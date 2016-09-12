@@ -116,7 +116,14 @@ SET(Y_SOURCE sandbox)
 ## prepare the build path
 ##
 ########################################################################
-SET(Y_BUILDPATH forge)
+STRING(REGEX REPLACE " " "" Y_GENPATH ${Y_GENERATOR})
+MESSAGE("Y_GENPATH=${Y_GENPATH}")
+IF(Y_GENERATOR_MULTI)
+	SET(Y_BUILDPATH "forge/${Y_GENPATH}")
+ELSE()
+	SET(Y_BUILDPATH "forge/${Y_GENPATH}/${Y_BUILDTYPE}")
+ENDIF()
+
 MESSAGE("Y_GENERATOR=${Y_GENERATOR}")
 MESSAGE("Y_BUILDTYPE=${Y_BUILDTYPE}")
 MESSAGE("Y_COMPILERS=${Y_COMPILERS}")
@@ -128,8 +135,7 @@ MESSAGE("Creating Build Path...")
 EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory ${Y_BUILDPATH})
 
 MESSAGE("Current Dir=${CMAKE_CURRENT_SOURCE_DIR}")
-STRING(REGEX REPLACE " " "" Y_GENPATH ${Y_GENERATOR})
-MESSAGE("Y_GENPATH=${Y_GENPATH}")
+
 
 ########################################################################
 ##
