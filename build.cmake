@@ -3,7 +3,7 @@ SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS    ON)
 
 ########################################################################
 ##
-## Finding out Y_BUILDTYPE : default Debug
+## Finding out Y_BUILDTYPE : default Debug, accepted Debug|Release
 ##
 ########################################################################
 SET(Y_BUILDTYPE_KNOWN   OFF)
@@ -32,6 +32,7 @@ ENDIF()
 ########################################################################
 SET(Y_GENERATOR_KNOWN OFF)
 SET(Y_GENERATOR_MULTI OFF) #if one generator handles multiples build types
+
 IF( "" STREQUAL "${Y_GENERATOR}" )
 	SET(Y_GENERATOR "Unix Makefiles")
 ENDIF()
@@ -52,7 +53,7 @@ ENDIF()
 
 IF( "${Y_GENERATOR}" MATCHES "CodeBlocks.*" )
 	SET(Y_GENERATOR_KNOWN ON)
-	SET(Y_GENERATOR_MULTI ON)
+	#SET(Y_GENERATOR_MULTI ON)
 ENDIF()
 
 IF(NOT Y_GENERATOR_KNOWN)
