@@ -33,7 +33,6 @@ ENDIF()
 SET(Y_COMPILERS_KNOWN OFF)
 IF( "" STREQUAL "${Y_COMPILERS}")
 	SET(Y_COMPILERS "gnu")
-	SET(Y_COMPILERS_KNOWN ON)
 ENDIF()
 
 IF( "${Y_COMPILERS}" STREQUAL "gnu" )
@@ -55,6 +54,27 @@ IF( "${Y_COMPILERS}" STREQUAL "intel" )
 	SET(Y_COMPILERS_KNOWN ON)
 ENDIF()
 
+IF(NOT Y_COMPILERS_KNOWN)
+	MESSAGE( FATAL_ERROR "Unknown Y_COMPILERS=${Y_COMPILERS}")
+ENDIF()	
+
+########################################################################
+##
+## Finding out Y_GENERATOR : default Unix Makefiles
+##
+########################################################################
+SET(Y_GENERATOR_KNOWN OFF)
+IF( "" STREQUAL "${Y_GENERATOR}" )
+	SET(Y_GENERATOR "Unix Makefiles")
+ENDIF()
+
+IF( "${Y_GENERATOR}" STREQUAL "Unix Makefiles" )
+	SET(Y_GENERATOR_KNOWN ON)
+ENDIF()
+
+IF(NOT Y_GENERATOR_KNOWN)
+	MESSAGE( FATAL_ERROR "Unknown Y_GENERATOR=${Y_GENERATOR}")
+ENDIF()
 
 ########################################################################
 ##
