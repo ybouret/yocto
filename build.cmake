@@ -56,6 +56,12 @@ IF( "${Y_GENERATOR}" MATCHES "CodeBlocks.*" )
 	#SET(Y_GENERATOR_MULTI ON)
 ENDIF()
 
+IF( "${Y_GENERATOR}" STREQUAL "Xcode" )
+	SET(Y_GENERATOR_KNOWN ON)
+	SET(Y_GENERATOR_MULTI ON)
+	SET(Y_COMPILERS       clang) #AppleClang in Xcode
+ENDIF()
+
 IF(NOT Y_GENERATOR_KNOWN)
 	MESSAGE( FATAL_ERROR "Unknown Y_GENERATOR=${Y_GENERATOR}")
 ENDIF()
@@ -107,13 +113,15 @@ SET(Y_SOURCE sandbox)
 
 ########################################################################
 ##
-## prepare the build process
+## prepare the build path
 ##
 ########################################################################
 SET(Y_BUILDPATH forge)
 MESSAGE("Y_GENERATOR=${Y_GENERATOR}")
 MESSAGE("Y_BUILDTYPE=${Y_BUILDTYPE}")
 MESSAGE("Y_COMPILERS=${Y_COMPILERS}")
+MESSAGE("        CC =${CC}")
+MESSAGE("        CXX=${CXX}")
 MESSAGE("Y_BUILDPATH=${Y_BUILDPATH}")
 
 MESSAGE("Creating Build Path...")
