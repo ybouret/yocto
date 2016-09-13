@@ -11,7 +11,7 @@ __ADD_PATTERN(*.png)
 __ADD_PATTERN(*.jpg)
 
 FOREACH(item IN LISTS to_remove)
-	MESSAGE("will remove ${item}")
+	MESSAGE("removing ${item}")
 	EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E remove -f ${item})
 ENDFOREACH(item)
 
