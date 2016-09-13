@@ -129,6 +129,36 @@ ENDIF()
 ########################################################################
 ##
 ##
+## linking macro
+##
+##
+########################################################################
+
+MACRO(TARGET_LINK_YOCTO tgt)
+
+	SET(ylibs "yocto")
+
+	####################################################################
+	# adding libraries and dependencies
+	####################################################################
+	FOREACH( extra ${ARGN} )
+			TARGET_LINK_LIBRARIES( ${tgt} y-${extra} )
+			#STRING(COMPARE EQUAL "net"  "${extra}" YOCTO_LD_NET)
+			#STRING(COMPARE EQUAL "kr"   "${extra}" YOCTO_LD_KR)
+	ENDFOREACH(extra)
+
+	####################################################################
+	# specific flags
+	####################################################################
+	
+	LIST(REMOVE_DUPLICATES ylibs)
+	MESSAGE("${tgt} <- ${ylibs}")
+	TARGET_LINK_LIBRARIES(${tgt} ${ylibs})
+ENDMACRO(TARGET_LINK_YOCTO)
+
+########################################################################
+##
+##
 ## end of yocto.cmake
 ##
 ##
