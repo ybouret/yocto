@@ -3,159 +3,179 @@ SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS    ON)
 
 ########################################################################
 ##
-## Finding out Y_BUILDTYPE : default Debug, accepted Debug|Release
+## Finding out BUILD_TYPE : default Debug, accepted Debug|Release
 ##
 ########################################################################
-SET(Y_BUILDTYPE_KNOWN   OFF)
+MESSAGE("===> Detecting BUILD_TYPE [Debug|Release]")
+SET(BUILD_TYPE_KNOWN   OFF)
 
-IF("" STREQUAL "${Y_BUILDTYPE}")
-	MESSAGE("Setting to Debug")
-	SET(Y_BUILDTYPE "Debug")
+IF("" STREQUAL "${BUILD_TYPE}")
+	SET(BUILD_TYPE "Debug")
 ENDIF()
 
-IF("Debug" STREQUAL "${Y_BUILDTYPE}")
-	SET(Y_BUILDTYPE_KNOWN     ON)
+IF("Debug" STREQUAL "${BUILD_TYPE}")
+	SET(BUILD_TYPE_KNOWN     ON)
 ENDIF()
 
-IF("Release" STREQUAL "${Y_BUILDTYPE}")
-	SET(Y_BUILDTYPE_KNOWN     ON)
+IF("Release" STREQUAL "${BUILD_TYPE}")
+	SET(BUILD_TYPE_KNOWN     ON)
 ENDIF()
 
-IF(NOT Y_BUILDTYPE_KNOWN)
-	MESSAGE( FATAL_ERROR "Unknown Y_BUILDTYPE=${Y_BUILDTYPE}" )
-ENDIF()
-
-########################################################################
-##
-## Finding out Y_GENERATOR : default Unix Makefiles
-##
-########################################################################
-SET(Y_GENERATOR_KNOWN OFF)
-SET(Y_GENERATOR_MULTI OFF) #if one generator handles multiples build types
-
-IF( "" STREQUAL "${Y_GENERATOR}" )
-	SET(Y_GENERATOR "Unix Makefiles")
-ENDIF()
-
-IF( "${Y_GENERATOR}" STREQUAL "Unix Makefiles" )
-	SET(Y_GENERATOR_KNOWN ON)
-ENDIF()
-
-IF( "${Y_GENERATOR}" STREQUAL "Ninja" )
-	SET(Y_GENERATOR_KNOWN ON)
-ENDIF()
-
-IF( "${Y_GENERATOR}" MATCHES "Visual Studio.*" )
-	SET(Y_GENERATOR_KNOWN ON)
-	SET(Y_GENERATOR_MULTI ON)
-	SET(Y_COMPILERS "microsoft")
-ENDIF()
-
-IF( "${Y_GENERATOR}" MATCHES "CodeBlocks.*" )
-	SET(Y_GENERATOR_KNOWN ON)
-	#SET(Y_GENERATOR_MULTI ON)
-ENDIF()
-
-IF( "${Y_GENERATOR}" STREQUAL "Xcode" )
-	SET(Y_GENERATOR_KNOWN ON)
-	SET(Y_GENERATOR_MULTI ON)
-	SET(Y_COMPILERS       clang) #AppleClang in Xcode
-ENDIF()
-
-IF(NOT Y_GENERATOR_KNOWN)
-	MESSAGE( FATAL_ERROR "Unknown Y_GENERATOR=${Y_GENERATOR}")
+IF(NOT BUILD_TYPE_KNOWN)
+	MESSAGE( FATAL_ERROR "Unknown BUILD_TYPE=${BUILD_TYPE}" )
 ENDIF()
 
 ########################################################################
 ##
-## Finding out Y_COMPILERS : default gnu
+## Finding out GENERATOR : default Unix Makefiles
 ##
 ########################################################################
-SET(Y_COMPILERS_KNOWN OFF)
-IF( "" STREQUAL "${Y_COMPILERS}")
-	SET(Y_COMPILERS "gnu")
+MESSAGE("===> Detecting GENERATOR [CMake -G]")
+SET(GENERATOR_KNOWN OFF)
+SET(GENERATOR_MULTI OFF) #if one generator handles multiples build types
+SET(COMPILERS_TRACE ON)  #if BUILD_PATH keeps trace of COMPILERS
+
+IF( "" STREQUAL "${GENERATOR}" )
+	SET(GENERATOR "Unix Makefiles")
 ENDIF()
 
-IF( "${Y_COMPILERS}" STREQUAL "gnu" )
+IF( "${GENERATOR}" STREQUAL "Unix Makefiles" )
+	SET(GENERATOR_KNOWN ON)
+ENDIF()
+
+IF( "${GENERATOR}" STREQUAL "Ninja" )
+	SET(GENERATOR_KNOWN ON)
+ENDIF()
+
+IF( "${GENERATOR}" MATCHES "Visual Studio.*" )
+	SET(GENERATOR_KNOWN ON)
+	SET(GENERATOR_MULTI ON)
+	SET(COMPILERS "microsoft") #cl.exe in MSVS
+	SET(COMPILERS_TRACE OFF)
+ENDIF()
+
+IF( "${GENERATOR}" MATCHES "CodeBlocks.*" )
+	SET(GENERATOR_KNOWN ON)
+ENDIF()
+
+IF( "${GENERATOR}" STREQUAL "Xcode" )
+	SET(GENERATOR_KNOWN ON)
+	SET(GENERATOR_MULTI ON)
+	SET(COMPILERS       clang) #AppleClang in Xcode
+	SET(COMPILERS_TRACE OFF)
+ENDIF()
+
+IF(NOT GENERATOR_KNOWN)
+	MESSAGE( FATAL_ERROR "Unknown GENERATOR=${GENERATOR}")
+ENDIF()
+
+########################################################################
+##
+## Finding out COMPILERS : default gnu
+##
+########################################################################
+MESSAGE("===> Detecting COMPILERS")
+SET(COMPILERS_KNOWN OFF)
+IF( "" STREQUAL "${COMPILERS}")
+	SET(COMPILERS "gnu")
+ENDIF()
+
+IF( "${COMPILERS}" STREQUAL "gnu" )
 	SET(CC  "gcc${VERSION}")
 	SET(CXX "g++${VERSION}")
-	SET(Y_COMPILERS_KNOWN ON)
+	SET(COMPILERS_KNOWN ON)
 ENDIF()
 
-IF( "${Y_COMPILERS}" STREQUAL "clang" )
+IF( "${COMPILERS}" STREQUAL "clang" )
 	SET(CC  "clang${VERSION}")
 	SET(CXX "clang++${VERSION}")
-	SET(Y_COMPILERS_KNOWN ON)
+	SET(COMPILERS_KNOWN ON)
 ENDIF()
 
-IF( "${Y_COMPILERS}" STREQUAL "intel" )
+IF( "${COMPILERS}" STREQUAL "intel" )
 	SET(CC  "icc")
 	SET(CXX "icpc")
-	SET(Y_COMPILERS_KNOWN ON)
+	SET(COMPILERS_KNOWN ON)
+	SET(VERSION "")
 ENDIF()
 
-IF( "${Y_COMPILERS}" STREQUAL "microsoft" )
+IF( "${COMPILERS}" STREQUAL "microsoft" )
 	SET(CC  "cl.exe")
 	SET(CXX "cl.exe")
-	SET(Y_COMPILERS_KNOWN ON)
+	SET(COMPILERS_KNOWN ON)
+	SET(VERSION "")
 ENDIF()
 
-IF(NOT Y_COMPILERS_KNOWN)
-	MESSAGE( FATAL_ERROR "Unknown Y_COMPILERS=${Y_COMPILERS}")
+IF(NOT COMPILERS_KNOWN)
+	MESSAGE( FATAL_ERROR "Unknown COMPILERS=${COMPILERS}")
 ENDIF()	
 
 ########################################################################
 ##
-## Finding out Y_SOURCE
+## Finding out SOURCE
 ##
 ########################################################################
-SET(Y_SOURCE sandbox)
+MESSAGE("===> Detecting SOURCE [default: ./src]")
+IF("" STREQUAL "${SOURCE}")
+	SET(SOURCE "src")
+ENDIF()
 
 ########################################################################
 ##
 ## prepare the build path
 ##
 ########################################################################
-STRING(REGEX REPLACE " " "" Y_GENPATH ${Y_GENERATOR})
-MESSAGE("Y_GENPATH=${Y_GENPATH}")
-IF(Y_GENERATOR_MULTI)
-	SET(Y_BUILDPATH "forge/${Y_GENPATH}")
+IF(COMPILERS_TRACE)
+	SET(BUILD_ROOT "forge/${COMPILERS}${VERSION}")
 ELSE()
-	SET(Y_BUILDPATH "forge/${Y_GENPATH}/${Y_BUILDTYPE}")
+	SET(BUILD_ROOT "forge")
 ENDIF()
 
-MESSAGE("Y_GENERATOR=${Y_GENERATOR}")
-MESSAGE("Y_BUILDTYPE=${Y_BUILDTYPE}")
-MESSAGE("Y_COMPILERS=${Y_COMPILERS}")
-MESSAGE("        CC =${CC}")
-MESSAGE("        CXX=${CXX}")
-MESSAGE("Y_BUILDPATH=${Y_BUILDPATH}")
+STRING(REGEX REPLACE " " "" __GENPATH ${GENERATOR})
+IF(GENERATOR_MULTI)
+	SET(BUILD_PATH "${BUILD_ROOT}/${__GENPATH}")
+ELSE()
+	SET(BUILD_PATH "${BUILD_ROOT}/${__GENPATH}/${BUILD_TYPE}")
+ENDIF()
 
-MESSAGE("Creating Build Path...")
-EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory ${Y_BUILDPATH})
+MESSAGE("=======> GENERATOR  = ${GENERATOR}")
+MESSAGE("=======> BUILD_TYPE = ${BUILD_TYPE}")
+MESSAGE("=======> COMPILERS  = ${COMPILERS}")
+MESSAGE("=======>        CC  = ${CC}")
+MESSAGE("=======>        CXX = ${CXX}")
+MESSAGE("=======> BUILD_PATH = ${BUILD_PATH}")
+MESSAGE("=======> SOURCE     = ${SOURCE}")
 
-MESSAGE("Current Dir=${CMAKE_CURRENT_SOURCE_DIR}")
+MESSAGE("===> Creating ${BUILD_PATH}")
+EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory ${BUILD_PATH})
 
 
 ########################################################################
 ##
-## prepare the build process
+## Generate The Project
 ##
 ########################################################################
-IF(Y_GENERATOR_MULTI)
+MESSAGE("===> Configuring with ${CMAKE_COMMAND}")
+MESSAGE("")
+MESSAGE("-------------------------------------------------------------")
+IF(GENERATOR_MULTI)
 	EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND}
-							-G${Y_GENERATOR}
+							-G${GENERATOR}
 							-DCMAKE_C_COMPILER=${CC}
 							-DCMAKE_CXX_COMPILER=${CXX}
-							${CMAKE_CURRENT_SOURCE_DIR}/${Y_SOURCE}
-							WORKING_DIRECTORY ${Y_BUILDPATH})
+							${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}
+							WORKING_DIRECTORY ${BUILD_PATH})
 ELSE()
 	EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND}
-							-G${Y_GENERATOR}
+							-G${GENERATOR}
 							-DCMAKE_C_COMPILER=${CC}
 							-DCMAKE_CXX_COMPILER=${CXX}
-							-DCMAKE_BUILD_TYPE=${Y_BUILDTYPE}
-							${CMAKE_CURRENT_SOURCE_DIR}/${Y_SOURCE}
-							WORKING_DIRECTORY ${Y_BUILDPATH})
+							-DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+							${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}
+							WORKING_DIRECTORY ${BUILD_PATH})
 ENDIF()
-				
+MESSAGE("-------------------------------------------------------------")	
+MESSAGE("")
+MESSAGE("===> Ready to be compiled with ${GENERATOR} for ${COMPILERS}${VERSION}")
+MESSAGE("")
+
