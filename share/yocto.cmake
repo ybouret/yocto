@@ -38,6 +38,9 @@ GET_FILENAME_COMPONENT(CC_NAME ${CMAKE_C_COMPILER} NAME )
 MESSAGE("Compiler: ${CC_NAME}")
 SET(YOCTO_KNOWN_COMPILER OFF)
 
+SET(COMPILER_VERSION "")
+
+
 ########################################################################
 ##
 ## 'gnu'
