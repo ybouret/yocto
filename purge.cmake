@@ -1,4 +1,5 @@
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
+MESSAGE("Purging forge...")
 FILE(GLOB to_purge forge/*)
 FOREACH(item IN LISTS to_purge)
 	IF(IS_DIRECTORY ${item})
