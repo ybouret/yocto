@@ -182,5 +182,6 @@ ADD_SUBDIRECTORY(file2data)
 
 YOCTO_BUILD(zlib)
 YOCTO_BUILD(png)
+YOCTO_BUILD(jbig)
 
 
