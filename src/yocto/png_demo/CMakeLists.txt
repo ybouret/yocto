@@ -22,3 +22,6 @@ pngwutil.c
 
 ADD_EXECUTABLE(pngtest pngtest.c)
 TARGET_LINK_LIBRARIES(pngtest y-png y-z)
+IF(YOCTO_LINUX)
+	TARGET_LINK_LIBRARIES(pngtest m)
+ENDIF()
