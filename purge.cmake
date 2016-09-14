@@ -1,12 +1,15 @@
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
-MESSAGE("Purging forge...")
+MESSAGE("")
+MESSAGE("====> removing forge content")
+
 FILE(GLOB to_purge forge/*)
 FOREACH(item IN LISTS to_purge)
 	IF(IS_DIRECTORY ${item})
-		#MESSAGE("remove DIR ${item}")
 		EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E remove_directory ${item})
 	ELSE()
-		#MESSAGE("remove STD ${item}")
 		EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E remove -f ${item})
 	ENDIF()
 ENDFOREACH(item)
+
+MESSAGE("")
+

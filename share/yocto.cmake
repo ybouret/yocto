@@ -141,16 +141,21 @@ MACRO(TARGET_LINK_YOCTO tgt)
 	####################################################################
 	# adding libraries and dependencies
 	####################################################################
+	SET(YOCTO_LD_KR OFF)
 	FOREACH( extra ${ARGN} )
-			TARGET_LINK_LIBRARIES( ${tgt} y-${extra} )
-			#STRING(COMPARE EQUAL "net"  "${extra}" YOCTO_LD_NET)
-			#STRING(COMPARE EQUAL "kr"   "${extra}" YOCTO_LD_KR)
+			LIST( APPEND ylibs "y-${extra}" )
+			IF( "kr" STREQUAL ${extra} )
+				SET(YOCTO_LD_NET ON)
+			ENDIF()
 	ENDFOREACH(extra)
 
 	####################################################################
 	# specific flags
 	####################################################################
-	
+
+	####################################################################
+	# apply linking
+	####################################################################
 	LIST(REMOVE_DUPLICATES ylibs)
 	MESSAGE("${tgt} <- ${ylibs}")
 	TARGET_LINK_LIBRARIES(${tgt} ${ylibs})

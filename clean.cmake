@@ -1,3 +1,5 @@
+MESSAGE("")
+MESSAGE("===> cleaning up...")
 SET(to_remove "")
 
 FUNCTION(__ADD_PATTERN pattern)
@@ -17,5 +19,7 @@ FOREACH(item IN LISTS to_remove)
 	MESSAGE("removing ${item}")
 	EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E remove -f ${item})
 ENDFOREACH(item)
+
+MESSAGE("")
 
 

@@ -1,4 +1,4 @@
-PROJECT(kr)
+## kr
 
 FILE( GLOB hashing_decl yocto/hashing/*.hpp)
 FILE( GLOB hashing_impl yocto/hashing/*.cpp)
@@ -29,7 +29,7 @@ SOURCE_GROUP( crypto/ios FILES ${ios_srcs} )
 SET( decl ${hashing_decl} ${bc_decl} ${sc_decl} ${ios_decl})
 SET( srcs ${hashing_srcs} ${bc_srcs} ${sc_srcs} ${ios_srcs})
 
-INCLUDE_DIRECTORIES( . ../main )
+INCLUDE_DIRECTORIES( . ../yocto )
 
 ADD_LIBRARY(y-kr STATIC ${srcs} )
 
@@ -39,7 +39,7 @@ IF(YOCTO_BUILD_TESTS)
 	ADD_SUBDIRECTORY(tests)
 ENDIF()
 
-ADD_EXECUTABLE(y-md y-md.cpp)
-TARGET_LINK_YOCTO(y-md kr)
-INSTALL( TARGETS y-md RUNTIME DESTINATION bin )
+ADD_EXECUTABLE(yocto_md y-md.cpp)
+TARGET_LINK_YOCTO(yocto_md kr)
+INSTALL( TARGETS yocto_md RUNTIME DESTINATION bin )
 

@@ -8,7 +8,7 @@ IF( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
 	TARGET_LINK_LIBRARIES( test-main dl )
 ENDIF()
 
-INSTALL( TARGETS test-main RUNTIME DESTINATION share/yocto/demo)
+#INSTALL( TARGETS test-main RUNTIME DESTINATION share/yocto/demo)
 
 ENABLE_TESTING()
 ADD_TEST(Platform    test-main platform)
