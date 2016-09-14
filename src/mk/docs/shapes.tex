@@ -1,0 +1,488 @@
+\documentclass[aps]{revtex4}
+\usepackage{graphicx}
+\usepackage{amssymb,amsfonts,amsmath,amsthm}
+\usepackage{chemarr}
+\usepackage{bm}
+\usepackage{pslatex}
+\usepackage{mathptmx}
+\usepackage{xfrac}
+
+%% concentration notations
+\newcommand{\mymat}[1]{\boldsymbol{#1}}
+%\newcommand{\mytrn}[1]{{#1}^{\mathsf{T}}}
+\newcommand{\mytrn}[1]{~^{\mathsf{t}}\!{#1}}
+\newcommand{\myvec}[1]{\overrightarrow{#1}}
+\newcommand{\mygrad}{\vec{\nabla}}
+\newcommand{\myhess}{\mathcal{H}}
+
+
+\begin{document}
+\title{Shapes Fitting}
+
+\section{Settings}
+
+We have a set of $N$ points $\vec{A}_i = (x_i,y_i)$ in the plane.
+
+\section{Fitting to a Circle}
+This is the method of Kasa and Coope.\\
+The algebraic equation of the circle is
+\begin{equation}
+	x^2+y^2 = ax+by+c
+\end{equation}
+with $z = x^2+y^2$, we have the multilinear regression problem
+\begin{equation}
+	z = ax+by+c
+\end{equation}
+which provides
+\begin{equation}
+	\label{eq:circ}
+	\begin{bmatrix}
+	\sum x_i^2 & \sum x_iy_i & \sum x_i\\
+	\sum x_iy_i & \sum y_i^2 & \sum y_i\\
+	\sum x_i    & \sum y_i & N \\
+	\end{bmatrix}
+	\begin{bmatrix}
+	a\\
+	b\\
+	c\\
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+	\sum z_i x_i\\
+	\sum z_i y_i\\
+	\sum z_i\\
+	\end{bmatrix}
+\end{equation}
+Solving \eqref{eq:circ} yields
+\begin{equation}
+	\left\lbrace
+	\begin{array}{rcl}
+	x_c & = & \sfrac{a}{2}\\
+	y_c & = & \sfrac{b}{2}\\
+	r^2 & = & {c}+x_c^2+y_c^2\\
+	\end{array}
+	\right.
+\end{equation}
+
+When adding a weight $w_i$ to each point we have to solve
+\begin{equation}
+	\label{eq:circ}
+	\begin{bmatrix}
+	\sum w_i^2 x_i^2 & \sum w_i^2 x_iy_i & \sum w_i^2 x_i\\
+	\sum w_i^2 x_iy_i & \sum w_i^2 y_i^2 & \sum w_i^2 y_i\\
+	\sum w_i^2x_i    & \sum w_i^2y_i & \sum w_i^2 \\
+	\end{bmatrix}
+	\begin{bmatrix}
+	a\\
+	b\\
+	c\\
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+	\sum w_i^2z_i x_i\\
+	\sum w_i^2z_i y_i\\
+	\sum w_i^2z_i\\
+	\end{bmatrix}
+\end{equation}
+
+\section{Fitting to a Conic}
+\subsection{Algebraic definition}
+	
+\begin{equation}
+\label{eq:ell_alg}
+	a\,x^2+b\,xy+c\,y^2 + d\,x+e\,y+f = 0
+\end{equation}
+which requires some constraints on $a,b,c$ to be univocal.
+We define rewrite the problem with
+\begin{equation}
+	\vec{A} = \begin{bmatrix}
+	a\\
+	b\\
+	c\\
+	d\\
+	e\\
+	f
+	\end{bmatrix}, 
+	\; 
+	\vec{Z}_i = 
+	\begin{bmatrix}
+	x_i^2\\
+	x_iy_i\\
+	y_i^2\\
+	x_i\\
+	y_i\\
+	1\\
+	\end{bmatrix}
+\end{equation}
+and we want to minimize
+\begin{equation}
+F^2\left(\vec{A}\right) = \sum_i \left(\vec{A}.\vec{Z}_i\right) 
+= \vec{A}^t \underbrace{\left(\sum_i \vec{Z}_i \otimes \vec{Z}_i \right)}_{\bm{S}} \vec{A}
+\end{equation}
+under the constraint
+\begin{equation}
+	\vec{A}^t \bm{C} \vec{A} = 1.
+\end{equation}
+Using the Lagrange multiplier $\lambda$, we need to minimize
+\begin{equation}
+	\mathcal{L}\left(\vec{A},\lambda\right) = F^2\left(\vec{A}\right) - \lambda \left( \vec{A}^t \bm{C} \vec{A} -1 \right).
+\end{equation}
+The vectorial part verifies
+\begin{equation}
+	\bm{S} \vec{A} = \lambda \vec{C} \vec{A}.
+\end{equation}
+Then $\bm{S}$ must be invertible and we get the eigen problem
+\begin{equation}
+	\underbrace{\bm{S}^{-1}\bm{C}}_{\displaystyle \bm{M}} \vec{A} = \dfrac{1}{\lambda} \vec{A}.
+\end{equation}
+To match the constraint and minimize $F^2$, $\bm{M}$ must have a greatest positive eigenvalue
+and its associated eigenvector $\vec{U}$, which must also verify 
+\begin{equation}
+	\vec{U}^t \bm{C} \vec{U} > 0,
+\end{equation}
+which should be exact...\\
+Then we get
+\begin{equation}
+	\vec{A} = \pm\dfrac{1}{\sqrt{\vec{U}^t \bm{C} \vec{U}}} \vec{U}
+\end{equation}
+
+\subsection{Elliptic Reduction}
+We can rewrite the quadratic form with
+\begin{equation}
+	\vec{P} = \begin{bmatrix}
+		x\\
+		y
+		\end{bmatrix},
+		\;
+		\bm{Q} = \begin{bmatrix}
+		a & \dfrac{b}{2}\\
+		\dfrac{b}{2} & c
+		\end{bmatrix},\;
+		\vec{L} = \begin{bmatrix}
+		d\\
+		e
+		\end{bmatrix}
+\end{equation}
+as
+\begin{equation}
+	\vec{P}^t \bm{Q} \vec{P} + \vec{L}\cdot\vec{P} + f = 0.
+\end{equation}
+At the center $\vec{J}$ of the ellipse, the gradient of the quadratic form 
+vanishes, so that formally
+\begin{equation}
+	\bm{Q}\vec{J} = -\dfrac{1}{2}\vec{L}\text{ or }\vec{J} = -\dfrac{1}{2} \bm{Q}^{-1} \vec{L}.
+\end{equation}
+We now translate the quadratic form with
+\begin{equation}
+	\vec{P} = \vec{P}' + \vec{J}.
+\end{equation}
+We get
+\begin{equation}
+	\left(\vec{P}' + \vec{J}\right)^t \bm{Q} \left(\vec{P}' + \vec{J}\right) +
+	\vec{L}\cdot\left(\vec{P}' + \vec{J}\right) + f = 0
+\end{equation}
+then
+\begin{equation}
+	\vec{P}'^t \bm{Q} \vec{P'} + 2 \vec{P}'^t \bm{Q} \vec{J} + \vec{J}^t \bm{Q} \vec{J} + 
+	\vec{L}\cdot\vec{P}' + \vec{L}\cdot\vec{J} + f = 0.
+\end{equation}
+Moreover
+\begin{equation}
+	\vec{P}'^t \bm{Q} \vec{P'} - \vec{L}\cdot\vec{P}' - \dfrac{1}{2} \vec{L}\cdot\vec{J} +
+    \vec{L}\cdot\vec{P}' + \vec{L}\cdot\vec{J} + f = 0
+\end{equation}
+or
+\begin{equation}
+	\vec{P}'^t \bm{Q} \vec{P} + \dfrac{1}{2} \vec{L}\cdot\vec{J} + f = 0
+\end{equation}
+and finally
+\begin{equation}
+	\vec{P}'^t \bm{Q} \vec{P} = \underbrace{\dfrac{1}{4} \vec{L}' \bm{Q}^{-1} \vec{L} -f}_{\rho^2}.
+\end{equation}
+
+There exist $\bm{R}\in\mathbb{O}^3$ such that
+\begin{equation}
+\bm{R}^tQ\bm{R} = \begin{bmatrix}
+\Lambda_X & 0 \\
+0         & \Lambda_Y\\
+\end{bmatrix}
+\end{equation}
+with $\Lambda_X\leq\Lambda_Y$, so that the equation becomes
+\begin{equation}
+	\Lambda_X X^2 + \Lambda_Y Y^2 = \rho^2
+\end{equation}
+and finally
+\begin{equation}
+	\left(\dfrac{X}{\sqrt{\dfrac{\rho^2}{\Lambda_X}}}\right)^2
+	 + \left(\dfrac{Y}{\sqrt{\dfrac{\rho^2}{\Lambda_Y}}}\right)^2 = 1.
+\end{equation}
+
+\end{document}
+
+\section{Fitting to an Ellipse}
+\subsection{Algebraic definition}
+An algebraic equation is
+\begin{equation}
+\label{eq:ell_alg}
+	a\,x^2+b\,xy+c\,y^2 + d\,x+e\,y+f = 0
+\end{equation}
+which requires some constraints on $a,b,c$ to be unique.
+Let us define 
+\begin{equation}
+	\vec{A} = 
+	\begin{pmatrix}
+	a\\
+	b\\
+	c\\
+	\end{pmatrix},\;
+	\vec{B} = 
+	\begin{pmatrix}
+	d\\
+	e\\
+	f\\
+	\end{pmatrix},\;
+	\vec{Q} =
+	\begin{pmatrix}
+	x^2\\
+	xy\\
+	y^2\\
+	\end{pmatrix},\;
+	\vec{Z} =
+	\begin{pmatrix}
+	x\\
+	y\\
+	1\\
+	\end{pmatrix}.
+\end{equation}
+The equation \eqref{eq:ell_alg} becomes
+\begin{equation}
+	\vec{A}.\vec{Q} + \vec{B}.\vec{Z} = 0
+\end{equation}
+We want to minimize
+\begin{align}
+	F^2\left(\vec{A},\vec{B}\right) & = \sum_{i=1}^N \left(\vec{A}.\vec{Q}_i + \vec{B}.\vec{Z}_i\right)^2\\
+	& =  \sum_{i=1}^N \left\lbrack
+	\left(\vec{A}.\vec{Q}_i\right)^2 + 2 \left(\vec{A}.\vec{Q}_i\right)\left(\vec{B}.\vec{Z}_i\right) + \left(\vec{B}.\vec{Z}_i\right)^2
+	\right\rbrack\\
+	& = \vec{A}.\left(\sum_i \vec{Q}_i\otimes\vec{Q}_i\right).\vec{A} +
+	 2 \vec{A}.\left(\sum_i \vec{Q}_i\otimes\vec{Z}_i\right).\vec{B} + \vec{B}.\left(\sum_i \vec{Z}_i\otimes\vec{Z}_i\right)\vec{B}.\\
+\end{align}
+We define the $3\times3$ matrices
+\begin{equation}
+	\mymat{S}_{qq} =  \vec{Q}_i\otimes\vec{Q}_i,\;\;\mymat{S}_{qz}=\vec{Q}_i\otimes\vec{Z}_i,\;\;\mymat{S}_{zz}=\vec{Z}_i\otimes\vec{Z}_i.
+\end{equation}
+so that
+\begin{align}
+	F^2\left(\vec{A},\vec{B}\right)  & = \vec{A}\mymat{S}_{qq}\vec{A} + 2\vec{A}\mymat{S}_{qz}\vec{B} + \vec{B}\mymat{S}_{zz}\vec{B}\\
+	 & = \vec{A}\mymat{S}_{qq}\vec{A} + 2\vec{B}\mytrn{\mymat{S}_{qz}}\vec{A} + \vec{B}\mymat{S}_{zz}\vec{B}
+\end{align}
+
+Let us minimize $F^2$ under the quadratic constraint
+\begin{equation}
+	\label{eq:C}
+	\vec{A}\mymat{C}\vec{A} = 1
+\end{equation}
+by setting
+\begin{equation}
+	L\left(\vec{A},\vec{B}\right) = F^2\left(\vec{A},\vec{B}\right) - \lambda \left( \vec{A}.\mymat{C}.\vec{A} - 1\right).
+\end{equation}
+We obtain the set of equations
+\begin{equation}
+	\left\lbrace
+	\begin{array}{rcl}
+	\mymat{S}_{qq}\vec{A} + \mymat{S}_{qz}\vec{B} & = & \lambda \mymat{C} \vec{A} \\
+	\mytrn{\mymat{S}}_{qz}\vec{A} + \mymat{S}_{zz}\vec{B} & = & \vec{0}\\
+	\end{array}
+	\right.
+\end{equation}
+The solution are
+\begin{equation}
+	\vec{B} = -\mymat{S}_{zz}^{-1} \mytrn{\mymat{S}}_{qz}\vec{A} = -\mymat{\beta}\vec{A}
+\end{equation}
+and
+\begin{equation}
+	\left(\mymat{S}_{qq} - \mymat{S}_{qz}\mymat{\beta}\right) \vec{A} = \lambda \mymat{C}\vec{A}.
+\end{equation}
+If we assume that $\mymat{C}$ is invertible then we define
+\begin{equation}
+	\mymat{M} = \mymat{C}^{-1} \left(\mymat{S}_{qq} - \mymat{S}_{qz}\beta\right)
+\end{equation}
+
+Consequently
+\begin{equation}
+	\lambda \in \mathsf{Spec}\left( M \right)
+\end{equation}
+and the acceptable eigenvectors $\vec{U}$ must verify
+\begin{equation}
+	\vec{U}\mymat{C}\vec{U}>0.
+\end{equation}
+If $\vec{U}$ is an acceptable eigenvector, then a solution $\vec{A}$ is 
+\begin{equation}
+	\vec{A} = \dfrac{1}{\sqrt{\vec{U}\mymat{C}\vec{U}}} \vec{U}
+\end{equation}
+
+If $\vec{A}$ is a solution then
+\begin{equation}
+	\vec{F}^2 = \vec{A} \left(\mymat{S}_{qq} - \mymat{S}_{qz}\mymat{S}_{zz}^{-1} \mytrn{\mymat{S}}_{qz}\right) \vec{A} = \lambda
+\end{equation}
+so that $\vec{A}$ is computed from the acceptable eigenvector with the smallest eigenvalue
+
+\subsection{Ellipe reduced equation: TO BE REWRITTEN!!!!}
+The quadratic  form is
+\begin{equation}
+\begin{bmatrix}
+x & y\\
+\end{bmatrix}
+\begin{bmatrix}
+ a & \dfrac{b}{2} \\
+ \dfrac{b}{2} & c\\
+\end{bmatrix}
+	\begin{bmatrix}
+	x\\
+	y\\
+	\end{bmatrix}
+	+
+	\begin{bmatrix}
+	x & y\\
+	\end{bmatrix}
+	\begin{bmatrix}
+	d\\
+	e\\
+	\end{bmatrix}
+	+f = 0
+\end{equation}
+At the center of the ellipse, the gradient of the quadratic form vanishes to that
+\begin{equation}
+	\begin{bmatrix}
+ a & \dfrac{b}{2} \\
+ \dfrac{b}{2} & c\\
+\end{bmatrix}
+\begin{bmatrix}
+	x_c\\
+	y_c\\
+\end{bmatrix}
+= -\dfrac{1}{2} 
+\begin{bmatrix}
+	d\\
+	e\\
+	\end{bmatrix}.
+\end{equation}
+Using $x=x'+x_c$ and $y=y'+y_c$
+one finds
+\begin{equation}
+	\begin{bmatrix}
+x' & y'\\
+\end{bmatrix}
+\begin{bmatrix}
+ a & \dfrac{b}{2} \\
+ \dfrac{b}{2} & c\\
+\end{bmatrix}
+	\begin{bmatrix}
+	x'\\
+	y'\\
+	\end{bmatrix} 
+	+
+		\begin{bmatrix}
+x_c & y_c\\
+\end{bmatrix}
+\begin{bmatrix}
+ a & \dfrac{b}{2} \\
+ \dfrac{b}{2} & c\\
+\end{bmatrix}
+	\begin{bmatrix}
+	x_c\\
+	y_c\\
+	\end{bmatrix} 
++
+	\begin{bmatrix}
+x_c & y_c\\
+\end{bmatrix}	
+\begin{bmatrix}
+	d\\
+	e\\
+	\end{bmatrix}
++
+	 f = 0
+\end{equation}
+and
+\begin{equation}
+\begin{bmatrix}
+x' & y'\\
+\end{bmatrix}
+\begin{bmatrix}
+ a & \dfrac{b}{2} \\
+ \dfrac{b}{2} & c\\
+\end{bmatrix}
+	\begin{bmatrix}
+	x'\\
+	y'\\
+	\end{bmatrix} = \dfrac{1}{4} 
+	\begin{bmatrix}
+	d & e\\
+	\end{bmatrix}
+	\begin{bmatrix}
+		a & \dfrac{b}{2} \\
+ 		\dfrac{b}{2} & c\\	\end{bmatrix}^{-1}
+	 \begin{bmatrix}
+	d\\
+	e\\
+	\end{bmatrix}- f.
+\end{equation}
+Since we have an ellipse, there exists $\lambda_X>0$, $\lambda_Y>0$ and an orthogonal matrix $\mymat{Q}$ such that
+\begin{equation}
+\begin{bmatrix}
+ a & \dfrac{b}{2} \\
+ \dfrac{b}{2} & c\\
+\end{bmatrix}
+= \mymat{Q}
+\begin{bmatrix}
+	\lambda_X & 0 \\
+	0  & \lambda_Y \\
+\end{bmatrix}
+\mytrn{\mymat{Q}}.
+\end{equation}
+With 
+\begin{equation}
+	\begin{bmatrix}
+	x'\\
+	y'\\
+	\end{bmatrix}
+	=
+	\mytrn{\mymat{Q}}
+	\begin{bmatrix}
+	X\\
+	Y\\
+	\end{bmatrix}
+\end{equation}
+and
+\begin{equation}
+	\begin{bmatrix}
+	D \\
+	E \\
+	\end{bmatrix}
+	=
+	\mytrn{\mymat{Q}}
+	\begin{bmatrix}
+	d\\
+	e\\
+	\end{bmatrix}
+\end{equation}
+we obtain
+\begin{equation}
+	\begin{bmatrix}
+	x_c\\
+	y_c\\
+	\end{bmatrix}
+	= -\dfrac{1}{2}\mymat{Q}
+	\begin{bmatrix}
+	D / \lambda_X\\
+	E / \lambda_Y\\
+	\end{bmatrix}
+\end{equation}
+and
+\begin{equation}
+	\lambda_X X^2 + \lambda_Y Y^2 = \dfrac{1}{4}\left(\dfrac{D^2}{\lambda_X} + \dfrac{E^2}{\lambda_Y}\right) - f
+\end{equation}
+
+\
+\end{document}

@@ -168,10 +168,19 @@ MACRO(TARGET_LINK_YOCTO tgt)
 	####################################################################
 	# adding libraries and dependencies
 	####################################################################
-	SET(YOCTO_LD_KR OFF)
+	SET(YOCTO_LD_NET OFF)
 	FOREACH( extra ${ARGN} )
 			LIST( APPEND ylibs "y-${extra}" )
-			IF( "kr" STREQUAL ${extra} )
+			
+			IF( "json" STREQUAL ${extra} )
+				LIST( APPEND ylibs "y-lingua" )
+			ENDIF()
+			
+			IF( "seem" STREQUAL ${extra} )
+				LIST( APPEND ylibs "y-lingua" )
+			ENDIF()
+			
+			IF( "net" STREQUAL ${extra} )
 				SET(YOCTO_LD_NET ON)
 			ENDIF()
 	ENDFOREACH(extra)
@@ -184,6 +193,18 @@ MACRO(TARGET_LINK_YOCTO tgt)
 		LIST( APPEND ylibs pthread )
 	ENDIF()
 	
+	IF(YOCTO_LD_NET)
+		IF(WIN32)
+			IF(YOCTO_GNU)
+			LIST(APPEND ylibs ws2_32)
+			ENDIF()
+		ENDIF()
+		
+		IF(YOCTO_SUNOS)
+			LIST(APPEND ylibs socket nsl)
+		ENDIF()
+	ENDIF()
+	
 	####################################################################
 	# apply linking
 	####################################################################
@@ -192,6 +213,22 @@ MACRO(TARGET_LINK_YOCTO tgt)
 	TARGET_LINK_LIBRARIES(${tgt} ${ylibs})
 	
 ENDMACRO(TARGET_LINK_YOCTO)
+
+########################################################################
+##
+##
+## FileToData function
+##
+##
+########################################################################
+FUNCTION(YOCTO_FILE2DATA source target)
+ADD_CUSTOM_COMMAND(
+OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${target}
+COMMAND yocto_file2data ${CMAKE_CURRENT_SOURCE_DIR}/${source} ${CMAKE_CURRENT_SOURCE_DIR}/${target}
+DEPENDS yocto_file2data ${CMAKE_CURRENT_SOURCE_DIR}/${source}
+COMMENT "[File2Data] ${source} => ${target}"
+)
+ENDFUNCTION(YOCTO_FILE2DATA)
 
 ########################################################################
 ##

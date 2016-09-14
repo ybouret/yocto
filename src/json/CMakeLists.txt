@@ -1,0 +1,31 @@
+
+SET(JSON_GRAM ${CMAKE_CURRENT_SOURCE_DIR}/yocto/json/json.g)
+SET(JSON_INCL ${CMAKE_CURRENT_SOURCE_DIR}/yocto/json/json.inc)
+SET(JSON_DEFS ${CMAKE_CURRENT_SOURCE_DIR}/yocto/json/json.def)
+
+FILE( GLOB decl yocto/json/*.hpp)
+FILE( GLOB impl yocto/json/*.cpp)
+SET( srcs ${decl} ${impl} )
+INSTALL( FILES ${decl} DESTINATION include/yocto/json )
+SOURCE_GROUP( json FILES ${srcs} ${JSON_GRAM} ${JSON_INCL} ${JSON_DEFS})
+
+ADD_CUSTOM_COMMAND(
+OUTPUT ${JSON_INCL}
+COMMAND yocto_file2data ${JSON_GRAM} ${JSON_INCL}
+DEPENDS yocto_file2data ${JSON_GRAM}
+)
+
+ADD_CUSTOM_COMMAND(
+OUTPUT ${JSON_DEFS}
+COMMAND yocto_gram2defs JSON_ ${JSON_GRAM} ${JSON_DEFS}
+DEPENDS yocto_gram2defs ${JSON_GRAM}
+)
+
+INCLUDE_DIRECTORIES( . ../yocto ../lingua)
+
+ADD_LIBRARY( y-json STATIC ${srcs} ${JSON_GRAM} ${JSON_INCL} ${JSON_DEFS})
+INSTALL( TARGETS y-json ARCHIVE DESTINATION lib )
+
+IF(YOCTO_BUILD_TESTS)
+	ADD_SUBDIRECTORY(tests)
+ENDIF()

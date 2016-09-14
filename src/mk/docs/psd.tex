@@ -1,0 +1,116 @@
+\documentclass[aps,twocolumn]{revtex4}
+\usepackage{graphicx}
+\usepackage{amssymb,amsfonts,amsmath,amsthm}
+\usepackage{chemarr}
+\usepackage{bm}
+\usepackage{pslatex}
+\usepackage{mathptmx}
+\usepackage{xfrac}
+
+%% concentration notations
+\newcommand{\mymat}[1]{\boldsymbol{#1}}
+\newcommand{\mytrn}[1]{{#1}^{\mathsf{T}}}
+\newcommand{\myvec}[1]{\overrightarrow{#1}}
+\newcommand{\mygrad}{\vec{\nabla}}
+\newcommand{\myhess}{\mathcal{H}}
+
+
+\begin{document}
+\title{Thoughts for Power Spectrum Estimation}
+\maketitle
+
+
+\section{Rectifying a signal}
+Let us assume that we have $M$ points of data $f_1,\ldots,f_M$, iso-sampling $f(t)$ over the interval $[0;T]$.
+We also assume that the periodic part of $f$ is supported by a polynomial part.
+We build the function
+\begin{equation}
+	g(t) = f(t) - \sum_{k=1}^K a_k t^{(k-1)}
+\end{equation}
+and the coefficients are determined by the minimization of
+\begin{equation}
+\int_0^T g(t)^2\,dt.
+\end{equation}
+We must set
+\begin{equation}
+	\forall j,\; 0 = \int_0^T g(t)\dfrac{\partial g}{\partial a_j} dt
+\end{equation}
+or
+\begin{equation}
+	\int_0^T t^{(j-1)} f(t) dt = \sum_{k=1}^K a_k \int_{0}^T t^{(j+k-2)} \; dt 
+\end{equation}
+which reads
+\begin{equation}
+	\sum_{i=1}^M 
+	\left\lbrack 
+	\dfrac{i^j - (i-1)^{j}}{j}	\right\rbrack
+ f_i = \sum_{k=1}^K \dfrac{M^{j+k-1}}{j+k-1} a_k
+\end{equation}
+
+We have
+\begin{equation}
+\mymat{\mu} \vec{a} = \mymat{\sigma}\vec{f}
+\end{equation}
+with
+\begin{equation}
+	\mymat{\mu}_{j,k} = \dfrac{M^{j+k-1}}{j+k-1}
+\end{equation}
+and
+\begin{equation}
+	\mymat{\sigma}_{j,i} = \dfrac{i^j - (i-1)^{j}}{j}
+\end{equation}
+
+\section{Local Maximum Refinement}
+Let us assume that $i$ is the index of a local maximum $y_i$ at coordinate $x_i$.
+We define
+\begin{equation}
+	\alpha = \dfrac{x_{i}-x_{i-1}}{x_{i+1}-x_{i-1}},
+\end{equation}
+\begin{equation}
+	\beta  = y_i - y_{i-1}
+\end{equation}
+and
+\begin{equation}
+	\gamma = y_{i+1} - y_{i-1}.
+\end{equation}
+We have the reduced parabola
+\begin{equation}
+	f(X) = \lambda X + \mu X^2
+\end{equation}
+satisfying
+\begin{equation}
+	\left\lbrace
+	\begin{array}{rcl}
+	\beta  & = & \lambda \alpha + \mu \alpha^2\\
+	\gamma & = & \lambda+\mu\\
+	\end{array}
+	\right.
+\end{equation}
+with a maximum at
+\begin{equation}
+	X_m = -\dfrac{\lambda}{2\mu}.
+\end{equation}
+We obtain
+\begin{equation}
+	\left\lbrace
+	\begin{array}{rcl}
+	\lambda \alpha(1-\alpha) & = & \beta - \alpha^2\gamma \\
+	\mu     \alpha(1-\alpha) & = & -(\beta - \alpha^2\gamma)  \\
+	\end{array}
+	\right.
+\end{equation}
+With $\beta>0$, $\gamma\leq\beta$ and $0<\alpha<1$, 
+\begin{equation}
+	X_m = \dfrac{1}{2} \dfrac{\beta - \alpha^2\gamma}{\beta - \alpha\gamma}
+\end{equation}
+and
+\begin{equation}
+	x_m = x_{i-1} + X_m \left(x_{i+1}-x_{i-1}\right).
+\end{equation}
+We also obtain
+\begin{equation}
+	y_m = y_{i-1} + \dfrac{1}{4\alpha\left(1-\alpha\right)} \dfrac{\left(\beta - \alpha^2\gamma\right)^2}{\beta-\alpha\gamma}.
+\end{equation}
+
+
+\end{document}

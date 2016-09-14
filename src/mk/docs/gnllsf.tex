@@ -1,0 +1,90 @@
+\documentclass[aps,twocolumn]{revtex4}
+\usepackage{graphicx}
+\usepackage{amssymb,amsfonts,amsmath,amsthm}
+\usepackage{chemarr}
+\usepackage{bm}
+\usepackage{pslatex}
+\usepackage{mathptmx}
+\usepackage{xfrac}
+
+%% concentration notations
+\newcommand{\mymat}[1]{\boldsymbol{#1}}
+\newcommand{\mytrn}[1]{~^{\mathsf{t}}#1}
+\newcommand{\myvec}[1]{\overrightarrow{#1}}
+\newcommand{\mygrad}{\vec{\nabla}}
+\newcommand{\myhess}{\mathcal{H}}
+\newcommand{\myd}{\mathrm{d}}
+
+\begin{document}
+\title{Generalized Non Linear Least Squares Fitting}
+\maketitle
+
+\section{Problem Description}
+We define the sample $S_i$ the collection of $N_i$ data points $(X_{i,1},\ldots,X_{i,N_i})$
+and their respective values $(Y_{i,1},\ldots,Y_{i,N_i})$.
+We want to least-squares fit this points by the function $F(x,\vec{u}_i)$
+where $\vec{u}_i$ is a subset of $M_i$ parameters among the total $M$ parameters $\vec{a}$.
+Accordingly, there exist a $M_i \times M$ matrix $\mymat{\Gamma}_i$ such that
+$$
+	\vec{u}_i = \mymat{\Gamma}_i \vec{a}.
+$$
+The least-squares estimator $D_i$ is defined by
+$$
+	D_i = \sum_{j=1}^{N_i} \left[Y_{i,j} - F\left(X_{i,j},\vec{u}_i\right) \right]^2.
+$$
+If we have $S$ samples,
+the quantity we want to minimise is
+$$
+	D\left(\vec{a}\right) = \sum_{i=1}^S D_i
+$$
+
+\section{Gradient Expression}
+We want to find the zero gradient of $D(\vec{a})$.
+$$
+	\partial_{\vec{a}} D = \sum_{i=1}^{S} \partial_{\vec{a}} D_i.
+$$
+So we define 
+$$
+	\vec{\beta} = -\dfrac{1}{2} \partial_{\vec{a}} D = \sum_{i=1}^{S} \mytrn{\mymat{\Gamma}}_i \vec{\beta}_i
+$$
+with
+$$
+	\vec{\beta}_{i} = -\dfrac{1}{2} \partial_{\vec{u}_i} D_i 
+$$
+and
+$$
+	\forall 1 \leq k \leq M_i, \;\; \beta_{i,k} =	 \sum_{j=1}^{N_i}\left[Y_{i,j} - F\left(X_{i,j},\vec{u}_i\right) \right]\dfrac{\partial F}{\partial u_{i,k}}
+$$
+
+\section{Pseudo Newton Equation}
+To find a zero of the gradient, we need to estimate the Jacobian of $\beta$, namely the Hessian of $D$, since
+$$
+	 \vec\beta\left(\vec{a}+\delta\vec{a}\right) \simeq \vec\beta\left(\vec{a}\right) + \partial_{\vec{a}} \vec{\beta} \cdot \delta\vec{a}
+$$
+We define the $M_i \times M_i$ partial symmetric curvature  matrix 
+$$
+	\mymat{C}_i = -\partial_{\vec{u}_i} \vec{\beta}_i
+$$
+so that
+$$
+	\mymat{C}_{i,k,l} = \sum_{j=1}^{N_i} \left(\dfrac{\partial F}{\partial u_{i,k}}\right) \left(\dfrac{\partial F}{\partial u_{i,l}}\right)
+$$
+and the $M\times M$ curvature matrix
+$$
+	\mymat{C} = \sum_{i=1}^{S} \mytrn{\mymat{\Gamma}}_i \mymat{C}_i \mymat{\Gamma}_i.
+$$
+We should solve
+$$
+	\vec{\beta} = \mymat{C} \delta\vec{a}
+$$
+but both $\vec{\beta}$ and $\mymat{C}$ are approximate values...arising from the derivatives and the Hessian truncation.
+
+
+\section{Levenberg-Marquardt Setup}
+By using $\lambda>0$, there should exists an invertible matrix $\mymat{C}_\lambda$: this is $\mymat{C}$ but
+the diagonal elements which are increased by $1+\lambda$. Otherwise the system is singular.
+In that case, $\delta\vec{a} = \mymat{C}_\lambda^{-1}$ is an approximation of
+the Newton's step.
+
+
+\end{document}

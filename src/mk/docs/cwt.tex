@@ -1,0 +1,79 @@
+\documentclass{revtex4}
+
+\usepackage{graphicx}
+\usepackage{amssymb,amsmath}
+\usepackage{epstopdf}
+\usepackage{bm}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+
+\newcommand{\trn}{\!\!~^t}
+\newcommand{\grad}{\vec{\nabla}}
+
+\begin{document}
+	\title{Continuous Wavelet Transform}
+	\maketitle
+
+\section{Definition}
+Let $f(x)$ be a $\mathcal{L}_2$ function. Let $\Psi(u)$ be a $\mathcal{L}_2$ function.
+Then we define the continuous wavelet transform
+\begin{equation}
+	\tilde{f}(s,w) = \dfrac{1}{\sqrt{w}}
+	\int_{-\infty}^{+\infty} f(x)\Psi\left(\dfrac{x-s}{w}\right) \, \mathrm{d}x
+\end{equation}
+
+\section{Energy Minimisation}
+There can be a baseline in the computation. Let us define, for a given shift $s$,
+\begin{equation}
+	\tilde{g}_s(w,\alpha) = \dfrac{1}{\sqrt{w}}
+	\int_{-\infty}^{+\infty} \left[\alpha + f(x) \right]\Psi\left(\dfrac{x-s}{w}\right) \, \mathrm{d}x
+	= \alpha \Phi_s(w) + \tilde{f}(s,w) 
+\end{equation}
+with
+\begin{equation}
+	\Phi_s(w) = \dfrac{1}{\sqrt{w}} \int_{-\infty}^{\infty} \Psi\left(\dfrac{x-s}{w}\right) \mathrm{d}x
+\end{equation}
+We want to minimize
+\begin{equation}
+	\mathcal{E}_s(\alpha) = \int_w \tilde{g}_s(w,\alpha)^2 \,\mathrm{d}w 
+	= \int_w  \left[\alpha \Phi_s(w) + \tilde{f}(s,w)\right]^2 \,\mathrm{d}w.
+\end{equation}
+Using 
+\begin{equation}
+	\partial_\alpha \mathcal{E}_s(\alpha) = 2 \int_w \Phi_s(w) \left[ \alpha \Phi_s(w) + \tilde{f}(s,w) \right]\,\mathrm{d}w
+\end{equation}
+we get the condition defined by
+\begin{equation}
+		0 = \alpha \int_w \Phi_s(w)^2 \,\mathrm{d}w + \int_w \Phi_s(w) \tilde{f}(s,w) \,\mathrm{d}w
+\end{equation}
+
+\section{Energy Minimisation Mark II}
+There can be a baseline in the computation. Let us define
+\begin{equation}
+	\tilde{g}_\alpha(s,w) = \dfrac{1}{\sqrt{w}}
+	\int_{-\infty}^{+\infty} \left[\alpha + f(x) \right]\Psi\left(\dfrac{x-s}{w}\right) \, \mathrm{d}x
+	= \alpha \Phi_s(w) + \tilde{f}(s,w) 
+\end{equation}
+We define the energy that we want to minimize
+\begin{align}
+	\mathcal{E}(\alpha)  & = \int_s \int_w \tilde{g}_\alpha(w,s)^2 \,\mathrm{d}w  \,\mathrm{d}s \\
+	 & = \int_s \int_w \dfrac{1}{w} 
+	 \left[ \alpha \int_x \Psi\left(\dfrac{x-s}{w}\right) \,\mathrm{d}x
+	  + \int_x f(x) \Psi\left(\dfrac{x-s}{w}\right) \,\mathrm{d}x
+	  \right]^2 \,\mathrm{d}w  \,\mathrm{d}s
+\end{align}
+and we get
+\begin{equation}
+	\partial_\alpha \mathcal{E}(\alpha) = 2
+	\int_s \int_w \dfrac{1}{w} 
+	\left(\int_x \Psi\left(\dfrac{x-s}{w}\right) \,\mathrm{d}x \right) 
+	\left[ \alpha \left(\int_x \Psi\left(\dfrac{x-s}{w}\right) \,\mathrm{d}x \right) +  \left(\int_x f(x)\Psi\left(\dfrac{x-s}{w}\right) \,\mathrm{d}x \right) \right]
+	\,\mathrm{d}w  \,\mathrm{d}s
+\end{equation}
+so that the condition writes
+\begin{equation}
+	0 = \alpha \int_s \int_w \dfrac{1}{w} \left(\int_x \Psi\left(\dfrac{x-s}{w}\right) \,\mathrm{d}x \right)^2 \,\mathrm{d}w  \,\mathrm{d}s + 
+	 \int_s \int_w \dfrac{1}{w} \left(\int_x \Psi\left(\dfrac{x-s}{w}\right) \,\mathrm{d}x \right) \left(\int_x f(x) \Psi\left(\dfrac{x-s}{w}\right) \,\mathrm{d}x \right)\,\mathrm{d}w  \,\mathrm{d}s
+\end{equation}
+
+\end{document}

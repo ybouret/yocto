@@ -1,0 +1,152 @@
+\documentclass[aps,twocolumn]{revtex4}
+\usepackage{graphicx}
+\usepackage{amssymb,amsfonts,amsmath,amsthm}
+\usepackage{chemarr}
+\usepackage{bm}
+\usepackage{pslatex}
+\usepackage{mathptmx}
+\usepackage{xfrac}
+
+%% concentration notations
+\newcommand{\mymat}[1]{\boldsymbol{#1}}
+\newcommand{\mytrn}[1]{{#1}^{\mathsf{T}}}
+\newcommand{\myvec}[1]{\overrightarrow{#1}}
+\newcommand{\mygrad}{\vec{\nabla}}
+\newcommand{\myhess}{\mathcal{H}}
+
+\begin{document}
+
+\section{Setup}
+Let $\vec{F}\left(\vec{X}\right)$ be a system of $n$ equations with $n$ variables.
+Starting from $\vec{X}$, what is the step to take ?
+In any case, for a small step $\vec{h}$ we have
+\begin{equation}
+	\vec{F}\left(\vec{X}+\vec{h}\right) \simeq \vec{F} + \mymat{J} \vec{h}
+\end{equation}
+We define the associated objective function
+\begin{equation}
+	f\left(\vec{X}\right) = \frac{1}{2} \vec{F}^2
+\end{equation}
+We notice that
+\begin{equation}
+	\mygrad f = \mytrn{\mymat{J}}\vec{F}
+\end{equation}.
+
+\section{Predicted Step}
+We use the Singular Value Decomposition of $J$ (with is a numeric approximation of the Jacobian)
+such that
+\begin{equation}
+	\mymat{J} = \mymat{U} \mymat{W} \mytrn{\mymat{V}}
+\end{equation}
+where $\mymat{W}$ is a diagonal matrix.
+We define the pseudo inverse
+\begin{equation}
+	\tilde{\mymat{J}}= \mymat{V} \tilde{\mymat{W}} \mytrn{\mymat{U}}
+\end{equation}
+and we define the full Newton's step 
+\begin{equation}
+	\vec{\sigma} = -\tilde{\mymat{J}} \vec{F}
+\end{equation}
+
+\section{Descent rate control}
+We define
+\begin{equation}
+	\phi\left(\lambda\right) = f\left(\vec{X}+\lambda\vec{\sigma}\right)
+\end{equation}
+with
+\begin{equation}
+	\phi'\left(\lambda\right) = \mytrn{\mygrad f } \vec{\sigma}
+\end{equation}
+and
+\begin{equation}
+	\phi'\left(0\right)  = - \mytrn{\vec{F}} \mymat{J} \tilde{\mymat{J}} \vec{F} = -\rho
+\end{equation}
+is the initial descent rate, which should be negative, (ie $\rho>0$).
+
+To avoid spurious decrease, we impose that 
+\begin{equation}
+	\phi\left(\lambda\right) \leq \phi\left(0\right) - \alpha \lambda \rho
+\end{equation}
+starting with $\lambda=1$.
+
+\end{document}
+
+\section{Well-conditioned Jacobian}
+In that case, we can compute the full Newton's step
+\begin{equation}
+	\vec{h} = - \mymat{J}^{-1} \vec{F}
+\end{equation}
+Let us now define
+\begin{equation}
+	\phi(\lambda) =  f \left(\vec{X} + \lambda \vec{h}\right)
+\end{equation}
+The initial descent rate of $\phi$ is
+\begin{equation}
+	\phi'(0) = \mygrad f \cdot \vec{h} \leq 0
+\end{equation}
+We must control the descent rate so that we don't jump too far or decrease too slowly.\\
+In the fully parabolic case, the 0 of $\phi$ is found by following \emph{half} the descent rate.
+Thus we need the control parameter
+\begin{equation}
+	0 < \alpha < \frac{1}{2},
+\end{equation}
+the descent rate
+\begin{equation}
+	\rho = - \mygrad f \cdot \vec{h} \geq 0,
+\end{equation}
+and accept a step only if
+\begin{equation}
+	\label{ok}
+	\phi(\lambda) \leq \phi(0) - \alpha \lambda \rho.
+\end{equation}
+In the algorithm, we always try $\lambda=1$ and test the convergence
+if the condition \eqref{ok} is fulfilled.
+Otherwise, we must backtrack to an acceptable solution, that can't be tested for convergence (not in
+the parabolic case).
+
+\section{Ill-conditioned Jacobian}
+We can switch to a conjugated gradient algorithm on $G$ since we have the knowledge of $\mygrad f$.
+\end{document}
+
+Nonetheless, we have a second order approximation of $f$
+\begin{equation}
+	f\left(\vec{X}+\vec{h}\right) \simeq f(\vec{X}) + \mytrn{\vec{F}} \mymat{J} \vec{h} +
+	\frac{1}{2} \mytrn{\vec{h}} \mytrn{\mymat{J}}\mymat{J} \vec{h}
+\end{equation}
+which is as best as we are close to a root.
+Since we assume that $\mymat{J}$ is ill-conditioned, we can use a singular value decomposition
+of
+\begin{equation}
+	\mymat{J} = \mymat{U} \mymat{W} \mytrn{\mymat{V}}
+\end{equation}
+where $\mymat{W}$ is a diagonal matrix, $\mytrn{\mymat{U}}\mymat{U}=\mytrn{\mymat{V}}\mymat{V}=\mymat{I}_n$.
+We obtain
+\begin{equation}
+	\mytrn{\mymat{J}}\mymat{J} = \mymat{V} \mymat{W}^2 \mytrn{\mymat{V}}.
+\end{equation}
+We transform $\mymat{W}$ into a non-singular matrix $\widetilde{\mymat{W}}$,
+so that the minimum of $G$ is around the step
+\begin{equation}
+	\vec{h}_k = - \mymat{V} \left( \widetilde{\mymat{W}}^{-2} \mymat{W}\right) \mytrn{\mymat{U}} \vec{F}_k.
+\end{equation}
+We recognize the Newton's step when $\mymat{W}$ is well-conditioned.
+The problem is to choose a good $\widetilde{\mymat{W}}$.
+Especially, we should have
+\begin{equation}
+\begin{array}{rcl}
+	\mygrad G_k \vec{h}_k & = &\mytrn{\vec{F}_k} \mymat{J} \vec{h_k} \\
+	& = & - \mytrn{\vec{F}_k} \mymat{U} \left( \widetilde{\mymat{W}}^{-2} \mymat{W}^2 \right)\mytrn{\mymat{U}} \vec{F}_k < 0\\
+\end{array}
+\end{equation}
+Since $\mygrad G_k$ is not zero, $\mytrn{\mymat{U}} \vec{F}_k$ is not zero.
+Since $\left( \widetilde{\mymat{W}}^{-2} \mymat{W}^2 \right)$ is positive-definite,
+\underline{$\vec{h}_k$ is a descent direction for $G$}.
+A simple way to regularize is
+\begin{equation}
+	\widetilde{W}_i^2 = W_i^2 + \beta^2 
+\end{equation}
+
+
+
+
+\end{document}

@@ -1,0 +1,48 @@
+\documentclass{revtex4}
+
+\usepackage{graphicx}
+\usepackage{amssymb,amsmath}
+\usepackage{epstopdf}
+\usepackage{bm}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+
+\newcommand{\trn}{\!\!~^t}
+\newcommand{\grad}{\vec{\nabla}}
+
+\begin{document}
+	\title{Numerical derivatives}
+	\maketitle
+
+\section{Polynomial approximation}
+Let $f$ be a polynomial
+$$
+	f(x) = \sum_{i=0}^{2n+1} a_i x^i
+$$
+
+\section{First order expression}
+The two point derivative estimation at zero with step $h$ is
+$$
+	\tilde{f}'(h) = \dfrac{\displaystyle \sum_{i=0}^{2n+1} a_i h^i - \sum_{i=0}^{2n+1} a_i (-h)^i}{2h}
+	 = a_1 + \sum_{j=1}^{n} a_{2j+1} h^{2j}.
+$$
+Let us evaluate a second time with $\alpha h$.
+$$
+	\tilde{f}'(\alpha h) = a_1 + \sum_{j=1}^{n} a_{2j+1} \alpha^{2j} h^{2j}.
+$$
+Then we evaluate
+$$
+	\dfrac{\tilde{f}'(\alpha h) - \alpha^2\tilde{f}'(h)}{1-\alpha^2} = 
+	a_1 + \sum_{j=2}^{n} a_{2j+1} \dfrac{\left(\alpha^{2j} - \alpha^2\right)}{1-\alpha^2} h^{2j}.
+$$
+The Ridders method uses $\alpha^2\simeq\frac{1}{2}$.
+
+\section{Second order evaluation}
+The three point derivative estimation at zero with step $h$ is
+$$
+	\tilde{f}''(h) = 
+	\dfrac{\displaystyle \sum_{i=0}^{2n+1} a_i h^i - 2a_0  + \sum_{i=0}^{2n+1} a_i (-h)^i}{h^2}
+	= 2a_2 + \sum_{j=0}^{n-1} a_{2j+4} h^{2j}
+$$
+
+\end{document}
