@@ -7,6 +7,7 @@ INSTALL( FILES ${decl} DESTINATION include/yocto/z++ )
 SOURCE_GROUP( z++ FILES ${srcs} )
 
 INCLUDE_DIRECTORIES( . ../yocto)
+## for local zlib
 INCLUDE_DIRECTORIES(.. ${CMAKE_CURRENT_BINARY_DIR}/../yocto/zlib )
 
 ADD_LIBRARY( y-z++ STATIC ${srcs} )
