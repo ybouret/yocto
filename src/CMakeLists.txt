@@ -36,6 +36,7 @@ INSTALL( FILES
 ##
 ########################################################################
 MACRO(YOCTO_BUILD dir)
+	MESSAGE("===> adding ${dir}")
 	ADD_SUBDIRECTORY(${dir})
 ENDMACRO(YOCTO_BUILD)
 
@@ -47,3 +48,5 @@ YOCTO_BUILD(mk)
 YOCTO_BUILD(mpi)
 YOCTO_BUILD(mpl)
 YOCTO_BUILD(net)
+
+YOCTO_BUILD(third_party)

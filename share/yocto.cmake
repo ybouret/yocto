@@ -209,7 +209,7 @@ MACRO(TARGET_LINK_YOCTO tgt)
 	# apply linking
 	####################################################################
 	LIST(REMOVE_DUPLICATES ylibs)
-	MESSAGE("[LINK] ${tgt}: ${ylibs}")
+	MESSAGE("  |_${tgt}: ${ylibs}")
 	TARGET_LINK_LIBRARIES(${tgt} ${ylibs})
 	
 ENDMACRO(TARGET_LINK_YOCTO)
@@ -238,4 +238,3 @@ ENDFUNCTION(YOCTO_FILE2DATA)
 ##
 ########################################################################
 MESSAGE("===> </yocto>")
-MESSAGE("")
