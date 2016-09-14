@@ -180,6 +180,10 @@ MACRO(TARGET_LINK_YOCTO tgt)
 				LIST( APPEND ylibs "y-lingua" )
 			ENDIF()
 			
+			IF( "png" STREQUAL ${extra} )
+				LIST( APPEND ylbis "y-z" )
+			ENDIF()
+			
 			IF( "net" STREQUAL ${extra} )
 				SET(YOCTO_LD_NET ON)
 			ENDIF()
