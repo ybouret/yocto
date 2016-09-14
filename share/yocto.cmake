@@ -44,8 +44,9 @@ SET(YOCTO_COMPILER_MAJOR "")
 SET(YOCTO_COMPILER_MINOR "")
 SET(YOCTO_COMPILER_PATCH "")
 
+# function will be call for gnu/clang/intel...
 FUNCTION(YOCTO_FIND_COMPILER_VERSION)
-	MESSAGE("|_Detecting compiler version")
+	MESSAGE("|_Detecting compiler version...")
 	# call cc --version
 	EXECUTE_PROCESS(COMMAND ${CMAKE_C_COMPILER} --version
 					OUTPUT_VARIABLE YOCTO_RAW_COMPILER_VERSION
@@ -55,7 +56,7 @@ FUNCTION(YOCTO_FIND_COMPILER_VERSION)
 	IF( NOT ("0" STREQUAL "${YOCTO_FIND_COMPILER_VERSION_SUCCESS}") )
 		MESSAGE( FATAL_ERROR "couldn't find compiler version")
 	ENDIF()
-	# get version patter
+	# get version pattern
 	STRING( REGEX MATCH    "[0-9]+\\.[0-9]+\\.[0-9]+" YOCTO_COMPILER_VERSION "${YOCTO_RAW_COMPILER_VERSION}" )
 	STRING( REGEX REPLACE  "([0-9]+)\\.[0-9]+\\.[0-9]+" "\\1" YOCTO_COMPILER_MAJOR "${YOCTO_COMPILER_VERSION}")
 	STRING( REGEX REPLACE  "[0-9]+\\.([0-9]+)\\.[0-9]+" "\\1" YOCTO_COMPILER_MINOR "${YOCTO_COMPILER_VERSION}")
