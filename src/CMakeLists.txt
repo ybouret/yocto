@@ -22,6 +22,11 @@ SET(YOCTO_BUILD_TESTS ON)
 ########################################################################
 ## mandatory project and files
 ########################################################################
+MACRO(YOCTO_BUILD dir)
+	MESSAGE("===> adding ${dir}")
+	ADD_SUBDIRECTORY(${dir})
+ENDMACRO(YOCTO_BUILD)
+
 ADD_SUBDIRECTORY(yocto)
 INSTALL( FILES 
 	../share/yocto.cmake
@@ -35,10 +40,6 @@ INSTALL( FILES
 ## other projects
 ##
 ########################################################################
-MACRO(YOCTO_BUILD dir)
-	MESSAGE("===> adding ${dir}")
-	ADD_SUBDIRECTORY(${dir})
-ENDMACRO(YOCTO_BUILD)
 
 YOCTO_BUILD(kr)
 YOCTO_BUILD(lingua)
@@ -48,5 +49,3 @@ YOCTO_BUILD(mk)
 YOCTO_BUILD(mpi)
 YOCTO_BUILD(mpl)
 YOCTO_BUILD(net)
-
-YOCTO_BUILD(third_party)
