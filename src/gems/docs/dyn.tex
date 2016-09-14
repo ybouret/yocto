@@ -1,0 +1,336 @@
+\documentclass[aps,twocolumn]{revtex4}
+\usepackage{graphicx}
+\usepackage{amssymb,amsfonts,amsmath}
+\usepackage{chemarr}
+\usepackage{bm}
+\usepackage{pslatex}
+%\usepackage{mathptmx}
+\usepackage{xfrac}
+
+\newcommand{\mymat}[1]{\boldsymbol{#1}}
+\newcommand{\mytrn}[1]{{\!\!~^{\mathsf{t}}{#1}}}
+\newcommand{\myvec}[1]{\overrightarrow{#1}}
+\newcommand{\half}{\sfrac{1}{2}}
+\newcommand{\q}{\vec{q}}
+\newcommand{\dq}{\dot{\q}}
+\newcommand{\ddq}{\ddot{\q}}
+\newcommand{\C}{\vec{C}}
+\newcommand{\J}{\mymat{J}}
+\newcommand{\dJ}{\dot{\J}}
+\newcommand{\tJ}{\mytrn{\J}}
+\newcommand{\G}{\vec{G}}
+\newcommand{\W}{\mymat{W}}
+\newcommand{\A}{\mymat{A}}
+\newcommand{\JW}{\hat{\mymat{J}}}
+\newcommand{\tJW}{\mytrn{\JW}}
+
+\begin{document}
+\title{Dynamics}
+
+\section{Notations}
+Let us have a system with $N$ particles, so that we have a $3N$-dimensional
+vector $\q$ of positions and a vector $\dq$ of velocities.
+We assume that we can compute the force field $\vec{F}$ such that
+\begin{equation}
+	\label{eq:newton}
+	\ddq = \mymat{W} \vec{F}
+\end{equation}
+where $\mymat{W}$ is the tensorized mass inverse matrix.
+
+\section{Newtonian Dynamics}
+
+\subsection{Problem}
+At step $n$, we know $\q_n$, $\dq_n$ and $\ddq_n = \mymat{W} \vec{F}_n$.
+How do we compute $\q_{n+1}$ and $\dq_{n+1}$after a time step $\tau$ ?
+
+\subsection{Velocity Verlet Derivation for Holonomic Forces}
+We update $\q_n$ by Taylor expansion during $\tau$ with
+\begin{equation}
+	\label{eq:forward}
+	\q_{n+1} = \q_n + \tau \dq_n + \frac{1}{2}\tau^2 \ddq_n.
+\end{equation}
+Since we can evaluate $\vec{F}_{n+1}$ and $\ddq_{n+1}=\mymat{W}\vec{F}_{n+1}$, the backward Taylor expansion
+gives
+\begin{equation}
+	\label{eq:backward}
+	\q_n = \q_{n+1} - \tau \dq_{n+1} + \frac{1}{2}\tau^2 \ddq_{n+1}.
+\end{equation}
+The sum of Eq. \eqref{eq:forward} and Eq. \eqref{eq:backward} gives 
+\begin{equation}
+	\label{eq:vv}
+	\dq_{n+1} = \dq_{n} + \dfrac{1}{2}\mymat{W}\left\lbrack\vec{F}_n + \vec{F}_{n+1}\right\rbrack
+\end{equation}
+
+\subsection{Velocity Verlet for Generic Forces}
+We use the following sequence.
+Given $\q_n$ and $\dq_n$, we compute $\vec{F}_n=\vec{F}(\q_n,\dq_n)$.
+Then for each time step we perform the following sequence.
+\begin{enumerate}
+	\item Evaluate \begin{equation} 
+	\dq_{n+\half} = \dq_n + \frac{1}{2}\tau \mymat{W}\vec{F}_n
+	\end{equation}
+		\item Advance \begin{equation}
+	\q_{n+1}  = \q_n + \tau \dq_{n+\half}.
+	\end{equation} 
+	The potential energy is already available.
+	\item Evaluate $\vec{F}_{n+\half}=\vec{F}(\q_{n+1},\dq_{n+\half})$
+	\item Update
+	\begin{equation}
+		\dq_{n+1} = \dq_{n+\half} + \frac{1}{2} \tau \W \vec{F}_{n+\half}.
+	\end{equation}
+	The kinetic energy is available.
+	\item Update
+	\begin{equation}
+		\vec{F}_{n+1}=\vec{F}(\q_{n+1},\dq_{n+1})
+	\end{equation}
+\end{enumerate}
+If the force depends only on position, the last step is discarded...
+
+\section{Stationary Holonomic Constraints}
+\subsection{Definitions and Notations}
+We assume that the positions $\q_n$ must satisfy a set of $M$ constraints forming
+the $M$ dimensional vector
+\begin{equation}
+\label{eq:C}
+	\C(\q_n) = \vec{0}.
+\end{equation}
+The successive time derivatives of this constraints lead to the legal velocities
+\begin{equation}
+	\label{eq:J}
+	\J_n\dq_n  = \vec{0}
+\end{equation}
+where $\J$ is the Jacobian of $\C$ with respect to $\q$ and is a $M\times3N$ matrix.
+The accelerations must verify
+\begin{equation}
+	\label{eq:accel}
+	\dJ_n\dq_n + \J_n\ddq_n = \vec{0}
+\end{equation}
+
+\subsection{Virtual Forces}
+Since the constraints are internal to the system, they doesn't work but they produce some internal
+forces $\G_n$. So
+\begin{equation}
+\forall \dq_n, \; \G_n\cdot\dq_n = 0.
+\end{equation}
+Accordingly, $\G_n$ is a combination of the rows of $\J_n$
+\begin{equation}
+	\G_n = \tJ_n \vec{\lambda}_n.
+\end{equation}
+Let us write
+\begin{equation}
+	\ddq_n = \W \left( \vec{F}_n + \G_n \right)
+\end{equation}
+we obtain
+\begin{equation}
+	\J_n \W \tJ_n \vec{\lambda}_n = -\left\lbrack \J_n\W\vec{F}_n + \dJ_n \dq_n \right\rbrack
+\end{equation}
+and
+\begin{equation}
+	\G_n = - \tJ_n \left(\J_n \W \tJ_n \right)^{-1}\left\lbrack \J_n\W\vec{F}_n + \dJ_n \dq_n \right\rbrack.
+\end{equation}
+We have the internal forces, derived from the legal accelerations, verifying Eq. \ref{eq:accel}.
+
+\subsection{Velocity Verlet Revisited}
+
+We start from $\q_n$, $\dq_n$. We compute $\vec{F}_n=\vec{F}(\q_n,\dq_n)$, 
+$\J_n$ and $\dJ_n$.
+We assume that $\C(\q_n)=\vec{0}$ and $\J_n\dq_n=\vec{0}$.
+\begin{enumerate}
+\item Compute $\G_n$ and $\ddq_n$.
+\item Evaluate $\dq_{n+\half}^p = \dq_n + \dfrac{1}{2}\tau \ddq_n$.
+\item Evaluate $\q_{n+1}^p=\q_n + \dq_{n+\half}^p.$
+\item Legalise $\q_{n+1}$ from $\q_{n+1}^p$.
+\item Compute  $\J_{n+1}$.
+\item Legalize $\dq_{n+\half}$ from $\dq_{n+\half}^p$.
+\item Compute  $\dJ_{n+\half}$
+\item Evaluate $\vec{F}(\q_{n+1},\dq_{n+\half}) = \vec{F}_{n+\half}$
+\item Evaluate 
+	$$\G_{n+\half}=
+	-\tJ_{n+1} \left(\J_{n+1} \W \tJ_{n+1} \right)^{-1}\left\lbrack \J_{n+1}\W\vec{F}_{n+\half} + \dJ_{n+\half} \dq_{n+\half} \right\rbrack$$
+\item compute $\dq_{n+1}^p = \dq_{n+\half} + 
+\dfrac{1}{2}\tau \W \left(\vec{F}_{n+\half}+\G_{n+\half}\right)$
+\item Legalise $\dq_{n+1}$ from $\dq_{n+1}^p$.
+\item compute $\dJ_{n+1}$.
+\item compute $\vec{F}_{n+1}$
+\end{enumerate}
+
+
+
+\end{document}
+
+\section{Holonomic Constraints}
+\subsection{Definitions and Notations}
+We assume that we have a set of $M$ constraints forming the $M$ dimensional vector
+\begin{equation}
+\label{eq:C}
+	\C(\q) = \vec{0}.
+\end{equation}
+The successive time derivatives must be zero as well, which produces the legal velocities
+\begin{equation}
+	\label{eq:J}
+	\J\dq = \vec{0}
+\end{equation}
+where $\J$ is the Jacobian of $\C$ with respect to $\q$ and is a $M\times3N$ matrix.
+We get the legal accelerations
+\begin{equation}
+	\dJ\dq + \J\ddq = \vec{0}
+\end{equation}
+\subsection{Virtual Forces}
+Since the constraints are internal to the system, they doesn't work but they produce some internal
+forces $\G$. So
+\begin{equation}
+\forall \dq, \; \G\cdot\dq = 0.
+\end{equation}
+Accordingly, $\G$ is a combination of the rows of $J$
+\begin{equation}
+	\G = \tJ \vec{\lambda}.
+\end{equation}
+Let us write
+\begin{equation}
+	\ddq = \W \left( \vec{F} + \G \right)
+\end{equation}
+we obtain
+\begin{equation}
+	\J \W \tJ \vec{\lambda} = -\left\lbrack \J\W\vec{F} + \dJ \dq \right\rbrack
+\end{equation}
+and
+\begin{equation}
+	\G = - \tJ \left(\J \W \tJ \right)^{-1}\left\lbrack \J\W\vec{F} + \dJ \dq \right\rbrack.
+\end{equation}
+
+\subsection{Algebraic Considerations}
+The matrix
+\begin{equation}
+	 \J \W \tJ 
+\end{equation}
+is the Gram matrix of $\J\W^{1/2}$.
+Provided that the rows of $\J$ are independent, namely $\text{rank}(\J)=M$, and likely that the $M$ constraints are independent, 
+then this is a definite positive, and the Cholesky algorithm can be used to solve the linear problem.
+
+\section{Discrete Newtonian Dynamics}
+
+\subsection{Legalizing the phase space}
+Let us assume that $\q_k$ and $\dq_{k}$ are almost satisfying respectively Eq. \eqref{eq:C} and Eq. \eqref{eq:J}.
+To change the positions, one can move the particles only along $\W\tJ_k \vec{\lambda}_k$ to respect the weighted constraints physics.
+We obtain some \textbf{upgraded positions}
+\begin{equation}
+	\label{eq:legal_q}
+	\q_{k+1} = \q_k - \W \tJ_k \left(\J_k \W \tJ_k \right)^{-1} \C(\q_k)
+\end{equation}
+and we can compute $\J_{k+1}$.
+We the update $\dq_k$ to some \textbf{legal velocities}
+\begin{equation}
+	\label{eq:legal_dq}
+	\dq_{k+1} = \dq_k - \W\tJ_{k+1} \left(\J_{k+1} \W \tJ_{k+1} \right)^{-1} \J_{k+1} \dq_k.
+\end{equation}
+We repeat this until the desired tolerance on $\q_{k+1}$ is achieved.
+At the end of the loop, a valid input phase space $\q_{n}$, $\dq_{n}$ and $\J_n$ is available.
+
+\subsection{Constrained Velocity Verlet}
+
+Starting from a valid $\q_n$, we compute $\J_n$, and we must also have a valid $\dq_n$ such that $\J_n\dq_n=\vec{0}$.
+
+\begin{enumerate}
+	\item Evaluate $\vec{F}_n = \vec{F}(\q_n,\dq_n)$ and $\dJ_n$.
+	\item Evaluate $\G_n = -\tJ_n \left(\J_n \W \tJ_n \right)^{-1}\left\lbrack \J_n\W\vec{F}_n + \dJ_n \dq_n \right\rbrack$
+	\item Evaluate the predicted phase space
+	\begin{align*}
+	\dq_{n+\half}^p & = \dq_n + \frac{1}{2} \tau \W \left(\vec{F}_n + \G_n \right) \\
+	\q_{n+\half}^p  & = \q_{n} + \tau \dq_{n+\half}^p
+	\end{align*}
+	\item Legalize $\left(\q_{n+\half}^p,\dq_{n+\half}^p\right)$ to $\left(\q_{n+1},\dq_{n+\half}\right)$. Now $\J_{n+1}$ is available.
+	\item Evaluate $\vec{F}_{n+\half}=\vec{F}\left(\q_{n+1},\dq_{n+\half}\right)$, $\dJ_{n+\half}$, 
+	and 
+	$$
+	\G_{n+\half}=-\tJ_{n+1} \left(\J_{n+1} \W \tJ_{n+1} \right)^{-1}\left\lbrack \J_{n+1}\W\vec{F}_{n+\half} + \dJ_{n+\half} \dq_{n+\half} \right\rbrack
+	$$
+	\item Update
+	$$
+		\dq_{n+1}^{p} = \dq_{n+\half} + \frac{1}{2} \tau \W\left(\vec{F}_{n+\half} + \vec{G}_{n+\half}\right)
+	$$
+	\item Legalize $\dq_{n+1}^{p}$ to $\dq_{n+1}$ as shown in Eq. \eqref{eq:legal_dq}
+\end{enumerate}
+
+\section{Practical Implementation}
+
+\subsection{Notations}
+Every time a matrix $\J_n$ is computed then  a representation of $\A_n = \left(\J_n \W\tJ_n\right)^{-1}$
+must be computed as well.\\
+
+An upgrade of positions is
+$$
+	\q_{k+1} = \q_{k} - \W \tJ_k  \A_{k} \C\left(\q_{k}\right).
+$$
+
+A legalization of the velocities is
+$$
+	\dq_{k+1} = \dq_{k} - \W \tJ_{k+1}  \A_{k+1} \J_{k+1} \dq_{k}
+$$
+
+Since $\W$ is a diagonal matrix, some dedicated multiplications shall take place.
+
+\subsection{Algorithm Implementation}
+
+\subsubsection{Initialization}
+We assume that we start from a valid phase space $\left(\q_n,\dq_n\right)$.
+We compute $\J_n$, $\A_n$ and collect $\vec{F}_n = \vec{F}\left(\q_n,\dq_n\right)$
+The initial kinetic energy, potential energy and Virial are computed.
+
+\subsubsection{Predicted Half Step}
+\label{pred0}
+Compute $\dJ_n$.
+Then deduce $$\vec{F}^c_n=\vec{F}_n - \tJ_n\A_n\left(\J_n\W\vec{F}_n + \dJ_n\dq_n\right)$$
+
+Use the predicted Velocity Verlet update with
+$$
+	\dq^p_{n+\half} = \dq_{n} + \frac{1}{2} \tau \W \vec{F}^c_{n}
+$$
+then
+$$
+	\q^p_{n+\half} = \q_{n} + \tau \dq^p_{n+\half}
+$$
+
+\subsubsection{Legalized Half-Step}
+After at least one round, we have the matrix $\J_{n+1}$ and $\A_{n+1}$, and the
+valid phase space $\left(\q_{n+1},\dq_{n+\half}\right)$.
+
+\subsubsection{Midpoint Forces Evaluation}
+Evaluate $\dJ_{n+\half}$ then collect
+$$
+	\vec{F}_{n+\half} = \vec{F}\left(\q_{n+1},\dq_{n+\half}\right)
+$$
+and compute
+$$
+	\vec{F}^c_{n+\half}=\vec{F}_{n+\half} - \tJ_{n+1}\A_{n+1}\left(\J_{n+1}\W\vec{F}_{n+\half} + \dJ_{n+\half}\dq_{n+\half}\right)
+$$
+
+\subsubsection{Predicted Full Step}
+Update
+$$
+	\dq^p_{n+1} = \dq^p_{n+\half} + \frac{1}{2} \tau \vec{F}^c_{n+\half}
+$$
+
+\subsubsection{Legalized Full Step}
+\label{final}
+This is a one step correction with
+$$
+	\dq_{n+1} = \dq_{n+1}^p - \W\tJ_{n+1} \A_{n+1} \J_{k+1} \dq_{n+1}^p.
+$$
+The compute
+$$
+	\vec{F}_{n+1} = \vec{F}\left(\q_{n+1},\dq_{n+1}\right)
+$$
+
+To go further, iterate to step \ref{pred0}.
+
+\subsection{Comments}
+
+\subsubsection{Constraints Clustering}
+Obviously, the constraints are most of the time grouped into clusters contribute
+independently to their involved particles. This shall greatly reduce the dimensionality of the matrices.
+
+\subsubsection{Holonomic Forces}
+When the forces don't depend on the velocities, then the forces evaluation in step \ref{final} is unnecessary.
+
+
+\end{document}
