@@ -193,6 +193,10 @@ MACRO(TARGET_LINK_YOCTO tgt)
 		LIST( APPEND ylibs pthread )
 	ENDIF()
 	
+	IF(YOCTO_LINUX)
+		LIST( APPEND ylibs rt )
+	ENDIF()
+	
 	IF(YOCTO_LD_NET)
 		IF(WIN32)
 			IF(YOCTO_GNU)
