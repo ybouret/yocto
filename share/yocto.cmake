@@ -163,7 +163,7 @@ ENDIF()
 
 MACRO(TARGET_LINK_YOCTO tgt)
 
-	SET(ylibs "yocto")
+	SET(ylibs "")
 
 	####################################################################
 	# adding libraries and dependencies
@@ -175,17 +175,22 @@ MACRO(TARGET_LINK_YOCTO tgt)
 				SET(YOCTO_LD_NET ON)
 			ENDIF()
 	ENDFOREACH(extra)
-
+	LIST(APPEND ylibs yocto)
+	
 	####################################################################
 	# specific flags
 	####################################################################
-
+	IF(YOCTO_LINUX)
+		LIST( APPEND ylibs pthread )
+	ENDIF()
+	
 	####################################################################
 	# apply linking
 	####################################################################
 	LIST(REMOVE_DUPLICATES ylibs)
-	MESSAGE("${tgt} <- ${ylibs}")
+	MESSAGE("[LINK] ${tgt}: ${ylibs}")
 	TARGET_LINK_LIBRARIES(${tgt} ${ylibs})
+	
 ENDMACRO(TARGET_LINK_YOCTO)
 
 ########################################################################
