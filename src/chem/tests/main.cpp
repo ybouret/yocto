@@ -1,0 +1,19 @@
+#include "yocto/utest/driver.hpp"
+
+YOCTO_UNIT_TEST_INIT(16)
+{
+    YOCTO_UNIT_TEST_DECL(species);
+    YOCTO_UNIT_TEST_DECL(lib);
+    YOCTO_UNIT_TEST_DECL(eq);
+    YOCTO_UNIT_TEST_DECL(eqs);
+    YOCTO_UNIT_TEST_DECL(nrm);
+    YOCTO_UNIT_TEST_DECL(boot);
+    YOCTO_UNIT_TEST_DECL(dosage);
+    YOCTO_UNIT_TEST_DECL(mix);
+    YOCTO_UNIT_TEST_DECL(sol);
+    YOCTO_UNIT_TEST_DECL(variables);
+    YOCTO_UNIT_TEST_DECL(eff);
+    YOCTO_UNIT_TEST_DECL(ode);
+
+}
+YOCTO_UNIT_TEST_EXEC()
