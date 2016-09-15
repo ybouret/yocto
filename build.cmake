@@ -179,7 +179,7 @@ MESSAGE("")
 MESSAGE("===> Ready to be compiled with ${GENERATOR} for ${COMPILERS}${VERSION}")
 MESSAGE("")
 
-IF( NOT ("" STREQUAL ${TARGET}) )
+IF( NOT ("" STREQUAL "${TARGET}") )
 	MESSAGE("===> Building ${TARGET}")
 	SET(NATIVE_FLAGS "")
 	IF( "${GENERATOR}" STREQUAL "Xcode")
