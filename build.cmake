@@ -179,3 +179,26 @@ MESSAGE("")
 MESSAGE("===> Ready to be compiled with ${GENERATOR} for ${COMPILERS}${VERSION}")
 MESSAGE("")
 
+IF( NOT ("" STREQUAL ${TARGET}) )
+	MESSAGE("===> Building ${TARGET}")
+	MESSAGE("===> BUILD_PATH=${BUILD_PATH}")
+	SET(NATIVE_FLAGS "")
+	IF( "${GENERATOR}" STREQUAL "Xcode")
+		MESSAGE("=======> parallel build for Xcode")
+		SET(NATIVE_FLAGS "-parallelizeTargets")
+	ENDIF()
+	
+	IF( "${GENERATOR}" MATCHES ".*Makefile.*" )
+		MESSAGE("=======> parallel build for ${GENERATOR}")
+		SET(NATIVE_FLAGS "-j8")
+	ENDIF()
+	
+	IF(GENERATOR_MULTI)
+		EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} --build . --target ${TARGET} --config ${BUILD_TYPE} --use-stderr -- ${NATIVE_FLAGS}
+						WORKING_DIRECTORY ${BUILD_PATH})
+	ELSE()
+		EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} --build . --target ${TARGET} --use-stderr -- ${NATIVE_FLAGS}
+						WORKING_DIRECTORY ${BUILD_PATH})
+	ENDIF()
+ENDIF()
+

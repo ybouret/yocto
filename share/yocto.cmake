@@ -204,7 +204,7 @@ MACRO(TARGET_LINK_YOCTO tgt)
 	LIST(APPEND ylibs yocto)
 	
 	####################################################################
-	# specific flags
+	# specific library flags
 	####################################################################
 	IF(YOCTO_LINUX OR YOCTO_FREEBSD)
 		LIST( APPEND ylibs pthread )
@@ -232,6 +232,13 @@ MACRO(TARGET_LINK_YOCTO tgt)
 	LIST(REMOVE_DUPLICATES ylibs)
 	MESSAGE(STATUS "Create ${tgt}: ${ylibs}")
 	TARGET_LINK_LIBRARIES(${tgt} ${ylibs})
+	
+	
+	IF( YOCTO_GNU AND WIN32)
+		IF("${YOCTO_COMPILER_VERSION}" VERSION_GREATER "4.5.0" )
+		TARGET_LINK_LIBRARIES( ${tgt} -static-libgcc -static-libstdc++ )
+		ENDIF()
+	ENDIF()
 	
 ENDMACRO(TARGET_LINK_YOCTO)
 
