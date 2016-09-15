@@ -251,6 +251,10 @@ MACRO(TARGET_LINK_YOCTO tgt)
 		ENDIF()
 	ENDIF()
 	
+	IF("${CMAKE_GENERATOR}" STREQUAL "Xcode")
+		TARGET_LINK_LIBRARIES(${tgt} -w )
+	ENDIF()
+	
 ENDMACRO(TARGET_LINK_YOCTO)
 
 ########################################################################
