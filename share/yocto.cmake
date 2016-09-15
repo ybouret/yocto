@@ -187,6 +187,15 @@ MACRO(TARGET_LINK_YOCTO tgt)
 			IF( "net" STREQUAL ${extra} )
 				SET(YOCTO_LD_NET ON)
 			ENDIF()
+			
+			IF( "bz2++" STREQUAL ${extra} )
+				LIST( APPEND ylibs "y-bz2" )
+			ENDIF()
+			
+			IF( "z++" STREQUAL ${extra} )
+				LIST( APPEND ylibs "y-z" )
+			ENDIF()
+			
 	ENDFOREACH(extra)
 	LIST(APPEND ylibs yocto)
 	
@@ -217,7 +226,7 @@ MACRO(TARGET_LINK_YOCTO tgt)
 	# apply linking
 	####################################################################
 	LIST(REMOVE_DUPLICATES ylibs)
-	MESSAGE("  |_${tgt}: ${ylibs}")
+	MESSAGE(STATUS "Create ${tgt}: ${ylibs}")
 	TARGET_LINK_LIBRARIES(${tgt} ${ylibs})
 	
 ENDMACRO(TARGET_LINK_YOCTO)

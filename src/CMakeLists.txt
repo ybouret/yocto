@@ -23,7 +23,7 @@ SET(YOCTO_BUILD_TESTS ON)
 ## mandatory project and files
 ########################################################################
 MACRO(YOCTO_BUILD dir)
-	MESSAGE("===> adding ${dir}")
+	MESSAGE( STATUS "Append ${dir}")
 	ADD_SUBDIRECTORY(${dir})
 ENDMACRO(YOCTO_BUILD)
 
