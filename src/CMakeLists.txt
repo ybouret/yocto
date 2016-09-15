@@ -54,4 +54,5 @@ YOCTO_BUILD(bz2++)
 YOCTO_BUILD(gems)
 YOCTO_BUILD(lua++)
 YOCTO_BUILD(fltk)
+YOCTO_BUILD(gfx)
 
