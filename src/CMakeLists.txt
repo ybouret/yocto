@@ -57,4 +57,5 @@ YOCTO_BUILD(fltk)
 YOCTO_BUILD(gfx)
 YOCTO_BUILD(chem)
 YOCTO_BUILD(python)
+YOCTO_BUILD(R++)
 
