@@ -186,5 +186,7 @@ YOCTO_BUILD(png)
 YOCTO_BUILD(jbig)
 YOCTO_BUILD(jpeg)
 YOCTO_BUILD(lua)
+YOCTO_BUILD(lzo)
+
 
 
