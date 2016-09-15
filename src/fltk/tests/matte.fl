@@ -1,0 +1,56 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0300 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include "yocto/FLTK/Matte_Button.hpp"} {public global
+} 
+
+decl {\#include "yocto/FLTK/Gel_Tabs.hpp"} {public global
+} 
+
+decl {using namespace yocto;} {selected public global
+} 
+
+Function {MakeWindowMatte()} {open
+} {
+  Fl_Window {} {
+    label {Matte Testing} open
+    xywh {551 182 389 271} type Double visible
+  } {
+    Fl_Button {} {
+      label button
+      xywh {75 202 115 23}
+      code0 {o->color(FL_ORANGE);}
+      class {FLTK::Matte_Button}
+    }
+    Fl_Button {} {
+      label button
+      xywh {200 202 108 23}
+      code0 {o->color(FL_RED);}
+      class {FLTK::Matte_Button}
+    }
+    Fl_Tabs {} {
+      label {Tabs:} open
+      xywh {80 40 235 130}
+      class {FLTK::Gel_Tabs}
+    } {
+      Fl_Group {} {
+        label Tab1 open
+        xywh {80 55 235 115} labelfont 1 hide
+      } {
+        Fl_Box {} {
+          label {Content of table 1}
+          xywh {125 84 130 52}
+        }
+      }
+      Fl_Group {} {
+        label Tab2 open
+        xywh {80 55 235 115}
+      } {
+        Fl_Clock {} {
+          xywh {155 80 75 75}
+        }
+      }
+    }
+  }
+} 

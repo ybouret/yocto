@@ -196,6 +196,10 @@ MACRO(TARGET_LINK_YOCTO tgt)
 				LIST( APPEND ylibs "y-z" )
 			ENDIF()
 			
+			IF( "fltk" STREQUAL ${extra} )
+				LIST( APPEND ylibs "y-mk" )
+			ENDIF()
+			
 	ENDFOREACH(extra)
 	LIST(APPEND ylibs yocto)
 	
