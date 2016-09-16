@@ -26,11 +26,13 @@ namespace yocto
                     Y_OCL_ERR(CL_MAP_FAILURE);
                     Y_OCL_ERR(CL_MISALIGNED_SUB_BUFFER_OFFSET);
                     Y_OCL_ERR(CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST);
+#if defined(CL_VERSION_1_2)
                     Y_OCL_ERR(CL_COMPILE_PROGRAM_FAILURE);
                     Y_OCL_ERR(CL_LINKER_NOT_AVAILABLE);
                     Y_OCL_ERR(CL_LINK_PROGRAM_FAILURE);
                     Y_OCL_ERR(CL_DEVICE_PARTITION_FAILED);
                     Y_OCL_ERR(CL_KERNEL_ARG_INFO_NOT_AVAILABLE);
+#endif
                     Y_OCL_ERR(CL_INVALID_VALUE);
                     Y_OCL_ERR(CL_INVALID_DEVICE_TYPE);
                     Y_OCL_ERR(CL_INVALID_PLATFORM);
@@ -66,10 +68,12 @@ namespace yocto
                     Y_OCL_ERR(CL_INVALID_MIP_LEVEL);
                     Y_OCL_ERR(CL_INVALID_GLOBAL_WORK_SIZE);
                     Y_OCL_ERR(CL_INVALID_PROPERTY);
+#if defined(CL_VERSION_1_2)
                     Y_OCL_ERR(CL_INVALID_IMAGE_DESCRIPTOR);
                     Y_OCL_ERR(CL_INVALID_COMPILER_OPTIONS);
                     Y_OCL_ERR(CL_INVALID_LINKER_OPTIONS);
                     Y_OCL_ERR(CL_INVALID_DEVICE_PARTITION_COUNT);
+#endif
                 default:
                     break;
             }
