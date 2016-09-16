@@ -20,6 +20,10 @@ FILE(GLOB_RECURSE tmp .DS_Store)
 SET(to_remove ${to_remove} ${tmp})
 ENDIF()
 
+#specific stuff
+LIST( APPEND to_remove "src/R++/rcode.so"  )
+LIST( APPEND to_remove "src/R++/rcode.dll" )
+
 FOREACH(item IN LISTS to_remove)
 	MESSAGE("removing ${item}")
 	EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E remove -f ${item})
