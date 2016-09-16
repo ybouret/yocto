@@ -5,6 +5,6 @@ using namespace yocto;
 
 YOCTO_UNIT_TEST_IMPL(types)
 {
-	
+    
 }
 YOCTO_UNIT_TEST_DONE()
