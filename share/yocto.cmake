@@ -30,6 +30,32 @@ STRING(COMPARE EQUAL "Windows" ${CMAKE_SYSTEM_NAME} YOCTO_WINDOWS)
 ########################################################################
 ##
 ##
+## Guess 32/64 pits
+##
+##
+########################################################################
+SET(YOCTO32 OFF)
+SET(YOCTO64 OFF)
+
+INCLUDE(CheckTypeSize)
+CHECK_TYPE_SIZE("void *" YOCTO_POINTER_SIZE BUILTIN_TYPES_ONLY LANGUAGE C)
+IF(NOT HAVE_YOCTO_POINTER_SIZE)
+	MESSAGE( FATAL_ERROR "unable to detect sizeof(void*)" )
+ENDIF()
+
+IF("${YOCTO_POINTER_SIZE}" STREQUAL "4")
+	SET(YOCTO32 ON)
+	MESSAGE("Assuming: 32 bits")
+ENDIF()
+
+IF("${YOCTO_POINTER_SIZE}" STREQUAL "8")
+	SET(YOCTO64 ON)
+	MESSAGE("Assuming: 64 bits")
+ENDIF()
+
+########################################################################
+##
+##
 ## Setup compilers and flags
 ##
 ##
@@ -40,9 +66,9 @@ SET(YOCTO_KNOWN_COMPILER OFF)
 
 # for gnu compatible compiler
 SET(YOCTO_COMPILER_VERSION "")
-SET(YOCTO_COMPILER_MAJOR "")
-SET(YOCTO_COMPILER_MINOR "")
-SET(YOCTO_COMPILER_PATCH "")
+SET(YOCTO_COMPILER_MAJOR   "")
+SET(YOCTO_COMPILER_MINOR   "")
+SET(YOCTO_COMPILER_PATCH   "")
 
 # function will be call for gnu/clang/intel...
 FUNCTION(YOCTO_FIND_COMPILER_VERSION)

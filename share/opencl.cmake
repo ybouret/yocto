@@ -7,6 +7,7 @@
 ##
 ########################################################################
 SET(YOCTO_OCL_FOUND OFF)
+MESSAGE( STATUS "" )
 MESSAGE( STATUS "[OpenCL] Detecting Installation..." )
 
 ########################################################################
@@ -24,4 +25,9 @@ IF(YOCTO_DARWIN)
 	ENDMACRO(YOCTO_OCL_LINK_TO)
 ENDIF()
 
-
+IF(YOCTO_OCL_FOUND)
+	MESSAGE( STATUS "[OpenCL] Enabled" )
+ELSE()
+	MESSAGE( STATUS "[OpenCL] Disable" )
+ENDIF()
+MESSAGE( STATUS "" )
