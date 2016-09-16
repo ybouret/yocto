@@ -11,10 +11,12 @@ YOCTO_UNIT_TEST_IMPL(types)
     for(size_t i=0;i<num_platforms;++i)
     {
         const ocl::Platform &P = OpenCL.Platforms[i];
-        std::cerr << "\tNAME    = " << P.NAME    << std::endl;
-        std::cerr << "\tVERSION = " << P.VERSION << std::endl;
-        std::cerr << "\tVENDOR  = " << P.VENDOR  << std::endl;
-        std::cerr << "\tPROFILE = " << P.PROFILE << std::endl;
+        std::cerr << "\tNAME       = " << P.NAME       << std::endl;
+        std::cerr << "\tVERSION    = " << P.VERSION    << std::endl;
+        std::cerr << "\tVENDOR     = " << P.VENDOR     << std::endl;
+        std::cerr << "\tPROFILE    = " << P.PROFILE    << std::endl;
+        std::cerr << "\tEXTENSIONS = " << P.EXTENSIONS << std::endl;
+
      }
 
 }
