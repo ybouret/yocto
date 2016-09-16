@@ -1,4 +1,4 @@
-#include "yocto/ocl/types.hpp"
+#include "yocto/ocl/driver.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
@@ -15,6 +15,8 @@ YOCTO_UNIT_TEST_IMPL(types)
         throw ocl::Exception( err, "clGetPlaftormIDs" );
     }
     std::cerr << "#platform=" << num_platforms << std::endl;
+
+    ocl::Driver &OCL = ocl::Driver::instance();
 
 }
 YOCTO_UNIT_TEST_DONE()
