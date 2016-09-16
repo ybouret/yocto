@@ -33,7 +33,7 @@ ENDIF()
 ########################################################################
 IF(NOT YOCTO_OCL_FOUND)
 	SET( AMDAPPSDKROOT $ENV{AMDAPPSDKROOT} )
-	
+	MESSAGE( STATUS "[OpenCL] Looking for AMD" )
 	IF( NOT "${AMDAPPSDKROOT}" STREQUAL "" )
 		MESSAGE( STATUS "[OpenCL] Using AMD implementation" )
 		SET(YOCTO_OCL_FOUND ON)
