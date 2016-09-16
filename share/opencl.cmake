@@ -28,10 +28,45 @@ ENDIF()
 
 ########################################################################
 ##
-## for Linux: looking for system OpenCL
+## for AMD implementation
 ##
 ########################################################################
-IF(YOCTO_LINUX)
+IF(NOT YOCTO_OCL_FOUND)
+	SET( AMDAPPSDKROOT $ENV{AMDAPPSDKROOT} )
+	
+	IF( NOT "${AMDAPPSDKROOT}" STREQUAL "" )
+		MESSAGE( STATUS "[OpenCL] Using AMD implementation" )
+		SET(YOCTO_OCL_FOUND)
+		#---------------------------------------------------------------
+		# register the include path
+		#---------------------------------------------------------------
+		INCLUDE_DIRECTORIES( "${AMDAPPSDKROOT}/include" )
+		IF( YOCTO64 )
+			MESSAGE( STATUS "[OpenCL] 64 bits" )
+			LINK_DIRECTORIES( "${AMDAPPSDKROOT}/lib/x86_64" )
+		ELSE()
+			MESSAGE( STATUS "[OpenCL] 32 bits" )
+			LINK_DIRECTORIES( "${AMDAPPSDKROOT}/lib/x86" )
+		ENDIF()
+		
+		#---------------------------------------------------------------
+		# Use OpenCL 
+		#---------------------------------------------------------------
+		MACRO( YOCTO_OCL_LINK_TO tgt )
+			MESSAGE( STATUS "${tgt} will use OpenCL (AMD)" )
+			TARGET_LINK_LIBRARIES( ${tgt} "OpenCL")
+		ENDMACRO(YOCTO_OCL_LINK_TO)
+	ENDIF()
+	
+ENDIF()
+
+
+########################################################################
+##
+## for Linux: looking for system OpenCL if not so fat
+##
+########################################################################
+IF(YOCTO_LINUX AND NOT YOCTO_OCL_FOUND)
 	MESSAGE( STATUS "[OpenCL] Looking for system OpenCL" )
 	FIND_FILE(CL-H cl.h PATHS /usr/include/CL /usr/local/cuda/include/CL)
 	MESSAGE( STATUS "[OpenCL] cl.h=${CL-H}" )
