@@ -5,18 +5,17 @@ using namespace yocto;
 
 YOCTO_UNIT_TEST_IMPL(types)
 {
-    cl_platform_id platforms[8];
-    cl_uint        max_num_platforms = sizeof(platforms)/sizeof(platforms[0]);
-    cl_uint        num_platforms = 0;
-    cl_int err = clGetPlatformIDs(max_num_platforms, platforms, &num_platforms);
-
-    if( err != CL_SUCCESS )
+    ocl::Driver &OpenCL = ocl::Driver::instance();
+    const size_t num_platforms = OpenCL.Platforms.size;
+    std::cerr << "num_platforms = " << num_platforms << std::endl;
+    for(size_t i=0;i<num_platforms;++i)
     {
-        throw ocl::Exception( err, "clGetPlaftormIDs" );
-    }
-    std::cerr << "#platform=" << num_platforms << std::endl;
-
-    ocl::Driver &OCL = ocl::Driver::instance();
+        const ocl::Platform &P = OpenCL.Platforms[i];
+        std::cerr << "\tNAME    = " << P.NAME    << std::endl;
+        std::cerr << "\tVERSION = " << P.VERSION << std::endl;
+        std::cerr << "\tVENDOR  = " << P.VENDOR  << std::endl;
+        std::cerr << "\tPROFILE = " << P.PROFILE << std::endl;
+     }
 
 }
 YOCTO_UNIT_TEST_DONE()

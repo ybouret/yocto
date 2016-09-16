@@ -2,7 +2,8 @@
 #define YOCTO_OCL_DRIVER_INCLUDED 1
 
 #include "yocto/threading/singleton.hpp"
-#include "yocto/ocl/types.hpp"
+#include "yocto/ocl/platform.hpp"
+#include "yocto/sequence/slots.hpp"
 
 namespace yocto
 {
@@ -11,7 +12,9 @@ namespace yocto
         class Driver : public singleton<Driver>
         {
         public:
-            
+            typedef slots_of<Platform> _Platforms;
+            const _Platforms Platforms;
+
         private:
             virtual ~Driver() throw();
             explicit Driver();
@@ -19,7 +22,7 @@ namespace yocto
             friend class singleton<Driver>;
             static const char name[];
             static const threading::longevity life_time = 7;
-            static const cl_uint max_num_platforms = 8;
+            static const cl_uint              max_num_platforms = 8;
         };
     }
 }
