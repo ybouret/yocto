@@ -102,7 +102,7 @@ ENDIF()
 IF(YOCTO_OCL_FOUND)
 	MESSAGE( STATUS "[OpenCL] Enabled" )
 ELSE()
-	MESSAGE( STATUS "[OpenCL] Disable" )
+	MESSAGE( STATUS "[OpenCL] Disabled" )
 ENDIF()
 MESSAGE( STATUS "" )
 
