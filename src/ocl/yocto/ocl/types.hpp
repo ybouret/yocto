@@ -35,34 +35,33 @@ namespace yocto
             YOCTO_DISABLE_ASSIGN(Exception);
         };
 
-#define YOCTO_OCL_CHECK(error_code,FUNC) do { if(CL_SUCCESS!=error_code) throw ocl::Exception(error_code,FUNC); } while(false)
+#define YOCTO_OCL_CHECK(error_code,FUNC) do { const cl_int __ocl_err = (error_code); if(CL_SUCCESS!=__ocl_err) throw ocl::Exception(__ocl_err,FUNC); } while(false)
 
         template <typename CLASS_ID,typename CLASS_INFO>
         struct GetInfo
         {
-#if 0
-            template <typename T> static inline
-            T Value(const CLASS_ID   id,
-                    const CLASS_INFO param_name,
-                    const char      *class_func_name)
+            template <typename T>
+            struct Read
             {
-                assert(class_func_name);
-                T             ans(0);
-                const size_t param_value_size     = sizeof(T);
-                void *       param_value          = &ans;
-                size_t       param_value_ret_size = 0;
-                const size_t err = CLASS_FUNC(id,
-                                              param_name,
-                                              param_value_size,
-                                              param_value,
-                                              &param_value_ret_size);
-                if(CL_SUCCESS!=err)
+                template <typename CLASS_FUNC> static inline
+                T Value(const CLASS_ID   id,
+                        const CLASS_INFO param_name,
+                        CLASS_FUNC       class_func,
+                        const char      *class_func_name)
                 {
-                    throw ocl::Exception(err,class_func_name);
+                    T            ans(0);
+                    const size_t param_value_size     = sizeof(T);
+                    void *       param_value          = &ans;
+                    size_t       param_value_ret_size = 0;
+                    const size_t err = class_func(id,
+                                                  param_name,
+                                                  param_value_size,
+                                                  param_value,
+                                                  &param_value_ret_size);
+                    YOCTO_OCL_CHECK(err,class_func_name);
+                    return ans;
                 }
-                return ans;
-            }
-#endif
+            };
 
             template <typename CLASS_FUNC> static inline
             size_t Length(const CLASS_ID   id,
