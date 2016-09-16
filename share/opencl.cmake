@@ -63,7 +63,7 @@ ENDIF()
 
 ########################################################################
 ##
-## for Linux: looking for system OpenCL if not so fat
+## for Linux: looking for system OpenCL if not so far
 ##
 ########################################################################
 IF(YOCTO_LINUX AND NOT YOCTO_OCL_FOUND)
@@ -89,6 +89,30 @@ IF(YOCTO_LINUX AND NOT YOCTO_OCL_FOUND)
 	ENDIF()
 	
 ENDIF()
+
+########################################################################
+##
+## try Windows cuda
+##
+########################################################################
+IF(YOCTO_WINDOWS AND NOT YOCTO_OCL_FOUND)
+	MESSAGE( STATUS "[OpenCL] Looking for CUDA" )
+	SET(OPENCL_INCLUDE_PATH "$ENV{CUDA_INC_PATH}" )
+	SET(OPENCL_LIBRARY_PATH "$ENV{CUDA_LIB_PATH}" )
+	
+	IF( NOT "${OPENCL_INCLUDE_PATH}" STREQUAL "" )
+		MESSAGE(STATUS "[OpenCL] using CUDA/Windows")
+		SET(YOCTO_OCL_FOUND ON)
+		INCLUDE_DIRECTORIES( "${OPENCL_INCLUDE_PATH}" )
+		LINK_DIRECTORIES(    "${OPENCL_LIBRARY_PATH}/../Win32" )
+		MACRO(YOCTO_OCL_LINK_TO tgt )
+			MESSAGE( STATUS "${tgt} will use OpenCL (CUDA/Windows)" )
+			TARGET_LINK_LIBRARIES( ${tgt} "OpenCL")
+		ENDMACRO(YOCTO_OCL_LINK_TO)
+	ENDIF()
+	
+ENDIF()
+
 
 
 ########################################################################
