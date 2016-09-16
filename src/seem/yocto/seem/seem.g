@@ -22,7 +22,7 @@ MOD      : '%';
 EXPONENT : '^';
 LPAREN   : '(';
 RPAREN   : ')';
-NUMBER   : "[:digit:]+([.][:digit:]+)?";
+NUMBER   : "[:digit:]+([.][:digit:]+)?([eE][-+][:digit:]+)?";
 ID       : "([:alpha:]|_)([:word:]|_)*";
 
 //lexical extra rules
