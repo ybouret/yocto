@@ -36,7 +36,7 @@ IF(NOT YOCTO_OCL_FOUND)
 	
 	IF( NOT "${AMDAPPSDKROOT}" STREQUAL "" )
 		MESSAGE( STATUS "[OpenCL] Using AMD implementation" )
-		SET(YOCTO_OCL_FOUND)
+		SET(YOCTO_OCL_FOUND ON)
 		#---------------------------------------------------------------
 		# register the include path
 		#---------------------------------------------------------------
