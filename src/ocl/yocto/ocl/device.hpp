@@ -9,7 +9,7 @@ namespace yocto
     namespace ocl
     {
         typedef slots_of<const string> _Extensions;
-
+        
         class Device
         {
         public:
