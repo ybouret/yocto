@@ -15,7 +15,7 @@ namespace yocto
             ~Platform() throw();
             Platform(const cl_platform_id platform_id);
 
-            const cl_platform_id       id;            //!< this id
+            const cl_platform_id       ID;            //!< this id
             const string               PROFILE;       //!< CL_PLATFORM_PROFILE
             const string               VERSION;       //!< CL_PLATFORM_VERSION
             const string               NAME;          //!< CL_PLATFORM_NAME

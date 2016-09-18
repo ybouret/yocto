@@ -21,11 +21,11 @@ YOCTO_UNIT_TEST_IMPL(types)
         {
             const ocl::Device &D = P.Devices[j];
             std::cerr << "\t\tDevice[" << j << "]" << std::endl;
-            std::cerr << "\t\t\tNAME    = " << D.NAME   << std::endl;
-            std::cerr << "\t\t\tVENDOR  = " << D.VENDOR << std::endl;
-            std::cerr << "\t\t\tVERSION = " << D.VERSION << std::endl;
-            std::cerr << "\t\t\tDRIVER  = " << D.DRIVER_VERSION << std::endl;
-            
+            std::cerr << "\t\t\tNAME       = " << D.NAME           << std::endl;
+            std::cerr << "\t\t\tVENDOR     = " << D.VENDOR         << std::endl;
+            std::cerr << "\t\t\tVERSION    = " << D.VERSION        << std::endl;
+            std::cerr << "\t\t\tDRIVER     = " << D.DRIVER_VERSION << std::endl;
+            std::cerr << "\t\t\tEXTENSIONS = " << D.EXTENSIONS     << std::endl;
         }
      }
 

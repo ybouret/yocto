@@ -9,14 +9,15 @@ namespace yocto
     namespace ocl
     {
         typedef slots_of<const string> _Extensions;
-        
+        void __ocl_parse_extensions( _Extensions &Ext, const string &extensions);
+
         class Device
         {
         public:
             typedef slots_of<const size_t> MaxWorkItemSizes;
             Device(const cl_device_id device_id);
             ~Device() throw();
-            const cl_device_id                id;
+            const cl_device_id                ID;
             const cl_device_type              TYPE;
             const cl_uint                     VENDOR_ID;
             const cl_uint                     MAX_COMPUTE_UNITS;
@@ -35,6 +36,7 @@ namespace yocto
             const string                      VENDOR;
             const string                      DRIVER_VERSION;
             const string                      VERSION;
+            const _Extensions                 EXTENSIONS;
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Device);
