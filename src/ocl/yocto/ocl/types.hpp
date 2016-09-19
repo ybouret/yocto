@@ -58,15 +58,17 @@ namespace yocto
     {
 
         //! get info wrapper
-        template <typename CLASS_ID,typename CLASS_INFO>
+        template <
+        typename CLASS_ID,
+        typename CLASS_INFO>
         struct GetInfo
         {
             template <typename T>
             struct Read
             {
                 template <typename CLASS_FUNC> static inline
-                T Value(const CLASS_ID   id,
-                        const CLASS_INFO param_name,
+                T Value(CLASS_ID         id,
+                        CLASS_INFO       param_name,
                         CLASS_FUNC       class_func,
                         const char      *class_func_name)
                 {
@@ -85,8 +87,8 @@ namespace yocto
             };
 
             template <typename CLASS_FUNC> static inline
-            size_t Length(const CLASS_ID   id,
-                          const CLASS_INFO param_name,
+            size_t Length(CLASS_ID         id,
+                          CLASS_INFO       param_name,
                           CLASS_FUNC       class_func,
                           const char      *class_func_name)
             {
@@ -103,10 +105,10 @@ namespace yocto
             }
 
             template <typename CLASS_FUNC> static inline
-            string String(const CLASS_ID    id,
-                          const CLASS_INFO  param_name,
-                          CLASS_FUNC        class_func,
-                          const char       *class_func_name)
+            string String(CLASS_ID    id,
+                          CLASS_INFO  param_name,
+                          CLASS_FUNC  class_func,
+                          const char *class_func_name)
             {
                 assert(class_func);
                 assert(class_func_name);
@@ -159,7 +161,7 @@ namespace yocto
             YOCTO_DISABLE_ASSIGN(Shared);
             static void    Retain(const   T) throw(); //!< to be defined
             static void    Release(const  T) throw(); //!< to be defined
-            static cl_uint RefCount(const T) throw(); //!< to be defined
+            //static cl_uint RefCount(const T) throw(); //!< to be defined
         };
 
     }
