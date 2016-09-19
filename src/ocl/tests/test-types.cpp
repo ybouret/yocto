@@ -37,6 +37,13 @@ YOCTO_UNIT_TEST_IMPL(types)
     {
         throw exception("No OpenCL devices...");
     }
+
+    for(size_t i=0;i<Devices.size;++i)
+    {
+        std::cerr << "Using " << Devices[i].NAME << std::endl;
+        ocl::Context context(platform,Devices[i]);
+    }
+
     ocl::DeviceMap       devmap;
     // try cpu
     for(size_t i=0;i<Devices.size;++i)
@@ -58,14 +65,16 @@ YOCTO_UNIT_TEST_IMPL(types)
     }
 
     {
-        ocl::Context context(platform,devmap);
+        std::cerr << "Creating Context" << std::endl;
+        ocl::Context      context(platform,devmap);
+
+        std::cerr << "Creating Command Queue" << std::endl;
+        ocl::CommandQueue Q(context,*(devmap.head->addr),0);
     }
 
-    for(size_t i=0;i<Devices.size;++i)
-    {
-        std::cerr << "Using " << Devices[i].NAME << std::endl;
-        ocl::Context context(platform,Devices[i]);
-    }
+
+
+    
 
 }
 YOCTO_UNIT_TEST_DONE()
