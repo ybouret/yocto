@@ -13,8 +13,20 @@ namespace yocto
         class Driver : public singleton<Driver>
         {
         public:
-            typedef slots_of<Platform> _Platforms;
+            typedef slots_of<Platform>    _Platforms;
+            typedef dynamic_slots<string> _BuildLogs;
             const _Platforms Platforms;
+            _BuildLogs       BuildLogs;
+
+            const Device & QueryDevice( const cl_device_id id ) const;
+
+            void BuildProgram(Program         &program,
+                              const DeviceMap &devmap,
+                              const string    &options);
+            
+            void BuildProgram(Program         &program,
+                              const Device    &device,
+                              const string    &options);
 
         private:
             virtual ~Driver() throw();
@@ -24,6 +36,17 @@ namespace yocto
             static const char name[];
             static const threading::longevity life_time = 7;
             static const cl_uint              max_num_platforms = 8;
+            static void  CL_CALLBACK Notify(cl_program program,void *user_data);
+
+            
+
+            void BuildProgram(Program      &program,
+                              cl_uint       num_devices,
+                              cl_device_id *device_list,
+                              const string &options);
+            
+
+
         };
     }
 }

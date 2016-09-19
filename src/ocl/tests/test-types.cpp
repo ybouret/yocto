@@ -5,7 +5,7 @@
 using namespace yocto;
 
 static const char ocl_add_prolog[] =
-" __kernel void add( __global float a[]) {\n";
+" __kernel void add( __global float *a) {\n";
 
 static const char ocl_add_code[] =
 "	const size_t i = get_global_id(0);\n"
@@ -113,7 +113,20 @@ YOCTO_UNIT_TEST_IMPL(types)
         std::cerr << "Creating program..." << std::endl;
         ocl::Program program(context,sources);
 
-        
+        std::cerr << "Build Program..." << std::endl;
+        const string options;
+        try
+        {
+            OpenCL.BuildProgram(program, devmap, options);
+            std::cerr << "SUCCESS BuildLogs:" << std::endl;
+            std::cerr << OpenCL.BuildLogs << std::endl;
+        }
+        catch(...)
+        {
+            std::cerr << "FAILURE BuildLogs:" << std::endl;
+            std::cerr << OpenCL.BuildLogs << std::endl;
+            throw;
+        }
     }
 
 
