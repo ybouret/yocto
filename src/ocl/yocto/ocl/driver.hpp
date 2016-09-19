@@ -3,6 +3,7 @@
 
 #include "yocto/threading/singleton.hpp"
 #include "yocto/ocl/buffer.hpp"
+#include "yocto/ocl/program.hpp"
 #include "yocto/sequence/slots.hpp"
 
 namespace yocto

@@ -4,6 +4,19 @@
 
 using namespace yocto;
 
+static const char ocl_add_prolog[] =
+" __kernel void add( __global float a[]) {\n";
+
+static const char ocl_add_code[] =
+"	const size_t i = get_global_id(0);\n"
+"	a[i] += i;\n"
+;
+
+static const char ocl_add_epilog[] =
+"}\n";
+
+
+
 YOCTO_UNIT_TEST_IMPL(types)
 {
     ocl::Driver &OpenCL = ocl::Driver::instance();
@@ -90,6 +103,17 @@ YOCTO_UNIT_TEST_IMPL(types)
         buf.EnqueueRead(Q, CL_FALSE, &data[1], buf.SIZE, 0);
         std::cerr << "Enqueue Read Items..." << std::endl;
         buf.EnqueueReadItems(Q,CL_FALSE, &data[1], 100, 0);
+
+        std::cerr << "Creating sources" << std::endl;
+        ocl::Sources sources;
+        sources.push_back(ocl_add_prolog);
+        sources.push_back(ocl_add_code);
+        sources.push_back(ocl_add_epilog);
+        std::cerr << "sources=" << sources << std::endl;
+        std::cerr << "Creating program..." << std::endl;
+        ocl::Program program(context,sources);
+
+        
     }
 
 
