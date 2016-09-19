@@ -40,6 +40,8 @@ namespace yocto
             const _Extensions                 EXTENSIONS;
             const cl_bool                     COMPILER_AVAILABLE;
             const cl_bool                     LINKER_AVAILABLE;
+
+
             inline bool is_cpu() const throw() { return 0 !=(TYPE & CL_DEVICE_TYPE_CPU); }
             inline bool is_gpu() const throw() { return 0 !=(TYPE & CL_DEVICE_TYPE_GPU); }
             bool        is_available() const;

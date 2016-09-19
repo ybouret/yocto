@@ -4,21 +4,37 @@ namespace yocto
 {
     namespace ocl
     {
+        template <>
+        void _Context::Release(cl_context context) throw()
+        {
+            (void)clReleaseContext(context);
+        }
+
         Context:: ~Context() throw()
         {
-#if 0
-            const cl_int err = clReleaseContext(context);
-            if(err!=CL_SUCCESS)
-            {
-                std::cerr << "Release Context: " << Error::String(err) << std::endl;
-            }
-#endif
-            (void) clReleaseContext(context);
-            context = NULL;
         }
-        
+
         Context:: Context(const Platform &P, const DeviceMap &device_map) :
-        context(0)
+        _Context( Create(P,device_map) )
+        {
+
+        }
+
+        Context:: Context(const Platform &P, const Device &D) :
+        _Context( Setup(P, &D.ID, 1) )
+        {
+        }
+
+        CL_CALLBACK void ContextCB(const char *errinfo,
+                                   const void *private_info,
+                                   size_t      cb,
+                                   void       *user_data)
+        {
+            std::cerr << "errInfo=" << errinfo << std::endl;
+        }
+
+
+        cl_context Context:: Create(const Platform &P, const DeviceMap &device_map)
         {
             const size_t num_devices = device_map.size;
             memory::buffer_of<cl_device_id,memory::pooled> devices(num_devices);
@@ -27,31 +43,20 @@ namespace yocto
             {
                 devices[idev++] = node->addr->ID;
             }
-            setup(P,devices(),num_devices);
+            return Setup(P,devices(),num_devices);
         }
-        
-        Context:: Context(const Platform &P, const Device &D)
+
+        cl_context Context:: Setup(const Platform      &,
+                                   const cl_device_id *devices,
+                                   const size_t        num_devices)
         {
-            setup(P, &D.ID, 1);
-        }
-        
-        CL_CALLBACK void ContextCB(const char *errinfo,
-                                   const void *private_info,
-                                   size_t      cb,
-                                   void       *user_data)
-        {
-            std::cerr << "errInfo=" << errinfo << std::endl;
-        }
-        
-        
-        void Context:: setup(const Platform      &,
-                             const cl_device_id *devices,
-                             const size_t        num_devices)
-        {
-            cl_int err = CL_SUCCESS;
-            context    = clCreateContext(NULL, num_devices, devices, ContextCB, NULL, &err);
+            cl_int      err = CL_SUCCESS;
+            cl_context  ctx = clCreateContext(NULL, num_devices, devices, ContextCB, NULL, &err);
             YOCTO_OCL_CHECK(err,"clCreateContext");
+            return ctx;
         }
+        
+        
         
     }
 }

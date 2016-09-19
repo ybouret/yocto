@@ -8,8 +8,9 @@ namespace yocto
 {
     namespace ocl
     {
-        
-        class Context
+        typedef Shared<cl_context> _Context;
+
+        class Context : public _Context
         {
         public:
             Context(const Platform &P, const DeviceMap &device_map);
@@ -19,9 +20,11 @@ namespace yocto
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Context);
-            void setup(const Platform &P, const cl_device_id *devices, const size_t num_devices);
             
-            cl_context context;
+            static cl_context Create(const Platform &P, const DeviceMap &device_map);
+            static cl_context Setup(const Platform &P, const cl_device_id *devices, const size_t num_devices);
+
+
         };
     }
 }

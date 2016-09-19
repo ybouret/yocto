@@ -17,11 +17,22 @@ namespace yocto
 {
     namespace ocl
     {
+        //! error to string...
         struct Error
         {
             static const char *String(const cl_int err) throw();
         };
 
+    }
+
+}
+
+namespace yocto
+{
+    namespace ocl
+    {
+
+        //! derived exception
         class Exception : public exception
         {
         public:
@@ -37,6 +48,16 @@ namespace yocto
 
 #define YOCTO_OCL_CHECK(error_code,FUNC) do { const cl_int __ocl_err = (error_code); if(CL_SUCCESS!=__ocl_err) throw ocl::Exception(__ocl_err,FUNC); } while(false)
 
+    }
+
+}
+
+namespace yocto
+{
+    namespace ocl
+    {
+
+        //! get info wrapper
         template <typename CLASS_ID,typename CLASS_INFO>
         struct GetInfo
         {
@@ -102,9 +123,47 @@ namespace yocto
 
 
         };
-        
+
 
     }
+}
+
+
+namespace yocto
+{
+    namespace ocl
+    {
+
+        template <typename T>
+        class Shared
+        {
+        public:
+            inline virtual ~Shared() throw()
+            {
+                Release(handle);
+                handle=0;
+            }
+
+            inline Shared(const Shared &other) : handle( other.handle )
+            {
+                Retain(handle);
+            }
+
+            inline const T operator*() const throw() { return handle; }
+
+        protected:
+            explicit Shared(const T h) throw() : handle(h) {}
+            T handle;
+
+        private:
+            YOCTO_DISABLE_ASSIGN(Shared);
+            static void    Retain(const   T) throw(); //!< to be defined
+            static void    Release(const  T) throw(); //!< to be defined
+            static cl_uint RefCount(const T) throw(); //!< to be defined
+        };
+
+    }
+
 }
 
 #endif
