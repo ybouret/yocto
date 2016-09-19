@@ -59,4 +59,5 @@ YOCTO_BUILD(chem)
 YOCTO_BUILD(python)
 YOCTO_BUILD(R++)
 YOCTO_BUILD(ocl)
+YOCTO_BUILD(spade)
 
