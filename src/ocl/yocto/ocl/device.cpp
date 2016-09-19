@@ -35,8 +35,7 @@ namespace yocto
         DRIVER_VERSION(GetInfo<cl_device_id,cl_device_info>::String(ID,CL_DRIVER_VERSION,clGetDeviceInfo,oclGetDeviceInfoText)),
         Y_OCL_STR(VERSION),
         EXTENSIONS(),
-        Y_OCL_INI(cl_bool,COMPILER_AVAILABLE),
-        Y_OCL_INI(cl_bool,LINKER_AVAILABLE)
+        Y_OCL_INI(cl_bool,COMPILER_AVAILABLE)
         {
             for(cl_uint i=0;i<MAX_WORK_ITEM_DIMENSIONS;++i)
             {

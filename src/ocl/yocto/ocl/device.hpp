@@ -39,7 +39,6 @@ namespace yocto
             const string                      VERSION;
             const _Extensions                 EXTENSIONS;
             const cl_bool                     COMPILER_AVAILABLE;
-            const cl_bool                     LINKER_AVAILABLE;
 
 
             inline bool is_cpu() const throw() { return 0 !=(TYPE & CL_DEVICE_TYPE_CPU); }
