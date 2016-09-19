@@ -27,7 +27,45 @@ YOCTO_UNIT_TEST_IMPL(types)
             std::cerr << "\t\t\tDRIVER     = " << D.DRIVER_VERSION << std::endl;
             std::cerr << "\t\t\tEXTENSIONS = " << D.EXTENSIONS     << std::endl;
         }
-     }
+    }
+
+    std::cerr << std::endl;
+    std::cerr << "Creating Context..." << std::endl;
+    const ocl::Platform &platform = OpenCL.Platforms[0];
+    const ocl::_Devices &Devices  = platform.Devices;
+    if(Devices.size<=0)
+    {
+        throw exception("No OpenCL devices...");
+    }
+    ocl::DeviceMap       devmap;
+    // try cpu
+    for(size_t i=0;i<Devices.size;++i)
+    {
+        const ocl::Device &D = platform.Devices[i];
+        if(D.is_cpu())
+        {
+            std::cerr << "Using CPU " << D.NAME << std::endl;
+            devmap.append(&D);
+            break;
+        }
+    }
+
+    if(devmap.size<=0)
+    {
+        const ocl::Device &D = Devices[0];
+        std::cerr << "Using device " << D.NAME << std::endl;
+        devmap.append(&D);
+    }
+
+    {
+        ocl::Context context(platform,devmap);
+    }
+
+    for(size_t i=0;i<Devices.size;++i)
+    {
+        std::cerr << "Using " << Devices[i].NAME << std::endl;
+        ocl::Context context(platform,Devices[i]);
+    }
 
 }
 YOCTO_UNIT_TEST_DONE()

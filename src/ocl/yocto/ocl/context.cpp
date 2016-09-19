@@ -6,7 +6,14 @@ namespace yocto
     {
         Context:: ~Context() throw()
         {
-            clReleaseContext(context);
+#if 0
+            const cl_int err = clReleaseContext(context);
+            if(err!=CL_SUCCESS)
+            {
+                std::cerr << "Release Context: " << Error::String(err) << std::endl;
+            }
+#endif
+            (void) clReleaseContext(context);
             context = NULL;
         }
         

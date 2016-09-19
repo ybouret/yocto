@@ -7,10 +7,11 @@ namespace yocto
 {
     namespace ocl
     {
+        typedef slots_of<const Device> _Devices;
+
         class Platform
         {
         public:
-            typedef slots_of<const Device> _Devices;
 
             ~Platform() throw();
             Platform(const cl_platform_id platform_id);

@@ -2,7 +2,7 @@
 #define YOCTO_OCL_DRIVER_INCLUDED 1
 
 #include "yocto/threading/singleton.hpp"
-#include "yocto/ocl/platform.hpp"
+#include "yocto/ocl/context.hpp"
 #include "yocto/sequence/slots.hpp"
 
 namespace yocto

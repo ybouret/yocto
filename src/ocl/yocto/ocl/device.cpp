@@ -34,7 +34,9 @@ namespace yocto
         Y_OCL_STR(VENDOR),
         DRIVER_VERSION(GetInfo<cl_device_id,cl_device_info>::String(ID,CL_DRIVER_VERSION,clGetDeviceInfo,oclGetDeviceInfoText)),
         Y_OCL_STR(VERSION),
-        EXTENSIONS()
+        EXTENSIONS(),
+        Y_OCL_INI(cl_bool,COMPILER_AVAILABLE),
+        Y_OCL_INI(cl_bool,LINKER_AVAILABLE)
         {
             for(cl_uint i=0;i<MAX_WORK_ITEM_DIMENSIONS;++i)
             {
@@ -48,6 +50,15 @@ namespace yocto
             const string extensions = GetInfo<cl_device_id,cl_device_info>::String(ID,CL_DEVICE_EXTENSIONS,clGetDeviceInfo, oclGetDeviceInfoText);
             __ocl_parse_extensions((_Extensions &)EXTENSIONS,extensions);
         }
-        
+
+
+        bool Device:: is_available() const
+        {
+            const cl_bool ans = GetInfo<cl_device_id,cl_device_info>::Read<cl_bool>::Value(ID,CL_DEVICE_AVAILABLE,clGetDeviceInfo,oclGetDeviceInfoText);
+            return CL_TRUE == ans;
+        }
+
+
+
     }
 }
