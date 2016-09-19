@@ -3,6 +3,7 @@
 
 #include "yocto/ocl/types.hpp"
 #include "yocto/sequence/slots.hpp"
+#include "yocto/sequence/addr-list.hpp"
 
 namespace yocto
 {
@@ -41,6 +42,9 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Device);
         };
+        
+        typedef addr_list<const Device> DeviceMap;
+        
     }
 }
 
