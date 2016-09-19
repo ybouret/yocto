@@ -1,5 +1,6 @@
 #include "yocto/ocl/driver.hpp"
 #include "yocto/utest/run.hpp"
+#include "yocto/sequence/vector.hpp"
 
 using namespace yocto;
 
@@ -51,6 +52,7 @@ YOCTO_UNIT_TEST_IMPL(types)
         const ocl::Device &D = platform.Devices[i];
         if(D.is_cpu())
         {
+            std::cerr << std::endl;
             std::cerr << "Using CPU " << D.NAME << std::endl;
             devmap.append(&D);
             break;
@@ -60,6 +62,7 @@ YOCTO_UNIT_TEST_IMPL(types)
     if(devmap.size<=0)
     {
         const ocl::Device &D = Devices[0];
+        std::cerr << std::endl;
         std::cerr << "Using device " << D.NAME << std::endl;
         devmap.append(&D);
     }
@@ -70,6 +73,23 @@ YOCTO_UNIT_TEST_IMPL(types)
 
         std::cerr << "Creating Command Queue" << std::endl;
         ocl::CommandQueue Q(context,*(devmap.head->addr),0);
+
+        std::cerr << "Creating Buffer" << std::endl;
+
+        ocl::BufferOf<float> buf(context,CL_MEM_READ_WRITE,100,NULL);
+
+        std::cerr << "Creating Data" << std::endl;
+        vector<float> data(buf.ITEMS);
+
+        std::cerr << "Enqueue Write..." << std::endl;
+        buf.EnqueueWrite(Q, CL_FALSE, &data[1], buf.SIZE, 0);
+        std::cerr << "Enqueue Write Items..." << std::endl;
+        buf.EnqueueWriteItems(Q,CL_FALSE, &data[1], 100, 0);
+
+        std::cerr << "Enqueue Read..." << std::endl;
+        buf.EnqueueRead(Q, CL_FALSE, &data[1], buf.SIZE, 0);
+        std::cerr << "Enqueue Read Items..." << std::endl;
+        buf.EnqueueReadItems(Q,CL_FALSE, &data[1], 100, 0);
     }
 
 

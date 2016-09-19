@@ -67,8 +67,8 @@ namespace yocto
             struct Read
             {
                 template <typename CLASS_FUNC> static inline
-                T Value(CLASS_ID         id,
-                        CLASS_INFO       param_name,
+                T Value(const CLASS_ID   id,
+                        const CLASS_INFO param_name,
                         CLASS_FUNC       class_func,
                         const char      *class_func_name)
                 {
@@ -167,5 +167,7 @@ namespace yocto
     }
 
 }
+
+
 
 #endif
