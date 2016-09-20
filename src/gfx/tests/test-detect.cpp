@@ -58,8 +58,13 @@ YOCTO_UNIT_TEST_IMPL(detect)
         const stencil_scharr_y5 gy;
 
         ED.build_instensity_from(imgf,gx,gy,xps);
-        IMG.save("img-intensity.png",ED,0);
-        
+        IMG.save("img-intensity0.png",ED,0);
+
+        std::cerr << "Full Edges Detection" << std::endl;
+        ED.build_from(imgf,gx,gy,xps);
+        IMG.save("img-intensity1.png",ED,0);
+
+
     }
     
 }
