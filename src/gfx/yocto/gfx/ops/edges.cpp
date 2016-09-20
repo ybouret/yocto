@@ -20,6 +20,7 @@ namespace yocto
         H(),
         level_up(0),
         level_lo(0),
+        weak_intake(0),
         tags(w,h),
         edges()
         {
