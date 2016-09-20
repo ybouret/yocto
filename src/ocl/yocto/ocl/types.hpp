@@ -13,6 +13,8 @@
 #       include <CL/cl.h>
 #endif
 
+#define YOCTO_OCL_NO_EVENTS 0,NULL,NULL
+
 namespace yocto
 {
     namespace ocl
@@ -47,6 +49,7 @@ namespace yocto
         };
 
 #define YOCTO_OCL_CHECK(error_code,FUNC) do { const cl_int __ocl_err = (error_code); if(CL_SUCCESS!=__ocl_err) throw ocl::Exception(__ocl_err,FUNC); } while(false)
+#define YOCTO_OCL_RUN(FUNC,ARGS) do { const cl_int __ocl_err = FUNC ARGS; if(CL_SUCCESS!=__ocl_err) throw ocl::Exception(__ocl_err,#FUNC); } while(false)
 
     }
 

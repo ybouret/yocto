@@ -1,4 +1,5 @@
 #include "yocto/ocl/command-queue.hpp"
+#include "yocto/ocl/kernel.hpp"
 
 namespace yocto
 {
@@ -44,8 +45,29 @@ namespace yocto
 
         void CommandQueue:: Finish()
         {
-            const cl_int err = clFinish(handle);
-            YOCTO_OCL_CHECK(err, "clFinish" );
+            YOCTO_OCL_RUN(clFinish,(handle));
         }
+
+        void CommandQueue:: Flush()
+        {
+            YOCTO_OCL_RUN(clFlush,(handle));
+        }
+
+
+        void CommandQueue:: EnqueueNDRangeKernel(const Kernel  &kernel,
+                                                 const cl_uint  work_dim,
+                                                 const size_t  *global_work_offset,
+                                                 const size_t  *global_work_size,
+                                                 const size_t  *local_work_size)
+        {
+            YOCTO_OCL_RUN(clEnqueueNDRangeKernel,(handle, *kernel, work_dim, global_work_offset, global_work_size, local_work_size,YOCTO_OCL_NO_EVENTS));
+        }
+
+        void CommandQueue:: EnqueueTask(const Kernel &kernel)
+        {
+            YOCTO_OCL_RUN(clEnqueueTask,(handle, *kernel,YOCTO_OCL_NO_EVENTS));
+        }
+
+
     }
 }

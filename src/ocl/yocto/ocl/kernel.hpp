@@ -34,7 +34,7 @@ namespace yocto
             }
 
             void SetBuffer(const cl_uint arg_index, const Buffer &buf);
-            void SetLocal(const cl_uint arg_index, const size_t bytes);
+            void SetLocal(const cl_uint arg_index,  const size_t bytes);
 
 
         private:
