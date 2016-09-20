@@ -46,17 +46,22 @@ namespace yocto
             return (p->size<=0);
         }
 
-        void EdgeDetector:: post_build(xpatches &xps)
-        {
-            edges.free();
 
-            // get the global max
+        void EdgeDetector:: query_Gmax(xpatches &xps) throw()
+        {
             Gmax = xps[1].as<float>();
             for(size_t i=xps.size();i>1;--i)
             {
                 Gmax = max_of(Gmax,xps[i].as<float>());
             }
+        }
 
+        void EdgeDetector:: post_build(xpatches &xps)
+        {
+            edges.free();
+
+            // get the global max
+            query_Gmax(xps);
 
             if(Gmax>0)
             {

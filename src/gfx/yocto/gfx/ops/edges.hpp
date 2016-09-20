@@ -58,6 +58,24 @@ namespace yocto
                 post_build(xps);
             }
 
+            //! build normalized intensity map
+            template <typename T>
+            void build_instensity_from(const pixmap<T> &source,
+                                       const stencil   &gx,
+                                       const stencil   &gy,
+                                       xpatches        &xps)
+            {
+                src = &source;
+                ddx = &gx;
+                ddy = &gy;
+                YGFX_SUBMIT(this, & EdgeDetector::build<T>, xps, xp.make<float>() = 0);
+                query_Gmax(xps);
+                if(Gmax>0)
+                {
+                    xps.submit(this, & EdgeDetector::normalize);
+                }
+            }
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(EdgeDetector);
@@ -76,6 +94,7 @@ namespace yocto
             particles      edges;
 
         private:
+            void query_Gmax(xpatches &) throw();
             void post_build(xpatches &);
             
             //! build intensity by patch
