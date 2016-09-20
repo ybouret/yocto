@@ -3,7 +3,6 @@
 
 #include "yocto/ocl/context.hpp"
 #include "yocto/ocl/mem-object.hpp"
-#include "yocto/ocl/command-queue.hpp"
 
 namespace yocto
 {
@@ -19,19 +18,7 @@ namespace yocto
 
             virtual ~Buffer() throw();
 
-
-            void EnqueueRead(CommandQueue  Q,
-                             const cl_bool blocking_read,
-                             void         *target,
-                             const size_t  bytes,
-                             const size_t  offset) const;
-
-            void EnqueueWrite(CommandQueue  Q,
-                              const cl_bool blocking_write,
-                              const void   *source,
-                              const size_t  bytes,
-                              const size_t  offset) const;
-
+            
         private:
             YOCTO_DISABLE_ASSIGN(Buffer);
             static cl_mem Create(cl_context         context,
@@ -62,25 +49,6 @@ namespace yocto
             ITEMS(other.ITEMS)
             {
             }
-
-            inline void EnqueueReadItems(CommandQueue &Q,
-                                         const cl_bool blocking_read,
-                                         T            *target,
-                                         const size_t  count,
-                                         const size_t  start) const
-            {
-                EnqueueRead(Q,blocking_read,target+start, count*sizeof(T), 0);
-            }
-
-            inline void EnqueueWriteItems(CommandQueue &Q,
-                                          const cl_bool blocking_write,
-                                          const T     * source,
-                                          const size_t  count,
-                                          const size_t  start) const
-            {
-                EnqueueWrite(Q,blocking_write,source+start, count*sizeof(T), 0);
-            }
-
 
         private:
             YOCTO_DISABLE_ASSIGN(BufferOf);

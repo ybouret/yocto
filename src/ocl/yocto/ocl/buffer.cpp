@@ -26,27 +26,7 @@ namespace yocto
             return ans;
         }
 
-        void Buffer::EnqueueRead(CommandQueue  Q,
-                                 const cl_bool blocking_read,
-                                 void         *target,
-                                 const size_t  bytes,
-                                 const size_t  offset) const
-        {
-            const cl_int err = clEnqueueReadBuffer(*Q,handle, blocking_read, offset, bytes, target, 0, NULL, NULL);
-            YOCTO_OCL_CHECK(err, "clEnqueueReadBuffer");
-        }
-
-        void Buffer:: EnqueueWrite(CommandQueue  Q,
-                                   const cl_bool blocking_write,
-                                   const void   *source,
-                                   const size_t  bytes,
-                                   const size_t  offset) const
-        {
-            const cl_int err = clEnqueueWriteBuffer(*Q,handle, blocking_write, offset, bytes, source, 0, NULL, NULL);
-            YOCTO_OCL_CHECK(err, "clEnqueueWriteBuffer");
-
-        }
-
+        
     }
 
 }

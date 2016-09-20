@@ -42,6 +42,24 @@ namespace yocto
             return Q;
         }
 
+        void CommandQueue:: EnqueueReadBuffer(Buffer       &buffer,
+                                              const cl_bool blocking,
+                                              void         *target,
+                                              const size_t  bytes,
+                                              const size_t  offset)
+        {
+            YOCTO_OCL_RUN(clEnqueueReadBuffer,(handle,*buffer, blocking, offset, bytes, target, YOCTO_OCL_NO_EVENTS));
+        }
+
+        void CommandQueue:: EnqueueWriteBuffer(Buffer       &buffer,
+                                               const cl_bool blocking,
+                                               const void   *source,
+                                               const size_t  bytes,
+                                               const size_t  offset)
+        {
+            YOCTO_OCL_RUN(clEnqueueWriteBuffer,(handle,*buffer, blocking, offset, bytes, source, YOCTO_OCL_NO_EVENTS));
+        }
+
 
         void CommandQueue:: Finish()
         {

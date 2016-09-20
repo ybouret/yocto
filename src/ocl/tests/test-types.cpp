@@ -95,14 +95,14 @@ YOCTO_UNIT_TEST_IMPL(types)
         vector<float> data(buf.ITEMS);
 
         std::cerr << "Enqueue Write..." << std::endl;
-        buf.EnqueueWrite(Q, CL_FALSE, &data[1], buf.SIZE, 0);
+        //buf.EnqueueWrite(Q, CL_FALSE, &data[1], buf.SIZE, 0);
         std::cerr << "Enqueue Write Items..." << std::endl;
-        buf.EnqueueWriteItems(Q,CL_FALSE, &data[1], 100, 0);
+        //buf.EnqueueWriteItems(Q,CL_FALSE, &data[1], 100, 0);
 
         std::cerr << "Enqueue Read..." << std::endl;
-        buf.EnqueueRead(Q, CL_FALSE, &data[1], buf.SIZE, 0);
+        //buf.EnqueueRead(Q, CL_FALSE, &data[1], buf.SIZE, 0);
         std::cerr << "Enqueue Read Items..." << std::endl;
-        buf.EnqueueReadItems(Q,CL_FALSE, &data[1], 100, 0);
+       // buf.EnqueueReadItems(Q,CL_FALSE, &data[1], 100, 0);
 
         std::cerr << "Creating sources" << std::endl;
         ocl::Sources sources;
