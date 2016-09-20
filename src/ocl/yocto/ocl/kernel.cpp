@@ -1,4 +1,5 @@
 #include "yocto/ocl/kernel.hpp"
+#include "yocto/code/bzset.hpp"
 
 namespace yocto
 {
@@ -33,15 +34,55 @@ namespace yocto
             return Create(program,kid);
         }
 
+        static const char oclGetKernelInfoText[] = "clGetKernelInfo";
+
+#define Y_OCL_STR(FIELD) FIELD( GetInfoType::String(handle,CL_KERNEL_##FIELD,clGetKernelInfo,oclGetKernelInfoText) )
+#define Y_OCL_INI(TYPE,FIELD) FIELD( GetInfoType::Read<TYPE>::Value(handle,CL_KERNEL_##FIELD,clGetKernelInfo,oclGetKernelInfoText) )
+
+        
+
+#define Y_OCL_KERNEL_CTOR()             \
+_Kernel( Create(program,kernel_name) ), \
+Y_OCL_STR(FUNCTION_NAME),               \
+Y_OCL_INI(cl_uint,NUM_ARGS)
+
+
         Kernel:: Kernel(const Program &program, const string &kernel_name) :
-        _Kernel( Create(program,kernel_name) )
+        Y_OCL_KERNEL_CTOR()
         {
         }
 
         Kernel:: Kernel(const Program &program, const char   *kernel_name) :
-        _Kernel( Create(program,kernel_name) )
+        Y_OCL_KERNEL_CTOR()
         {
         }
+
+        template <typename T>
+        static inline T __ocl_kernel_work_group_info(const Kernel                   &kernel,
+                                                     const Device                   &device,
+                                                     const cl_kernel_work_group_info param)
+        {
+            T ans; bzset(ans);
+            const cl_int err = clGetKernelWorkGroupInfo(*kernel, device.ID, param, sizeof(T), &ans, NULL);
+            YOCTO_OCL_CHECK(err, "clGetKernelWorkGroupInfo" );
+            return ans;
+        }
+
+#undef Y_OCL_INI
+#define Y_OCL_INI(TYPE,FIELD) FIELD( __ocl_kernel_work_group_info<TYPE>(kernel,device,CL_KERNEL_##FIELD) )
+
+        Kernel:: WorkGroupInfo:: WorkGroupInfo(const Kernel &kernel, const Device &device) :
+        Y_OCL_INI(size_t,WORK_GROUP_SIZE),
+        Y_OCL_INI(point3d<size_t>,COMPILE_WORK_GROUP_SIZE),
+        Y_OCL_INI(cl_ulong,LOCAL_MEM_SIZE),
+        Y_OCL_INI(size_t,PREFERRED_WORK_GROUP_SIZE_MULTIPLE),
+        Y_OCL_INI(cl_ulong,PRIVATE_MEM_SIZE)
+        {
+        }
+
+        Kernel:: WorkGroupInfo:: ~WorkGroupInfo() throw()
+        {}
+
 
 
     }
