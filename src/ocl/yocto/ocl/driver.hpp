@@ -36,8 +36,7 @@ namespace yocto
             static const char name[];
             static const threading::longevity life_time = 7;
             static const cl_uint              max_num_platforms = 8;
-            static void  CL_CALLBACK Notify(cl_program program,void *user_data);
-
+            
             
 
             void BuildProgram(Program      &program,

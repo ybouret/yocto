@@ -54,13 +54,12 @@ namespace yocto
         const char Driver::name[] = "OpenCL";
 
 
-        void CL_CALLBACK Driver::Notify(cl_program program, void *user_data)
-        {
-            //assert(user_data);
-            //Driver &self = *(Driver *)user_data;
-
-        }
-
+        
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // Macros to compile programs...
+        //
+        ////////////////////////////////////////////////////////////////////////
         static const char oclGetProgramBuildInfo[] = "clGetProgramBuildInfo";
 
         template <typename T>
@@ -106,13 +105,19 @@ namespace yocto
             const cl_int err = clBuildProgram(*program, num_devices, device_list, &options[0], NULL, NULL);
             for(cl_uint i=0;i<num_devices;++i)
             {
-                // get device
+                //______________________________________________________________
+                //
+                // get device and initialize log
+                //______________________________________________________________
                 const cl_device_id device = device_list[i];
                 const Device      &D      = QueryDevice(device);
                 string            &Log    = BuildLogs.push_back(D.NAME);
                 Log += "\n";
 
+                //______________________________________________________________
+                //
                 // get status
+                //______________________________________________________________
                 const cl_build_status status = __ReadBuildValue<cl_build_status>(*program,device,CL_PROGRAM_BUILD_STATUS);
                 switch(status)
                 {
@@ -121,6 +126,10 @@ namespace yocto
                     default:               Log += "\tUnknown...\n"; break;
                 }
 
+                //______________________________________________________________
+                //
+                // get log
+                //______________________________________________________________
                 Log += __ReadBuildString(*program, device, CL_PROGRAM_BUILD_LOG);
                 Log += "\n";
             }
