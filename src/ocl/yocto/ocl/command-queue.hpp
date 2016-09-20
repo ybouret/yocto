@@ -17,6 +17,8 @@ namespace yocto
                                   const Device  &device,
                                   cl_command_queue_properties properties);
             CommandQueue(const CommandQueue &Q);
+
+            void Finish();
             
         private:
             YOCTO_DISABLE_ASSIGN(CommandQueue);

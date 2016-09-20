@@ -2,6 +2,7 @@
 #define YOCTO_OCL_KERNEL_INCLUDED 1
 
 #include "yocto/ocl/program.hpp"
+#include "yocto/ocl/buffer.hpp"
 #include "yocto/math/point3d.hpp"
 
 namespace yocto
@@ -21,7 +22,21 @@ namespace yocto
 
             const string  FUNCTION_NAME;
             const cl_uint NUM_ARGS;
-            
+
+            void __SetArg(const cl_uint arg_index,
+                          const size_t  arg_size,
+                          const void   *arg_value);
+
+            template <typename T>
+            inline void SetValue( const cl_uint arg_index, const T value )
+            {
+                __SetArg(arg_index,sizeof(T),&value);
+            }
+
+            void SetBuffer(const cl_uint arg_index, const Buffer &buf);
+            void SetLocal(const cl_uint arg_index, const size_t bytes);
+
+
         private:
             YOCTO_DISABLE_ASSIGN(Kernel);
             static cl_kernel Create(const Program &program, const string &kernel_name);

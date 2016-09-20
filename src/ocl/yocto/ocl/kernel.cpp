@@ -84,6 +84,20 @@ Y_OCL_INI(cl_uint,NUM_ARGS)
         {}
 
 
+        void Kernel:: __SetArg(const cl_uint arg_index,
+                               const size_t  arg_size,
+                               const void   *arg_value)
+        {
+            const cl_int err = clSetKernelArg(handle,arg_index,arg_size,arg_value);
+            YOCTO_OCL_CHECK(err, "clSetKernelArg" );
+        }
+
+        void Kernel:: SetBuffer(const cl_uint arg_index, const Buffer &buf)
+        {
+            cl_mem m = *buf;
+            __SetArg(arg_index, sizeof(cl_mem), &m);
+        }
+
 
     }
 }

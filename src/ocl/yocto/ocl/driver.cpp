@@ -27,7 +27,9 @@ namespace yocto
 
 
 
-        Driver:: Driver() : Platforms()
+        Driver:: Driver() :
+        Platforms(),
+        BuildLogs()
         {
             // query #platforms
             cl_platform_id platforms[max_num_platforms];

@@ -40,6 +40,12 @@ namespace yocto
             YOCTO_OCL_CHECK(err,"clCreateCommandQueue");
             return Q;
         }
-        
+
+
+        void CommandQueue:: Finish()
+        {
+            const cl_int err = clFinish(handle);
+            YOCTO_OCL_CHECK(err, "clFinish" );
+        }
     }
 }
