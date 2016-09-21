@@ -8,6 +8,8 @@
 #include "yocto/functor.hpp"
 #include "yocto/parallel/basic.hpp"
 #include "yocto/counted-object.hpp"
+#include "yocto/container/vslot.hpp"
+#include "yocto/container/tuple.hpp"
 
 namespace yocto
 {
@@ -27,8 +29,8 @@ namespace yocto
             const size_t size;   //!< how many contextes
             lockable    &access; //!< shared access
             const size_t indx;   //!< 1..size
-
-
+            vslot        data;   //!< for thread specific data
+            
             //! splitting/using data
             /**
              - code example
@@ -49,7 +51,11 @@ namespace yocto
             {
                 parallel::basic_split<T>(rank, size, offset, length);
             }
-
+            
+            YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,range,size_t,offset,size_t,length);
+            inline range(const context &ctx,const size_t n) throw() :
+            offset(1), length(n) { ctx.split<size_t>(offset,length); }
+            YOCTO_PAIR_END();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(context);

@@ -24,7 +24,7 @@ namespace yocto
         
         //! virtual interface
         virtual bool is_active() const throw() = 0;
-        virtual void free()      throw() = 0;
+        virtual void free()      throw()       = 0;
         
         //! Non virtual interface
         void release() throw();
