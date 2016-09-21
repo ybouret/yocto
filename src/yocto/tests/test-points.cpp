@@ -44,6 +44,8 @@ static inline void doPoints()
     std::cerr << p*q << std::endl;
 }
 
+#include "yocto/ios/ocstream.hpp"
+
 YOCTO_UNIT_TEST_IMPL(points)
 {
     doPoints< point2d<int>   >();
@@ -51,6 +53,42 @@ YOCTO_UNIT_TEST_IMPL(points)
 
     doPoints< point3d<int64_t>   >();
     doPoints< point3d<double>    >();
+
+
+    {
+        ios::wcstream fp("on_circle.dat");
+        for(size_t i=10+alea_lt(50);i>0;--i)
+        {
+            point2d<float>  pf = point2d<float> ::on_unit_circle(_rand);
+            point2d<double> pd = point2d<double>::on_unit_circle(_rand);
+            fp("%g %g\n", pf.x, pf.y );
+            fp("%g %g\n", pd.x, pd.y );
+        }
+    }
+
+    {
+        ios::wcstream fp("in_disk.dat");
+        for(size_t i=10+alea_lt(50);i>0;--i)
+        {
+            point2d<float>  pf = point2d<float> ::in_unit_disk(_rand);
+            point2d<double> pd = point2d<double>::in_unit_disk(_rand);
+            fp("%g %g\n", pf.x, pf.y );
+            fp("%g %g\n", pd.x, pd.y );
+        }
+    }
+
+
+    {
+        ios::wcstream fp("in_sphere.dat");
+        for(size_t i=10+alea_lt(50);i>0;--i)
+        {
+            point3d<float>  pf = point3d<float> ::on_unit_sphere(_rand);
+            point3d<double> pd = point3d<double>::on_unit_sphere(_rand);
+            fp("%g %g %g\n", pf.x, pf.y, pf.z);
+            fp("%g %g %g\n", pd.x, pd.y, pd.z);
+        }
+
+    }
 
 }
 YOCTO_UNIT_TEST_DONE()
