@@ -28,6 +28,9 @@ namespace yocto
         public:
             const size_t cores;
 
+            kernel_executor       & operator*() throw();
+            const kernel_executor & operator*() const throw();
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(vpu);
         };

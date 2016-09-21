@@ -54,7 +54,7 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(context);
             friend class crew;
-            void        *priv;
+            void        *priv; //!< used by crew setup
         };
 
         //! a threading kernel, using a context to know which data process
@@ -68,9 +68,11 @@ namespace yocto
 
             virtual ~kernel_executor() throw();
 
-            virtual void   operator()(kernel &) throw() = 0;
-            virtual size_t num_threads()  const throw() = 0;
-            
+            virtual void      operator()(kernel &) throw() = 0;
+            virtual size_t    num_threads()  const throw() = 0;
+            context &         operator[](const size_t rank) throw();
+            const context &   operator[](const size_t rank) const throw();
+
             template <typename OBJECT_POINTER,typename METHOD_POINTER>
             inline void call( OBJECT_POINTER h, METHOD_POINTER m )
             {
@@ -78,6 +80,8 @@ namespace yocto
                 kernel  k(h,m);
                 self(k);
             }
+
+
 
         protected:
             explicit kernel_executor() throw();
@@ -87,6 +91,7 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(kernel_executor);
+            virtual context *get_context(const size_t context_rank) const throw() = 0;
         };
 
         //! sequential executor, for debugging or single thread run
@@ -103,6 +108,7 @@ namespace yocto
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(sequential_executor);
+            virtual context *get_context(const size_t context_rank) const throw();
         };
 
 
@@ -137,6 +143,7 @@ namespace yocto
 
             static void worker_call(void *) throw();
             void        worker_loop(context &ctx) throw();
+            virtual context *get_context(const size_t context_rank) const throw();
 
         public:
             const size_t failure; //!< set to rank+1 if failure

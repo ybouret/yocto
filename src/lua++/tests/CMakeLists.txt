@@ -1,7 +1,7 @@
 
 FILE(GLOB test_srcs test-*.cpp)
 ADD_EXECUTABLE(test-lua++ main.cpp ${test_srcs} vec3.lua array.lua tables.lua)
-TARGET_LINK_YOCTO( test-lua++ lua++ lua )
+TARGET_LINK_YOCTO( test-lua++ lua++ )
 SET( HERE "${CMAKE_SOURCE_DIR}/lua++/tests" )
 
 ENABLE_TESTING()

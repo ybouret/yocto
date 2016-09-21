@@ -36,6 +36,18 @@ namespace yocto
         void kernel_executor:: no_failure() const throw() { (size_t&)failure = 0; }
         void kernel_executor:: set_failure(const size_t f) const throw() { (size_t&)failure = f; }
 
+
+        context & kernel_executor:: operator[](const size_t rank) throw()
+        {
+            return * get_context(rank);
+        }
+
+        const context & kernel_executor:: operator[](const size_t rank) const throw()
+        {
+            return * get_context(rank);
+        }
+
+
     }
 
 }
@@ -71,7 +83,12 @@ namespace yocto
 
         size_t sequential_executor:: num_threads() const throw() { return 1; }
         
-
+        context * sequential_executor:: get_context(const size_t context_rank) const throw()
+        {
+            assert(context_rank==0);
+            const context &ctx = *this;
+            return (context *)&ctx;
+        }
     }
 
 }
@@ -123,10 +140,18 @@ namespace yocto
         {
             return this->size;
         }
-        
+
+        context * crew:: get_context(const size_t context_rank) const throw()
+        {
+            assert(contexts.size==this->size);
+            assert(contexts.size>0);
+            assert(context_rank<contexts.size);
+            const context &ctx = contexts[context_rank];
+            return (context *)&ctx;
+        }
+
         void crew:: init()
         {
-
 
             try
             {

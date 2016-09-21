@@ -16,6 +16,15 @@ namespace yocto
         {
         }
 
+        kernel_executor & vpu:: operator*() throw()
+        {
+            return *simd;
+        }
+
+        const kernel_executor & vpu:: operator*() const throw()
+        {
+            return *simd;
+        }
 
     }
 }
