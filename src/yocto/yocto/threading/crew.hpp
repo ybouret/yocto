@@ -51,11 +51,18 @@ namespace yocto
             {
                 parallel::basic_split<T>(rank, size, offset, length);
             }
-            
+
+            //! example of data
             YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,range,size_t,offset,size_t,length);
             inline range(const context &ctx,const size_t n) throw() :
             offset(1), length(n) { ctx.split<size_t>(offset,length); }
             YOCTO_PAIR_END();
+
+            //! example of data creation
+            inline void create_range(const size_t n)
+            {
+                data.build<range,const context &,size_t>(*this,n);
+            }
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(context);
