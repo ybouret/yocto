@@ -120,8 +120,16 @@ namespace yocto
                 }
             }
         }
-        
-        
+
+        //! return in [-1:1], T=float|double
+        template <typename T>
+        inline T sym1() throw()
+        {
+            const T h = get<T>();
+            return  (h+h) - T(1);
+        }
+
+               
     protected:
         explicit urand32() throw();
         

@@ -102,6 +102,24 @@ namespace yocto
         inline const_type &operator[](const size_t indx) const throw() { assert(1==indx||2==indx||3==indx); return *((&x-1)+indx); }
 
 
+        // for T=float|double
+        static inline
+        point3d on_unit_sphere( urand32 &ran ) throw()
+        {
+            while(true)
+            {
+                const T x1 = ran.sym1<T>();
+                const T x2 = ran.sym1<T>();
+                const T r2 = (x1*x1) + (x2*x2);
+                if(r2>=1) continue;
+                const T s  = math::Sqrt(T(1)-r2);
+                const T hx = x1 * s;
+                const T hy = x2 * s;
+                return point3d(hx+hx,hy+hy,T(1)-(r2+r2));
+            }
+        }
+        
+
     };
     
     
