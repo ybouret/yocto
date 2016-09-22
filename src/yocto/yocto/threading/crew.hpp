@@ -17,7 +17,7 @@ namespace yocto
     {
 
         //! a context = range information for a working thread
-        class context
+        class context : public vslot
         {
         public:
             context(const size_t    the_rank,
@@ -29,7 +29,7 @@ namespace yocto
             const size_t size;   //!< how many contextes
             lockable    &access; //!< shared access
             const size_t indx;   //!< 1..size
-            vslot        data;   //!< for thread specific data
+            //vslot        data;   //!< for thread specific data
             
             //! splitting/using data
             /**
@@ -61,7 +61,7 @@ namespace yocto
             //! example of data creation
             inline void create_range(const size_t n)
             {
-                data.build<range,const context &,size_t>(*this,n);
+                build<range,const context &,size_t>(*this,n);
             }
 
         private:
