@@ -17,10 +17,10 @@ namespace yocto
         explicit basic_slot(size_t);
         
         
-        size_t                size() const throw(); //!< allocated bytes
-        const std::type_info *info() const throw(); //!< remind me of the type
-        const char  *         name() const throw(); //!< from info() or ""
-        uint32_t              hash() const throw();
+        size_t                bytes() const throw(); //!< allocated bytes
+        const std::type_info *info()  const throw(); //!< remind me of the type
+        const char  *         name()  const throw(); //!< from info() or ""
+        uint32_t              hash()  const throw();
         
         //! virtual interface
         virtual bool is_active() const throw() = 0;

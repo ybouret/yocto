@@ -57,7 +57,7 @@ namespace yocto
     }
     
     xslot:: xslot( const xslot &other ) :
-    basic_slot( other.size() ),
+    basic_slot( other.bytes() ),
     copy_(0)
     {
         if( other.is_active() )

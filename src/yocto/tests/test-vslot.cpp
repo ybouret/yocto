@@ -77,7 +77,7 @@ YOCTO_UNIT_TEST_DONE()
 
 #include "yocto/container/vslot.hpp"
 
-#define __SHOW(X) std::cerr << "name= <" << X.name() << ">/bytes=" << X.size() << std::endl
+#define __SHOW(X) std::cerr << "name= <" << X.name() << ">/bytes=" << X.bytes() << std::endl
 
 namespace
 {

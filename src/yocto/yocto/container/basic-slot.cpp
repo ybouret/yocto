@@ -34,10 +34,10 @@ kill_(0)
         assert(0==kill_);
     }
     
-    size_t                 basic_slot:: size() const throw() { return slot_.size; }
-    const std::type_info * basic_slot:: info() const throw() { return info_; }
-    const char *           basic_slot:: name() const throw() { return info_ ? info_->name() : ""; }
-    uint32_t               basic_slot:: hash() const throw() { return hash32(slot_.data,slot_.size); }
+    size_t                 basic_slot:: bytes() const throw() { return slot_.size; }
+    const std::type_info * basic_slot:: info()  const throw() { return info_; }
+    const char *           basic_slot:: name()  const throw() { return info_ ? info_->name() : ""; }
+    uint32_t               basic_slot:: hash()  const throw() { return hash32(slot_.data,slot_.size); }
 
 
     void basic_slot:: allocate(size_t n)
