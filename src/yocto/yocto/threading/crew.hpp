@@ -1,131 +1,21 @@
 #ifndef YOCTO_THREADING_CREW_INCLUDED
 #define YOCTO_THREADING_CREW_INCLUDED 1
 
-#include "yocto/threading/threads.hpp"
+#include "yocto/threading/kernel-executor.hpp"
 #include "yocto/threading/layout.hpp"
 #include "yocto/sequence/slots.hpp"
 #include "yocto/threading/condition.hpp"
 #include "yocto/functor.hpp"
-#include "yocto/parallel/basic.hpp"
-#include "yocto/counted-object.hpp"
-#include "yocto/container/vslot.hpp"
-#include "yocto/container/tuple.hpp"
 
 namespace yocto
 {
     namespace threading
     {
 
-        //! a context = range information for a working thread
-        class context : public vslot
-        {
-        public:
-            context(const size_t    the_rank,
-                    const size_t    the_size,
-                    lockable       &the_lock) throw();
-            virtual ~context() throw();
-
-            const size_t rank;   //!< 0..size-1
-            const size_t size;   //!< how many contextes
-            lockable    &access; //!< shared access
-            const size_t indx;   //!< 1..size
-            //vslot        data;   //!< for thread specific data
-            
-            //! splitting/using data
-            /**
-             - code example
-             size_t offset = 1;
-             size_t length = idata.size();
-             ctx.split(offset, length);
-             for(size_t i=offset,count=length;count-->0;++i)
-             {
-             // do something...
-             }
-             - or
-             #define DO_SOMETHING(I) process(I)
-             YOCTO_LOOP_FUNC(length,DO_SOMETHING,offset);
-             */
-
-            template <typename T> inline
-            void split(T &offset,T &length) const throw()
-            {
-                parallel::basic_split<T>(rank, size, offset, length);
-            }
-
-            //! example of data
-            YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,range,size_t,offset,size_t,length);
-            inline range(const context &ctx,const size_t n) throw() :
-            offset(1), length(n) { ctx.split<size_t>(offset,length); }
-            YOCTO_PAIR_END();
-
-            //! example of data creation
-            inline void create_range(const size_t n)
-            {
-                build<range,const context &,size_t>(*this,n);
-            }
-
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(context);
-            friend class crew;
-            void        *priv; //!< used by crew setup
-        };
-
-        //! a threading kernel, using a context to know which data process
-        typedef functor<void,TL1(context&)> kernel;
-
-        //! interface to execute a kernel
-        class kernel_executor : public counted_object
-        {
-        public:
-            const size_t failure;
-
-            virtual ~kernel_executor() throw();
-
-            virtual void      operator()(kernel &) throw() = 0;
-            virtual size_t    num_threads()  const throw() = 0;
-            context &         operator[](const size_t rank) throw();
-            const context &   operator[](const size_t rank) const throw();
-
-            template <typename OBJECT_POINTER,typename METHOD_POINTER>
-            inline void call( OBJECT_POINTER h, METHOD_POINTER m )
-            {
-                kernel_executor   &self = *this;
-                kernel  k(h,m);
-                self(k);
-            }
-
-
-
-        protected:
-            explicit kernel_executor() throw();
-
-            void no_failure() const throw();
-            void set_failure(size_t) const throw();
-
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(kernel_executor);
-            virtual context *get_context(const size_t context_rank) const throw() = 0;
-        };
-
-        //! sequential executor, for debugging or single thread run
-        class sequential_executor :
-        public kernel_executor,
-        public faked_lock,
-        public context
-        {
-        public:
-            virtual ~sequential_executor() throw();
-            explicit sequential_executor() throw();
-            virtual void  operator()(kernel &) throw();
-            virtual size_t num_threads() const throw();
-            
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(sequential_executor);
-            virtual context *get_context(const size_t context_rank) const throw();
-        };
-
-
+        //______________________________________________________________________
+        //
         //! a crew of threads, will call kernel on each context
+        //______________________________________________________________________
         class crew : public layout, public kernel_executor
         {
         public:

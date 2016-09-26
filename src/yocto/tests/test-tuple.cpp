@@ -28,7 +28,6 @@ YOCTO_PENTUPLE_END();
 YOCTO_SEXTUPLE_DECL(YOCTO_TUPLE_STANDARD,Sextuple,int,a,int, b, int, c, int,d,int,e,int,f);
 YOCTO_SEXTUPLE_END();
 
-//#define TEST_MACRO(ARG) do { ARG float x = alea<float>(); std::cerr << "rand=" << x << std::endl; } while(false)
 
 YOCTO_UNIT_TEST_IMPL(tuple)
 {
@@ -51,8 +50,6 @@ YOCTO_UNIT_TEST_IMPL(tuple)
     Qat Q2(Q1);
     std::cerr << "Q1=" << Q1 << std::endl;
     std::cerr << "Q1=" << Q2 << std::endl;
-    //TEST_MACRO();
-    //TEST_MACRO(const);
-    //TEST_MACRO(volatile);
+
 }
 YOCTO_UNIT_TEST_DONE()
