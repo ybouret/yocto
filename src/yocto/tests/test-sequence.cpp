@@ -152,6 +152,8 @@ namespace {
 	}
 }
 
+#include "yocto/container/manager.hpp"
+
 YOCTO_UNIT_TEST_IMPL(sequence)
 {
 	size_t n = 0;
@@ -167,10 +169,33 @@ YOCTO_UNIT_TEST_IMPL(sequence)
 	perform< list<string> >(n);
 	perform< list<dummy>  >(n); if( num_dummy != 0 ) throw exception("list: invalid dummy count");
 	
-	perform< vector<int>    >(n);
+    perform< vector<int>    >(n);
 	perform< vector<double> >(n);
 	perform< vector<string> >(n);
 	perform< vector<dummy>  >(n); if( num_dummy != 0 ) throw exception("vector: invalid dummy count");
 	perform< vector<int,memory::pooled::allocator>  >(n);
+
+    {
+        container_manager_for< sequence<double> > mgr;
+        vector<double> v;
+        list<double>   l;
+        mgr.enroll(v);
+        mgr.enroll(l);
+        mgr.free_all();
+        mgr.ensure_all(100);
+        mgr.release_all();
+    }
+
+    {
+        container_manager_for< vector<double> > mgr;
+        vector<double> v1;
+        vector<double> v2;
+        mgr.enroll(v1);
+        mgr.enroll(v2);
+        mgr.make_all(100);
+        mgr.release_all();
+    }
+
+
 }
 YOCTO_UNIT_TEST_DONE()
