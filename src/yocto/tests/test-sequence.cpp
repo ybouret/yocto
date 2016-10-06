@@ -176,26 +176,27 @@ YOCTO_UNIT_TEST_IMPL(sequence)
 	perform< vector<int,memory::pooled::allocator>  >(n);
 
     {
-        container_manager_for< sequence<double> > mgr;
+        container_manager_of< sequence<double> > mgr;
         vector<double> v;
         list<double>   l;
-        mgr.enroll(v);
-        mgr.enroll(l);
-        mgr.free_all();
-        mgr.ensure_all(100);
-        mgr.release_all();
+        mgr.enroll(v,1);
+        mgr.enroll(l,1);
+        mgr.free_all(1);
+        mgr.ensure_all(3,100);
+        mgr.release_all(1);
     }
 
     {
-        container_manager_for< vector<double> > mgr;
+        container_manager_of< vector<double> > mgr;
         vector<double> v1;
         vector<double> v2;
-        mgr.enroll(v1);
-        mgr.enroll(v2);
+        mgr.enroll(v1,1);
+        mgr.enroll(v2,2);
         mgr.make_all(100);
         mgr.release_all();
     }
 
+    std::cerr << "container_manager::num_groups=" << container_manager::num_groups << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()
