@@ -212,7 +212,7 @@ namespace yocto
     private:
         typedef addr_node<T> node_type;
         typedef addr_list<T> group;
-        
+
         group                groups[num_groups];
         
         YOCTO_DISABLE_COPY_AND_ASSIGN(container_manager_of);
