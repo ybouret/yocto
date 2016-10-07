@@ -37,7 +37,7 @@ namespace yocto
 
         }
 
-        // enroll a host in
+        // enroll a host in groups corresponding to mask
         inline void enroll( T &host, group_t group_mask )
         {
             group_mask = check_group(group_mask);
@@ -50,7 +50,9 @@ namespace yocto
             }
         }
 
-        // free all groups
+
+
+        //! free all groups
         inline void free_all() throw()
         {
             for(size_t i=0;i<num_groups;++i)
@@ -59,6 +61,7 @@ namespace yocto
             }
         }
 
+        //! free all groups corresponding to mask
         inline void free_all( group_t group_mask ) throw()
         {
             group_mask = check_group(group_mask);
@@ -72,6 +75,7 @@ namespace yocto
 
         }
 
+        //! release all groups
         inline void release_all() throw()
         {
             for(size_t i=0;i<num_groups;++i)
@@ -80,6 +84,7 @@ namespace yocto
             }
         }
 
+        //! release all groups corresponding to mask
         inline void release_all( group_t group_mask ) throw()
         {
             group_mask = check_group(group_mask);
