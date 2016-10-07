@@ -89,7 +89,12 @@ namespace yocto
 		inline float     Square( const complex<float>  &x ) throw() { return x.re * x.re + x.im * x.im; }
 		inline double    Square( const complex<double> &x ) throw() { return x.re * x.re + x.im * x.im; }
         inline ptrdiff_t Square( ptrdiff_t x ) throw() {return x*x; }
-		
+
+        inline float     Cube( float     x ) throw() { return x*x*x; }
+        inline double    Cube( double    x ) throw() { return x*x*x; }
+        inline ptrdiff_t Cube( ptrdiff_t x ) throw() { return x*x*x; }
+
+
 		inline float  Sqrt( float  x ) throw()  { return sqrtf( x ); }
 		inline double Sqrt( double x ) throw()  { return sqrt(  x );  }
 		
