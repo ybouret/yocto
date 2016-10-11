@@ -183,7 +183,9 @@ YOCTO_UNIT_TEST_IMPL(sequence)
         mgr.enroll(l,1);
         mgr.free_all(1);
         mgr.ensure_all(3,100);
+        mgr.ensure_all(120);
         mgr.release_all(1);
+        mgr.free_all();
     }
 
     {

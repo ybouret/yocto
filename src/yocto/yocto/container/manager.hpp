@@ -28,6 +28,8 @@ namespace yocto
     class container_manager_of : public container_manager
     {
     public:
+        typedef container_manager_of<T> self_type;
+
         inline explicit container_manager_of() throw() : container_manager()
         {
         }
@@ -37,7 +39,7 @@ namespace yocto
 
         }
 
-        // enroll a host in groups corresponding to mask
+        //! enroll a host in groups corresponding to mask
         inline void enroll( T &host, group_t group_mask )
         {
             group_mask = check_group(group_mask);
@@ -51,164 +53,60 @@ namespace yocto
         }
 
 
-
         //! free all groups
         inline void free_all() throw()
         {
-            for(size_t i=0;i<num_groups;++i)
-            {
-                __free_all(groups[i]);
-            }
+            __all_no_throw(__free_all);
         }
 
-        //! free all groups corresponding to mask
+        //! free all groups matching the mask
         inline void free_all( group_t group_mask ) throw()
         {
-            group_mask = check_group(group_mask);
-            for(size_t i=0;i<num_groups;++i)
-            {
-                if(belongs_to(i,group_mask))
-                {
-                    __free_all(groups[i]);
-                }
-            }
-
+            __all_no_throw(__free_all,group_mask);
         }
 
         //! release all groups
         inline void release_all() throw()
         {
-            for(size_t i=0;i<num_groups;++i)
-            {
-                __release_all(groups[i]);
-            }
+            __all_no_throw(__release_all);
         }
 
         //! release all groups corresponding to mask
         inline void release_all( group_t group_mask ) throw()
         {
-            group_mask = check_group(group_mask);
-            for(size_t i=0;i<num_groups;++i)
-            {
-                if(belongs_to(i,group_mask))
-                {
-                    __release_all(groups[i]);
-                }
-            }
-
+            __all_no_throw(__release_all,group_mask);
         }
 
         inline void ensure_all(size_t n)
         {
-            try
-            {
-                for(size_t i=0;i<num_groups;++i)
-                {
-                    __ensure_all(groups[i],n);
-                }
-            }
-            catch(...)
-            {
-                release_all();
-                throw;
-            }
+            __all(__ensure_all,n);
         }
 
         inline void ensure_all( group_t group_mask, const size_t n )
         {
-            try
-            {
-                group_mask = check_group(group_mask);
-                for(size_t i=0;i<num_groups;++i)
-                {
-                    if(belongs_to(i,group_mask))
-                    {
-                        __ensure_all(groups[i],n);
-                    }
-                }
-            }
-            catch(...)
-            {
-                release_all();
-                throw;
-            }
-
+            __all(__ensure_all,group_mask,n);
         }
 
 
         inline void reserve_all(size_t n)
         {
-            try
-            {
-                for(size_t i=0;i<num_groups;++i)
-                {
-                    __reserve_all(groups[i],n);
-                }
-            }
-            catch(...)
-            {
-                release_all();
-                throw;
-            }
+            __all(__reserve_all,n);
         }
 
         inline void reserve_all( group_t group_mask, const size_t n )
         {
-            try
-            {
-                group_mask = check_group(group_mask);
-                for(size_t i=0;i<num_groups;++i)
-                {
-                    if(belongs_to(i,group_mask))
-                    {
-                       __reserve_all(groups[i],n);
-                    }
-                }
-            }
-            catch(...)
-            {
-                release_all();
-                throw;
-            }
-
+            __all(__reserve_all,group_mask,n);
         }
         
 
         inline void make_all(size_t n)
         {
-            try
-            {
-                for(size_t i=0;i<num_groups;++i)
-                {
-                    __make_all(groups[i],n);
-                }
-            }
-            catch(...)
-            {
-                release_all();
-                throw;
-            }
+            __all(__make_all,n);
         }
 
         inline void make_all( group_t group_mask, const size_t n )
         {
-            try
-            {
-                group_mask = check_group(group_mask);
-                for(size_t i=0;i<num_groups;++i)
-                {
-                    if(belongs_to(i,group_mask))
-                    {
-                        __make_all(groups[i],n);
-                    }
-                }
-            }
-            catch(...)
-            {
-                release_all();
-                throw;
-            }
-
+            __all(__make_all,group_mask,n);
         }
         
 
@@ -221,6 +119,67 @@ namespace yocto
         group                groups[num_groups];
         
         YOCTO_DISABLE_COPY_AND_ASSIGN(container_manager_of);
+        template <typename PROC>
+        inline void __all_no_throw(const PROC proc) throw()
+        {
+            for(size_t i=0;i<num_groups;++i)
+            {
+                proc(groups[i]);
+            }
+        }
+
+        template <typename PROC>
+        inline void __all_no_throw(const PROC proc,group_t group_mask) throw()
+        {
+            group_mask = check_group(group_mask);
+            for(size_t i=0;i<num_groups;++i)
+            {
+                if(belongs_to(i,group_mask))
+                {
+                    proc(groups[i]);
+                }
+            }
+        }
+
+        template <typename PROC>
+        inline void __all(const PROC proc, const size_t n)
+        {
+            try
+            {
+                for(size_t i=0;i<num_groups;++i)
+                {
+                    proc(groups[i],n);
+                }
+            }
+            catch(...)
+            {
+                release_all();
+                throw;
+            }
+        }
+
+        template <typename PROC>
+        inline void __all(const PROC proc,group_t group_mask,const size_t n)
+        {
+            try
+            {
+                group_mask = check_group(group_mask);
+                for(size_t i=0;i<num_groups;++i)
+                {
+                    if(belongs_to(i,group_mask))
+                    {
+                        proc(groups[i],n);
+                    }
+                }
+            }
+            catch(...)
+            {
+                release_all();
+                throw;
+            }
+        }
+
+
         static inline void __free_all( group &g ) throw()
         {
             for(node_type *node=g.tail;node;node=node->prev)
