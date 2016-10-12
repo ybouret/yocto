@@ -28,7 +28,7 @@ namespace yocto
 			static void DoString( lua_State *L, const string &code );
 			static void DoString( lua_State *L, const char   *code );
 		};
-		
+
 	}
 }
 
