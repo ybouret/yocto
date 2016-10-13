@@ -51,6 +51,18 @@ namespace yocto
             ios::ocstream fp(filename,false);
             fp.flush();
         }
+
+        void ocstream:: echo(const string &filename, const char *format,...)
+        {
+            ios::acstream fp(filename);
+            assert(format);
+            va_list args;
+            va_start(args, format);
+            vfprintf(fp.handle, format, args);
+            va_end (args);
+            if( ferror(fp.handle) != 0 )
+                throw libc::exception( EIO, "ocstream::echo('%s',...)", format );
+        }
 		
 	}
 	
