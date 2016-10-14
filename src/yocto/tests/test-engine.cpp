@@ -23,16 +23,16 @@ namespace {
         inline ~Work() throw() {}
         inline  Work( const Work &w ) throw() : value( w.value ), sum(w.sum) {}
 
-        inline void operator()(lockable &access)
+        inline void operator()(context &ctx)
         {
             {
-                YOCTO_LOCK(access);
+                YOCTO_LOCK(ctx.access);
                 std::cerr << "Working @" << value << "..." << std::endl;
                 std::cerr.flush();
             }
             rand32_kiss r;
             {
-                YOCTO_LOCK(access);
+                YOCTO_LOCK(ctx.access);
                 r.wseed();
             }
             wtime chrono;
@@ -72,11 +72,11 @@ YOCTO_UNIT_TEST_IMPL(engine)
     chrono.start();
     // seq
     {
-        faked_lock access;
+        sequential_dispatcher seq;
         for(size_t i=1;i<=nj;++i)
         {
             Work w(i);
-            w(access);
+            w(seq[0]);
         }
     }
     const double tseq = chrono.query();

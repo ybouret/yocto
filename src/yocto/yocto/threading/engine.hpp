@@ -15,7 +15,7 @@ namespace yocto
     {
 
         typedef uint32_t                     job_id; //!< a unique id
-        typedef functor<void,TL1(lockable&)> job;    //!< a job to execute
+        typedef kernel                       job;    //!< a job to execute
 
         //______________________________________________________________________
         //
@@ -54,9 +54,9 @@ namespace yocto
 
                 inline ~jwrapper() throw() {}
 
-                inline void operator()( lockable &shared_lock )
+                inline void operator()( context &ctx )
                 {
-                    ((*host).*call)(data,shared_lock);
+                    ((*host).*call)(data,ctx);
                 }
 
             private:
@@ -93,7 +93,7 @@ namespace yocto
             virtual job_id enqueue(const job &J);
             virtual void   flush();
             virtual size_t num_threads() const throw();
-            virtual context & operator[](const size_t) throw();
+            virtual context &       operator[](const size_t) throw();
             virtual const context & operator[](const size_t) const throw();
 
         private:
@@ -112,7 +112,7 @@ namespace yocto
             explicit engine(bool setVerbose);
 
             //! user tailored settings
-            explicit engine(const size_t num_threads, const size_t threads_offset,bool setVerbose);
+            explicit engine(const size_t user_num_threads, const size_t user_threads_offset,bool setVerbose);
             virtual ~engine() throw();
 
             //! execute a job
@@ -123,7 +123,7 @@ namespace yocto
 
             //! this->size
             virtual size_t num_threads() const throw();
-            virtual context & operator[](const size_t) throw();
+            virtual context &       operator[](const size_t) throw();
             virtual const context & operator[](const size_t) const throw();
 
 

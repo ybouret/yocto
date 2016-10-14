@@ -35,7 +35,7 @@ namespace yocto
         job_id sequential_dispatcher:: enqueue(const job &J)
         {
             job run(J);
-            run(access);
+            run(ctx);
             return ++juuid;
         }
 
@@ -101,7 +101,7 @@ more_work(),                      \
 work_done(),                      \
 completed(),                      \
 access(workers.access),           \
-contexts(),                       \
+contexts(size),                   \
 dying(false),                     \
 tasks(),                          \
 pending(tasks.size),              \
@@ -118,8 +118,8 @@ failed(0)
             init();
         }
         
-        engine:: engine(const size_t num_threads, const size_t threads_offset, bool setVerbose) :
-        layout(num_threads,threads_offset,setVerbose),
+        engine:: engine(const size_t user_num_threads, const size_t user_threads_offset, bool setVerbose) :
+        layout(user_num_threads,user_threads_offset,setVerbose),
         Y_THREADING_ENGINE_CTOR()
         {
             init();
@@ -403,6 +403,11 @@ namespace yocto
             //
             //__________________________________________________________________
             const int thread_name = workers.get_index_of( thread::get_current_id() );
+            if(thread_name<0||thread_name>=int(size))
+            {
+                abort();
+            }
+            context &ctx = contexts[thread_name];
             access.lock();
             ++(size_t&)ready;
             if(verbose) std::cerr << "[engine] Worker ID=" << thread_name << std::endl;
@@ -440,7 +445,7 @@ namespace yocto
                 const job_id J = todo->uuid;
                 try
                 {
-                    todo->work(access);         // do the job, UNLOCKED...
+                    todo->work(ctx);         // do the job, UNLOCKED...
                 }
                 catch(...)
                 {
