@@ -27,7 +27,7 @@ namespace yocto
             threading::job_id jid;       //!< last job ID
 
             
-            //! enqueue a method(xpatch&,lockable&)
+            //! enqueue a method(xpatch&,threading::context&)
             template <
             typename OBJECT_POINTER,
             typename METHOD_POINTER>
@@ -37,7 +37,7 @@ namespace yocto
             {
                 assert(host);
                 assert(method);
-                jid = server->enqueue2<OBJECT_POINTER,METHOD_POINTER,xpatch>(host,method,*this);
+                jid = server->enqueue_shared<OBJECT_POINTER,METHOD_POINTER,xpatch>(*this,host,method);
             }
 
 

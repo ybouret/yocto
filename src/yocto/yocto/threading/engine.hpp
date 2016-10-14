@@ -33,26 +33,26 @@ namespace yocto
             virtual const context & operator[](const size_t) const throw() = 0;
 
 
-            //! wrapper for single instruction, multiple data
+            //! wrapper for single instruction on shared data
             /**
-             METHOD_POINTER(T &,lockable &)
+             METHOD_POINTER(T &, context &)
              */
             template <
             typename OBJECT_POINTER,
             typename METHOD_POINTER,
             typename T
             >
-            class jwrapper
+            class jshared
             {
             public:
 
-                inline jwrapper(OBJECT_POINTER h, METHOD_POINTER c, T &d ) throw() :
+                inline jshared(OBJECT_POINTER h, METHOD_POINTER c, T &d ) throw() :
                 host(h), call(c), data(d) {}
 
-                inline jwrapper(const jwrapper &other) throw() :
+                inline jshared(const jshared &other) throw() :
                 host(other.host), call(other.call), data(other.data) {}
 
-                inline ~jwrapper() throw() {}
+                inline ~jshared() throw() {}
 
                 inline void operator()( context &ctx )
                 {
@@ -63,14 +63,57 @@ namespace yocto
                 OBJECT_POINTER host;
                 METHOD_POINTER call;
                 T             &data;
-                YOCTO_DISABLE_ASSIGN(jwrapper);
+                YOCTO_DISABLE_ASSIGN(jshared);
             };
 
+
             template <typename OBJECT_POINTER,typename METHOD_POINTER,typename T> inline
-            job_id enqueue2(OBJECT_POINTER host, METHOD_POINTER method, T &data)
+            job_id enqueue_shared(T &data, OBJECT_POINTER host, METHOD_POINTER method)
             {
-                const jwrapper<OBJECT_POINTER,METHOD_POINTER,T> jw(host,method,data);
-                const job   J(jw);
+                const jshared<OBJECT_POINTER,METHOD_POINTER,T> js(host,method,data);
+                const job   J(js);
+                return enqueue(J);
+            }
+
+            //! wrapper for single instruction and partial copy data
+            /**
+             METHOD_POINTER(T &, context &)
+             */
+            template <
+            typename OBJECT_POINTER,
+            typename METHOD_POINTER,
+            typename T
+            >
+            class jcopy
+            {
+            public:
+
+                inline jcopy(OBJECT_POINTER h, METHOD_POINTER c, const T &d ) throw() :
+                host(h), call(c), data(d) {}
+
+                inline jcopy(const jcopy &other) throw() :
+                host(other.host), call(other.call), data(other.data) {}
+
+                inline ~jcopy() throw() {}
+
+                inline void operator()( context &ctx )
+                {
+                    ((*host).*call)(data,ctx);
+                }
+
+            private:
+                OBJECT_POINTER host;
+                METHOD_POINTER call;
+                const T        data;
+                YOCTO_DISABLE_ASSIGN(jcopy);
+            };
+
+
+            template <typename OBJECT_POINTER,typename METHOD_POINTER,typename T> inline
+            job_id enqueue_copy(const T &data, OBJECT_POINTER host, METHOD_POINTER method)
+            {
+                const jcopy<OBJECT_POINTER,METHOD_POINTER,T> jc(host,method,data);
+                const job   J(jc);
                 return enqueue(J);
             }
 
