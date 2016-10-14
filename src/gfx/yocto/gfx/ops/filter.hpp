@@ -153,8 +153,8 @@ namespace yocto
             pixmap<T>       *tgt;
             const pixmap<T> *src;
 
-            inline void run(xpatch   &xp,
-                            lockable & ) throw()
+            inline void run(xpatch             &xp,
+                            threading::context & ) throw()
             {
                 assert(tgt);
                 assert(src);

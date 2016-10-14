@@ -68,7 +68,7 @@ namespace yocto
             const void *rhs;
 
             template <typename T> inline
-            void run1( xpatch &xp, lockable & ) throw()
+            void run1( xpatch &xp, threading::context & ) throw()
             {
                 assert(lhs);
                 const unit_t     ymin = xp.lower.y;
@@ -90,7 +90,7 @@ namespace yocto
             }
 
             template <typename T> inline
-            void run2( xpatch &xp, lockable & ) throw()
+            void run2( xpatch &xp, threading::context & ) throw()
             {
                 assert(lhs);
                 assert(rhs);

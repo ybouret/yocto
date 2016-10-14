@@ -159,7 +159,7 @@ namespace yocto
 
         private:
             template <typename COLOR,typename T,size_t NCH>
-            inline void initialize( xpatch &xp, lockable & ) throw()
+            inline void initialize( xpatch &xp, threading::context & ) throw()
             {
                 assert(tgt);
                 assert(src);
@@ -298,7 +298,7 @@ namespace yocto
             }
 
             template <typename COLOR,typename T,size_t NCH>
-            inline void update_g( xpatch &xp, lockable & ) throw()
+            inline void update_g( xpatch &xp, threading::context & ) throw()
             {
                 assert(tgt);
                 assert(src);
@@ -329,7 +329,7 @@ namespace yocto
             }
 
             template <typename COLOR,typename T,size_t NCH>
-            inline void update_l( xpatch &xp, lockable & ) throw()
+            inline void update_l( xpatch &xp, threading::context & ) throw()
             {
                 assert(tgt);
                 assert(src);

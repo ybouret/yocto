@@ -99,7 +99,7 @@ namespace yocto
             
             //! build intensity by patch
             template <typename T>
-            inline void build(xpatch &xp, lockable &) throw()
+            inline void build(xpatch &xp, threading::context &) throw()
             {
                 assert(src);
                 assert(ddx);
@@ -159,9 +159,9 @@ namespace yocto
                 xp.as<float>() = localGmax;
             }
 
-            void normalize(xpatch &xp, lockable &) throw();
-            void non_maxima_suppress(xpatch &xp, lockable &) throw();
-            void apply_thresholds(xpatch &xp, lockable &) throw();
+            void normalize(xpatch &xp, threading::context &) throw();
+            void non_maxima_suppress(xpatch &xp, threading::context &) throw();
+            void apply_thresholds(xpatch &xp, threading::context &) throw();
         };
 
     }

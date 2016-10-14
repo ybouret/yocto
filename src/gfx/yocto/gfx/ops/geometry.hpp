@@ -57,7 +57,7 @@ namespace yocto
             float       crg;
 
             template <typename T>
-            inline void __rotate( xpatch &xp, lockable & ) throw()
+            inline void __rotate( xpatch &xp, threading::context & ) throw()
             {
                 assert(tgt);
                 assert(src);
@@ -95,7 +95,7 @@ namespace yocto
 
 
             template <typename T>
-            inline void __symline( xpatch &xp, lockable & ) throw()
+            inline void __symline( xpatch &xp, threading::context & ) throw()
             {
                 assert(tgt);
                 assert(src);

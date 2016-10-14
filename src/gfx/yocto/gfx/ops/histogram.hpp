@@ -85,7 +85,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(Histogram);
             const void *src;
             template <typename T>
-            inline void update_cb( xpatch &xp, lockable & ) throw()
+            inline void update_cb( xpatch &xp, threading::context & ) throw()
             {
                 assert(src);
                 const pixmap<T> &pxm = *static_cast< const pixmap<T> * >(src);

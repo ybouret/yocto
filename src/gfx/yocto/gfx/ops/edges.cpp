@@ -26,7 +26,7 @@ namespace yocto
         {
         }
 
-        void EdgeDetector::normalize(xpatch &xp, lockable & ) throw()
+        void EdgeDetector::normalize(xpatch &xp, threading::context & ) throw()
         {
             assert(Gmax>0);
             pixmap<float> &G   = *this;
@@ -137,7 +137,7 @@ namespace yocto
         }
 
 
-        void EdgeDetector:: non_maxima_suppress(xpatch &xp,  lockable &access) throw()
+        void EdgeDetector:: non_maxima_suppress(xpatch &xp,  threading::context &) throw()
         {
             assert(Gmax>0);
             pixmap<float> &G   = *this;
@@ -194,7 +194,7 @@ namespace yocto
         }
 
 
-        void EdgeDetector:: apply_thresholds(xpatch &xp, lockable &access) throw()
+        void EdgeDetector:: apply_thresholds(xpatch &xp, threading::context &) throw()
         {
             for(unit_t y=xp.upper.y;y>=xp.lower.y;--y)
             {

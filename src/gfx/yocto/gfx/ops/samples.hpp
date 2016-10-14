@@ -48,7 +48,7 @@ namespace yocto
             void       *tgt;
             const void *src;
 
-            inline void __split( xpatch &xp, lockable & ) throw()
+            inline void __split( xpatch &xp, threading::context & ) throw()
             {
                 assert(tgt);
                 assert(src);
@@ -78,7 +78,7 @@ namespace yocto
             }
 
 
-            inline void __merge( xpatch &xp, lockable & ) throw()
+            inline void __merge( xpatch &xp, threading::context & ) throw()
             {
                 assert(tgt);
                 assert(src);

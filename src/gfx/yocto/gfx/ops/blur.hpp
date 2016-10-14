@@ -74,7 +74,7 @@ namespace yocto
 
 
             template <typename T, typename U, size_t NCH>
-            inline void eval( xpatch &xp, lockable & ) throw()
+            inline void eval( xpatch &xp, threading::context & ) throw()
             {
                 assert(target);
                 assert(source);

@@ -150,7 +150,7 @@ sum += v0*msk.weight
             //! raw computation
             //__________________________________________________________________
             template <typename T,typename U>
-            inline void run( xpatch &xp, lockable & ) throw()
+            inline void run( xpatch &xp, threading::context & ) throw()
             {
                 assert(tgt);
                 assert(src);
@@ -184,7 +184,7 @@ sum += v0*msk.weight
             //! raw computation, NCH channels
             //__________________________________________________________________
             template <typename T,typename U,size_t NCH>
-            inline void collect( xpatch &xp, lockable & ) throw()
+            inline void collect( xpatch &xp, threading::context & ) throw()
             {
                 assert(tgt);
                 assert(src);
@@ -271,7 +271,7 @@ sum += v0*msk.weight
             //! use for not-rescaling stencils
             //__________________________________________________________________
             template <typename T,typename U,size_t NCH>
-            inline void transfer( xpatch &xp, lockable & ) throw()
+            inline void transfer( xpatch &xp, threading::context & ) throw()
             {
                 static const float scale      = float(pixel<U>::opaque);
                 static const float resolution = 255.0f * scale;
@@ -299,7 +299,7 @@ sum += v0*msk.weight
             //! use for rescaling stencils
             //__________________________________________________________________
             template <typename T,typename U,size_t NCH>
-            inline void expand( xpatch &xp, lockable & ) throw()
+            inline void expand( xpatch &xp, threading::context & ) throw()
             {
                 static const float scale      = float(pixel<U>::opaque);
                 static const float resolution = 255.0f * scale;
