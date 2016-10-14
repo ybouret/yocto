@@ -3,14 +3,12 @@
 
 #include "yocto/threading/context.hpp"
 #include "yocto/counted-object.hpp"
-#include "yocto/functor.hpp"
 
 namespace yocto
 {
     namespace threading
     {
-        //! a threading kernel, using a context to know which data process
-        typedef functor<void,TL1(context&)> kernel;
+       
 
         //! interface to execute a kernel
         class kernel_executor : public counted_object

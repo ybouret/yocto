@@ -4,8 +4,10 @@
 #include "yocto/threading/threads.hpp"
 #include "yocto/threading/condition.hpp"
 #include "yocto/threading/layout.hpp"
+#include "yocto/threading/context.hpp"
 #include "yocto/counted-object.hpp"
 #include "yocto/functor.hpp"
+#include "yocto/sequence/slots.hpp"
 
 namespace yocto
 {
@@ -15,7 +17,10 @@ namespace yocto
         typedef uint32_t                     job_id; //!< a unique id
         typedef functor<void,TL1(lockable&)> job;    //!< a job to execute
 
+        //______________________________________________________________________
+        //
         //! interface class: job dispatcher
+        //______________________________________________________________________
         class dispatcher : public counted_object
         {
         public:
@@ -23,7 +28,9 @@ namespace yocto
 
             virtual job_id enqueue(const job &J ) = 0;
             virtual void   flush()                = 0;
-            virtual size_t levels() const throw() = 0;
+            virtual size_t num_threads() const throw() = 0;
+            virtual context & operator[](const size_t) throw() = 0;
+            virtual const context & operator[](const size_t) const throw() = 0;
 
 
             //! wrapper for single instruction, multiple data
@@ -85,10 +92,13 @@ namespace yocto
 
             virtual job_id enqueue(const job &J);
             virtual void   flush();
-            virtual size_t levels() const throw();
+            virtual size_t num_threads() const throw();
+            virtual context & operator[](const size_t) throw();
+            virtual const context & operator[](const size_t) const throw();
 
         private:
             faked_lock access;
+            context    ctx;
             job_id     juuid;
             YOCTO_DISABLE_COPY_AND_ASSIGN(sequential_dispatcher);
         };
@@ -112,7 +122,10 @@ namespace yocto
             virtual void    flush() throw();
 
             //! this->size
-            virtual size_t levels() const throw();
+            virtual size_t num_threads() const throw();
+            virtual context & operator[](const size_t) throw();
+            virtual const context & operator[](const size_t) const throw();
+
 
         private:
             threads   workers;    //!< list of threads, layout.size+1
@@ -124,7 +137,8 @@ namespace yocto
             mutex &access;        //!< workers.access
             
         private:
-            const bool dying; //!< internal flag to quit properly
+            slots_of<context> contexts;
+            const bool        dying; //!< internal flag to quit properly
 
             //! internal linked list of tasks
             class task

@@ -21,7 +21,9 @@ namespace yocto
 {
     namespace threading
     {
-        sequential_dispatcher:: sequential_dispatcher() throw() : access(),
+        sequential_dispatcher:: sequential_dispatcher() throw() :
+        access(),
+        ctx(0,1,access),
         juuid(0)
         {
         }
@@ -42,10 +44,23 @@ namespace yocto
             
         }
 
-        size_t sequential_dispatcher:: levels() const throw()
+        size_t sequential_dispatcher:: num_threads() const throw()
         {
             return 1;
         }
+
+        context & sequential_dispatcher:: operator[](const size_t i) throw()
+        {
+            assert(i<1);
+            return ctx;
+        }
+
+        const context & sequential_dispatcher:: operator[](const size_t i) const throw()
+        {
+            assert(i<1);
+            return ctx;
+        }
+
     }
     
 }
@@ -86,6 +101,7 @@ more_work(),                      \
 work_done(),                      \
 completed(),                      \
 access(workers.access),           \
+contexts(),                       \
 dying(false),                     \
 tasks(),                          \
 pending(tasks.size),              \
@@ -115,7 +131,7 @@ failed(0)
             quit();
         }
         
-        size_t engine:: levels() const throw()
+        size_t engine:: num_threads() const throw()
         {
             return size;
         }
@@ -131,7 +147,16 @@ failed(0)
             
             try
             {
-                
+
+                //______________________________________________________________
+                //
+                // prepare all contexts
+                //______________________________________________________________
+                for(size_t i=0;i<size;++i)
+                {
+                    contexts.append<size_t,size_t,lockable&>(i,size,access);
+                }
+
                 //______________________________________________________________
                 //
                 // prepare all worker threads:0..size-1
@@ -279,6 +304,19 @@ failed(0)
             assert(args);
             static_cast<engine *>(args)->master_loop();
         }
+
+        context & engine:: operator[](const size_t i) throw()
+        {
+            assert(i<num_threads());
+            return contexts[i];
+        }
+
+        const context & engine:: operator[](const size_t i) const throw()
+        {
+            assert(i<num_threads());
+            return contexts[i];
+        }
+
     }
     
 }

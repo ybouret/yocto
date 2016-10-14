@@ -5,6 +5,7 @@
 #include "yocto/container/vslot.hpp"
 #include "yocto/container/tuple.hpp"
 #include "yocto/threading/threads.hpp"
+#include "yocto/functor.hpp"
 
 namespace yocto
 {
@@ -75,6 +76,9 @@ namespace yocto
         }
 
         YOCTO_TRIPLE_END();
+
+        //! a threading kernel, using a context to know which data process
+        typedef functor<void,TL1(context&)> kernel;
 
     }
 }
