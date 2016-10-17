@@ -1,13 +1,8 @@
+INCLUDE(../../share/visit.cmake)
 
-SET( VISIT $ENV{VISIT} )
-MESSAGE( STATUS "VISIT=${VISIT}" )
+IF(VISIT_FOUND)
 
-IF( "" STREQUAL "${VISIT}" )
-	MESSAGE("No VisIt interface found" )
-ELSE()
-	MESSAGE("Building VisIt interface" )
-	INCLUDE_DIRECTORIES( . ../yocto )
-	INCLUDE_DIRECTORIES( ${VISIT}/libsim/V2/include )
+	INCLUDE_DIRECTORIES( . ../yocto ../mpi )
 
 	FILE(GLOB decl yocto/visit/*.hpp)
 	FILE(GLOB impl yocto/visit/*.cpp)
@@ -23,5 +18,5 @@ ELSE()
 		ADD_SUBDIRECTORY(tests)
 	ENDIF()
 
-ENDIF()
+ENDIF(VISIT_FOUND)
 
