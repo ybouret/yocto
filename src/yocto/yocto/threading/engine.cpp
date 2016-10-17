@@ -1,5 +1,6 @@
 #include "yocto/threading/engine.hpp"
 #include <iostream>
+#include <cstdlib>
 
 namespace yocto
 {
