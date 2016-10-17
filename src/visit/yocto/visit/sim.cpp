@@ -28,22 +28,23 @@ namespace yocto
 
     VisIt & VisIt:: Start(const string &sim_name,
                           const string &sim_comm,
-                          const mpi &MPI)
+                          const mpi    &usrMPI)
     {
         YOCTO_LOCK(access);
         __sim_name = sim_name.c_str();
         __sim_comm = sim_comm.c_str();
-        __MPI      = &MPI;
+        __MPI      = &usrMPI;
         return VisIt::instance();
     }
 
     VisIt:: VisIt() :
+    MPI(*__MPI),
     cycle(0),
     time(0),
-    runMode(0),
+    runMode(VISIT_SIMMODE_STOPPED),
     done(0),
-    par_rank(__MPI->CommWorldRank),
-    par_size(__MPI->CommWorldSize),
+    par_rank(MPI.CommWorldRank),
+    par_size(MPI.CommWorldSize),
     parallel(par_size>1),
     par_main(0==par_rank)
     {
@@ -51,6 +52,7 @@ namespace yocto
         //
         // preparing visit
         //______________________________________________________________________
+        MPI.Printf(stderr, "Visit Setup on %d.%d\n",par_size,par_rank);
         VisItSetupEnvironment();
         VisItSetBroadcastIntFunction(visit_broadcast_int_callback);
         VisItSetBroadcastStringFunction(visit_broadcast_string_callback);
@@ -67,8 +69,8 @@ namespace yocto
                                                 NULL  // absolute path
                                                 );
         }
-        
 
+        
     }
 
 }

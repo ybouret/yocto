@@ -11,6 +11,7 @@ namespace yocto
     class VisIt : public singleton<VisIt>
     {
     public:
+        const mpi   &MPI;
         int          cycle;
         double       time;
         int          runMode;
@@ -22,7 +23,7 @@ namespace yocto
 
         static VisIt &Start(const string &sim_name,
                             const string &sim_comment,
-                            const mpi    &MPI);
+                            const mpi    &usrMPI);
 
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(VisIt);
