@@ -247,6 +247,10 @@ MACRO(TARGET_LINK_YOCTO tgt)
 				LIST( APPEND ylibs "y-mk" )
 			ENDIF()
 			
+			IF( "visit" STREQUAL ${extra} )
+				LIST( APPEND ylibs "y-mpi" )
+			ENDIF()
+			
 	ENDFOREACH(extra)
 	LIST(APPEND ylibs yocto)
 	
