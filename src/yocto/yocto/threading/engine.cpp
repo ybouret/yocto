@@ -17,6 +17,20 @@ namespace yocto
     }
 
 }
+namespace yocto
+{
+    namespace threading
+    {
+        job_batch::  job_batch() throw() {}
+        job_batch:: ~job_batch() throw() {}
+    }
+    
+}
+
+
+
+
+
 
 namespace yocto
 {
@@ -439,7 +453,8 @@ namespace yocto
             
             if(pending>0)
             {
-                
+                std::cerr << "[engine] Worker ID=" << thread_name << " take one job out of " << pending << std::endl;
+
                 task *todo = tasks.pop_front(); // extract next task
                 activ.push_back(todo);          // set it in active state
                 access.unlock();                // other threads can run
@@ -499,7 +514,34 @@ namespace yocto
             try { new(t) task(juuid,J); } catch(...) { tpool.store(t); throw; }
             YOCTO_THREAD_ENGINE_ENQUEUE_EPILOG();
         }
-        
+
+        void engine:: enqueue_batch( const job_batch &jobs )
+        {
+            YOCTO_LOCK(access);
+            const size_t n = jobs.size();
+            job_batch::const_iterator j = jobs.begin();
+            for(size_t i=1;i<=n;++i,++j)
+            {
+                task *t = query_task();
+                try { new (t) task(juuid,*j); }
+                catch(...)
+                {
+                    tpool.store(t);
+                    if(i>1)
+                    {
+                        more_work.signal();
+                    }
+                    throw;
+                }
+                tasks.push_back(t);
+                ++juuid;
+            }
+            if(n>0)
+            {
+                more_work.signal();
+            }
+        }
+
         //! wait until all jobs are done
         void engine:: flush() throw()
         {

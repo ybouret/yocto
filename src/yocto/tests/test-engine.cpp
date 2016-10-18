@@ -102,6 +102,27 @@ YOCTO_UNIT_TEST_IMPL(engine)
         std::cerr << "\t (*) ratio      = " << tseq/tpar << std::endl;
         std::cerr << "\t (*) efficiency = " << (100.0*tseq)/(Q.size*tpar) << "%" << std::endl;
     }
+
+    std::cerr << "create  batch..." << std::endl;
+    job_batch jbatch;
+    chrono.start();
+    for(size_t i=1;i<=nj;++i)
+    {
+        const Work w(i);
+        jbatch.push_back(w);
+    }
+    std::cerr << "enqueuing batch..." << std::endl;
+    Q.enqueue_batch(jbatch);
+    std::cerr << "done..." << std::endl;
+    Q.flush();
+    const double tpar2 = chrono.query();
+    {
+        YOCTO_LOCK(Q.access);
+        std::cerr << "\t (*) tpar2      = " << tpar2      << std::endl;
+        std::cerr << "\t (*) ratio      = " << tseq/tpar2 << std::endl;
+        std::cerr << "\t (*) efficiency = " << (100.0*tseq)/(Q.size*tpar2) << "%" << std::endl;
+    }
+
     {
         YOCTO_LOCK(Q.access);
         std::cerr << "\t---- Program is quiting ----" << std::endl;

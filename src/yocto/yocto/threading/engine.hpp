@@ -8,6 +8,7 @@
 #include "yocto/counted-object.hpp"
 #include "yocto/functor.hpp"
 #include "yocto/sequence/slots.hpp"
+#include "yocto/sequence/list.hpp"
 
 namespace yocto
 {
@@ -17,9 +18,13 @@ namespace yocto
         typedef uint32_t                     job_id; //!< a unique id
         typedef kernel                       job;    //!< a job to execute
 
+
+
         //______________________________________________________________________
         //
+        //
         //! interface class: job dispatcher
+        //
         //______________________________________________________________________
         class dispatcher : public counted_object
         {
@@ -33,10 +38,13 @@ namespace yocto
             virtual const context & operator[](const size_t) const throw() = 0;
 
 
+            //__________________________________________________________________
+            //
             //! wrapper for single instruction on shared data
             /**
              METHOD_POINTER(T &, context &)
              */
+            //__________________________________________________________________
             template <
             typename OBJECT_POINTER,
             typename METHOD_POINTER,
@@ -75,10 +83,13 @@ namespace yocto
                 return enqueue(J);
             }
 
+            //__________________________________________________________________
+            //
             //! wrapper for single instruction and partial copy data
             /**
              METHOD_POINTER(T &, context &)
              */
+            //__________________________________________________________________
             template <
             typename OBJECT_POINTER,
             typename METHOD_POINTER,
@@ -125,8 +136,49 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(dispatcher);
         };
 
-        
+        //______________________________________________________________________
+        //
+        //! batch of jobs
+        //______________________________________________________________________
+        class job_batch : public list<job>
+        {
+        public:
+            virtual ~job_batch() throw();
+            explicit job_batch() throw();
+
+            template <typename OBJECT_POINTER, typename METHOD_POINTER>
+            inline void append(OBJECT_POINTER host, METHOD_POINTER method)
+            {
+                const job J(host,method);
+                push_back(J);
+            }
+
+            template <typename OBJECT_POINTER,typename METHOD_POINTER,typename T>
+            void append_shared(T &data, OBJECT_POINTER host, METHOD_POINTER method)
+            {
+                const dispatcher::jshared<OBJECT_POINTER,METHOD_POINTER,T> js(host,method,data);
+                const job   J(js);
+                push_back(J);
+            }
+
+            template <typename OBJECT_POINTER,typename METHOD_POINTER,typename T> inline
+            void append_copy(const T &data, OBJECT_POINTER host, METHOD_POINTER method)
+            {
+                const dispatcher::jcopy<OBJECT_POINTER,METHOD_POINTER,T> jc(host,method,data);
+                const job   J(jc);
+                push_back(J);
+            }
+
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(job_batch);
+        };
+
+
+        //______________________________________________________________________
+        //
         //! failsafe sequential dispatcher
+        //______________________________________________________________________
         class sequential_dispatcher : public dispatcher
         {
         public:
@@ -147,7 +199,10 @@ namespace yocto
         };
 
 
+        //______________________________________________________________________
+        //
         //! manage a given number of threads
+        //______________________________________________________________________
         class engine : public layout, public dispatcher
         {
         public:
@@ -160,6 +215,9 @@ namespace yocto
 
             //! execute a job
             virtual job_id enqueue( const job &J );
+
+            //! enqueue all jobs
+            void enqueue_batch( const job_batch &jobs );
 
             //! wait until all jobs are done
             virtual void    flush() throw();
@@ -206,7 +264,7 @@ namespace yocto
             };
 
             core::list_of<task> tasks;   //!< tasks to process
-            const size_t       &pending; //!< task.size
+            const size_t       &pending; //!< tasks.size
             core::list_of<task> activ;   //!< running tasks
             const size_t       &running; //!< activ.size
             core::pool_of<task> tpool;   //!< pool of dangling tasks
