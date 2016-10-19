@@ -69,7 +69,10 @@ namespace yocto
             void        *priv; //!< used by crew setup
         };
 
-
+        //______________________________________________________________________
+        //
+        //! a supply of contexts for working threads
+        //______________________________________________________________________
         class context_supply : public slots_of<context>
         {
         public:
@@ -79,6 +82,10 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(context_supply);
         };
+
+        
+
+
 
         //! a threading kernel, using a context to know which data to process
         typedef functor<void,TL1(context&)> kernel;
