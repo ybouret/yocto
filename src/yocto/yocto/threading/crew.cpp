@@ -16,7 +16,7 @@ dying(false),                   \
 kproc(0),                       \
 cycle(),                        \
 synch(),                        \
-contexts(size),                 \
+contexts(size,access),          \
 failure(0)
 
         crew:: crew(bool setVerbose) : layout(setVerbose),
@@ -74,8 +74,7 @@ namespace yocto
                 //______________________________________________________________
                 for(size_t rank=0;rank<size;++rank)
                 {
-                    //-- build context
-                    contexts.append<size_t,size_t,lockable&>(rank,size,access);
+                    //-- use context to launch thread...
                     context &ctx = contexts[rank];
                     ctx.priv = this;
 

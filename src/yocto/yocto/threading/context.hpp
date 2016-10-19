@@ -3,6 +3,7 @@
 
 #include "yocto/parallel/basic.hpp"
 #include "yocto/container/vslot.hpp"
+#include "yocto/sequence/slots.hpp"
 #include "yocto/container/tuple.hpp"
 #include "yocto/threading/threads.hpp"
 #include "yocto/functor.hpp"
@@ -11,7 +12,11 @@ namespace yocto
 {
     namespace threading
     {
+
+        //______________________________________________________________________
+        //
         //! a context = range information for a working thread
+        //______________________________________________________________________
         class context : public vslot
         {
         public:
@@ -24,7 +29,6 @@ namespace yocto
             const size_t size;   //!< how many contextes
             lockable    &access; //!< shared access
             const size_t indx;   //!< 1..size
-            //vslot        data;   //!< for thread specific data
 
             //! splitting/using data
             /**
@@ -65,19 +69,18 @@ namespace yocto
             void        *priv; //!< used by crew setup
         };
 
-        template<typename ARRAY>
-        YOCTO_TRIPLE_DECL(YOCTO_TUPLE_TEMPLATE,processor_of,const size_t,offset,const size_t,length,ARRAY,arr);
-        inline processor_of(const context &ctx,ARRAY &a) throw() :
-        offset(1),
-        length(a.size()),
-        arr(a)
+
+        class context_supply : public slots_of<context>
         {
-            ctx.split<size_t>((size_t&)offset,(size_t&)length);
-        }
+        public:
+            virtual ~context_supply() throw();
+            explicit context_supply(const size_t n, lockable &l);
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(context_supply);
+        };
 
-        YOCTO_TRIPLE_END();
-
-        //! a threading kernel, using a context to know which data process
+        //! a threading kernel, using a context to know which data to process
         typedef functor<void,TL1(context&)> kernel;
 
     }

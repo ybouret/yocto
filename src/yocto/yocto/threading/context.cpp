@@ -25,3 +25,22 @@ namespace yocto
     
 }
 
+namespace yocto
+{
+    namespace threading
+    {
+        context_supply:: ~context_supply() throw()
+        {
+        }
+
+        context_supply:: context_supply(const size_t n, lockable &l ) :
+        slots_of<context>(n)
+        {
+            assert(n>0);
+            for(size_t r=0;r<n;++r)
+            {
+                append<size_t,size_t,lockable&>(r,n,l);
+            }
+        }
+    }
+}

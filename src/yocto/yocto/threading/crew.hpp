@@ -3,7 +3,6 @@
 
 #include "yocto/threading/kernel-executor.hpp"
 #include "yocto/threading/layout.hpp"
-#include "yocto/sequence/slots.hpp"
 #include "yocto/threading/condition.hpp"
 #include "yocto/functor.hpp"
 
@@ -38,7 +37,7 @@ namespace yocto
             kernel           *kproc;    //!< what to do for the current cycle
             condition         cycle;    //!< waiting for cycle
             condition         synch;    //!< waiting for synch
-            slots_of<context> contexts;
+            context_supply    contexts;
 
             void init();
             void quit() throw();
