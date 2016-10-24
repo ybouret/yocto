@@ -41,10 +41,12 @@ namespace yocto
 
             virtual size_t num_threads() const throw();
 
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(seq_executor);
+        protected:
             faked_lock        access;
             context           ctx;
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(seq_executor);
             virtual context * get_context(const size_t rank) const throw();
         };
 
@@ -58,15 +60,17 @@ namespace yocto
 
             virtual size_t num_threads() const throw();
 
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(par_executor);
+        protected:
             threads          workers;
         public:
             mutex            &access;
-        private:
+        protected:
             context_supply    contexts;
-            virtual context * get_context(const size_t rank) const throw();
+            bool              stopping; //!< flag to stop loops...
 
+        private:
+            virtual context * get_context(const size_t rank) const throw();
+            YOCTO_DISABLE_COPY_AND_ASSIGN(par_executor);
         };
 
     }

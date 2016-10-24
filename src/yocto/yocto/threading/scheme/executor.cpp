@@ -59,7 +59,8 @@ namespace yocto
         yocto::threading::layout(setVerbose),
         workers("executor",size),
         access(workers.access),
-        contexts(size,access)
+        contexts(size,access),
+        stopping(false)
         {
         }
 
