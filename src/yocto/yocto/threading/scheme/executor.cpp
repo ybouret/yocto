@@ -75,7 +75,7 @@ namespace yocto
 
         size_t par_executor:: num_threads() const throw()
         {
-            assert(size==workers.size);
+            assert(size<=workers.size);
             return size;
         }
     }

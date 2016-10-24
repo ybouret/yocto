@@ -63,10 +63,9 @@ namespace yocto
                 build<range,const context &,size_t>(*this,n);
             }
 
+            void *priv;
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(context);
-            friend class crew;
-            void        *priv; //!< used by crew setup
         };
 
         //______________________________________________________________________

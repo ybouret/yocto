@@ -20,8 +20,10 @@ namespace {
         {
             {
                 YOCTO_LOCK(ctx.access);
-                std::cerr << "proc.context " << ctx.size << "." << ctx.rank << std::endl;
+                std::cerr << "@proc " << ctx.size << "." << ctx.rank << std::endl;
             }
+
+
         }
 
     private:
@@ -37,7 +39,11 @@ YOCTO_UNIT_TEST_IMPL(schemes)
     threading::SIMD1 seq;
     std::cerr << "Sequential..." << std::endl;
     seq.load( &todo, & Todo::proc );
-    std::cerr << "done..." << std::endl;
+    std::cerr << "done..." << std::endl << std::endl;
+
+    std::cerr << "Parallel..." << std::endl;
+    threading::SIMD par(true);
+    par.load( &todo, & Todo::proc );
 
 }
 YOCTO_UNIT_TEST_DONE()
