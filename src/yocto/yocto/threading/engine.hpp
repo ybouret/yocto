@@ -7,7 +7,6 @@
 #include "yocto/threading/context.hpp"
 #include "yocto/counted-object.hpp"
 #include "yocto/functor.hpp"
-#include "yocto/sequence/slots.hpp"
 #include "yocto/sequence/list.hpp"
 
 namespace yocto
