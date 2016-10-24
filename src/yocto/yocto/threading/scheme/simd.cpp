@@ -54,7 +54,8 @@ namespace yocto
         ready(0),
         cycle(),
         synch(),
-        kproc(0)
+        kproc(0),
+        last_failure_index(0)
         {
             init();
         }
@@ -196,7 +197,7 @@ namespace yocto
             {
                 //TODO: send a message ?
                 YOCTO_LOCK(access);
-                //set_failure(ctx.indx);
+                last_failure_index = ctx.indx;
             }
 
             access.lock();
@@ -216,7 +217,7 @@ namespace yocto
             assert(size==ready);   // must be true here
             kproc = &k;            // local link
             ready = 0;             // global counter
-            //no_failure();          // clean up flag
+            last_failure_index = 0;
             cycle.broadcast();     // would start all threads
             synch.wait(access);    // unlock access => start threads => come back LOCKED
             assert(size==ready);   // must be true here

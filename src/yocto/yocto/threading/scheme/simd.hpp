@@ -69,6 +69,9 @@ namespace yocto
 
             static void call_loop( void *args ) throw();
             void loop(context &) throw();
+        public:
+            size_t last_failure_index;
+            
         };
 
     }
