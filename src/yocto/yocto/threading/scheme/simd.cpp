@@ -103,6 +103,10 @@ namespace yocto
                             if(verbose) { std::cerr << fn << "ready" << std::endl; }
                             return;
                         }
+                        else
+                        {
+                            access.unlock();
+                        }
                     }
                 }
                 
