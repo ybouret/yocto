@@ -163,7 +163,7 @@ namespace yocto
             // first synchronization
             //__________________________________________________________________
             access.lock();
-            if(verbose) { std::cerr << fn  << " synchronizing " << ctx.size << "." << ctx.rank << std::endl; }
+            if(verbose) { std::cerr << fn  << "synchronizing " << ctx.size << "." << ctx.rank << std::endl; }
             assert(ready<size);
             ++ready;
 

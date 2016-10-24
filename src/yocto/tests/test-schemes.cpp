@@ -1,5 +1,6 @@
 #include "yocto/threading/scheme/simd.hpp"
 #include "yocto/utest/run.hpp"
+#include "yocto/code/rand32.hpp"
 
 using namespace yocto;
 
@@ -8,7 +9,10 @@ namespace {
     class Todo
     {
     public:
-        inline Todo() throw()
+        rand32_kiss r;
+        double      s;
+
+        inline Todo() throw() : r(), s(0)
         {
         }
 
@@ -18,19 +22,29 @@ namespace {
 
         inline void proc( threading::context &ctx ) throw()
         {
+            r.seed(ctx.rank);
+            double sum = 0;
+            size_t offset = 0;
+            size_t length = count;
+            ctx.split(offset,length);
+            for(size_t i=0;i<length;++i)
             {
-                YOCTO_LOCK(ctx.access);
-                std::cerr << "@proc " << ctx.size << "." << ctx.rank << std::endl;
+                sum += r.get<double>();
             }
-
-
+            ctx.make<double>(sum);
         }
+
+        static size_t count;
 
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(Todo);
     };
 
+
+    size_t Todo::count = 100000000;
 }
+
+
 
 YOCTO_UNIT_TEST_IMPL(schemes)
 {
