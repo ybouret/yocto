@@ -2,7 +2,6 @@
 #define YOCTO_THREADING_SCHEME_EXECUTOR
 
 #include "yocto/threading/context.hpp"
-#include "yocto/counted-object.hpp"
 #include "yocto/threading/threads.hpp"
 #include "yocto/threading/layout.hpp"
 
@@ -12,7 +11,7 @@ namespace yocto
     {
 
         // executor: resources to execute some kernel(s)
-        class executor : public counted_object
+        class executor
         {
         public:
             virtual ~executor() throw();
