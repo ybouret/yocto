@@ -10,6 +10,9 @@ namespace yocto
     {
 
         //! single instruction, multiple data interface
+        /**
+         the same kernel will be called on a different context
+         */
         class _SIMD
         {
         public:
@@ -47,6 +50,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(SIMD1);
         };
 
+
         //! parallel code
         class SIMD : public par_executor, public _SIMD
         {
@@ -67,10 +71,11 @@ namespace yocto
             void init();
             void quit() throw();
 
-            static void call_loop( void *args ) throw();
+            static void call_loop( void *args ) throw(); // thread entry point
             void loop(context &) throw();
+
         public:
-            size_t last_failure_index;
+            size_t last_failure_index; //! index of thread in case of failure
             
         };
 

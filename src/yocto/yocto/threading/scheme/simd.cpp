@@ -85,7 +85,7 @@ namespace yocto
                 
                 //______________________________________________________________
                 //
-                // waiting for first synchro
+                // waiting for first synchro and place threads
                 //______________________________________________________________
                 while(true)
                 {
@@ -109,7 +109,7 @@ namespace yocto
                         }
                     }
                 }
-                
+
 
             }
             catch(...)
