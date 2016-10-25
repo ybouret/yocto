@@ -132,6 +132,13 @@ namespace yocto
                         if(ready>size)
                         {
                             if(verbose) { std::cerr << fn << "synchronised" << std::endl; }
+                            // thread placement:
+                            // the control thread is on first allowed CPU !
+                            size_t iThread = 0;
+                            for(thread *thr = workers.head; thr; thr=thr->next )
+                            {
+                                thr->on_cpu( cpu_index_of(iThread++) );
+                            }
                             access.unlock();
                             return;
                         }
