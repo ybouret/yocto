@@ -62,8 +62,11 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(par_server);
-            static void control_loop( void *args ) throw();
-            static void workers_loop( void *args ) throw();
+            static void start_control( void *args ) throw();
+            static void start_workers( void *args ) throw();
+
+            void init();
+            void quit() throw();
 
             class task : public object
             {
@@ -82,10 +85,15 @@ namespace yocto
 
             typedef core::pool_of<task>     task_pool; //!< dead tasks
             typedef core::pool_of_cpp<task> task_list; //!< alive tasks
-            task_list pending; //!< tasks to be done
-            task_list current; //!< tasks being processed
-            task_pool storage; //!< cache
 
+            task_list    pending; //!< tasks to be done
+            task_list    current; //!< tasks being processed
+            task_pool    storage; //!< cache
+            size_t       ready;   //!< for synchronization
+
+
+            void control_loop() throw();
+            void workers_loop( context & ) throw();
         };
 
     }

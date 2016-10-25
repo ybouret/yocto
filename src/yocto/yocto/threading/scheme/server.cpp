@@ -58,6 +58,7 @@ namespace yocto
 
         par_server:: ~par_server() throw()
         {
+            quit();
         }
 
         par_server:: par_server(const bool setVerbose) :
@@ -67,6 +68,62 @@ namespace yocto
         current(),
         storage()
         {
+        }
+
+
+        void par_server:: quit() throw()
+        {
+            access.lock();
+            stopping = true;
+            access.unlock();
+        }
+
+
+        void par_server:: init()
+        {
+            try
+            {
+                //______________________________________________________________
+                //
+                // launch workers
+                //______________________________________________________________
+                for(size_t rank=0;rank<size;++rank)
+                {
+                    context &ctx = (*this)[rank];
+                    ctx.priv     = this;
+
+                    workers.launch(start_workers,&ctx);
+                }
+            }
+            catch(...)
+            {
+                quit();
+                throw;
+            }
+        }
+
+        void par_server:: start_control( void *args ) throw()
+        {
+            assert(args);
+            static_cast<par_server *>(args)->control_loop();
+        }
+
+        void par_server:: start_workers(void *args) throw()
+        {
+            assert(args);
+            context &ctx = *static_cast<context *>(args); assert(ctx.priv);
+            static_cast<par_server *>(ctx.priv)->workers_loop(ctx);
+        }
+
+
+        void par_server::control_loop() throw()
+        {
+        }
+
+
+        void par_server::workers_loop(context &ctx) throw()
+        {
+
         }
 
     }

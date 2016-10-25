@@ -57,7 +57,7 @@ namespace yocto
             explicit par_executor(bool setVerbose=false);
             virtual ~par_executor() throw();
 
-            virtual size_t num_threads() const throw();
+            virtual size_t num_threads() const throw(); //!< layout size <= workers.size
 
         protected:
             threads          workers;
