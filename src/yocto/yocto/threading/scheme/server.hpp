@@ -2,6 +2,7 @@
 #define YOCTO_THREADIND_SCHEME_SERVER_INCLUDED 1
 
 #include "yocto/threading/scheme/executor.hpp"
+#include "yocto/threading/condition.hpp"
 
 namespace yocto
 {
@@ -58,6 +59,7 @@ namespace yocto
             virtual ~par_server() throw();
             explicit par_server(const bool setVerbose=false);
 
+            virtual job_id enqueue( kernel &k );
 
 
         private:
@@ -86,11 +88,12 @@ namespace yocto
             typedef core::pool_of<task>     task_pool; //!< dead tasks
             typedef core::pool_of_cpp<task> task_list; //!< alive tasks
 
-            task_list    pending; //!< tasks to be done
-            task_list    current; //!< tasks being processed
-            task_pool    storage; //!< cache
-            size_t       ready;   //!< for synchronization
-
+            task_list    pending;    //!< tasks to be done
+            task_list    current;    //!< tasks being processed
+            task_pool    storage;    //!< cache
+            size_t       ready;      //!< for (first) synchronization
+            condition    incoming;   //!< got some job for workers
+            condition    activity;   //!< control should check this
 
             void control_loop() throw();
             void workers_loop( context & ) throw();

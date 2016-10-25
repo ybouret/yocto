@@ -1,7 +1,7 @@
 #include "yocto/threading/scheme/simd.hpp"
-#include "yocto/threading/scheme/server.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand32.hpp"
+#include "yocto/sys/wtime.hpp"
 
 using namespace yocto;
 
@@ -49,7 +49,6 @@ namespace {
     size_t Todo::count = 100000000;
 }
 
-#include "yocto/sys/wtime.hpp"
 
 YOCTO_UNIT_TEST_IMPL(SIMD)
 {
@@ -73,7 +72,7 @@ YOCTO_UNIT_TEST_IMPL(SIMD)
 
 
 }
-                YOCTO_UNIT_TEST_DONE()
+YOCTO_UNIT_TEST_DONE()
 
 
 
