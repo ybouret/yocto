@@ -220,6 +220,21 @@ namespace yocto
 
         job_id par_server:: enqueue( kernel &k )
         {
+
+            //__________________________________________________________________
+            //
+            // take control
+            //__________________________________________________________________
+            access.lock();
+
+            
+            access.unlock();
+            return 0;
+        }
+
+        par_server::task * par_server:: create_task(const kernel &k)
+        {
+
             return 0;
         }
 

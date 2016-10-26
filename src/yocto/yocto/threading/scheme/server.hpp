@@ -97,6 +97,7 @@ namespace yocto
 
             void control_loop() throw();
             void workers_loop( context & ) throw();
+            task *create_task(const kernel &k);
         };
 
     }
