@@ -1,5 +1,6 @@
 #include "yocto/threading/scheme/server.hpp"
 #include "yocto/utest/run.hpp"
+#include "yocto/sys/wtime.hpp"
 
 using namespace yocto;
 
@@ -36,6 +37,7 @@ YOCTO_UNIT_TEST_IMPL(server)
 
     
     parsrv.enqueue(k);
+    wtime::sleep(1);
 
 }
 YOCTO_UNIT_TEST_DONE()

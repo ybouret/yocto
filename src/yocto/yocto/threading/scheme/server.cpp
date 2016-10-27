@@ -98,11 +98,15 @@ namespace yocto
 
             // wait for current tasks to end
 
-            // finish
+            // finish/flush
             incoming.broadcast();
             activity.broadcast();
 
-
+            // empty storage
+            while(storage.size)
+            {
+                object::release1<task>( storage.query() );
+            }
 
         }
 
@@ -210,13 +214,16 @@ namespace yocto
             }
             if(verbose) { std::cerr << fn << "control: checking tasks" << std::endl; }
 
-            // let's study what we got
-            
+            if(pending.size)
+            {
+                incoming.signal();
+            }
 
 
 
+            // ok, end of it
             if(verbose) { std::cerr << fn << "control: waiting for next activity" << std::endl; }
-            goto WAIT_FOR_ACTIVITY;
+            goto WAIT_FOR_ACTIVITY; // will unlock access
 
         }
 
@@ -227,6 +234,7 @@ namespace yocto
             if(verbose) { std::cerr << fn << "workers: enter " << ctx.size << "." << ctx.rank << std::endl; }
             ++ready;
 
+        WAITING_FOR_WORK:
             // wait on a LOCKED mutex
             incoming.wait(access);
 
@@ -237,6 +245,33 @@ namespace yocto
                 access.unlock();
                 return;
             }
+
+            if(verbose) { std::cerr << fn << "workers: checking job for " << ctx.size << "." << ctx.rank << std::endl; }
+            // ok, signaled by control thread, we are still LOCKED, let us check
+            if(pending.size>0)
+            {
+                // we take it !
+                task *todo = pending.pop_front();
+                current.push_back(todo);
+
+                // we ask the control thread that he can go further
+                activity.signal();
+                access.unlock();
+
+                // now this working thread is the only owner of the task
+                // and access is granted for other threads to process
+                todo->proc(ctx);
+
+                // we're done: remove task
+                access.lock();
+                (void)current.unlink(todo);
+                todo->~task();
+                storage.store(todo);
+            }
+
+            // at this point, access must be LOCKED
+            goto WAITING_FOR_WORK;
+
 
         }
 
