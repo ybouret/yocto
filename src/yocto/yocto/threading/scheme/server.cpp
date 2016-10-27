@@ -84,10 +84,14 @@ namespace yocto
             access.lock();
             if(verbose) { std::cerr << fn << "stopping jobs" << std::endl; }
             stopping = true;
+
             // clean up
+            if(verbose) { std::cerr << fn << "#pending tasks: " << pending.size << std::endl; }
             while(pending.size)
             {
-                object::release1<task>(pending.pop_back());
+                task *t = pending.pop_back();
+                t->~task();
+                object::release1<task>(t);
             }
             
             access.unlock();
@@ -176,6 +180,11 @@ namespace yocto
         }
 
 
+        //______________________________________________________________________
+        //
+        //
+        //______________________________________________________________________
+
         void par_server::control_loop() throw()
         {
 
@@ -183,22 +192,31 @@ namespace yocto
             access.lock();
             if(verbose)
             {
-                std::cerr << fn << "enter control" << std::endl;
+                std::cerr << fn << "control: enter" << std::endl;
             }
             ++ready;
 
+        WAIT_FOR_ACTIVITY:
             // wait on a LOCKED mutex
             activity.wait(access);
 
             // wake up on LOCKED mutex
+            if(verbose) { std::cerr << fn << "control: activity detected" << std::endl; }
             if(stopping)
             {
-                if(verbose) { std::cerr << fn << "leave  control" << std::endl; }
+                if(verbose) { std::cerr << fn << "control: leave" << std::endl; }
                 access.unlock();
                 return; // end of thread
             }
+            if(verbose) { std::cerr << fn << "control: checking tasks" << std::endl; }
+
+            // let's study what we got
+            
 
 
+
+            if(verbose) { std::cerr << fn << "control: waiting for next activity" << std::endl; }
+            goto WAIT_FOR_ACTIVITY;
 
         }
 
@@ -206,7 +224,7 @@ namespace yocto
         void par_server::workers_loop(context &ctx) throw()
         {
             access.lock();
-            if(verbose) { std::cerr << fn << "enter worker " << ctx.size << "." << ctx.rank << std::endl; }
+            if(verbose) { std::cerr << fn << "workers: enter " << ctx.size << "." << ctx.rank << std::endl; }
             ++ready;
 
             // wait on a LOCKED mutex
@@ -215,7 +233,7 @@ namespace yocto
             // wake up on a LOCKED mutex
             if(stopping)
             {
-                if(verbose) { std::cerr << fn << "leave worker " << ctx.size << "." << ctx.rank << std::endl; }
+                if(verbose) { std::cerr << fn << "workers: leave " << ctx.size << "." << ctx.rank << std::endl; }
                 access.unlock();
                 return;
             }
@@ -230,10 +248,22 @@ namespace yocto
             // take control
             //__________________________________________________________________
             YOCTO_LOCK(access);
+            if(verbose) { std::cerr << "creating task #" << juuid << std::endl; }
+
+            //__________________________________________________________________
+            //
+            // create the task and append it to the queue
+            //__________________________________________________________________
             task *t = create_task(k);
             pending.push_back(t);
-            
-            return 0;
+
+
+            //__________________________________________________________________
+            //
+            // wake up the control thread
+            //__________________________________________________________________
+            activity.signal();
+            return t->uuid;
         }
 
         par_server::task * par_server:: create_task(const kernel &k)
