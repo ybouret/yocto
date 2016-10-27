@@ -60,7 +60,7 @@ namespace yocto
             explicit par_server(const bool setVerbose=false);
 
             virtual job_id enqueue( kernel &k );
-
+            void flush() throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(par_server);

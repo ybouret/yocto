@@ -97,10 +97,7 @@ namespace yocto
             access.unlock();
 
             // wait for current tasks to end
-
-            // finish/flush
-            incoming.broadcast();
-            activity.broadcast();
+            flush();
 
             // empty storage
             while(storage.size)
@@ -108,6 +105,16 @@ namespace yocto
                 object::release1<task>( storage.query() );
             }
 
+        }
+
+        void par_server:: flush() throw()
+        {
+            access.lock();
+            if(pending.size>0)
+            {
+                flushing.wait(access);
+                access.unlock();
+            }
         }
 
 
@@ -216,9 +223,14 @@ namespace yocto
 
             if(pending.size)
             {
+                // more work
                 incoming.signal();
             }
-
+            else
+            {
+                // if main threads await...
+                flushing.signal();
+            }
 
 
             // ok, end of it
