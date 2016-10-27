@@ -72,7 +72,8 @@ namespace yocto
         storage(),
         ready(0),
         incoming(),
-        activity()
+        activity(),
+        flushing()
         {
             init();
         }
@@ -84,8 +85,11 @@ namespace yocto
             if(verbose) { std::cerr << fn << "stopping jobs" << std::endl; }
             stopping = true;
             // clean up
-            pending.clear();
-
+            while(pending.size)
+            {
+                object::release1<task>(pending.pop_back());
+            }
+            
             access.unlock();
 
             // wait for current tasks to end
@@ -225,17 +229,28 @@ namespace yocto
             //
             // take control
             //__________________________________________________________________
-            access.lock();
-
+            YOCTO_LOCK(access);
+            task *t = create_task(k);
+            pending.push_back(t);
             
-            access.unlock();
             return 0;
         }
 
         par_server::task * par_server:: create_task(const kernel &k)
         {
-
-            return 0;
+            
+            task *t = (storage.size>0) ? storage.query() : object::acquire1<task>();
+            try
+            {
+                new (t) task(juuid,k);
+                ++juuid;
+            }
+            catch(...)
+            {
+                storage.store(t);
+                throw;
+            }
+            return t;
         }
 
 

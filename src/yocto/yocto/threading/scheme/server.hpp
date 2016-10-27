@@ -70,7 +70,7 @@ namespace yocto
             void init();
             void quit() throw();
 
-            class task : public object
+            class task
             {
             public:
                 task         *next;
@@ -85,8 +85,8 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(task);
             };
 
-            typedef core::pool_of<task>     task_pool; //!< dead tasks
-            typedef core::pool_of_cpp<task> task_list; //!< alive tasks
+            typedef core::pool_of<task> task_pool; //!< dead tasks
+            typedef core::list_of<task> task_list; //!< alive tasks
 
             task_list    pending;    //!< tasks to be done
             task_list    current;    //!< tasks being processed
@@ -94,7 +94,8 @@ namespace yocto
             size_t       ready;      //!< for (first) synchronization
             condition    incoming;   //!< got some job for workers
             condition    activity;   //!< control should check this
-
+            condition    flushing;   //!< wait while flushing...
+            
             void control_loop() throw();
             void workers_loop( context & ) throw();
             task *create_task(const kernel &k);
