@@ -36,8 +36,8 @@ YOCTO_UNIT_TEST_IMPL(server)
     threading::kernel k( & dummy, & DoSomething::Run );
 
     
-    parsrv.enqueue(k);
-    wtime::sleep(1);
+    //parsrv.enqueue(k);
+    //wtime::sleep(1);
 
 }
 YOCTO_UNIT_TEST_DONE()

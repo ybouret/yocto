@@ -81,11 +81,23 @@ namespace yocto
 
         void par_server:: quit() throw()
         {
+            //__________________________________________________________________
+            //
+            // Take control
+            //__________________________________________________________________
             access.lock();
+
+            //__________________________________________________________________
+            //
+            // activate the stop flag for everyone
+            //__________________________________________________________________
             if(verbose) { std::cerr << fn << "stopping jobs" << std::endl; }
             stopping = true;
 
-            // clean up
+            //__________________________________________________________________
+            //
+            // clean up pending tasks
+            //__________________________________________________________________
             if(verbose) { std::cerr << fn << "#pending tasks: " << pending.size << std::endl; }
             while(pending.size)
             {
@@ -93,26 +105,47 @@ namespace yocto
                 t->~task();
                 object::release1<task>(t);
             }
-            
-            access.unlock();
 
-            // wait for current tasks to end
+            //__________________________________________________________________
+            //
+            // release control for current tasks to finish
+            //__________________________________________________________________
+            access.unlock();
             flush();
 
+            //__________________________________________________________________
+            //
+            // everybody come back
+            //__________________________________________________________________
+            if(verbose) { std::cerr << "final call" << std::endl; }
+            activity.broadcast();
+            incoming.broadcast();
+
+
+            //__________________________________________________________________
+            //
             // empty storage
+            //__________________________________________________________________
             while(storage.size)
             {
                 object::release1<task>( storage.query() );
             }
+
+            //__________________________________________________________________
+            //
+            // threads destructor takes care of cleanup
+            //__________________________________________________________________
 
         }
 
         void par_server:: flush() throw()
         {
             access.lock();
+            if(verbose) { std::cerr << "flushing" << std::endl; }
             if(pending.size>0)
             {
                 flushing.wait(access);
+                if(verbose) { std::cerr << "flushed..." << std::endl; }
                 access.unlock();
             }
         }
@@ -195,7 +228,6 @@ namespace yocto
         //
         //
         //______________________________________________________________________
-
         void par_server::control_loop() throw()
         {
 
@@ -208,19 +240,33 @@ namespace yocto
             ++ready;
 
         WAIT_FOR_ACTIVITY:
+            //__________________________________________________________________
+            //
             // wait on a LOCKED mutex
+            //__________________________________________________________________
             activity.wait(access);
 
+            //__________________________________________________________________
+            //
             // wake up on LOCKED mutex
+            //__________________________________________________________________
             if(verbose) { std::cerr << fn << "control: activity detected" << std::endl; }
             if(stopping)
             {
+                //______________________________________________________________
+                //
+                // end of thread
+                //______________________________________________________________
                 if(verbose) { std::cerr << fn << "control: leave" << std::endl; }
                 access.unlock();
                 return; // end of thread
             }
             if(verbose) { std::cerr << fn << "control: checking tasks" << std::endl; }
 
+            //__________________________________________________________________
+            //
+            // somebdy woke me up, let's see why
+            //__________________________________________________________________
             if(pending.size)
             {
                 // more work
@@ -233,7 +279,10 @@ namespace yocto
             }
 
 
-            // ok, end of it
+            //__________________________________________________________________
+            //
+            // ok, end of turn, the wait will unlock the mutex
+            //__________________________________________________________________
             if(verbose) { std::cerr << fn << "control: waiting for next activity" << std::endl; }
             goto WAIT_FOR_ACTIVITY; // will unlock access
 
@@ -247,34 +296,59 @@ namespace yocto
             ++ready;
 
         WAITING_FOR_WORK:
+            //__________________________________________________________________
+            //
             // wait on a LOCKED mutex
+            //__________________________________________________________________
             incoming.wait(access);
 
+            //__________________________________________________________________
+            //
             // wake up on a LOCKED mutex
+            //__________________________________________________________________
             if(stopping)
             {
+                //__________________________________________________________________
+                //
+                // end of thread
+                //__________________________________________________________________
                 if(verbose) { std::cerr << fn << "workers: leave " << ctx.size << "." << ctx.rank << std::endl; }
                 access.unlock();
                 return;
             }
 
             if(verbose) { std::cerr << fn << "workers: checking job for " << ctx.size << "." << ctx.rank << std::endl; }
+            //__________________________________________________________________
+            ///
             // ok, signaled by control thread, we are still LOCKED, let us check
+            //__________________________________________________________________
             if(pending.size>0)
             {
+                //______________________________________________________________
+                //
                 // we take it !
+                //______________________________________________________________
                 task *todo = pending.pop_front();
                 current.push_back(todo);
 
-                // we ask the control thread that he can go further
+                //______________________________________________________________
+                //
+                // we tell the control thread that he can go further
+                //______________________________________________________________
                 activity.signal();
                 access.unlock();
 
+                //______________________________________________________________
+                //
                 // now this working thread is the only owner of the task
                 // and access is granted for other threads to process
+                //______________________________________________________________
                 todo->proc(ctx);
 
+                //______________________________________________________________
+                //
                 // we're done: remove task
+                //______________________________________________________________
                 access.lock();
                 (void)current.unlink(todo);
                 todo->~task();
