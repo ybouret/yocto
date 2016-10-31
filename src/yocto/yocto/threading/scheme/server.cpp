@@ -117,10 +117,11 @@ namespace yocto
             //
             // everybody come back
             //__________________________________________________________________
+            access.lock();
             if(verbose) { std::cerr << "final call" << std::endl; }
             activity.broadcast();
             incoming.broadcast();
-
+            access.unlock();
 
             //__________________________________________________________________
             //
@@ -144,10 +145,13 @@ namespace yocto
             if(verbose) { std::cerr << "flushing" << std::endl; }
             if(pending.size>0)
             {
+                // wait on a locked mutex
                 flushing.wait(access);
+
+                // wake up on a locked mutex
                 if(verbose) { std::cerr << "flushed..." << std::endl; }
-                access.unlock();
             }
+            access.unlock();
         }
 
 
@@ -244,6 +248,7 @@ namespace yocto
             //
             // wait on a LOCKED mutex
             //__________________________________________________________________
+            if(verbose) { std::cerr << fn << "control: wait for activity" << std::endl; }
             activity.wait(access);
 
             //__________________________________________________________________
@@ -270,12 +275,14 @@ namespace yocto
             if(pending.size)
             {
                 // more work
+                if(verbose) { std::cerr << fn << "control: signaling incoming..." << std::endl; }
                 incoming.signal();
             }
             else
             {
                 // if main threads await...
-                flushing.signal();
+                if(verbose) { std::cerr << fn << "control: signaling flushed..." << std::endl; }
+                flushing.broadcast();
             }
 
 
@@ -300,6 +307,7 @@ namespace yocto
             //
             // wait on a LOCKED mutex
             //__________________________________________________________________
+            if(verbose) { std::cerr << fn << "workers: "<< ctx.size << "." << ctx.rank << " waiting for incoming..." << std::endl; }
             incoming.wait(access);
 
             //__________________________________________________________________
