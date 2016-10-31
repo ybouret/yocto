@@ -118,7 +118,7 @@ namespace yocto
             // everybody come back
             //__________________________________________________________________
             access.lock();
-            if(verbose) { std::cerr << "final call" << std::endl; }
+            if(verbose) { std::cerr << fn << "final call" << std::endl; }
             activity.broadcast();
             incoming.broadcast();
             access.unlock();
@@ -142,14 +142,14 @@ namespace yocto
         void par_server:: flush() throw()
         {
             access.lock();
-            if(verbose) { std::cerr << "flushing" << std::endl; }
+            if(verbose) { std::cerr << fn << "flushing" << std::endl; }
             if(pending.size>0)
             {
                 // wait on a locked mutex
                 flushing.wait(access);
 
                 // wake up on a locked mutex
-                if(verbose) { std::cerr << "flushed..." << std::endl; }
+                if(verbose) { std::cerr << fn << "flushed..." << std::endl; }
             }
             access.unlock();
         }
