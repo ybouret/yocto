@@ -70,6 +70,9 @@ YOCTO_UNIT_TEST_IMPL(SIMD)
     const double par_ell = chrono.query();
     std::cerr << "done...in " << (par_ell)*1000.0 << " ms" << std::endl << std::endl;
 
+    const double speed_up = seq_ell/par_ell;
+    const double eff      = parallel::efficiency(speed_up,par.size);
+    std::cerr << "efficiency=" << eff << "%" << std::endl << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()
