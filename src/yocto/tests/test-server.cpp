@@ -37,11 +37,11 @@ YOCTO_UNIT_TEST_IMPL(server)
     threading::kernel k( & dummy, & DoSomething::Run );
 
 
-    for(size_t i=0;i<100;++i)
+    for(size_t i=0;i<10;++i)
     {
         parsrv.enqueue(k);
     }
-    
+
 
     parsrv.flush();
     //wtime::sleep(1);
