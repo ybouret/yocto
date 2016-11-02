@@ -229,7 +229,7 @@ namespace yocto
 
 
 #define __DISPLAY(CODE) do { if(verbose) { std::cerr << fn << CODE << std::endl; } } while(false)
-        
+
 
         //______________________________________________________________________
         //
@@ -239,7 +239,6 @@ namespace yocto
         //______________________________________________________________________
         void par_server::control_loop() throw()
         {
-
 
             access.lock();
             if(verbose)
