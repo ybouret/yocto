@@ -70,14 +70,12 @@ namespace yocto
         pending(),
         current(),
         storage(),
-        ready(0),
-        incoming(),
-        activity(),
-        flushing()
+        ready(0)
         {
             init();
         }
 
+#define __DISPLAY(CODE) do { if(verbose) { std::cerr << fn << CODE << std::endl; } } while(false)
 
         void par_server:: quit() throw()
         {
@@ -91,14 +89,14 @@ namespace yocto
             //
             // activate the stop flag for everyone
             //__________________________________________________________________
-            if(verbose) { std::cerr << fn << "stopping jobs" << std::endl; }
+            __DISPLAY("stopping jobs");
             stopping = true;
 
             //__________________________________________________________________
             //
             // clean up pending tasks
             //__________________________________________________________________
-            if(verbose) { std::cerr << fn << "#pending tasks: " << pending.size << std::endl; }
+            __DISPLAY("discarding #pending tasks: " << pending.size);
             while(pending.size)
             {
                 task *t = pending.pop_back();
@@ -118,9 +116,8 @@ namespace yocto
             // everybody come back
             //__________________________________________________________________
             access.lock();
-            if(verbose) { std::cerr << fn << "final call" << std::endl; }
+            __DISPLAY("ending threads");
             activity.broadcast();
-            incoming.broadcast();
             access.unlock();
 
             //__________________________________________________________________
@@ -142,14 +139,14 @@ namespace yocto
         void par_server:: flush() throw()
         {
             access.lock();
-            if(verbose) { std::cerr << fn << "flushing" << std::endl; }
+            __DISPLAY("flushing...");
             if(pending.size>0)
             {
                 // wait on a locked mutex
-                flushing.wait(access);
+                //flushing.wait(access);
 
                 // wake up on a locked mutex
-                if(verbose) { std::cerr << fn << "flushed..." << std::endl; }
+                __DISPLAY("...all done");
             }
             access.unlock();
         }
@@ -167,14 +164,8 @@ namespace yocto
                 {
                     context &ctx = (*this)[rank];
                     ctx.priv     = this;
-                    workers.launch(start_workers,&ctx);
+                    workers.launch(start,&ctx);
                 }
-
-                //______________________________________________________________
-                //
-                // launch controler
-                //______________________________________________________________
-                workers.launch(start_control,this);
 
 
                 //______________________________________________________________
@@ -185,9 +176,9 @@ namespace yocto
                 {
                     if( access.try_lock() )
                     {
-                        if(ready>size)
+                        if(ready>=size)
                         {
-                            if(verbose) { std::cerr << fn << "synchronised" << std::endl; }
+                            __DISPLAY("synchronised");
                             // thread placement:
                             // the control thread is on first allowed CPU !
                             size_t iThread = 0;
@@ -214,105 +205,31 @@ namespace yocto
             }
         }
 
-        void par_server:: start_control( void *args ) throw()
-        {
-            assert(args);
-            static_cast<par_server *>(args)->control_loop();
-        }
 
-        void par_server:: start_workers(void *args) throw()
+        void par_server:: start(void *args) throw()
         {
             assert(args);
             context &ctx = *static_cast<context *>(args); assert(ctx.priv);
-            static_cast<par_server *>(ctx.priv)->workers_loop(ctx);
+            static_cast<par_server *>(ctx.priv)->loop(ctx);
         }
 
 
-#define __DISPLAY(CODE) do { if(verbose) { std::cerr << fn << CODE << std::endl; } } while(false)
 
 
         //______________________________________________________________________
-        //
-        //
-        //  control loop to activate threads
-        //
-        //______________________________________________________________________
-        void par_server::control_loop() throw()
+
+
+        void par_server::loop(context &ctx) throw()
         {
-
             access.lock();
-            if(verbose)
-            {
-                std::cerr << fn << "control: enter" << std::endl;
-            }
+            __DISPLAY("enter " << ctx.size << "." << ctx.rank);
             ++ready;
 
-        WAIT_FOR_ACTIVITY:
             //__________________________________________________________________
             //
             // wait on a LOCKED mutex
             //__________________________________________________________________
-            if(verbose) { std::cerr << fn << "control: wait for activity" << std::endl; }
             activity.wait(access);
-
-            //__________________________________________________________________
-            //
-            // wake up on LOCKED mutex
-            //__________________________________________________________________
-            if(verbose) { std::cerr << fn << "control: activity detected" << std::endl; }
-            if(stopping)
-            {
-                //______________________________________________________________
-                //
-                // end of thread
-                //______________________________________________________________
-                if(verbose) { std::cerr << fn << "control: leave" << std::endl; }
-                access.unlock();
-                return; // end of thread
-            }
-            if(verbose) { std::cerr << fn << "control: checking tasks" << std::endl; }
-
-            //__________________________________________________________________
-            //
-            // somebdy woke me up, let's see why
-            //__________________________________________________________________
-            if(pending.size)
-            {
-                // more work
-                if(verbose) { std::cerr << fn << "control: signaling incoming..." << std::endl; }
-                incoming.signal();
-            }
-            else
-            {
-                // if main threads await...
-                if(verbose) { std::cerr << fn << "control: signaling flushed..." << std::endl; }
-                flushing.broadcast();
-            }
-
-
-            //__________________________________________________________________
-            //
-            // ok, end of turn, the wait will unlock the mutex
-            //__________________________________________________________________
-            if(verbose) { std::cerr << fn << "control: waiting for next activity" << std::endl; }
-            goto WAIT_FOR_ACTIVITY; // will unlock access
-
-        }
-
-
-        void par_server::workers_loop(context &ctx) throw()
-        {
-            access.lock();
-            if(verbose) { std::cerr << fn << "workers: enter " << ctx.size << "." << ctx.rank << std::endl; }
-            ++ready;
-
-        WAITING_FOR_WORK:
-            //__________________________________________________________________
-            //
-            // wait on a LOCKED mutex
-            //__________________________________________________________________
-            if(verbose) { std::cerr << fn << "workers: "<< ctx.size << "." << ctx.rank << " waiting for incoming..." << std::endl; }
-            incoming.wait(access);
 
             //__________________________________________________________________
             //
@@ -320,59 +237,16 @@ namespace yocto
             //__________________________________________________________________
             if(stopping)
             {
-                //__________________________________________________________________
+                //______________________________________________________________
                 //
                 // end of thread
-                //__________________________________________________________________
-                if(verbose) { std::cerr << fn << "workers: leave " << ctx.size << "." << ctx.rank << std::endl; }
+                //______________________________________________________________
+                __DISPLAY("leave " << ctx.size << "." << ctx.rank);
                 access.unlock();
                 return;
             }
 
-            if(verbose) { std::cerr << fn << "workers: checking job for " << ctx.size << "." << ctx.rank << std::endl; }
-            //__________________________________________________________________
-            ///
-            // ok, signaled by control thread, we are still LOCKED, let us check
-            //__________________________________________________________________
-            if(pending.size>0)
-            {
-                //______________________________________________________________
-                //
-                // we take it !
-                //______________________________________________________________
-                task *todo = pending.pop_front();
-                current.push_back(todo);
-
-                //______________________________________________________________
-                //
-                // we tell the control thread that it can go further
-                //______________________________________________________________
-                if(verbose) { std::cerr << fn << "workers: signaling activity level-1 from " << ctx.size << "." << ctx.rank << std::endl; }
-                activity.signal();
-                access.unlock();
-
-                //______________________________________________________________
-                //
-                // now this working thread is the only owner of the task
-                // and access is granted for other threads to process
-                //______________________________________________________________
-                todo->proc(ctx);
-
-                //______________________________________________________________
-                //
-                // we're done: remove task
-                //______________________________________________________________
-                access.lock();
-                (void)current.unlink(todo);
-                todo->~task();
-                storage.store(todo);
-            }
-
-            // at this point, access must be LOCKED
-            // we tell the control thread that it can go further
-            if(verbose) { std::cerr << fn << "workers: signaling activity level-2 from " << ctx.size << "." << ctx.rank << std::endl; }
-            activity.signal();
-            goto WAITING_FOR_WORK;
+            
 
 
         }
@@ -397,7 +271,7 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // wake up the control thread
+            // signal that there is some jobs to do
             //__________________________________________________________________
             activity.signal();
             return t->uuid;

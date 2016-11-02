@@ -64,9 +64,9 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(par_server);
-            static void start_control( void *args ) throw();
-            static void start_workers( void *args ) throw();
-
+            static void start(void *args) throw();
+            void   loop( context &) throw();
+            
             void init();
             void quit() throw();
 
@@ -92,12 +92,9 @@ namespace yocto
             task_list    current;    //!< tasks being processed
             task_pool    storage;    //!< cache
             size_t       ready;      //!< for (first) synchronization
-            condition    incoming;   //!< got some job for workers
-            condition    activity;   //!< control should check this
-            condition    flushing;   //!< wait while flushing...
+            condition    activity;   //!< workers are waiting for something to do
+            condition    flushing;   //!< main thread is waiting for all jobs to complete
             
-            void control_loop() throw();
-            void workers_loop( context & ) throw();
             task *create_task(const kernel &k);
         };
 

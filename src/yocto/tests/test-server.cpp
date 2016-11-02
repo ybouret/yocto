@@ -36,7 +36,8 @@ YOCTO_UNIT_TEST_IMPL(server)
     DoSomething       dummy;
     threading::kernel k( & dummy, & DoSomething::Run );
 
-
+    return 0;
+    
 
     for(size_t i=0;i<2;++i)
     {
