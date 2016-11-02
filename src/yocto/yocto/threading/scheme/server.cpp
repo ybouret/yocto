@@ -231,6 +231,8 @@ namespace yocto
         //______________________________________________________________________
         //
         //
+        //  control loop to activate threads
+        //
         //______________________________________________________________________
         void par_server::control_loop() throw()
         {
@@ -341,8 +343,9 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // we tell the control thread that he can go further
+                // we tell the control thread that it can go further
                 //______________________________________________________________
+                if(verbose) { std::cerr << fn << "workers: signaling activity level-1 from " << ctx.size << "." << ctx.rank << std::endl; }
                 activity.signal();
                 access.unlock();
 
@@ -364,6 +367,9 @@ namespace yocto
             }
 
             // at this point, access must be LOCKED
+            // we tell the control thread that it can go further
+            if(verbose) { std::cerr << fn << "workers: signaling activity level-2 from " << ctx.size << "." << ctx.rank << std::endl; }
+            activity.signal();
             goto WAITING_FOR_WORK;
 
 
