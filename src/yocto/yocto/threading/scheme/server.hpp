@@ -3,6 +3,7 @@
 
 #include "yocto/threading/scheme/executor.hpp"
 #include "yocto/threading/condition.hpp"
+#include "yocto/sequence/array.hpp"
 
 namespace yocto
 {
@@ -22,6 +23,7 @@ namespace yocto
             virtual ~server() throw();
 
             virtual job_id enqueue( kernel &k ) = 0;
+            virtual void   enqueue_all( array<kernel> &batch ) = 0;
 
 
         protected:
@@ -43,6 +45,7 @@ namespace yocto
             explicit seq_server();
 
             virtual job_id enqueue( kernel &k );
+            virtual void   enqueue_all( array<kernel> &batch );
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(seq_server);
@@ -60,6 +63,7 @@ namespace yocto
             explicit par_server(const bool setVerbose=false);
 
             virtual job_id enqueue( kernel &k );
+            virtual void   enqueue_all( array<kernel> &batch );
             void flush() throw();
 
         private:

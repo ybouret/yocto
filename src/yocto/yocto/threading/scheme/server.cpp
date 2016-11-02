@@ -36,6 +36,16 @@ namespace yocto
             k(ctx);
             return ++juuid;
         }
+
+        void  seq_server:: enqueue_all(  array<kernel> &batch )
+        {
+            const size_t n = batch.size();
+            for(size_t i=1;i<=n;++i)
+            {
+                batch[i](ctx);
+                ++juuid;
+            }
+        }
     }
 }
 
@@ -326,6 +336,34 @@ namespace yocto
             activity.signal();
             return t->uuid;
         }
+
+
+        void par_server:: enqueue_all(  array<kernel> &batch )
+        {
+            //__________________________________________________________________
+            //
+            // take control
+            //__________________________________________________________________
+            YOCTO_LOCK(access);
+
+            //__________________________________________________________________
+            //
+            // push back all tasks at once
+            //__________________________________________________________________
+            const size_t n = batch.size();
+            for(size_t i=1;i<=n;++i)
+            {
+                pending.push_back( create_task(batch[i]) );
+            }
+
+            //__________________________________________________________________
+            //
+            // and go !
+            //__________________________________________________________________
+
+            activity.signal();
+        }
+
 
         par_server::task * par_server:: create_task(const kernel &k)
         {
