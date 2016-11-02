@@ -62,5 +62,6 @@ YOCTO_UNIT_TEST_IMPL(server)
     std::cerr << std::endl;
     std::cerr << "efficiency: " << parallel::efficiency(seq_time/par_time,parsrv.size) << "%" << std::endl;
 
+    
 }
 YOCTO_UNIT_TEST_DONE()
