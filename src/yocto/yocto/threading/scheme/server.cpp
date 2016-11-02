@@ -228,6 +228,9 @@ namespace yocto
         }
 
 
+#define __DISPLAY(CODE) do { if(verbose) { std::cerr << fn << CODE << std::endl; } } while(false)
+        
+
         //______________________________________________________________________
         //
         //
