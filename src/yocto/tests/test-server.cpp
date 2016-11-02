@@ -19,7 +19,7 @@ namespace  {
                 YOCTO_LOCK(ctx.access);
                 std::cerr << "Run on " << ctx.size << "." << ctx.rank << std::endl;
             }
-                wtime::sleep(1);
+                wtime::sleep(0.5);
 
         }
 
@@ -32,20 +32,35 @@ namespace  {
 YOCTO_UNIT_TEST_IMPL(server)
 {
     threading::seq_server seqsrv;
-    threading::par_server parsrv(true);
+    threading::par_server parsrv(false);
 
     DoSomething       dummy;
     threading::kernel k( & dummy, & DoSomething::Run );
 
+    const size_t n = 8;
+    wtime chrono;
 
+    chrono.start();
+    for(size_t i=0;i<n;++i)
+    {
+        seqsrv.enqueue(k);
+    }
+    const double seq_time = chrono.query();
 
-    for(size_t i=0;i<3;++i)
+    std::cerr << "seq_time=" << seq_time * 1000.0 << std::endl;
+
+    chrono.start();
+    for(size_t i=0;i<n;++i)
     {
         parsrv.enqueue(k);
     }
     parsrv.flush();
 
-    //wtime::sleep(4);
+    const double par_time = chrono.query();
+    std::cerr << "par_time=" << par_time * 1000.0 << std::endl;
+
+    std::cerr << std::endl;
+    std::cerr << "efficiency: " << parallel::efficiency(seq_time/par_time,parsrv.size) << "%" << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()

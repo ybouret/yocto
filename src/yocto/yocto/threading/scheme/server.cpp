@@ -140,14 +140,14 @@ namespace yocto
         void par_server:: flush() throw()
         {
             access.lock();
-            __DISPLAY("flushing...");
+            __DISPLAY("flushing request");
             if(pending.size>0||current.size>0)
             {
                 // wait on a locked mutex
                 flushing.wait(access);
 
                 // wake up on a locked mutex
-                __DISPLAY("...all done");
+                __DISPLAY("flushing is done");
             }
             access.unlock();
         }
