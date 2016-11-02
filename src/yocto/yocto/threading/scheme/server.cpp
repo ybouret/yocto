@@ -76,6 +76,7 @@ namespace yocto
         }
 
 #define __DISPLAY(CODE) do { if(verbose) { std::cerr << fn << CODE << std::endl; } } while(false)
+#define __DISPLAY_SUB(CODE) __DISPLAY(ctx.size<<"."<<ctx.rank << ": " << CODE)
 
         void par_server:: quit() throw()
         {
@@ -140,10 +141,10 @@ namespace yocto
         {
             access.lock();
             __DISPLAY("flushing...");
-            if(pending.size>0)
+            if(pending.size>0||current.size>0)
             {
                 // wait on a locked mutex
-                //flushing.wait(access);
+                flushing.wait(access);
 
                 // wake up on a locked mutex
                 __DISPLAY("...all done");
@@ -178,7 +179,7 @@ namespace yocto
                     {
                         if(ready>=size)
                         {
-                            __DISPLAY("synchronised");
+                            __DISPLAY("threads are synchronised");
                             // thread placement:
                             // the control thread is on first allowed CPU !
                             size_t iThread = 0;
@@ -215,20 +216,25 @@ namespace yocto
 
 
 
-
+        //______________________________________________________________________
+        //
+        //
+        // This is the main loop
+        //
         //______________________________________________________________________
 
 
         void par_server::loop(context &ctx) throw()
         {
             access.lock();
-            __DISPLAY("enter " << ctx.size << "." << ctx.rank);
+            __DISPLAY_SUB("enter");
             ++ready;
 
             //__________________________________________________________________
             //
             // wait on a LOCKED mutex
             //__________________________________________________________________
+        WAIT_FOR_ACTIVITY:
             activity.wait(access);
 
             //__________________________________________________________________
@@ -241,13 +247,57 @@ namespace yocto
                 //
                 // end of thread
                 //______________________________________________________________
-                __DISPLAY("leave " << ctx.size << "." << ctx.rank);
+                __DISPLAY_SUB("leave");
                 access.unlock();
                 return;
             }
 
-            
+            //__________________________________________________________________
+            //
+            // ok, let us do something. At this point, we are LOCKED
+            //__________________________________________________________________
+            while(pending.size)
+            {
+                __DISPLAY_SUB("run task #" << pending.head->uuid);
+                // take something to do
+                task *t = pending.pop_front();
+                current.push_back(t);
 
+                // set activity for other
+                if(pending.size)
+                {
+                    __DISPLAY_SUB("resignaling");
+                    activity.signal();
+                }
+
+                // yield access
+                access.unlock();
+
+                // execute task
+                t->proc(ctx);
+
+                // take control
+                access.lock();
+
+                // remove task
+                (void) current.unlink(t);
+                t->~task();
+                storage.store(t);
+
+            }
+
+            //__________________________________________________________________
+            //
+            // here, no more task, we are LOCKED
+            //__________________________________________________________________
+            __DISPLAY_SUB("no more pending tasks");
+            if(current.size<=0)
+            {
+                __DISPLAY_SUB("all submitted tasks are done");
+                flushing.signal();
+            }
+
+            goto WAIT_FOR_ACTIVITY;
 
         }
 
@@ -259,7 +309,7 @@ namespace yocto
             // take control
             //__________________________________________________________________
             YOCTO_LOCK(access);
-            if(verbose) { std::cerr << "creating task #" << juuid << std::endl; }
+            __DISPLAY("creating task #" << juuid);
 
             //__________________________________________________________________
             //

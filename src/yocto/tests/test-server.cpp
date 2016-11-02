@@ -18,8 +18,9 @@ namespace  {
             {
                 YOCTO_LOCK(ctx.access);
                 std::cerr << "Run on " << ctx.size << "." << ctx.rank << std::endl;
-                wtime::sleep(0.5);
             }
+                wtime::sleep(1);
+
         }
 
     private:
@@ -36,16 +37,15 @@ YOCTO_UNIT_TEST_IMPL(server)
     DoSomething       dummy;
     threading::kernel k( & dummy, & DoSomething::Run );
 
-    return 0;
-    
 
-    for(size_t i=0;i<2;++i)
+
+    for(size_t i=0;i<3;++i)
     {
         parsrv.enqueue(k);
     }
     parsrv.flush();
 
-    //wtime::sleep(1);
+    //wtime::sleep(4);
 
 }
 YOCTO_UNIT_TEST_DONE()
