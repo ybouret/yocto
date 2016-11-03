@@ -36,7 +36,7 @@ namespace {
             {
                 sum += r.get<double>();
             }
-            ctx.make<double>(sum);
+            // warning: memory allocation is not thread safe ? ctx.make<double>(sum);
         }
 
         static size_t count;

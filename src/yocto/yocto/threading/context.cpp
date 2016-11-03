@@ -10,6 +10,7 @@ namespace yocto
         context:: context(const size_t the_rank,
                           const size_t the_size,
                           lockable    &the_lock) throw() :
+						  vslot(),
         rank(the_rank),
         size(the_size),
         access(the_lock),
