@@ -4,7 +4,7 @@
 #include "yocto/gfx/types.hpp"
 #include "yocto/container/vslot.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/threading/engine.hpp"
+#include "yocto/threading/scheme/server.hpp"
 #include "yocto/ptr/arc.hpp"
 
 namespace yocto
@@ -12,7 +12,7 @@ namespace yocto
     namespace gfx
     {
 
-        typedef arc_ptr<threading::dispatcher> thread_server;
+        typedef arc_ptr<threading::server> thread_server;
 
 
         //! execution patch
