@@ -85,7 +85,9 @@ namespace yocto
         pending(),
         current(),
         storage(),
-        ready(0)
+        ready(0),
+	activity(),
+	flushing()
         {
             init();
         }
