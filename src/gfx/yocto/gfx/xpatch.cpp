@@ -32,7 +32,7 @@ namespace yocto
 {
     namespace gfx
     {
-        xpatches:: xpatches(const patch &source, threading::dispatcher *srv) :
+        xpatches:: xpatches(const patch &source, threading::server *srv) :
         _xpatches(),
         server(srv)
         {
@@ -48,19 +48,19 @@ namespace yocto
 
         void xpatches:: setup_from(const patch &source)
         {
-            parallel::build_patches(*this,server->num_threads(),source);
+            parallel::build_patches(*this,server->cpu.num_threads(),source);
         }
 
         xpatches::xpatches(const patch &source) :
         _xpatches(),
-        server( new threading::sequential_dispatcher() )
+        server( new threading::par_server(false) )
         {
             setup_from(source);
         }
 
         xpatches:: xpatches(const patch &source, const bool setVerbose) :
         _xpatches(),
-        server( new threading::engine(setVerbose) )
+        server( new threading::par_server(setVerbose) )
         {
             setup_from(source);
         }

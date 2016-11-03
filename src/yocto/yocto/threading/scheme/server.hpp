@@ -4,6 +4,7 @@
 #include "yocto/threading/scheme/executor.hpp"
 #include "yocto/threading/condition.hpp"
 #include "yocto/sequence/array.hpp"
+#include "yocto/counted-object.hpp"
 
 namespace yocto
 {
@@ -15,7 +16,7 @@ namespace yocto
         //
         //! server interface
         //______________________________________________________________________
-        class server
+        class server : public counted_object
         {
         public:
             executor &cpu;
@@ -24,6 +25,98 @@ namespace yocto
 
             virtual job_id enqueue( kernel &k ) = 0;
             virtual void   enqueue_all( array<kernel> &batch ) = 0;
+            virtual void   flush() throw() = 0;
+
+            //__________________________________________________________________
+            //
+            //! wrapper for single instruction on shared data
+            /**
+             METHOD_POINTER(T &, context &)
+             */
+            //__________________________________________________________________
+            template <
+            typename OBJECT_POINTER,
+            typename METHOD_POINTER,
+            typename T
+            >
+            class jshared
+            {
+            public:
+
+                inline jshared(OBJECT_POINTER h, METHOD_POINTER c, T &d ) throw() :
+                host(h), call(c), data(d) {}
+
+                inline jshared(const jshared &other) throw() :
+                host(other.host), call(other.call), data(other.data) {}
+
+                inline ~jshared() throw() {}
+
+                inline void operator()( context &ctx )
+                {
+                    ((*host).*call)(data,ctx);
+                }
+
+            private:
+                OBJECT_POINTER host;
+                METHOD_POINTER call;
+                T             &data;
+                YOCTO_DISABLE_ASSIGN(jshared);
+            };
+
+
+            template <typename OBJECT_POINTER,typename METHOD_POINTER,typename T> inline
+            job_id enqueue_shared(T &data, OBJECT_POINTER host, METHOD_POINTER method)
+            {
+                const jshared<OBJECT_POINTER,METHOD_POINTER,T> js(host,method,data);
+                kernel J(js);
+                return enqueue(J);
+            }
+
+            //__________________________________________________________________
+            //
+            //! wrapper for single instruction and keep a copy of data
+            /**
+             METHOD_POINTER(T &, context &)
+             */
+            //__________________________________________________________________
+            template <
+            typename OBJECT_POINTER,
+            typename METHOD_POINTER,
+            typename T
+            >
+            class jcopy
+            {
+            public:
+
+                inline jcopy(OBJECT_POINTER h, METHOD_POINTER c, const T &d ) throw() :
+                host(h), call(c), data(d) {}
+
+                inline jcopy(const jcopy &other) throw() :
+                host(other.host), call(other.call), data(other.data) {}
+
+                inline ~jcopy() throw() {}
+
+                inline void operator()( context &ctx )
+                {
+                    ((*host).*call)(data,ctx);
+                }
+
+            private:
+                OBJECT_POINTER host;
+                METHOD_POINTER call;
+                T              data;
+                YOCTO_DISABLE_ASSIGN(jcopy);
+            };
+
+
+            template <typename OBJECT_POINTER,typename METHOD_POINTER,typename T> inline
+            job_id enqueue_copy(const T &data, OBJECT_POINTER host, METHOD_POINTER method)
+            {
+                const jcopy<OBJECT_POINTER,METHOD_POINTER,T> jc(host,method,data);
+                kernel J(jc);
+                return enqueue(J);
+            }
+
 
 
         protected:
@@ -46,6 +139,7 @@ namespace yocto
 
             virtual job_id enqueue( kernel &k );
             virtual void   enqueue_all( array<kernel> &batch );
+            virtual void   flush() throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(seq_server);
@@ -64,13 +158,13 @@ namespace yocto
 
             virtual job_id enqueue( kernel &k );
             virtual void   enqueue_all( array<kernel> &batch );
-            void flush() throw();
+            virtual void   flush() throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(par_server);
             static void start(void *args) throw();
             void   loop( context &) throw();
-            
+
             void init();
             void quit() throw();
 
@@ -101,7 +195,7 @@ namespace yocto
             
             task *create_task(const kernel &k);
         };
-
+        
     }
 }
 

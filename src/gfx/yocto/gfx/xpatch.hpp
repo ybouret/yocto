@@ -54,7 +54,7 @@ namespace yocto
         {
         public:
             //! default constructor for standalone dispatcher
-            explicit xpatches(const patch &source, threading::dispatcher *srv);
+            explicit xpatches(const patch &source, threading::server *srv);
 
             //! constructor for shared dispatcher
             explicit xpatches(const patch &source, const thread_server &srv);

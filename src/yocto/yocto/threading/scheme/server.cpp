@@ -46,6 +46,11 @@ namespace yocto
                 ++juuid;
             }
         }
+
+        void seq_server:: flush() throw()
+        {
+        }
+        
     }
 }
 
@@ -290,7 +295,7 @@ namespace yocto
                 //______________________________________________________________
                 if(pending.size)
                 {
-                    __DISPLAY_SUB("resignaling");
+                    //__DISPLAY_SUB("resignaling");
                     activity.signal();
                 }
 
@@ -326,10 +331,10 @@ namespace yocto
             //
             // here, no more pending task, we are LOCKED
             //__________________________________________________________________
-            __DISPLAY_SUB("no more pending tasks");
+            //__DISPLAY_SUB("no more pending tasks");
             if(current.size<=0)
             {
-                __DISPLAY_SUB("all submitted tasks are done");
+                //__DISPLAY_SUB("all submitted tasks are done");
                 flushing.signal();
             }
 
