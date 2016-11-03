@@ -2,10 +2,13 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/sys/wtime.hpp"
 #include "yocto/sequence/vector.hpp"
+#include "yocto/string/conv.hpp"
 
 using namespace yocto;
 
 namespace  {
+
+    static double sleeping_time = 0.2;
 
     class DoSomething
     {
@@ -20,7 +23,7 @@ namespace  {
                 YOCTO_LOCK(ctx.access);
                 std::cerr << "Run on " << ctx.size << "." << ctx.rank << std::endl;
             }
-                wtime::sleep(0.2);
+                wtime::sleep(sleeping_time);
 
         }
 
@@ -38,7 +41,18 @@ YOCTO_UNIT_TEST_IMPL(server)
     DoSomething       dummy;
     threading::kernel k( & dummy, & DoSomething::Run );
 
-    const size_t n = 8;
+    size_t n = 8;
+
+    if(argc>1)
+    {
+        n = strconv::to_size(argv[1],"n");
+    }
+
+    if(argc>2)
+    {
+        sleeping_time = strconv::to_double(argv[2],"sleeping_time");
+    }
+
     wtime chrono;
     std::cerr << "Sequential Code" << std::endl;
     chrono.start();

@@ -120,11 +120,16 @@ namespace yocto
             // release control for current tasks to finish
             //__________________________________________________________________
             access.unlock();
+
+            //__________________________________________________________________
+            //
+            // wait for current tasks to end
+            //__________________________________________________________________
             flush();
 
             //__________________________________________________________________
             //
-            // everybody come back
+            // everybody came back, time for final return
             //__________________________________________________________________
             access.lock();
             __DISPLAY("ending threads");
@@ -190,8 +195,10 @@ namespace yocto
                         if(ready>=size)
                         {
                             __DISPLAY("threads are synchronised");
-                            // thread placement:
-                            // the control thread is on first allowed CPU !
+                            //__________________________________________________
+                            //
+                            // thread placement
+                            //__________________________________________________
                             size_t iThread = 0;
                             for(thread *thr = workers.head; thr; thr=thr->next )
                             {
@@ -269,27 +276,46 @@ namespace yocto
             while(pending.size)
             {
                 __DISPLAY_SUB("run task #" << pending.head->uuid);
+
+                //______________________________________________________________
+                //
                 // take something to do
+                //______________________________________________________________
                 task *t = pending.pop_front();
                 current.push_back(t);
 
+                //______________________________________________________________
+                //
                 // set activity for other
+                //______________________________________________________________
                 if(pending.size)
                 {
                     __DISPLAY_SUB("resignaling");
                     activity.signal();
                 }
 
+                //______________________________________________________________
+                //
                 // yield access
+                //______________________________________________________________
                 access.unlock();
 
+                //______________________________________________________________
+                //
                 // execute task
+                //______________________________________________________________
                 t->proc(ctx);
 
-                // take control
+                //______________________________________________________________
+                //
+                // take control to manage selected task
+                //______________________________________________________________
                 access.lock();
 
+                //______________________________________________________________
+                //
                 // remove task
+                //______________________________________________________________
                 (void) current.unlink(t);
                 t->~task();
                 storage.store(t);
@@ -298,7 +324,7 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // here, no more task, we are LOCKED
+            // here, no more pending task, we are LOCKED
             //__________________________________________________________________
             __DISPLAY_SUB("no more pending tasks");
             if(current.size<=0)
