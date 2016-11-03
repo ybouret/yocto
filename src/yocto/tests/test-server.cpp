@@ -1,6 +1,7 @@
 #include "yocto/threading/scheme/server.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sys/wtime.hpp"
+#include "yocto/sequence/vector.hpp"
 
 using namespace yocto;
 
@@ -19,7 +20,7 @@ namespace  {
                 YOCTO_LOCK(ctx.access);
                 std::cerr << "Run on " << ctx.size << "." << ctx.rank << std::endl;
             }
-                wtime::sleep(0.5);
+                wtime::sleep(0.2);
 
         }
 
@@ -39,16 +40,17 @@ YOCTO_UNIT_TEST_IMPL(server)
 
     const size_t n = 8;
     wtime chrono;
-
+    std::cerr << "Sequential Code" << std::endl;
     chrono.start();
     for(size_t i=0;i<n;++i)
     {
         seqsrv.enqueue(k);
     }
-    const double seq_time = chrono.query();
+    double seq_time = chrono.query();
 
     std::cerr << "seq_time=" << seq_time * 1000.0 << std::endl;
 
+    std::cerr << "Parallel Code" << std::endl;
     chrono.start();
     for(size_t i=0;i<n;++i)
     {
@@ -56,12 +58,34 @@ YOCTO_UNIT_TEST_IMPL(server)
     }
     parsrv.flush();
 
-    const double par_time = chrono.query();
+    double par_time = chrono.query();
     std::cerr << "par_time=" << par_time * 1000.0 << std::endl;
 
     std::cerr << std::endl;
     std::cerr << "efficiency: " << parallel::efficiency(seq_time/par_time,parsrv.size) << "%" << std::endl;
 
+    std::cerr << std::endl;
+    std::cerr << "using batch..." << std::endl;
+
+    vector<threading::kernel> batch(n,as_capacity);
+    for(size_t i=1;i<=n;++i)  batch.push_back(k);
+
+    std::cerr << "Sequential Code" << std::endl;
+    chrono.start();
+    seqsrv.enqueue_all(batch);
+    seq_time = chrono.query();
+
+    std::cerr << "seq_time=" << seq_time * 1000.0 << std::endl;
+    std::cerr << "Parallel Code" << std::endl;
+    chrono.start();
+    parsrv.enqueue_all(batch);
+    parsrv.flush();
+
+    par_time = chrono.query();
+    std::cerr << "par_time=" << par_time * 1000.0 << std::endl;
+
+    std::cerr << std::endl;
+    std::cerr << "efficiency: " << parallel::efficiency(seq_time/par_time,parsrv.size) << "%" << std::endl;
     
 }
 YOCTO_UNIT_TEST_DONE()
