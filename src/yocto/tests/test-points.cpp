@@ -140,11 +140,11 @@ YOCTO_UNIT_TEST_IMPL(splitting)
 }
 YOCTO_UNIT_TEST_DONE()
 
-#include "yocto/parallel/engine-split.hpp"
+#include "yocto/parallel/server-split.hpp"
 
-YOCTO_UNIT_TEST_IMPL(engine_split)
+YOCTO_UNIT_TEST_IMPL(server_split)
 {
-    threading::engine server(true);
+    threading::par_server server(true);
     patch2D p2( coord2D(1,1), coord2D(10,5) );
     vector<patch2D> sub2;
     create_patches(sub2,p2,&server);

@@ -110,8 +110,6 @@ YOCTO_UNIT_TEST_INIT(150)
     
 	YOCTO_UNIT_TEST_DECL(condition);
     YOCTO_UNIT_TEST_DECL(barrier);
-    YOCTO_UNIT_TEST_DECL(engine);
-    YOCTO_UNIT_TEST_DECL(crew);
     
 	YOCTO_UNIT_TEST_DECL(dist);
     YOCTO_UNIT_TEST_DECL(binary);
@@ -142,7 +140,7 @@ YOCTO_UNIT_TEST_INIT(150)
 
     YOCTO_UNIT_TEST_DECL(points);
     YOCTO_UNIT_TEST_DECL(splitting);
-    YOCTO_UNIT_TEST_DECL(engine_split);
+    YOCTO_UNIT_TEST_DECL(server_split);
     
     YOCTO_UNIT_TEST_DECL(xtensor);
 
