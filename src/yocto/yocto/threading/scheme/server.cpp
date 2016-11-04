@@ -13,7 +13,7 @@ namespace yocto
         juuid(0)
         {
         }
-        
+
     }
 }
 
@@ -50,7 +50,7 @@ namespace yocto
         void seq_server:: flush() throw()
         {
         }
-        
+
     }
 }
 
@@ -86,8 +86,8 @@ namespace yocto
         current(),
         storage(),
         ready(0),
-	activity(),
-	flushing()
+        activity(),
+        flushing()
         {
             init();
         }
@@ -393,11 +393,11 @@ namespace yocto
             //
             // and go !
             //__________________________________________________________________
-
+            
             activity.signal();
         }
-
-
+        
+        
         par_server::task * par_server:: create_task(const kernel &k)
         {
             
@@ -414,7 +414,7 @@ namespace yocto
             }
             return t;
         }
-
-
+        
+        
     }
 }
