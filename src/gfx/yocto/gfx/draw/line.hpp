@@ -50,6 +50,20 @@ namespace yocto
         {
             draw_line<T>(img,v0.x,v0.y,v1.x,v1.y,C,alpha);
         }
+
+        template <typename T>
+        inline void draw_patch(pixmap<T>    &img,
+                               const patch  &p,
+                               const T       C,
+                               const uint8_t alpha = 0xff )
+        {
+            draw_line<T>(img,p.lower.x,p.lower.y,p.lower.x,p.upper.y,C,alpha);
+            draw_line<T>(img,p.lower.x,p.upper.y,p.upper.x,p.upper.y,C,alpha);
+            draw_line<T>(img,p.upper.x,p.upper.y,p.upper.x,p.lower.y,C,alpha);
+            draw_line<T>(img,p.upper.x,p.lower.y,p.lower.x,p.lower.y,C,alpha);
+        }
+
+
     }
 }
 

@@ -148,7 +148,10 @@ namespace yocto
             
             //! sort by decreasing size
             void sort() throw();
-            
+
+            //! sort by decreasing extension
+            void sort_by_extension() throw();
+
             void load(const tagmap &tags);
 
             void regroup_all() throw();

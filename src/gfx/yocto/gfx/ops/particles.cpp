@@ -76,6 +76,18 @@ namespace yocto {
             quicksort(self,__compare_particles);
         }
 
+        static inline int __compare_particles_extensions( const particle::ptr &lhs, const particle::ptr &rhs ) throw()
+        {
+            const vertex L = lhs->width();
+            const vertex R = rhs->width();
+            return __compare_decreasing( L.norm2(), R.norm2() );
+        }
+
+        void particles:: sort_by_extension() throw()
+        {
+            _particles &self = *this;
+            quicksort(self,__compare_particles_extensions);
+        }
 
 
         void particles:: load(const tagmap &tags)
