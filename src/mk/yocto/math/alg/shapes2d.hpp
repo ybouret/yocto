@@ -73,7 +73,7 @@ for(size_t i=1;i<=N;++i) sum += u[i];       \
 DEST = sum;                                 \
 } while(false)
 
-            inline void compute( point2d<T> &center, T &radius )
+            inline T compute( point2d<T> &center, T &radius )
             {
                 assert(data.size()>0);
                 const size_t N = data.size();
@@ -102,7 +102,20 @@ DEST = sum;                                 \
                 const T c = Q[3];
                 center.x = T(0.5)*a;
                 center.y = T(0.5)*b;
-                radius  = Sqrt( max_of<T>(0,c+center.norm2()) );
+                radius   = Sqrt( max_of<T>(0,c+center.norm2()) );
+
+                // compute RMS
+                T rms = 0;
+                for(size_t i=N;i>0;--i)
+                {
+                    const T dx = data[i].x - center.x;
+                    const T dy = data[i].y - center.y;
+                    const T rr = Hypotenuse(dx,dy);
+                    const T dR = radius - rr;
+                    rms += dR*dR;
+                }
+                rms /= N;
+                return Sqrt(rms);
             }
 #undef YOCTO_MK_FIT_CIRCLE
 
