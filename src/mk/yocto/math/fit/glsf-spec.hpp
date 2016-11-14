@@ -100,23 +100,12 @@ namespace yocto
                 }
 
                 static inline
-                T EvalDrvs(const T X, const array<T> &aorg) throw()
+                void ComputeDrvs( array<double> &drvs, const array<double> &aorg) throw()
                 {
-                    const size_t n = aorg.size();
-                    if(n>1)
+                    assert(drvs.size()==aorg.size());
+                    for(size_t i=drvs.size();i>0;--i)
                     {
-                        T ans = n * aorg[n];
-                        for(size_t i=n;i>2;)
-                        {
-                            ans *= X;
-                            --i;
-                            ans += aorg[i] * i;
-                        }
-                        return ans;
-                    }
-                    else
-                    {
-                        return 0;
+                        drvs[i] = (i-1) * aorg[i];
                     }
                 }
 
