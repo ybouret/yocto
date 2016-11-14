@@ -103,10 +103,12 @@ namespace yocto
                 void ComputeDrvs( array<double> &drvs, const array<double> &aorg) throw()
                 {
                     assert(drvs.size()==aorg.size());
-                    for(size_t i=drvs.size();i>0;--i)
+                    const size_t n = drvs.size();
+                    for(size_t i=1;i<n;++i)
                     {
-                        drvs[i] = (i-1) * aorg[i];
+                        drvs[i] = i*aorg[i+1];
                     }
+                    drvs[n] = 0;
                 }
 
 

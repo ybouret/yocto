@@ -214,6 +214,17 @@ YOCTO_UNIT_TEST_IMPL(glsf_poly)
         }
     }
 
+        {
+            vector<double> coef(4);
+            vector<double> drvs(4);
+            for(size_t i=1;i<=coef.size();++i) coef[i] = i;
+            
+            std::cerr << "coef=" << coef << std::endl;
+            _GLS::Polynomial<double>::ComputeDrvs(drvs,coef);
+            std::cerr << "drvs=" << drvs << std::endl;
+
+        }
+
 
 }
 YOCTO_UNIT_TEST_DONE()
