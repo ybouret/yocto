@@ -97,8 +97,29 @@ namespace yocto
                     {
                         return 0;
                     }
-
                 }
+
+                static inline
+                T EvalDrvs(const T X, const array<T> &aorg) throw()
+                {
+                    const size_t n = aorg.size();
+                    if(n>1)
+                    {
+                        T ans = n * aorg[n];
+                        for(size_t i=n;i>2;)
+                        {
+                            ans *= X;
+                            --i;
+                            ans += aorg[i] * i;
+                        }
+                        return ans;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+
 
                 static inline
                 bool Start( const typename GLS<T>::Sample &S,  array<T> &a )
