@@ -158,7 +158,7 @@ YOCTO_UNIT_TEST_IMPL(ops)
             IMG.save("img_fliph.png",tmp,NULL);
         }
 
-        return 0;
+        //return 0;
 
         std::cerr << "-- to YUV" << std::endl;
         yuvmap       yuv(img,YUV::fromRGB,img);
