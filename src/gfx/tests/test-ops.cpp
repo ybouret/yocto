@@ -144,7 +144,21 @@ YOCTO_UNIT_TEST_IMPL(ops)
         const string filename = argv[1];
         pixmap3      img( IMG.load3(filename,NULL) );
         IMG.save("img.png",img,NULL);
-        xpatches xps(img,true);
+        xpatches xps(img,false);
+
+        {
+            pixmap3 tmp(img);
+            tmp.flip_vertical();
+            IMG.save("img_flipv.png",tmp,NULL);
+        }
+
+        {
+            pixmap3 tmp(img);
+            tmp.flip_horizontal();
+            IMG.save("img_fliph.png",tmp,NULL);
+        }
+
+        return 0;
 
         std::cerr << "-- to YUV" << std::endl;
         yuvmap       yuv(img,YUV::fromRGB,img);

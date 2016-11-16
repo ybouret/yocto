@@ -326,5 +326,37 @@ namespace yocto
 
         }
 
+        void bitmap:: flip_vertical() throw()
+        {
+            unit_t src = 0;
+            unit_t tgt = h;
+            while(--tgt>src)
+            {
+                uint8_t *p = static_cast<uint8_t *>(get_line(src));
+                uint8_t *q = static_cast<uint8_t *>(get_line(tgt));
+                for(unit_t i=0;i<w;++i,p+=depth,q+=depth)
+                {
+                    memswap(p,q,depth);
+                }
+                ++src;
+            }
+        }
+
+        void bitmap:: flip_horizontal() throw()
+        {
+            unit_t src = 0;
+            unit_t tgt = w;
+            while(--tgt>src)
+            {
+                for(unit_t j=0;j<h;++j)
+                {
+                    memswap( get(src,j), get(tgt,j), depth);
+                }
+                ++src;
+            }
+        }
+
+
+
     }
 }

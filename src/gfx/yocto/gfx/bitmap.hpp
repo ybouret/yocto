@@ -125,6 +125,8 @@ namespace yocto
             void save(const string &filename,
                       const bool    in_color = true ) const;
 
+            void flip_vertical()   throw();
+            void flip_horizontal() throw();
 
         private:
             YOCTO_DISABLE_ASSIGN(bitmap);
