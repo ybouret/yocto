@@ -11,10 +11,11 @@ namespace yocto
         class matcher : public object
         {
         public:
-            explicit matcher(pattern *p) throw();
+            explicit matcher(pattern *p);
             virtual ~matcher() throw();
 
             bool  full_match(const string &s);
+            bool  partial_match(const string &s);
             token last;
 
         private:

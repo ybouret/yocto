@@ -33,6 +33,16 @@ YOCTO_UNIT_TEST_IMPL(match)
             {
                 std::cerr << "FALSE" << std::endl;
             }
+
+            std::cerr << "|_partial: ";
+            if(m.partial_match(s))
+            {
+                std::cerr << "TRUE: '" << m.last << "'" << std::endl;
+            }
+            else
+            {
+                std::cerr << "FALSE" << std::endl;
+            }
         }
 
     }
