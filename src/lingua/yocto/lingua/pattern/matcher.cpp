@@ -1,4 +1,5 @@
 #include "yocto/lingua/pattern/matcher.hpp"
+#include "yocto/lingua/pattern/regexp.hpp"
 #include "yocto/ios/imstream.hpp"
 #include "yocto/exception.hpp"
 
@@ -14,6 +15,15 @@ namespace yocto
                 throw exception("matcher: pattern is accepting empty strings");
             }
         }
+
+        matcher:: matcher(const char *s) : motif( regexp(s,NULL) )
+        {
+        }
+
+        matcher:: matcher(const string &s) : motif( regexp(s,NULL) )
+        {
+        }
+
 
         matcher:: ~matcher() throw()
         {

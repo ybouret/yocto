@@ -12,6 +12,8 @@ namespace yocto
         {
         public:
             explicit matcher(pattern *p);
+            explicit matcher(const char   *expr);    //!< compile expression
+            explicit matcher(const string &expr);    //!< compile expression
             virtual ~matcher() throw();
 
             bool  full_match(const string &s);
