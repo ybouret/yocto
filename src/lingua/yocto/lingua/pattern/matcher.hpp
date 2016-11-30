@@ -18,11 +18,13 @@ namespace yocto
 
             bool  full_match(const string &s);
             bool  partial_match(const string &s);
-            token last;
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(matcher);
             pattern::ptr motif;
+
+        public:
+            token last;
         };
 
     }

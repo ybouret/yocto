@@ -8,7 +8,7 @@ namespace yocto
     namespace lingua
     {
 
-        matcher:: matcher(pattern *p): motif(p)
+        matcher:: matcher(pattern *p): motif(p), last()
         {
             if(motif->match_empty())
             {
@@ -16,11 +16,11 @@ namespace yocto
             }
         }
 
-        matcher:: matcher(const char *s) : motif( regexp(s,NULL) )
+        matcher:: matcher(const char *s) : motif( regexp(s,NULL) ), last()
         {
         }
 
-        matcher:: matcher(const string &s) : motif( regexp(s,NULL) )
+        matcher:: matcher(const string &s) : motif( regexp(s,NULL) ), last()
         {
         }
 
