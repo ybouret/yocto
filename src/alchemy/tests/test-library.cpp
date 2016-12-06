@@ -23,6 +23,6 @@ YOCTO_UNIT_TEST_IMPL(library)
 
     chemlib->display(std::cerr,C);
     std::cerr << "C=" << C << std::endl;
-
+    
 }
 YOCTO_UNIT_TEST_DONE()
