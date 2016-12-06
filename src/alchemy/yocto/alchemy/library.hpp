@@ -33,6 +33,8 @@ namespace yocto
             double molar_charge_of(const array<double> &C) const throw();
             double ionic_strength_of(const array<double> &C) const throw();
 
+            void display( std::ostream &os ) const;
+
         private:
             YOCTO_DISABLE_ASSIGN(library);
             size_t max_name_length;

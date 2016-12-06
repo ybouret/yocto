@@ -77,6 +77,25 @@ namespace yocto
         }
 
 
+        void library:: display( std::ostream &os ) const
+        {
+            std::cerr << "/--";
+            for(size_t i=max_name_length;i>0;--i) std::cerr << '-';
+            std::cerr << std::endl;
+
+            for(const_iterator i = begin(); i != end(); ++i)
+            {
+                std::cerr << "| ";
+                std::cerr << (*i)->name;
+                std::cerr << std::endl;
+            }
+
+            std::cerr << "\\--";
+            for(size_t i=max_name_length;i>0;--i) std::cerr << '-';
+            std::cerr << std::endl;
+        }
+
+
     }
 }
 
