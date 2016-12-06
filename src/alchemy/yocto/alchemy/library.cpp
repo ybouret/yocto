@@ -79,20 +79,50 @@ namespace yocto
 
         void library:: display( std::ostream &os ) const
         {
-            std::cerr << "/--";
-            for(size_t i=max_name_length;i>0;--i) std::cerr << '-';
-            std::cerr << std::endl;
-
+            prolog(os);
             for(const_iterator i = begin(); i != end(); ++i)
             {
                 std::cerr << "| ";
                 std::cerr << (*i)->name;
                 std::cerr << std::endl;
             }
+            epilog(os);
+        }
 
-            std::cerr << "\\--";
-            for(size_t i=max_name_length;i>0;--i) std::cerr << '-';
-            std::cerr << std::endl;
+#define Y_ALCHEMY_EXTRA 16
+        void library:: prolog( std::ostream &os ) const
+        {
+            os << "/--";
+            for(size_t i=Y_ALCHEMY_EXTRA+max_name_length;i>0;--i) os << '-';
+            os << std::endl;
+        }
+
+        void library:: epilog(std::ostream &os) const
+        {
+            os << "\\--";
+            for(size_t i=Y_ALCHEMY_EXTRA+max_name_length;i>0;--i) os << '-';
+            os << std::endl;
+        }
+
+        void library:: display( std::ostream &os, const array<double> &C) const
+        {
+            assert(C.size()>=size());
+            prolog(os);
+            size_t j = 1;
+            for(const_iterator i = begin(); i != end(); ++i,++j)
+            {
+                os << "| ";
+                os << (*i)->name;
+                assert((*i)->indx==j);
+                for(size_t k=(*i)->name.size();k<=max_name_length;++k)
+                {
+                    os << ' ';
+                }
+                os << ": ";
+                os << C[j];
+                os << std::endl;
+            }
+            epilog(os);
         }
 
 
@@ -141,6 +171,26 @@ namespace yocto
                 z2C += (*it)->zsq * C[i];
             }
             return z2C*0.5;
+        }
+
+        double & library:: value_of( const string &name, array<double> &C ) const
+        {
+            return C[ index_of(name) ];
+        }
+        
+        double & library:: value_of( const char *name, array<double> &C ) const
+        {
+            return C[ index_of(name) ];
+        }
+
+        const double & library:: value_of( const string &name, const array<double> &C ) const
+        {
+            return C[ index_of(name) ];
+        }
+
+        const double & library:: value_of( const char *name, const array<double> &C ) const
+        {
+            return C[ index_of(name) ];
         }
 
     }
