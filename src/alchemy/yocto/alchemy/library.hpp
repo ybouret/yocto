@@ -9,7 +9,7 @@ namespace yocto
 {
     namespace alchemy
     {
-
+        
         //! a library of species, bases on species::database
         class library : public counted_object, public species::database
         {
