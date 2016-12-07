@@ -38,7 +38,8 @@ namespace yocto
         {
         public:
             typedef intr_ptr<string,equilibrium>        pointer;
-
+            typedef set<string,pointer>                 database;
+            
             const string                   name;
             const library::pointer         pLib;
             mutable equilibrium_constant   K;
