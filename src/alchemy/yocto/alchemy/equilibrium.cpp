@@ -84,6 +84,15 @@ namespace yocto
 {
     namespace alchemy
     {
+        const actors & equilibrium:: get_products()  const throw()
+        {
+            return products;
+        }
+        
+        const actors & equilibrium:: get_reactants()  const throw()
+        {
+            return reactants;
+        }
 
         
         equilibrium:: ~equilibrium() throw()
