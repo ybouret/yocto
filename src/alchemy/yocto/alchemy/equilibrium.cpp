@@ -4,11 +4,11 @@ namespace yocto
 {
     namespace alchemy
     {
-        equilibrium:: actor:: ~actor() throw()
+        actor:: ~actor() throw()
         {
         }
 
-        equilibrium:: actor::actor(const species::pointer &the_sp, const int the_nu ) throw() :
+        actor::actor(const species::pointer &the_sp, const int the_nu ) throw() :
         sp(the_sp),
         nu(the_nu),
         next(0),
@@ -16,7 +16,7 @@ namespace yocto
         {
         }
 
-        equilibrium:: actor:: actor( const actor &other ) throw() :
+        actor:: actor( const actor &other ) throw() :
         sp(other.sp),
         nu(other.nu),
         next(0),
@@ -27,6 +27,28 @@ namespace yocto
 
     }
 }
+
+namespace yocto
+{
+    namespace alchemy
+    {
+        true_equilibrium_constant:: true_equilibrium_constant(const double K) throw() : value(K) {}
+        true_equilibrium_constant:: ~true_equilibrium_constant() throw() {}
+        true_equilibrium_constant:: true_equilibrium_constant(const true_equilibrium_constant &other) throw() : value(other.value) {}
+        double true_equilibrium_constant:: operator()(double) throw() { return value; }
+
+        equilibrium_constant_callable * true_equilibrium_constant::clone() const
+        {
+            return new true_equilibrium_constant(*this);
+        }
+
+        equilibrium_constant_callable * true_equilibrium_constant:: create(const double K)
+        {
+            return new true_equilibrium_constant(K);
+        }
+    }
+}
+
 
 #include "yocto/exception.hpp"
 
@@ -40,14 +62,25 @@ namespace yocto
         {
         }
 
-        equilibrium:: equilibrium(const string           &the_name,
-                                  const library::pointer &the_lib,
-                                  const Constant         &the_K) :
+        equilibrium:: equilibrium(const string               &the_name,
+                                  const library::pointer     &the_lib,
+                                  const equilibrium_constant &the_K) :
         name(the_name),
         lib(the_lib),
         K(the_K)
         {
         }
+
+        equilibrium:: equilibrium(const string               &the_name,
+                                  const library::pointer     &the_lib,
+                                  const double                the_K) :
+        name(the_name),
+        lib(the_lib),
+        K( true_equilibrium_constant::create(the_K) )
+        {
+
+        }
+
 
         void equilibrium:: add(const string &name, const int nu)
         {
