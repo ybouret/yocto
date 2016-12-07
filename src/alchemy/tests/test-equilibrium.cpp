@@ -41,6 +41,9 @@ YOCTO_UNIT_TEST_IMPL(equilibrium)
     eq2.add("A-", 1);
     eq2.add("H+", 1);
 
+    std::cerr << "eq1: " << eq1 << std::endl;
+    std::cerr << "eq2: " << eq2 << std::endl;
+
     double K1 = 0;
     double G1 = eq1.computeGamma(C, 0.0, K1);
     std::cerr << "G1=" << G1 << ", K1=" << K1 << std::endl;

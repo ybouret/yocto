@@ -109,6 +109,37 @@ namespace yocto
 
         }
 
+        const string & equilibrium:: key() const throw() { return name; }
+
+
+        static inline void show_actor(const actor *node, std::ostream &os, const actor *head, const bool is_product)
+        {
+            const int nu = is_product ? node->nu : -node->nu;
+            switch(nu)
+            {
+                case  1: if(node!=head) { os << '+'; } break;
+                case -1: os << '-'; break;
+                default: os <<  nu << '*';  break;
+            }
+            os << '[' << node->sp->name << ']';
+        }
+
+        std::ostream & operator<<( std::ostream &os, const equilibrium &eq)
+        {
+            for(const actor *node = eq.reactants.head;node;node=node->next)
+            {
+                show_actor(node,os,eq.reactants.head,false);
+            }
+
+            os << " <=> ";
+
+            for(const actor *node = eq.products.head;node;node=node->next)
+            {
+                show_actor(node,os,eq.products.head,true);
+            }
+
+            return os;
+        }
 
         void equilibrium:: add(const string &name, const int nu)
         {

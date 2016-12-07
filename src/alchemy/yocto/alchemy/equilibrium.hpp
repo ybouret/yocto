@@ -37,7 +37,7 @@ namespace yocto
         class equilibrium : public counted_object
         {
         public:
-            typedef arc_ptr<equilibrium>        pointer;
+            typedef intr_ptr<string,equilibrium>        pointer;
 
             const string                   name;
             const library::pointer         pLib;
@@ -52,6 +52,7 @@ namespace yocto
                                  const double                the_K);
 
             virtual ~equilibrium() throw();
+            const string & key() const throw();
 
             void add(const string &name, const int nu);
 
@@ -70,6 +71,8 @@ namespace yocto
             void computeGradient(array<double>       &Phi,
                                  const array<double> &C,
                                  const double         Kt) const throw();
+
+            friend std::ostream & operator<<( std::ostream &, const equilibrium &);
 
 
         private:
