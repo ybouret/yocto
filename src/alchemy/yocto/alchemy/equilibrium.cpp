@@ -11,6 +11,7 @@ namespace yocto
         actor::actor(const species::pointer &the_sp, const int the_nu ) throw() :
         sp(the_sp),
         nu(the_nu),
+        ev( (nu<0) ?-nu:nu),
         next(0),
         prev(0)
         {
@@ -19,6 +20,7 @@ namespace yocto
         actor:: actor( const actor &other ) throw() :
         sp(other.sp),
         nu(other.nu),
+        ev(other.ev),
         next(0),
         prev(0)
         {
@@ -139,14 +141,14 @@ namespace yocto
             {
                 assert(a->nu<0);
                 const double Ca = C[a->sp->indx];
-                lhs *= ipower<double>(Ca,size_t(-a->nu));
+                lhs *= ipower<double>(Ca,a->ev);
             }
 
             for(const actor *a = products.head; a != NULL; a=a->next )
             {
                 assert(a->nu>0);
                 const double Ca = C[a->sp->indx];
-                rhs *= ipower<double>(Ca,size_t(a->nu));
+                rhs *= ipower<double>(Ca,a->ev);
             }
 
             return lhs - rhs;

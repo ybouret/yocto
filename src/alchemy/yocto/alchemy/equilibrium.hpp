@@ -15,6 +15,7 @@ namespace yocto
         public:
             const species::pointer sp;
             const int              nu;       //!< stoechio, not zero!
+            const size_t           ev;       //!< exponent value, |nu|
             actor                 *next;     //!< for list
             actor                 *prev;     //!< for list
             actor(const actor &) throw();
@@ -55,6 +56,7 @@ namespace yocto
             const actors & get_products()  const throw();
             const actors & get_reactants() const throw();
 
+            //! the equilibrium indicator
             double Gamma(const array<double> &C,
                          const double         t,
                          double              &Kt) const throw();
