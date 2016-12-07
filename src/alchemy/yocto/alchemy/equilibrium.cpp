@@ -32,9 +32,29 @@ namespace yocto
 {
     namespace alchemy
     {
-        true_equilibrium_constant:: true_equilibrium_constant(const double K) throw() : value(K) {}
+
+        typedef equilibrium_constant::callable  equilibrium_constant_callable;
+
+        //! wrapper for true constant
+        class true_equilibrium_constant : public equilibrium_constant_callable
+        {
+        public:
+            explicit true_equilibrium_constant(const double K) throw();
+            virtual ~true_equilibrium_constant() throw();
+            true_equilibrium_constant(const true_equilibrium_constant &other) throw();
+            const double value;
+            double operator()(double) throw();
+
+            virtual equilibrium_constant_callable * clone() const;
+            static  equilibrium_constant_callable * create(const double K);
+
+        private:
+            YOCTO_DISABLE_ASSIGN(true_equilibrium_constant);
+        };
+
+        true_equilibrium_constant::  true_equilibrium_constant(const double K) throw() : value(K) {}
         true_equilibrium_constant:: ~true_equilibrium_constant() throw() {}
-        true_equilibrium_constant:: true_equilibrium_constant(const true_equilibrium_constant &other) throw() : value(other.value) {}
+        true_equilibrium_constant::  true_equilibrium_constant(const true_equilibrium_constant &other) throw() : value(other.value) {}
         double true_equilibrium_constant:: operator()(double) throw() { return value; }
 
         equilibrium_constant_callable * true_equilibrium_constant::clone() const
@@ -51,6 +71,7 @@ namespace yocto
 
 
 #include "yocto/exception.hpp"
+#include "yocto/code/ipower.hpp"
 
 namespace yocto
 {
@@ -107,6 +128,29 @@ namespace yocto
             if(nu>0) products.push_back(a); else reactants.push_back(a);
         }
 
+        double equilibrium:: Gamma(const array<double> &C,
+                                   const double         t,
+                                   double              &Kt) const throw()
+        {
+            assert(C.size()>=lib->size());
+            double lhs = (Kt=K(t));
+            double rhs = 1;
+            for(const actor *a = reactants.head; a != NULL; a=a->next )
+            {
+                assert(a->nu<0);
+                const double Ca = C[a->sp->indx];
+                lhs *= ipower<double>(Ca,size_t(-a->nu));
+            }
+
+            for(const actor *a = products.head; a != NULL; a=a->next )
+            {
+                assert(a->nu>0);
+                const double Ca = C[a->sp->indx];
+                rhs *= ipower<double>(Ca,size_t(a->nu));
+            }
+
+            return lhs - rhs;
+        }
 
     }
 }

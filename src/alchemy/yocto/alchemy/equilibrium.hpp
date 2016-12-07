@@ -28,34 +28,17 @@ namespace yocto
 
         //! time dependant constant
         typedef math::numeric<double>::function equilibrium_constant;
-        typedef equilibrium_constant::callable  equilibrium_constant_callable;
 
-        //! wrapper for true constant
-        class true_equilibrium_constant : public equilibrium_constant_callable
-        {
-        public:
-            explicit true_equilibrium_constant(const double K) throw();
-            virtual ~true_equilibrium_constant() throw();
-            true_equilibrium_constant(const true_equilibrium_constant &other) throw();
-            const double value;
-            double operator()(double) throw();
-
-            virtual equilibrium_constant_callable * clone() const;
-            static  equilibrium_constant_callable * create(const double K);
-
-        private:
-            YOCTO_DISABLE_ASSIGN(true_equilibrium_constant);
-        };
-
+      
         //! an equilibrium
         class equilibrium : public counted_object
         {
         public:
             typedef arc_ptr<equilibrium>        pointer;
 
-            const string           name;
-            const library::pointer lib;
-            equilibrium_constant   K;
+            const string                   name;
+            const library::pointer         lib;
+            mutable equilibrium_constant   K;
 
             explicit equilibrium(const string               &the_name,
                                  const library::pointer     &the_lib,
@@ -71,6 +54,10 @@ namespace yocto
 
             const actors & get_products()  const throw();
             const actors & get_reactants() const throw();
+
+            double Gamma(const array<double> &C,
+                         const double         t,
+                         double              &Kt) const throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);

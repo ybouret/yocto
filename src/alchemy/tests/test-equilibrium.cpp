@@ -30,7 +30,15 @@ YOCTO_UNIT_TEST_IMPL(equilibrium)
     std::cerr << "ionic_strength: " << chemlib->ionic_strength_of(C) << std::endl;
 
     equilibrium eq1( "water", chemlib, 1e-14 );
+    eq1.add("H+",1);
+    eq1.add("HO-",1);
     std::cerr << "Kw=" << eq1.K(0) << std::endl;
+
+    double Kt = 0;
+    double G0 = eq1.Gamma(C, 0.0, Kt);
+    std::cerr << "G0=" << G0 << ", Kt=" << Kt << std::endl;
+
+
 
 }
 YOCTO_UNIT_TEST_DONE()
