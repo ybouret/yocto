@@ -14,8 +14,10 @@ namespace yocto
         {
         public:
             const species::pointer sp;
+            const size_t           id;       //!< sp->indx
             const int              nu;       //!< stoechio, not zero!
             const size_t           ev;       //!< exponent value, |nu|
+            const size_t           evm;      //!< ev-1
             actor                 *next;     //!< for list
             actor                 *prev;     //!< for list
             actor(const actor &) throw();
@@ -38,7 +40,7 @@ namespace yocto
             typedef arc_ptr<equilibrium>        pointer;
 
             const string                   name;
-            const library::pointer         lib;
+            const library::pointer         pLib;
             mutable equilibrium_constant   K;
 
             explicit equilibrium(const string               &the_name,
@@ -57,9 +59,18 @@ namespace yocto
             const actors & get_reactants() const throw();
 
             //! the equilibrium indicator
-            double Gamma(const array<double> &C,
-                         const double         t,
-                         double              &Kt) const throw();
+            double computeGamma(const array<double> &C,
+                                const double         t,
+                                double              &Kt) const throw();
+            //! update from Kt
+            double updateGamma(const array<double> &C,
+                               const double         Kt) const throw();
+
+            //! compute gradient
+            void computeGradient(array<double>       &Phi,
+                                 const array<double> &C,
+                                 const double         Kt) const throw();
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);

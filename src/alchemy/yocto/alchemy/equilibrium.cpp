@@ -10,8 +10,10 @@ namespace yocto
 
         actor::actor(const species::pointer &the_sp, const int the_nu ) throw() :
         sp(the_sp),
+        id(sp->indx),
         nu(the_nu),
         ev( (nu<0) ?-nu:nu),
+        evm(ev-1),
         next(0),
         prev(0)
         {
@@ -19,8 +21,10 @@ namespace yocto
 
         actor:: actor( const actor &other ) throw() :
         sp(other.sp),
+        id(other.id),
         nu(other.nu),
         ev(other.ev),
+        evm(other.evm),
         next(0),
         prev(0)
         {
@@ -74,6 +78,7 @@ namespace yocto
 
 #include "yocto/exception.hpp"
 #include "yocto/code/ipower.hpp"
+#include "yocto/math/core/tao.hpp"
 
 namespace yocto
 {
@@ -89,7 +94,7 @@ namespace yocto
                                   const library::pointer     &the_lib,
                                   const equilibrium_constant &the_K) :
         name(the_name),
-        lib(the_lib),
+        pLib(the_lib),
         K(the_K)
         {
         }
@@ -98,7 +103,7 @@ namespace yocto
                                   const library::pointer     &the_lib,
                                   const double                the_K) :
         name(the_name),
-        lib(the_lib),
+        pLib(the_lib),
         K( true_equilibrium_constant::create(the_K) )
         {
 
@@ -107,7 +112,7 @@ namespace yocto
 
         void equilibrium:: add(const string &name, const int nu)
         {
-            const species::pointer &sp = (*lib)[name];
+            const species::pointer &sp = (*pLib)[name];
             if(0==nu) return;
             
             for(const actor *node = products.head;node;node=node->next)
@@ -130,29 +135,85 @@ namespace yocto
             if(nu>0) products.push_back(a); else reactants.push_back(a);
         }
 
-        double equilibrium:: Gamma(const array<double> &C,
-                                   const double         t,
-                                   double              &Kt) const throw()
+        double equilibrium:: computeGamma(const array<double> &C,
+                                          const double         t,
+                                          double              &Kt) const throw()
         {
-            assert(C.size()>=lib->size());
-            double lhs = (Kt=K(t));
+            return updateGamma(C,(Kt=K(t)));
+        }
+
+        double equilibrium:: updateGamma(const array<double> &C,
+                                         const double         Kt) const throw()
+        {
+            assert(C.size()>=pLib->size());
+            double lhs = Kt;
             double rhs = 1;
             for(const actor *a = reactants.head; a != NULL; a=a->next )
             {
                 assert(a->nu<0);
-                const double Ca = C[a->sp->indx];
+                assert(a->ev>0);
+                const double Ca = C[a->id];
                 lhs *= ipower<double>(Ca,a->ev);
             }
 
             for(const actor *a = products.head; a != NULL; a=a->next )
             {
                 assert(a->nu>0);
-                const double Ca = C[a->sp->indx];
+                assert(a->ev>0);
+                const double Ca = C[a->id];
                 rhs *= ipower<double>(Ca,a->ev);
             }
 
             return lhs - rhs;
+
         }
 
+#define __ZPHI(INDEX) Phi[INDEX]=0
+
+        void equilibrium:: computeGradient(array<double>       &Phi,
+                                           const array<double> &C,
+                                           const double         Kt) const throw()
+        {
+            assert(Phi.size()==pLib->size());
+            assert(C.size()>=pLib->size());
+            const size_t M = pLib->size();
+            YOCTO_LOOP_FUNC(M,__ZPHI,1);
+
+            for(const actor *a = reactants.head; a != NULL; a=a->next )
+            {
+                const  size_t j   = a->id;
+                double        lhs = Kt * a->ev * ipower(C[j],a->evm);
+
+                for(const actor *b = reactants.head; b!=NULL; b=b->next)
+                {
+                    if(a!=b)
+                    {
+                        lhs *= ipower(C[b->id],b->ev);
+                    }
+                }
+
+                Phi[j] = lhs;
+            }
+
+            for(const actor *a = products.head; a != NULL; a=a->next )
+            {
+                const  size_t j   = a->sp->indx;
+                double        rhs = a->ev * ipower(C[j],a->evm);
+
+                for(const actor *b = products.head; b!=NULL; b=b->next)
+                {
+                    if(a!=b)
+                    {
+                        rhs *= ipower(C[b->id],b->ev);
+                    }
+                }
+
+                Phi[j] = -rhs;
+            }
+
+
+
+        }
     }
+
 }
