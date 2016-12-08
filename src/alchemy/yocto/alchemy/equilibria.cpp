@@ -24,6 +24,7 @@ namespace yocto
         Xi(),
         xi(),
         dC(),
+        active(),
         max_name_length(0)
         {}
 
@@ -51,15 +52,16 @@ namespace yocto
         {
             (size_t &)N = size();
             (size_t &)M = pLib->size();
-            dC.   release();
-            C.    release();
-            xi.   release();
-            Xi.   release();
-            K.    release();
-            Gamma.release();
-            Phi.  release();
-            NuT.  release();
-            Nu.   release();
+            active.release();
+            dC.    release();
+            C.     release();
+            xi.    release();
+            Xi.    release();
+            K.     release();
+            Gamma. release();
+            Phi.   release();
+            NuT.   release();
+            Nu.    release();
             try
             {
                 if(N>0)
@@ -73,6 +75,7 @@ namespace yocto
                     xi.make(N);
                     C.make(M);
                     dC.make(M);
+                    active.make(M,false);
                     size_t i = 1;
                     for(iterator it=begin();i<=N;++i,++it)
                     {
@@ -83,6 +86,7 @@ namespace yocto
                             const int    nu = node->nu;
                             Nu[i][j]  = nu;
                             NuT[j][i] = nu;
+                            active[j] = true;
                         }
                         for(const actor *node = eq.get_reactants().head;node;node=node->next)
                         {
@@ -90,6 +94,7 @@ namespace yocto
                             const int    nu = node->nu;
                             Nu[i][j]  = nu;
                             NuT[j][i] = nu;
+                            active[j] = true;
                         }
 
                     }
@@ -112,7 +117,8 @@ namespace yocto
             }
         }
 
-        void equilibria:: computeXi(const array<double> &C0, const double t)
+        void equilibria:: computeXi(const array<double> &C0,
+                                    const double         t)
         {
             size_t i = 1;
             for(iterator it=begin();i<=N;++i,++it)
@@ -173,80 +179,13 @@ namespace yocto
                 tao::neg(xi,Gamma);
                 LU<double>::solve(Xi,xi);
 
-                std::cerr << "C  =" << C << std::endl;
+                std::cerr << "C  =" << C  << std::endl;
                 std::cerr << "xi =" << xi << std::endl;
 
 
-                //______________________________________________________________
-                //
-                // study the extents
-                //______________________________________________________________
-                register size_t i  = 1;
-                for(iterator    it = begin();i<=N;++i,++it)
-                {
-                    const equilibrium &eq  = **it;
-                    const double       xii = xi[i];
-                    if(xii>0)
-                    {
-                        {
-                            //__________________________________________________
-                            //
-                            // there may be a limitation by a reactant
-                            //__________________________________________________
-                            const actor *r = eq.get_reactants().head;
-                            if(r)
-                            {
-                                const actor *the_r  = r;
-                                double       xiMax  = C[r->id]/r->ev;
-                                for(r=r->next;r!=NULL;r=r->next)
-                                {
-                                    const double xiTmp = C[r->id]/r->ev;
-                                    if(xiTmp<xiMax)
-                                    {
-                                        xiMax=xiTmp;
-                                        the_r=r;
-                                    }
-                                }
-                                if(xiMax>=xii)
-                                {
-                                    std::cerr << "Limited by reactant " << the_r->sp->name << std::endl; exit(0);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if(xii<0)
-                        {
-                            //__________________________________________________
-                            //
-                            // there may be a limitation by a product
-                            //__________________________________________________
-                            const actor *p = eq.get_products().head;
-                            if(p)
-                            {
-                                const actor *the_p = p;
-                                double       xiMin = -C[p->id]/p->ev;
-                                for(p=p->next;p!=NULL;p=p->next)
-                                {
-                                    const double xiTmp = -C[p->id]/p->ev;
-                                    if(xiTmp>xiMin)
-                                    {
-                                        xiMin=xiTmp;
-                                        the_p=p;
-                                    }
-                                }
-                                if(xiMin<=xii)
-                                {
-                                    std::cerr << "Limited by product " << the_p->sp->name << std::endl; exit(0);
-                                }
-                            }
-                        }
-                    }
-                }
-
-
                 
+                tao::mul(dC, NuT, xi);
+                tao::add(C, dC);
                 updateXi(C);
                 if(++count>=10) break;
             }

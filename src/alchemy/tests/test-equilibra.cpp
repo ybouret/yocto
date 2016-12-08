@@ -16,9 +16,13 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     
     chemlib->add("H+",1);
     chemlib->add("HO-",-1);
+
+    chemlib->add("Na+",1);
+    chemlib->add("Cl-",-1);
+
     chemlib->add("AH",0);
     chemlib->add("A-",-1);
-    
+
     vector<double> C( chemlib->size() + 2);
     for(size_t i=1;i<=C.size(); ++i)
     {
@@ -34,7 +38,7 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     }
 
     {
-        equilibrium &eq = chemsys.add("acide",1e-4);
+        equilibrium &eq = chemsys.add("acid",1e-4);
         eq.add("H+",1);
         eq.add("A-",1);
         eq.add("AH",-1);
@@ -42,12 +46,12 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
 
     
     chemsys.compile();
-    std::cerr << "Nu    = "  << chemsys.Nu   << std::endl;
-    std::cerr << "NuT   = "  << chemsys.NuT  << std::endl;
-
+    std::cerr << "Nu     = "  << chemsys.Nu   << std::endl;
+    std::cerr << "NuT    = "  << chemsys.NuT  << std::endl;
+    std::cerr << "active = "  << chemsys.active << std::endl;
     chemsys.computeXi(C, 0);
-    std::cerr << "Gamma = " << chemsys.Gamma << std::endl;
-    std::cerr << "Phi   = " << chemsys.Phi   << std::endl;
+    std::cerr << "Gamma  = " << chemsys.Gamma << std::endl;
+    std::cerr << "Phi    = " << chemsys.Phi   << std::endl;
 
     std::cerr << "-- Normalizing..." << std::endl;
     chemsys.normalize(C, 0.0);

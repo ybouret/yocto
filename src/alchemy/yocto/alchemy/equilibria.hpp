@@ -20,18 +20,18 @@ namespace yocto
             virtual ~equilibria() throw();
 
             const library::pointer pLib;
-            const size_t           M;     //!< species
-            const size_t           N;     //!< equilibria
-            matrix<double>         Nu;    //!< NxM, topology
-            matrix<double>         NuT;   //!< Nu'
-            matrix<double>         Phi;   //!< NxM, Jacobian
-            vector<double>         Gamma; //!< N, equilibrium indicators
-            vector<double>         K;     //!< N, equilibrium constants at a given time
-            matrix<double>         Xi;    //!< Nu'*Phi, chemical Jacobian
-            vector<double>         xi;    //!< chemical extent
-            vector<double>         C;     //!< local concentrations
-            vector<double>         dC;    //!< delta concentration
-
+            const size_t           M;      //!< species
+            const size_t           N;      //!< equilibria
+            matrix<double>         Nu;     //!< NxM, topology
+            matrix<double>         NuT;    //!< Nu'
+            matrix<double>         Phi;    //!< NxM, Jacobian
+            vector<double>         Gamma;  //!< N, equilibrium indicators
+            vector<double>         K;      //!< N, equilibrium constants at a given time
+            matrix<double>         Xi;     //!< Nu'*Phi, chemical Jacobian
+            vector<double>         xi;     //!< chemical extent
+            vector<double>         C;      //!< local concentrations
+            vector<double>         dC;     //!< delta concentration
+            vector<bool>           active; //!< active species flag
             equilibrium & add( const string &name, const equilibrium_constant &K);
             equilibrium & add( const string &name, const double                K);
 
