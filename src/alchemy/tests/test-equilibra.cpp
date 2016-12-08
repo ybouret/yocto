@@ -32,14 +32,26 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
         eq.add("H+", 1);
         eq.add("HO-",1);
     }
+
+    {
+        equilibrium &eq = chemsys.add("acide",1e-4);
+        eq.add("H+",1);
+        eq.add("A-",1);
+        eq.add("AH",-1);
+    }
+
     
     chemsys.compile();
-    std::cerr << "Nu    ="  << chemsys.Nu  << std::endl;
-    std::cerr << "NuT   =" << chemsys.NuT << std::endl;
+    std::cerr << "Nu    = "  << chemsys.Nu   << std::endl;
+    std::cerr << "NuT   = "  << chemsys.NuT  << std::endl;
 
-    chemsys.computeGammaAndPhi(C, 0);
-    std::cerr << "Gamma =" << chemsys.Gamma << std::endl;
-    std::cerr << "Phi   =" << chemsys.Phi   << std::endl;
+    chemsys.computeXi(C, 0);
+    std::cerr << "Gamma = " << chemsys.Gamma << std::endl;
+    std::cerr << "Phi   = " << chemsys.Phi   << std::endl;
+
+    std::cerr << "-- Normalizing..." << std::endl;
+    chemsys.normalize(C, 0.0);
+
 
 }
 YOCTO_UNIT_TEST_DONE()

@@ -1,8 +1,12 @@
 #include "yocto/alchemy/equilibria.hpp"
 #include "yocto/code/utils.hpp"
+#include "yocto/math/core/tao.hpp"
+#include "yocto/math/core/lu.hpp"
 
 namespace yocto
 {
+    using namespace math;
+
     namespace alchemy
     {
         equilibria:: ~equilibria() throw() {}
@@ -14,6 +18,12 @@ namespace yocto
         N(0),
         Nu(),
         NuT(),
+        Phi(),
+        Gamma(),
+        K(),
+        Xi(),
+        xi(),
+        dC(),
         max_name_length(0)
         {}
 
@@ -41,11 +51,14 @@ namespace yocto
         {
             (size_t &)N = size();
             (size_t &)M = pLib->size();
-            K.release();
+            dC.   release();
+            xi.   release();
+            Xi.   release();
+            K.    release();
             Gamma.release();
-            Phi.release();
-            NuT.release();
-            Nu.release();
+            Phi.  release();
+            NuT.  release();
+            Nu.   release();
             try
             {
                 if(N>0)
@@ -55,6 +68,9 @@ namespace yocto
                     Phi.make(N,M);
                     Gamma.make(N);
                     K.make(N);
+                    Xi.make(N);
+                    xi.make(N);
+                    dC.make(M);
                     size_t i = 1;
                     for(iterator it=begin();i<=N;++i,++it)
                     {
@@ -66,6 +82,14 @@ namespace yocto
                             Nu[i][j]  = nu;
                             NuT[j][i] = nu;
                         }
+                        for(const actor *node = eq.get_reactants().head;node;node=node->next)
+                        {
+                            const size_t j  = node->id;
+                            const int    nu = node->nu;
+                            Nu[i][j]  = nu;
+                            NuT[j][i] = nu;
+                        }
+
                     }
                 }
             }
@@ -77,17 +101,85 @@ namespace yocto
             }
         }
 
-        void equilibria:: computeGammaAndPhi(const array<double> &C, const double t)
+        void equilibria:: buildXi()
+        {
+            tao::mmul_rtrn(Xi, Phi, Nu);
+            if(!LU<double>::build(Xi))
+            {
+                throw exception("equilibria: singular composition");
+            }
+        }
+
+        void equilibria:: computeXi(const array<double> &C, const double t)
         {
             size_t i = 1;
             for(iterator it=begin();i<=N;++i,++it)
             {
                 const equilibrium &eq = **it;
                 Gamma[i] = eq.computeGamma(C, t, K[i]);
-                eq.computeGradient(Phi[i], C, K[i]);
+                eq.computeGradient(Phi[i], C,    K[i]);
             }
+            buildXi();
+        }
+
+        void equilibria:: updateXi(const array<double> &C)
+        {
+            size_t i=1;
+            for(iterator it=begin();i<=N;++i,++it)
+            {
+                const equilibrium &eq = **it;
+                const double Kt = K[i];
+                Gamma[i] = eq.updateGamma(C,Kt);
+                eq.computeGradient(Phi[i],C,Kt);
+            }
+            buildXi();
         }
 
     }
 }
+
+
+namespace yocto
+{
+    namespace alchemy
+    {
+
+        void equilibria:: normalize(array<double> &C, const double t)
+        {
+            //__________________________________________________________________
+            //
+            // initialize
+            //__________________________________________________________________
+            assert(C.size()>=M);
+#ifndef NDEBUG
+            for(size_t i=1;i<=M;++i) { assert(C[i]>=0); }
+#endif
+            computeXi(C,t);
+
+            while(true)
+            {
+                //______________________________________________________________
+                //
+                // compute the raw extent
+                //______________________________________________________________
+                tao::neg(xi,Gamma);
+                LU<double>::solve(Xi,xi);
+
+                std::cerr << "C=" << C << std::endl;
+                std::cerr << "xi=" << xi << std::endl;
+                tao::mul(dC, NuT, xi);
+                std::cerr << "dC=" << dC << std::endl;
+                
+
+                break;
+            }
+
+
+        }
+
+
+    }
+
+}
+
 
