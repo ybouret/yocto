@@ -14,6 +14,8 @@ namespace yocto
         class equilibria : public equilibrium::database
         {
         public:
+            
+
             explicit equilibria(const library::pointer &shlib);
             virtual ~equilibria() throw();
 
@@ -27,17 +29,18 @@ namespace yocto
             vector<double>         K;     //!< N, equilibrium constants at a given time
             matrix<double>         Xi;    //!< Nu'*Phi, chemical Jacobian
             vector<double>         xi;    //!< chemical extent
+            vector<double>         C;     //!< local concentrations
             vector<double>         dC;    //!< delta concentration
-            
+
             equilibrium & add( const string &name, const equilibrium_constant &K);
             equilibrium & add( const string &name, const double                K);
 
             void compile();
 
-            void computeXi(const array<double> &C, const double t); // compute Gamma,K, Phi and Xi at a given time
-            void updateXi(const array<double> &C); //!< update Gamma,Phi and Xi
+            void computeXi(const array<double> &C0, const double t); // compute Gamma,K, Phi and Xi at a given time
+            void updateXi(const array<double>  &C0); //!< update Gamma,Phi and Xi
 
-            void normalize( array<double> &C, const double t );
+            void normalize( array<double> &C0, const double t );
 
 
         private:

@@ -75,6 +75,7 @@ namespace yocto
 
             friend std::ostream & operator<<( std::ostream &, const equilibrium &);
 
+            
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);

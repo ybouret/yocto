@@ -32,14 +32,14 @@ namespace yocto
             if( !insert(eq) ) throw exception("alchemy.equilibria(multiple '%s')",eq->name.c_str());
             max_name_length = max_of<size_t>(max_name_length,eq->name.size());
         }
-        
+
         equilibrium & equilibria:: add( const string &name, const equilibrium_constant &K)
         {
             equilibrium::pointer eq( new equilibrium(name,pLib,K) );
             submit(eq);
             return *eq;
         }
-        
+
         equilibrium & equilibria:: add( const string &name, const double K)
         {
             equilibrium::pointer eq( new equilibrium(name,pLib,K) );
@@ -52,6 +52,7 @@ namespace yocto
             (size_t &)N = size();
             (size_t &)M = pLib->size();
             dC.   release();
+            C.    release();
             xi.   release();
             Xi.   release();
             K.    release();
@@ -70,6 +71,7 @@ namespace yocto
                     K.make(N);
                     Xi.make(N);
                     xi.make(N);
+                    C.make(M);
                     dC.make(M);
                     size_t i = 1;
                     for(iterator it=begin();i<=N;++i,++it)
@@ -110,27 +112,27 @@ namespace yocto
             }
         }
 
-        void equilibria:: computeXi(const array<double> &C, const double t)
+        void equilibria:: computeXi(const array<double> &C0, const double t)
         {
             size_t i = 1;
             for(iterator it=begin();i<=N;++i,++it)
             {
                 const equilibrium &eq = **it;
-                Gamma[i] = eq.computeGamma(C, t, K[i]);
-                eq.computeGradient(Phi[i], C,    K[i]);
+                Gamma[i] = eq.computeGamma(C0, t, K[i]);
+                eq.computeGradient(Phi[i], C0,    K[i]);
             }
             buildXi();
         }
 
-        void equilibria:: updateXi(const array<double> &C)
+        void equilibria:: updateXi(const array<double> &C0)
         {
             size_t i=1;
             for(iterator it=begin();i<=N;++i,++it)
             {
                 const equilibrium &eq = **it;
                 const double Kt = K[i];
-                Gamma[i] = eq.updateGamma(C,Kt);
-                eq.computeGradient(Phi[i],C,Kt);
+                Gamma[i] = eq.updateGamma(C0,Kt);
+                eq.computeGradient(Phi[i],C0,Kt);
             }
             buildXi();
         }
@@ -138,48 +140,97 @@ namespace yocto
     }
 }
 
+#include "yocto/code/utils.hpp"
 
 namespace yocto
 {
     namespace alchemy
     {
 
-        void equilibria:: normalize(array<double> &C, const double t)
+        void equilibria:: normalize(array<double> &C0, const double t)
         {
             //__________________________________________________________________
             //
             // initialize
             //__________________________________________________________________
-            assert(C.size()>=M);
+            assert(C0.size()>=M);
+            tao::set(C,C0);
+
 #ifndef NDEBUG
             for(size_t i=1;i<=M;++i) { assert(C[i]>=0); }
 #endif
             computeXi(C,t);
 
+            size_t count=0;
             while(true)
             {
                 //______________________________________________________________
                 //
                 // compute the raw extent
                 //______________________________________________________________
+                std::cerr << std::endl;
+                std::cerr << "Gamma=" << Gamma << std::endl;
                 tao::neg(xi,Gamma);
                 LU<double>::solve(Xi,xi);
 
-                std::cerr << "C=" << C << std::endl;
-                std::cerr << "xi=" << xi << std::endl;
-                tao::mul(dC, NuT, xi);
-                std::cerr << "dC=" << dC << std::endl;
+                std::cerr << "C  =" << C << std::endl;
+                std::cerr << "xi =" << xi << std::endl;
+
+
+                //______________________________________________________________
+                //
+                // study the extents
+                //______________________________________________________________
+                register size_t i  = 1;
+                for(iterator    it = begin();i<=N;++i,++it)
+                {
+                    const equilibrium &eq  = **it;
+                    const double       xii = xi[i];
+                    if(xii>0)
+                    {
+                        {
+                            //__________________________________________________
+                            //
+                            // there may be a limitation by a reactant
+                            //__________________________________________________
+                            const actor *r = eq.get_reactants().head;
+                            if(r)
+                            {
+
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(xii<0)
+                        {
+                            //__________________________________________________
+                            //
+                            // there may be a limitation by a product
+                            //__________________________________________________
+                            const actor *p = eq.get_products().head;
+                            if(p)
+                            {
+                                
+                            }
+                        }
+                    }
+                }
+
+
                 
-
-                break;
+                updateXi(C);
+                if(++count>=10) break;
             }
-
 
         }
 
 
-    }
 
+        
+        
+    }
+    
 }
 
 
