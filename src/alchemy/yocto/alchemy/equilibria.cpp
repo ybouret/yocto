@@ -196,7 +196,21 @@ namespace yocto
                             const actor *r = eq.get_reactants().head;
                             if(r)
                             {
-
+                                const actor *the_r  = r;
+                                double       xiMax  = C[r->id]/r->ev;
+                                for(r=r->next;r!=NULL;r=r->next)
+                                {
+                                    const double xiTmp = C[r->id]/r->ev;
+                                    if(xiTmp<xiMax)
+                                    {
+                                        xiMax=xiTmp;
+                                        the_r=r;
+                                    }
+                                }
+                                if(xiMax>=xii)
+                                {
+                                    std::cerr << "Limited by reactant " << the_r->sp->name << std::endl; exit(0);
+                                }
                             }
                         }
                     }
@@ -211,7 +225,21 @@ namespace yocto
                             const actor *p = eq.get_products().head;
                             if(p)
                             {
-                                
+                                const actor *the_p = p;
+                                double       xiMin = -C[p->id]/p->ev;
+                                for(p=p->next;p!=NULL;p=p->next)
+                                {
+                                    const double xiTmp = -C[p->id]/p->ev;
+                                    if(xiTmp>xiMin)
+                                    {
+                                        xiMin=xiTmp;
+                                        the_p=p;
+                                    }
+                                }
+                                if(xiMin<=xii)
+                                {
+                                    std::cerr << "Limited by product " << the_p->sp->name << std::endl; exit(0);
+                                }
                             }
                         }
                     }
