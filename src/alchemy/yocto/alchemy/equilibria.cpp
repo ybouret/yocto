@@ -41,6 +41,9 @@ namespace yocto
         {
             (size_t &)N = size();
             (size_t &)M = pLib->size();
+            K.release();
+            Gamma.release();
+            Phi.release();
             NuT.release();
             Nu.release();
             try
@@ -49,6 +52,9 @@ namespace yocto
                 {
                     Nu.make(N,M);
                     NuT.make(M,N);
+                    Phi.make(N,M);
+                    Gamma.make(N);
+                    K.make(N);
                     size_t i = 1;
                     for(iterator it=begin();i<=N;++i,++it)
                     {
@@ -70,7 +76,17 @@ namespace yocto
                 throw;
             }
         }
-        
+
+        void equilibria:: computeGammaAndPhi(const array<double> &C, const double t)
+        {
+            size_t i = 1;
+            for(iterator it=begin();i<=N;++i,++it)
+            {
+                const equilibrium &eq = **it;
+                Gamma[i] = eq.computeGamma(C, t, K[i]);
+                eq.computeGradient(Phi[i], C, K[i]);
+            }
+        }
 
     }
 }

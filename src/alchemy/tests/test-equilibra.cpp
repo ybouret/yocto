@@ -34,9 +34,12 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     }
     
     chemsys.compile();
-    std::cerr << "Nu="  << chemsys.Nu  << std::endl;
-    std::cerr << "NuT=" << chemsys.NuT << std::endl;
+    std::cerr << "Nu    ="  << chemsys.Nu  << std::endl;
+    std::cerr << "NuT   =" << chemsys.NuT << std::endl;
 
+    chemsys.computeGammaAndPhi(C, 0);
+    std::cerr << "Gamma =" << chemsys.Gamma << std::endl;
+    std::cerr << "Phi   =" << chemsys.Phi   << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()
