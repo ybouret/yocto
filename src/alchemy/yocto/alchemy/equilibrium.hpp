@@ -101,7 +101,7 @@ namespace yocto
         public:
             mutable xi_limits xi;
             void compute_limits() const throw();
-            
+
         };
 
     }

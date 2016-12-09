@@ -26,6 +26,8 @@ namespace yocto
         C(),
         dC(),
         active(),
+        beta(),
+        Nu2(),
         max_name_length(0)
         {}
 
@@ -53,6 +55,8 @@ namespace yocto
         {
             (size_t &)N = size();
             (size_t &)M = pLib->size();
+            Nu2.   release();
+            beta.  release();
             active.release();
             dC.    release();
             C.     release();
@@ -77,6 +81,9 @@ namespace yocto
                     C.make(M);
                     dC.make(M);
                     active.make(M,false);
+                    beta.make(M);
+                    Nu2.make(M,M);
+
                     size_t i = 1;
                     for(iterator it=begin();i<=N;++i,++it)
                     {
@@ -97,8 +104,8 @@ namespace yocto
                             NuT[j][i] = nu;
                             active[j] = true;
                         }
-
                     }
+                    tao::mmul(Nu2, NuT, Nu);
                 }
             }
             catch(...)
@@ -184,7 +191,7 @@ namespace yocto
                 std::cerr << "xi =" << xi << std::endl;
 
 
-                
+
                 tao::mul(dC, NuT, xi);
                 tao::add(C, dC);
                 updateXi(C);
@@ -195,7 +202,43 @@ namespace yocto
 
 
 
-        
+
+
+    }
+
+}
+
+namespace yocto
+{
+    namespace alchemy
+    {
+
+        void equilibria:: balance()
+        {
+            std::cerr << "C=" << C << std::endl;
+
+            while(true)
+            {
+                size_t bad = 0;
+                for(size_t i=M;i>0;--i)
+                {
+                    beta[i] = 0;
+                    if(active[i]&&C[i]<0)
+                    {
+                        beta[i] = 1;
+                        ++bad;
+                    }
+                }
+                if(bad<=0) return;
+                std::cerr << "bad="  << bad  << std::endl;
+                std::cerr << "beta=" << beta << std::endl;
+
+                // algebraic delta C
+                tao::mul(dC,Nu2,beta);
+                std::cerr << "dC=" << dC << std::endl;
+                break;
+            }
+        }
         
     }
     

@@ -23,7 +23,7 @@ namespace yocto
             const size_t           M;      //!< species
             const size_t           N;      //!< equilibria
             matrix<double>         Nu;     //!< NxM, topology
-            matrix<double>         NuT;    //!< Nu'
+            matrix<double>         NuT;    //!< Nu', MxM
             matrix<double>         Phi;    //!< NxM, Jacobian
             vector<double>         Gamma;  //!< N, equilibrium indicators
             vector<double>         K;      //!< N, equilibrium constants at a given time
@@ -32,6 +32,8 @@ namespace yocto
             vector<double>         C;      //!< local concentrations
             vector<double>         dC;     //!< delta concentration
             vector<bool>           active; //!< active species flag
+            vector<double>         beta;   //!< gradient for balancing, M
+            matrix<double>         Nu2;    //!< Nu'*Nu, MxM
             equilibrium & add( const string &name, const equilibrium_constant &K);
             equilibrium & add( const string &name, const double                K);
 
@@ -39,6 +41,8 @@ namespace yocto
 
             void computeXi(const array<double> &C0, const double t); // compute Gamma,K, Phi and Xi at a given time
             void updateXi(const array<double>  &C0); //!< update Gamma,Phi and Xi
+
+            void balance(); //!< balance C
 
             void normalize( array<double> &C0, const double t );
 
