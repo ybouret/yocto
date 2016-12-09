@@ -40,10 +40,11 @@ $$
 Let us assume that we numerically meet some negative active concentration.
 We hence want to minimise the function
 \begin{equation}
-	\mathcal{E}\left(\vec{C}\right) = 
+	\mathcal{E}\left(\vec{C}\right) = \sum_j
 	\left\lbrace
-	\begin{array}{cc}
-	-C_j & \\
+	\begin{array}{cl}
+	-C_j & \text{if species } j \text{ is active and } C_j<0\\
+	0    & \text{otherwise}\\
 	\end{array}
 	\right.
 \end{equation}
