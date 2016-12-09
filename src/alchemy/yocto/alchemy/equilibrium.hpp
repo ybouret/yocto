@@ -4,6 +4,7 @@
 #include "yocto/alchemy/library.hpp"
 #include "yocto/core/list.hpp"
 #include "yocto/math/types.hpp"
+#include "yocto/container/tuple.hpp"
 
 namespace yocto
 {
@@ -31,6 +32,23 @@ namespace yocto
 
         //! time dependant constant
         typedef math::numeric<double>::function equilibrium_constant;
+
+        // a xi limit
+        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,
+                        xi_limit,
+                        bool,  exists,
+                        double,value);
+        inline xi_limit() throw() : exists(false), value(0) {}
+        YOCTO_PAIR_END();
+
+        //
+        YOCTO_TRIPLE_DECL(YOCTO_TUPLE_STANDARD,
+                          xi_limits,
+                          xi_limit,forward,
+                          xi_limit,reverse,
+                          bool,    blocked);
+        inline xi_limits() throw() : forward(), reverse(), blocked(false) {}
+        YOCTO_TRIPLE_END();
 
       
         //! an equilibrium
@@ -75,12 +93,15 @@ namespace yocto
 
             friend std::ostream & operator<<( std::ostream &, const equilibrium &);
 
-            
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);
             actors products;
             actors reactants;
+        public:
+            mutable xi_limits xi;
+            void compute_limits() const throw();
+            
         };
 
     }

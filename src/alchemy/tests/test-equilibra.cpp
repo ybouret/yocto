@@ -26,7 +26,7 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     vector<double> C( chemlib->size() + 2);
     for(size_t i=1;i<=C.size(); ++i)
     {
-        C[i] = alea<double>();
+        C[i] = 1e-4*alea<double>();
     }
     
     equilibria chemsys(chemlib);

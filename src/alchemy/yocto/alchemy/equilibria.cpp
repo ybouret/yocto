@@ -23,6 +23,7 @@ namespace yocto
         K(),
         Xi(),
         xi(),
+        C(),
         dC(),
         active(),
         max_name_length(0)
