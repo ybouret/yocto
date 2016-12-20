@@ -94,7 +94,7 @@ namespace yocto
                         for(const actor *node = eq.get_products().head;node;node=node->next)
                         {
                             const size_t j  = node->id;
-                            const int    nu = node->nu;
+                            const int    nu = node->nu; assert(nu>0);
                             Nu[i][j]  = nu;
                             NuT[j][i] = nu;
                             active[j] = true;
@@ -102,7 +102,7 @@ namespace yocto
                         for(const actor *node = eq.get_reactants().head;node;node=node->next)
                         {
                             const size_t j  = node->id;
-                            const int    nu = node->nu;
+                            const int    nu = node->nu; assert(nu<0);
                             Nu[i][j]  = nu;
                             NuT[j][i] = nu;
                             active[j] = true;
@@ -221,23 +221,44 @@ namespace yocto
             std::cerr << "C=" << C << std::endl;
             while(true)
             {
-                size_t bad = 0;
+                //______________________________________________________________
+                //
+                // counting bad species
+                //______________________________________________________________
+                size_t nbad = 0;
                 for(size_t i=M;i>0;--i)
                 {
                     beta[i] = 0;
                     if(active[i]&&C[i]<0)
                     {
                         beta[i] = 1;
-                        ++bad;
+                        ++nbad;
                     }
                 }
-                if(bad<=0) return;
-                std::cerr << "bad="  << bad  << std::endl;
+                if(nbad<=0) return;
+                std::cerr << "nbad=" << nbad  << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
 
-                // algebraic eta
+                //______________________________________________________________
+                //
+                // algebraic eta: descent direction
+                //______________________________________________________________
                 tao::mul(eta,Nu2,beta);
                 std::cerr << "eta=" << eta << std::endl;
+                double alpha = 0;
+                size_t jzero = 0;
+
+                //______________________________________________________________
+                //
+                // find greatest alpha
+                //______________________________________________________________
+
+                for(size_t j=M;j>0;--j)
+                {
+                    if(active[j])
+                    {
+                    }
+                }
                 break;
             }
         }

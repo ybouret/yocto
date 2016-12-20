@@ -35,6 +35,7 @@ namespace yocto
             vector<int>            beta;   //!< gradient for balancing, M
             matrix<int>            Nu2;    //!< Nu'*Nu, MxM
             vector<int>            eta;    //!< integer descent direction for balancing, Nu2*beta
+            
             equilibrium & add( const string &name, const equilibrium_constant &K);
             equilibrium & add( const string &name, const double                K);
 
