@@ -37,18 +37,7 @@ $$
 $$
 
 \section{Balancing Concentrations}
-
-%Let us assume that we numerically meet some negative active concentration.
-%We hence want to minimise the function
-%\begin{equation}
-%	\mathcal{E}\left(\vec{C}\right) = \sum_j
-%	\left\lbrace
-%	\begin{array}{cl}
-%	-C_j & \text{if species } j \text{ is active and } C_j<0\\
-%	0    & \text{otherwise}\\
-%	\end{array}
-%	\right.
-%\end{equation}
+\subsection{Method}
 
 Let us assume that we define an objective function $\mathcal{E}\left(\vec{C}\right)$ which is minimal with value 0 when all active species are positive. Whenever one of those concentrations is negative, we want to find and extent $\vec{\xi}$ which optimises 
 \begin{equation}
@@ -56,7 +45,7 @@ Let us assume that we define an objective function $\mathcal{E}\left(\vec{C}\rig
 \end{equation}
 The descent direction w.r.t. $\vec{\xi}$ is
 \begin{equation}
-	\vec{\eta} = -\partial_{\vec{\xi}} \mathcal{E} = -\mymat{\nu} \mygrad \mathcal{E} = \mymat{\nu} \vec{\beta}
+	-\partial_{\vec{\xi}} \mathcal{E} = -\mymat{\nu} \mygrad \mathcal{E} = \mymat{\nu} \vec{\beta}
 \end{equation}
 with
 \begin{equation}
@@ -64,8 +53,28 @@ with
 \end{equation}
 Accordingly, 
 \begin{equation}
-\exists \alpha \geq 0,\text{ such that }\delta\vec{C}_\alpha = \alpha \mytrn{\mymat{\nu}} \mymat{\nu} \vec{\beta} \text{ will decrease } \mathcal{E}\left( \vec{C}+\delta\vec{C}_\alpha \right)
+\exists \alpha \geq 0,\text{ such that }\delta\vec{C}_\alpha 
+= \alpha \mytrn{\mymat{\nu}} \mymat{\nu} \vec{\beta}
+= \alpha \vec{\eta} \text{ will decrease } \mathcal{E}\left( \vec{C}+\delta\vec{C}_\alpha \right)
 \end{equation}
+
+\subsection{Function}
+The simplest function is
+\begin{equation}
+	\mathcal{E}\left(\vec{C}\right) = \sum_j
+	\left\lbrace
+	\begin{array}{cl}
+	-C_j & \text{if species } j \text{ is active and } C_j<0\\
+	0    & \text{otherwise}\\
+	\end{array}
+	\right.
+\end{equation}
+
+Accordingly
+\begin{equation}
+	\vec{\beta} = 
+\end{equation}
+
 
 
 \end{document}

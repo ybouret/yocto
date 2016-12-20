@@ -28,6 +28,7 @@ namespace yocto
         active(),
         beta(),
         Nu2(),
+        eta(),
         max_name_length(0)
         {}
 
@@ -55,6 +56,7 @@ namespace yocto
         {
             (size_t &)N = size();
             (size_t &)M = pLib->size();
+            eta.   release();
             Nu2.   release();
             beta.  release();
             active.release();
@@ -83,6 +85,7 @@ namespace yocto
                     active.make(M,false);
                     beta.make(M);
                     Nu2.make(M,M);
+                    eta.make(M);
 
                     size_t i = 1;
                     for(iterator it=begin();i<=N;++i,++it)
@@ -216,7 +219,6 @@ namespace yocto
         void equilibria:: balance()
         {
             std::cerr << "C=" << C << std::endl;
-
             while(true)
             {
                 size_t bad = 0;
@@ -233,9 +235,9 @@ namespace yocto
                 std::cerr << "bad="  << bad  << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
 
-                // algebraic delta C
-                tao::mul(dC,Nu2,beta);
-                std::cerr << "dC=" << dC << std::endl;
+                // algebraic eta
+                tao::mul(eta,Nu2,beta);
+                std::cerr << "eta=" << eta << std::endl;
                 break;
             }
         }
