@@ -257,6 +257,55 @@ namespace yocto
                 {
                     if(active[j])
                     {
+                        //______________________________________________________
+                        //
+                        // what do we do ?
+                        //______________________________________________________
+                        const double Cj = C[j];
+                        if(Cj<0)
+                        {
+                            //__________________________________________________
+                            //
+                            // bad concentration, go to zero if possible
+                            //__________________________________________________
+                            const int ej = eta[j];
+                            if(ej<0)
+                            {
+                                const string &name = (*pLib)(j)->name;
+                                throw exception("impossible to balance '%s'", name.c_str());
+                            }
+                            else
+                            {
+                                if(ej>0)
+                                {
+                                    const double atmp = -Cj/ej;
+                                    if(alpha>0)
+                                    {
+                                        if(atmp<alpha)
+                                        {
+                                            alpha = atmp;
+                                            jzero = j;
+                                            std::cerr << "updating jzero=" << jzero << "; alpha=" << alpha << std::endl;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        jzero = j;
+                                        alpha = atmp;
+                                        std::cerr << "initializing jzero=" << jzero << "; alpha=" << alpha << std::endl;
+                                    }
+                                }
+                                // else if eta[j] = 0: do nothing
+                            }
+                        }
+                        else
+                        {
+                            //__________________________________________________
+                            //
+                            // good concentration, don't go too low !
+                            //__________________________________________________
+                        }
+
                     }
                 }
                 break;
