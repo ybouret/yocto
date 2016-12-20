@@ -14,7 +14,6 @@ namespace yocto
             static const char fn[] = "equilibria.balance: ";
             //std::cerr << "C=" << C << std::endl;
             std::cerr << std::endl << "Balancing..." << std::endl;
-            size_t count = 0;
             while(true)
             {
                 pLib->display(std::cerr,C);
@@ -147,14 +146,15 @@ namespace yocto
                         }
                         else
                         {
-                            C[j] = max_of<double>(0,alpha*eta[j]);
+                            C[j] = max_of<double>(0,C[j]+alpha*eta[j]);
                         }
                     }
                 }
                 C[jzero] = 0;
-                
-                if(++count>=2) break;
             }
+
+
+
         }
 
     }
