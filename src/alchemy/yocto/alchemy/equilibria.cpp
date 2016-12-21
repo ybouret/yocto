@@ -2,6 +2,7 @@
 #include "yocto/code/utils.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/lu.hpp"
+#include "yocto/math/core/adjoint.hpp"
 
 namespace yocto
 {
@@ -27,10 +28,21 @@ namespace yocto
         dC(),
         active(),
         beta(),
-        Nu2(),
+        W(),
         eta(),
         max_name_length(0)
         {}
+
+        std::ostream & operator<<( std::ostream &os, const equilibria &eqs)
+        {
+            for( equilibria::const_iterator i = eqs.begin(); i != eqs.end(); ++i)
+            {
+                const equilibrium &eq = **i;
+                os << eq.name; for(size_t j=eq.name.size();j<=eqs.max_name_length;++j) os << ' '; os << ':'; os << ' ';
+                os << eq << std::endl;
+            }
+            return os;
+        }
 
         void equilibria::submit(const equilibrium::pointer &eq)
         {
@@ -57,7 +69,7 @@ namespace yocto
             (size_t &)N = size();
             (size_t &)M = pLib->size();
             eta.   release();
-            Nu2.   release();
+            W.     release();
             beta.  release();
             active.release();
             dC.    release();
@@ -73,6 +85,10 @@ namespace yocto
             {
                 if(N>0)
                 {
+                    //__________________________________________________________
+                    //
+                    // allocate memory
+                    //__________________________________________________________
                     Nu.make(N,M);
                     NuT.make(M,N);
                     Phi.make(N,M);
@@ -84,9 +100,13 @@ namespace yocto
                     dC.make(M);
                     active.make(M,false);
                     beta.make(M);
-                    Nu2.make(M,M);
+                    W.   make(M,M);
                     eta.make(M);
 
+                    //__________________________________________________________
+                    //
+                    // fill matrices and informations
+                    //__________________________________________________________
                     size_t i = 1;
                     for(iterator it=begin();i<=N;++i,++it)
                     {
@@ -108,7 +128,25 @@ namespace yocto
                             active[j] = true;
                         }
                     }
-                    tao::mmul(Nu2, NuT, Nu);
+
+                    //__________________________________________________________
+                    //
+                    // compute balancing matrix
+                    //__________________________________________________________
+
+                    matrix<int> nu2(N,N);
+                    tao::mmul(nu2,Nu,NuT);
+                    matrix<int> adj(N,N);
+                    iadjoint(adj,nu2);
+
+                    //std::cerr << "nu2=" << nu2 << std::endl;
+                    //std::cerr << "adj=" << adj << std::endl;
+                    //std::cerr << "det_nu2=" << det_nu2 << std::endl;
+                    
+                    matrix<int> rhs(N,M);
+                    tao::mmul(rhs,adj,Nu);
+                    tao::mmul(W,NuT,rhs);
+                    
                 }
             }
             catch(...)

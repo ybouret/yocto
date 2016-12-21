@@ -23,6 +23,9 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     chemlib->add("AH",0);
     chemlib->add("A-",-1);
 
+    chemlib->add("NH4+",1);
+    chemlib->add("NH3",0);
+
     vector<double> C( chemlib->size() + 2);
     for(size_t i=1;i<=C.size(); ++i)
     {
@@ -32,12 +35,23 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
 
 
     equilibria chemsys(chemlib);
-    
+
+
+
     {
         equilibrium &eq = chemsys.add("water",1e-14);
         eq.add("H+", 1);
         eq.add("HO-",1);
     }
+
+    {
+        equilibrium &eq = chemsys.add("base",1e-9);
+        eq.add("NH3",1);
+        eq.add("H+",1);
+        eq.add("NH4+",-1);
+
+    }
+
 
     {
         equilibrium &eq = chemsys.add("acid",1e-4);
@@ -46,12 +60,15 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
         eq.add("AH",-1);
     }
 
+
     
     chemsys.compile();
+    std::cerr << chemsys << std::endl;
     std::cerr << "Nu     = "  << chemsys.Nu     << std::endl;
     std::cerr << "NuT    = "  << chemsys.NuT    << std::endl;
+    std::cerr << "W      = "  << chemsys.W      << std::endl;
+
     std::cerr << "active = "  << chemsys.active << std::endl;
-    std::cerr << "Nu2    = "  << chemsys.Nu2    << std::endl;
     for(size_t i=1;i<=chemlib->size();++i)
     {
         chemsys.C[i] = C[i];

@@ -33,7 +33,7 @@ namespace yocto
             vector<double>         dC;     //!< delta concentration
             vector<bool>           active; //!< active species flag
             vector<int>            beta;   //!< gradient for balancing, M
-            matrix<int>            Nu2;    //!< Nu'*Nu, MxM
+            matrix<int>            W;      //!< Nu' * adjoint(Nu*Nu') * Nu, MxM
             vector<int>            eta;    //!< integer descent direction for balancing, Nu2*beta
             
             equilibrium & add( const string &name, const equilibrium_constant &K);
@@ -47,6 +47,8 @@ namespace yocto
             void balance(); //!< balance C
 
             void normalize( array<double> &C0, const double t );
+
+            friend std::ostream & operator<<( std::ostream &, const equilibria &);
 
 
         private:
