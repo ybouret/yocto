@@ -19,7 +19,7 @@ namespace yocto
                 pLib->display(std::cerr,C);
                 //______________________________________________________________
                 //
-                // counting bad species
+                // counting bad species and computing objective gradient
                 //______________________________________________________________
                 size_t nbad = 0;
                 for(size_t i=M;i>0;--i)
@@ -27,7 +27,7 @@ namespace yocto
                     beta[i] = 0;
                     if(active[i]&&C[i]<0)
                     {
-                        beta[i] = 1;
+                        beta[i] = -C[i];
                         ++nbad;
                     }
                 }
@@ -35,14 +35,38 @@ namespace yocto
                 if(nbad<=0) return;
 
                 std::cerr << "beta=" << beta  << std::endl;
+
+                //______________________________________________________________
+                //
+                // compute the descent direction
+                //______________________________________________________________
                 tao::mul(eta,W,beta);
                 std::cerr << "eta="  << eta   << std::endl;
+
+                //______________________________________________________________
+                //
+                // compute the maximum step that will zero one
+                // invalid concentration
+                //______________________________________________________________
+                double alpha = 0;
+                size_t jzero = 0;
+
+                for(size_t j=M;j>0;--j)
+                {
+                    if(beta[j]<=0) continue;
+
+                }
+
+
                 return;
                 
             }
 
 
         }
+
+
+        
 
     }
 

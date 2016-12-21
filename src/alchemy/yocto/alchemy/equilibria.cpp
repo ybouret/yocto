@@ -134,19 +134,17 @@ namespace yocto
                     // compute balancing matrix
                     //__________________________________________________________
 
-                    matrix<int> nu2(N,N);
+                    matrix<double> nu2(N);
                     tao::mmul(nu2,Nu,NuT);
-                    matrix<int> adj(N,N);
-                    iadjoint(adj,nu2);
-
-                    //std::cerr << "nu2=" << nu2 << std::endl;
-                    //std::cerr << "adj=" << adj << std::endl;
-                    //std::cerr << "det_nu2=" << det_nu2 << std::endl;
-                    
-                    matrix<int> rhs(N,M);
-                    tao::mmul(rhs,adj,Nu);
+                    std::cerr << "nu2=" << nu2 << std::endl;
+                    if(!LU<double>::build(nu2))
+                    {
+                        throw exception("singular topology!");
+                    }
+                    matrix<double> rhs(Nu);
+                    LU<double>::solve(nu2,rhs);
                     tao::mmul(W,NuT,rhs);
-                    
+
                 }
             }
             catch(...)
