@@ -28,7 +28,7 @@ namespace yocto
         dC(),
         active(),
         beta(),
-        W(),
+        Nu2(),
         eta(),
         max_name_length(0)
         {}
@@ -69,7 +69,7 @@ namespace yocto
             (size_t &)N = size();
             (size_t &)M = pLib->size();
             eta.   release();
-            W.     release();
+            Nu2.   release();
             beta.  release();
             active.release();
             dC.    release();
@@ -89,19 +89,19 @@ namespace yocto
                     //
                     // allocate memory
                     //__________________________________________________________
-                    Nu.make(N,M);
-                    NuT.make(M,N);
-                    Phi.make(N,M);
-                    Gamma.make(N);
-                    K.make(N);
-                    Xi.make(N);
-                    xi.make(N);
-                    C.make(M);
-                    dC.make(M);
+                    Nu.    make(N,M);
+                    NuT.   make(M,N);
+                    Phi.   make(N,M);
+                    Gamma. make(N);
+                    K.     make(N);
+                    Xi.    make(N);
+                    xi.    make(N);
+                    C.     make(M);
+                    dC.    make(M);
                     active.make(M,false);
-                    beta.make(M);
-                    W.   make(M,M);
-                    eta.make(M);
+                    beta.  make(M);
+                    Nu2.   make(M,M);
+                    eta.   make(M);
 
                     //__________________________________________________________
                     //
@@ -133,17 +133,7 @@ namespace yocto
                     //
                     // compute balancing matrix
                     //__________________________________________________________
-
-                    matrix<double> nu2(N);
-                    tao::mmul(nu2,Nu,NuT);
-                    std::cerr << "nu2=" << nu2 << std::endl;
-                    if(!LU<double>::build(nu2))
-                    {
-                        throw exception("singular topology!");
-                    }
-                    matrix<double> rhs(Nu);
-                    LU<double>::solve(nu2,rhs);
-                    tao::mmul(W,NuT,rhs);
+                    tao::mmul(Nu2,NuT,Nu);
 
                 }
             }

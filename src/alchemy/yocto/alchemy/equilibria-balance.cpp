@@ -40,23 +40,10 @@ namespace yocto
                 //
                 // compute the descent direction
                 //______________________________________________________________
-                tao::mul(eta,W,beta);
+                tao::mul(eta,Nu2,beta);
                 std::cerr << "eta="  << eta   << std::endl;
 
-                //______________________________________________________________
-                //
-                // compute the maximum step that will zero one
-                // invalid concentration
-                //______________________________________________________________
-                double alpha = 0;
-                size_t jzero = 0;
-
-                for(size_t j=M;j>0;--j)
-                {
-                    if(beta[j]<=0) continue;
-
-                }
-
+                
 
                 return;
                 

@@ -33,8 +33,8 @@ namespace yocto
             vector<double>         dC;     //!< delta concentration
             vector<bool>           active; //!< active species flag
             vector<double>         beta;   //!< gradient for balancing, M
-            matrix<double>         W;      //!< Nu' * adjoint(Nu*Nu') * Nu, MxM
-            vector<double>         eta;    //!< integer descent direction for balancing, Nu2*beta
+            matrix<double>         Nu2;    //!< Nu' * Nu, MxM
+            vector<double>         eta;    //!< integer descent direction for balancing, Nu2*beta, M
             
             equilibrium & add( const string &name, const equilibrium_constant &K);
             equilibrium & add( const string &name, const double                K);
