@@ -11,23 +11,24 @@ namespace yocto
 
         void equilibria:: balance()
         {
-            static const char fn[] = "equilibria.balance: ";
+            //static const char fn[] = "equilibria.balance: ";
             //std::cerr << "C=" << C << std::endl;
             std::cerr << std::endl << "Balancing..." << std::endl;
             while(true)
             {
                 pLib->display(std::cerr,C);
+
                 //______________________________________________________________
                 //
-                // counting bad species and computing objective gradient
+                // counting bad species and collect the values
                 //______________________________________________________________
                 size_t nbad = 0;
-                for(size_t i=M;i>0;--i)
+                for(size_t j=M;j>0;--j)
                 {
-                    beta[i] = 0;
-                    if(active[i]&&C[i]<0)
+                    beta[j] = 0;
+                    if(active[j]&&C[j]<0)
                     {
-                        beta[i] = -C[i];
+                        beta[j] = -C[j];
                         ++nbad;
                     }
                 }
@@ -38,12 +39,68 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // compute the descent direction
+                // Loop over reactions
                 //______________________________________________________________
-                tao::mul(eta,Nu2,beta);
-                std::cerr << "eta="  << eta   << std::endl;
+                for(size_t i=N;i>0;--i)
+                {
+                    const array<int> &nu = iNu[i];
+                    std::cerr << "nu#" << i << "=" << nu << std::endl;
+                    // compute limits
+                    xi_limits limits;
+                    size_t    jzr = 0;
+                    size_t    jzf = 0;
+                    for(size_t j=M;j>0;--j)
+                    {
+                        const int nu_j = nu[j];
+                        if(nu_j>0)
+                        {
+                            const double      Cj  = max_of<double>(0,C[j]); std::cerr << "C[" << j << "]=" << Cj << ", nu=" << nu_j << std::endl;
+                            const double      Xj  = Cj/nu_j;
+                            if(!limits.reverse.exists)
+                            {
+                                limits.reverse.value  = Xj;
+                                limits.reverse.exists = true;
+                                jzr  = j;
+                            }
+                            else
+                            {
+                                if(Xj<limits.reverse.value)
+                                {
+                                    limits.reverse.value = Xj;
+                                    jzr                  = j;
+                                }
+                            }
+                            continue;
+                        }
 
-                
+                        if(nu_j<0)
+                        {
+                            const double      Cj  = max_of<double>(0,C[j]); std::cerr << "C[" << j << "]=" << Cj << ", nu=" << nu_j << std::endl;
+                            const double      Xj  = Cj/(-nu_j);
+                            if(!limits.reverse.exists)
+                            {
+                                limits.forward.value  = Xj;
+                                limits.forward.exists = true;
+                                jzf                   = j;
+                            }
+                            else
+                            {
+                                if(Xj<limits.reverse.value)
+                                {
+                                    limits.reverse.value = Xj;
+                                    jzf                  = j;
+                                }
+                            }
+
+                            continue;
+                        }
+
+                    }
+                    std::cerr << "..limits#" <<i << ".reverse=" << limits.reverse << ",jzr=" << jzr << std::endl;
+                    std::cerr << "..limits#" <<i << ".forward=" << limits.forward << ",jzf=" << jzf << std::endl;
+
+
+                }
 
                 return;
                 

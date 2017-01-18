@@ -65,6 +65,7 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     chemsys.compile();
     std::cerr << chemsys << std::endl;
     std::cerr << "Nu     = "  << chemsys.Nu     << std::endl;
+    std::cerr << "iNu    = "  << chemsys.iNu    << std::endl;
     std::cerr << "NuT    = "  << chemsys.NuT    << std::endl;
     std::cerr << "Nu2    = "  << chemsys.Nu2    << std::endl;
 

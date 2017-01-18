@@ -28,6 +28,7 @@ namespace yocto
         dC(),
         active(),
         beta(),
+        iNu(),
         Nu2(),
         eta(),
         max_name_length(0)
@@ -70,6 +71,7 @@ namespace yocto
             (size_t &)M = pLib->size();
             eta.   release();
             Nu2.   release();
+            iNu.   release();
             beta.  release();
             active.release();
             dC.    release();
@@ -100,6 +102,7 @@ namespace yocto
                     dC.    make(M);
                     active.make(M,false);
                     beta.  make(M);
+                    iNu.   make(N,M);
                     Nu2.   make(M,M);
                     eta.   make(M);
 
@@ -116,6 +119,7 @@ namespace yocto
                             const size_t j  = node->id;
                             const int    nu = node->nu; assert(nu>0);
                             Nu[i][j]  = nu;
+                            iNu[i][j] = nu;
                             NuT[j][i] = nu;
                             active[j] = true;
                         }
@@ -124,6 +128,7 @@ namespace yocto
                             const size_t j  = node->id;
                             const int    nu = node->nu; assert(nu<0);
                             Nu[i][j]  = nu;
+                            iNu[i][j] = nu;
                             NuT[j][i] = nu;
                             active[j] = true;
                         }

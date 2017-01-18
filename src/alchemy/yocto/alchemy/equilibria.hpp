@@ -33,6 +33,7 @@ namespace yocto
             vector<double>         dC;     //!< delta concentration
             vector<bool>           active; //!< active species flag
             vector<double>         beta;   //!< gradient for balancing, M
+            matrix<int>            iNu;    //!< integer Nu
             matrix<double>         Nu2;    //!< Nu' * Nu, MxM
             vector<double>         eta;    //!< integer descent direction for balancing, Nu2*beta, M
             
