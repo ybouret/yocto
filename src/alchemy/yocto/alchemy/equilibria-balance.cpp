@@ -45,29 +45,43 @@ namespace yocto
                 {
                     const array<int> &nu = iNu[i];
                     std::cerr << "nu#" << i << "=" << nu << std::endl;
+
+                    //__________________________________________________________
+                    //
                     // compute limits
-                    xi_limits limits;
-                    size_t    jzr = 0;
-                    size_t    jzf = 0;
+                    //__________________________________________________________
+
+                    bool   has_reverse = false;
+                    double max_reverse = 0;
+                    size_t jzr         = 0;
+
+                    bool   has_forward = false;
+                    double max_forward = 0;
+                    size_t jzf         = 0;
+
                     for(size_t j=M;j>0;--j)
                     {
                         const int nu_j = nu[j];
                         if(nu_j>0)
                         {
-                            const double      Cj  = max_of<double>(0,C[j]); std::cerr << "C[" << j << "]=" << Cj << ", nu=" << nu_j << std::endl;
-                            const double      Xj  = Cj/nu_j;
-                            if(!limits.reverse.exists)
+                            const double Xj = max_of<double>(C[j]/nu_j,0.0);
+                            std::cerr << "X[" << j << "]=" << Xj << ", nu=" << nu_j << std::endl;
+                            //__________________________________________________
+                            //
+                            // this is a product, so there is a reverse limitation
+                            //__________________________________________________
+                            if(!has_reverse)
                             {
-                                limits.reverse.value  = Xj;
-                                limits.reverse.exists = true;
-                                jzr  = j;
+                                jzr         = j;
+                                has_reverse = true;
+                                max_reverse = Xj;
                             }
                             else
                             {
-                                if(Xj<limits.reverse.value)
+                                if(Xj<max_reverse)
                                 {
-                                    limits.reverse.value = Xj;
-                                    jzr                  = j;
+                                    jzr         = j;
+                                    max_reverse = Xj;
                                 }
                             }
                             continue;
@@ -75,32 +89,52 @@ namespace yocto
 
                         if(nu_j<0)
                         {
-                            const double      Cj  = max_of<double>(0,C[j]); std::cerr << "C[" << j << "]=" << Cj << ", nu=" << nu_j << std::endl;
-                            const double      Xj  = Cj/(-nu_j);
-                            if(!limits.reverse.exists)
+                            const double Xj = max_of<double>(C[j]/(-nu_j),0.0);
+                            std::cerr << "X[" << j << "]=" << Xj << ", nu=" << nu_j << std::endl;
+                            //__________________________________________________
+                            //
+                            // this is a reactant, so there is a forward limitation
+                            //__________________________________________________
+                            if(!has_forward)
                             {
-                                limits.forward.value  = Xj;
-                                limits.forward.exists = true;
-                                jzf                   = j;
+                                jzf         = j;
+                                has_forward = true;
+                                max_forward = Xj;
                             }
                             else
                             {
-                                if(Xj<limits.reverse.value)
+                                if(Xj<max_forward)
                                 {
-                                    limits.reverse.value = Xj;
-                                    jzf                  = j;
+                                    jzf         = j;
+                                    max_forward = Xj;
                                 }
                             }
-
-                            continue;
                         }
-
                     }
-                    std::cerr << "..limits#" <<i << ".reverse=" << limits.reverse << ",jzr=" << jzr << std::endl;
-                    std::cerr << "..limits#" <<i << ".forward=" << limits.forward << ",jzf=" << jzf << std::endl;
+
+                    if(has_reverse)
+                    {
+                        std::cerr << "max_reverse=" << max_reverse << ", jzr=" << jzr << std::endl;
+                    }
+                    else
+                    {
+                        std::cerr << "no reverse" << std::endl;
+                    }
+
+                    if(has_forward)
+                    {
+                        std::cerr << "max_forward=" << max_forward << ", jzf=" << jzr << std::endl;
+                    }
+                    else
+                    {
+                        std::cerr << "no forward" << std::endl;
+                    }
+                    std::cerr << std::endl;
+
 
 
                 }
+
 
                 return;
                 
