@@ -4,11 +4,26 @@
 #include "yocto/alchemy/equilibrium.hpp"
 #include "yocto/container/matrix.hpp"
 #include "yocto/sequence/vector.hpp"
+#include "yocto/container/tuple.hpp"
 
 namespace yocto
 {
     namespace alchemy
     {
+
+        YOCTO_TRIPLE_DECL(YOCTO_TUPLE_STANDARD,XiLimit,
+                          bool,  exists,
+                          double,value,
+                          size_t,index);
+        inline XiLimit() throw() : exists(false), value(0), index(0) {}
+        YOCTO_TRIPLE_END();
+
+        YOCTO_TRIPLE_DECL(YOCTO_TUPLE_STANDARD,XiLimits,
+                          XiLimit,forward,
+                          XiLimit,reverse,
+                          bool,   blocked);
+        inline XiLimits() throw() : forward(), reverse(), blocked(false) {}
+        YOCTO_TRIPLE_END();
 
 
         class equilibria : public equilibrium::database
@@ -59,6 +74,8 @@ namespace yocto
             size_t max_name_length;
             void submit( const equilibrium::pointer &eq);
             void buildXi();
+            void compute(XiLimits &limits, const array<int> &nu) const throw();
+
         };
     }
 }

@@ -4,7 +4,6 @@
 #include "yocto/alchemy/library.hpp"
 #include "yocto/core/list.hpp"
 #include "yocto/math/types.hpp"
-//#include "yocto/container/tuple.hpp"
 
 namespace yocto
 {
@@ -81,9 +80,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);
             actors products;
             actors reactants;
-        public:
-            void compute_limits() const throw();
-
+            
         };
 
     }
