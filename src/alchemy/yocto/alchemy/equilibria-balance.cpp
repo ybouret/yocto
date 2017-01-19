@@ -125,6 +125,11 @@ namespace yocto
                         XiLimits limits;
                         compute(limits,nu);
                     }
+                    if(!processed)
+                    {
+                        const string &id = (*pLib)(j)->name;
+                        throw imported::exception("alchemy.equilibria.balance","cannot balance %s",&id[0]);
+                    }
                 }
             }
 
