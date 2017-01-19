@@ -112,7 +112,6 @@ namespace yocto
                     // a bad concentration is detected: let's find a reaction
                     // to process it
                     //__________________________________________________________
-                    bool processed = false;
                     for(size_t i=N;i>0;--i)
                     {
                         const array<int> &nu   = iNu[i];
@@ -130,6 +129,23 @@ namespace yocto
                         {
                             const double xx = (-Cj)/nu_j;
                             std::cerr << "\t" << (*pLib)(j)->name << " is a product, need a possible forward step of " << xx << std::endl;
+                            XiLimit &fwd = limits.forward;
+                            if(!fwd.exists || (fwd.exists&&xx<=fwd.value) )
+                            {
+                                std::cerr << "\tusing fwd, nu=" << nu << std::endl;
+                                for(size_t k=M;k>0;--k)
+                                {
+                                    if(active[k])
+                                    {
+                                        C[k] += xx * nu[k];
+                                    }
+                                }
+                                if(fwd.exists&&(fwd.index==j))
+                                {
+                                    C[j] = 0;
+                                }
+                                goto BALANCE_CYCLE;
+                            }
                             continue;
                         }
 
@@ -137,26 +153,45 @@ namespace yocto
                         {
                             const double xx = (-Cj)/(-nu_j);
                             std::cerr << "\t" << (*pLib)(j)->name << " is a reactant, need a possible reverse step of " << xx << std::endl;
+                            XiLimit &rev = limits.reverse;
+                            if(!rev.exists || (rev.exists&&xx<=rev.value) )
+                            {
+                                std::cerr << "\tusing rev, nu=" << nu << std::endl;
+                                for(size_t k=M;k>0;--k)
+                                {
+                                    if(active[k])
+                                    {
+                                        C[k] -= xx * nu[k];
+                                    }
+                                }
+                                if(rev.exists&&(rev.index==j))
+                                {
+                                    C[j] = 0;
+                                }
+                                goto BALANCE_CYCLE;
+                            }
                             continue;
                         }
+                    }
 
-                    }
-                    if(!processed)
-                    {
-                        const string &id = (*pLib)(j)->name;
-                        throw imported::exception("alchemy.equilibria.balance","cannot balance %s",&id[0]);
-                    }
+                    //__________________________________________________________
+                    //
+                    // couldn't process after all reaction
+                    //__________________________________________________________
+                    const string &id = (*pLib)(j)->name;
+                    throw imported::exception("alchemy.equilibria.balance","couldn't balance %s",&id[0]);
+
                 }
             }
-
-
-
+            
+            
+            
         }
-
-
-
-
+        
+        
+        
+        
     }
-
+    
 }
 
