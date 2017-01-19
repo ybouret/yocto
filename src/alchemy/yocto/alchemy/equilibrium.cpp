@@ -104,7 +104,9 @@ namespace yocto
                                   const equilibrium_constant &the_K) :
         name(the_name),
         pLib(the_lib),
-        K(the_K)
+        K(the_K),
+        products(),
+        reactants()
         {
         }
 

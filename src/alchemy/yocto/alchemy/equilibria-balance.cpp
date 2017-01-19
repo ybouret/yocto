@@ -39,7 +39,7 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // Loop over reactions
+                // Loop over reactions to compute limits
                 //______________________________________________________________
                 for(size_t i=N;i>0;--i)
                 {
@@ -51,13 +51,13 @@ namespace yocto
                     // compute limits
                     //__________________________________________________________
 
-                    bool   has_reverse = false;
-                    double max_reverse = 0;
-                    size_t jzr         = 0;
+                    bool   has_reverse = false;  // if a reverse limit exists
+                    double max_reverse = 0;      // max extent in reverse way
+                    size_t jzr         = 0;      // index of the species that would be zero at max_reverse
 
-                    bool   has_forward = false;
-                    double max_forward = 0;
-                    size_t jzf         = 0;
+                    bool   has_forward = false;  // if a forward limit exists
+                    double max_forward = 0;      // max extent in forward way
+                    size_t jzf         = 0;      // index of the species that would be zero at max_forward
 
                     for(size_t j=M;j>0;--j)
                     {
