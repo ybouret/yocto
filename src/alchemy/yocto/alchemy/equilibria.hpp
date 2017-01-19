@@ -18,12 +18,11 @@ namespace yocto
         inline XiLimit() throw() : exists(false), value(0), index(0) {}
         YOCTO_TRIPLE_END();
 
-        YOCTO_TRIPLE_DECL(YOCTO_TUPLE_STANDARD,XiLimits,
+        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,XiLimits,
                           XiLimit,forward,
-                          XiLimit,reverse,
-                          bool,   blocked);
-        inline XiLimits() throw() : forward(), reverse(), blocked(false) {}
-        YOCTO_TRIPLE_END();
+                          XiLimit,reverse);
+        inline XiLimits() throw() : forward(), reverse() {}
+        YOCTO_PAIR_END();
 
 
         class equilibria : public equilibrium::database

@@ -103,9 +103,10 @@ namespace yocto
             pLib->display(std::cerr,C);
             for(size_t j=M;j>0;--j)
             {
-                if(active[j]&&C[j]<0)
+                const double Cj = C[j];
+                if(active[j]&&Cj<0)
                 {
-                    std::cerr << "bad [" << (*pLib)(j)->name << "]=" << C[j] << std::endl;
+                    std::cerr << "bad [" << (*pLib)(j)->name << "]=" << Cj << std::endl;
                     //__________________________________________________________
                     //
                     // a bad concentration is detected: let's find a reaction
@@ -118,12 +119,27 @@ namespace yocto
                         const int         nu_j = nu[j];
                         if(!nu_j)
                         {
-                            std::cerr << "reaction '" << (*this)(i)->name << "' cannot handle " << (*pLib)(j)->name << std::endl;
+                            //std::cerr << "reaction '" << (*this)(i)->name << "' cannot handle " << (*pLib)(j)->name << std::endl;
                             continue; // the reaction cannot handle the species
                         }
                         std::cerr << "querying '" << (*this)(i)->name << "' to process " << (*pLib)(j)->name << std::endl;
                         XiLimits limits;
                         compute(limits,nu);
+
+                        if(nu_j>0)
+                        {
+                            const double xx = (-Cj)/nu_j;
+                            std::cerr << "\t" << (*pLib)(j)->name << " is a product, need a possible forward step of " << xx << std::endl;
+                            continue;
+                        }
+
+                        if(nu_j<0)
+                        {
+                            const double xx = (-Cj)/(-nu_j);
+                            std::cerr << "\t" << (*pLib)(j)->name << " is a reactant, need a possible reverse step of " << xx << std::endl;
+                            continue;
+                        }
+
                     }
                     if(!processed)
                     {
