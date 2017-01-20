@@ -67,7 +67,6 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     std::cerr << "Nu     = "  << chemsys.Nu     << std::endl;
     std::cerr << "iNu    = "  << chemsys.iNu    << std::endl;
     std::cerr << "NuT    = "  << chemsys.NuT    << std::endl;
-    std::cerr << "Nu2    = "  << chemsys.Nu2    << std::endl;
 
     std::cerr << "active = "  << chemsys.active << std::endl;
     for(size_t i=1;i<=chemlib->size();++i)

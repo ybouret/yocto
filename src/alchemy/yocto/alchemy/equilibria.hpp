@@ -16,12 +16,14 @@ namespace yocto
                           double,value,
                           size_t,index);
         inline XiLimit() throw() : exists(false), value(0), index(0) {}
+        inline void reset() throw() { exists = false; value = 0; index = 0; }
         YOCTO_TRIPLE_END();
 
         YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,XiLimits,
                           XiLimit,forward,
                           XiLimit,reverse);
         inline XiLimits() throw() : forward(), reverse() {}
+        inline void reset() throw() { forward.reset(); reverse.reset(); }
         YOCTO_PAIR_END();
 
 
@@ -46,10 +48,8 @@ namespace yocto
             vector<double>         C;      //!< local concentrations
             vector<double>         dC;     //!< delta concentration
             vector<bool>           active; //!< active species flag
-            vector<double>         beta;   //!< gradient for balancing, M
+            vector<double>         bad;    //!< bad concentrations for balancing
             matrix<int>            iNu;    //!< integer Nu
-            matrix<double>         Nu2;    //!< Nu' * Nu, MxM
-            vector<double>         eta;    //!< integer descent direction for balancing, Nu2*beta, M
             
             equilibrium & add( const string &name, const equilibrium_constant &K);
             equilibrium & add( const string &name, const double                K);

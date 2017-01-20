@@ -11,6 +11,8 @@ namespace yocto
 
         void equilibria:: compute(XiLimits &limits, const array<int> &nu) const throw()
         {
+
+            limits.reset();
             //__________________________________________________________________
             //
             // Loop over species
@@ -98,6 +100,33 @@ namespace yocto
             //static const char fn[] = "equilibria.balance: ";
             //std::cerr << "C=" << C << std::endl;
             std::cerr << std::endl << "Balancing..." << std::endl;
+
+
+            pLib->display(std::cerr,C);
+
+            //__________________________________________________________________
+            //
+            // dectect bad concentrations
+            //__________________________________________________________________
+            size_t nbad = 0;
+            for(size_t j=M;j>0;--j)
+            {
+                const double Cj = C[j];
+                bad[j] = 0;
+                if(active[j]&&Cj<0)
+                {
+                    ++nbad;
+                    bad[j] = -Cj;
+                }
+            }
+
+            if(nbad<=0)
+                return;
+
+
+
+
+            return;
 
         BALANCE_CYCLE:
             pLib->display(std::cerr,C);

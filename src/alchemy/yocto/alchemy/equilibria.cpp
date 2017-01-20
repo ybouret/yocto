@@ -27,10 +27,8 @@ namespace yocto
         C(),
         dC(),
         active(),
-        beta(),
+        bad(),
         iNu(),
-        Nu2(),
-        eta(),
         max_name_length(0)
         {}
 
@@ -69,10 +67,8 @@ namespace yocto
         {
             (size_t &)N = size();
             (size_t &)M = pLib->size();
-            eta.   release();
-            Nu2.   release();
             iNu.   release();
-            beta.  release();
+            bad.   release();
             active.release();
             dC.    release();
             C.     release();
@@ -101,10 +97,8 @@ namespace yocto
                     C.     make(M);
                     dC.    make(M);
                     active.make(M,false);
-                    beta.  make(M);
+                    bad.   make(M);
                     iNu.   make(N,M);
-                    Nu2.   make(M,M);
-                    eta.   make(M);
 
                     //__________________________________________________________
                     //
@@ -134,12 +128,7 @@ namespace yocto
                         }
                     }
 
-                    //__________________________________________________________
-                    //
-                    // compute balancing matrix
-                    //__________________________________________________________
-                    tao::mmul(Nu2,NuT,Nu);
-
+                    
                 }
             }
             catch(...)
