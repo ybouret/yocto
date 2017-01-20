@@ -96,14 +96,62 @@ namespace yocto
 
 
         bool equilibria:: try_balance(const size_t      j,
-                                      const XiLimits    limits,
+                                      const XiLimits   &limits,
                                       const array<int> &nu) throw()
         {
             const int         nu_j = nu[j];
             if(!nu_j)
-                return false;
-            assert(active[j]);
-            const double Cj = bad[j]; assert(Cj<0);
+                return false; // this reaction doesn't handle the species
+
+            assert(active[j]);assert(bad[j]<0);
+            const double Cj = bad[j];
+
+            if(nu_j>0)
+            {
+                const double xx = (-Cj)/nu_j;
+                std::cerr << "\t" << (*pLib)(j)->name << " is a product, need a possible forward step of " << xx << std::endl;
+                const XiLimit &fwd = limits.forward;
+                if(!fwd.exists || (fwd.exists&&xx<=fwd.value) )
+                {
+                    std::cerr << "\tusing fwd, nu=" << nu << std::endl;
+                    for(size_t k=M;k>0;--k)
+                    {
+                        if(active[k])
+                        {
+                            C[k] += xx * nu[k];
+                        }
+                    }
+                    if(fwd.exists&&(fwd.index==j))
+                    {
+                        C[j] = 0;
+                    }
+                    return true;
+                }
+            }
+
+            if(nu_j>0)
+            {
+                const double xx = (-Cj)/(-nu_j);
+                std::cerr << "\t" << (*pLib)(j)->name << " is a reactant, need a possible reverse step of " << xx << std::endl;
+                const XiLimit &rev = limits.reverse;
+                if(!rev.exists || (rev.exists&&xx<=rev.value) )
+                {
+                    std::cerr << "\tusing rev, nu=" << nu << std::endl;
+                    for(size_t k=M;k>0;--k)
+                    {
+                        if(active[k])
+                        {
+                            C[k] -= xx * nu[k];
+                        }
+                    }
+                    if(rev.exists&&(rev.index==j))
+                    {
+                        C[j] = 0;
+                    }
+                    return true;
+                }
+            }
+
 
             return false;
         }
@@ -111,8 +159,6 @@ namespace yocto
 
         void equilibria:: balance()
         {
-            //static const char fn[] = "equilibria.balance: ";
-            //std::cerr << "C=" << C << std::endl;
             std::cerr << std::endl << "Balancing..." << std::endl;
 
         TRY_BALANCE:
@@ -165,103 +211,12 @@ namespace yocto
                     if(Cj>=0.0) continue;
                     if(try_balance(j,limits,nu))
                     {
+                        // at least one concentration has changed...
                         goto TRY_BALANCE;
                     }
                 }
             }
-            //const string &id = (*pLib)(j)->name;
             throw imported::exception("alchemy.equilibria.balance","no possible balance");
-
-#if 0
-            return;
-
-        BALANCE_CYCLE:
-            pLib->display(std::cerr,C);
-            for(size_t j=M;j>0;--j)
-            {
-                const double Cj = C[j];
-                if(active[j]&&Cj<0)
-                {
-                    std::cerr << "bad [" << (*pLib)(j)->name << "]=" << Cj << std::endl;
-                    //__________________________________________________________
-                    //
-                    // a bad concentration is detected: let's find a reaction
-                    // to process it
-                    //__________________________________________________________
-                    for(size_t i=N;i>0;--i)
-                    {
-                        const array<int> &nu   = iNu[i];
-                        const int         nu_j = nu[j];
-                        if(!nu_j)
-                        {
-                            //std::cerr << "reaction '" << (*this)(i)->name << "' cannot handle " << (*pLib)(j)->name << std::endl;
-                            continue; // the reaction cannot handle the species
-                        }
-                        std::cerr << "querying '" << (*this)(i)->name << "' to process " << (*pLib)(j)->name << std::endl;
-                        XiLimits limits;
-                        compute(limits,nu);
-
-                        if(nu_j>0)
-                        {
-                            const double xx = (-Cj)/nu_j;
-                            std::cerr << "\t" << (*pLib)(j)->name << " is a product, need a possible forward step of " << xx << std::endl;
-                            XiLimit &fwd = limits.forward;
-                            if(!fwd.exists || (fwd.exists&&xx<=fwd.value) )
-                            {
-                                std::cerr << "\tusing fwd, nu=" << nu << std::endl;
-                                for(size_t k=M;k>0;--k)
-                                {
-                                    if(active[k])
-                                    {
-                                        C[k] += xx * nu[k];
-                                    }
-                                }
-                                if(fwd.exists&&(fwd.index==j))
-                                {
-                                    C[j] = 0;
-                                }
-                                goto BALANCE_CYCLE;
-                            }
-                            continue;
-                        }
-
-                        if(nu_j<0)
-                        {
-                            const double xx = (-Cj)/(-nu_j);
-                            std::cerr << "\t" << (*pLib)(j)->name << " is a reactant, need a possible reverse step of " << xx << std::endl;
-                            XiLimit &rev = limits.reverse;
-                            if(!rev.exists || (rev.exists&&xx<=rev.value) )
-                            {
-                                std::cerr << "\tusing rev, nu=" << nu << std::endl;
-                                for(size_t k=M;k>0;--k)
-                                {
-                                    if(active[k])
-                                    {
-                                        C[k] -= xx * nu[k];
-                                    }
-                                }
-                                if(rev.exists&&(rev.index==j))
-                                {
-                                    C[j] = 0;
-                                }
-                                goto BALANCE_CYCLE;
-                            }
-                            continue;
-                        }
-                    }
-
-                    //__________________________________________________________
-                    //
-                    // couldn't process after all reaction
-                    //__________________________________________________________
-                    const string &id = (*pLib)(j)->name;
-                    throw imported::exception("alchemy.equilibria.balance","couldn't balance %s",&id[0]);
-
-                }
-            }
-            
-            
-#endif
         }
         
         
