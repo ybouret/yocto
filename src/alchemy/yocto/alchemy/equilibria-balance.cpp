@@ -95,13 +95,27 @@ namespace yocto
         }
 
 
+        bool equilibria:: try_balance(const size_t      j,
+                                      const XiLimits    limits,
+                                      const array<int> &nu) throw()
+        {
+            const int         nu_j = nu[j];
+            if(!nu_j)
+                return false;
+            assert(active[j]);
+            const double Cj = bad[j]; assert(Cj<0);
+
+            return false;
+        }
+
+
         void equilibria:: balance()
         {
             //static const char fn[] = "equilibria.balance: ";
             //std::cerr << "C=" << C << std::endl;
             std::cerr << std::endl << "Balancing..." << std::endl;
 
-
+        TRY_BALANCE:
             pLib->display(std::cerr,C);
 
             //__________________________________________________________________
@@ -116,7 +130,7 @@ namespace yocto
                 if(active[j]&&Cj<0)
                 {
                     ++nbad;
-                    bad[j] = -Cj;
+                    bad[j] = Cj;
                 }
             }
 
@@ -124,8 +138,41 @@ namespace yocto
                 return;
 
 
+            //__________________________________________________________________
+            //
+            // Loop on reactions to try to solve the problem
+            //__________________________________________________________________
+            for(size_t i=N;i>0;--i)
+            {
+                //______________________________________________________________
+                //
+                // extract the local topology and compute the limits according
+                // to the current set of concentrations
+                //______________________________________________________________
+                std::cerr << "querying '" << (*this)(i)->name << "'" << std::endl;
 
+                const array<int> &nu   = iNu[i];
+                XiLimits          limits;
+                compute(limits,nu);
 
+                //______________________________________________________________
+                //
+                // try to use this reaction to balance invalid concentrations
+                //______________________________________________________________
+                for(size_t j=M;j>0;--j)
+                {
+                    const double Cj = bad[j];
+                    if(Cj>=0.0) continue;
+                    if(try_balance(j,limits,nu))
+                    {
+                        goto TRY_BALANCE;
+                    }
+                }
+            }
+            //const string &id = (*pLib)(j)->name;
+            throw imported::exception("alchemy.equilibria.balance","no possible balance");
+
+#if 0
             return;
 
         BALANCE_CYCLE:
@@ -214,7 +261,7 @@ namespace yocto
             }
             
             
-            
+#endif
         }
         
         

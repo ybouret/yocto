@@ -74,6 +74,7 @@ namespace yocto
             void submit( const equilibrium::pointer &eq);
             void buildXi();
             void compute(XiLimits &limits, const array<int> &nu) const throw();
+            bool try_balance(const size_t j, const XiLimits limits, const array<int> &nu) throw();
 
         };
     }
