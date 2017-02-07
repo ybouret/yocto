@@ -47,43 +47,12 @@ $\delta\vec{C}$ such that
 Locally, we have
 \begin{equation}
 	\mathcal{E}\left(\vec{C}+\mytrn{\mymat{\nu}}\vec{\xi}\right) \simeq 
-	\mathcal{E}\left(\vec{C}\right) - \vec{\beta}\cdot\delta\vec{C}.
+	\mathcal{E}\left(\vec{C}\right) - \vec{\beta}\cdot\delta\vec{C} = \mathcal{E}\left(\vec{C}\right) - \vec{\xi}\cdot \mymat{\nu}\vec{\beta}
 \end{equation}
-Since, for matter conservation, we must have $\delta\vec{C} = \mytrn{\mymat{\nu}}\vec{\xi}$, 
-a condition is that there exists a positive value $\mu$ such that 
+where
 \begin{equation}
-	\vec{\xi} \cdot \mymat{\nu} \vec{\beta} = \mu > 0 .
+	\vec{\beta} = -\partial_{\vec{C}} \mathcal{E}
 \end{equation}
-In particular, this fails is $\vert\mymat{\nu} \vec{\beta}\vert=0$...
-We need to choose $\vec{\xi}$. A simple way is to impose a least displacement condition, so
-that we want to minimise $\vert\delta\vec{C}\vert$, or $\vert\mytrn{\mymat{\nu}}\vec{\xi}\vert$, or
-$\dfrac{1}{2}\vec{\xi}\mymat{\nu}\mytrn{\mymat{\nu}}\cdot\vec{\xi}$.
-
-Hence we want to minimise the Lagrangian
-\begin{equation}
-	\mathcal{L} = \dfrac{1}{2}\vec{\xi}\mymat{\nu}\mytrn{\mymat{\nu}}\cdot\vec{\xi} 
-	- \lambda \left( \vec{\xi} \cdot \mymat{\nu} \vec{\beta} - \alpha\right)
-\end{equation}
-leading to
-\begin{equation}
-	\vec{\xi} = \lambda \left(\mymat{\nu}\mytrn{\mymat{\nu}}\right)^{-1} \mymat{\nu} \vec{\beta}
-\end{equation}
-and
-\begin{equation}
-	\mu = \lambda \vec{\beta} \mytrn{\mymat{\nu}} \left(\mymat{\nu}\mytrn{\mymat{\nu}}\right)^{-1} \mymat{\nu} \vec{\beta}
-\end{equation}
-
-By a change of scaling, there exists $\alpha$ such that
-\begin{equation}
-	\delta \vec{C} = \alpha \underbrace{\mytrn{\mymat{\nu}} \left(\mymat{\nu}\mytrn{\mymat{\nu}}\right)^{-1} \mymat{\nu}}_{\mymat{W}} \cdot \vec{\beta}
-\end{equation}
-%Indeed, the determinant of a Gram matrix is always positive, so that we can use the  adjoint matrix.\\
-So, once we have computed $\vec{\beta}$, we have
-\begin{equation}
-	\vec{\eta} = \mymat{W} \vec{\beta}
-\end{equation}
-
-
 
 \end{document}
 
