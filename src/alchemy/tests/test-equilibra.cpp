@@ -29,7 +29,7 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     vector<double> C( chemlib->size() + 2);
     for(size_t i=1;i<=C.size(); ++i)
     {
-        C[i] = 1e-4*alea<double>()*(0.5-alea<double>());
+        C[i] = 1e-4*alea<double>();//*(0.5-alea<double>());
     }
 
 
@@ -76,15 +76,13 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     chemlib->display(std::cerr,chemsys.C);
     chemsys.balance();
 
-
-    return 0;
     
-    chemsys.computeXi(C, 0);
+    chemsys.computeXi(chemsys.C, 0);
     std::cerr << "Gamma  = " << chemsys.Gamma << std::endl;
     std::cerr << "Phi    = " << chemsys.Phi   << std::endl;
 
     std::cerr << "-- Normalizing..." << std::endl;
-    chemsys.normalize(C, 0.0);
+    chemsys.normalize(chemsys.C, 0.0);
 
 
 }

@@ -192,13 +192,13 @@ namespace yocto
             //__________________________________________________________________
             assert(C0.size()>=M);
             tao::set(C,C0);
+            balance();
 
-#ifndef NDEBUG
-            for(size_t i=1;i<=M;++i) { assert(C[i]>=0); }
-#endif
             computeXi(C,t);
 
-            size_t count=0;
+            double norm2=0;
+            bool   check=false;
+
             while(true)
             {
                 //______________________________________________________________
@@ -217,8 +217,30 @@ namespace yocto
 
                 tao::mul(dC, NuT, xi);
                 tao::add(C, dC);
+                balance();
                 updateXi(C);
-                if(++count>=10) break;
+                const double temp2 = tao::norm_sq(dC);
+                if(check)
+                {
+                    std::cerr << "norm=" << temp2 << "/" << norm2 << std::endl;
+                    if(temp2>=norm2)
+                    {
+                        std::cerr << "Reached equilibrium" << std::endl;
+                        // set back value
+                        for(size_t i=M;i>0;--i)
+                        {
+                            C0[i] = C[i];
+                        }
+                        break;
+                    }
+                    norm2 = temp2;
+                }
+                else
+                {
+                    check = true;
+                    norm2 = temp2;
+                }
+                //if(++count>=10) break;
             }
 
         }

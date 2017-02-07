@@ -56,8 +56,8 @@ namespace yocto
 
             void compile();
 
-            void computeXi(const array<double> &C0, const double t); // compute Gamma,K, Phi and Xi at a given time
-            void updateXi(const array<double>  &C0); //!< update Gamma,Phi and Xi
+            void computeXi(const array<double> &C0, const double t); //!< compute Gamma,K, Phi and Xi at a given time
+            void updateXi(const array<double>  &C0);                 //!< update Gamma,Phi and Xi
 
             void balance(); //!< balance C
 
