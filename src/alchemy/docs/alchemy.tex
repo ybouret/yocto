@@ -33,8 +33,36 @@ We also naturally have the topology matrix $\mymat{\nu}$, such that
 any chemical shift is defined by a  chemical extent vector $\vec{\xi}$ and
 produces a shift
 $$
-	\mytrn{\mymat{\nu}}\vec{\xi}
+	\delta\vec{C}=\mytrn{\mymat{\nu}}\vec{\xi}
 $$
+
+\section{Balancing Concentrations}
+\subsection{Method}
+
+Let us assume that we define a continuously derivable objective function $\mathcal{E}\left(\vec{C}\right)$ which is minimal (with value 0) when all active species are positive. Whenever one of those concentrations is negative, we want to find an excess
+$\delta\vec{C}$ such that
+\begin{equation}
+	\mathcal{E}\left(\vec{C}+\delta\vec{C}\right) \leq 0
+\end{equation}
+
+Let $\vec{\beta}$ be the steepest descent direction of $\mathcal{E}$,
+\begin{equation}
+	\vec{\beta} = -\partial_{\vec{C}} \mathcal{E}.
+\end{equation}
+Since
+\begin{equation}
+	\mathcal{E}
+	\left(\vec{C}+\mytrn{\mymat{\nu}}\vec{\xi}\right) 
+	\simeq \mathcal{E}\left(\vec{C}\right) - \vec{\beta} \cdot \mytrn{\mymat{\nu}}\vec{\xi}
+	= \mathcal{E}\left(\vec{C}\right) - \mymat{\nu}\vec{\beta}\cdot\vec{\xi},
+\end{equation}
+the steepest descent direction w.r.t the extent is $\mymat{\nu}\vec{\beta}$, which turns into
+a steepest concentration descent 
+\begin{equation}
+	\vec{\eta} = \mytrn{\mymat{\nu}} \mymat{\nu} \, \vec{\beta}
+\end{equation}
+%so that we want to find an extent $\vec{\xi}$ which minimises $\mathcal{F}(\alpha)=\mathcal{E}(\vec{C} + \alpha
+
 
 \end{document}
 
