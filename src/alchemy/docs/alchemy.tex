@@ -59,9 +59,23 @@ Since
 the steepest descent direction w.r.t the extent is $\mymat{\nu}\vec{\beta}$, which turns into
 a steepest concentration descent 
 \begin{equation}
-	\vec{\eta} = \mytrn{\mymat{\nu}} \mymat{\nu} \, \vec{\beta}
+	\vec{g} = \mytrn{\mymat{\nu}} \mymat{\nu} \, \vec{\beta}
 \end{equation}
 %so that we want to find an extent $\vec{\xi}$ which minimises $\mathcal{F}(\alpha)=\mathcal{E}(\vec{C} + \alpha
+
+We may use
+\begin{equation}
+\mathcal{E}\left(\vec{C}\right) = 
+\end{equation}
+
+Hence we can write a modified conjugated gradient algorithm, which makes sens only if there is
+an invalid concentration
+
+\begin{enumerate}
+\item Initialize $\vec{g}$, check that $\vert\vec{g}\vert>0$. Set $\vec{h}=\vec{g}$.
+\item
+\end{enumerate}
+
 
 
 \end{document}
