@@ -72,8 +72,11 @@ Hence we can write a modified conjugated gradient algorithm, which makes sens on
 an invalid concentration
 
 \begin{enumerate}
-\item Initialize $\vec{g}$, check that $\vert\vec{g}\vert>0$. Set $\vec{h}=\vec{g}$.
-\item
+\item Initialize $\vec{g}$, check that $g_2=\vert\vec{g}\vert^2>0$. Set $\vec{h}=\vec{g}$.
+\item Find the minimum, w.r.t $\alpha$ of $\mathcal{E}\left(\vec{C}+\alpha \vec{h}\right)$. 
+\item Update $\vec{C}$ to $\vec{C}+\alpha\vec{h}$. If the minimum is zero, terminate the algorithm.
+\item Compute the temporary steepest descent $\vec{b}$, check that $b_2=\vert\vec{b}\vert^2>0$.
+\item Compute $\gamma=\left(\right)/g2$.
 \end{enumerate}
 
 
