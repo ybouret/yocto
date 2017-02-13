@@ -1,6 +1,8 @@
 #include "yocto/alchemy/equilibria.hpp"
 #include "yocto/code/utils.hpp"
 #include "yocto/math/core/tao.hpp"
+#include "yocto/math/opt/bracket.hpp"
+#include "yocto/math/opt/minimize.hpp"
 
 namespace yocto
 {
@@ -103,8 +105,8 @@ namespace yocto
             if(!nu_j)
                 return false; // this reaction doesn't handle the species
 
-            assert(active[j]);assert(bad[j]<0);
-            const double Cj = bad[j];
+            assert(active[j]);assert(beta[j]<0);
+            const double Cj = beta[j];
 
             if(nu_j>0)
             {
@@ -172,11 +174,11 @@ namespace yocto
             for(size_t j=M;j>0;--j)
             {
                 const double Cj = C[j];
-                bad[j] = 0;
+                beta[j] = 0;
                 if(active[j]&&Cj<0)
                 {
                     ++nbad;
-                    bad[j] = Cj;
+                    beta[j] = Cj;
                 }
             }
 
@@ -209,7 +211,7 @@ namespace yocto
                 //______________________________________________________________
                 for(size_t j=M;j>0;--j)
                 {
-                    const double Cj = bad[j];
+                    const double Cj = beta[j];
                     if(Cj>=0.0) continue;
                     if(try_balance(j,limits,nu))
                     {
@@ -220,9 +222,130 @@ namespace yocto
             }
             throw imported::exception("alchemy.equilibria.balance","no possible balance");
         }
-        
-        
-        
+
+        double equilibria:: call_E(const double alpha)
+        {
+            tao::setprobe(dC, C, alpha, h);
+            double ans = 0;
+            for(size_t i=M;i>0;--i)
+            {
+                const double tmp = dC[i];
+                if(active[i] && tmp < 0 )
+                {
+                    ans += tmp * tmp;
+                }
+            }
+            return ans;
+        }
+
+        void equilibria:: call_g(array<double> &grad, const array<double> &Ctmp)
+        {
+            for(size_t i=M;i>0;--i)
+            {
+                const double CC = Ctmp[i];
+                if(active[i] && CC < 0 )
+                {
+                    beta[i] = -CC;
+                }
+            }
+            tao::mul(grad, Nu2, beta);
+        }
+
+
+
+
+        void equilibria:: balance2()
+        {
+            static const char fn[] = "equilibria.balance: ";
+
+            std::cerr << "-- Initialize Balancing" << std::endl;
+            std::cerr << "C=" << C << std::endl;
+            // initialize objective function
+            double E0 = E(0.0);
+            std::cerr << "E0=" << E0 << std::endl;
+            if(E0<=0)
+            {
+                return; // everything is fine
+            }
+
+            // initialize gradient
+            call_g(g,dC);
+            std::cerr << "beta=" << beta << std::endl;
+            std::cerr << "g   =" << g    << std::endl;
+
+            double g2 = tao::norm_sq(g);
+            if(g2<=0)
+            {
+                throw exception("%sinvalid initial gradient",fn);
+            }
+            tao::set(h,g);
+            std::cerr << "h=" << h << std::endl;
+
+            while(true)
+            {
+                std::cerr << "\tE0=" << E0 << std::endl;
+                // find minimum in h direction
+                triplet<double> xx = { 0.0, 1.0,     0.0 };
+                triplet<double> EE = { E0,  E(xx.b), 0.0 };
+                std::cerr << "-- Initial" << std::endl;
+                std::cerr << "xx=" << xx << std::endl;
+                std::cerr << "EE=" << EE << std::endl;
+                std::cerr << "h=" << h << std::endl;
+
+
+                std::cerr << "-- Bracketing" << std::endl;
+                math::bracket<double>::expand(E,xx,EE);
+
+                std::cerr << "xx=" << xx << std::endl;
+                std::cerr << "EE=" << EE << std::endl;
+
+                std::cerr << "-- Optimize" << std::endl;
+
+                math::optimize1D<double>::run(E, xx, EE, 0.0);
+                std::cerr << "xx=" << xx << std::endl;
+                std::cerr << "EE=" << EE << std::endl;
+
+
+                // advance point
+                const double E1 = E(xx.b);
+                tao::set(C,dC);
+                std::cerr << "C=" << C << std::endl;
+
+
+                std::cerr << "E0=" << E0 <<  " -> " << E1 << std::endl;
+                if(E1>=E0)
+                {
+                    throw exception("%sunable to balance concentrations",fn);
+                }
+                E0 = E1;
+                if(E0<=0)
+                {
+                    break; // success
+                }
+
+                call_g(b,dC);
+                const double b2 = tao::norm_sq(b);
+                if(b2<=0)
+                {
+                    throw exception("%sinvalid current gradient",fn);
+                }
+                double dgg = 0;
+                for(size_t i=M;i>0;--i)
+                {
+                    dgg += (b[i]-g[i])*b[i];
+                }
+                const double gam = dgg/g2;
+
+                g2 = b2;
+                tao::set(g,b);
+                tao::setprobe(h,g,gam,h);
+
+            }
+
+            assert(E0<=0);
+
+
+        }
         
     }
     

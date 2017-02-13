@@ -19,16 +19,20 @@ namespace yocto
         N(0),
         Nu(),
         NuT(),
+        Nu2(),
         Phi(),
         Gamma(),
         K(),
-        Xi(),
+        Chi(),
         xi(),
         C(),
         dC(),
         active(),
-        bad(),
+        beta(),
+        g(),
+        h(),
         iNu(),
+        E(this, & equilibria::call_E),
         max_name_length(0)
         {}
 
@@ -68,15 +72,19 @@ namespace yocto
             (size_t &)N = size();
             (size_t &)M = pLib->size();
             iNu.   release();
-            bad.   release();
+            b.     release();
+            h.     release();
+            g.     release();
+            beta.  release();
             active.release();
             dC.    release();
             C.     release();
             xi.    release();
-            Xi.    release();
+            Chi.   release();
             K.     release();
             Gamma. release();
             Phi.   release();
+            Nu2.   release();
             NuT.   release();
             Nu.    release();
             try
@@ -89,15 +97,19 @@ namespace yocto
                     //__________________________________________________________
                     Nu.    make(N,M);
                     NuT.   make(M,N);
+                    Nu2.   make(M,M);
                     Phi.   make(N,M);
                     Gamma. make(N);
                     K.     make(N);
-                    Xi.    make(N);
+                    Chi.   make(N);
                     xi.    make(N);
                     C.     make(M);
                     dC.    make(M);
                     active.make(M,false);
-                    bad.   make(M);
+                    beta.  make(M);
+                    g.     make(M);
+                    h.     make(M);
+                    b.     make(M);
                     iNu.   make(N,M);
 
                     //__________________________________________________________
@@ -128,7 +140,10 @@ namespace yocto
                         }
                     }
 
-                    
+                    tao::mmul(Nu2, NuT, Nu);
+                    //std::cerr << "Nu =" << Nu  << std::endl;
+                    //std::cerr << "Nu2=" << Nu2 << std::endl;
+
                 }
             }
             catch(...)
@@ -141,15 +156,15 @@ namespace yocto
 
         void equilibria:: buildXi()
         {
-            tao::mmul_rtrn(Xi, Phi, Nu);
-            if(!LU<double>::build(Xi))
+            tao::mmul_rtrn(Chi, Phi, Nu);
+            if(!LU<double>::build(Chi))
             {
                 throw exception("equilibria: singular composition");
             }
         }
 
-        void equilibria:: computeXi(const array<double> &C0,
-                                    const double         t)
+        void equilibria:: computeChi(const array<double> &C0,
+                                      const double         t)
         {
             size_t i = 1;
             for(iterator it=begin();i<=N;++i,++it)
@@ -161,7 +176,7 @@ namespace yocto
             buildXi();
         }
 
-        void equilibria:: updateXi(const array<double> &C0)
+        void equilibria:: updateChi(const array<double> &C0)
         {
             size_t i=1;
             for(iterator it=begin();i<=N;++i,++it)
@@ -194,7 +209,7 @@ namespace yocto
             tao::set(C,C0);
             balance();
 
-            computeXi(C,t);
+            computeChi(C,t);
 
             double norm2=0;
             bool   check=false;
@@ -208,7 +223,7 @@ namespace yocto
                 std::cerr << std::endl;
                 std::cerr << "Gamma=" << Gamma << std::endl;
                 tao::neg(xi,Gamma);
-                LU<double>::solve(Xi,xi);
+                LU<double>::solve(Chi,xi);
 
                 std::cerr << "C  =" << C  << std::endl;
                 std::cerr << "xi =" << xi << std::endl;
@@ -218,7 +233,7 @@ namespace yocto
                 tao::mul(dC, NuT, xi);
                 tao::add(C, dC);
                 balance();
-                updateXi(C);
+                updateChi(C);
                 const double temp2 = tao::norm_sq(dC);
                 if(check)
                 {
@@ -242,13 +257,13 @@ namespace yocto
                 }
                 //if(++count>=10) break;
             }
-
+            
         }
-
-
-
-
-
+        
+        
+        
+        
+        
     }
 
 }

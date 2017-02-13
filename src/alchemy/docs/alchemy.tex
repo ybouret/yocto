@@ -76,7 +76,9 @@ an invalid concentration
 \item Find the minimum, w.r.t $\alpha$ of $\mathcal{E}\left(\vec{C}+\alpha \vec{h}\right)$. 
 \item Update $\vec{C}$ to $\vec{C}+\alpha\vec{h}$. If the minimum is zero, terminate the algorithm.
 \item Compute the temporary steepest descent $\vec{b}$, check that $b_2=\vert\vec{b}\vert^2>0$.
-\item Compute $\gamma=\left(\right)/g2$.
+\item Compute $\gamma=\dfrac{\left(\vec{b}-\vec{g}\right)\cdot \vec{b}}{g_2}$.
+\item Update $\vec{g} = \vec{b}$
+\item Update $\vec{h} = \vec{g} + \gamma \vec{h}$
 \end{enumerate}
 
 
