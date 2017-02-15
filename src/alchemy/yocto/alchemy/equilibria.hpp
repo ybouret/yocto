@@ -62,32 +62,28 @@ namespace yocto
             equilibrium & add( const string &name, const equilibrium_constant &K);
             equilibrium & add( const string &name, const double                K);
 
-            void compile();
+            void compile(); //!< allocate and compute constant terms accordint to the library
 
             void computeChi(const array<double> &C0, const double t); //!< compute Gamma,K, Phi and Xi at a given time
             void updateChi(const array<double>  &C0);                 //!< update Gamma,Phi and Xi
 
-            void balance(); //!< balance C
 
             void normalize( array<double> &C0, const double t );
 
             friend std::ostream & operator<<( std::ostream &, const equilibria &);
 
 
-            void balance2(); //!< balance C
+            void balance(); //!< balance C
 
         private:
             math::numeric<double>::function E;
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
             size_t max_name_length;
             void submit( const equilibrium::pointer &eq);
-            void buildXi();
-            void compute(XiLimits &limits, const array<int> &nu) const throw();
-            bool try_balance(const size_t j, const XiLimits &limits, const array<int> &nu) throw();
+            void buildChi();
 
             double call_E(const double alpha); //!< objective function dC = C + alpha*h
-            void   call_g(array<double> &grad,const array<double> &Ctmp); //!< descent direction of E@Ctmp
-            bool   bracket(triplet<double> &x, triplet<double> &E);
+            void   compute_descent(array<double> &descent,const array<double> &Ctmp); //!< descent direction of E@Ctmp
 
         };
     }

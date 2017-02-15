@@ -65,7 +65,22 @@ a steepest concentration descent
 
 We may use
 \begin{equation}
-\mathcal{E}\left(\vec{C}\right) = 
+\mathcal{E}\left(\vec{C}\right) = \sum_{j} 
+\left\lbrace
+\begin{array}{ll}
+\frac{1}{2} C_j^2 & \text{if species $\#j$ is  active  and $C_j<0$}  \\
+0 & \text{otherwise}\\
+\end{array}
+\right. 
+\end{equation}
+so that
+\begin{equation}
+	\vec{\beta} =
+	\begin{bmatrix}
+	\vdots\\
+	-C_j \; (\text{if species $\#j$ is  active  and $C_j<0$})\\
+	\vdots\\
+	\end{bmatrix}
 \end{equation}
 
 Hence we can write a modified conjugated gradient algorithm, which makes sens only if there is
