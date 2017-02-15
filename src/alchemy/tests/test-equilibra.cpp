@@ -77,7 +77,7 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     chemlib->display(std::cerr,chemsys.C);
 
     chemsys.balance();
-    
+    chemsys.normalize(chemsys.C, 0.0);
 
     return 0;
 

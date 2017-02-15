@@ -33,11 +33,11 @@ We also naturally have the topology matrix $\mymat{\nu}$, such that
 any chemical shift is defined by a  chemical extent vector $\vec{\xi}$ and
 produces a shift
 $$
-	\delta\vec{C}=\mytrn{\mymat{\nu}}\vec{\xi}
+	\mytrn{\mymat{\nu}}\vec{\xi}
 $$
+We note $\mymat{\Phi}$ the Jacobian of $\vec{\Gamma}$.
 
 \section{Balancing Concentrations}
-\subsection{Method}
 
 Let us assume that we define a continuously derivable objective function $\mathcal{E}\left(\vec{C}\right)$ which is minimal (with value 0) when all active species are positive. Whenever one of those concentrations is negative, we want to find an excess
 $\delta\vec{C}$ such that
@@ -94,29 +94,34 @@ an invalid concentration
 \item Compute $\gamma=\dfrac{\left(\vec{b}-\vec{g}\right)\cdot \vec{b}}{g_2}$.
 \item Update $\vec{g} = \vec{b}$
 \item Update $\vec{h} = \vec{g} + \gamma \vec{h}$
+\item go to 2
 \end{enumerate}
+
+\section{Normalising}
+A chemical system must be balanced before normalisation.
+Then, at a given time $t$, we assume that we start from
+$\vec{\Gamma}\left(\vec{C}\right)\not=\vec{0}$  and that we look for the chemical
+extent $\vec{\xi}$ so that
+\begin{equation}
+	\vec{\Gamma}\left(\vec{C}+\mytrn{\mymat{\nu}}\vec{\xi}\right) = \vec{0}
+\end{equation}
+We approximate the extent using the first order expansion
+\begin{equation}
+	\vec{0} = \vec{\Gamma}\left(\vec{C}\right) + \underbrace{\left(\mymat{\Phi}\mytrn{\mymat{\nu}}\right)}_{\displaystyle \mymat{\chi}} 
+	\vec{\xi}
+\end{equation}	
+\begin{enumerate}
+\item Compute $\vec{\Gamma}$ and $\mymat{\chi}$
+\item Compute $\vec{\xi}=-\mymat{\chi}^{-1} \vec{\Gamma}$
+\item Update  $\vec{C}$ to $\vec{C}+\mytrn{\mymat{\nu}}\vec{\xi}$
+\item go to 1 until convergence.
+\end{enumerate}
+
+\section{Using in an ODE}
 
 
 
 \end{document}
 
-
-\section{Balancing Concentrations}
-\subsection{Method}
-
-Let us assume that we define an objective function $\mathcal{E}\left(\vec{C}\right)$ which is minimal (with value 0) when all active species are positive. Whenever one of those concentrations is negative, we want to find an excess
-$\delta\vec{C}$ such that
-\begin{equation}
-	\mathcal{E}\left(\vec{C}+\delta\vec{C}\right).
-\end{equation}
-Locally, we have
-\begin{equation}
-	\mathcal{E}\left(\vec{C}+\mytrn{\mymat{\nu}}\vec{\xi}\right) \simeq 
-	\mathcal{E}\left(\vec{C}\right) - \vec{\beta}\cdot\delta\vec{C} = \mathcal{E}\left(\vec{C}\right) - \vec{\xi}\cdot \mymat{\nu}\vec{\beta}
-\end{equation}
-where
-\begin{equation}
-	\vec{\beta} = -\partial_{\vec{C}} \mathcal{E}
-\end{equation}
 
 

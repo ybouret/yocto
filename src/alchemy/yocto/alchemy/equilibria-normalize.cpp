@@ -79,7 +79,6 @@ namespace yocto
                 tao::mul(dC, NuT, xi);
                 tao::add(C, dC);
                 balance();
-                updateChi(C);
                 const double temp2 = tao::norm_sq(dC);
                 if(check)
                 {
@@ -101,7 +100,7 @@ namespace yocto
                     check = true;
                     norm2 = temp2;
                 }
-                //if(++count>=10) break;
+                updateChi(C);
             }
             
         }
