@@ -63,6 +63,18 @@ namespace yocto
              */
             static
             bool orthonormal( matrix<T> &Q, const matrix<T> &P);
+
+            //! build Range (Img) and NullSpace (Ker) from U,W,V
+            /**
+             - use the rows as vectors of the Range and Nullspace
+             - use the zero elements of w to get them
+             */
+            static
+            void range_and_nullspace(matrix<T>       &Img,
+                                     matrix<T>       &Ker,
+                                     const matrix<T> &U,
+                                     const array<T>  &W,
+                                     const matrix<T> &V);
         };
         
     }

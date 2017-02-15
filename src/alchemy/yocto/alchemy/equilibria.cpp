@@ -1,7 +1,7 @@
 #include "yocto/alchemy/equilibria.hpp"
 #include "yocto/code/utils.hpp"
 #include "yocto/math/core/tao.hpp"
-#include "yocto/math/core/adjoint.hpp"
+#include "yocto/math/core/svd.hpp"
 
 namespace yocto
 {
@@ -140,8 +140,15 @@ namespace yocto
                     }
 
                     tao::mmul(Nu2, NuT, Nu);
-                    //std::cerr << "Nu =" << Nu  << std::endl;
-                    //std::cerr << "Nu2=" << Nu2 << std::endl;
+                    matrix<double> U(Nu2),V(M);
+                    vector<double> W(M);
+                    if(!svd<double>::build(U,W,V))
+                    {
+                        throw exception("toto");
+                    }
+                    std::cerr << "U=" << U << std::endl;
+                    std::cerr << "V=" << V << std::endl;
+                    std::cerr << "W=" << W << std::endl;
 
                 }
             }

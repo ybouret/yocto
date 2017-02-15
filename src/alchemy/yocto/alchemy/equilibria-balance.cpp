@@ -163,7 +163,7 @@ namespace yocto
             assert(E0<=0);
             //______________________________________________________________
             //
-            // avoid numerical glithces
+            // avoid numerical glitches
             //______________________________________________________________
             for(size_t j=M;j>0;--j)
             {
@@ -172,6 +172,8 @@ namespace yocto
                     C[j] = max_of<double>(C[j],0.0);
                 }
             }
+
+            pLib->display(std::cerr,C);
 
         }
         

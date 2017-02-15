@@ -64,16 +64,17 @@ namespace yocto
 
             void compile(); //!< allocate and compute constant terms accordint to the library
 
-            void computeChi(const array<double> &C0, const double t); //!< compute Gamma,K, Phi and Xi at a given time
-            void updateChi(const array<double>  &C0);                 //!< update Gamma,Phi and Xi
+            void computeChi(const array<double> &C0, const double t); //!< compute Gamma,K, Phi and Chi at a given time
+            void updateChi(const array<double>  &C0);                 //!< update Gamma,Phi and Chi from stored K
 
 
-            void normalize( array<double> &C0, const double t );
+            void normalize(array<double> &C0,
+                           const double   t);
 
             friend std::ostream & operator<<( std::ostream &, const equilibria &);
 
 
-            void balance(); //!< balance C
+            void balance(); //!< balance current C
 
         private:
             math::numeric<double>::function E;

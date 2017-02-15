@@ -446,6 +446,48 @@ namespace yocto
             // All done !
             return true;
         }
+
+        template <>
+        void svd<real_t>:: range_and_nullspace(matrix<real_t>       &Img,
+                                               matrix<real_t>       &Ker,
+                                               const matrix<real_t> &U,
+                                               const array<real_t>  &W,
+                                               const matrix<real_t> &V)
+        {
+            assert(U.cols==U.rows);
+            assert(V.cols==V.rows);
+            assert(W.size()==U.cols);
+            const size_t n = W.size();
+
+            // first pass find dim(Img)
+            size_t dim = 0;
+            for(size_t i=n;i>0;--i)
+            {
+                if(Fabs(W[i])>0) ++dim;
+            }
+            const size_t ker = n-dim;
+
+            if(dim>0)
+            {
+                if(dim>=n)
+                {
+                    Ker.release();
+                    Img.make(n,n);
+                }
+                else
+                {
+                    Img.make(dim,n);
+                    Ker.make(ker,n);
+                }
+            }
+            else
+            {
+                Img.release();
+                Ker.make(n,n);
+            }
+            
+
+        }
     }
 }
 
