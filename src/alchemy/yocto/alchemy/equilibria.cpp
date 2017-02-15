@@ -140,6 +140,7 @@ namespace yocto
                     }
 
                     tao::mmul(Nu2, NuT, Nu);
+#if 0
                     matrix<double> U(Nu2),V(M);
                     vector<double> W(M);
                     if(!svd<double>::build(U,W,V))
@@ -155,6 +156,7 @@ namespace yocto
                     svd<double>::range_and_nullspace(P,Q,U,W,V);
                     std::cerr << "P=" << P << std::endl;
                     std::cerr << "Q=" << Q << std::endl;
+#endif
                 }
             }
             catch(...)
