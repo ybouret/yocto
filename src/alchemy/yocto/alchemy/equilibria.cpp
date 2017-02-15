@@ -149,7 +149,12 @@ namespace yocto
                     std::cerr << "U=" << U << std::endl;
                     std::cerr << "V=" << V << std::endl;
                     std::cerr << "W=" << W << std::endl;
-
+                    std::cerr << "N=" << N << std::endl;
+                    for(size_t i=N+1;i<=M;++i) W[i] = 0;
+                    matrix<double> P,Q;
+                    svd<double>::range_and_nullspace(P,Q,U,W,V);
+                    std::cerr << "P=" << P << std::endl;
+                    std::cerr << "Q=" << Q << std::endl;
                 }
             }
             catch(...)

@@ -467,6 +467,7 @@ namespace yocto
             }
             const size_t ker = n-dim;
 
+            // allocate matrices
             if(dim>0)
             {
                 if(dim>=n)
@@ -484,6 +485,29 @@ namespace yocto
             {
                 Img.release();
                 Ker.make(n,n);
+            }
+            
+            // fill matrices
+            size_t ir = 0;
+            size_t ik = 0;
+            for(size_t k=n;k>0;--k)
+            {
+                if(Fabs(W[k])>0)
+                {
+                    ++ir;
+                    for(size_t i=n;i>0;--i)
+                    {
+                        Img[ir][i] = U[i][k];
+                    }
+                }
+                else
+                {
+                    ++ik;
+                    for(size_t i=n;i>0;--i)
+                    {
+                        Ker[ik][i] = V[i][k];
+                    }
+                }
             }
             
 
