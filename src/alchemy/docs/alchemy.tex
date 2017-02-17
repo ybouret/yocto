@@ -114,6 +114,7 @@ We approximate the extent using the first order expansion
 \item Compute $\vec{\Gamma}$ and $\mymat{\chi}$
 \item Compute $\vec{\xi}=-\mymat{\chi}^{-1} \vec{\Gamma}$
 \item Update  $\vec{C}$ to $\vec{C}+\mytrn{\mymat{\nu}}\vec{\xi}$
+\item Balance !
 \item go to 1 until convergence.
 \end{enumerate}
 
@@ -121,7 +122,7 @@ We approximate the extent using the first order expansion
 
 \section{Booting with linear constraints}
 Let us assume that we have $N_c$ linear constraints (electroneutrality, osmolarity, mass concentration) with $Nc+N=M$
-and we can write that a valid concentration must satisfy
+and we can write that a valid concentration must satisfy, using a $N_c\times M$ matrix $\mymat{P}$. 
 \begin{equation}
 	\mymat{P} \vec{C} = \vec{\Lambda} \text{ and } \vec{\Gamma}\left(\vec{C}\right) = \vec{0}.
 \end{equation}

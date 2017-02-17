@@ -44,9 +44,8 @@ namespace yocto
 
 
 
-        void equilibria:: balance()
+        bool equilibria:: balance() throw()
         {
-            static const char fn[] = "equilibria.balance: ";
 
             std::cerr << "-- Initialize Balancing" << std::endl;
             std::cerr << "C=" << C << std::endl;
@@ -59,7 +58,7 @@ namespace yocto
             std::cerr << "E0ini=" << E0 << std::endl;
             if(E0<=0)
             {
-                return; // everything is fine
+                return true; // everything is fine
             }
 
             //__________________________________________________________________
@@ -73,7 +72,8 @@ namespace yocto
             double g2 = tao::norm_sq(g);
             if(g2<=0)
             {
-                throw exception("%sinvalid initial gradient",fn);
+                std::cerr << "invalid descent direction" << std::endl;
+                return false;
             }
             tao::set(h,g);
             std::cerr << "h=" << h << std::endl;
@@ -124,12 +124,13 @@ namespace yocto
                 std::cerr << "E0=" << E0 <<  " -> " << E1 << std::endl;
                 if(E1>=E0)
                 {
-                    throw exception("%sunable to balance concentrations",fn);
+                    std::cerr << "Not decreasing func" << std::endl;
+                    return false;
                 }
                 E0 = E1;
                 if(E0<=0)
                 {
-                    break; // success
+                    break;
                 }
 
                 //______________________________________________________________
@@ -140,7 +141,8 @@ namespace yocto
                 const double b2 = tao::norm_sq(b);
                 if(b2<=0)
                 {
-                    throw exception("%sinvalid current gradient",fn);
+                    std::cerr << "invalid descent direction" << std::endl;
+                    return false;
                 }
                 double dgg = 0;
                 for(size_t i=M;i>0;--i)
@@ -155,10 +157,11 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // TODO: ensure h is in Im(Nu2)
+                // TODO: ensure h is in Im(Nu2) ?
                 //______________________________________________________________
 
             }
+
 
             assert(E0<=0);
             //______________________________________________________________
@@ -174,7 +177,7 @@ namespace yocto
             }
 
             pLib->display(std::cerr,C);
-
+            return true;
         }
         
     }

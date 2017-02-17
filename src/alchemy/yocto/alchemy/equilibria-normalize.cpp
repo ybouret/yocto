@@ -47,13 +47,15 @@ namespace yocto
 
         void equilibria:: normalize(array<double> &C0, const double t)
         {
+            static const char fn[] = "equilibria::boot: ";
             //__________________________________________________________________
             //
             // initialize
             //__________________________________________________________________
             assert(C0.size()>=M);
             tao::set(C,C0);
-            balance();
+            if(!balance()) throw exception("%scouldn't balance initial concentrations",fn);
+
 
             computeChi(C,t);
 
@@ -78,7 +80,8 @@ namespace yocto
 
                 tao::mul(dC, NuT, xi);
                 tao::add(C, dC);
-                balance();
+                if(!balance()) throw exception("%scouldn't balance current concentrations",fn);
+
                 const double temp2 = tao::norm_sq(dC);
                 if(check)
                 {

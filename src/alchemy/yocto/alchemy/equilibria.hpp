@@ -74,7 +74,7 @@ namespace yocto
             friend std::ostream & operator<<( std::ostream &, const equilibria &);
 
 
-            void balance(); //!< balance current C
+            bool balance() throw(); //!< balance current C
 
         private:
             math::numeric<double>::function E;
