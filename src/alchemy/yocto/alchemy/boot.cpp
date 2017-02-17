@@ -119,9 +119,7 @@ namespace yocto
 
         boot:: boot(const library::pointer &p) :
         pLib(p),
-        constraints(pLib->size(),as_capacity),
-        P(),
-        Q()
+        constraints(pLib->size(),as_capacity)
         {
             
         }

@@ -30,8 +30,37 @@ YOCTO_UNIT_TEST_IMPL(boot)
     loader.osmolarity(0.1);
     loader.conserve("Na+",0.01);
     loader.conserve("AH","A-",0.02);
+    loader.conserve("NH4+","NH3",0.003);
 
     std::cerr << loader << std::endl;
+    equilibria chemsys(chemlib);
+    
+    {
+        equilibrium &eq = chemsys.add("water",1e-14);
+        eq.add("H+", 1);
+        eq.add("HO-",1);
+    }
+    
+    {
+        equilibrium &eq = chemsys.add("base",1e-9);
+        eq.add("NH3",1);
+        eq.add("H+",1);
+        eq.add("NH4+",-1);
+
+    }
+
+    {
+        equilibrium &eq = chemsys.add("acid",1e-4);
+        eq.add("H+",1);
+        eq.add("A-",1);
+        eq.add("AH",-1);
+    }
+
+
+
+    chemsys.compile();
+    loader.run(chemsys);
+    
 
 }
 YOCTO_UNIT_TEST_DONE()
