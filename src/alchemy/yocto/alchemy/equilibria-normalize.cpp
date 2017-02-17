@@ -74,7 +74,6 @@ namespace yocto
                 LU<double>::solve(Chi,xi);
 
                 std::cerr << "C  =" << C  << std::endl;
-                std::cerr << "xi =" << xi << std::endl;
 
 
 
@@ -85,10 +84,8 @@ namespace yocto
                 const double temp2 = tao::norm_sq(dC);
                 if(check)
                 {
-                    std::cerr << "norm=" << temp2 << "/" << norm2 << std::endl;
                     if(temp2>=norm2)
                     {
-                        std::cerr << "Reached equilibrium" << std::endl;
                         // set back value
                         for(size_t i=M;i>0;--i)
                         {

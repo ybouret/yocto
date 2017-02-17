@@ -47,15 +47,11 @@ namespace yocto
         bool equilibria:: balance() throw()
         {
 
-            std::cerr << "-- Initialize Balancing" << std::endl;
-            std::cerr << "C=" << C << std::endl;
-
             //__________________________________________________________________
             //
             // initialize objective function
             //__________________________________________________________________
             double E0 = E(0.0);
-            std::cerr << "E0ini=" << E0 << std::endl;
             if(E0<=0)
             {
                 return true; // everything is fine
@@ -66,17 +62,12 @@ namespace yocto
             // initialize descent directions
             //__________________________________________________________________
             compute_descent(g,dC);
-            std::cerr << "beta=" << beta << std::endl;
-            std::cerr << "g   =" << g    << std::endl;
-
             double g2 = tao::norm_sq(g);
             if(g2<=0)
             {
-                std::cerr << "invalid descent direction" << std::endl;
                 return false;
             }
             tao::set(h,g);
-            std::cerr << "h=" << h << std::endl;
 
 
             //__________________________________________________________________
@@ -85,7 +76,6 @@ namespace yocto
             //__________________________________________________________________
             while(true)
             {
-                std::cerr << "\tE0=" << E0 << std::endl;
 
                 //______________________________________________________________
                 //
@@ -93,23 +83,9 @@ namespace yocto
                 //______________________________________________________________
                 triplet<double> xx = { 0.0, 1.0,     0.0 };
                 triplet<double> EE = { E0,  E(xx.b), 0.0 };
-                std::cerr << "-- Initial" << std::endl;
-                std::cerr << "xx=" << xx << std::endl;
-                std::cerr << "EE=" << EE << std::endl;
-                std::cerr << "h=" << h << std::endl;
 
-
-                std::cerr << "-- Bracketing" << std::endl;
                 math::bracket<double>::expand(E,xx,EE);
-
-                std::cerr << "xx=" << xx << std::endl;
-                std::cerr << "EE=" << EE << std::endl;
-
-                std::cerr << "-- Optimize" << std::endl;
-
-                math::optimize1D<double>::run(E, xx, EE, 0.0);
-                std::cerr << "xx=" << xx << std::endl;
-                std::cerr << "EE=" << EE << std::endl;
+                math::optimize1D<double>::run(E,xx,EE, 0.0);
 
                 //______________________________________________________________
                 //
@@ -118,14 +94,9 @@ namespace yocto
                 //______________________________________________________________
                 const double E1 = E(xx.b);
                 tao::set(C,dC);
-                std::cerr << "C=" << C << std::endl;
-
-
-                std::cerr << "E0=" << E0 <<  " -> " << E1 << std::endl;
                 if(E1>=E0)
                 {
-                    std::cerr << "Not decreasing func" << std::endl;
-                    return false;
+                    return false; // zero cannot be reached
                 }
                 E0 = E1;
                 if(E0<=0)
@@ -141,7 +112,6 @@ namespace yocto
                 const double b2 = tao::norm_sq(b);
                 if(b2<=0)
                 {
-                    std::cerr << "invalid descent direction" << std::endl;
                     return false;
                 }
                 double dgg = 0;
@@ -176,7 +146,7 @@ namespace yocto
                 }
             }
 
-            pLib->display(std::cerr,C);
+            //pLib->display(std::cerr,C);
             return true;
         }
         

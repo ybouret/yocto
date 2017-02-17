@@ -4,7 +4,6 @@
 #include "yocto/alchemy/equilibrium.hpp"
 #include "yocto/container/matrix.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/container/tuple.hpp"
 #include "yocto/math/triplet.hpp"
 
 namespace yocto
@@ -14,23 +13,7 @@ namespace yocto
     {
         using math::triplet;
 
-
-        YOCTO_TRIPLE_DECL(YOCTO_TUPLE_STANDARD,XiLimit,
-                          bool,  exists,
-                          double,value,
-                          size_t,index);
-        inline XiLimit() throw() : exists(false), value(0), index(0) {}
-        inline void reset() throw() { exists = false; value = 0; index = 0; }
-        YOCTO_TRIPLE_END();
-
-        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,XiLimits,
-                          XiLimit,forward,
-                          XiLimit,reverse);
-        inline XiLimits() throw() : forward(), reverse() {}
-        inline void reset() throw() { forward.reset(); reverse.reset(); }
-        YOCTO_PAIR_END();
-
-
+        
         class equilibria : public equilibrium::database
         {
         public:
