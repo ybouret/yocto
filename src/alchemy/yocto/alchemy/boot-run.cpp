@@ -77,7 +77,7 @@ namespace yocto
             std::cerr << "P2=" << P2 << std::endl;
             if(!LU<double>::build(P2))
             {
-                throw exception("%ssingular constraints",fn);
+                throw exception("%ssingular set of constraints",fn);
             }
             vector<double> U(Nc);
             Cstar.make(M);
