@@ -9,6 +9,32 @@ namespace yocto
     
     namespace alchemy
     {
+
+        void equilibria:: computePhi(const array<double> &C0,const double t)
+        {
+            size_t i = 1;
+            for(iterator it=begin();i<=N;++i,++it)
+            {
+                const equilibrium &eq = **it;
+                Gamma[i] = eq.computeGamma(C0, t, K[i]);
+                eq.computeGradient(Phi[i], C0,    K[i]);
+            }
+
+        }
+
+        void equilibria:: updatePhi(const array<double> &C0)
+        {
+            size_t i=1;
+            for(iterator it=begin();i<=N;++i,++it)
+            {
+                const equilibrium &eq = **it;
+                const double Kt = K[i];
+                Gamma[i] = eq.updateGamma(C0,Kt);
+                eq.computeGradient(Phi[i],C0,Kt);
+            }
+
+        }
+
         void equilibria:: buildChi()
         {
             tao::mmul_rtrn(Chi, Phi, Nu);
@@ -21,26 +47,13 @@ namespace yocto
         void equilibria:: computeChi(const array<double> &C0,
                                      const double         t)
         {
-            size_t i = 1;
-            for(iterator it=begin();i<=N;++i,++it)
-            {
-                const equilibrium &eq = **it;
-                Gamma[i] = eq.computeGamma(C0, t, K[i]);
-                eq.computeGradient(Phi[i], C0,    K[i]);
-            }
+            computePhi(C0,t);
             buildChi();
         }
 
         void equilibria:: updateChi(const array<double> &C0)
         {
-            size_t i=1;
-            for(iterator it=begin();i<=N;++i,++it)
-            {
-                const equilibrium &eq = **it;
-                const double Kt = K[i];
-                Gamma[i] = eq.updateGamma(C0,Kt);
-                eq.computeGradient(Phi[i],C0,Kt);
-            }
+            updatePhi(C0);
             buildChi();
         }
 

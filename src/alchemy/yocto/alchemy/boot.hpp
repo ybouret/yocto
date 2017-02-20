@@ -68,14 +68,13 @@ namespace yocto
 
             friend std::ostream & operator<<(std::ostream &,const boot &);
 
-            void run( equilibria &eqs );
+            void run( equilibria &eqs, const double t);
 
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
             const library::pointer      pLib;
             vector<constraint::pointer> constraints;
-            vector<double>              Cstar;
         };
 
     }

@@ -11,7 +11,7 @@ namespace yocto
     namespace alchemy
     {
 
-        void boot:: run( equilibria &eqs )
+        void boot:: run( equilibria &eqs, const double t )
         {
             static const char fn[] = "boot.run: ";
             // check parameters
@@ -70,21 +70,15 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // check the rank and compute Cstar
+            // check the rank and inv(P*P')
             //__________________________________________________________________
-            matrix<double> P2(Nc);
-            tao::mmul_rtrn(P2,P,P);
-            std::cerr << "P2=" << P2 << std::endl;
-            if(!LU<double>::build(P2))
+            matrix<double> iP2(Nc);
+            tao::mmul_rtrn(iP2,P,P);
+            std::cerr << "P2=" << iP2 << std::endl;
+            if(!LU<double>::build(iP2))
             {
                 throw exception("%ssingular set of constraints",fn);
             }
-            vector<double> U(Nc);
-            Cstar.make(M);
-            tao::set(U,Lam);
-            LU<double>::solve(P2,U);
-            tao::mul_trn(Cstar,P,U);
-            std::cerr << "Cstar=" << Cstar << std::endl;
 
             //__________________________________________________________________
             //
@@ -101,6 +95,90 @@ namespace yocto
                 svd<double>::truncate(Q[i]);
             }
             std::cerr << "Q=" << Q << std::endl;
+
+
+            //__________________________________________________________________
+            //
+            // compute Ustar
+            //__________________________________________________________________
+            vector<double> Ustar(Lam);
+            vector<double> Cstar(M);
+            LU<double>::solve(iP2,Ustar);
+            tao::mul_trn(Cstar, P, Ustar);
+            std::cerr << "Ustar=" << Ustar << std::endl;
+            std::cerr << "Cstar=" << Cstar << std::endl;
+
+            vector<double> U(Nc), dU(Nc);
+            vector<double> V(N),  dV(N);
+            matrix<double> PhiQ(N);
+            vector<double> C_old(M);
+            bool first = true;
+            size_t count = 0;
+
+        LOOP:
+            // initialize U, compute C from U and V
+            tao::set(C_old,C);
+            tao::set(U,Ustar);
+            tao::set(C,Cstar);
+            tao::mul_add_trn(C,Q,V);
+            std::cerr << "C0=" << C << std::endl;
+            std::cerr << "U0=" << U << std::endl;
+            std::cerr << "V0=" << V << std::endl;
+
+            // validate C
+            eqs.validate();
+
+            // recompute U and V
+            tao::mul(U,P,C);
+            LU<double>::solve(iP2,U);
+            tao::mul(V,Q,C);
+            std::cerr << "C1=" << C << std::endl;
+            std::cerr << "U1=" << U << std::endl;
+            std::cerr << "V1=" << V << std::endl;
+
+            // compute dV from Gamma
+            if(first)
+            {
+                first = false;
+                eqs.computePhi(C, t);
+            }
+            else
+            {
+                eqs.updatePhi(C);
+            }
+
+            tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
+            std::cerr << "PhiQ=" << PhiQ << std::endl;
+            if( !LU<double>::build(PhiQ) )
+            {
+                throw exception("%ssingular set of constraints during computation",fn);
+            }
+            tao::neg(dV,eqs.Gamma);
+            LU<double>::solve(PhiQ,dV);
+            std::cerr << "dV=" << dV << std::endl;
+            //update V
+            tao::add(V,dV);
+
+
+            // update C
+            tao::mul_trn(C,P,U);
+            tao::mul_add_trn(C,Q,V);
+            std::cerr << "C2=" << C << std::endl;
+            std::cerr << "U2=" << U << std::endl;
+            std::cerr << "V2=" << V << std::endl;
+
+
+            // recompute U and V
+            eqs.validate();
+            std::cerr << "C3   =" << C     << std::endl;
+            std::cerr << "C_old=" << C_old << std::endl;
+
+            //tao::mul(U,P,C);
+            //LU<double>::solve(iP2,U);
+            tao::mul(V,Q,C);
+            std::cerr << "U3=" << U << std::endl;
+            std::cerr << "V3=" << V << std::endl;
+            if(++count<=2) goto LOOP;
 
         }
 

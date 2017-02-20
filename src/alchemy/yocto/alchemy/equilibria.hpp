@@ -50,6 +50,9 @@ namespace yocto
             void computeChi(const array<double> &C0, const double t); //!< compute Gamma,K, Phi and Chi at a given time
             void updateChi(const array<double>  &C0);                 //!< update Gamma,Phi and Chi from stored K
 
+            void computePhi(const array<double> &C0,const double t); //!< compute Gamma, K and Phi at a given time
+            void updatePhi(const array<double>  &C0);                //!< update Gamma, Phi and Chi from a stored K
+
 
             void normalize(array<double> &C0,
                            const double   t);
@@ -58,6 +61,8 @@ namespace yocto
 
 
             bool balance() throw(); //!< balance current C
+
+            void validate() throw();
 
         private:
             math::numeric<double>::function E;

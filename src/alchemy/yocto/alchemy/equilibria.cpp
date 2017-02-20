@@ -177,9 +177,20 @@ namespace yocto
     namespace alchemy
     {
 
-               
-        
-        
+        void equilibria:: validate() throw()
+        {
+            for(size_t i=M;i>0;--i)
+            {
+                if(active[i])
+                {
+                    C[i] = max_of<double>(0.0,C[i]);
+                }
+            }
+
+        }
+
+
+
         
         
     }
