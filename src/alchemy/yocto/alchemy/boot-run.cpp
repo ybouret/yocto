@@ -170,15 +170,15 @@ namespace yocto
 
             // recompute U and V
             eqs.validate();
+            std::cerr << "V3=" << V << std::endl;
             std::cerr << "C3   =" << C     << std::endl;
             std::cerr << "C_old=" << C_old << std::endl;
 
             //tao::mul(U,P,C);
             //LU<double>::solve(iP2,U);
             tao::mul(V,Q,C);
-            std::cerr << "U3=" << U << std::endl;
-            std::cerr << "V3=" << V << std::endl;
-            if(++count<=2) goto LOOP;
+            //std::cerr << "U3=" << U << std::endl;
+            if(++count<=50) goto LOOP;
 
         }
 
