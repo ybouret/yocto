@@ -121,6 +121,7 @@ We approximate the extent using the first order expansion
 \section{Using in an ODE}
 
 \section{Booting with linear constraints}
+\subsection{Description}
 Let us assume that we have $N_c$ linear constraints (electroneutrality, osmolarity, mass concentration) with $Nc+N=M$
 and we can write that a valid concentration must satisfy, using a $N_c\times M$ matrix $\mymat{P}$. 
 \begin{equation}
@@ -131,6 +132,18 @@ Obviously, if we take $\mymat{Q}\in\mymat{P}^{\perp}$, we have a set of vectors 
 	\vec{C} = \mytrn{\mymat{P}} \vec{U} + \mytrn{\mymat{Q}} \vec{V}
 \end{equation}
 We must find a way to compute $\vec{U}$ and $\vec{V}$ while preserving the validity of $\vec{C}$.
+
+\subsection{Algorithm}
+Let us assume that we start from $\vec{U}_n$ and $\vec{V}_n$ defining $\vec{C}_n$.
+We compute
+\begin{equation}
+\vec{U}^\star = \left(\mymat{P}\mytrn{\mymat{P}}\right)^{-1} \vec{\Lambda}
+\end{equation}
+We get
+\begin{equation}
+	\delta\vec{U}_n = \vec{U}^\star - \vec{U}_n
+\end{equation}
+
 
 \end{document}
 
