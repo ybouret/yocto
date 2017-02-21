@@ -134,6 +134,51 @@ Obviously, if we take $\mymat{Q}\in\mymat{P}^{\perp}$, we have a set of vectors 
 We must find a way to compute $\vec{U}$ and $\vec{V}$ while preserving the validity of $\vec{C}$.
 
 \subsection{Algorithm}
+
+Let us assume that we start from $\vec{V}_n$ defining $\vec{C}_n$.
+We also define $\mathcal{C}$ the operator that set invalid concentrations to $0$.
+We may define 
+\begin{equation}
+\vec{U}^\star = \left(\mymat{P}\mytrn{\mymat{P}}\right)^{-1} \vec{\Lambda}
+\end{equation}
+and 
+\begin{equation}
+\vec{C}^\star = \mytrn{\mymat{P}} \vec{U}^\star
+\end{equation}
+
+We compute 
+\begin{equation}
+	\vec{C}_{n+x} = \mathcal{C}\left(\vec{C}^\star+\mytrn{\mymat{Q}} \vec{V}_n\right)
+\end{equation}
+and deduce (we do not need it for the computations)
+\begin{equation}
+	\vec{U}_{n} = \left(\mymat{P}\mytrn{\mymat{P}}\right)^{-1} \mymat{P}\vec{C}_{n+x} \text{ (which is $\vec{U}^\star$ for a valid set of concentrations)}
+\end{equation}
+and
+\begin{equation}
+	\vec{V}_{n+x} = \mymat{Q} \vec{C}_{n+x}
+\end{equation}
+formally defining the valid concentration
+\begin{equation}
+	\vec{C}_{n+x} = \mytrn{\mymat{P}} \vec{U}_{n} + \mytrn{\mymat{Q}} \vec{V}_{n+x}
+\end{equation}
+
+We now expand 
+\begin{equation}
+\vec{\Gamma}\left(\vec{C}_{n+x}+\mytrn{\mymat{Q}} \delta\vec{V}_n\right) \simeq
+\vec{\Gamma}_n + \left(\mymat{\Phi}_n \mytrn{\mymat{Q}}\right) \delta \vec{V}_n
+\end{equation}
+to get
+\begin{equation}
+	\vec{C}_{n+1} = \mathcal{C}\left(\vec{C}_{n+x} -  \mytrn{\mymat{Q}}\left(\mymat{\Phi}_n \mytrn{\mymat{Q}}\right)^{-1} \vec{\Gamma}_n\right)
+\end{equation}
+and
+\begin{equation}
+	\vec{V}_{n+1}   = \mymat{Q} \vec{C}_{n+1}.
+\end{equation}
+
+\end{document}
+
 Let us assume that we start from $\vec{U}_n$ and $\vec{V}_n$ defining $\vec{C}_n$.
 We also define $\mathcal{C}$ the operator that set invalid concentrations to $0$.
 We compute

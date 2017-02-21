@@ -99,87 +99,62 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // compute Ustar
+            // compute Cstar
             //__________________________________________________________________
-            vector<double> Ustar(Lam);
             vector<double> Cstar(M);
-            LU<double>::solve(iP2,Ustar);
-            tao::mul_trn(Cstar, P, Ustar);
-            std::cerr << "Ustar=" << Ustar << std::endl;
+            {
+                vector<double> U(Lam);
+                LU<double>::solve(iP2,U);
+                tao::mul_trn(Cstar,P,U);
+            }
             std::cerr << "Cstar=" << Cstar << std::endl;
 
-            vector<double> U(Nc), dU(Nc);
-            vector<double> V(N),  dV(N);
+            vector<double> V(N), dV(N);
             matrix<double> PhiQ(N);
-            vector<double> C_old(M);
             bool first = true;
-            size_t count = 0;
 
-        LOOP:
-            // initialize U, compute C from U and V
-            tao::set(C_old,C);
-            tao::set(U,Ustar);
+
+            // initialize
             tao::set(C,Cstar);
             tao::mul_add_trn(C,Q,V);
-            std::cerr << "C0=" << C << std::endl;
-            std::cerr << "U0=" << U << std::endl;
             std::cerr << "V0=" << V << std::endl;
-
-            // validate C
+            std::cerr << "C0=" << C << std::endl;
             eqs.validate();
-
-            // recompute U and V
-            tao::mul(U,P,C);
-            LU<double>::solve(iP2,U);
             tao::mul(V,Q,C);
-            std::cerr << "C1=" << C << std::endl;
-            std::cerr << "U1=" << U << std::endl;
             std::cerr << "V1=" << V << std::endl;
+            std::cerr << "C1=" << C << std::endl;
 
-            // compute dV from Gamma
+
+            size_t count = 0;
+        LOOP:
+            // update V by non linear constraints
             if(first)
             {
                 first = false;
-                eqs.computePhi(C, t);
+                eqs.computePhi(C,t);
             }
             else
             {
                 eqs.updatePhi(C);
             }
 
+            // compute the Newton step
             tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
-            std::cerr << "PhiQ=" << PhiQ << std::endl;
-            if( !LU<double>::build(PhiQ) )
+            if(!LU<double>::build(PhiQ))
             {
-                throw exception("%ssingular set of constraints during computation",fn);
+                throw exception("%ssingular concentrations",fn);
             }
             tao::neg(dV,eqs.Gamma);
             LU<double>::solve(PhiQ,dV);
-            std::cerr << "dV=" << dV << std::endl;
-            //update V
-            tao::add(V,dV);
+            //std::cerr << "dV=" << dV << std::endl;
 
-
-            // update C
-            tao::mul_trn(C,P,U);
-            tao::mul_add_trn(C,Q,V);
-            std::cerr << "C2=" << C << std::endl;
-            std::cerr << "U2=" << U << std::endl;
-            std::cerr << "V2=" << V << std::endl;
-
-
-            // recompute U and V
+            // compute the new C
+            tao::mul_add_trn(C,Q,dV);
             eqs.validate();
-            std::cerr << "V3=" << V << std::endl;
-            std::cerr << "C3   =" << C     << std::endl;
-            std::cerr << "C_old=" << C_old << std::endl;
-
-            //tao::mul(U,P,C);
-            //LU<double>::solve(iP2,U);
             tao::mul(V,Q,C);
-            //std::cerr << "U3=" << U << std::endl;
-            if(++count<=50) goto LOOP;
-
+            //std::cerr << "V2=" << V << std::endl;
+            std::cerr << "C=" << C << std::endl;
+            if(++count<=10) goto LOOP;
         }
 
 
