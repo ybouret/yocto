@@ -150,7 +150,10 @@ namespace yocto
                 eqs.updatePhi(C);
             }
 
+            //__________________________________________________________________
+            //
             // compute the Newton step
+            //__________________________________________________________________
             tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
             if(!LU<double>::build(PhiQ))
             {
@@ -162,14 +165,18 @@ namespace yocto
 
             tao::set(start_C,C);
             tao::mul_trn(delta_C,Q,dV);
-            
+
+            std::cerr << "G0=" << pEqs->Gamma2Value() << " / " << call_F(0.0) << std::endl;
+
+
+
             // compute the new C
             tao::mul_add_trn(C,Q,dV);
             eqs.validate();
             tao::mul(V,Q,C);
             //std::cerr << "V2=" << V << std::endl;
             std::cerr << "C=" << C << std::endl;
-            if(++count<=10) goto LOOP;
+            //if(++count<=10) goto LOOP;
         }
 
         double boot:: call_F(double alpha)
@@ -177,7 +184,7 @@ namespace yocto
             assert(pEqs);
             tao::setprobe(pEqs->C, start_C, alpha, delta_C);
             pEqs->updateGamma(pEqs->C);
-            return tao::norm_sq(pEqs->Gamma);
+            return pEqs->Gamma2Value();
         }
     }
 
