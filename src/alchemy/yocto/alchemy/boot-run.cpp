@@ -3,6 +3,10 @@
 #include "yocto/math/core/svd.hpp"
 #include "yocto/math/core/tao.hpp"
 
+#include "yocto/math/opt/bracket.hpp"
+#include "yocto/math/opt/minimize.hpp"
+
+
 namespace yocto
 {
 
@@ -135,6 +139,7 @@ namespace yocto
 
 
             size_t count = 0;
+            numeric<double>::function F(this, & boot::call_F );
         LOOP:
             //__________________________________________________________________
             //
@@ -163,20 +168,34 @@ namespace yocto
             LU<double>::solve(PhiQ,dV);
             //std::cerr << "dV=" << dV << std::endl;
 
+            //__________________________________________________________________
+            //
+            // prepare to decrease
+            //__________________________________________________________________
             tao::set(start_C,C);
             tao::mul_trn(delta_C,Q,dV);
 
-            std::cerr << "G0=" << pEqs->Gamma2Value() << " / " << call_F(0.0) << std::endl;
+            triplet<double> xx = { 0.0,                 1.0,         0 };
+            triplet<double> ff = { pEqs->Gamma2Value(), call_F(1.0), 0 };
+            std::cerr << "xx0=" << xx << std::endl; std::cerr << "ff0=" << ff << std::endl;
+            bracket<double>::expand(F,xx,ff);
+
+            std::cerr << "xx1=" << xx << std::endl;  std::cerr << "ff1=" << ff << std::endl;
+            optimize1D<double>::run(F,xx,ff, 0.0);
+            std::cerr << "xx2=" << xx << std::endl;  std::cerr << "ff2=" << ff << std::endl;
 
 
-
+            //__________________________________________________________________
+            //
             // compute the new C
-            tao::mul_add_trn(C,Q,dV);
+            //__________________________________________________________________
+            tao::setprobe(C, start_C, xx.b, delta_C);
+            std::cerr << "C_opt=" << C << std::endl;
             eqs.validate();
             tao::mul(V,Q,C);
-            //std::cerr << "V2=" << V << std::endl;
-            std::cerr << "C=" << C << std::endl;
-            //if(++count<=10) goto LOOP;
+            std::cerr << "C_fin=" << C << std::endl;
+            std::cerr << "V_fin=" << V << std::endl;
+            if(++count<=10) goto LOOP;
         }
 
         double boot:: call_F(double alpha)
