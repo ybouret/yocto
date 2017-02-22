@@ -120,119 +120,56 @@ namespace yocto
 
             vector<double> V(N), dV(N);
             matrix<double> PhiQ(N);
-            bool first = true;
-
-
-            //__________________________________________________________________
-            //
-            // initialize
-            //__________________________________________________________________
             numeric<double>::function F(this, & boot::call_F );
 
-            goto INITIALIZE;
 
-        LOOP:
-            {
-                //______________________________________________________________
-                //
-                // update V by non linear constraints
-                //______________________________________________________________
-                if(first)
-                {
-                    first = false;
-                    eqs.computePhi(C,t);
-                }
-                else
-                {
-                    eqs.updatePhi(C);
-                }
-
-                //______________________________________________________________
-                //
-                // compute the Newton step, firstly as dV
-                //______________________________________________________________
-                tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
-                if(!LU<double>::build(PhiQ))
-                {
-                    throw exception("%ssingular concentrations",fn);
-                }
-                tao::neg(dV,eqs.Gamma);
-                LU<double>::solve(PhiQ,dV);
-
-                //______________________________________________________________
-                //
-                // prepare to decrease with the delta_C Newton's step !
-                //______________________________________________________________
-                tao::set(start_C,C);
-                tao::mul_trn(delta_C,Q,dV);
-                std::cerr << "delta_C=" << delta_C << std::endl;
-                const double    G0 = eqs.Gamma2Value();
-                triplet<double> xx = { 0.0, 1.0,         0 };
-                triplet<double> ff = { G0,  call_F(1.0), 0 };
-                std::cerr << "xx0=" << xx << std::endl; std::cerr << "ff0=" << ff << std::endl;
-                bracket<double>::expand(F,xx,ff);
-
-                std::cerr << "xx1=" << xx << std::endl;  std::cerr << "ff1=" << ff << std::endl;
-                optimize1D<double>::run(F,xx,ff, 0.0);
-                std::cerr << "xx2=" << xx << std::endl;  std::cerr << "ff2=" << ff << std::endl;
-
-
-
-                //______________________________________________________________
-                //
-                // compute the new C
-                //______________________________________________________________
-                tao::setprobe(C, start_C, xx.b, delta_C);
-                eqs.validate();
-                std::cerr << "C_start=" << start_C << std::endl;
-                std::cerr << "C_final=" << C << std::endl;
-                eqs.updateGamma(C);
-                const double G1 = eqs.Gamma2Value();
-                std::cerr << "G1=" << G1 << " <- " << G0 << std::endl;
-
-                //______________________________________________________________
-                //
-                // check convergence betweeen start_C and C
-                //______________________________________________________________
-                bool converged = true;
-                for(size_t i=M;i>0;--i)
-                {
-                    const double C_old = start_C[i];
-                    const double C_new = C[i];
-                    if( Fabs(C_old-C_new)> numeric<double>::ftol * ( Fabs(C_old)+Fabs(C_new) ) )
-                    {
-                        converged = false;
-                        break;
-                    }
-                }
-
-                
-                if(converged)
-                {
-                    std::cerr << "Converged" << std::endl;
-                    return;
-                }
-                
-                //______________________________________________________________
-                //
-                // compute the new associated V part
-                //______________________________________________________________
-                tao::mul(V,Q,C);
-                std::cerr << "V_fin=" << V << std::endl;
-            }
-            
-        INITIALIZE:
             tao::set(C,Cstar);
-            tao::mul_add_trn(C,Q,V);
             eqs.validate();
             tao::mul(V,Q,C);
-            goto LOOP;
+            eqs.computePhi(C,t);
+            double F0 = eqs.Gamma2Value();
+
+            std::cerr << "C0=" << C   << std::endl;
+            std::cerr << "F0=" << F0  << std::endl;
+            std::cerr << "V0=" << V   << std::endl;
+
+            size_t count = 0;
+            
+        LOOP:
+            // compute dV Newton's step, assuming Gamma and Phi are computed
+            tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
+            if( !LU<double>::build(PhiQ) )
+            {
+                throw exception("%sunexpected invalid set of concentrations",fn);
+            }
+            tao::neg(dV,eqs.Gamma);
+            LU<double>::solve(PhiQ,dV);
+            tao::set(start_C,C);
+            tao::mul_trn(delta_C,Q,dV);
+
+            // get a globally decreasing step
+            triplet<double> xx = { 0.0, 1.0, -1 };
+            triplet<double> ff = { F0,  F(1.0), -1 };
+            std::cerr << "xx0=" << xx << std::endl; std::cerr << "ff0=" << ff << std::endl;
+            bracket<double>::expand(F, xx, ff);
+            std::cerr << "xx1=" << xx << std::endl; std::cerr << "ff1=" << ff << std::endl;
+            optimize1D<double>::run(F,xx,ff,0.0);
+            std::cerr << "xx2=" << xx << std::endl; std::cerr << "ff2=" << ff << std::endl;
+
+            const double F1 = F(xx.b);
+            std::cerr << "F1=" << F1 << " <-" << F0 << std::endl;
+            std::cerr << "C="  << C  << std::endl;
+
+            eqs.updatePhi(C);
+            F0 =  F1;
+            if(++count<=10) goto LOOP;
         }
         
         double boot:: call_F(double alpha)
         {
             assert(pEqs);
             tao::setprobe(pEqs->C, start_C, alpha, delta_C);
+            pEqs->validate();
             pEqs->updateGamma(pEqs->C);
             return pEqs->Gamma2Value();
         }
