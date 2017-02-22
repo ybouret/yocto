@@ -41,7 +41,9 @@ namespace yocto
             vector<double>         h;
             vector<double>         b;
             matrix<int>            iNu;    //!< integer Nu
-
+            vector<int>            nuP;    //!< sum of nu for products, units of Gamma
+            mutable vector<double> gam;    //!< for normalized Gamma values
+            
             equilibrium & add( const string &name, const equilibrium_constant &K);
             equilibrium & add( const string &name, const double                K);
 
@@ -53,6 +55,8 @@ namespace yocto
             void computePhi(const array<double> &C0,const double t); //!< compute Gamma, K and Phi at a given time
             void updatePhi(const array<double>  &C0);                //!< update Gamma, Phi and Chi from a stored K
 
+            void updateGamma(const array<double> &C0); //!< update Gamma
+            double Gamma2Value() const throw(); //!< return an objective function value
 
             void normalize(array<double> &C0,
                            const double   t);

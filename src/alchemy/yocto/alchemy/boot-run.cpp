@@ -28,6 +28,7 @@ namespace yocto
             }
 
             array<double> &C = eqs.C;
+
             assert(C.size()==M);
 
             matrix<double> P;
@@ -49,9 +50,13 @@ namespace yocto
             {
                 // no reactions
 
+                return;
             }
 
-
+            start_C.make(M);
+            delta_C.make(M);
+            pEqs = &eqs;
+            
             P.  make(Nc,M);
             Lam.make(Nc);
             for(size_t i=1;i<=Nc;++i)
@@ -114,7 +119,11 @@ namespace yocto
             bool first = true;
 
 
+            //__________________________________________________________________
+            //
             // initialize
+            //__________________________________________________________________
+
             tao::set(C,Cstar);
             tao::mul_add_trn(C,Q,V);
             std::cerr << "V0=" << V << std::endl;
@@ -127,7 +136,10 @@ namespace yocto
 
             size_t count = 0;
         LOOP:
+            //__________________________________________________________________
+            //
             // update V by non linear constraints
+            //__________________________________________________________________
             if(first)
             {
                 first = false;
@@ -148,6 +160,9 @@ namespace yocto
             LU<double>::solve(PhiQ,dV);
             //std::cerr << "dV=" << dV << std::endl;
 
+            tao::set(start_C,C);
+            tao::mul_trn(delta_C,Q,dV);
+            
             // compute the new C
             tao::mul_add_trn(C,Q,dV);
             eqs.validate();
@@ -157,7 +172,13 @@ namespace yocto
             if(++count<=10) goto LOOP;
         }
 
-
+        double boot:: call_F(double alpha)
+        {
+            assert(pEqs);
+            tao::setprobe(pEqs->C, start_C, alpha, delta_C);
+            pEqs->updateGamma(pEqs->C);
+            return tao::norm_sq(pEqs->Gamma);
+        }
     }
 
 }

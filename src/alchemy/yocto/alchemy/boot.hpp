@@ -75,6 +75,10 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
             const library::pointer      pLib;
             vector<constraint::pointer> constraints;
+            vector<double>              start_C;
+            vector<double>              delta_C;
+            equilibria                 *pEqs;
+            double                      call_F(double alpha);
         };
 
     }

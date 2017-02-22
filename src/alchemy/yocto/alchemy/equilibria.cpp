@@ -70,6 +70,8 @@ namespace yocto
         {
             (size_t &)N = size();
             (size_t &)M = pLib->size();
+            gam.   release();
+            nuP.   release();
             iNu.   release();
             b.     release();
             h.     release();
@@ -110,6 +112,8 @@ namespace yocto
                     h.     make(M);
                     b.     make(M);
                     iNu.   make(N,M);
+                    nuP.   make(N);
+                    gam.   make(N);
 
                     //__________________________________________________________
                     //
@@ -127,6 +131,7 @@ namespace yocto
                             iNu[i][j] = nu;
                             NuT[j][i] = nu;
                             active[j] = true;
+                            nuP[i] += nu;
                         }
                         for(const actor *node = eq.get_reactants().head;node;node=node->next)
                         {
@@ -140,23 +145,6 @@ namespace yocto
                     }
 
                     tao::mmul(Nu2, NuT, Nu);
-#if 0
-                    matrix<double> U(Nu2),V(M);
-                    vector<double> W(M);
-                    if(!svd<double>::build(U,W,V))
-                    {
-                        throw exception("toto");
-                    }
-                    std::cerr << "U=" << U << std::endl;
-                    std::cerr << "V=" << V << std::endl;
-                    std::cerr << "W=" << W << std::endl;
-                    std::cerr << "N=" << N << std::endl;
-                    for(size_t i=N+1;i<=M;++i) W[i] = 0;
-                    matrix<double> P,Q;
-                    svd<double>::range_and_nullspace(P,Q,U,W,V);
-                    std::cerr << "P=" << P << std::endl;
-                    std::cerr << "Q=" << Q << std::endl;
-#endif
                 }
             }
             catch(...)
@@ -171,6 +159,7 @@ namespace yocto
     }
 }
 
+#include "yocto/sort/quick.hpp"
 
 namespace yocto
 {
@@ -190,7 +179,26 @@ namespace yocto
         }
 
 
-
+        double equilibria:: Gamma2Value() const throw()
+        {
+            for(size_t i=N;i>0;--i)
+            {
+                const double g = Fabs(Gamma[i]); //!< value of Gamma
+                const double p = nuP[i];           //!< its unit in power of standard conc
+                if(p>=2.0)
+                {
+                    gam[i] = pow(g,1.0/p);
+                }
+                else
+                {
+                    gam[i] = g;
+                }
+            }
+            //std::cerr << "Gam=" << Gamma << std::endl;
+            //std::cerr << "gam=" << gam   << std::endl;
+            quicksort(gam);
+            return tao::sum(gam);
+        }
         
         
     }

@@ -57,6 +57,19 @@ namespace yocto
             buildChi();
         }
 
+        void equilibria:: updateGamma(const array<double> &C0)
+        {
+            size_t i=1;
+            for(iterator it=begin();i<=N;++i,++it)
+            {
+                const equilibrium &eq = **it;
+                const double Kt = K[i];
+                Gamma[i] = eq.updateGamma(C0,Kt);
+                //eq.computeGradient(Phi[i],C0,Kt);
+            }
+        }
+
+
 
         void equilibria:: normalize(array<double> &C0, const double t)
         {

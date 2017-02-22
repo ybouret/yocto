@@ -63,12 +63,13 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
 
     
     chemsys.compile();
+
     std::cerr << chemsys << std::endl;
     std::cerr << "Nu     = "  << chemsys.Nu     << std::endl;
     std::cerr << "iNu    = "  << chemsys.iNu    << std::endl;
     std::cerr << "NuT    = "  << chemsys.NuT    << std::endl;
     std::cerr << "Nu2    = "  << chemsys.Nu2    << std::endl;
-
+    std::cerr << "nuP    = "  << chemsys.nuP    << std::endl;
     std::cerr << "active = "  << chemsys.active << std::endl;
     for(size_t i=1;i<=chemlib->size();++i)
     {
@@ -76,22 +77,18 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     }
     chemlib->display(std::cerr,chemsys.C);
 
+    chemsys.computePhi(chemsys.C,0);
+    chemsys.Gamma2Value();
+
+
     chemsys.balance();
     chemsys.normalize(chemsys.C, 0.0);
+    chemsys.Gamma2Value();
+
+
 
     return 0;
 
-#if 0
-    chemsys.balance();
-
-    
-    chemsys.computeChi(chemsys.C, 0);
-    std::cerr << "Gamma  = " << chemsys.Gamma << std::endl;
-    std::cerr << "Phi    = " << chemsys.Phi   << std::endl;
-
-    std::cerr << "-- Normalizing..." << std::endl;
-    chemsys.normalize(chemsys.C, 0.0);
-#endif
 
 }
 YOCTO_UNIT_TEST_DONE()

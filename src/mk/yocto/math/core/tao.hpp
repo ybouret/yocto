@@ -224,6 +224,7 @@ namespace yocto
 #define Y_TAO_SUM(I) ans += a[I]
                 YOCTO_TAO_LOOP(a.size(),SUM);
 #undef  Y_TAO_SUM
+                return ans;
             }
             
             
