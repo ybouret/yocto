@@ -56,7 +56,7 @@ namespace yocto
             void updatePhi(const array<double>  &C0);                //!< update Gamma, Phi and Chi from a stored K
 
             void updateGamma(const array<double> &C0); //!< update Gamma
-            double Gamma2Value() const throw(); //!< return an objective function value
+            double Gamma2Value() const throw();        //!< return an objective function value
 
             void normalize(array<double> &C0,
                            const double   t);
@@ -66,7 +66,7 @@ namespace yocto
 
             bool balance() throw(); //!< balance current C
 
-            void validate() throw();
+            void validate(array<double> &C0) const throw();
 
         private:
             math::numeric<double>::function E;

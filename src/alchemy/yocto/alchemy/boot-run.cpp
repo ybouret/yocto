@@ -118,14 +118,34 @@ namespace yocto
             }
             std::cerr << "Cstar=" << Cstar << std::endl;
 
+            //__________________________________________________________________
+            //
+            // prepare memory
+            //__________________________________________________________________
+
             vector<double> V(N), dV(N);
             matrix<double> PhiQ(N);
             numeric<double>::function F(this, & boot::call_F );
 
 
+            //__________________________________________________________________
+            //
+            // initialize C to Cstar, validated
+            //__________________________________________________________________
             tao::set(C,Cstar);
-            eqs.validate();
+            eqs.validate(C);
+
+            //__________________________________________________________________
+            //
+            // deduce initial V
+            //__________________________________________________________________
             tao::mul(V,Q,C);
+
+            //__________________________________________________________________
+            //
+            // compute initial Gamma, Phi and F
+            //__________________________________________________________________
+
             eqs.computePhi(C,t);
             double F0 = eqs.Gamma2Value();
 
@@ -133,10 +153,11 @@ namespace yocto
             std::cerr << "F0=" << F0  << std::endl;
             std::cerr << "V0=" << V   << std::endl;
 
-            size_t count = 0;
-            
         LOOP:
+            //__________________________________________________________________
+            //
             // compute dV Newton's step, assuming Gamma and Phi are computed
+            //__________________________________________________________________
             tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
             if( !LU<double>::build(PhiQ) )
             {
@@ -144,33 +165,59 @@ namespace yocto
             }
             tao::neg(dV,eqs.Gamma);
             LU<double>::solve(PhiQ,dV);
+
+            //__________________________________________________________________
+            //
+            // initialize optimization: start_C + alpha * delta_C
+            //__________________________________________________________________
             tao::set(start_C,C);
             tao::mul_trn(delta_C,Q,dV);
 
+            //__________________________________________________________________
+            //
             // get a globally decreasing step
+            //__________________________________________________________________
             triplet<double> xx = { 0.0, 1.0, -1 };
             triplet<double> ff = { F0,  F(1.0), -1 };
-            std::cerr << "xx0=" << xx << std::endl; std::cerr << "ff0=" << ff << std::endl;
-            bracket<double>::expand(F, xx, ff);
-            std::cerr << "xx1=" << xx << std::endl; std::cerr << "ff1=" << ff << std::endl;
+            bracket<double>::expand(F,xx,ff);
             optimize1D<double>::run(F,xx,ff,0.0);
-            std::cerr << "xx2=" << xx << std::endl; std::cerr << "ff2=" << ff << std::endl;
 
             const double F1 = F(xx.b);
             std::cerr << "F1=" << F1 << " <-" << F0 << std::endl;
             std::cerr << "C="  << C  << std::endl;
 
-            eqs.updatePhi(C);
-            F0 =  F1;
-            if(++count<=10) goto LOOP;
+            if(F1<F0)
+            {
+                // decreasing
+                eqs.updatePhi(C);
+                F0 =  F1;
+                goto LOOP;
+            }
+            else
+            {
+                // not decreasing, save last C and break
+                tao::set(C,start_C);
+            }
+
+
+            
+
+
         }
         
         double boot:: call_F(double alpha)
         {
             assert(pEqs);
+            // create a probe
             tao::setprobe(pEqs->C, start_C, alpha, delta_C);
-            pEqs->validate();
+
+            // clamp the probe
+            pEqs->validate(pEqs->C);
+
+            // compute gamma
             pEqs->updateGamma(pEqs->C);
+
+            // return objective value
             return pEqs->Gamma2Value();
         }
     }

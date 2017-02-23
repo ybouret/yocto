@@ -166,13 +166,14 @@ namespace yocto
     namespace alchemy
     {
 
-        void equilibria:: validate() throw()
+        void equilibria:: validate( array<double> &C0 ) const throw()
         {
+            assert(C0.size()>=M);
             for(size_t i=M;i>0;--i)
             {
                 if(active[i])
                 {
-                    C[i] = max_of<double>(0.0,C[i]);
+                    C0[i] = max_of<double>(0.0,C0[i]);
                 }
             }
 
