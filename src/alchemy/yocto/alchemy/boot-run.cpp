@@ -111,11 +111,9 @@ namespace yocto
             // compute Cstar
             //__________________________________________________________________
             vector<double> Cstar(M);
-            {
-                vector<double> U(Lam);
-                LU<double>::solve(iP2,U);
-                tao::mul_trn(Cstar,P,U);
-            }
+            vector<double> Ustar(Lam);
+            LU<double>::solve(iP2,Ustar);
+            tao::mul_trn(Cstar,P,Ustar);
             std::cerr << "Cstar=" << Cstar << std::endl;
 
             //__________________________________________________________________
@@ -124,10 +122,96 @@ namespace yocto
             //__________________________________________________________________
 
             vector<double> V(N), dV(N);
-            matrix<double> PhiQ(N);
+            vector<double> U(Nc), dU(Nc);
+            matrix<double> PhiQ(N),PhiP(N,Nc);
             numeric<double>::function F(this, & boot::call_F );
 
 
+            //__________________________________________________________________
+            //
+            // initialize
+            //__________________________________________________________________
+            tao::set(C,Cstar);
+            eqs.validate(C);
+            eqs.computePhi(C,t);
+            double F0 = eqs.Gamma2Value();
+
+        LOOP:
+
+            //__________________________________________________________________
+            //
+            // deduce components of a validated C, assuming Gamma,Phi and F0
+            // are also computed
+            //__________________________________________________________________
+
+            tao::mul(dU,P,C); // save P*C for later
+            tao::set(U,dU);   // to compute by LU inversion
+            LU<double>::solve(iP2,U);
+            tao::mul(V,Q,C);
+            std::cerr << "F=" << F0 << std::endl;
+            std::cerr << "C=" << C << std::endl;
+            std::cerr << "U=" << U << std::endl;
+            std::cerr << "V=" << V << std::endl;
+
+            // compute dU
+            tao::subp(dU,Lam); // Lam-P*C
+            LU<double>::solve(iP2,dU); // dU = inv(P*P')*(Lam-P*C)
+            //std::cerr << "dU=" << dU << std::endl;
+
+            // compute dV
+            tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
+            //std::cerr << "Phi=" << eqs.Phi << std::endl;
+            //std::cerr << "PhiQ=" << PhiQ << std::endl;
+            if(!LU<double>::build(PhiQ))
+            {
+                throw exception("%sinvalid Jacobian",fn);
+            }
+            tao::mmul_rtrn(PhiP,eqs.Phi,P);
+            //std::cerr << "PhiP=" << PhiP << std::endl;
+            tao::set(dV,eqs.Gamma);
+            tao::mul_add(dV,PhiP,dU);
+            tao::neg(dV,dV);
+            LU<double>::solve(PhiQ,dV);
+            //std::cerr << "dV=" << dV << std::endl;
+
+            // save start_C and compute delta_C
+            tao::set(start_C,C);
+            tao::mul_trn(delta_C,P,dU);
+            tao::mul_add_trn(delta_C,Q,dV);
+            //std::cerr << "delta_C=" << delta_C << std::endl;
+
+            // find a global minimum of the non linear part
+            triplet<double> xx = { 0.0, 1.0, -1 };
+            triplet<double> ff = { F0,  F(1.0), -1 };
+           // std::cerr << "xx0=" << xx << std::endl; std::cerr << "ff0=" << ff << std::endl;
+            bracket<double>::expand(F,xx,ff);
+            //std::cerr << "xx1=" << xx << std::endl; std::cerr << "ff1=" << ff << std::endl;
+            optimize1D<double>::run(F,xx,ff,0.0);
+            //std::cerr << "xx2=" << xx << std::endl; std::cerr << "ff2=" << ff << std::endl;
+
+            const double alpha = max_of<double>(xx.b,0);
+            const double F1    = F(alpha);
+            std::cerr << "F1=" << F1 << " <-- " << F0 << std::endl;
+            std::cerr << "C="  << C  << std::endl;
+
+            if(F1<F0)
+            {
+                // decreasing
+                eqs.updatePhi(C);
+                F0 =  F1;
+                std::cerr << std::endl;
+                goto LOOP;
+            }
+            else
+            {
+                // not decreasing, save last C and break
+                tao::set(C,start_C);
+            }
+
+
+
+
+#if 0
             //__________________________________________________________________
             //
             // initialize C to Cstar, validated
@@ -198,9 +282,9 @@ namespace yocto
                 // not decreasing, save last C and break
                 tao::set(C,start_C);
             }
+#endif
 
 
-            
 
 
         }

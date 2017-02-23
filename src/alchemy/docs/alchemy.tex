@@ -134,7 +134,7 @@ Obviously, if we take $\mymat{Q}\in\mymat{P}^{\perp}$, we have a set of vectors 
 We must find a way to compute $\vec{U}$ and $\vec{V}$ while preserving the validity of $\vec{C}$.
 
 \subsection{Algorithm}
-
+We need a globally decreasing strategy...
 Let us assume that we start from $\vec{V}_n$ defining $\vec{C}_n$.
 We also define $\mathcal{C}$ the operator that set invalid concentrations to $0$.
 We may define 
@@ -150,18 +150,12 @@ We compute
 \begin{equation}
 	\vec{C}_{n+x} = \mathcal{C}\left(\vec{C}^\star+\mytrn{\mymat{Q}} \vec{V}_n\right)
 \end{equation}
-and deduce (we do not need it for the computations)
-\begin{equation}
-	\vec{U}_{n} = \left(\mymat{P}\mytrn{\mymat{P}}\right)^{-1} \mymat{P}\vec{C}_{n+x} \text{ (which is $\vec{U}^\star$ for a valid set of concentrations)}
-\end{equation}
 and
 \begin{equation}
-	\vec{V}_{n+x} = \mymat{Q} \vec{C}_{n+x}
+	\vec{V}_{n+x} = \mymat{Q} \vec{C}_{n+x}.
 \end{equation}
-formally defining the valid concentration
-\begin{equation}
-	\vec{C}_{n+x} = \mytrn{\mymat{P}} \vec{U}_{n} + \mytrn{\mymat{Q}} \vec{V}_{n+x}
-\end{equation}
+formally defining the valid concentration.
+
 
 We now expand 
 \begin{equation}
@@ -179,45 +173,6 @@ and
 
 \end{document}
 
-Let us assume that we start from $\vec{U}_n$ and $\vec{V}_n$ defining $\vec{C}_n$.
-We also define $\mathcal{C}$ the operator that set invalid concentrations to $0$.
-We compute
-\begin{equation}
-\vec{U}^\star = \left(\mymat{P}\mytrn{\mymat{P}}\right)^{-1} \vec{\Lambda}
-\end{equation}
-We straightforwardly get
-\begin{equation}
-	\delta\vec{U}_{n+1/3} = \vec{U}^\star - \vec{U}_n
-\end{equation}
-so that we can compute
-\begin{equation}
-	\vec{U}_{n+1/3} = \vec{U}_n + \delta\vec{U}_{n+1/3} = \vec{U}^\star
-\end{equation}
-
-\begin{equation}
-	\vec{C}_{n+1/3} = \mathcal{C}\left(\mytrn{\mymat{P}}\vec{U}_{n+1/3}+ \mytrn{\mymat{Q}}\vec{V}_n\right)
-\end{equation}
-and we redefine
-\begin{equation}
-	\vec{U}_{n+2/3} = \left(\mymat{P}\mytrn{\mymat{P}}\right)^{-1} \mymat{P} \vec{C}_{n+1/3}, \;\;\; \vec{V}_{n+1/3} = \mymat{Q} \vec{C}_{n+1/3}
-\end{equation}
-
-Then we compute $\vec{\Gamma}\left(\vec{C}_{n+1/3}\right)$ and $\mymat{\Phi}_{n+1/3}$ and we expand
-\begin{equation}
-	\vec{0} \approx  \vec{\Gamma}_{n+1/3} 
-	%+ \left(\mymat{\Phi} \mytrn{\mymat{P}}\right) \delta\vec{U}_{n+2/3} 
-	+ \left(\mymat{\Phi} \mytrn{\mymat{Q}}\right) \delta\vec{V}_{n}
-\end{equation}
-and we define
-\begin{equation}
-	\vec{V}_{n+2/3} = \vec{V}_{n+1/3} + \delta\vec{V}_{n}
-\end{equation}
-
-\begin{equation}
-	\vec{C}_{n+1} = \mathcal{C}\left(\mytrn{\mymat{P}}\vec{U}_{n+2/3} + \mytrn{\mymat{Q}} \vec{V}_{n+2/3} \right)
-\end{equation}
-
-\end{document}
 
 
 
