@@ -90,6 +90,7 @@ namespace yocto
 #undef  Y_TAO_NEG
             }
 
+            //! a += alpha
             template <typename ARR, typename U>
             static inline void shift( ARR &a, U alpha) throw()
             {
@@ -108,6 +109,17 @@ namespace yocto
                 YOCTO_TAO_LOOP(a.size(),MULBY);
 #undef Y_TAO_MULBY
             }
+
+            //! a /= x;
+            template <typename ARR>
+            static inline void divby(typename ARR::param_type x, ARR &a ) throw()
+            {
+#define Y_TAO_DIVBY(I) a[I] /= x
+                YOCTO_TAO_LOOP(a.size(),DIVBY);
+#undef Y_TAO_DIVBY
+            }
+
+
 
             //! a = x*b
             template<typename ARR, typename BRR>
@@ -341,6 +353,20 @@ namespace yocto
                 YOCTO_TAO_LOOP(M.rows,MULROW);
 #undef  Y_TAO_MULROW
             }
+
+
+            //! a = (M*b)/D
+            template <typename ARR, typename MAT, typename BRR>
+            static inline void mul_and_div( ARR &a, const MAT &M, const BRR &b, const typename ARR::type D ) throw()
+            {
+                assert(a.size()>=M.rows);
+                assert(b.size()>=M.cols);
+#define Y_TAO_MULROW_AND_DIV(I) a[I] = dot__(a,M[I],b)/D
+                YOCTO_TAO_LOOP(M.rows,MULROW_AND_DIV);
+#undef  Y_TAO_MULROW_AND_DIV
+            }
+
+
             
             //! a += M*b
             template <typename ARR, typename MAT, typename BRR>

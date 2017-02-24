@@ -6,6 +6,8 @@
 #include "yocto/math/opt/bracket.hpp"
 #include "yocto/math/opt/minimize.hpp"
 
+#include "yocto/math/core/adjoint.hpp"
+
 
 namespace yocto
 {
@@ -81,13 +83,16 @@ namespace yocto
             //
             // check the rank and inv(P*P')
             //__________________________________________________________________
-            matrix<double> iP2(Nc);
-            tao::mmul_rtrn(iP2,P,P);
-            std::cerr << "P2=" << iP2 << std::endl;
-            if(!LU<double>::build(iP2))
-            {
-                throw exception("%ssingular set of constraints",fn);
-            }
+            matrix<double> P2(Nc,Nc);
+            tao::mmul_rtrn(P2,P,P);
+            std::cerr << "P2=" << P2 << std::endl;
+            const double dPP = ideterminant(P2);
+            if(Fabs(dPP)<0) throw exception("%singular constraints",fn);
+            std::cerr << "dPP=" << dPP << std::endl;
+            matrix<double> aPP(Nc,Nc);
+            iadjoint(aPP,P2);
+            std::cerr << "aPP=" << aPP << std::endl;
+
 
             //__________________________________________________________________
             //
@@ -110,10 +115,13 @@ namespace yocto
             // compute Cstar
             //__________________________________________________________________
             vector<double> Cstar(M);
-            vector<double> Ustar(Lam);
-            LU<double>::solve(iP2,Ustar);
-            tao::mul_trn(Cstar,P,Ustar);
+            vector<double> Utmp(Lam);
+            tao::mul(Utmp,aPP,Lam);
+
+            tao::mul_trn(Cstar,P,Utmp);
+            tao::divby(dPP,Cstar);
             std::cerr << "Cstar=" << Cstar << std::endl;
+
 
             //__________________________________________________________________
             //
@@ -142,9 +150,8 @@ namespace yocto
             // are also computed
             //__________________________________________________________________
 
-            tao::mul(dU,P,C); // save P*C for later
-            tao::set(U,dU);   // to compute by LU inversion
-            LU<double>::solve(iP2,U);
+            tao::mul(Utmp,P,C);               // save P*C for later
+            tao::mul_and_div(U,aPP,Utmp,dPP); // U = inv(P*P')*(P*C)
             tao::mul(V,Q,C);
             std::cerr << "F=" << F0 << std::endl;
             std::cerr << "C=" << C << std::endl;
@@ -155,8 +162,8 @@ namespace yocto
             //
             // compute dU = inv(P*P')*(Lam-P*C)
             //__________________________________________________________________
-            tao::subp(dU,Lam);         // Lam-P*C
-            LU<double>::solve(iP2,dU); // dU = inv(P*P')*(Lam-P*C)
+            tao::subp(Utmp,Lam);               // Lam-P*C
+            tao::mul_and_div(dU,aPP,Utmp,dPP); // dU = inv(P*P')*(Lam-P*C)
 
             //__________________________________________________________________
             //
@@ -221,7 +228,23 @@ namespace yocto
             //
             // clean up
             //__________________________________________________________________
+            for(size_t k=0;k<10;++k)
+            {
+                //tao::set(dU,Lam);
+                //tao::mul_sub(dU,P,C);
+                //LU<double>::solve(iP2,dU);
+                tao::set(Utmp,Lam);
+                tao::mul_sub(Utmp,P,C);
+                tao::mul_and_div(dU,aPP,Utmp,dPP);
 
+                tao::mul_trn(delta_C, P, dU);
+                std::cerr << "delta_U=" << dU      << std::endl;
+                std::cerr << "delta_C=" << delta_C << std::endl;
+                tao::add(C,delta_C);
+                eqs.validate(C);
+            }
+            svd<double>::truncate(C);
+            
         }
 
         double boot:: call_F(double alpha)
