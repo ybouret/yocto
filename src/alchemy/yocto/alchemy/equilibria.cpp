@@ -185,7 +185,7 @@ namespace yocto
             for(size_t i=N;i>0;--i)
             {
                 const double g = Fabs(Gamma[i]); //!< value of Gamma
-                const double p = nuP[i];           //!< its unit in power of standard conc
+                const double p = nuP[i];         //!< its unit in power of standard conc
                 if(p>=2.0)
                 {
                     gam[i] = pow(g,1.0/p);
@@ -195,8 +195,6 @@ namespace yocto
                     gam[i] = g;
                 }
             }
-            //std::cerr << "Gam=" << Gamma << std::endl;
-            //std::cerr << "gam=" << gam   << std::endl;
             quicksort(gam);
             return tao::sum(gam);
         }

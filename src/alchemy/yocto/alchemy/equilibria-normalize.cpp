@@ -10,7 +10,8 @@ namespace yocto
     namespace alchemy
     {
 
-        void equilibria:: computePhi(const array<double> &C0,const double t)
+        void equilibria:: computePhi(const array<double> &C0,
+                                     const double         t)
         {
             size_t i = 1;
             for(iterator it=begin();i<=N;++i,++it)
@@ -65,7 +66,6 @@ namespace yocto
                 const equilibrium &eq = **it;
                 const double Kt = K[i];
                 Gamma[i] = eq.updateGamma(C0,Kt);
-                //eq.computeGradient(Phi[i],C0,Kt);
             }
         }
 
@@ -73,10 +73,10 @@ namespace yocto
 
         void equilibria:: normalize(array<double> &C0, const double t)
         {
-            static const char fn[] = "equilibria::boot: ";
+            static const char fn[] = "equilibria::normalize: ";
             //__________________________________________________________________
             //
-            // initialize
+            // initialize, get C0 into local C
             //__________________________________________________________________
             assert(C0.size()>=M);
             tao::set(C,C0);

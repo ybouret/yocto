@@ -98,7 +98,6 @@ namespace yocto
             {
                 throw exception("%sunable to build orthonormal space",fn);
             }
-            std::cerr << "Q0=" << Q << std::endl;
             for(size_t i=1;i<=N;++i)
             {
                 svd<double>::truncate(Q[i]);
@@ -120,8 +119,7 @@ namespace yocto
             //
             // prepare memory
             //__________________________________________________________________
-
-            vector<double> V(N), dV(N);
+            vector<double> V(N),  dV(N);
             vector<double> U(Nc), dU(Nc);
             matrix<double> PhiQ(N),PhiP(N,Nc);
             numeric<double>::function F(this, & boot::call_F );
@@ -129,7 +127,7 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // initialize
+            // initialize C to a validated Cstar
             //__________________________________________________________________
             tao::set(C,Cstar);
             eqs.validate(C);
@@ -153,41 +151,46 @@ namespace yocto
             std::cerr << "U=" << U << std::endl;
             std::cerr << "V=" << V << std::endl;
 
-            // compute dU
-            tao::subp(dU,Lam); // Lam-P*C
+            //__________________________________________________________________
+            //
+            // compute dU = inv(P*P')*(Lam-P*C)
+            //__________________________________________________________________
+            tao::subp(dU,Lam);         // Lam-P*C
             LU<double>::solve(iP2,dU); // dU = inv(P*P')*(Lam-P*C)
-            //std::cerr << "dU=" << dU << std::endl;
 
-            // compute dV
+            //__________________________________________________________________
+            //
+            // compute dV = -inv(Phi*Q')*(Gamma+Phi*P'*dU)
+            //__________________________________________________________________
             tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
-            //std::cerr << "Phi=" << eqs.Phi << std::endl;
-            //std::cerr << "PhiQ=" << PhiQ << std::endl;
             if(!LU<double>::build(PhiQ))
             {
                 throw exception("%sinvalid Jacobian",fn);
             }
             tao::mmul_rtrn(PhiP,eqs.Phi,P);
-            //std::cerr << "PhiP=" << PhiP << std::endl;
             tao::set(dV,eqs.Gamma);
             tao::mul_add(dV,PhiP,dU);
             tao::neg(dV,dV);
             LU<double>::solve(PhiQ,dV);
-            //std::cerr << "dV=" << dV << std::endl;
 
+
+            //__________________________________________________________________
+            //
             // save start_C and compute delta_C
+            //__________________________________________________________________
             tao::set(start_C,C);
             tao::mul_trn(delta_C,P,dU);
             tao::mul_add_trn(delta_C,Q,dV);
-            //std::cerr << "delta_C=" << delta_C << std::endl;
 
-            // find a global minimum of the non linear part
+            //__________________________________________________________________
+            //
+            // find a global minimum of the non linear part, avoiding
+            // oscillations
+            //__________________________________________________________________
             triplet<double> xx = { 0.0, 1.0, -1 };
             triplet<double> ff = { F0,  F(1.0), -1 };
-           // std::cerr << "xx0=" << xx << std::endl; std::cerr << "ff0=" << ff << std::endl;
             bracket<double>::expand(F,xx,ff);
-            //std::cerr << "xx1=" << xx << std::endl; std::cerr << "ff1=" << ff << std::endl;
             optimize1D<double>::run(F,xx,ff,0.0);
-            //std::cerr << "xx2=" << xx << std::endl; std::cerr << "ff2=" << ff << std::endl;
 
             const double alpha = max_of<double>(xx.b,0);
             const double F1    = F(alpha);
@@ -196,7 +199,10 @@ namespace yocto
 
             if(F1<F0)
             {
+                //______________________________________________________________
+                //
                 // decreasing
+                //______________________________________________________________
                 eqs.updatePhi(C);
                 F0 =  F1;
                 std::cerr << std::endl;
@@ -204,91 +210,20 @@ namespace yocto
             }
             else
             {
+                //______________________________________________________________
+                //
                 // not decreasing, save last C and break
+                //______________________________________________________________
                 tao::set(C,start_C);
             }
 
-
-
-
-#if 0
             //__________________________________________________________________
             //
-            // initialize C to Cstar, validated
+            // clean up
             //__________________________________________________________________
-            tao::set(C,Cstar);
-            eqs.validate(C);
-
-            //__________________________________________________________________
-            //
-            // deduce initial V
-            //__________________________________________________________________
-            tao::mul(V,Q,C);
-
-            //__________________________________________________________________
-            //
-            // compute initial Gamma, Phi and F
-            //__________________________________________________________________
-
-            eqs.computePhi(C,t);
-            double F0 = eqs.Gamma2Value();
-
-            std::cerr << "C0=" << C   << std::endl;
-            std::cerr << "F0=" << F0  << std::endl;
-            std::cerr << "V0=" << V   << std::endl;
-
-        LOOP:
-            //__________________________________________________________________
-            //
-            // compute dV Newton's step, assuming Gamma and Phi are computed
-            //__________________________________________________________________
-            tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
-            if( !LU<double>::build(PhiQ) )
-            {
-                throw exception("%sunexpected invalid set of concentrations",fn);
-            }
-            tao::neg(dV,eqs.Gamma);
-            LU<double>::solve(PhiQ,dV);
-
-            //__________________________________________________________________
-            //
-            // initialize optimization: start_C + alpha * delta_C
-            //__________________________________________________________________
-            tao::set(start_C,C);
-            tao::mul_trn(delta_C,Q,dV);
-
-            //__________________________________________________________________
-            //
-            // get a globally decreasing step
-            //__________________________________________________________________
-            triplet<double> xx = { 0.0, 1.0, -1 };
-            triplet<double> ff = { F0,  F(1.0), -1 };
-            bracket<double>::expand(F,xx,ff);
-            optimize1D<double>::run(F,xx,ff,0.0);
-
-            const double F1 = F(xx.b);
-            std::cerr << "F1=" << F1 << " <-" << F0 << std::endl;
-            std::cerr << "C="  << C  << std::endl;
-
-            if(F1<F0)
-            {
-                // decreasing
-                eqs.updatePhi(C);
-                F0 =  F1;
-                goto LOOP;
-            }
-            else
-            {
-                // not decreasing, save last C and break
-                tao::set(C,start_C);
-            }
-#endif
-
-
-
 
         }
-        
+
         double boot:: call_F(double alpha)
         {
             assert(pEqs);
