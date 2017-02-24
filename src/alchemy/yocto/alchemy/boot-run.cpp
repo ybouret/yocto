@@ -224,6 +224,8 @@ namespace yocto
                 tao::set(C,start_C);
             }
 
+            
+#if 0
             //__________________________________________________________________
             //
             // clean up
@@ -238,12 +240,15 @@ namespace yocto
                 tao::mul_and_div(dU,aPP,Utmp,dPP);
 
                 tao::mul_trn(delta_C, P, dU);
-                std::cerr << "delta_U=" << dU      << std::endl;
+                //std::cerr << "delta_U=" << dU      << std::endl;
                 std::cerr << "delta_C=" << delta_C << std::endl;
                 tao::add(C,delta_C);
                 eqs.validate(C);
             }
+            std::cerr << "C0=" << C << std::endl;
             svd<double>::truncate(C);
+            std::cerr << "C1=" << C << std::endl;
+#endif
             
         }
 

@@ -313,6 +313,8 @@ namespace yocto
             }
             return ans;
         }
+        
+        
         template <>
         size_t svd<real_t>:: inverse( array<real_t> &w )
         {
