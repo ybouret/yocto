@@ -30,7 +30,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
     loader.osmolarity(0.042);
     loader.conserve("Na+",     0.01);
     loader.conserve("AH",  "A-",0.000);
-    loader.conserve("NH4+","NH3",0.00);
+    loader.conserve("NH4+","NH3",1e-5);
 
     std::cerr << loader << std::endl;
     equilibria chemsys(chemlib);

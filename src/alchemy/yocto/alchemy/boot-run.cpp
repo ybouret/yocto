@@ -103,10 +103,12 @@ namespace yocto
             {
                 throw exception("%sunable to build orthonormal space",fn);
             }
+#if 0
             for(size_t i=1;i<=N;++i)
             {
                 svd<double>::truncate(Q[i]);
             }
+#endif
             std::cerr << "Q=" << Q << std::endl;
 
 
@@ -153,10 +155,10 @@ namespace yocto
             tao::mul(Utmp,P,C);               // save P*C for later
             tao::mul_and_div(U,aPP,Utmp,dPP); // U = inv(P*P')*(P*C)
             tao::mul(V,Q,C);
-            std::cerr << "F=" << F0 << std::endl;
-            std::cerr << "C=" << C << std::endl;
-            std::cerr << "U=" << U << std::endl;
-            std::cerr << "V=" << V << std::endl;
+            //std::cerr << "F=" << F0 << std::endl;
+            //std::cerr << "C=" << C << std::endl;
+            //std::cerr << "U=" << U << std::endl;
+            //std::cerr << "V=" << V << std::endl;
 
             //__________________________________________________________________
             //
@@ -201,8 +203,8 @@ namespace yocto
 
             const double alpha = max_of<double>(xx.b,0);
             const double F1    = F(alpha);
-            std::cerr << "F1=" << F1 << " <-- " << F0 << std::endl;
-            std::cerr << "C="  << C  << std::endl;
+            //std::cerr << "F1=" << F1 << " <-- " << F0 << std::endl;
+            //std::cerr << "C="  << C  << std::endl;
 
             if(F1<F0)
             {
@@ -212,7 +214,7 @@ namespace yocto
                 //______________________________________________________________
                 eqs.updatePhi(C);
                 F0 =  F1;
-                std::cerr << std::endl;
+                //std::cerr << std::endl;
                 goto LOOP;
             }
             else
@@ -223,35 +225,33 @@ namespace yocto
                 //______________________________________________________________
                 tao::set(C,start_C);
             }
-            std::cerr << "C0=" << C << std::endl;
-            svd<double>::truncate(C);
-            std::cerr << "C1=" << C << std::endl;
-
             
-#if 0
+            //std::cerr << "C0=" << C << std::endl;
+          
+            
             //__________________________________________________________________
             //
-            // clean up
+            // check validity
             //__________________________________________________________________
-            for(size_t k=0;k<10;++k)
+            eqs.updateGamma(C);
+            const double F_end = eqs.Gamma2Value();
+            //std::cerr << "F_end=" << F_end << std::endl;
+            if(F_end>0)
             {
-                //tao::set(dU,Lam);
-                //tao::mul_sub(dU,P,C);
-                //LU<double>::solve(iP2,dU);
-                tao::set(Utmp,Lam);
-                tao::mul_sub(Utmp,P,C);
-                tao::mul_and_div(dU,aPP,Utmp,dPP);
-
-                tao::mul_trn(delta_C, P, dU);
-                //std::cerr << "delta_U=" << dU      << std::endl;
-                std::cerr << "delta_C=" << delta_C << std::endl;
-                tao::add(C,delta_C);
-                eqs.validate(C);
+                svd<double>::truncate(C);
             }
-            std::cerr << "C0=" << C << std::endl;
-            svd<double>::truncate(C);
-            std::cerr << "C1=" << C << std::endl;
-#endif
+            
+            
+            tao::mul(U,P,C);
+            tao::sub(U,Lam);
+            const double rms = tao::RMS(U);
+            if(rms>numeric<double>::ftol)
+            {
+                throw exception("%s:numerical failure for constraints", fn);
+            }
+            
+            
+
             
         }
 
