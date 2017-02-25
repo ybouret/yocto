@@ -47,7 +47,7 @@ namespace yocto
             equilibrium & add( const string &name, const equilibrium_constant &K);
             equilibrium & add( const string &name, const double                K);
 
-            void compile(); //!< allocate and compute constant terms accordint to the library
+            void compile(); //!< allocate and compute constant terms according to the library
 
             void computeChi(const array<double> &C0, const double t); //!< compute Gamma,K, Phi and Chi at a given time
             void updateChi(const array<double>  &C0);                 //!< update Gamma,Phi and Chi from stored K
@@ -57,7 +57,7 @@ namespace yocto
 
             void updateGamma(const array<double> &C0); //!< update Gamma
             double Gamma2Value() const throw();        //!< return an objective function value
-
+            
             void normalize(array<double> &C0,
                            const double   t);
 
