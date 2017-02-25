@@ -29,7 +29,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
     loader.electroneutrality();
     loader.osmolarity(0.042);
     loader.conserve("Na+",     0.01);
-    loader.conserve("AH",  "A-",0.0001);
+    loader.conserve("AH",  "A-",0.000);
     loader.conserve("NH4+","NH3",0.00);
 
     std::cerr << loader << std::endl;

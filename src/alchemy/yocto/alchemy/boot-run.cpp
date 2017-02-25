@@ -223,6 +223,9 @@ namespace yocto
                 //______________________________________________________________
                 tao::set(C,start_C);
             }
+            std::cerr << "C0=" << C << std::endl;
+            svd<double>::truncate(C);
+            std::cerr << "C1=" << C << std::endl;
 
             
 #if 0
