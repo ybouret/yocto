@@ -192,8 +192,6 @@ namespace yocto
             {
                 C0[i] = C[i];
             }
-            //pLib->display(std::cerr,C0);
-
 
         }
         
