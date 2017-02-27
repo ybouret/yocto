@@ -76,6 +76,51 @@ namespace yocto
             static const char fn[] = "equilibria::normalize: ";
             //__________________________________________________________________
             //
+            // initialize:
+            // -- C <- C0
+            // -- balancing
+            // -- compute initial Chi, ie Gamma and Phi as well
+            //__________________________________________________________________
+            assert(C0.size()>=M);
+            tao::set(C,C0);
+            if(!balance())
+            {
+                throw exception("%scouldn't balance initial concentrations",fn);
+            }
+
+            computeChi(C,t);
+            double  gam0 = Gamma2Value();
+            std::cerr << "C   =" << C    << std::endl;
+            std::cerr << "gam0=" << gam0 << std::endl;
+
+            while(true)
+            {
+                //______________________________________________________________
+                //
+                // compute the raw extent from Newton's method
+                //______________________________________________________________
+                tao::neg(xi,Gamma);
+                LU<double>::solve(Chi,xi);
+                tao::mul(dC, NuT, xi);
+
+                std::cerr << "Gamma=" << Gamma << std::endl;
+                std::cerr << "xi   =" << xi    << std::endl;
+                std::cerr << "dC   =" << dC    << std::endl;
+
+                //______________________________________________________________
+                //
+                // compute the raw extent from Newton's method
+                //______________________________________________________________
+
+
+                break;
+            }
+
+
+            exit(0);
+
+            //__________________________________________________________________
+            //
             // initialize, get C0 into local C
             //__________________________________________________________________
             assert(C0.size()>=M);
