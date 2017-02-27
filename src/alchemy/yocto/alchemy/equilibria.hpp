@@ -37,6 +37,8 @@ namespace yocto
             vector<double>         dC;     //!< delta concentration
             vector<bool>           active; //!< active species flag
             vector<double>         beta;   //!< bad concentrations for balancing, a.k.a gradient
+            vector<double>         Cini;   //!< for trials
+            vector<double>         step;   //!< for normalizing
             vector<double>         g;
             vector<double>         h;
             vector<double>         b;
@@ -57,19 +59,24 @@ namespace yocto
 
             void updateGamma(const array<double> &C0); //!< update Gamma
             double Gamma2Value() const throw();        //!< return an objective function value
-            
+
+            //! normalize
+            /**
+             - at the end, Gamma is almost 0, Phi and Chi are computed @C0
+             */
             void normalize(array<double> &C0,
                            const double   t);
 
             friend std::ostream & operator<<( std::ostream &, const equilibria &);
 
 
-            bool balance() throw(); //!< balance current C
+            bool balance() throw(); //!< balance current C, internal code
 
             void validate(array<double> &C0) const throw();
 
         private:
             math::numeric<double>::function E;
+            math::numeric<double>::function F;
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
             size_t max_name_length;
             void submit( const equilibrium::pointer &eq);
@@ -77,7 +84,7 @@ namespace yocto
 
             double call_E(const double alpha); //!< objective function dC = C + alpha*h
             void   compute_descent(array<double> &descent,const array<double> &Ctmp); //!< descent direction of E@Ctmp
-
+            double call_F(const double alpha); //!< objective function: C = Cini + alpha * dC, balance, updateGamma and return Gamma2Value
         };
     }
 }

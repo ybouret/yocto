@@ -28,10 +28,13 @@ namespace yocto
         dC(),
         active(),
         beta(),
+        Cini(),
+        step(),
         g(),
         h(),
         iNu(),
         E(this, & equilibria::call_E),
+        F(this, & equilibria::call_F),
         max_name_length(0)
         {}
 
@@ -76,6 +79,8 @@ namespace yocto
             b.     release();
             h.     release();
             g.     release();
+            step.  release();
+            Cini.  release();
             beta.  release();
             active.release();
             dC.    release();
@@ -108,6 +113,8 @@ namespace yocto
                     dC.    make(M);
                     active.make(M,false);
                     beta.  make(M);
+                    Cini.  make(M);
+                    step.  make(M);
                     g.     make(M);
                     h.     make(M);
                     b.     make(M);

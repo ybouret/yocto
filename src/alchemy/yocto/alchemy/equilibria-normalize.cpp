@@ -3,10 +3,13 @@
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/lu.hpp"
 
+#include "yocto/math/opt/bracket.hpp"
+#include "yocto/math/opt/minimize.hpp"
+
 namespace yocto
 {
     using namespace math;
-    
+
     namespace alchemy
     {
 
@@ -69,7 +72,16 @@ namespace yocto
             }
         }
 
-
+        double equilibria:: call_F(const double alpha)
+        {
+            tao::setprobe(C, Cini, alpha, step);
+            if(!balance())
+            {
+                throw exception("couldn't balance while normalizing, level-2");
+            }
+            updateGamma(C);
+            return Gamma2Value();
+        }
 
         void equilibria:: normalize(array<double> &C0, const double t)
         {
@@ -90,94 +102,103 @@ namespace yocto
 
             computeChi(C,t);
             double  gam0 = Gamma2Value();
-            std::cerr << "C   =" << C    << std::endl;
-            std::cerr << "gam0=" << gam0 << std::endl;
 
-            while(true)
-            {
-                //______________________________________________________________
-                //
-                // compute the raw extent from Newton's method
-                //______________________________________________________________
-                tao::neg(xi,Gamma);
-                LU<double>::solve(Chi,xi);
-                tao::mul(dC, NuT, xi);
+        LOOP:
+            //__________________________________________________________________
+            //
+            // compute the raw extent from Newton's method
+            //__________________________________________________________________
+            tao::neg(xi,Gamma);
+            LU<double>::solve(Chi,xi);
+            tao::mul(step, NuT, xi);
 
-                std::cerr << "Gamma=" << Gamma << std::endl;
-                std::cerr << "xi   =" << xi    << std::endl;
-                std::cerr << "dC   =" << dC    << std::endl;
-
-                //______________________________________________________________
-                //
-                // compute the raw extent from Newton's method
-                //______________________________________________________________
-
-
-                break;
-            }
-
-
-            exit(0);
 
             //__________________________________________________________________
             //
-            // initialize, get C0 into local C
+            // save starting point
             //__________________________________________________________________
-            assert(C0.size()>=M);
-            tao::set(C,C0);
-            if(!balance()) throw exception("%scouldn't balance initial concentrations",fn);
+            tao::set(Cini,C);
 
 
-            computeChi(C,t);
-
-            double norm2=0;
-            bool   check=false;
-
-            while(true)
+            //__________________________________________________________________
+            //
+            // try full step, optimistic way
+            //__________________________________________________________________
+            tao::add(C,step);
+            if(!balance())
             {
-                //______________________________________________________________
-                //
-                // compute the raw extent
-                //______________________________________________________________
-                std::cerr << std::endl;
-                std::cerr << "Gamma=" << Gamma << std::endl;
-                tao::neg(xi,Gamma);
-                LU<double>::solve(Chi,xi);
-
-                std::cerr << "C  =" << C  << std::endl;
+                throw exception("%scouldn't balance while normalizing, level-1",fn);
+            }
+            updateChi(C);
+            double gam1 = Gamma2Value();
+            std::cerr << "gamma: " << gam1 << " <- " << gam0 << std::endl;
 
 
-
-                tao::mul(dC, NuT, xi);
-                tao::add(C, dC);
-                if(!balance()) throw exception("%scouldn't balance current concentrations",fn);
-
-                const double temp2 = tao::norm_sq(dC);
-                if(check)
+            if(gam1<gam0)
+            {
+                if(gam1<=0)
                 {
-                    if(temp2>=norm2)
+                    //__________________________________________________________
+                    //
+                    // perfect numeric match, Phi and Chi are computed
+                    //__________________________________________________________
+                    std::cerr << "-- Perfect Newton's match" << std::endl;
+                    goto DONE;
+                }
+                gam0 = gam1;
+                goto LOOP;
+            }
+            else
+            {
+                std::cerr << "-- Optimizing" << std::endl;
+                triplet<double> xx = { 0.0,  1.0,  -1.0 };
+                triplet<double> FF = { gam0, gam1, -1.0 };
+                bracket<double>::expand(F,xx,FF);
+                optimize1D<double>::run(F,xx,FF,0.0);
+
+                // take the best step and update C, Gamma, Phi and Chi
+                const double alpha = max_of<double>(0.0,xx.b);
+                tao::setprobe(C, Cini, alpha, step);
+                updateChi(C);
+                gam1 = Gamma2Value();
+                if(gam1<gam0)
+                {
+                    if(gam1<=0)
                     {
-                        // set back value
-                        for(size_t i=M;i>0;--i)
-                        {
-                            C0[i] = C[i];
-                        }
-                        break;
+                        //______________________________________________________
+                        //
+                        // optimized numeric match, Phi and Chi are computed
+                        //______________________________________________________
+                        std::cerr << "-- Optimized Newton's match" << std::endl;
+                        goto DONE;
                     }
-                    norm2 = temp2;
+                    gam0 = gam1;
+                    goto LOOP;
                 }
                 else
                 {
-                    check = true;
-                    norm2 = temp2;
+                    std::cerr << "-- Numeric Stop" << std::endl;
+                    //__________________________________________________________
+                    //
+                    // Numeric Stop!
+                    //__________________________________________________________
+                    goto DONE;
                 }
-                updateChi(C);
             }
-            
+
+
+        DONE:
+            for(size_t i=M;i>0;--i)
+            {
+                C0[i] = C[i];
+            }
+            //pLib->display(std::cerr,C0);
+
+
         }
-
-
+        
+        
     }
-
+    
 }
 
