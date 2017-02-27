@@ -126,7 +126,6 @@ the value $\gamma_n$.\\
 \item goto 1.
 \end{enumerate}
 
-\section{Using in an ODE}
 
 \section{Booting with linear constraints}
 \subsection{Description}
@@ -169,8 +168,32 @@ $$
 \item otherwise, update $\vec{C}_n$, $\gamma_n$.
 \end{enumerate}
 
-The the validity of the result must be checked...
+The the validity of the result must be checked, especially that the linear part is almost zero...
 
+\section{Using in an ODE}
+
+If we start from 
+\begin{equation}
+	\vec{\Gamma}\left(t,\vec{C}\right) = \vec{0}
+\end{equation}
+then all the legal transformation must obey
+\begin{equation}
+	\vec{0} = \partial_t \vec{\Gamma} + \mymat{\Phi} \partial_t \vec{C}
+\end{equation}
+If we impose $\delta\vec{C}$ during $\delta t$ then the system will produce an extent $\delta \vec{\xi}$ such that
+\begin{equation}
+	\vec{0} = \delta t \partial_t \vec{\Gamma} + \mymat{\Phi}\left(\delta \vec{C} + \mytrn{\mymat{\nu}} \delta \vec{\xi}\right)
+\end{equation}
+so that
+\begin{equation}
+	\delta \vec{\xi} = \left(\mymat{\Phi}\mytrn{\mymat{\nu}}\right)^{-1} \left( \delta t \partial_t \vec{\Gamma}  + \mymat{\Phi} \delta \vec{C} \right).
+\end{equation}
+
+If $\vec{\sigma}$ is a slow variation, then
+\begin{equation}
+	\partial_t \vec{C} = \vec{\sigma} - \mytrn{\mymat{\nu}} \left(\mymat{\Phi}\mytrn{\mymat{\nu}}\right)^{-1} \left( \partial_t \vec{\Gamma} + \mymat{\Phi} \vec{\sigma} \right)
+\end{equation}
+	
 
 \end{document}
 
