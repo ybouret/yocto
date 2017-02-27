@@ -91,14 +91,15 @@ an invalid concentration
 \item Find the minimum, w.r.t $\alpha$ of $\mathcal{E}\left(\vec{C}+\alpha \vec{h}\right)$. 
 \item Update $\vec{C}$ to $\vec{C}+\alpha\vec{h}$. If the minimum is zero, terminate the algorithm.
 \item Compute the temporary steepest descent $\vec{b}$, check that $b_2=\vert\vec{b}\vert^2>0$.
-\item Compute $\gamma=\dfrac{\left(\vec{b}-\vec{g}\right)\cdot \vec{b}}{g_2}$.
+\item Compute $\alpha=\dfrac{\left(\vec{b}-\vec{g}\right)\cdot \vec{b}}{g_2}$.
 \item Update $\vec{g} = \vec{b}$
-\item Update $\vec{h} = \vec{g} + \gamma \vec{h}$
+\item Update $\vec{h} = \vec{g} + \alpha \vec{h}$
 \item go to 2
 \end{enumerate}
 
 \section{Normalising}
-We need a globally convergent algorithm.
+
+
 A chemical system must be balanced before normalisation.
 Then, at a given time $t$, we assume that we start from
 $\vec{\Gamma}\left(\vec{C}\right)\not=\vec{0}$  and that we look for the chemical
@@ -111,12 +112,18 @@ We approximate the extent using the first order expansion
 	\vec{0} = \vec{\Gamma}\left(\vec{C}\right) + \underbrace{\left(\mymat{\Phi}\mytrn{\mymat{\nu}}\right)}_{\displaystyle \mymat{\chi}} 
 	\vec{\xi}
 \end{equation}	
+
+We define  $\gamma$ an
+objective function of $\vec{\Gamma}$, and $\mathcal{B}$ the balancing operator.\\
+We start from a BALANCED $\vec{C}_n$, with a computed $\vec{\Gamma}_n$ and $\mymat{\chi}_n$, and
+the value $\gamma_n$.\\
+
 \begin{enumerate}
-\item Compute $\vec{\Gamma}$ and $\mymat{\chi}$
-\item Compute $\vec{\xi}=-\mymat{\chi}^{-1} \vec{\Gamma}$
-\item Update  $\vec{C}$ to $\vec{C}+\mytrn{\mymat{\nu}}\vec{\xi}$
-\item Balance !
-\item go to 1 until convergence.
+\item Compute the Newton's step $\delta\vec{C}_n = - \mytrn{\mymat{\nu}}\left(\mymat{\chi}_n^{-1} \vec{\Gamma}_{n}\right)$.
+\item Compute $\gamma_{n+1}=\gamma\left(\mathcal{B}\left(\vec{C}_n+\delta\vec{C}_n\right)\right)$
+\item If $\gamma_{n+1}<\gamma_{n}$, update $\vec{\Gamma}$ and $\mymat{\chi}$. If $\gamma_{n+1}\leq 0$, done!
+\item Otherwise, try to optimize $\gamma\left(\mathcal{B}\left(\vec{C}_n+\alpha\delta\vec{C}_n\right)\right)$ and use the same conclusion as before or break on numeric minimum.
+\item goto 1.
 \end{enumerate}
 
 \section{Using in an ODE}
@@ -135,9 +142,7 @@ Obviously, if we take $\mymat{Q}\in\mymat{P}^{\perp}$, we have a set of vectors 
 We must find a way to compute $\vec{U}$ and $\vec{V}$ while preserving the validity of $\vec{C}$.
 
 \subsection{Algorithm}
-We need a globally decreasing strategy...\\
-Let us assume that we start from $\vec{V}_n$ defining $\vec{C}_n$.
-We also define $\mathcal{C}$ the operator that set invalid concentrations to $0$, and $\gamma$ an
+We define $\mathcal{C}$ the operator that set invalid concentrations to $0$, and $\gamma$ an
 objective function of $\vec{\Gamma}$.
 
 We start from a VALID $\vec{C}_n$, with a computed $\vec{\Gamma}_n$ and $\mymat{\Phi}_n$, and
