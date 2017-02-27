@@ -139,12 +139,31 @@ Let us assume that we start from $\vec{V}_n$ defining $\vec{C}_n$.
 We also define $\mathcal{C}$ the operator that set invalid concentrations to $0$, and $\gamma$ an
 objective function of $\vec{\Gamma}$.
 
-We start from $\vec{C}_n$ and $\vec{V}_n$, with a computed $\vec{\Gamma}_n$ and $\mymat{\Phi}_n$, and
+We start from a VALID $\vec{C}_n$, with a computed $\vec{\Gamma}_n$ and $\mymat{\Phi}_n$, and
 the value $\gamma_n$.
 
 \begin{enumerate}
-\item 
+\item Compute the linear 
+	$$\delta\vec{U}_n = \left(\mymat{P}\mytrn{\mymat{P}}\right)^{-1} \left( \vec{\Lambda} - \mymat{P} \vec{C}_n \right)$$
+
+\item Compute the non-linear
+	$$\delta\vec{V}_n = - \left(\mymat{\Phi}_n\mytrn{\mymat{Q}}\right)^{-1}\left(\vec{\Gamma}_n+\mymat{\Phi}_n\underbrace{\mytrn{\mymat{P}}\cdot\delta\vec{U}_n}_{\delta\vec{C}_n'}\right)$$
+
+\item Compute the descent direction 
+$$
+	\delta\vec{C}_n = \underbrace{\mytrn{\mymat{P}} \delta \vec{U}_n}_{\delta\vec{C}_n'} + \mytrn{\mymat{Q}} \delta\vec{V}_n
+$$
+
+\item Find $\alpha\geq0$ which minimises 
+$$
+	\gamma_{n+1} = \gamma\left( \mathcal{C}\left(\vec{C}_n + \alpha \delta\vec{C}_n\right)\right)
+$$
+
+\item if $\gamma_{n+1}\geq\gamma_n$, stop and use $\vec{C}_n$ 
+\item otherwise, update $\vec{C}_n$, $\gamma_n$.
 \end{enumerate}
+
+The the validity of the result must be checked...
 
 
 \end{document}

@@ -33,7 +33,10 @@ namespace yocto
                                 );
             }
 
-            array<double> &C = eqs.C;
+            array<double>  &C     = eqs.C;
+            array<double>  &dC    = eqs.dC;
+            array<double>  &Gamma = eqs.Gamma;
+            matrix<double> &Phi   = eqs.Phi;
 
             assert(C.size()==M);
 
@@ -81,17 +84,15 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // check the rank and inv(P*P')
+            // check the rank and inv(P*P') as adjoint and determinant
             //__________________________________________________________________
             matrix<double> P2(Nc,Nc);
             tao::mmul_rtrn(P2,P,P);
             std::cerr << "P2=" << P2 << std::endl;
             const double dPP = ideterminant(P2);
             if(Fabs(dPP)<0) throw exception("%singular constraints",fn);
-            std::cerr << "dPP=" << dPP << std::endl;
             matrix<double> aPP(Nc,Nc);
             iadjoint(aPP,P2);
-            std::cerr << "aPP=" << aPP << std::endl;
 
 
             //__________________________________________________________________
@@ -103,12 +104,6 @@ namespace yocto
             {
                 throw exception("%sunable to build orthonormal space",fn);
             }
-#if 0
-            for(size_t i=1;i<=N;++i)
-            {
-                svd<double>::truncate(Q[i]);
-            }
-#endif
             std::cerr << "Q=" << Q << std::endl;
 
 
@@ -129,15 +124,16 @@ namespace yocto
             //
             // prepare memory
             //__________________________________________________________________
-            vector<double> V(N),  dV(N);
-            vector<double> U(Nc), dU(Nc);
-            matrix<double> PhiQ(N),PhiP(N,Nc);
+            vector<double> dV(N);
+            vector<double> dU(Nc);
+
+            matrix<double> PhiQ(N);
             numeric<double>::function F(this, & boot::call_F );
 
 
             //__________________________________________________________________
             //
-            // initialize C to a validated Cstar
+            // initialize C to a validated Cstar and V
             //__________________________________________________________________
             tao::set(C,Cstar);
             eqs.validate(C);
@@ -148,37 +144,26 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // deduce components of a validated C, assuming Gamma,Phi and F0
-            // are also computed
-            //__________________________________________________________________
-
-            tao::mul(Utmp,P,C);               // save P*C for later
-            tao::mul_and_div(U,aPP,Utmp,dPP); // U = inv(P*P')*(P*C)
-            tao::mul(V,Q,C);
-            //std::cerr << "F=" << F0 << std::endl;
-            //std::cerr << "C=" << C << std::endl;
-            //std::cerr << "U=" << U << std::endl;
-            //std::cerr << "V=" << V << std::endl;
-
-            //__________________________________________________________________
+            // assuming Gamma,Phi and F0
             //
             // compute dU = inv(P*P')*(Lam-P*C)
             //__________________________________________________________________
-            tao::subp(Utmp,Lam);               // Lam-P*C
+            tao::set(Utmp,Lam);                // Utmp = Lambda
+            tao::mul_sub(Utmp,P,C);            // Utmp = Lambda-P*C
             tao::mul_and_div(dU,aPP,Utmp,dPP); // dU = inv(P*P')*(Lam-P*C)
+            tao::mul_trn(dC,P,dU);             // dC = P'*U
 
             //__________________________________________________________________
             //
-            // compute dV = -inv(Phi*Q')*(Gamma+Phi*P'*dU)
+            // compute dV = -inv(Phi*Q')*(Gamma+Phi*dC)
             //__________________________________________________________________
-            tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
+            tao::mmul_rtrn(PhiQ,Phi,Q);
             if(!LU<double>::build(PhiQ))
             {
                 throw exception("%sinvalid Jacobian",fn);
             }
-            tao::mmul_rtrn(PhiP,eqs.Phi,P);
-            tao::set(dV,eqs.Gamma);
-            tao::mul_add(dV,PhiP,dU);
+            tao::set(dV,Gamma);
+            tao::mul_add(dV,Phi,dC);
             tao::neg(dV,dV);
             LU<double>::solve(PhiQ,dV);
 
@@ -188,7 +173,7 @@ namespace yocto
             // save start_C and compute delta_C
             //__________________________________________________________________
             tao::set(start_C,C);
-            tao::mul_trn(delta_C,P,dU);
+            tao::set(delta_C,dC);
             tao::mul_add_trn(delta_C,Q,dV);
 
             //__________________________________________________________________
@@ -196,8 +181,8 @@ namespace yocto
             // find a global minimum of the non linear part, avoiding
             // oscillations
             //__________________________________________________________________
-            triplet<double> xx = { 0.0, 1.0, -1 };
-            triplet<double> ff = { F0,  F(1.0), -1 };
+            triplet<double> xx = { 0.0, 1.0,     -1 };
+            triplet<double> ff = { F0,  F(xx.b), -1 };
             bracket<double>::expand(F,xx,ff);
             optimize1D<double>::run(F,xx,ff,0.0);
 
@@ -212,9 +197,9 @@ namespace yocto
                 //
                 // decreasing
                 //______________________________________________________________
+                eqs.validate(C);
                 eqs.updatePhi(C);
                 F0 =  F1;
-                //std::cerr << std::endl;
                 goto LOOP;
             }
             else
@@ -226,25 +211,24 @@ namespace yocto
                 tao::set(C,start_C);
             }
             
-            //std::cerr << "C0=" << C << std::endl;
-          
-            
             //__________________________________________________________________
             //
-            // check validity
+            // check validity: non linear part
             //__________________________________________________________________
             eqs.updateGamma(C);
             const double F_end = eqs.Gamma2Value();
-            //std::cerr << "F_end=" << F_end << std::endl;
             if(F_end>0)
             {
                 svd<double>::truncate(C);
             }
             
-            
-            tao::mul(U,P,C);
-            tao::sub(U,Lam);
-            const double rms = tao::RMS(U);
+            //__________________________________________________________________
+            //
+            // check validity: linear part
+            //__________________________________________________________________
+            tao::mul(Utmp,P,C);
+            tao::sub(Utmp,Lam);
+            const double rms = tao::RMS(Utmp);
             if(rms>numeric<double>::ftol)
             {
                 throw exception("%s:numerical failure for constraints", fn);
