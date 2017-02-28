@@ -72,12 +72,14 @@ namespace yocto
             }
         }
 
+        static const char fn[] = "equilibria::normalize: ";
+
         double equilibria:: call_F(const double alpha)
         {
             tao::setprobe(C, Cini, alpha, step);
             if(!balance())
             {
-                throw exception("couldn't balance while normalizing, level-2");
+                throw exception("%scouldn't balance while normalizing, level-2",fn);
             }
             updateGamma(C);
             return Gamma2Value();
@@ -85,7 +87,6 @@ namespace yocto
 
         void equilibria:: normalize(array<double> &C0, const double t)
         {
-            static const char fn[] = "equilibria::normalize: ";
             //__________________________________________________________________
             //
             // initialize:
@@ -131,7 +132,7 @@ namespace yocto
             }
             updateChi(C);
             double gam1 = Gamma2Value();
-            std::cerr << "gamma: " << gam1 << " <- " << gam0 << std::endl;
+            //std::cerr << "gamma: " << gam1 << " <- " << gam0 << std::endl;
 
 
             if(gam1<gam0)
@@ -142,7 +143,7 @@ namespace yocto
                     //
                     // perfect numeric match, Phi and Chi are computed
                     //__________________________________________________________
-                    std::cerr << "-- Perfect Newton's match" << std::endl;
+                    //std::cerr << "-- Perfect Newton's match" << std::endl;
                     goto DONE;
                 }
                 gam0 = gam1;
@@ -150,13 +151,17 @@ namespace yocto
             }
             else
             {
-                std::cerr << "-- Optimizing" << std::endl;
+                //std::cerr << "-- Optimizing" << std::endl;
                 triplet<double> xx = { 0.0,  1.0,  -1.0 };
                 triplet<double> FF = { gam0, gam1, -1.0 };
                 bracket<double>::expand(F,xx,FF);
                 optimize1D<double>::run(F,xx,FF,0.0);
 
+                //______________________________________________________________
+                //
                 // take the best step and update C, Gamma, Phi and Chi
+                //______________________________________________________________
+
                 const double alpha = max_of<double>(0.0,xx.b);
                 tao::setprobe(C, Cini, alpha, step);
                 updateChi(C);
@@ -169,7 +174,7 @@ namespace yocto
                         //
                         // optimized numeric match, Phi and Chi are computed
                         //______________________________________________________
-                        std::cerr << "-- Optimized Newton's match" << std::endl;
+                        //std::cerr << "-- Optimized Newton's match" << std::endl;
                         goto DONE;
                     }
                     gam0 = gam1;
@@ -177,17 +182,21 @@ namespace yocto
                 }
                 else
                 {
-                    std::cerr << "-- Numeric Stop" << std::endl;
                     //__________________________________________________________
                     //
                     // Numeric Stop!
                     //__________________________________________________________
+                    //std::cerr << "-- Numeric Stop" << std::endl;
                     goto DONE;
                 }
             }
 
 
         DONE:
+            //__________________________________________________________________
+            //
+            // store new value
+            //__________________________________________________________________
             for(size_t i=M;i>0;--i)
             {
                 C0[i] = C[i];
