@@ -255,7 +255,21 @@ namespace yocto
         }
 
         
-
+        double equilibrium:: dtGamma(const array<double> &C,
+                                     const double         t,
+                                     const double         dt,
+                                     drvs_type           &drvs)
+        {
+            double lhs = drvs(K,t,dt);
+            for(const actor *a = reactants.head; a != NULL; a=a->next )
+            {
+                assert(a->nu<0);
+                assert(a->ev>0);
+                const double Ca = C[a->id];
+                lhs *= ipower<double>(Ca,a->ev);
+            }
+            return lhs;
+        }
 
     }
 

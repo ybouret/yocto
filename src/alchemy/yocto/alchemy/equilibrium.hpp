@@ -3,7 +3,7 @@
 
 #include "yocto/alchemy/library.hpp"
 #include "yocto/core/list.hpp"
-#include "yocto/math/types.hpp"
+#include "yocto/math/fcn/drvs.hpp"
 
 namespace yocto
 {
@@ -31,7 +31,7 @@ namespace yocto
 
         //! time dependant constant
         typedef math::numeric<double>::function equilibrium_constant;
-        
+        typedef math::derivative<double>        drvs_type;
       
         //! an equilibrium
         class equilibrium : public counted_object
@@ -74,7 +74,12 @@ namespace yocto
                                  const double         Kt) const throw();
 
             friend std::ostream & operator<<( std::ostream &, const equilibrium &);
-            
+
+            double dtGamma(const array<double> &C,
+                           const double         t,
+                           const double         dt,
+                           drvs_type           &drvs);
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);

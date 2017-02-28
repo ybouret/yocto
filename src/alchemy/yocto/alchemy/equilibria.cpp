@@ -33,6 +33,9 @@ namespace yocto
         g(),
         h(),
         iNu(),
+        nuP(),
+        gam(),
+        drvs(),
         E(this, & equilibria::call_E),
         F(this, & equilibria::call_F),
         max_name_length(0)

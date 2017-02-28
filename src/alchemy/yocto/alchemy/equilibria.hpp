@@ -45,7 +45,9 @@ namespace yocto
             matrix<int>            iNu;    //!< integer Nu
             vector<int>            nuP;    //!< sum of nu for products, units of Gamma
             mutable vector<double> gam;    //!< for normalized Gamma values
-            
+            drvs_type              drvs;
+
+
             equilibrium & add( const string &name, const equilibrium_constant &K);
             equilibrium & add( const string &name, const double                K);
 
