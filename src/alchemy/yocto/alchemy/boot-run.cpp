@@ -186,11 +186,14 @@ namespace yocto
             bracket<double>::expand(F,xx,ff);
             optimize1D<double>::run(F,xx,ff,0.0);
 
+            //const double alpha = (xx.b < numeric<double>::sqrt_ftol) ? 0.0 : xx.b;
             const double alpha = max_of<double>(xx.b,0);
             const double F1    = F(alpha);
-            std::cerr << "F1=" << F1 << " <-- " << F0 << ", alpha=" << alpha << " / ftol=" << numeric<double>::ftol << std::endl;
+            std::cerr << "F1=" << F1 << " <-- " << F0 << ", alpha=" << alpha << " / ftol=" << numeric<double>::ftol << " / sqrt_ftol=" << numeric<double>::sqrt_ftol << std::endl;
             std::cerr << "C="  << C  << std::endl;
 
+            exit(0);
+            
             if(F1<F0)
             {
                 std::cerr << "F0-F1=" << F0-F1 << std::endl;
@@ -199,9 +202,7 @@ namespace yocto
             }
 
 
-            if(   (F1<F0)
-               && ( (F0-F1) > numeric<double>::ftol * (F0+F1) )
-               )
+            if(F1<F0)
             {
                 //______________________________________________________________
                 //
