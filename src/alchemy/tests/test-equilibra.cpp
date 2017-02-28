@@ -83,7 +83,10 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
 
     chemsys.balance();
     chemsys.normalize(chemsys.C, 0.0);
-    chemsys.Gamma2Value();
+
+    std::cerr << "C="     << chemsys.C << std::endl;
+    std::cerr << "Phi="   << chemsys.Phi << std::endl;
+    std::cerr << "Gamma=" << chemsys.Gamma << std::endl;
 
 
 
