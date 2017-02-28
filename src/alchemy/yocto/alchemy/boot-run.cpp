@@ -188,16 +188,26 @@ namespace yocto
 
             const double alpha = max_of<double>(xx.b,0);
             const double F1    = F(alpha);
-            //std::cerr << "F1=" << F1 << " <-- " << F0 << std::endl;
-            //std::cerr << "C="  << C  << std::endl;
+            std::cerr << "F1=" << F1 << " <-- " << F0 << ", alpha=" << alpha << " / ftol=" << numeric<double>::ftol << std::endl;
+            std::cerr << "C="  << C  << std::endl;
 
             if(F1<F0)
+            {
+                std::cerr << "F0-F1=" << F0-F1 << std::endl;
+                std::cerr << "F0+F1=" << F0+F1 << std::endl;
+                std::cerr << "(F0-F1)/(F0+F1)=" << (F0-F1)/(F0+F1) << std::endl;
+            }
+
+
+            if(   (F1<F0)
+               && ( (F0-F1) > numeric<double>::ftol * (F0+F1) )
+               )
             {
                 //______________________________________________________________
                 //
                 // decreasing
                 //______________________________________________________________
-                eqs.validate(C);
+                std::cerr << "decreasing..." << std::endl;
                 eqs.updatePhi(C);
                 F0 =  F1;
                 goto LOOP;
