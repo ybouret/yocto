@@ -14,10 +14,10 @@ namespace yocto
         using math::triplet;
 
         
-        class equilibria : public equilibrium::database
+        class equilibria : public counted_object, public equilibrium::database
         {
         public:
-            
+            typedef arc_ptr<equilibria> pointer;
 
             explicit equilibria(const library::pointer &shlib);
             virtual ~equilibria() throw();
