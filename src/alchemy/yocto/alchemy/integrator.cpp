@@ -8,9 +8,9 @@ namespace yocto
         {
         }
 
-        integrator:: integrator(const equilibria::pointer &eqs) :
-        odeint(1e-4),
-        pEqs(eqs)
+        integrator:: integrator(const equilibria::pointer &user_eqs, const double user_eps) :
+        odeint(user_eps),
+        pEqs(user_eqs)
         {
 
         }
