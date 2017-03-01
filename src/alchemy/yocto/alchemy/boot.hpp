@@ -71,18 +71,11 @@ namespace yocto
             void run( equilibria &eqs, const double t);
 
 
-            void run2( equilibria &eqs, const double t);
-
-
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
             const library::pointer      pLib;
             vector<constraint::pointer> constraints;
-            vector<double>              start_C;
-            vector<double>              delta_C;
-            equilibria                 *pEqs;
-            double                      call_F(double alpha);
-
+            
 
 
         };

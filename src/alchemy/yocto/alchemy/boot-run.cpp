@@ -18,6 +18,316 @@ namespace yocto
     namespace alchemy
     {
 
+        namespace
+        {
+            static const char fn[] = "boot.run: ";
+
+            class BootContext
+            {
+
+            public:
+                equilibria    &eqs;
+                const library &lib;
+                const size_t   N;
+                const size_t   M;
+                const size_t   Nc;
+                matrix<double> P;
+                vector<double> Lam;
+                matrix<double> Q;
+                matrix<double> PP;
+                double         dPP;
+                matrix<double> aPP;
+                vector<double> Cstar;
+                vector<double> Utemp;
+                const double   t;
+                array<double>  &C;
+                vector<bool>    used;
+                numeric<double>::scalar_field E;
+                numeric<double>::vector_field G;
+                vector<double>   Vcurr;
+                vector<double>   dV;
+                vector<double>   Vtemp;
+                matrix<double>  &PhiQ;
+                numeric<double>::function gam;
+
+                inline BootContext(equilibria    &usrEqs,
+                                   const library &usrLib,
+                                   const size_t   usrNc,
+                                   const double   usrT
+                                   ) :
+                eqs(usrEqs),
+                lib(usrLib),
+                N(eqs.size()),
+                M(lib.size()),
+                Nc(usrNc),
+                P(Nc,M),
+                Lam(Nc),
+                Q(N,M),
+                PP(Nc,Nc),
+                dPP(0),
+                aPP(Nc,Nc),
+                Cstar(M),
+                Utemp(Nc),
+                t(usrT),
+                C(eqs.C),
+                used(N,true),
+                E(this, & BootContext::call_E),
+                G(this, & BootContext::call_G),
+                Vcurr(N),
+                dV(N),
+                Vtemp(N),
+                PhiQ(eqs.Chi),
+                gam(this,& BootContext::call_F)
+                {
+
+                }
+
+                void initialize()
+                {
+                    tao::mmul_rtrn(PP,P,P);
+                    std::cerr << "PP=" << PP << std::endl;
+                    const double dPP = ideterminant(PP);
+                    if(Fabs(dPP)<0) throw exception("%singular constraints",fn);
+                    matrix<double> aPP(Nc,Nc);
+                    iadjoint(aPP,PP);
+
+
+                    //__________________________________________________________
+                    //
+                    // compute orthogonal space
+                    //__________________________________________________________
+                    if(!svd<double>::orthonormal(Q,P))
+                    {
+                        throw exception("%sunable to build orthonormal space",fn);
+                    }
+                    std::cerr << "Q=" << Q << std::endl;
+
+                    //__________________________________________________________
+                    //
+                    // compute Cstar
+                    //__________________________________________________________
+                    tao::mul(Utemp,aPP,Lam);
+                    tao::mul_trn(Cstar,P,Utemp);
+                    tao::divby(dPP,Cstar);
+                    std::cerr << "Cstar=" << Cstar << std::endl;
+                    std::cerr << "V0   =" << Vcurr  << std::endl;
+
+                    //__________________________________________________________
+                    //
+                    // initialize Vcurr
+                    //__________________________________________________________
+                    moveV(Vcurr);
+                    std::cerr << "V1=" << Vcurr << std::endl;
+                    std::cerr << "C1=" << C     << std::endl;
+
+                    //__________________________________________________________
+                    //
+                    // initialize Vcurr
+                    //__________________________________________________________
+
+                    eqs.computePhi(C,t);
+
+                }
+
+                void process()
+                {
+                    double gam0 = eqs.Gamma2Value();
+
+                LOOP:
+                    //__________________________________________________________
+                    //
+                    // compute the full Newton's step
+                    // dV = -inv(Phi*Q') * Gamma;
+                    //__________________________________________________________
+                    tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
+                    if(!LU<double>::build(PhiQ))
+                    {
+                        throw exception("%ssingular composition",fn);
+                    }
+                    tao::neg(dV,eqs.Gamma);
+                    LU<double>::solve(PhiQ,dV);
+
+                    //__________________________________________________________
+                    //
+                    // optimize to be sure to decrease
+                    //__________________________________________________________
+                    std::cerr << "gam(0)=" << gam(0) << "/" << gam0 << std::endl;
+
+                    triplet<double> xx = { 0, 1.0, -1.0 };
+                    triplet<double> gg = { gam0, gam(xx.b), -1.0 }; std::cerr << "xx=" << xx << ", gg=" << gg << std::endl;
+                    bracket<double>::expand(gam,xx,gg);             std::cerr << "xx=" << xx << ", gg=" << gg << std::endl;
+                    optimize1D<double>::run(gam,xx,gg,0.0);         std::cerr << "xx=" << xx << ", gg=" << gg << std::endl;
+
+                    const double alpha = max_of<double>(xx.b,0.0);
+                    const double gam1  = gam(alpha);
+                    std::cerr << "gam1=" << gam1 << "  <-- " << gam0 << std::endl;
+
+                    if(gam1<gam0)
+                    {
+                        tao::set(Vcurr,Vtemp);
+                        gam0 = gam1;
+                        eqs.updatePhi(C);
+                        goto LOOP;
+                    }
+
+                    //__________________________________________________________
+                    //
+                    // last good value
+                    //__________________________________________________________
+                    gen_C(Vcurr);
+                    std::cerr << "C=" << C << std::endl;
+                    svd<double>::truncate(C);
+                    std::cerr << "C=" << C << std::endl;
+                    eqs.updateGamma(C);
+                    std::cerr << "Gamma=" << eqs.Gamma << std::endl;
+
+                    tao::set(Utemp,Lam);
+                    tao::mul_sub(Utemp, P,C);
+                    const double rms = tao::RMS(Utemp);
+                    std::cerr << "Utemp=" << Utemp << std::endl;
+                    std::cerr << "rms=" << rms << std::endl;
+
+                }
+
+
+                inline void moveV(array<double> &V)
+                {
+                    (void)cgrad<double>::optimize(E,
+                                                  G,
+                                                  V,
+                                                  used,
+                                                  0.0);
+                    gen_C(V);
+                }
+
+                inline ~BootContext() throw()
+                {
+                }
+
+                inline void gen_C(const array<double> &V) throw()
+                {
+                    tao::set(C,Cstar);
+                    tao::mul_add_trn(C,Q,V);
+                }
+
+                inline double call_E(const array<double> &V) throw()
+                {
+                    gen_C(V);
+                    double ans = 0.0;
+                    for(size_t i=C.size();i>0;--i)
+                    {
+                        if(eqs.active[i])
+                        {
+                            const double Ci = C[i];
+                            if(Ci<0)
+                            {
+                                ans += Ci*Ci;
+                            }
+                        }
+                    }
+                    return 0.5*ans;
+                }
+
+                inline void call_G(array<double>       &G,
+                                   const array<double> &V) throw()
+                {
+                    gen_C(V);
+                    for(size_t i=C.size();i>0;--i)
+                    {
+                        eqs.beta[i] = 0;
+                        if(eqs.active[i])
+                        {
+                            const double Ci = C[i];
+                            if(Ci<0)
+                            {
+                                eqs.beta[i] = Ci;
+                            }
+                        }
+                    }
+                    tao::mul(G,Q,eqs.beta);
+                }
+
+                inline double call_F(double alpha)
+                {
+                    tao::setprobe(Vtemp, Vcurr, alpha, dV);
+                    moveV(Vtemp);
+                    eqs.updateGamma(C);
+                    return eqs.Gamma2Value();
+                }
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(BootContext);
+            };
+        }
+
+
+        void boot:: run( equilibria &eqs, const double t )
+        {
+
+            //__________________________________________________________________
+            //
+            // check parameters
+            //__________________________________________________________________
+
+            const size_t Nc = constraints.size();
+            const size_t N  = eqs.size();
+            const size_t M  = pLib->size();
+            if(M!=N+Nc)
+            {
+                throw exception("%s#species=%u != #equations=%u + #constraints=%u",
+                                fn,
+                                unsigned(M),
+                                unsigned(N),
+                                unsigned(Nc)
+                                );
+            }
+
+            //__________________________________________________________________
+            //
+            // build the constraint matrix
+            //__________________________________________________________________
+            if(Nc<=0)
+            {
+                // no constraints
+
+                return;
+            }
+
+            if(Nc>=M)
+            {
+                // no reactions
+
+                return;
+            }
+
+            //__________________________________________________________________
+            //
+            // build the constraint matrix
+            //__________________________________________________________________
+            BootContext ctx(eqs,*pLib,Nc,t);
+
+            for(size_t i=1;i<=Nc;++i)
+            {
+                const constraint &cc = *constraints[i];
+                ctx.Lam[i] = cc.value;
+                for(component::database::const_iterator j = cc.begin(); j!= cc.end(); ++j)
+                {
+                    const component &comp = *j;
+                    const size_t     k    = comp.sp->indx;
+                    ctx.P[i][k] = comp.weight;
+                }
+            }
+            std::cerr << "P="   << ctx.P   << std::endl;
+            std::cerr << "Lam=" << ctx.Lam << std::endl;
+
+            ctx.initialize();
+            ctx.process();
+
+        }
+
+
+
+#if 0
         void boot:: run( equilibria &eqs, const double t )
         {
             static const char fn[] = "boot.run: ";
@@ -194,7 +504,7 @@ namespace yocto
             std::cerr << "C="  << C  << std::endl;
 
             exit(0);
-            
+
             if(F1<F0)
             {
                 std::cerr << "F0-F1=" << F0-F1 << std::endl;
@@ -222,7 +532,7 @@ namespace yocto
                 //______________________________________________________________
                 tao::set(C,start_C);
             }
-            
+
             //__________________________________________________________________
             //
             // check validity: non linear part
@@ -233,7 +543,7 @@ namespace yocto
             {
                 svd<double>::truncate(C);
             }
-            
+
             //__________________________________________________________________
             //
             // check validity: linear part
@@ -245,10 +555,10 @@ namespace yocto
             {
                 throw exception("%s:numerical failure for constraints", fn);
             }
-            
-            
 
-            
+
+
+
         }
 
         double boot:: call_F(double alpha)
@@ -267,8 +577,9 @@ namespace yocto
             return pEqs->Gamma2Value();
         }
 
+#endif
 
-
+#if 0
         class PositiveFinder
         {
         public:
@@ -308,13 +619,18 @@ namespace yocto
                 (void) cgrad<double>::optimize(E,G,V,used,0.0,NULL);
             }
 
-
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(PositiveFinder);
-            inline double call_E(const array<double> &V) throw()
+            inline void gen_C(const array<double> &V) throw()
             {
                 tao::set(C,Cstar);
                 tao::mul_add_trn(C,Q,V);
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(PositiveFinder);
+
+            inline double call_E(const array<double> &V) throw()
+            {
+                gen_C(V);
                 double ans = 0.0;
                 for(size_t i=C.size();i>0;--i)
                 {
@@ -333,8 +649,7 @@ namespace yocto
             inline void call_G(array<double>       &G,
                                const array<double> &V) throw()
             {
-                tao::set(C,Cstar);
-                tao::mul_add_trn(C,Q,V);
+                gen_C(V);
                 for(size_t i=C.size();i>0;--i)
                 {
                     beta[i] = 0;
@@ -350,233 +665,52 @@ namespace yocto
                 tao::mul(G,Q,beta);
             }
         };
-        void boot:: run2( equilibria &eqs, const double t)
+
+        class BootOptimizer
         {
-            static const char fn[] = "boot.run: ";
-
-            //__________________________________________________________________
-            //
-            // check parameters
-            //__________________________________________________________________
-
-            const size_t Nc = constraints.size();
-            const size_t N  = eqs.size();
-            const size_t M  = pLib->size();
-            if(M!=N+Nc)
+        public:
+            PositiveFinder            &pfn;
+            array<double>             &V;
+            vector<double>             Vstart;
+            vector<double>             Vdelta;
+            equilibria                &eqs;
+            numeric<double>::function  F;
+            
+            inline BootOptimizer(PositiveFinder      &usrPFN,
+                                 array<double>       &usrV,
+                                 equilibria          &usrEqs) :
+            pfn(usrPFN),
+            V( usrV ),
+            Vstart( V.size() ),
+            Vdelta( V.size() ),
+            eqs(usrEqs),
+            F(this, & BootOptimizer::call_F )
             {
-                throw exception("#species=%u != #equations=%u + #constraints=%u",
-                                unsigned(M),
-                                unsigned(N),
-                                unsigned(Nc)
-                                );
             }
-
-            array<double>  &C     = eqs.C;
-            array<double>  &dC    = eqs.dC;
-            array<double>  &Gamma = eqs.Gamma;
-            matrix<double> &Phi   = eqs.Phi;    //! MxN, Jacobian
-            matrix<double> &PhiQ  = eqs.Chi;    //! NxN
-
-            assert(C.size()==M);
-
-            matrix<double> P;
-            vector<double> Lam;
-
-
-            if(Nc<=0)
+            
+            inline ~BootOptimizer() throw()
             {
-                // no constraints
-
-                return;
             }
-
-            if(Nc>=M)
+            
+            double call_F(const double alpha)
             {
-                // no reactions
-
-                return;
+                tao::setprobe(V,Vstart,alpha,Vdelta);
+                pfn.move(V);
+                pfn.gen_C(V);
+                eqs.updateGamma(pfn.C);
+                return eqs.Gamma2Value();
             }
-
-            //__________________________________________________________________
-            //
-            // prepare global memory
-            //__________________________________________________________________
-            start_C.make(M);
-            delta_C.make(M);
-            pEqs = &eqs;
-
-            //__________________________________________________________________
-            //
-            // build the constraint matrix
-            //__________________________________________________________________
-
-            P.  make(Nc,M);
-            Lam.make(Nc);
-            for(size_t i=1;i<=Nc;++i)
-            {
-                const constraint &cc = *constraints[i];
-                Lam[i] = cc.value;
-                for(component::database::const_iterator j = cc.begin(); j!= cc.end(); ++j)
-                {
-                    const component &comp = *j;
-                    const size_t     k    = comp.sp->indx;
-                    P[i][k] = comp.weight;
-                }
-            }
-            std::cerr << "P="   << P   << std::endl;
-            std::cerr << "Lam=" << Lam << std::endl;
-
-            //__________________________________________________________________
-            //
-            // check the rank and inv(P*P') as adjoint and determinant
-            //__________________________________________________________________
-            matrix<double> P2(Nc,Nc);
-            tao::mmul_rtrn(P2,P,P);
-            std::cerr << "P2=" << P2 << std::endl;
-            const double dPP = ideterminant(P2);
-            if(Fabs(dPP)<0) throw exception("%singular constraints",fn);
-            matrix<double> aPP(Nc,Nc);
-            iadjoint(aPP,P2);
-
-
-            //__________________________________________________________________
-            //
-            // compute orthogonal space
-            //__________________________________________________________________
-            matrix<double> Q(N,M);
-            if(!svd<double>::orthonormal(Q,P))
-            {
-                throw exception("%sunable to build orthonormal space",fn);
-            }
-            std::cerr << "Q=" << Q << std::endl;
-
-
-            //__________________________________________________________________
-            //
-            // compute Cstar
-            //__________________________________________________________________
-            vector<double> Cstar(M);
-            vector<double> Ustar(Lam);
-            tao::mul(Ustar,aPP,Lam);
-
-            tao::mul_trn(Cstar,P,Ustar);
-            tao::divby(dPP,Cstar);
-            std::cerr << "Ustar=" << Ustar << std::endl;
-            std::cerr << "Cstar=" << Cstar << std::endl;
-
-            //__________________________________________________________________
-            //
-            // compute initial V by approaching positive values
-            //__________________________________________________________________
-            vector<double> V(N);
-
-            vector<bool>   used(N,true);
-            PositiveFinder pfn(Q,Cstar,C,eqs.active,used,eqs.beta);
-            pfn.move(V);
-            (void) pfn.E(V);
-            std::cerr << "C=" << C << std::endl;
-            std::cerr << "V=" << V << std::endl;
-
-            //__________________________________________________________________
-            //
-            // compute initial value
-            //__________________________________________________________________
-            eqs.computePhi(C,t);
-            double gam0 = eqs.Gamma2Value();
-            std::cerr << "gam0=" << gam0 << std::endl;
-
-            vector<double>            dV(N);
-
-            //LOOP:
-            // at this point, Gamma and Phi must be computed
-            std::cerr << std::endl << "Gamma=" << Gamma << std::endl;
-            // compute Phi*Q'
-            tao::mmul_rtrn(PhiQ,Phi,Q);
-            if( !LU<double>::build(PhiQ) )
-            {
-                throw exception("%ssingular composition",fn);
-            }
-
-            // deduce dV = -inv(Phi*Q')*Gamma
-            tao::neg(dV,Gamma);
-            LU<double>::solve(PhiQ,dV);
-
-
-
-
-
-            return;
-
-#if 0
-            //__________________________________________________________________
-            //
-            // initialize C to a validated Cstar and V to zero
-            //__________________________________________________________________
-            vector<double>            dV(N);
-            numeric<double>::function gam(this, & boot::call_F );
-
-            tao::set(C,Cstar);
-            std::cerr << "C0=" << C << std::endl;
-            //eqs.validate(C);
-            eqs.computePhi(C,t);
-            std::cerr << "C1=" << C << std::endl;
-            double gam0 = eqs.Gamma2Value();
-            std::cerr << "gam0=" << gam0 << std::endl;
-
-        LOOP:
-            // at this point, Gamma and Phi must be computed
-            std::cerr << std::endl << "Gamma=" << Gamma << std::endl;
-            // compute Phi*Q'
-            tao::mmul_rtrn(PhiQ,Phi,Q);
-            if( !LU<double>::build(PhiQ) )
-            {
-                throw exception("%ssingular composition",fn);
-            }
-
-            // deduce dV = -inv(Phi*Q')*Gamma
-            tao::neg(dV,Gamma);
-            LU<double>::solve(PhiQ,dV);
-
-            // deduce delta_C = Q'*dV
-            tao::mul_trn(delta_C,Q,dV);
-
-            // prepare optimization
-            tao::set(start_C,C);
-            triplet<double> xx = { 0.0,  1.0, -1 };
-            triplet<double> gg = { gam0, gam(xx.b), -1 }; //std::cerr << "xx=" << xx << std::endl << "gg=" << gg << std::endl;
-            bracket<double>::expand(gam,xx,gg);           //std::cerr << "xx=" << xx << std::endl << "gg=" << gg << std::endl;
-            optimize1D<double>::run(gam,xx,gg,0.0);       //std::cerr << "xx=" << xx << std::endl << "gg=" << gg << std::endl;
-
-            // must be forward
-            const double gam1  = gam(max_of<double>(xx.b,0.0));
-            pLib->display(std::cerr,C);
-            std::cerr << "gam1=" << gam1 << " <-- " << gam0 << std::endl;
-
-            if(gam1<gam0)
-            {
-                eqs.updatePhi(C);
-                gam0 = gam1;
-                goto LOOP;
-            }
-            else
-            {
-                tao::set(C,start_C);
-                // done-->break
-            }
-
-            std::cerr << "C=" << C << std::endl;
-            vector<double> Utmp(Nc);
-            tao::set(Utmp,Lam);
-            tao::mul_sub(Utmp,P,C);
-            std::cerr << "Utmp="<< Utmp << std::endl;
-            svd<double>::truncate(C);
-            pLib->display(std::cerr,C);
+            
+            
+            
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(BootOptimizer);
+        };
 #endif
-
-
-        }
-
-
+        
+        
+        
     }
     
 }
