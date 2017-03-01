@@ -257,7 +257,7 @@ namespace yocto
             tao::setprobe(pEqs->C, start_C, alpha, delta_C);
 
             // clamp the probe
-            pEqs->validate(pEqs->C);
+            //pEqs->validate(pEqs->C);
 
             // compute gamma
             pEqs->updateGamma(pEqs->C);
@@ -318,7 +318,6 @@ namespace yocto
             //
             // prepare global memory
             //__________________________________________________________________
-
             start_C.make(M);
             delta_C.make(M);
             pEqs = &eqs;
@@ -392,7 +391,7 @@ namespace yocto
 
             tao::set(C,Cstar);
             std::cerr << "C0=" << C << std::endl;
-            eqs.validate(C);
+            //eqs.validate(C);
             eqs.computePhi(C,t);
             std::cerr << "C1=" << C << std::endl;
             double gam0 = eqs.Gamma2Value();
@@ -439,6 +438,11 @@ namespace yocto
                 // done-->break
             }
 
+            std::cerr << "C=" << C << std::endl;
+            vector<double> Utmp(Nc);
+            tao::set(Utmp,Lam);
+            tao::mul_sub(Utmp,P,C);
+            std::cerr << "Utmp="<< Utmp << std::endl;
             svd<double>::truncate(C);
             pLib->display(std::cerr,C);
 
