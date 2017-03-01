@@ -82,6 +82,9 @@ namespace yocto
             vector<double>              delta_C;
             equilibria                 *pEqs;
             double                      call_F(double alpha);
+
+
+
         };
 
     }

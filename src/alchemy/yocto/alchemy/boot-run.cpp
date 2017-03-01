@@ -5,6 +5,7 @@
 
 #include "yocto/math/opt/bracket.hpp"
 #include "yocto/math/opt/minimize.hpp"
+#include "yocto/math/opt/cgrad.hpp"
 
 #include "yocto/math/core/adjoint.hpp"
 
@@ -267,6 +268,88 @@ namespace yocto
         }
 
 
+
+        class PositiveFinder
+        {
+        public:
+            const matrix<double> &Q;
+            const array<double>  &Cstar;
+            array<double>        &C;
+            const array<bool>    &active;
+            const array<bool>    &used;
+            array<double>        &beta;
+
+            math::numeric<double>::scalar_field E;
+            math::numeric<double>::vector_field G;
+
+            inline PositiveFinder(const matrix<double> &usrQ,
+                                  const array<double>  &usrCstar,
+                                  array<double>        &usrC,
+                                  const array<bool>    &usrActive,
+                                  const array<bool>    &usrUsed,
+                                  array<double>        &usrBeta) throw() :
+            Q(usrQ),
+            Cstar(usrCstar),
+            C(usrC),
+            active(usrActive),
+            used(usrUsed),
+            beta(usrBeta),
+            E(this, & PositiveFinder::call_E),
+            G(this, & PositiveFinder::call_G)
+            {
+                assert(Cstar.size()==C.size());
+                assert(C.size()==active.size());
+            }
+
+            inline ~PositiveFinder() throw() {}
+
+            inline void move(array<double> &V)
+            {
+                (void) cgrad<double>::optimize(E,G,V,used,0.0,NULL);
+            }
+
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(PositiveFinder);
+            inline double call_E(const array<double> &V) throw()
+            {
+                tao::set(C,Cstar);
+                tao::mul_add_trn(C,Q,V);
+                double ans = 0.0;
+                for(size_t i=C.size();i>0;--i)
+                {
+                    if(active[i])
+                    {
+                        const double Ci = C[i];
+                        if(Ci<0)
+                        {
+                            ans += Ci*Ci;
+                        }
+                    }
+                }
+                return 0.5*ans;
+            }
+
+            inline void call_G(array<double>       &G,
+                               const array<double> &V) throw()
+            {
+                tao::set(C,Cstar);
+                tao::mul_add_trn(C,Q,V);
+                for(size_t i=C.size();i>0;--i)
+                {
+                    beta[i] = 0;
+                    if(active[i])
+                    {
+                        const double Ci = C[i];
+                        if(Ci<0)
+                        {
+                            beta[i] = Ci;
+                        }
+                    }
+                }
+                tao::mul(G,Q,beta);
+            }
+        };
         void boot:: run2( equilibria &eqs, const double t)
         {
             static const char fn[] = "boot.run: ";
@@ -381,7 +464,50 @@ namespace yocto
             std::cerr << "Ustar=" << Ustar << std::endl;
             std::cerr << "Cstar=" << Cstar << std::endl;
 
+            //__________________________________________________________________
+            //
+            // compute initial V by approaching positive values
+            //__________________________________________________________________
+            vector<double> V(N);
 
+            vector<bool>   used(N,true);
+            PositiveFinder pfn(Q,Cstar,C,eqs.active,used,eqs.beta);
+            pfn.move(V);
+            (void) pfn.E(V);
+            std::cerr << "C=" << C << std::endl;
+            std::cerr << "V=" << V << std::endl;
+
+            //__________________________________________________________________
+            //
+            // compute initial value
+            //__________________________________________________________________
+            eqs.computePhi(C,t);
+            double gam0 = eqs.Gamma2Value();
+            std::cerr << "gam0=" << gam0 << std::endl;
+
+            vector<double>            dV(N);
+
+            //LOOP:
+            // at this point, Gamma and Phi must be computed
+            std::cerr << std::endl << "Gamma=" << Gamma << std::endl;
+            // compute Phi*Q'
+            tao::mmul_rtrn(PhiQ,Phi,Q);
+            if( !LU<double>::build(PhiQ) )
+            {
+                throw exception("%ssingular composition",fn);
+            }
+
+            // deduce dV = -inv(Phi*Q')*Gamma
+            tao::neg(dV,Gamma);
+            LU<double>::solve(PhiQ,dV);
+
+
+
+
+
+            return;
+
+#if 0
             //__________________________________________________________________
             //
             // initialize C to a validated Cstar and V to zero
@@ -445,7 +571,7 @@ namespace yocto
             std::cerr << "Utmp="<< Utmp << std::endl;
             svd<double>::truncate(C);
             pLib->display(std::cerr,C);
-
+#endif
 
 
         }
