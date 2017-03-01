@@ -185,7 +185,7 @@ namespace yocto
                     tao::mul_sub(Utemp, P,C);
                     const double rms = tao::RMS(Utemp);
                     std::cerr << "Utemp=" << Utemp << std::endl;
-                    std::cerr << "rms=" << rms << std::endl;
+                    std::cerr << "rms="   << rms << std::endl;
 
                 }
 
