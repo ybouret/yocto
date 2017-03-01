@@ -71,6 +71,9 @@ namespace yocto
             void run( equilibria &eqs, const double t);
 
 
+            void run2( equilibria &eqs, const double t);
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
             const library::pointer      pLib;

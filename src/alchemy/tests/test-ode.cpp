@@ -56,9 +56,9 @@ YOCTO_UNIT_TEST_IMPL(ode)
     loader.electroneutrality();
     loader.conserve("Na+", 0);
     loader.conserve("Cl-", 0);
-    loader.conserve("AH", "A-", 1e-3);
+    loader.conserve("AH", "A-", 1e-4);
 
-    loader.run(*chemsys, 0.0);
+    loader.run2(*chemsys, 0.0);
 
 
 
