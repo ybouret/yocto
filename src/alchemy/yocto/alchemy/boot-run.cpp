@@ -153,7 +153,7 @@ namespace yocto
                     //__________________________________________________________
                     std::cerr << "gam(0)=" << gam(0) << "/" << gam0 << std::endl;
 
-                    triplet<double> xx = { 0, 1.0, -1.0 };
+                    triplet<double> xx = { 0,        1.0,   -1.0 };
                     triplet<double> gg = { gam0, gam(xx.b), -1.0 };
                     bracket<double>::expand(gam,xx,gg);
                     optimize1D<double>::run(gam,xx,gg,0.0);
