@@ -148,14 +148,14 @@ namespace yocto
 
                     //__________________________________________________________
                     //
-                    // optimize to be sure to decrease
+                    // optimize to be sure to decrease the Gamma part...
                     //__________________________________________________________
                     std::cerr << "gam(0)=" << gam(0) << "/" << gam0 << std::endl;
 
                     triplet<double> xx = { 0, 1.0, -1.0 };
-                    triplet<double> gg = { gam0, gam(xx.b), -1.0 }; std::cerr << "xx=" << xx << ", gg=" << gg << std::endl;
-                    bracket<double>::expand(gam,xx,gg);             std::cerr << "xx=" << xx << ", gg=" << gg << std::endl;
-                    optimize1D<double>::run(gam,xx,gg,0.0);         std::cerr << "xx=" << xx << ", gg=" << gg << std::endl;
+                    triplet<double> gg = { gam0, gam(xx.b), -1.0 };
+                    bracket<double>::expand(gam,xx,gg);
+                    optimize1D<double>::run(gam,xx,gg,0.0);
 
                     const double alpha = max_of<double>(xx.b,0.0);
                     const double gam1  = gam(alpha);
@@ -176,16 +176,22 @@ namespace yocto
                     gen_C(Vcurr);
                     std::cerr << "C=" << C << std::endl;
                     svd<double>::truncate(C);
+                    eqs.validate(C);
                     std::cerr << "C=" << C << std::endl;
+
+                    /*
                     eqs.updateGamma(C);
                     std::cerr << "Gamma=" << eqs.Gamma << std::endl;
+                     */
 
                     tao::set(Utemp,Lam);
                     tao::mul_sub(Utemp, P,C);
                     const double rms = tao::RMS(Utemp);
-                    std::cerr << "Utemp=" << Utemp << std::endl;
                     std::cerr << "rms="   << rms   << std::endl;
-
+                    if(rms>numeric<double>::ftol)
+                    {
+                        throw exception("%sunable to solve constraints",fn);
+                    }
                 }
 
 
