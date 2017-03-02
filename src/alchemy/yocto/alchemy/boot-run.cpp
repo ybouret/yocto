@@ -98,9 +98,10 @@ namespace yocto
                     //__________________________________________________________
                     if(!svd<double>::orthonormal(Q,P)) throw exception("%sunable to build orthonormal space",fn);
 
-                    std::cerr << "Q=" << Q << std::endl;
+                    std::cerr << "Q0=" << Q << std::endl;
                     // TODO: truncate Q ?
-
+                    svd<double>::truncate(Q);
+                    std::cerr << "Q=" << Q << std::endl;
 
                     //__________________________________________________________
                     //
@@ -217,6 +218,7 @@ namespace yocto
                     tao::mul_add_trn(C,Q,V);
                 }
 
+                // compute objective function to dectect unvalid concentrations
                 inline double call_E(const array<double> &V) throw()
                 {
                     gen_C(V);
@@ -235,6 +237,7 @@ namespace yocto
                     return 0.5*ans;
                 }
 
+                // compute objective function gradient
                 inline void call_G(array<double>       &G,
                                    const array<double> &V) throw()
                 {
@@ -254,6 +257,7 @@ namespace yocto
                     tao::mul(G,Q,eqs.beta);
                 }
 
+                // compute gamma along the most positive way
                 inline double call_F(double alpha)
                 {
                     tao::setprobe(Vtemp, Vcurr, alpha, dV);

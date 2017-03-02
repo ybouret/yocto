@@ -292,7 +292,7 @@ namespace yocto
         }
         
         template <>
-        size_t svd<real_t>:: truncate( array<real_t> &w )
+        size_t svd<real_t>:: truncate( array<real_t> &w ) throw()
         {
             size_t       ans = 0;
             const size_t n   = w.size();
@@ -313,7 +313,42 @@ namespace yocto
             }
             return ans;
         }
-        
+
+        template <>
+        size_t svd<real_t>:: truncate( matrix<real_t> &A ) throw()
+        {
+            size_t       ans  = 0;
+            const size_t nr   = A.rows;
+            const size_t nc   = A.cols;
+            real_t       Amax = 0;
+
+            for(size_t r=nr;r>0;--r)
+            {
+                const array<real_t> &A_r = A[r];
+                for(size_t c=nc;c>0;--c)
+                {
+                    const real_t tmp  =  Fabs( A_r[c] );
+                    if(tmp>Amax) Amax = tmp;
+                }
+            }
+
+            const real_t tol = Sqrt( real_t(nr)*real_t(nc) ) * Fabs( numeric<real_t>::epsilon * Amax );
+
+            for(size_t r=nr;r>0;--r)
+            {
+                array<real_t> &A_r = A[r];
+                for(size_t c=nc;c>0;--c)
+                {
+                    if( Fabs(A_r[c]) <= tol )
+                    {
+                        A_r[c] = 0;
+                        ++ans;
+                    }
+                }
+            }
+
+            return ans;
+        }
         
         template <>
         size_t svd<real_t>:: inverse( array<real_t> &w )

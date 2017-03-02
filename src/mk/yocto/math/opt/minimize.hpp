@@ -55,6 +55,18 @@ namespace yocto {
                                   triplet<T>                    &f,
                                   T                              xtol);
 
+            //! best effort forward run
+            /**
+             - start from (x.a,f.a) and (x.b,f.b)
+             - bracket 
+             - run using xtol
+             - and assume no coming back, return max_of(x.b,initial_x.a)
+             - f.b is recomputed on the best value
+             */
+            static T forward_run(typename numeric<T>::function &func,
+                                 triplet<T> &x,
+                                 triplet<T> &f,
+                                 T          xtol);
         };
 
     }

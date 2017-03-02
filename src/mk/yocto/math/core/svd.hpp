@@ -44,7 +44,16 @@ namespace yocto
              \return the number of 0 eigenvalues, a.k.a the numeric kernel size.  
              */
             static
-            size_t truncate( array<T> &w );
+            size_t truncate( array<T> &w ) throw();
+
+            //! truncate matrix singular values
+            /**
+             - compute tol = epsilon * sqrt(n*m) * max(|A_ij|)
+             - set A[i][j] to 0 if |A[i][j]| <= tol
+             \return the number of 0...
+             */
+            static
+            size_t truncate( matrix<T> &A) throw();
 
             //! inverse of diagonal values
             /**

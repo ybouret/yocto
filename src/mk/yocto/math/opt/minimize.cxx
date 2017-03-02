@@ -159,11 +159,38 @@ namespace yocto {
             }
             return false;
         }
-        
-        
-        
-        
-        
+
+
+
+
+
     } // math
-    
+
 } //yocto
+
+
+#include "yocto/math/opt/bracket.hpp"
+
+
+namespace yocto
+{
+    namespace math
+    {
+
+        template <>
+        real_t optimize1D<real_t>::forward_run(typename numeric<real_t>::function &func,
+                                               triplet<real_t> &x,
+                                               triplet<real_t> &f,
+                                               real_t          xtol)
+        {
+            assert(x.b>=x.a);
+            const real_t init_x = x.a;
+            bracket<real_t>::expand(func,x,f);
+            optimize1D<real_t>::run(func,x,f,xtol);
+            const real_t alpha = max_of<real_t>(x.b,init_x);
+            x.b = alpha;
+            f.b = func(alpha);
+            return alpha;
+        }
+    }
+}
