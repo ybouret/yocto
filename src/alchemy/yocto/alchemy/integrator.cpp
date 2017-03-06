@@ -14,7 +14,7 @@ namespace yocto
         pEqs(user_eqs),
         normalize(this, &integrator::call_normalize )
         {
-
+            
         }
 
 
@@ -24,13 +24,22 @@ namespace yocto
             pEqs->normalize(y,t);
         }
 
-        void integrator:: project(array<double>       &sigma,
-                                  const array<double> &y,
-                                  const double         t)
+        void integrator:: project(array<double>        &rate,
+                                  const array<double>  &C,
+                                  const double          t)
         {
-            
+            pEqs->project(rate,C,t);
         }
         
-        
+        void integrator::forward(ode_type      &sigma,
+                                 array<double> &y,
+                                 const double   t1,
+                                 const double   t2,
+                                 double        &tscale)
+        {
+            odeint &self = *this;
+            self(sigma, y, t1, t2, tscale, &normalize);
+        }
     }
+
 }

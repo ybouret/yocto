@@ -2,15 +2,45 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/code/rand.hpp"
+#include "yocto/alchemy/integrator.hpp"
 
 using namespace yocto;
 using namespace alchemy;
 
 
-static inline double Kv(const double t)
+namespace
 {
-    return 1e-4*(2.0 + cos(t));
+    static inline double Kv(const double t)
+    {
+        return 1e-4*(2.0 + cos(t));
+    }
+
+
+    class Kinetic
+    {
+    public:
+        Kinetic()
+        {
+        }
+
+        ~Kinetic() throw()
+        {
+        }
+
+        void Sigma( array<double> &dCdt, const array<double> &C, const double t )
+        {
+            const size_t M = C.size();
+            for(size_t i=M;i>0;--i)
+            {
+                dCdt[i] = 0;
+            }
+        }
+
+    private:
+
+    };
 }
+
 
 YOCTO_UNIT_TEST_IMPL(ode)
 {
@@ -59,6 +89,13 @@ YOCTO_UNIT_TEST_IMPL(ode)
     loader.conserve("AH", "A-", 1e-4);
 
     loader.run(*chemsys, 0.0);
+
+    vector<double> C(chemsys->C);
+
+    Kinetic    scheme;
+    integrator chemint(chemsys,1e-7);
+
+    chemint.start(chemlib->size());
 
 
 
