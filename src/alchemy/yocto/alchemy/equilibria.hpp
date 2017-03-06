@@ -74,7 +74,14 @@ namespace yocto
 
             bool balance() throw(); //!< balance current C, internal code
 
+            //! set all negative active value to zero
             void validate(array<double> &C0) const throw();
+
+            //! project rate
+            void project(array<double>       &rate,
+                         const array<double> &C0,
+                         const double t);
+
 
         private:
             math::numeric<double>::function E;

@@ -2,10 +2,13 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/code/rand.hpp"
+#include "yocto/math/core/tao.hpp"
+
 
 using namespace yocto;
 using namespace alchemy;
 
+using namespace math;
 
 YOCTO_UNIT_TEST_IMPL(equilibria)
 {
@@ -87,6 +90,22 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     std::cerr << "C="     << chemsys.C << std::endl;
     std::cerr << "Phi="   << chemsys.Phi << std::endl;
     std::cerr << "Gamma=" << chemsys.Gamma << std::endl;
+
+    vector<double> rate(chemlib->size()+3,0);
+    for(size_t i=chemlib->size();i>0;--i)
+    {
+        rate[i] = alea<double>()-0.5;
+    }
+
+    std::cerr << "rate0=" << rate << std::endl;
+    chemsys.project(rate,C, 0.0);
+    std::cerr << "rate1=" << rate << std::endl;
+
+    tao::set(chemsys.dC,rate);
+    std::cerr << "dC=" << chemsys.dC << std::endl;
+
+    tao::mul(chemsys.xi,chemsys.Phi,chemsys.dC);
+    std::cerr << "xi=" << chemsys.xi << std::endl;
 
 
 
