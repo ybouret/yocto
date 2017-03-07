@@ -12,6 +12,7 @@ namespace yocto
         integrator:: integrator(const equilibria::pointer &user_eqs, const double user_eps) :
         odeint(user_eps),
         pEqs(user_eqs),
+        pLib(pEqs->pLib),
         normalize(this, &integrator::call_normalize )
         {
             
@@ -20,7 +21,7 @@ namespace yocto
 
         void integrator::call_normalize(array<double> &y, const double t)
         {
-            assert(y.size()>=pEqs->pLib->size());
+            assert(y.size()>=pLib->size());
             pEqs->normalize(y,t);
         }
 
@@ -38,6 +39,7 @@ namespace yocto
                                  double        &tscale)
         {
             odeint &self = *this;
+            assert(y.size()>=pLib->size());
             self(sigma, y, t1, t2, tscale, &normalize);
         }
     }

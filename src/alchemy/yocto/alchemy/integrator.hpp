@@ -35,6 +35,7 @@ namespace yocto
                         const array<double>  &C,
                         const double          t);
 
+            
             void forward(ode_type      &sigma,
                          array<double> &y,
                          const double   t1,
@@ -44,7 +45,8 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(integrator);
-            equilibria::pointer pEqs;
+            equilibria::pointer    pEqs;
+            const library::pointer pLib;
             ode_proc            normalize;
 
             void call_normalize(array<double> &y, const double t);

@@ -44,6 +44,7 @@ namespace yocto
             const double & value_of( const string &name, const array<double> &C ) const;
             const double & value_of( const char   *name, const array<double> &C ) const;
 
+            double pH(const array<double> &C) const;
 
         private:
             YOCTO_DISABLE_ASSIGN(library);

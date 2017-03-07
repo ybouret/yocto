@@ -1,6 +1,7 @@
 #include "yocto/alchemy/library.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/code/utils.hpp"
+#include <cmath>
 
 namespace yocto
 {
@@ -192,6 +193,14 @@ namespace yocto
         {
             return C[ index_of(name) ];
         }
+
+        double library:: pH(const array<double> &C) const
+        {
+            const double h = value_of("H+",C);
+            if(h<=0) throw exception("negative [H+]");
+            return -log10(h);
+        }
+
 
     }
 

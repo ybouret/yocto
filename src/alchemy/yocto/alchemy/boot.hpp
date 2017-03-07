@@ -8,34 +8,46 @@ namespace yocto
     namespace alchemy
     {
 
+
+        //______________________________________________________________________
+        //
+        // compute initial composition from constraints and
+        // equilibria
+        //______________________________________________________________________
         class boot
         {
         public:
 
+            //__________________________________________________________________
+            //
             //! component for a constraint
+            //__________________________________________________________________
             class component
             {
             public:
-                const species::pointer sp;
-                double                 weight;
+                typedef set<string,component> database;
+
+                const species::pointer        sp;
+                double                        weight;
 
                 component(const species::pointer &s, const double w) throw();
                 ~component() throw();
                 component(const component &) throw();
                 const string &key() const throw();
 
-                typedef set<string,component> database;
 
             private:
                 YOCTO_DISABLE_ASSIGN(component);
             };
 
+            //__________________________________________________________________
+            //
             //! linear constraint: set of components equal to value
+            //__________________________________________________________________
             class constraint :
             public counted_object,
             public component::database
-            {            void electroneutrality();
-
+            {
             public:
                 typedef arc_ptr<constraint> pointer;
                 const library::pointer      pLib;
@@ -60,9 +72,9 @@ namespace yocto
             virtual ~boot() throw();
 
 
-            void electroneutrality();           //!< electroneutrality
+            void electroneutrality();           //!< apply electroneutrality
             void osmolarity(const double osm);  //!< set osmolarity
-            void conserve(const string &name, const double C);
+            void conserve(const string &name, const double C); //!< conserve species
             void conserve(const string &nameA, const string &nameB, const double C);
 
 
@@ -75,8 +87,6 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
             const library::pointer      pLib;
             vector<constraint::pointer> constraints;
-            
-
 
         };
 
