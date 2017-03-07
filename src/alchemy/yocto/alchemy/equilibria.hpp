@@ -80,7 +80,15 @@ namespace yocto
             //! project rate
             void project(array<double>       &rate,
                          const array<double> &C0,
-                         const double t);
+                         const double         t);
+
+            //! mix two solutions
+            void mix(array<double>       &CC,
+                     const double         weightA,
+                     const array<double> &CA,
+                     const double         weightB,
+                     const array<double> &CB,
+                     const double         t=0);
 
 
         private:

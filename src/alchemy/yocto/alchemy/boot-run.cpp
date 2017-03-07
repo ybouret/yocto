@@ -272,7 +272,7 @@ namespace yocto
         }
 
 
-        void boot:: run( equilibria &eqs, const double t )
+        const array<double> & boot:: run( equilibria &eqs, const double t )
         {
 
             //__________________________________________________________________
@@ -301,14 +301,14 @@ namespace yocto
             {
                 // no constraints
 
-                return;
+                return eqs.C;
             }
 
             if(Nc>=M)
             {
                 // no reactions
 
-                return;
+                return eqs.C;
             }
 
             //__________________________________________________________________
@@ -334,6 +334,7 @@ namespace yocto
             ctx.initialize();
             ctx.process();
 
+            return eqs.C;
         }
 
 

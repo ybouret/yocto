@@ -237,6 +237,10 @@ MACRO(TARGET_LINK_YOCTO tgt)
 				LIST( APPEND ylibs "y-mk" )
 			ENDIF()
 			
+			IF( "alchemy" STREQUAL ${extra} )
+				LIST( APPEND ylibs "y-mk" )
+			ENDIF()
+			
 			IF( "tiff" STREQUAL ${extra} )
 				LIST( APPEND ylibs "y-jpeg" )
 				LIST( APPEND ylibs "y-jbig" )

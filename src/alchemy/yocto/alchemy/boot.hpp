@@ -80,7 +80,8 @@ namespace yocto
 
             friend std::ostream & operator<<(std::ostream &,const boot &);
 
-            void run( equilibria &eqs, const double t);
+            //! compute and return reference to eqs.C
+            const array<double> &run( equilibria &eqs, const double t=0);
 
 
         private:
