@@ -20,7 +20,8 @@ namespace yocto
 
             lua_State * operator*();
 
-
+            inline int  absindex(int idx) { return lua_absindex(L,idx); }
+            inline void arith(int op)     { lua_arith(L,op); }
         private:
             lua_State *L;
             YOCTO_DISABLE_COPY_AND_ASSIGN(State);
