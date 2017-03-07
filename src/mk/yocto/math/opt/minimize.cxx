@@ -178,10 +178,10 @@ namespace yocto
     {
 
         template <>
-        real_t optimize1D<real_t>::forward_run(typename numeric<real_t>::function &func,
-                                               triplet<real_t> &x,
-                                               triplet<real_t> &f,
-                                               real_t          xtol)
+        real_t optimize1D<real_t>::forward_run(numeric<real_t>::function &func,
+                                               triplet<real_t>           &x,
+                                               triplet<real_t>           &f,
+                                               real_t                     xtol)
         {
             assert(x.b>=x.a);
             const real_t init_x = x.a;

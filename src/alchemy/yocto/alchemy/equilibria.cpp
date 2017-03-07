@@ -32,6 +32,7 @@ namespace yocto
         step(),
         g(),
         h(),
+        b(),
         iNu(),
         nuP(),
         gam(),

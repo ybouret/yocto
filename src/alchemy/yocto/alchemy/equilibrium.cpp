@@ -115,7 +115,9 @@ namespace yocto
                                   const double                the_K) :
         name(the_name),
         pLib(the_lib),
-        K( true_equilibrium_constant::create(the_K) )
+        K( true_equilibrium_constant::create(the_K) ),
+        products(),
+        reactants()
         {
 
         }
