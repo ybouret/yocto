@@ -44,7 +44,7 @@ namespace yocto
             return L;
         }
 
-        void DumpStack( lua_State *L ) {
+        void State:: DumpStack() {
             printf("<lua_State top='%d'>\n", lua_gettop(L) );
             for( int i=lua_gettop(L);i>0;--i) {
                 printf("\t%d\t<%s>\n", i, luaL_typename(L,i));
@@ -52,7 +52,7 @@ namespace yocto
             printf("</lua_State>\n");
         }
 
-        void DumpTable( lua_State *L, int t, const char *name ) {
+        void State:: DumpTable( int t, const char *name ) {
             const char *tab = name ? name : "TABLE";
             printf("<%s>\n",tab);
             luaL_checktype( L, t, LUA_TTABLE);

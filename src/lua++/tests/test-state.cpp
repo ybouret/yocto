@@ -7,6 +7,6 @@ using namespace yocto;
 YOCTO_UNIT_TEST_IMPL(state)
 {
     Lua::State L;
-    Lua::DumpStack(*L);
+    L.DumpStack();
 }
 YOCTO_UNIT_TEST_DONE()

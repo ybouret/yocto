@@ -20,14 +20,15 @@ namespace yocto
 
             lua_State * operator*();
 
+            void DumpStack();
+            void DumpTable(int index , const char *name = NULL);
 
         private:
             lua_State *L;
             YOCTO_DISABLE_COPY_AND_ASSIGN(State);
         };
 
-        void DumpStack( lua_State *L );
-        void DumpTable( lua_State *L, int index , const char *name = NULL);
+
     }
 }
 
