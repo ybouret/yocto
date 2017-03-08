@@ -20,6 +20,7 @@ namespace yocto
 
             lua_State * operator*();
 
+#if 0
             inline int  absindex(int idx) throw() { return lua_absindex(L,idx); }
             inline void arith(int op) throw() { lua_arith(L,op); }
             inline void call(int nargs, int nresults) { return lua_call(L,nargs,nresults); }
@@ -85,6 +86,7 @@ namespace yocto
             inline void settable(int index) { lua_settable(L,index); }
             inline void settop(int index) { lua_settop(L,index); }
             inline void setuservalue(int index) { lua_setuservalue(L,index); }
+#endif
             
         private:
             lua_State *L;
