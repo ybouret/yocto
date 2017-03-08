@@ -4,6 +4,7 @@
 #include "yocto/lua/lua.hpp"
 #include "yocto/counted-object.hpp"
 #include "yocto/ptr/arc.hpp"
+#include "yocto/string.hpp"
 
 namespace yocto
 {
@@ -22,6 +23,13 @@ namespace yocto
 
             void DumpStack();
             void DumpTable(int index , const char *name = NULL);
+
+            //! double, int, string
+            template <typename T>
+            T Get(const string &name);
+
+            template <typename T>
+            inline T Get(const char *name) { const string Name(name); return Get<T>(Name); }
 
         private:
             lua_State *L;

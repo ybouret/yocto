@@ -68,6 +68,35 @@ namespace yocto
             printf("</%s>\n", name);
         }
 
-        
+        template <>
+        double State::Get<double>(const string &name)
+        {
+            lua_settop(L,0);
+            lua_getglobal(L,name.c_str());
+            if(!lua_isnumber(L,-1)) throw exception("lua_tonumber failure for '%s'", name.c_str());
+            return double(lua_tonumber(L,-1));
+        }
+
+        template <>
+        int State::Get<int>(const string &name)
+        {
+            lua_settop(L,0);
+            lua_getglobal(L,name.c_str());
+            if(!lua_isinteger(L,-1)) throw exception("lua_tointeger failure for '%s'", name.c_str());
+            return int(lua_tointeger(L,-1));
+        }
+
+
+        template <>
+        string State::Get<string>(const string &name)
+        {
+            lua_settop(L,0);
+            lua_getglobal(L,name.c_str());
+            if(!lua_isstring(L,-1)) throw exception("lua_tostring failure for '%s'", name.c_str());
+            size_t      l = 0;
+            const char *s = lua_tolstring(L, -1, &l);
+            return string(s,l);
+        }
+
     }
 }
