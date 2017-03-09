@@ -28,9 +28,14 @@ namespace yocto
             template <typename T>
             T Get(const string &name);
 
+            //! wrapper
             template <typename T>
             inline T Get(const char *name) { const string Name(name); return Get<T>(Name); }
 
+            void        DoString(const string &code);
+            inline void DoString(const char   *code) { const string Code(code); DoString(Code); }
+            void        DoFile(const string &filename);
+            inline void DoFile(const char   *filename) { const string fn(filename); DoFile(fn); }
         private:
             lua_State *L;
             YOCTO_DISABLE_COPY_AND_ASSIGN(State);

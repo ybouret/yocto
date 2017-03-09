@@ -1,6 +1,7 @@
 #include "yocto/lua/lua-state.hpp"
 #include "yocto/exceptions.hpp"
 #include <cerrno>
+#include <iostream>
 
 namespace yocto
 {
@@ -96,6 +97,25 @@ namespace yocto
             size_t      l = 0;
             const char *s = lua_tolstring(L, -1, &l);
             return string(s,l);
+        }
+
+        void State:: DoString(const string &code)
+        {
+            lua_settop(L,0);
+            //std::cerr << "DoString('" << code << "')" << std::endl;
+            if(luaL_dostring(L,code.c_str()))
+            {
+                throw exception("luaL_dostring: %s", lua_tostring(L,-1) );
+            }
+        }
+
+        void State:: DoFile(const string &filename)
+        {
+            lua_settop(L,0);
+            if(luaL_dofile(L,filename.c_str()))
+            {
+                throw exception("luaL_dofile: %s", lua_tostring(L,-1) );
+            }
         }
 
     }
