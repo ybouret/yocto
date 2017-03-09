@@ -32,6 +32,14 @@ namespace yocto
             template <typename T>
             inline T Get(const char *name) { const string Name(name); return Get<T>(Name); }
 
+            template <typename T>
+            void Push( typename type_traits<T>::parameter_type arg);
+
+            template <typename T>
+            T To(const int idx);
+
+
+
             void        DoString(const string &code);
             inline void DoString(const char   *code) { const string Code(code); DoString(Code); }
             void        DoFile(const string &filename);

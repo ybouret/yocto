@@ -118,5 +118,48 @@ namespace yocto
             }
         }
 
+        template <>
+        void State:: Push<double>(  type_traits<double>::parameter_type arg)
+        {
+            lua_pushnumber(L, lua_Number(arg) );
+        }
+
+        template <>
+        void State:: Push<int>(  type_traits<int>::parameter_type arg)
+        {
+            lua_pushinteger(L, lua_Integer(arg) );
+        }
+
+        template <>
+        void State:: Push<string>(  type_traits<string>::parameter_type arg)
+        {
+            lua_pushlstring(L,arg.c_str(),arg.size());
+        }
+
+
+
+        template <>
+        double State:: To<double>(const int idx)
+        {
+            if( !lua_isnumber(L,idx) ) throw exception("To<double> failure");
+            return double( lua_tonumber(L,idx) );
+        }
+
+        template <>
+        int State:: To<int>(const int idx)
+        {
+            if( !lua_isinteger(L,idx) ) throw exception("To<int> failure");
+            return int( lua_tointeger(L,idx) );
+        }
+
+        template <>
+        string State:: To<string>(const int idx)
+        {
+            if(!lua_isstring(L,idx)) throw exception("To<string> failure");
+            size_t      l = 0;
+            const char *s = lua_tolstring(L, idx, &l);
+            return string(s,l);
+        }
+
     }
 }

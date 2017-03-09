@@ -8,16 +8,47 @@ namespace yocto
 {
     namespace Lua
     {
-        class Function
+        class _Function
         {
         public:
-            Function(const State::Pointer &state, const string &fname);
-            Function(const Function &fn);
+            _Function(const State::Pointer &state, const string &fname);
+            _Function(const _Function &fn);
 
-            virtual ~Function() throw();
+            virtual ~_Function() throw();
 
             State::Pointer vm;
-            const string   name;
+            const string   fn;
+
+        protected:
+            lua_State *fetch();
+
+        private:
+            YOCTO_DISABLE_ASSIGN(_Function);
+        };
+
+        template <typename T>
+        class Function : public _Function
+        {
+        public:
+            YOCTO_ARGUMENTS_DECL_T;
+            inline Function(const State::Pointer &state, const string &fname) :
+            _Function(state,fname) {}
+            inline Function(const Function &other) : _Function(other) {}
+            inline virtual ~Function() throw() {}
+
+
+            //! one parameter function
+            inline T operator()(param_type arg)
+            {
+                lua_State *L = fetch();
+                vm->Push<T>(arg);
+                if(lua_pcall(L, 1, 1, 0))
+                {
+                    throw exception("%s error:'%s'",fn.c_str(),lua_tostring(L, -1));
+                }
+                return vm->To<T>(-1);
+            }
+
 
         private:
             YOCTO_DISABLE_ASSIGN(Function);
