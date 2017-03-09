@@ -36,6 +36,7 @@ namespace yocto
             inline void DoString(const char   *code) { const string Code(code); DoString(Code); }
             void        DoFile(const string &filename);
             inline void DoFile(const char   *filename) { const string fn(filename); DoFile(fn); }
+            
         private:
             lua_State *L;
             YOCTO_DISABLE_COPY_AND_ASSIGN(State);
