@@ -69,6 +69,16 @@ namespace yocto
             printf("</%s>\n", name);
         }
 
+    }
+
+}
+
+namespace yocto
+{
+
+    namespace Lua
+    {
+
         template <>
         double State::Get<double>(const string &name)
         {
@@ -99,10 +109,28 @@ namespace yocto
             return string(s,l);
         }
 
+        template <>
+        bool State:: Get<bool>(const string &name)
+        {
+            lua_settop(L,0);
+            lua_getglobal(L,name.c_str());
+            if(!lua_isboolean(L,-1)) throw exception("lua_toboolean failure for '%s'", name.c_str());
+            return lua_toboolean(L,-1) == 1;
+        }
+
+    }
+
+}
+
+namespace yocto
+{
+
+    namespace Lua
+    {
+
         void State:: DoString(const string &code)
         {
             lua_settop(L,0);
-            //std::cerr << "DoString('" << code << "')" << std::endl;
             if(luaL_dostring(L,code.c_str()))
             {
                 throw exception("luaL_dostring: %s", lua_tostring(L,-1) );
@@ -117,6 +145,16 @@ namespace yocto
                 throw exception("luaL_dofile: %s", lua_tostring(L,-1) );
             }
         }
+
+    }
+
+}
+
+namespace yocto
+{
+
+    namespace Lua
+    {
 
         template <>
         void State:: Push<double>(  type_traits<double>::parameter_type arg)
@@ -136,6 +174,22 @@ namespace yocto
             lua_pushlstring(L,arg.c_str(),arg.size());
         }
 
+        template <>
+        void State:: Push<bool>(  type_traits<bool>::parameter_type arg)
+        {
+            lua_pushboolean(L, arg ? 1 : 0 );
+        }
+
+
+    }
+
+}
+
+namespace yocto
+{
+
+    namespace Lua
+    {
 
 
         template <>
@@ -163,3 +217,32 @@ namespace yocto
 
     }
 }
+
+
+namespace yocto
+{
+
+    namespace Lua
+    {
+
+        size_t State:: GetTableLength()
+        {
+            assert( lua_istable(L,-1) );
+            size_t count = 0;
+            lua_pushnil(L);  /* first key */
+            while (lua_next(L,-2) != 0) {
+                /* uses 'key' (at index -2) and 'value' (at index -1) */
+
+                printf("%s - %s\n",
+                       lua_typename(L, lua_type(L, -2)),
+                       lua_typename(L, lua_type(L, -1)));
+                /* removes 'value'; keeps 'key' for next iteration */
+                ++count;
+                lua_pop(L, 1);
+            }
+            return count;
+        }
+    }
+
+}
+

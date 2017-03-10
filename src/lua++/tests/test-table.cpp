@@ -10,12 +10,19 @@ YOCTO_UNIT_TEST_IMPL(table)
     lua_State *L = *vm;
 
     lua_newtable(L);
-    lua_setglobal(L,"toto");
-    lua_getglobal(L,"toto");
     vm.SetField<double>("a",1.0);
     vm.SetField<string>("b","hello");
+    vm.SetEntry<int>(5,4);
+    assert(lua_istable(L,-1));
+    lua_setglobal(L,"toto");
     vm.DoString("for k in pairs(toto) do print( \"toto[\" .. k .. \"]=\" .. toto[k] ) end");
-    
+
+    lua_settop(L,0);
+    lua_getglobal(L,"toto");
+    assert(lua_istable(L,-1));
+    const size_t n = vm.GetTableLength();
+    std::cerr << "#=" << n << std::endl;
+
 
 
 

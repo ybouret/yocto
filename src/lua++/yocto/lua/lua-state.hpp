@@ -24,7 +24,7 @@ namespace yocto
             void DumpStack();
             void DumpTable(int index , const char *name = NULL);
 
-            //! double, int, string
+            //! double, int, string, bool
             template <typename T>
             T Get(const string &name);
 
@@ -40,13 +40,47 @@ namespace yocto
 
             //! assuming a table on the stack
             template <typename T>
-            inline void SetField(const string &name,typename type_traits<T>::parameter_type value)
+            inline void SetField(const string &name, typename type_traits<T>::parameter_type value)
             {
                 assert(lua_istable(L,-1));
                 (void)lua_pushlstring(L,name.c_str(),name.length());
                 Push<T>(value);
                 lua_rawset(L, -3);
             }
+
+            //! wrapper
+            template <typename T>
+            inline void SetField(const char *name,typename type_traits<T>::parameter_type value)
+            {
+                const string Name(name);
+                SetField<T>(Name,value);
+            }
+
+            //! assuming a table (as array) is on the stack
+            template <typename T>
+            inline void SetEntry(const int idx,typename type_traits<T>::parameter_type value)
+            {
+                assert(lua_istable(L,-1));
+                Push<T>(value);
+                lua_rawseti(L,-2,idx);
+            }
+
+
+            //! assuming a table (as array) is on the stack
+            template <typename T>
+            inline T GetEntry(const int idx)
+            {
+                assert(lua_istable(L,-1));
+                lua_rawgeti(L,-1,idx);
+                typename type_traits<T>::const_type ans( To<T>(-1) );
+                lua_pop(L,1);
+                return ans;
+            }
+
+            //! returning the number of items in a table on the stack
+            size_t GetTableLength();
+
+
 
 
             void        DoString(const string &code);
