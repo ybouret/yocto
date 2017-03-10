@@ -6,7 +6,13 @@ species =
     { "Ac-",  -1 }
 };
 
+function Kv(t)
+return 10^(-4.8)*(1.0+0.01*math.cos(t))
+end
+
 eqs =
 {
-    { "water", 1e-14 }
+    { "water", 1e-14 },
+    { "acetic", "Kv" },
+    { "acid", 1e-4 }
 };

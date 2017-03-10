@@ -13,14 +13,14 @@ namespace yocto
         {
             typedef functor<void,TL2(Lua::State&,species&)> species_callback;
 
-            static void load(Lua::State   &vm,
-                             const string &libName,
-                             library      &lib,
-                             species_callback *cb = 0);
+            static void load(Lua::State::Pointer   &vm,
+                             const string          &libName,
+                             library               &lib,
+                             species_callback      *cb = 0);
 
-            static void load(Lua::State   &vm,
-                             const string &eqsName,
-                             equilibria   &eqs
+            static void load(Lua::State::Pointer &vm,
+                             const string        &eqsName,
+                             equilibria          &eqs
                              );
 
         };
