@@ -68,12 +68,12 @@ namespace yocto
             while (vm.next(-2) != 0) {
                 /* uses 'key' (at index -2) and 'value' (at index -1) */
 #if 0
-                 printf("%s - %s\n",
-                        vm.type_name_at(-2),
-                        vm.type_name_at(-1)
-                 //lua_typename(*vm, lua_type(*vm, -2)),
-                 //lua_typename(*vm, lua_type(*vm, -1))
-                        );
+                printf("%s - %s\n",
+                       vm.type_name_at(-2),
+                       vm.type_name_at(-1)
+                       //lua_typename(*vm, lua_type(*vm, -2)),
+                       //lua_typename(*vm, lua_type(*vm, -1))
+                       );
 #endif
                 ++count;
                 if(!vm.istable(-1))
@@ -91,4 +91,29 @@ namespace yocto
     }
 
 }
+
+namespace yocto
+{
+    namespace alchemy
+    {
+        void __lua:: load(Lua::State   &vm,
+                          const string &eqsName,
+                          equilibria   &eqs)
+        {
+            const char *name = eqsName.c_str();
+            vm.settop(0);
+            vm.getglobal(name);
+            if(!vm.istable(-1))
+            {
+                throw exception("'%s' is not a lua table", name);
+            }
+            const size_t n = vm.GetTableLength();
+            std::cerr << "Parsing " << n << " equilibria from " << name << std::endl;
+
+        }
+        
+    }
+}
+
+
 

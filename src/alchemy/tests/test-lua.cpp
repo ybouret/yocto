@@ -21,6 +21,11 @@ YOCTO_UNIT_TEST_IMPL(lua)
 
     __lua::load(vm, "species", *pLib);
     pLib->display(std::cerr);
+
+    equilibria::pointer pEqs( new equilibria(pLib) );
+
+    __lua::load(vm,"eqs",*pEqs);
+    
 }
 YOCTO_UNIT_TEST_DONE()
 
