@@ -6,6 +6,9 @@ TARGET_LINK_YOCTO( test-lua++ lua++ )
 
 ENABLE_TESTING()
 ADD_TEST(State test-lua++ state)
+ADD_TEST(Funcs test-lua++ funcs)
+ADD_TEST(Table test-lua++ table)
+
 #ADD_TEST(vec3    test-lua++ require "${HERE}/vec3.lua" )
 #ADD_TEST(array   test-lua++ require "${HERE}/array.lua")
 

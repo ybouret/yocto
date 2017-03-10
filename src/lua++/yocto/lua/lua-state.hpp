@@ -38,6 +38,15 @@ namespace yocto
             template <typename T>
             T To(const int idx);
 
+            //! assuming a table on the stack
+            template <typename T>
+            inline void SetField(const string &name,typename type_traits<T>::parameter_type value)
+            {
+                assert(lua_istable(L,-1));
+                (void)lua_pushlstring(L,name.c_str(),name.length());
+                Push<T>(value);
+                lua_rawset(L, -3);
+            }
 
 
             void        DoString(const string &code);
