@@ -21,6 +21,7 @@ YOCTO_UNIT_TEST_IMPL(table)
     lua_getglobal(L,"toto");
     assert(lua_istable(L,-1));
     const size_t n = vm.GetTableLength();
+    assert(lua_istable(L,-1));
     std::cerr << "#=" << n << std::endl;
 
 
