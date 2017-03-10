@@ -50,6 +50,20 @@ namespace yocto
                 return vm->To<T>(-1);
             }
 
+            //! two parameters function
+            inline T operator()(param_type arg1, param_type arg2)
+            {
+                lua_State *L = fetch();
+                vm->Push<T>(arg1);
+                vm->Push<T>(arg2);
+                if(lua_pcall(L, 2, 1, 0))
+                {
+                    throw exception("%s error:'%s'",fn.c_str(),lua_tostring(L, -1));
+                }
+                return vm->To<T>(-1);
+            }
+
+
 
         private:
             YOCTO_DISABLE_ASSIGN(Function);
