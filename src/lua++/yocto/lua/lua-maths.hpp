@@ -3,6 +3,7 @@
 
 #include "yocto/lua/lua-state.hpp"
 #include "yocto/math/types.hpp"
+#include "yocto/exception.hpp"
 
 namespace yocto
 {
