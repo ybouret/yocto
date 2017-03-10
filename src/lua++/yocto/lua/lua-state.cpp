@@ -232,10 +232,11 @@ namespace yocto
             lua_pushnil(L);  /* first key */
             while (lua_next(L,-2) != 0) {
                 /* uses 'key' (at index -2) and 'value' (at index -1) */
-
+                /*
                 printf("%s - %s\n",
                        lua_typename(L, lua_type(L, -2)),
                        lua_typename(L, lua_type(L, -1)));
+                 */
                 /* removes 'value'; keeps 'key' for next iteration */
                 ++count;
                 lua_pop(L, 1);
