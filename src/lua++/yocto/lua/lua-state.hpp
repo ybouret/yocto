@@ -166,7 +166,10 @@ namespace yocto
             inline const char *tostring(int index)  { return lua_tostring(L,index); }
             inline double      tonumber(int index)  { return lua_tonumber(L,index); }
             inline int         type(int index) { return lua_type(L,index); }
-            
+            inline const char*_typename(int tp) { return lua_typename(L,tp); }
+
+            inline const char *type_name_at(int index) { return lua_typename(L,lua_type(L,index)); }
+
         };
 
     }

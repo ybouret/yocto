@@ -20,7 +20,7 @@ YOCTO_UNIT_TEST_IMPL(lua)
     }
 
     __lua::load(vm, "species", *pLib);
-    
+    pLib->display(std::cerr);
 }
 YOCTO_UNIT_TEST_DONE()
 

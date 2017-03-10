@@ -83,9 +83,15 @@ namespace yocto
             prolog(os);
             for(const_iterator i = begin(); i != end(); ++i)
             {
-                std::cerr << "| ";
-                std::cerr << (*i)->name;
-                std::cerr << std::endl;
+                os << "| ";
+                os << (*i)->name;
+                for(size_t k=(*i)->name.size();k<=max_name_length;++k)
+                {
+                    os << ' ';
+                }
+                os<< ':' << ' ';
+                os << (*i)->z;
+                os << std::endl;
             }
             epilog(os);
         }
