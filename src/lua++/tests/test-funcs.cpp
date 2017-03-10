@@ -1,10 +1,10 @@
-#include "yocto/lua/lua-maths.hpp"
+#include "yocto/lua/lua-funcs.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
 
 
-YOCTO_UNIT_TEST_IMPL(func)
+YOCTO_UNIT_TEST_IMPL(funcs)
 {
     Lua::State::Pointer L( new Lua::State() );
     L->DumpStack();

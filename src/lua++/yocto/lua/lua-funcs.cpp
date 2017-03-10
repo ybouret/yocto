@@ -1,4 +1,4 @@
-#include "yocto/lua/lua-maths.hpp"
+#include "yocto/lua/lua-funcs.hpp"
 
 namespace yocto
 {

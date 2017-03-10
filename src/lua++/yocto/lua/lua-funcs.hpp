@@ -1,5 +1,5 @@
-#ifndef YOCTO_LUA_MATHS_INCLUDED
-#define YOCTO_LUA_MATHS_INCLUDED 1
+#ifndef YOCTO_LUA_FUNCS_INCLUDED
+#define YOCTO_LUA_FUNCS_INCLUDED 1
 
 #include "yocto/lua/lua-state.hpp"
 #include "yocto/math/types.hpp"
