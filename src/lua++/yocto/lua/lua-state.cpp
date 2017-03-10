@@ -1,7 +1,8 @@
 #include "yocto/lua/lua-state.hpp"
 #include "yocto/exceptions.hpp"
 #include <cerrno>
-#include <iostream>
+//#include <iostream>
+#include <cstdlib>
 
 namespace yocto
 {
