@@ -28,6 +28,9 @@ YOCTO_UNIT_TEST_IMPL(lua)
 
     pEqs->compile();
 
+    boot loader(pLib);
+    __lua::load(vm, "sol", loader);
+
 }
 YOCTO_UNIT_TEST_DONE()
 

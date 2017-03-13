@@ -121,7 +121,6 @@ namespace yocto
                         const int            item)
         {
             assert(vm->istable(-1));
-            std::cerr << "Adding Items to '" << eq.name << "'" << std::endl;
             vm->pushnil();
 
             //__________________________________________________________________
@@ -140,7 +139,6 @@ namespace yocto
             const int nu = vm->tointeger(-1);
             if(!nu) throw exception("%s, item#%d: coefficient is ZERO!", eq.name.c_str(),item);
             vm->pop(1);
-            std::cerr << "nu=" << nu << std::endl;
 
 
             if(!vm->next(-2))
@@ -158,6 +156,8 @@ namespace yocto
             {
                 throw exception("%s, item#%d: unexpected extra data", eq.name.c_str(),item);
             }
+
+            std::cerr << "nu=" << nu << " for " << id << std::endl;
 
             eq.add(id,nu);
 
@@ -293,17 +293,39 @@ namespace yocto
                     throw exception("%s: entry #%d is not a table", name, count);
                 }
                 __add_equilibria(vm,name,eqs, count);
-
+                
                 /* removes 'value'; keeps 'key' for next iteration */
                 vm->pop(1);
             }
-
+            
             std::cerr << eqs << std::endl;
-
+            
         }
         
     }
 }
 
 
+namespace yocto
+{
+    namespace alchemy
+    {
+        
+        void __lua:: load(Lua::State::Pointer &vm,
+                          const string        &bootName,
+                          boot                &loader)
+        {
+            const char *name = bootName.c_str();
+            vm->settop(0);
+            vm->getglobal(name);
+            if(!vm->istable(-1))
+            {
+                throw exception("'%s' is not a lua table", name);
+            }
+            const size_t n = vm->GetTableLength();
+            std::cerr << "Parsing " << n << " constraints from " << name << std::endl;
+
+        }
+    }
+}
 
