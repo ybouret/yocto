@@ -25,7 +25,9 @@ YOCTO_UNIT_TEST_IMPL(lua)
     equilibria::pointer pEqs( new equilibria(pLib) );
 
     __lua::load(vm,"eqs",*pEqs);
-    
+
+    pEqs->compile();
+
 }
 YOCTO_UNIT_TEST_DONE()
 

@@ -134,6 +134,8 @@ namespace yocto
                     for(iterator it=begin();i<=N;++i,++it)
                     {
                         const equilibrium &eq = **it;
+                        int                sum_abs_nu = 0;
+                        int                sum_nu_z   = 0;
                         for(const actor *node = eq.get_products().head;node;node=node->next)
                         {
                             const size_t j  = node->id;
@@ -143,6 +145,8 @@ namespace yocto
                             NuT[j][i] = nu;
                             active[j] = true;
                             nuP[i] += nu;
+                            sum_abs_nu += nu;
+                            sum_nu_z += nu * node->sp->z;
                         }
                         for(const actor *node = eq.get_reactants().head;node;node=node->next)
                         {
@@ -152,7 +156,11 @@ namespace yocto
                             iNu[i][j] = nu;
                             NuT[j][i] = nu;
                             active[j] = true;
+                            sum_abs_nu -= nu;
+                            sum_nu_z += nu * node->sp->z;
                         }
+                        if(sum_abs_nu<=0) throw exception("%s: no matter is transformed!", eq.name.c_str());
+                        if(sum_nu_z  !=0) throw exception("%s: charge is created!",        eq.name.c_str());
                     }
 
                     tao::mmul(Nu2, NuT, Nu);
