@@ -74,6 +74,7 @@ namespace yocto
 
             void electroneutrality();           //!< apply electroneutrality
             void osmolarity(const double osm);  //!< set osmolarity
+            void ionic_strength(const double I); //!< set ionic_strength
             void conserve(const string &name, const double C); //!< conserve species
             void conserve(const string &nameA, const string &nameB, const double C);
 

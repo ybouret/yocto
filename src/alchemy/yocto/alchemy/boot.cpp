@@ -151,6 +151,18 @@ namespace yocto
 
         }
 
+        
+        void boot:: ionic_strength(const double I)
+        {
+            constraint::pointer cc( new constraint(pLib,I) );
+            constraints.push_back(cc);
+            
+            for(library::const_iterator it = pLib->begin(); it != pLib->end(); ++it )
+            {
+                const species::pointer &sp = *it;
+                cc->add(sp->name,0.5*double(sp->z*sp->z));
+            }
+        }
 
         void boot:: conserve(const string &name, const double C)
         {

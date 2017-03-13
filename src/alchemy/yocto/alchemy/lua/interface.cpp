@@ -321,6 +321,55 @@ namespace yocto
             const string label = vm->tostring(-1);
             vm->pop(1);
             
+            if( "E/N" == label )
+            {
+                std::cerr << "Electroneutrality" << std::endl;
+                loader.electroneutrality();
+                goto DISCARD;
+            }
+            
+            
+            if( "OSM" == label )
+            {
+                std::cerr << "Enforcing osmolarity" << std::endl;
+                if(!vm->next(-2))
+                {
+                    throw exception("%s, constraint#%d: missing osmolarity value", name, count);
+                }
+                if(!vm->isnumber(-1))
+                {
+                    throw exception("%s, constraint#%d: osmolarity value is not a number", name, count);
+                }
+                const double osm = vm->tonumber(-1);
+                std::cerr << "\tto OSM=" << osm << std::endl;
+                loader.osmolarity(osm);
+                vm->pop(1);
+                goto DISCARD;
+            }
+            
+            if( "I" == label )
+            {
+                std::cerr << "Enforcing ionic strength" << std::endl;
+                if(!vm->next(-2))
+                {
+                    throw exception("%s, constraint#%d: missing ionic strength value", name, count);
+                }
+                if(!vm->isnumber(-1))
+                {
+                    throw exception("%s, constraint#%d: ionic strength value is not a number", name, count);
+                }
+                const double I = vm->tonumber(-1);
+                std::cerr << "\tto I=" << I << std::endl;
+                loader.ionic_strength(I);
+                vm->pop(1);
+                goto DISCARD;
+            }
+
+            
+            throw exception("%s, constraint#%d: unknown specific constraint '%s'", name, count, label.c_str());
+            
+            // discard remaining items
+        DISCARD:
             while(vm->next(-2))
             {
                 
