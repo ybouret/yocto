@@ -47,7 +47,7 @@ namespace yocto
                 {
                     throw exception("%s error:'%s'",fn.c_str(),lua_tostring(L, -1));
                 }
-                return vm->To<T>(-1);
+                return __return();
             }
 
             //! two parameters function
@@ -60,13 +60,19 @@ namespace yocto
                 {
                     throw exception("%s error:'%s'",fn.c_str(),lua_tostring(L, -1));
                 }
-                return vm->To<T>(-1);
+                return __return();
             }
 
 
 
         private:
             YOCTO_DISABLE_ASSIGN(Function);
+            inline const_type __return()
+            {
+                const_type ans = vm->To<T>(-1);
+                vm->pop(1);
+                return ans;
+            }
         };
     }
 

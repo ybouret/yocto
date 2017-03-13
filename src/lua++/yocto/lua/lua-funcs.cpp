@@ -23,7 +23,7 @@ namespace yocto
         lua_State *_Function:: fetch()
         {
             lua_State *L = **vm;
-            lua_settop(L,0);
+            //lua_settop(L,0);
             lua_getglobal(L,fn.c_str());
             return L;
         }

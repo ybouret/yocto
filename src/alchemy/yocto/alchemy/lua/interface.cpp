@@ -13,6 +13,11 @@ namespace yocto
         {
             assert(vm.istable(-1));
             vm.pushnil();
+
+            //__________________________________________________________________
+            //
+            // Get the name of the species
+            //__________________________________________________________________
             if(!vm.next(-2))
             {
                 throw exception("%s#%d: missing species name",libname,count);
@@ -22,6 +27,10 @@ namespace yocto
             vm.pop(1);
 
 
+            //__________________________________________________________________
+            //
+            // Get the charge of the species
+            //__________________________________________________________________
             if(!vm.next(-2))
             {
                 throw exception("%s#%d: missing species charge",libname,count);
@@ -30,8 +39,16 @@ namespace yocto
             std::cerr << "z   = " << sp_z << std::endl;
             vm.pop(1);
 
+            //__________________________________________________________________
+            //
+            // create it
+            //__________________________________________________________________
             species &sp = lib.add(sp_name,sp_z);
 
+            //__________________________________________________________________
+            //
+            // callback on other items
+            //__________________________________________________________________
             while(vm.next(-2))
             {
                 if(cb)
@@ -60,7 +77,10 @@ namespace yocto
             const size_t n = vm->GetTableLength();
             std::cerr << "Parsing " << n << " species from " << name << std::endl;
 
+            //__________________________________________________________________
+            //
             // iterating over each species
+            //__________________________________________________________________
             vm->pushnil();  /* first key */
             int count = 0;
             while (vm->next(-2) != 0) {
@@ -103,8 +123,12 @@ namespace yocto
         {
             assert(vm->istable(-1));
 
-            // eq name
             vm->pushnil();
+            //__________________________________________________________________
+            //
+            // equilibrium name
+            //__________________________________________________________________
+
             if(!vm->next(-2))
             {
                 throw exception("%s#%d: missing equilibrium name",eqsName,count);
@@ -113,7 +137,10 @@ namespace yocto
             std::cerr << "name= " << eq_name << std::endl;
             vm->pop(1);
 
+            //__________________________________________________________________
+            //
             // eq constant
+            //__________________________________________________________________
             if(!vm->next(-2))
             {
                 throw exception("%s#%d: missing equilibrium constant",eqsName,count);
@@ -121,12 +148,20 @@ namespace yocto
 
             bool has_constant = false;
 
+            //__________________________________________________________________
+            //
+            // is a number, then it's a real constant
+            //__________________________________________________________________
             if( !has_constant && vm->isnumber(-1) )
             {
                 (void)eqs.add(eq_name, vm->tonumber(-1));
                 has_constant = true;
             }
 
+            //__________________________________________________________________
+            //
+            // time dependant constant
+            //__________________________________________________________________
             if( !has_constant && vm->isstring(-1) )
             {
                 const string fn = vm->tostring(-1);
@@ -143,18 +178,27 @@ namespace yocto
 
             vm->pop(1);
 
-            // will parse eq
-            // fetch eq
+            //__________________________________________________________________
+            //
+            // will parse equilibrium topologie
+            //__________________________________________________________________
+
+            // fetch the create equilibrium
             equilibrium::pointer *ppEq = eqs.search(eq_name);
             if(!ppEq) throw exception("unexpected missing %s in equilibria!", eq_name.c_str());
             equilibrium &eq = **ppEq;
             std::cerr << "building " << eq.name << std::endl;
+            std::cerr << "K(0)=    " << eq.K(0) << std::endl;
 
 
-            // discard end of table
+            //__________________________________________________________________
+            //
+            // parse nu/species pairs
+            //__________________________________________________________________
+
             while(vm->next(-2))
             {
-
+                
                 vm->pop(1);
             }
 
