@@ -180,6 +180,13 @@ namespace yocto
             constraints.push_back(cc);
         }
 
+        boot::constraint & boot::create(const double value)
+        {
+            constraint::pointer cc( new constraint(pLib,value) );
+            constraints.push_back(cc);
+            return *cc;
+        }
+
 
         std::ostream & operator<<(std::ostream &os,const boot &b)
         {

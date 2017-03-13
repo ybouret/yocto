@@ -78,6 +78,7 @@ namespace yocto
             void conserve(const string &name, const double C); //!< conserve species
             void conserve(const string &nameA, const string &nameB, const double C);
 
+            constraint & create(const double value);
 
             friend std::ostream & operator<<(std::ostream &,const boot &);
 

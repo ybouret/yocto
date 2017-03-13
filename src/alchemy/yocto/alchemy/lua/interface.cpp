@@ -293,15 +293,15 @@ namespace yocto
                     throw exception("%s: entry #%d is not a table", name, count);
                 }
                 __add_equilibria(vm,name,eqs, count);
-                
+
                 /* removes 'value'; keeps 'key' for next iteration */
                 vm->pop(1);
             }
-            
+
             std::cerr << eqs << std::endl;
-            
+
         }
-        
+
     }
 }
 
@@ -320,15 +320,15 @@ namespace yocto
             assert(vm->isstring(-1));
             const string label = vm->tostring(-1);
             vm->pop(1);
-            
+
             if( "E/N" == label )
             {
                 std::cerr << "Electroneutrality" << std::endl;
                 loader.electroneutrality();
                 goto DISCARD;
             }
-            
-            
+
+
             if( "OSM" == label )
             {
                 std::cerr << "Enforcing osmolarity" << std::endl;
@@ -346,7 +346,7 @@ namespace yocto
                 vm->pop(1);
                 goto DISCARD;
             }
-            
+
             if( "I" == label )
             {
                 std::cerr << "Enforcing ionic strength" << std::endl;
@@ -365,35 +365,48 @@ namespace yocto
                 goto DISCARD;
             }
 
-            
+
             throw exception("%s, constraint#%d: unknown specific constraint '%s'", name, count, label.c_str());
-            
+
             // discard remaining items
         DISCARD:
             while(vm->next(-2))
             {
-                
+
                 vm->pop(1);
             }
+        }
+
+        static inline
+        void __add_component(Lua::State::Pointer &vm,
+                             const char          *name,
+                             const int            count,
+                             boot::constraint    &cc)
+        {
+
         }
 
 
         static inline
         void __add_generic_constraint(Lua::State::Pointer &vm,
-                                       const char          *name,
-                                       boot                &loader,
-                                       const int            count)
+                                      const char          *name,
+                                      boot                &loader,
+                                      const int            count)
         {
             assert(vm->isnumber(-1));
 
             const double value = vm->tonumber(-1);
             vm->pop(1);
             std::cerr << "\t\tvalue=" << value << std::endl;
+            boot::constraint &cc = loader.create(value);
 
             // then parse coeff/species
+            int item = 0;
             while(vm->next(-2))
             {
-
+                ++item;
+                std::cerr << "adding item#" << item << std::endl;
+                __add_component(vm, name, count,cc);
                 vm->pop(1);
             }
 
@@ -413,20 +426,20 @@ namespace yocto
                 throw exception("%s, constraint#%d is empty",name,count);
             }
 
-            
+
             if( LUA_TSTRING == vm->type(-1) )
             {
                 __add_specific_constraint(vm,name,loader,count);
                 return;
             }
-            
-            
+
+
             if(vm->isnumber(-1))
             {
                 __add_generic_constraint(vm,name,loader,count);
                 return;
             }
-            
+
             throw exception("%s, constraint #%d must start with string or number",name,count);
 
 
@@ -447,7 +460,7 @@ namespace yocto
             }
             const size_t n = vm->GetTableLength();
             std::cerr << "Parsing " << n << " constraints from " << name << std::endl;
-
+            
             // iterating over each equilibrium
             vm->pushnil();  /* first key */
             int count = 0;
@@ -461,8 +474,8 @@ namespace yocto
                 __add_constraint(vm,name,loader,count);
                 vm->pop(1);
             }
-
-
+            
+            
         }
     }
 }
