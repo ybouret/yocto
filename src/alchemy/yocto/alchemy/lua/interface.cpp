@@ -116,6 +116,55 @@ namespace yocto
     {
 
         static inline
+        void __add_item(Lua::State::Pointer &vm,
+                        equilibrium         &eq,
+                        const int            item)
+        {
+            assert(vm->istable(-1));
+            std::cerr << "Adding Items to '" << eq.name << "'" << std::endl;
+            vm->pushnil();
+
+            //__________________________________________________________________
+            //
+            // Getting nu
+            //__________________________________________________________________
+            if(!vm->next(-2))
+            {
+                throw exception("%s, item#%d: missing coefficient", eq.name.c_str(),item);
+
+            }
+            if(!vm->isinteger(-1))
+            {
+                throw exception("%s, item#%d: coefficient is not an integer", eq.name.c_str(),item);
+            }
+            const int nu = vm->tointeger(-1);
+            if(!nu) throw exception("%s, item#%d: coefficient is ZERO!", eq.name.c_str(),item);
+            vm->pop(1);
+            std::cerr << "nu=" << nu << std::endl;
+
+
+            if(!vm->next(-2))
+            {
+                throw exception("%s, item#%d: missing species name", eq.name.c_str(),item);
+            }
+            if(!vm->isstring(-1))
+            {
+                throw exception("%s, itemd%d: species name is not a string",eq.name.c_str(),item);
+            }
+            const string id = vm->tostring(-1);
+            vm->pop(1);
+
+            if(vm->next(-2))
+            {
+                throw exception("%s, item#%d: unexpected extra data", eq.name.c_str(),item);
+            }
+
+            eq.add(id,nu);
+
+        }
+
+
+        static inline
         void __add_equilibria(Lua::State::Pointer &vm,
                               const char          *eqsName,
                               equilibria          &eqs,
@@ -195,10 +244,15 @@ namespace yocto
             //
             // parse nu/species pairs
             //__________________________________________________________________
-
+            int item = 0;
             while(vm->next(-2))
             {
-                
+                ++item;
+                if( !vm->istable(-1) )
+                {
+                    throw exception("%s: item#%d is not a table",eq_name.c_str(),item);
+                }
+                __add_item(vm,eq,item);
                 vm->pop(1);
             }
 

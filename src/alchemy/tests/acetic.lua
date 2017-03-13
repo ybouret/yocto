@@ -12,7 +12,7 @@ end
 
 eqs =
 {
-    { "water", 1e-14 , { 1, "H+" } },
+    { "water", 1e-14 , { 1, "H+"}, {1, "HO-"} },
     { "acetic", "Kv" },
     { "acid", 1e-4 }
 };
