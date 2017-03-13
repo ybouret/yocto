@@ -317,7 +317,15 @@ namespace yocto
                                        boot                &loader,
                                        const int            count)
         {
-
+            assert(vm->isstring(-1));
+            const string label = vm->tostring(-1);
+            vm->pop(1);
+            
+            while(vm->next(-2))
+            {
+                
+                vm->pop(1);
+            }
         }
 
 
@@ -356,18 +364,20 @@ namespace yocto
                 throw exception("%s, constraint#%d is empty",name,count);
             }
 
-            if(vm->isstring(-1))
+            
+            if( LUA_TSTRING == vm->type(-1) )
             {
                 __add_specific_constraint(vm,name,loader,count);
                 return;
             }
-
+            
+            
             if(vm->isnumber(-1))
             {
                 __add_generic_constraint(vm,name,loader,count);
                 return;
             }
-
+            
             throw exception("%s, constraint #%d must start with string or number",name,count);
 
 
