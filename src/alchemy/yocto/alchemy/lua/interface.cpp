@@ -310,7 +310,71 @@ namespace yocto
 {
     namespace alchemy
     {
-        
+
+        static inline
+        void __add_specific_constraint(Lua::State::Pointer &vm,
+                                       const char          *name,
+                                       boot                &loader,
+                                       const int            count)
+        {
+
+        }
+
+
+        static inline
+        void __add_generic_constraint(Lua::State::Pointer &vm,
+                                       const char          *name,
+                                       boot                &loader,
+                                       const int            count)
+        {
+            assert(vm->isnumber(-1));
+
+            const double value = vm->tonumber(-1);
+            vm->pop(1);
+            std::cerr << "\t\tvalue=" << value << std::endl;
+
+            // then parse coeff/species
+            while(vm->next(-2))
+            {
+
+                vm->pop(1);
+            }
+
+        }
+
+        void __add_constraint(Lua::State::Pointer &vm,
+                              const char          *name,
+                              boot                &loader,
+                              const int            count)
+        {
+            assert(vm->istable(-1));
+            std::cerr << "\tconstraint #" << count << std::endl;
+
+            vm->pushnil();
+            if(!vm->next(-2))
+            {
+                throw exception("%s, constraint#%d is empty",name,count);
+            }
+
+            if(vm->isstring(-1))
+            {
+                __add_specific_constraint(vm,name,loader,count);
+                return;
+            }
+
+            if(vm->isnumber(-1))
+            {
+                __add_generic_constraint(vm,name,loader,count);
+                return;
+            }
+
+            throw exception("%s, constraint #%d must start with string or number",name,count);
+
+
+
+
+        }
+
         void __lua:: load(Lua::State::Pointer &vm,
                           const string        &bootName,
                           boot                &loader)
@@ -324,6 +388,21 @@ namespace yocto
             }
             const size_t n = vm->GetTableLength();
             std::cerr << "Parsing " << n << " constraints from " << name << std::endl;
+
+            // iterating over each equilibrium
+            vm->pushnil();  /* first key */
+            int count = 0;
+            while (vm->next(-2) != 0)
+            {
+                ++count;
+                if(!vm->istable(-1))
+                {
+                    throw exception("%s: constraint#%d is not a table", name, count);
+                }
+                __add_constraint(vm,name,loader,count);
+                vm->pop(1);
+            }
+
 
         }
     }
