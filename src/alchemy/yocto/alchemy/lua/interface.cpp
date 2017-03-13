@@ -381,8 +381,41 @@ namespace yocto
         void __add_component(Lua::State::Pointer &vm,
                              const char          *name,
                              const int            count,
-                             boot::constraint    &cc)
+                             boot::constraint    &cc,
+                             const int            item)
         {
+            assert(vm->istable(-1));
+            // weight
+            vm->pushnil();
+            if(!vm->next(-2))
+            {
+                throw exception("%s, constraint#%d, component%d: missing weight", name,count,item);
+            }
+            if(!vm->isnumber(-1))
+            {
+                throw exception("%s, constraint#%d, component%d: weight is not a number", name,count,item);
+            }
+            const double weight = vm->tonumber(-1);
+            vm->pop(1);
+
+            // name
+            if(!vm->next(-2))
+            {
+                throw exception("%s, constraint#%d, component%d: missing species", name,count,item);
+            }
+            if(!vm->isstring(-1))
+            {
+                throw exception("%s, constraint#%d, component%d: species is not a string", name,count,item);
+            }
+            const string sp_name = vm->tostring(-1);
+            vm->pop(1);
+
+            // discard end of table
+            while(vm->next(-2)) vm->pop(1);
+
+            std::cerr << "\t\tadding '" << sp_name << "', weight=" << weight << std::endl;
+            cc.add(sp_name, weight);
+
 
         }
 
@@ -405,8 +438,12 @@ namespace yocto
             while(vm->next(-2))
             {
                 ++item;
-                std::cerr << "adding item#" << item << std::endl;
-                __add_component(vm, name, count,cc);
+                std::cerr << "\t\tadding component#" << item << std::endl;
+                if(!vm->istable(-1))
+                {
+                    throw exception("%s, constraint#%d: component#%d is not a coeff/species table",name,count,item);
+                }
+                __add_component(vm, name, count,cc,item);
                 vm->pop(1);
             }
 
@@ -441,10 +478,6 @@ namespace yocto
             }
 
             throw exception("%s, constraint #%d must start with string or number",name,count);
-
-
-
-
         }
 
         void __lua:: load(Lua::State::Pointer &vm,

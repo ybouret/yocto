@@ -31,6 +31,13 @@ YOCTO_UNIT_TEST_IMPL(lua)
     boot loader(pLib);
     __lua::load(vm, "sol", loader);
 
+    const array<double> &C0 = loader.run(*pEqs);
+    pLib->display(std::cerr,C0);
+    if(pLib->search("H+"))
+    {
+        std::cerr << "pH=" << pLib->pH(C0) << std::endl;
+    }
+
 }
 YOCTO_UNIT_TEST_DONE()
 
