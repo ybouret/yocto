@@ -65,7 +65,8 @@ namespace yocto
                 E(this, & BootInit::call_E ),
                 G(this, & BootInit::call_G )
                 {
-                    if(Nc+N!=M) throw exception("%s: #constraints=%u + #equilibria=%u != #species=%u", fn, unsigned(Nc), unsigned(N), unsigned(M) );
+                    if(Nc+N!=M)
+                        throw exception("%s: #constraints=%u + #equilibria=%u != #species=%u", fn, unsigned(Nc), unsigned(N), unsigned(M) );
 
                     // special cases
 
@@ -88,7 +89,10 @@ namespace yocto
                     // special cases
 
 
+                    //__________________________________________________________
+                    //
                     // generic case, build Cstar
+                    //__________________________________________________________
                     {
                         matrix<double> PP(Nc);
                         tao::mmul_rtrn(PP, P, P);
@@ -117,7 +121,10 @@ namespace yocto
                     std::cerr << "V=" << V << std::endl;
                     std::cerr << "C=" << C << std::endl;
 
+                    //__________________________________________________________
+                    //
                     // initialize Gamma, Phi, K
+                    //__________________________________________________________
                     eqs.computePhi(C,t);
 
 
@@ -164,7 +171,8 @@ namespace yocto
                 }
 
                 // move V to get the most valid composition
-                inline void moveV(array<double> &Ctry, array<double> &Vtry)
+                inline
+                void moveV(array<double> &Ctry, array<double> &Vtry)
                 {
                     (void)cgrad<double>::optimize(E,
                                                   G,
