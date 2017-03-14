@@ -72,8 +72,8 @@ namespace yocto
             virtual ~boot() throw();
 
 
-            void electroneutrality();           //!< apply electroneutrality
-            void osmolarity(const double osm);  //!< set osmolarity
+            void electroneutrality();            //!< apply electroneutrality
+            void osmolarity(const double osm);   //!< set osmolarity
             void ionic_strength(const double I); //!< set ionic_strength
             void conserve(const string &name, const double C); //!< conserve species
             void conserve(const string &nameA, const string &nameB, const double C);
@@ -85,6 +85,7 @@ namespace yocto
             //! compute and return reference to eqs.C
             const array<double> &run( equilibria &eqs, const double t=0);
 
+            void initialize( array<double> &C0, equilibria &eqs, const double t=0);
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
