@@ -118,7 +118,7 @@ namespace yocto
                     {
                         if(eqs.active[j])
                         {
-                            C[j] += numeric<double>::sqrt_ftol;
+                            //C[j] += numeric<double>::sqrt_ftol;
                         }
                     }
                     tao::mul(Vcurr,Q,C);
@@ -137,7 +137,7 @@ namespace yocto
                     // initialize K, Gamma and Phi
                     //__________________________________________________________
                     eqs.computePhi(C,t);
-
+                    std::cerr << "Phi=" << eqs.Phi << std::endl;
                 }
 
                 void process()
@@ -151,6 +151,7 @@ namespace yocto
                     // dV = -inv(Phi*Q') * Gamma;
                     //__________________________________________________________
                     tao::mmul_rtrn(PhiQ,eqs.Phi,Q);
+                    std::cerr << "PhiQ=" << PhiQ << std::endl;
                     if(!LU<double>::build(PhiQ))
                     {
                         throw exception("%ssingular composition",fn);
