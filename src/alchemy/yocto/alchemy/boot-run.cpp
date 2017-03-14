@@ -111,7 +111,18 @@ namespace yocto
                     tao::mul_trn(Cstar,P,Utemp);
                     tao::divby(dPP,Cstar);
                     std::cerr << "Cstar=" << Cstar << std::endl;
-                    std::cerr << "V0   =" << Vcurr  << std::endl;
+                    tao::set(C,Cstar);
+                    tao::mul(Vcurr,Q,C);
+                    std::cerr << "V0a   =" << Vcurr  << std::endl;
+                    for(size_t j=M;j>0;--j)
+                    {
+                        if(eqs.active[j])
+                        {
+                            C[j] += numeric<double>::sqrt_ftol;
+                        }
+                    }
+                    tao::mul(Vcurr,Q,C);
+                    std::cerr << "V0b   =" << Vcurr  << std::endl;
 
                     //__________________________________________________________
                     //
