@@ -170,6 +170,7 @@ namespace yocto
                     optimize1D<double>::run(gam,xx,gg,0.0);
 
                     const double alpha = max_of<double>(xx.b,0.0);
+                    std::cerr << "opt=" << xx.b << "/alpha=" << alpha << std::endl;
                     const double gam1  = gam(alpha);
                     std::cerr << "gam1=" << gam1 << "  <-- " << gam0 << std::endl;
 
@@ -191,10 +192,10 @@ namespace yocto
                     eqs.validate(C);
                     std::cerr << "C=" << C << std::endl;
 
-                    /*
+#if 1
                     eqs.updateGamma(C);
                     std::cerr << "Gamma=" << eqs.Gamma << std::endl;
-                     */
+#endif
 
                     tao::set(Utemp,Lam);
                     tao::mul_sub(Utemp, P,C);
