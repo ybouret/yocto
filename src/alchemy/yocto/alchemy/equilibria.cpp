@@ -224,21 +224,21 @@ namespace yocto
         void equilibria:: warm_up( array<double> &C0 )
         {
             assert(C0.size()>=M);
-            std::cerr << "warm up" << std::endl;
+            //std::cerr << "warm up" << std::endl;
             for(size_t j=M;j>0;--j) C0[j] = 0;
             for(size_t i=N;i>0;--i)
             {
                 const double Ki  = K[i];
                 const array<int> &nu_i = iNu[i];
-                std::cerr << "K" << i << "=" << Ki << std::endl;
+                //std::cerr << "K" << i << "=" << Ki << std::endl;
 
                 int sum_nu = 0;
                 for(size_t j=M;j>0;--j)
                 {
                     sum_nu += nu_i[j];
                 }
-                std::cerr << "nu"     << i << "=" << nu_i   << std::endl;
-                std::cerr << "sum_nu" << i << "=" << sum_nu << std::endl;
+                //std::cerr << "nu"     << i << "=" << nu_i   << std::endl;
+                //std::cerr << "sum_nu" << i << "=" << sum_nu << std::endl;
                 if(sum_nu)
                 {
                     const double Ci = pow(Ki,1.0/double(sum_nu));
@@ -247,14 +247,14 @@ namespace yocto
                     {
                         if(nu_i[j])
                         {
-                            C0[j] += Ci * alea<double>();
+                            C0[j] += Ci;// * alea<double>();
                         }
                     }
                 }
             }
-            std::cerr << "C0=" << C0 << std::endl;
+            //std::cerr << "Cini=" << C0 << std::endl;
             normalize(C0,-1,false);
-            std::cerr << "C1=" << C0 << std::endl;
+            //std::cerr << "Cnrm=" << C0 << std::endl;
 
         }
 

@@ -41,8 +41,11 @@ YOCTO_UNIT_TEST_IMPL(lua)
     pEqs->computeK(0.0);
     pEqs->warm_up(C0);
 
-    //loader.initialize(C0,*pEqs);
-
+    loader.initialize(C0,*pEqs);
+    if(pLib->search("H+"))
+    {
+        std::cerr << "pH=" << pLib->pH(C0) << std::endl;
+    }
 
 }
 YOCTO_UNIT_TEST_DONE()

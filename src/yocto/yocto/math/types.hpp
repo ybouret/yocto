@@ -70,6 +70,8 @@ namespace yocto
             
             //! returns value h such that x+h!=x and x-h!=x
             static T    min_space(const T x) throw();
+
+            static const T gold; // 0.5*(sqrt(5.0)+1.0)
 		};
 		
         

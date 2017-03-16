@@ -23,7 +23,7 @@ namespace yocto
 		template <> const real_t numeric<real_t>::tiny         = Pow( REAL(10.0), numeric<real_t>::min_10_exp );
 		template <> const real_t numeric<real_t>::huge         = Pow( REAL(10.0), numeric<real_t>::max_10_exp );
 		template <> const real_t numeric<real_t>::sqrt_tiny    = Pow( REAL(10.0), Floor(numeric<real_t>::min_10_exp/2) );
-
+        template <> const real_t numeric<real_t>::gold         = REAL(0.5) * ( Sqrt( REAL(5.0) ) + REAL(1.0) );
 	}
 	
 }

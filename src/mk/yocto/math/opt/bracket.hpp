@@ -24,6 +24,7 @@ namespace yocto {
             //! bracketting a minimum to call minimize
             /**
              search from xa,xb, assuming that fa and fb are computed.
+             The first expansion is xc=xa + gold * (xb-xa)
              */
             static void expand( typename numeric<T>::function &func, triplet<T> &x, triplet<T> &f );
 		};

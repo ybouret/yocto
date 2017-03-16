@@ -126,7 +126,7 @@ namespace yocto {
         template <>
         void bracket<real_t>::expand( numeric<real_t>::function &func, triplet<real_t> &x, triplet<real_t> &f )
         {
-            static const real_t GOLD = REAL(1.618034);
+            static const real_t GOLD = numeric<real_t>::gold;
             static const real_t GLIM = REAL(10.0);
             static const real_t TINY = REAL(1e-20);
 
