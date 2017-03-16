@@ -86,7 +86,10 @@ namespace yocto
                     std::cerr << "P  =" << P << std::endl;
                     std::cerr << "Lam=" << Lam << std::endl;
 
+                    //__________________________________________________________
+                    //
                     // special cases
+                    //__________________________________________________________
 
 
                     //__________________________________________________________
@@ -127,6 +130,28 @@ namespace yocto
                     //__________________________________________________________
                     eqs.computePhi(C,t);
 
+                    std::cerr << "Gam=" << eqs.Gamma << std::endl;
+                    std::cerr << "Phi=" << eqs.Phi   << std::endl;
+                    std::cerr << "Nu =" << eqs.Nu    << std::endl;
+
+                    tao::mmul_rtrn(eqs.Chi,eqs.Phi,eqs.Nu);
+                    std::cerr << "Chi=" << eqs.Chi   << std::endl;
+
+                    matrix<double> sV(N,N);
+                    vector<double> sW(N);
+                    if(!svd<double>::build(eqs.Chi, sW, sV) )
+                    {
+                        throw exception("no SVD");
+                    }
+                    std::cerr << "sU=" << eqs.Chi << std::endl;
+                    std::cerr << "sV=" << sV      << std::endl;
+                    svd<double>::truncate(sW);
+                    std::cerr << "sW=diag(" << sW << ")" << std::endl;
+
+                    vector<double> dxi(N);
+                    svd<double>::solve(eqs.Chi, sW, sV, eqs.Gamma, dxi);
+                    tao::neg(dxi,dxi);
+                    std::cerr << "dxi=" << dxi << std::endl;
 
                 }
 
