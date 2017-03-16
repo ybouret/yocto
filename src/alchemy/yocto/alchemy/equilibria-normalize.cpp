@@ -95,7 +95,7 @@ namespace yocto
             return Gamma2Value();
         }
 
-        void equilibria:: normalize(array<double> &C0, const double t)
+        void equilibria:: normalize(array<double> &C0, const double t, const bool recompute)
         {
             //__________________________________________________________________
             //
@@ -110,8 +110,14 @@ namespace yocto
             {
                 throw exception("%scouldn't balance initial concentrations",fn);
             }
-
-            computeChi(C,t);
+            if(recompute)
+            {
+                computeChi(C,t);
+            }
+            else
+            {
+                updateChi(C);
+            }
             double  gam0 = Gamma2Value();
 
         LOOP:

@@ -26,7 +26,7 @@ namespace yocto
             {
                 CC[i] = weightA*CA[i] + weightB*CB[i];
             }
-            normalize(CC,t);
+            normalize(CC,t,true);
         }
 
     }

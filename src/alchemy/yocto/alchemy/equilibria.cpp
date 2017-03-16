@@ -249,6 +249,8 @@ namespace yocto
                 }
             }
             std::cerr << "C0=" << C0 << std::endl;
+            normalize(C0,-1,false);
+            std::cerr << "C1=" << C0 << std::endl;
 
         }
 

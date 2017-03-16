@@ -22,7 +22,7 @@ namespace yocto
         void integrator::call_normalize(array<double> &y, const double t)
         {
             assert(y.size()>=pLib->size());
-            pEqs->normalize(y,t);
+            pEqs->normalize(y,t,true);
         }
 
         void integrator:: project(array<double>        &rate,

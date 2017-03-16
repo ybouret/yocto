@@ -68,7 +68,8 @@ namespace yocto
              - at the end, Gamma is almost 0, Phi and Chi are computed @C0
              */
             void normalize(array<double> &C0,
-                           const double   t);
+                           const double   t,
+                           const bool     recompute);
 
             friend std::ostream & operator<<( std::ostream &, const equilibria &);
 
@@ -91,7 +92,7 @@ namespace yocto
                      const array<double> &CB,
                      const double         t=0);
 
-            //! initialize some value of C0 once K are computed
+            //! initialize some value of C0, K must be computed
             void warm_up( array<double> &C0 );
 
         private:
