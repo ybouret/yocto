@@ -180,6 +180,7 @@ namespace yocto
 
 #include "yocto/sort/quick.hpp"
 #include <cmath>
+#include "yocto/code/rand.hpp"
 
 namespace yocto
 {
@@ -244,7 +245,10 @@ namespace yocto
                     std::cerr << "C" << i << "=" << Ci << std::endl;
                     for(size_t j=M;j>0;--j)
                     {
-                        if(nu_i[j]) C0[j] += Ci;
+                        if(nu_i[j])
+                        {
+                            C0[j] += Ci * alea<double>();
+                        }
                     }
                 }
             }
