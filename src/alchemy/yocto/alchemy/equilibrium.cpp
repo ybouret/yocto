@@ -273,6 +273,40 @@ namespace yocto
             return lhs;
         }
 
+        size_t equilibrium:: number_of_species() const throw()
+        {
+            return products.size + reactants.size;
+        }
+
+        bool   equilibrium:: involves(const string &name) const throw()
+        {
+            for(const actor *a = reactants.head; a; a=a->next)
+            {
+                if(name==a->sp->name) return true;
+            }
+
+            for(const actor *a = products.head; a; a=a->next)
+            {
+                if(name==a->sp->name) return true;
+            }
+            return false;
+        }
+
+        bool equilibrium:: depends_on(const equilibrium &other) const throw()
+        {
+            for(const actor *a = reactants.head; a; a=a->next)
+            {
+                if(other.involves(a->sp->name)) return true;
+            }
+
+            for(const actor *a = products.head; a; a=a->next)
+            {
+                if(other.involves(a->sp->name)) return true;
+            }
+
+            return false;
+        }
+
     }
 
 }

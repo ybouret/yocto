@@ -80,7 +80,9 @@ namespace yocto
                            const double         dt,
                            drvs_type           &drvs);
 
-
+            bool   involves(const string &name) const throw();
+            bool   depends_on(const equilibrium &other) const throw();
+            size_t number_of_species() const throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);

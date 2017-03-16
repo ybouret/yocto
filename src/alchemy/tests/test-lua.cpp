@@ -1,5 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/alchemy/lua/interface.hpp"
+#include "yocto/alchemy/eqtree.hpp"
 
 using namespace yocto;
 using namespace alchemy;
@@ -28,9 +29,17 @@ YOCTO_UNIT_TEST_IMPL(lua)
 
     pEqs->compile();
 
+
+
     boot loader(pLib);
     __lua::load(vm, "sol", loader);
 
+
+    eqNode *tree = eqNode::build(*pEqs);
+    if(tree)
+    {
+        delete tree;
+    }
 
     vector<double> C0( pLib->size() + 2 );
 
