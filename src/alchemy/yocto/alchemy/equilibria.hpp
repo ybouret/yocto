@@ -53,6 +53,7 @@ namespace yocto
 
             void compile(); //!< allocate and compute constant terms according to the library
 
+            void computeK(const double t);
             void computeChi(const array<double> &C0, const double t); //!< compute Gamma,K, Phi and Chi at a given time
             void updateChi(const array<double>  &C0);                 //!< update Gamma,Phi and Chi from stored K
 
@@ -90,6 +91,8 @@ namespace yocto
                      const array<double> &CB,
                      const double         t=0);
 
+            //! initialize some value of C0 once K are computed
+            void warm_up( array<double> &C0 );
 
         private:
             math::numeric<double>::function E;

@@ -13,6 +13,16 @@ namespace yocto
     namespace alchemy
     {
 
+        void equilibria:: computeK(const double t)
+        {
+            size_t i = 1;
+            for(iterator it=begin();i<=N;++i,++it)
+            {
+                const equilibrium &eq = **it;
+                K[i] = eq.K(t);
+            }
+        }
+
         void equilibria:: computePhi(const array<double> &C0,
                                      const double         t)
         {

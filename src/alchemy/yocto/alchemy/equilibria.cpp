@@ -179,6 +179,7 @@ namespace yocto
 }
 
 #include "yocto/sort/quick.hpp"
+#include <cmath>
 
 namespace yocto
 {
@@ -217,7 +218,41 @@ namespace yocto
             quicksort(gam);
             return tao::sum(gam);
         }
-        
+
+
+        void equilibria:: warm_up( array<double> &C0 )
+        {
+            assert(C0.size()>=M);
+            std::cerr << "warm up" << std::endl;
+            for(size_t j=M;j>0;--j) C0[j] = 0;
+            for(size_t i=N;i>0;--i)
+            {
+                const double Ki  = K[i];
+                const array<int> &nu_i = iNu[i];
+                std::cerr << "K" << i << "=" << Ki << std::endl;
+
+                int sum_nu = 0;
+                for(size_t j=M;j>0;--j)
+                {
+                    sum_nu += nu_i[j];
+                }
+                std::cerr << "nu"     << i << "=" << nu_i   << std::endl;
+                std::cerr << "sum_nu" << i << "=" << sum_nu << std::endl;
+                if(sum_nu)
+                {
+                    const double Ci = pow(Ki,1.0/double(sum_nu));
+                    std::cerr << "C" << i << "=" << Ci << std::endl;
+                    for(size_t j=M;j>0;--j)
+                    {
+                        if(nu_i[j]) C0[j] += Ci;
+                    }
+                }
+            }
+            std::cerr << "C0=" << C0 << std::endl;
+
+        }
+
+
         
     }
 

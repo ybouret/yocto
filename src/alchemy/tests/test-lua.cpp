@@ -35,15 +35,13 @@ YOCTO_UNIT_TEST_IMPL(lua)
     __lua::load(vm, "sol", loader);
 
 
-    eqNode *tree = eqNode::build(*pEqs);
-    if(tree)
-    {
-        delete tree;
-    }
+
 
     vector<double> C0( pLib->size() + 2 );
+    pEqs->computeK(0.0);
+    pEqs->warm_up(C0);
 
-    loader.initialize(C0,*pEqs);
+    //loader.initialize(C0,*pEqs);
 
 
 }
