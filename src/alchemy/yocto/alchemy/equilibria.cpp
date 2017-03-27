@@ -133,9 +133,10 @@ namespace yocto
                     size_t i = 1;
                     for(iterator it=begin();i<=N;++i,++it)
                     {
-                        const equilibrium &eq = **it;
+                        const equilibrium &eq         = **it;
                         int                sum_abs_nu = 0;
                         int                sum_nu_z   = 0;
+                        (size_t &)(eq.indx)           = i;
                         for(const actor *node = eq.get_products().head;node;node=node->next)
                         {
                             const size_t j  = node->id;

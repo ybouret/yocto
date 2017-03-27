@@ -40,9 +40,10 @@ namespace yocto
             typedef intr_ptr<string,equilibrium>        pointer;
             typedef set<string,pointer>                 database;
             
-            const string                   name;
-            const library::pointer         pLib;
-            mutable equilibrium_constant   K;
+            const   string                   name;
+            const   library::pointer         pLib;
+            mutable equilibrium_constant     K;
+            const size_t                     indx;
 
             explicit equilibrium(const string               &the_name,
                                  const library::pointer     &the_lib,

@@ -105,6 +105,7 @@ namespace yocto
         name(the_name),
         pLib(the_lib),
         K(the_K),
+        indx(0),
         products(),
         reactants()
         {
@@ -116,6 +117,7 @@ namespace yocto
         name(the_name),
         pLib(the_lib),
         K( true_equilibrium_constant::create(the_K) ),
+        indx(0),
         products(),
         reactants()
         {
