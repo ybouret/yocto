@@ -73,7 +73,21 @@ namespace yocto
             // Third pass: gettin reactions with matter exchange and involved
             // species
             //__________________________________________________________________
-            
+            sub.free();
+            for( iterator it = begin(); it != end(); ++it)
+            {
+                const equilibrium::pointer &pEq = *it;
+                for(size_t j=isp.size();j>0;--j)
+                {
+                    if(pEq->involves(isp[j]->name))
+                    {
+                        sub.push_back(pEq);
+                        break;
+                    }
+                }
+            }
+            std::cerr << "Involving " << sub.size() << " eqs" << std::endl;
+
 
         }
 
