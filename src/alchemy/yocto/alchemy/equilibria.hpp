@@ -95,6 +95,10 @@ namespace yocto
             //! initialize some value of C0, K must be computed
             void warm_up( array<double> &C0 );
 
+            //! initialize some value of C0, K must be computed
+            void init0( array<double> &C0 );
+            
+
         private:
             math::numeric<double>::function E;
             math::numeric<double>::function F;

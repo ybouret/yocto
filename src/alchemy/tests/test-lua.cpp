@@ -1,6 +1,5 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/alchemy/lua/interface.hpp"
-#include "yocto/alchemy/eqtree.hpp"
 
 using namespace yocto;
 using namespace alchemy;
