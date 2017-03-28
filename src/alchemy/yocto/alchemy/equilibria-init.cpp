@@ -1,5 +1,5 @@
 #include "yocto/alchemy/equilibria.hpp"
-
+#include "yocto/math/core/tao.hpp"
 
 namespace yocto
 {
@@ -67,7 +67,23 @@ namespace yocto
             {
                 std::cerr << "\t--> " << isp[j]->name << std::endl;
             }
-            
+
+            const size_t Nr = sub.size();
+            //const size_t Mr = isp.size();
+            if(Nr<=0||M<=0)
+            {
+                return;
+            }
+
+            matrix<double> Nur(Nr,M);
+            for(size_t i=1;i<=Nr;++i)
+            {
+                const size_t I = sub[i]->indx;
+                tao::set(Nur[i],Nu[I]);
+
+            }
+            std::cerr << "Nur=" << Nur << std::endl;
+
 
 #if 0
             //__________________________________________________________________
