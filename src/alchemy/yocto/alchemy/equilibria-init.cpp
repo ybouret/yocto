@@ -26,7 +26,7 @@ namespace yocto
                 {
                     throw exception("%sinvalid equilibrium",fn);
                 }
-                if(pEq->get_reactants().size<=0)
+                if(pEq->get_reactants().size<=0||pEq->get_products().size<=0)
                 {
                     std::cerr << "INIT: Using " << pEq->name << std::endl;
                     assert(pEq->get_products().size>0);
@@ -67,7 +67,9 @@ namespace yocto
             {
                 std::cerr << "\t--> " << isp[j]->name << std::endl;
             }
+            
 
+#if 0
             //__________________________________________________________________
             //
             // Third pass: gettin reactions with matter exchange and involved
@@ -91,6 +93,7 @@ namespace yocto
             {
                 std::cerr << "\t\t-->" << sub[i]->name << std::endl;
             }
+#endif
 
         }
 
