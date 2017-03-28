@@ -79,7 +79,7 @@ namespace yocto
                 const equilibrium::pointer &pEq = *it;
                 for(size_t j=isp.size();j>0;--j)
                 {
-                    if(pEq->involves(isp[j]->name))
+                    if(pEq->involves(isp[j]->name) && pEq->delta_nu()!=0 )
                     {
                         sub.push_back(pEq);
                         break;
@@ -87,7 +87,10 @@ namespace yocto
                 }
             }
             std::cerr << "Involving " << sub.size() << " eqs" << std::endl;
-
+            for(size_t i=1;i<=sub.size();++i)
+            {
+                std::cerr << "\t\t-->" << sub[i]->name << std::endl;
+            }
 
         }
 

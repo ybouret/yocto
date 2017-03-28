@@ -310,7 +310,11 @@ namespace yocto
         }
 
 
-      
+        int equilibrium:: delta_nu() const throw()
+        {
+            return int(products.size) - int(reactants.size);
+        }
+
 
     }
 

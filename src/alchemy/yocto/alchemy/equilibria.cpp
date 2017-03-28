@@ -222,6 +222,7 @@ namespace yocto
         }
 
 
+
         void equilibria:: warm_up( array<double> &C0 )
         {
             assert(C0.size()>=M);

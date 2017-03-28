@@ -84,7 +84,9 @@ namespace yocto
             bool   involves(const string &name) const throw();
             bool   depends_on(const equilibrium &other) const throw();
             size_t number_of_species() const throw();
-            
+            int    delta_nu() const throw();
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);
             actors products;
