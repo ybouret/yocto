@@ -83,8 +83,8 @@ namespace yocto
         //! return the highest data
         inline const_type & peek() const throw()
         {
-            assert( size_ > 0 );
-            assert( data_ > 0 );
+            assert( size_ > 0     );
+            assert( data_ != NULL );
             assert( data_[0] != NULL );
             return *data_[0];
         }

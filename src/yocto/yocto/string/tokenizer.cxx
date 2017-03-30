@@ -21,7 +21,7 @@ namespace yocto {
 		}
 		
 		template <>
-		bool tokenizer<yCH>:: get_next( bool (*is_separator)( yCH ) throw() ) throw()
+		bool tokenizer<yCH>:: get_next( bool (*is_separator)( yCH )  ) throw()
 		{
             
 #if 1
@@ -71,7 +71,7 @@ namespace yocto {
         
         
 		template <>
-		void tokenizer<yCH>::split( sequence< basic::string<yCH> > &seq, const basic::string<yCH> &input, bool (*is_separator)( yCH ) throw())
+		void tokenizer<yCH>::split( sequence< basic::string<yCH> > &seq, const basic::string<yCH> &input, bool (*is_separator)( yCH ) )
 		{
 			tokenizer tkn( input );
 			while( tkn.get_next( is_separator ) )

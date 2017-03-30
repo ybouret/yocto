@@ -13,7 +13,8 @@
 
 namespace yocto
 {
-	typedef memory::small_object<YOCTO_LIMIT_SIZE,YOCTO_CHUNK_SIZE> object;
+
+    typedef memory::small_object<YOCTO_LIMIT_SIZE,YOCTO_CHUNK_SIZE> object;
     
     
 #define YOCTO_MAKE_OBJECT \

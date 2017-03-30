@@ -11,15 +11,16 @@ namespace yocto
 	class auto_clean 
 	{
 	public:
-		inline explicit auto_clean( T &host, void (T::*method)(void) throw() ) throw() :
+		inline explicit auto_clean( T &host, void (T::*method)(void) ) throw() :
 		host_( host ),
 		method_( method ) { assert(method_!=NULL); }
 		
-		inline virtual ~auto_clean() throw() { (host_.*method_)(); }
+		inline virtual ~auto_clean() throw() {
+            try { (host_.*method_)(); } catch(...) {} }
 		
 	private:
 		T        &host_;
-		void (T::*method_)(void) throw(); 
+		void (T::*method_)(void);
 		YOCTO_DISABLE_COPY_AND_ASSIGN(auto_clean);
 	};
     
