@@ -121,7 +121,7 @@ namespace yocto
             inline int         isnil(int index) { return lua_isnil(L,index); }
             inline int         isnone(int index) { return lua_isnone(L,index); }
             inline int         isnoneornil(int index) { return lua_isnoneornil(L,index); }
-            inline int         isnumber(int index) { return lua_isnumber(L,index); }
+            inline int         isNumber(int index) { return lua_isnumber(L,index); }
             inline int         isstring(int index) { return lua_isstring(L,index); }
             inline int         istable(int index)  { return lua_istable(L,index); }
             inline int         isthread(int index) { return lua_isthread(L,index); }

@@ -201,7 +201,7 @@ namespace yocto
             //
             // is a number, then it's a real constant
             //__________________________________________________________________
-            if( !has_constant && vm->isnumber(-1) )
+            if( !has_constant && vm->isNumber(-1) )
             {
                 (void)eqs.add(eq_name, vm->tonumber(-1));
                 has_constant = true;
@@ -336,7 +336,7 @@ namespace yocto
                 {
                     throw exception("%s, constraint#%d: missing osmolarity value", name, count);
                 }
-                if(!vm->isnumber(-1))
+                if(!vm->isNumber(-1))
                 {
                     throw exception("%s, constraint#%d: osmolarity value is not a number", name, count);
                 }
@@ -354,7 +354,7 @@ namespace yocto
                 {
                     throw exception("%s, constraint#%d: missing ionic strength value", name, count);
                 }
-                if(!vm->isnumber(-1))
+                if(!vm->isNumber(-1))
                 {
                     throw exception("%s, constraint#%d: ionic strength value is not a number", name, count);
                 }
@@ -391,7 +391,7 @@ namespace yocto
             {
                 throw exception("%s, constraint#%d, component%d: missing weight", name,count,item);
             }
-            if(!vm->isnumber(-1))
+            if(!vm->isNumber(-1))
             {
                 throw exception("%s, constraint#%d, component%d: weight is not a number", name,count,item);
             }
@@ -426,7 +426,7 @@ namespace yocto
                                       boot                &loader,
                                       const int            count)
         {
-            assert(vm->isnumber(-1));
+            assert(vm->isNumber(-1));
 
             const double value = vm->tonumber(-1);
             vm->pop(1);
@@ -471,7 +471,7 @@ namespace yocto
             }
 
 
-            if(vm->isnumber(-1))
+            if(vm->isNumber(-1))
             {
                 __add_generic_constraint(vm,name,loader,count);
                 return;
