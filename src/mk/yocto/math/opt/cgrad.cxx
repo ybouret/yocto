@@ -63,7 +63,6 @@ namespace yocto
                                      callback                               *cb
                                      )
         {
-            std::cerr << "CGRAD: Enter..." << std::endl;
             assert(p.size()==used.size());
             const size_t nvar = p.size(); assert(nvar>0);
             some_arrays<4,real_t,memory::global> arrays;

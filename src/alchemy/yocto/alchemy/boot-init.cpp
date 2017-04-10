@@ -237,7 +237,8 @@ namespace yocto
 
                 // move V to get the most valid composition
                 inline
-                void moveV(array<double> &Ctry, array<double> &Vtry)
+                void moveV(array<double> &Ctry,
+                           array<double> &Vtry)
                 {
                     (void)cgrad<double>::optimize(E,
                                                   G,
@@ -267,7 +268,9 @@ namespace yocto
 
         void boot:: initialize( array<double> &C0, equilibria &eqs, const double t)
         {
+            assert(C0.size()>=eqs.M);
             BootInit ini(eqs,constraints,t);
+            for(size_t i=eqs.M;i>0;--i) C0[i] = ini.C[i];
         }
 
 

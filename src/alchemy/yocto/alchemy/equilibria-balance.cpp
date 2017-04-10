@@ -85,7 +85,7 @@ namespace yocto
                 triplet<double> EE = { E0,  E(xx.b), 0.0 };
 
                 math::bracket<double>::expand(E,xx,EE);
-                math::optimize1D<double>::run(E,xx,EE, 0.0);
+                math::optimize1D<double>::run(E,xx,EE,0.0);
 
                 //______________________________________________________________
                 //

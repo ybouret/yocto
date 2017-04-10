@@ -1,3 +1,4 @@
+#if 0
 #include "yocto/alchemy/boot.hpp"
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/core/svd.hpp"
@@ -196,10 +197,8 @@ namespace yocto
                     eqs.validate(C);
                     std::cerr << "C=" << C << std::endl;
 
-#if 1
                     eqs.updateGamma(C);
                     std::cerr << "Gamma=" << eqs.Gamma << std::endl;
-#endif
 
                     tao::set(Utemp,Lam);
                     tao::mul_sub(Utemp, P,C);
@@ -288,6 +287,7 @@ namespace yocto
         }
 
 
+
         const array<double> & boot:: run( equilibria &eqs, const double t )
         {
 
@@ -357,3 +357,5 @@ namespace yocto
     }
     
 }
+#endif
+

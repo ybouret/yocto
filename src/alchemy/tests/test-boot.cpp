@@ -59,8 +59,9 @@ YOCTO_UNIT_TEST_IMPL(boot)
 
 
     chemsys.compile();
-    loader.run(chemsys,0.0);
-    //chemlib->display(std::cerr,chemsys.C);
+    vector<double> C0(chemlib->size(),0);
+    loader.initialize(C0,chemsys);
+    chemlib->display(std::cerr,C0);
 
 }
 YOCTO_UNIT_TEST_DONE()

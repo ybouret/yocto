@@ -2,7 +2,6 @@
 #include "yocto/math/ztype.hpp"
 #include "yocto/code/utils.hpp"
 #include "yocto/sort/network.hpp"
-
 #include "yocto/ios/ocstream.hpp"
 
 namespace yocto {
@@ -123,9 +122,7 @@ namespace yocto {
             for(;;)
             {
                 kernel::minimize<real_t>(func,x,f);
-                std::cerr << "OPT: x=" << x << ", f=" << f << std::endl;
                 const real_t dx_curr = Fabs(x.c-x.a);
-                std::cerr << "\tdx_curr=" << dx_curr << std::endl;
                 if(dx_curr<=xtol||dx_curr>=dx_prev) break;
                 dx_prev = dx_curr;
             }

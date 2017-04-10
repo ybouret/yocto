@@ -84,33 +84,7 @@ namespace yocto
             }
             std::cerr << "Nur=" << Nur << std::endl;
 
-
-#if 0
-            //__________________________________________________________________
-            //
-            // Third pass: gettin reactions with matter exchange and involved
-            // species
-            //__________________________________________________________________
-            sub.free();
-            for( iterator it = begin(); it != end(); ++it)
-            {
-                const equilibrium::pointer &pEq = *it;
-                for(size_t j=isp.size();j>0;--j)
-                {
-                    if(pEq->involves(isp[j]->name) && pEq->delta_nu()!=0 )
-                    {
-                        sub.push_back(pEq);
-                        break;
-                    }
-                }
-            }
-            std::cerr << "Involving " << sub.size() << " eqs" << std::endl;
-            for(size_t i=1;i<=sub.size();++i)
-            {
-                std::cerr << "\t\t-->" << sub[i]->name << std::endl;
-            }
-#endif
-
+            
         }
 
 
