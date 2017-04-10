@@ -167,7 +167,10 @@ namespace yocto
 
                     triplet<double> xx = { 0,        1.0,   -1.0 };
                     triplet<double> gg = { gam0, gam(xx.b), -1.0 };
+                    std::cerr << "expanding..." << std::endl;
                     bracket<double>::expand(gam,xx,gg);
+                    std::cerr << "found xx=" << xx << ", gg=" << gg << std::endl;
+                    std::cerr << "optimizing..." << std::endl;
                     optimize1D<double>::run(gam,xx,gg,0.0);
 
                     const double alpha = max_of<double>(xx.b,0.0);

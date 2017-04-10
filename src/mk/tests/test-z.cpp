@@ -27,6 +27,8 @@ static inline void show_values( const char *name )
 	SHOW(max_exp);
     SHOW(tiny);
     SHOW(sqrt_tiny);
+    SHOW(gold);
+    SHOW(gold_inv);
     std::cerr <<std::endl;
 }
 

@@ -53,6 +53,7 @@ YOCTO_UNIT_TEST_IMPL(titration)
 
     chemsys.compile();
     const double C0 = 1e-4;
+    std::cerr << "Computing Acid Composition" << std::endl;
     vector<double> Cacid(chemsys.M);
     {
         boot loader(chemlib);
@@ -68,6 +69,7 @@ YOCTO_UNIT_TEST_IMPL(titration)
         std::cerr << "pH=" << chemlib->pH(Cacid) << std::endl;
     }
 
+    std::cerr << "Computing Basic Composition" << std::endl;
     vector<double> Csoda(chemsys.M);
     {
         boot loader(chemlib);
@@ -84,6 +86,7 @@ YOCTO_UNIT_TEST_IMPL(titration)
     }
 
     vector<double> CC(chemsys.M);
+    return 0;
 
     std::cerr << "Mixing..." << std::endl;
     {
