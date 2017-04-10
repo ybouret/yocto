@@ -37,10 +37,10 @@ YOCTO_UNIT_TEST_IMPL(lua)
 
 
     vector<double> C0( pLib->size() + 2 );
-    pEqs->computeK(0.0);
-    pEqs->warm_up(C0);
-    pEqs->init0(C0);
-
+    //pEqs->computeK(0.0);
+    //pEqs->warm_up(C0);
+    //pEqs->init0(C0);
+    loader.solution(C0,*pEqs,0);
     return 0;
 
     loader.initialize(C0,*pEqs);

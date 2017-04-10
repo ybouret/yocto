@@ -86,6 +86,8 @@ namespace yocto
             //const array<double> &run( equilibria &eqs, const double t=0);
 
             void initialize( array<double> &C0, equilibria &eqs, const double t=0);
+            void solution( array<double> &C0, equilibria &eqs, const double t=0);
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
