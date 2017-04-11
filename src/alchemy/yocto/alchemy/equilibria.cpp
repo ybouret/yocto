@@ -261,6 +261,16 @@ namespace yocto
         }
 
 
+        void equilibria:: rescale(array<double> &C0, const double coef)
+        {
+            assert(coef>0);
+            assert(C0.size()>=M);
+            for(size_t j=M;j>0;--j)
+            {
+                C0[j] *= coef;
+            }
+            normalize(C0,-1,false);
+        }
         
     }
 

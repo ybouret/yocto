@@ -97,7 +97,10 @@ namespace yocto
 
             //! initialize some value of C0, K must be computed
             void init0( array<double> &C0 );
-            
+
+            void rescale( array<double> &C0, const double coef);
+
+
 
         private:
             math::numeric<double>::function E;

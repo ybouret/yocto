@@ -91,6 +91,14 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     std::cerr << "Phi="   << chemsys.Phi << std::endl;
     std::cerr << "Gamma=" << chemsys.Gamma << std::endl;
 
+    std::cerr << "rescaling..." << std::endl;
+    for(size_t i=1;i<=30;++i)
+    {
+        chemsys.rescale(C,0.8);
+        std::cerr << "C=" << C << std::endl;
+    }
+    return 0;
+
     vector<double> rate(chemlib->size()+3,0);
     for(size_t i=chemlib->size();i>0;--i)
     {
