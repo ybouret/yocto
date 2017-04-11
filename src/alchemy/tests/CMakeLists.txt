@@ -3,6 +3,7 @@ ADD_EXECUTABLE(test-alchemy main.cpp ${test_srcs}
 	acetic.lua
 	carbonic.lua
 	water.lua
+	phosphoric.lua
 )
 TARGET_LINK_YOCTO( test-alchemy alchemy lua++)
 
@@ -18,5 +19,6 @@ ADD_TEST(ODE         test-alchemy ode)
 ADD_TEST(Titration   test-alchemy titration)
 ADD_TEST(Acetic      test-alchemy lua ${HERE}/acetic.lua)
 ADD_TEST(Carbonic    test-alchemy lua ${HERE}/carbonic.lua)
-ADD_TEST(Water       test-alchemy lya ${HERE}/water.lua)
+ADD_TEST(Water       test-alchemy lua ${HERE}/water.lua)
+ADD_TEST(Phosphoric  test-alchemy lua ${HERE}/phosphoric.lua)
 
