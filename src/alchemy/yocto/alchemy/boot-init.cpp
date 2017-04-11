@@ -154,7 +154,7 @@ namespace yocto
 
                     eqs.updatePhi(C);
                     static const double shrink = 1.0 / numeric<double>::gold;
-                    double gam0 = eqs.Gamma2Value();
+                    double gam0 = F(0);
 
                 LOOP:
                     std::cerr << "Gam=" << Gamma << std::endl;
@@ -256,7 +256,7 @@ namespace yocto
                     tao::setprobe(Vtmp,V,x,dV);
                     moveV(Ctmp,Vtmp);
                     eqs.updateGamma(Ctmp);
-                    return eqs.Gamma2Value();
+                    return 0.5*tao::norm_sq(eqs.Gamma);
                 }
 
             private:

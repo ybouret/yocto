@@ -254,6 +254,7 @@ namespace yocto
                     }
                 }
             }
+
             //std::cerr << "Cini=" << C0 << std::endl;
             normalize(C0,-1,false);
             //std::cerr << "Cnrm=" << C0 << std::endl;

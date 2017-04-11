@@ -2,6 +2,7 @@ FILE(GLOB test_srcs test-*.cpp)
 ADD_EXECUTABLE(test-alchemy main.cpp ${test_srcs}
 	acetic.lua
 	carbonic.lua
+	water.lua
 )
 TARGET_LINK_YOCTO( test-alchemy alchemy lua++)
 
@@ -16,3 +17,6 @@ ADD_TEST(Boot        test-alchemy boot)
 ADD_TEST(ODE         test-alchemy ode)
 ADD_TEST(Titration   test-alchemy titration)
 ADD_TEST(Acetic      test-alchemy lua ${HERE}/acetic.lua)
+ADD_TEST(Carbonic    test-alchemy lua ${HERE}/carbonic.lua)
+ADD_TEST(Water       test-alchemy lya ${HERE}/water.lua)
+

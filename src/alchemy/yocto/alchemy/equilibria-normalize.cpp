@@ -139,13 +139,26 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // try full step, optimistic way
+            // try adaptive step
             //__________________________________________________________________
-            tao::add(C,step);
-            if(!balance())
+            while(true)
             {
-                throw exception("%scouldn't balance while normalizing, level-1",fn);
+                tao::add(C,step);
+                if(!balance())
+                {
+                    tao::mulby(0.5,step);
+                    if(tao::norm_sq(step)<=0)
+                    {
+                        throw exception("%scouldn't balance while normalizing, level-1",fn);
+                    }
+                    tao::set(C,Cini);
+                }
+                else
+                {
+                    break;
+                }
             }
+
             updateChi(C);
             double gam1 = Gamma2Value();
             //std::cerr << "gamma: " << gam1 << " <- " << gam0 << std::endl;
