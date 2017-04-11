@@ -141,12 +141,22 @@ namespace yocto
             //
             // try adaptive step
             //__________________________________________________________________
+#if 0
+            tao::add(C,step);
+            if(!balance())
+            {
+                throw exception("%scouldn't balance while normalizing, level-1",fn);
+
+            }
+#else
             while(true)
             {
+                //std::cerr << "step=" << step << std::endl;
                 tao::add(C,step);
                 if(!balance())
                 {
                     tao::mulby(0.5,step);
+                    std::cerr << "\treduced_step=" << step << std::endl;
                     if(tao::norm_sq(step)<=0)
                     {
                         throw exception("%scouldn't balance while normalizing, level-1",fn);
@@ -155,9 +165,11 @@ namespace yocto
                 }
                 else
                 {
+                    //std::cerr << "balanced" << std::endl;
                     break;
                 }
             }
+#endif
 
             updateChi(C);
             double gam1 = Gamma2Value();

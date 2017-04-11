@@ -2,6 +2,7 @@
 #define YOCTO_ALCHEMY_BOOT_INCLUDED 1
 
 #include "yocto/alchemy/equilibria.hpp"
+#include "yocto/code/rand32.hpp"
 
 namespace yocto
 {
@@ -14,7 +15,7 @@ namespace yocto
         // compute initial composition from constraints and
         // equilibria
         //______________________________________________________________________
-        class boot
+        class boot : public uniform_generator<double,rand32_kiss>
         {
         public:
 

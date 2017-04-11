@@ -29,6 +29,7 @@ namespace yocto
             matrix<double> P;
             matrix<double> Q;
             vector<double> Lam;
+            vector<double> C;
             vector<double> Cstar;
             vector<double> Ctemp;
             vector<double> V;
@@ -36,10 +37,11 @@ namespace yocto
 
             numeric<double>::function F;
 
-            inline BootSol(equilibria     &usr_eqs,
-                           const library  &usr_lib,
+            inline BootSol(boot                             &ran,
+                           equilibria                       &usr_eqs,
+                           const library                    &usr_lib,
                            array<boot::constraint::pointer> &cst,
-                           const double t ) :
+                           const double                      t ) :
             eqs(usr_eqs),
             lib(usr_lib),
             M(lib.size()),
@@ -47,6 +49,7 @@ namespace yocto
             Nc(cst.size()),
             P(),
             Lam(),
+            C(),
             Cstar(),
             Ctemp(),
             F( this, & BootSol :: call_F )
@@ -61,6 +64,7 @@ namespace yocto
                 P.make(Nc,M);
                 Q.make(N,M);
                 Lam.make(Nc);
+                C.make(M);
                 Cstar.make(M);
                 Ctemp.make(M);
                 V.make(N);
@@ -105,14 +109,61 @@ namespace yocto
                 SVD::truncate(Q);
                 std::cerr << "Q=" << Q << std::endl;
 
-                eqs.computeK(t);
 
+                double Cmin = 0;
+                double Cmax = 0;
+                {
+                    size_t i    = 0;
+                    for(equilibria::iterator ii=eqs.begin();ii!=eqs.end();++ii)
+                    {
+                        const equilibrium &eq = **ii;
 
-               
+                        ++i;
+                        const double Ki    = ( eqs.K[i] = eq.K(t) );
+                        const double delta = eq.delta_nu();
+                        std::cerr << "K_{" << eq.name << "}=" << Ki << ", delta_nu=" << delta << std::endl;
+                        if(delta)
+                        {
+                            const double Ci = pow(Ki,1.0/delta);
+                            std::cerr << "\tC_K=" << Ci << std::endl;
+                            if(Cmin>0)
+                            {
+                                Cmin = min_of(Ci,Cmin);
+                            }
+                            else
+                            {
+                                Cmin = Ci;
+                            }
+                            Cmax = max_of(Ci,Cmax);
+                        }
+                    }
+                }
+
+                std::cerr << "Cmin=" << Cmin << std::endl;
+                std::cerr << "Cmax=" << Cmax << std::endl;
+
+                if(Cmax<=0)
+                {
+                    // 0 is solution...
+                    return;
+                }
+
+                const double Camp = Cmax - Cmin;
+
+                // generate initial configuration
+                for(size_t j=M;j>0;--j)
+                {
+                    C[j] = Cmin + ran() * Camp;
+                }
+                std::cerr << "Cran=" << C << std::endl;
+                tao::mul(V,Q,C);
+                gen_C(C,V);
+                std::cerr << "Cini=" << C << std::endl;
+                std::cerr << "Vini=" << V << std::endl;
 
             }
 
-        
+
 
 
             double call_F(double alpha)
@@ -139,23 +190,23 @@ namespace yocto
                 tao::set(Ctry,Cstar);
                 tao::mul_add_trn(Ctry,Q,Vtry);
             }
-
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(BootSol);
         };
-
-
-
+        
+        
+        
         void boot::solution(array<double> &C0,
                             equilibria    &eqs,
                             const double t)
         {
-
-            BootSol sol(eqs, *(eqs.pLib), constraints, t);
-
-
+            
+            BootSol sol(*this,eqs,*(eqs.pLib),constraints,t);
+            
+            
         }
-
+        
     }
 }
 
