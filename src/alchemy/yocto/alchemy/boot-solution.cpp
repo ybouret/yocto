@@ -4,7 +4,9 @@
 #include "yocto/math/core/lu.hpp"
 
 #include "yocto/ios/ocstream.hpp"
-#include "yocto/math/opt/cgrad.hpp"
+#include "yocto/math/opt/bracket.hpp"
+#include "yocto/math/opt/minimize.hpp"
+
 
 
 
@@ -108,7 +110,10 @@ namespace yocto
                 std::cerr << "P  =" << P << std::endl;
                 std::cerr << "Lam=" << Lam << std::endl;
 
+                //______________________________________________________________
+                //
                 // compute Cstar = P'*inv(P*P')*Lam
+                //______________________________________________________________
                 {
                     matrix<double> P2(Nc);
                     tao::mmul_rtrn(P2,P,P);
@@ -118,13 +123,16 @@ namespace yocto
                         throw exception("%ssingular set of constraints",fn);
                     }
                     vector<double> U(Nc);
-                    tao::neg(U,Lam);
+                    tao::set(U,Lam);
                     LU<double>::solve(P2,U);
-                    tao::mul_trn(Cstar,P,Lam);
+                    tao::mul_trn(Cstar,P,U);
                 }
                 std::cerr << "Cstar=" << Cstar << std::endl;
 
+                //______________________________________________________________
+                //
                 // compute orthonornal matrix
+                //______________________________________________________________
                 if( !SVD::orthonormal(Q,P) )
                 {
                     throw exception("%sunable to build orthonormal matrix!",fn);
@@ -132,7 +140,10 @@ namespace yocto
                 SVD::truncate(Q);
                 std::cerr << "Q=" << Q << std::endl;
 
-
+                //______________________________________________________________
+                //
+                // compute concentration space
+                //______________________________________________________________
                 double Cmin = 0;
                 double Cmax = 0;
                 {
@@ -144,11 +155,11 @@ namespace yocto
                         ++i;
                         const double Ki    = ( eqs.K[i] = eq.K(t) );
                         const double delta = eq.delta_nu();
-                        std::cerr << "K_{" << eq.name << "}=" << Ki << ", delta_nu=" << delta << std::endl;
+                        //std::cerr << "K_{" << eq.name << "}=" << Ki << ", delta_nu=" << delta << std::endl;
                         if(delta)
                         {
                             const double Ci = pow(Ki,1.0/delta);
-                            std::cerr << "\tC_K=" << Ci << std::endl;
+                            std::cerr << "\tC_{" << eq.name << "}=" << Ci << std::endl;
                             if(Cmin>0)
                             {
                                 Cmin = min_of(Ci,Cmin);
@@ -162,8 +173,8 @@ namespace yocto
                     }
                 }
 
-                std::cerr << "Cmin=" << Cmin << std::endl;
-                std::cerr << "Cmax=" << Cmax << std::endl;
+                std::cerr << "\t\tCmin=" << Cmin << std::endl;
+                std::cerr << "\t\tCmax=" << Cmax << std::endl;
 
                 if(Cmax<=0)
                 {
@@ -173,43 +184,73 @@ namespace yocto
 
                 const double Camp = Cmax - Cmin;
 
-#define COMPUTE_H() (eqs.Gamma2Value())
+//#define COMPUTE_H() (eqs.Gamma2Value())
+#define COMPUTE_H() (tao::norm_sq(eqs.Gamma))
 
+                size_t num_trials=0;
+
+            NEW_TRIAL:
+                ++num_trials;
                 // generate initial configuration
                 for(size_t j=M;j>0;--j)
                 {
-                    C[j] = Cmin + ran() * Camp;
+                    C[j] = Cmin + 100 * ran() * Camp;
                 }
                 std::cerr << "Cran=" << C << std::endl;
                 tao::mul(V,Q,C);
                 gen_C(C,V);
+                //moveV();
+                eqs.updatePhi(C);
+
+                double H0 = COMPUTE_H();
+
+            LOOP:
                 std::cerr << "Cini=" << C << std::endl;
                 std::cerr << "Vini=" << V << std::endl;
+                std::cerr << "\tH0=" << H0 << std::endl;
 
-                if(gen_beta(C))
-                {
-                    std::cerr << "beta=" << beta << std::endl;
-                    std::cerr << "eta="  << eta  << std::endl;
-                }
-
-
-
-                eqs.updatePhi(C);
-                double H0 = COMPUTE_H();
-                std::cerr << "H0=" << H0 << std::endl;
 
                 tao::mmul_rtrn(PhiQ, Phi, Q);
-                std::cerr << "PhiQ=" << PhiQ << std::endl;
+                //std::cerr << "PhiQ=" << PhiQ << std::endl;
                 if( ! LU<double>::build(PhiQ) )
                 {
                     std::cerr << "Need to restart..." << std::endl;
-                    exit(1);
+                    goto NEW_TRIAL;
                 }
                 tao::neg(dV,Gamma);
-                std::cerr << "dV=" << dV << std::endl;
-                
+                LU<double>::solve(PhiQ,dV);
+                //std::cerr << "dV=" << dV << std::endl;
+                double H1 = F(1.0);
+                std::cerr << "\tH1=" << H1 << std::endl;
 
+                if(H1<H0)
+                {
+                    H0=H1;
+                    tao::set(V,Vtemp);
+                    tao::set(C,Ctemp);
+                    eqs.updatePhi(C);
+                    goto LOOP;
+                }
+                else
+                {
+                    std::cerr << "-- Optimize H" << std::endl;
+                    triplet<double> xx = { 0.0, 0.5, -1 };
+                    triplet<double> hh = { H0,  F(xx.b), -1 };
+                    bracket<double>::expand(F,xx,hh);
+                    std::cerr << "xx=" << xx << ", hh=" << hh << std::endl;
+                    optimize1D<double>::run(F,xx,hh,0.0);
+                    const double alpha = max_of(0.0,xx.b);
+                    std::cerr << "alpha=" << alpha << std::endl;
+                    H1 = F(alpha);
+                    if(H1<H0)
+                    {
+                        goto LOOP;
+                    }
+                }
 
+                // check result
+                std::cerr << "Done" << std::endl;
+                std::cerr << "C=" << C << std::endl;
 
 
             }
@@ -230,9 +271,10 @@ namespace yocto
             {
                 tao::set(Ctry,Cstar);
                 tao::mul_add_trn(Ctry,Q,Vtry);
+                SVD::truncate(Ctry);
             }
 
-            inline bool gen_beta(const array<double> &Ctry) throw()
+            inline void moveV()
             {
                 bool bad = false;
                 for(size_t j=M;j>0;--j)
@@ -240,24 +282,82 @@ namespace yocto
                     beta[j] = 0;
                     if(eqs.active[j])
                     {
-                        const double Cj = 0;
+                        const double Cj = C[j];
                         if(Cj<0)
                         {
                             beta[j] = -Cj;
-                            bad = true;
+                            bad     = true;
                         }
                     }
                 }
-                if(bad)
+                if(!bad) return;
+                //std::cerr << "beta0=" << beta << std::endl;
+                tao::mul(eta,Q,beta);
+                //std::cerr << "eta  =" << eta  << std::endl;
+                tao::mul_trn(beta,Q,eta);
+                //std::cerr << "beta1=" << beta << std::endl;
+
+                // analyze
+                double alpha = 0;
+                for(size_t j=M;j>0;--j)
                 {
-                    tao::mul(eta,Q,beta);
-                    return true;
+                    if(!eqs.active[j]) continue;
+                    const double conc_j = C[j];
+                    const double beta_j = beta[j];
+
+                    if(conc_j>=0)
+                    {
+                        if(beta_j<0)
+                        {
+                            const double atemp = conc_j/(-beta_j);
+                            if(alpha<=0)
+                            {
+                                alpha = atemp;
+                            }
+                            else
+                            {
+                                alpha = min_of(alpha,atemp);
+                            }
+                            std::cerr << "#" << j << ": conc=" << conc_j << ", beta=" << beta_j << ": atemp=" << atemp << " => alpha=" << alpha << std::endl;
+                        }
+                    }
+                    else
+                    {
+                        assert(conc_j<0);
+                        if(beta_j<0)
+                        {
+                            alpha=0;
+                            std::cerr << "#" << j << ": conc=" << conc_j << ", beta=" << beta_j << ": take the risk alpha=0" << std::endl;
+                            break;
+                        }
+                        else
+                        {
+                            if(beta_j>0)
+                            {
+                                const double atemp = (-conc_j)/beta_j;
+                                if(alpha<=0)
+                                {
+                                    alpha = atemp;
+                                }
+                                else
+                                {
+                                    alpha = min_of(alpha,atemp);
+                                }
+                                std::cerr << "#" << j << ": conc=" << conc_j << ", beta=" << beta_j << ": atemp=" << atemp << " => alpha=" << alpha << std::endl;
+                            }
+                        }
+                    }
                 }
-                else
-                {
-                    return false;
-                }
+
+                tao::muladd(V, alpha, eta);
+                std::cerr << "conc0=" << C    << std::endl;
+                gen_C(C,V);
+                tao::mul(V,Q,C);
+                std::cerr << "conc1=" << C << std::endl;
+                std::cerr << "moveV=" << V << std::endl;
             }
+
+
 
 
         private:
@@ -270,9 +370,12 @@ namespace yocto
                             equilibria    &eqs,
                             const double t)
         {
-            
+            assert(C0.size()>=eqs.M);
             BootSol sol(*this,eqs,*(eqs.pLib),constraints,t);
-            
+            for(size_t j=eqs.M;j>0;--j)
+            {
+                C0[j] = sol.C[j];
+            }
             
         }
         
