@@ -34,6 +34,9 @@ namespace yocto
             vector<double> Ctemp;
             vector<double> V;
             vector<double> Vtemp;
+            vector<double> dV;
+            vector<double> beta;
+            vector<double> eta;
 
             numeric<double>::function F;
 
@@ -52,15 +55,26 @@ namespace yocto
             C(),
             Cstar(),
             Ctemp(),
+            V(),
+            Vtemp(),
+            dV(),
+            beta(),
+            eta(),
             F( this, & BootSol :: call_F )
             {
                 if(Nc+N!=M)
                     throw exception("%s#constraints=%u + #equilibria=%u != #species=%u", fn, unsigned(Nc), unsigned(N), unsigned(M) );
 
+                //______________________________________________________________
+                //
                 // special cases
+                //______________________________________________________________
 
 
+                //______________________________________________________________
+                //
                 // generic case
+                //______________________________________________________________
                 P.make(Nc,M);
                 Q.make(N,M);
                 Lam.make(Nc);
@@ -69,8 +83,17 @@ namespace yocto
                 Ctemp.make(M);
                 V.make(N);
                 Vtemp.make(N);
+                dV.make(N);
+                beta.make(M);
+                eta.make(N);
+                matrix<double> &Phi   = eqs.Phi;
+                matrix<double> &PhiQ  = eqs.Chi;
+                array<double>  &Gamma = eqs.Gamma;
 
+                //______________________________________________________________
+                //
                 // create linear part
+                //______________________________________________________________
                 for(size_t i=1;i<=Nc;++i)
                 {
                     const boot::constraint &cc = *cst[i];
@@ -150,6 +173,8 @@ namespace yocto
 
                 const double Camp = Cmax - Cmin;
 
+#define COMPUTE_H() (eqs.Gamma2Value())
+
                 // generate initial configuration
                 for(size_t j=M;j>0;--j)
                 {
@@ -161,27 +186,43 @@ namespace yocto
                 std::cerr << "Cini=" << C << std::endl;
                 std::cerr << "Vini=" << V << std::endl;
 
+                if(gen_beta(C))
+                {
+                    std::cerr << "beta=" << beta << std::endl;
+                    std::cerr << "eta="  << eta  << std::endl;
+                }
+
+
+
+                eqs.updatePhi(C);
+                double H0 = COMPUTE_H();
+                std::cerr << "H0=" << H0 << std::endl;
+
+                tao::mmul_rtrn(PhiQ, Phi, Q);
+                std::cerr << "PhiQ=" << PhiQ << std::endl;
+                if( ! LU<double>::build(PhiQ) )
+                {
+                    std::cerr << "Need to restart..." << std::endl;
+                    exit(1);
+                }
+                tao::neg(dV,Gamma);
+                std::cerr << "dV=" << dV << std::endl;
+                
+
+
+
+
             }
 
 
 
 
-            double call_F(double alpha)
+            double call_F(double x)
             {
-                for(size_t j=M;j>0;--j)
-                {
-                    if(eqs.active[j])
-                    {
-                        Ctemp[j] = alpha;
-                    }
-                    else
-                    {
-                        Ctemp[j] = 0;
-                    }
-                }
+                tao::setprobe(Vtemp,V,x,dV);
+                gen_C(Ctemp,Vtemp);
                 eqs.updateGamma(Ctemp);
-                return 0.5 * tao::norm_sq(eqs.Gamma);
-                //return eqs.Gamma2Value();
+                return COMPUTE_H();
             }
 
             inline void gen_C(array<double>       &Ctry,
@@ -190,7 +231,35 @@ namespace yocto
                 tao::set(Ctry,Cstar);
                 tao::mul_add_trn(Ctry,Q,Vtry);
             }
-            
+
+            inline bool gen_beta(const array<double> &Ctry) throw()
+            {
+                bool bad = false;
+                for(size_t j=M;j>0;--j)
+                {
+                    beta[j] = 0;
+                    if(eqs.active[j])
+                    {
+                        const double Cj = 0;
+                        if(Cj<0)
+                        {
+                            beta[j] = -Cj;
+                            bad = true;
+                        }
+                    }
+                }
+                if(bad)
+                {
+                    tao::mul(eta,Q,beta);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(BootSol);
         };
