@@ -356,7 +356,6 @@ namespace yocto
                 //______________________________________________________________
 
                 double alpha = 0.0;
-#define SET_ALPHA() do { if(alpha<=0) { alpha=atemp; } else { alpha = min_of(alpha,atemp); } } while(false)
                 
                 for(size_t j=1;j<=M;++j)
                 {
@@ -381,14 +380,41 @@ namespace yocto
                         {
                             assert(beta_j<0);
                             const double atemp = conc_j/(-beta_j);
-                            std::cerr << "decreasing limitation = " << atemp;
-                            SET_ALPHA();
+                            std::cerr << "decreasing limitation  = " << atemp;
+                            if(alpha<=0) alpha=atemp; else alpha=min_of(alpha,atemp);
                             std::cerr << " => alpha=" << alpha << std::endl;
                             continue;
                         }
-                        
                         assert(die("never get here"));
                     }
+                    else
+                    {
+                        assert(conc_j<0);
+                        if(beta_j<=0)
+                        {
+                            std::cerr << " need to take alpha=0!" << std::endl;
+                            alpha = 0;
+                            break;
+                        }
+                        else
+                        {
+                            assert(beta_j>0);
+                            const double atemp = (-conc_j)/beta_j;
+                            std::cerr << "increasing requirement = " << atemp;
+                            if(alpha<=0)
+                            {
+                                alpha=atemp;
+                            }
+                            else
+                            {
+                                alpha=min_of(alpha,atemp);
+                            }
+                            std::cerr << " => alpha=" << alpha << std::endl;
+                            continue;
+                        }
+                        assert(die("never get here"));
+                    }
+                    
 
 
 
