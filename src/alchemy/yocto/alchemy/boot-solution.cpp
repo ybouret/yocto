@@ -138,6 +138,7 @@ namespace yocto
                     throw exception("%sunable to build orthonormal matrix!",fn);
                 }
                 SVD::truncate(Q);
+
                 std::cerr << "Q=" << Q << std::endl;
 
                 //______________________________________________________________
@@ -213,6 +214,7 @@ namespace yocto
                 // project on the legal space to get initial V
                 //______________________________________________________________
                 tao::mul(V,Q,C);
+                moveV(C,V);
                 gen_C(C,V);
 
                 //______________________________________________________________
@@ -240,6 +242,10 @@ namespace yocto
                 tao::neg(dV,Gamma);
                 LU<double>::solve(PhiQ,dV);
 
+                //______________________________________________________________
+                //
+                // take it...
+                //______________________________________________________________
 
                 double H1 = F(1.0);
                 std::cerr << "\tH1=" << H1 << std::endl;
@@ -293,6 +299,46 @@ namespace yocto
                 tao::set(Ctry,Cstar);
                 tao::mul_add_trn(Ctry,Q,Vtry);
                 SVD::truncate(Ctry);
+            }
+
+            inline void moveV(array<double> &Ctry,
+                              array<double> &Vtry)  throw()
+            {
+                // initialize concentrations
+                bool bad = false;
+                gen_C(Ctry,Vtry);
+                std::cerr << "Ctry=" << Ctry << std::endl;
+                // and detect bad active ones
+                for(size_t j=M;j>0;--j)
+                {
+                    beta[j] = 0;
+                    if(eqs.active[j])
+                    {
+                        const double Cj = C[j];
+                        if(Cj<0)
+                        {
+                            beta[j] = -Cj;
+                            bad     = true;
+                        }
+                    }
+                }
+                if(!bad) return;
+
+                // so beta is the vector to add to C to
+                // get minimal valid concentration
+                std::cerr << "beta0=" << beta << std::endl;
+
+                // the closest vector is Q'*(Q*beta)
+                tao::mul(eta,Q,beta);
+                tao::mul_trn(beta,Q,eta);
+                std::cerr << "beta =" << beta << std::endl;
+
+                // now analyse how much of this beta we can add to C
+                
+
+                exit(0);
+
+
             }
 
 #if 0
