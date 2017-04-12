@@ -77,17 +77,18 @@ namespace yocto
                 //
                 // generic case
                 //______________________________________________________________
-                P.make(Nc,M);
-                Q.make(N,M);
-                Lam.make(Nc);
-                C.make(M);
-                Cstar.make(M);
-                Ctemp.make(M);
-                V.make(N);
-                Vtemp.make(N);
-                dV.make(N);
-                beta.make(M);
-                eta.make(N);
+                P.     make(Nc,M);
+                Q.     make(N,M);
+                Lam.   make(Nc);
+                C.     make(M);
+                Cstar. make(M);
+                Ctemp. make(M);
+                V.     make(N);
+                Vtemp. make(N);
+                dV.    make(N);
+                beta.  make(M);
+                eta.   make(N);
+                
                 matrix<double> &Phi   = eqs.Phi;
                 matrix<double> &PhiQ  = eqs.Chi;
                 array<double>  &Gamma = eqs.Gamma;
@@ -308,7 +309,6 @@ namespace yocto
                 //
                 // initialize concentrations
                 //______________________________________________________________
-
                 bool bad = false;
                 gen_C(Ctry,Vtry);
                 std::cerr << "Ctry=" << Ctry << std::endl;
@@ -356,7 +356,8 @@ namespace yocto
                 //______________________________________________________________
 
                 double alpha = 0.0;
-
+#define SET_ALPHA() do { if(alpha<=0) { alpha=atemp; } else { alpha = min_of(alpha,atemp); } } while(false)
+                
                 for(size_t j=1;j<=M;++j)
                 {
                     if(!eqs.active[j]) continue;
@@ -380,9 +381,12 @@ namespace yocto
                         {
                             assert(beta_j<0);
                             const double atemp = conc_j/(-beta_j);
-                            std::cerr << "decreasing limitation = " << atemp << std::endl;
+                            std::cerr << "decreasing limitation = " << atemp;
+                            SET_ALPHA();
+                            std::cerr << " => alpha=" << alpha << std::endl;
                             continue;
                         }
+                        
                         assert(die("never get here"));
                     }
 
