@@ -304,11 +304,20 @@ namespace yocto
             inline void moveV(array<double> &Ctry,
                               array<double> &Vtry)  throw()
             {
+                //______________________________________________________________
+                //
                 // initialize concentrations
+                //______________________________________________________________
+
                 bool bad = false;
                 gen_C(Ctry,Vtry);
                 std::cerr << "Ctry=" << Ctry << std::endl;
+
+                //______________________________________________________________
+                //
                 // and detect bad active ones
+                //______________________________________________________________
+
                 for(size_t j=M;j>0;--j)
                 {
                     beta[j] = 0;
@@ -324,17 +333,63 @@ namespace yocto
                 }
                 if(!bad) return;
 
+                //______________________________________________________________
+                //
                 // so beta is the vector to add to C to
                 // get minimal valid concentration
+                //______________________________________________________________
+
                 std::cerr << "beta0=" << beta << std::endl;
 
+                //______________________________________________________________
+                //
                 // the closest vector is Q'*(Q*beta)
+                //______________________________________________________________
+
                 tao::mul(eta,Q,beta);
                 tao::mul_trn(beta,Q,eta);
                 std::cerr << "beta =" << beta << std::endl;
 
+                //______________________________________________________________
+                //
                 // now analyse how much of this beta we can add to C
-                
+                //______________________________________________________________
+
+                double alpha = 0.0;
+
+                for(size_t j=1;j<=M;++j)
+                {
+                    if(!eqs.active[j]) continue;
+                    const double conc_j = Ctry[j];
+                    const double beta_j = beta[j];
+                    std::cerr << "#" << j << ", C=" << conc_j << ", beta=" << beta_j << " : ";
+
+                    //__________________________________________________________
+                    //
+                    // first case: C[j]>=0
+                    //__________________________________________________________
+
+                    if(conc_j>=0)
+                    {
+                        if(beta_j>=0)
+                        {
+                            std::cerr << "OK" << std::endl;
+                            continue;
+                        }
+                        else
+                        {
+                            assert(beta_j<0);
+                            const double atemp = conc_j/(-beta_j);
+                            std::cerr << "decreasing limitation = " << atemp << std::endl;
+                            continue;
+                        }
+                        assert(die("never get here"));
+                    }
+
+
+
+                    std::cerr << std::endl;
+                }
 
                 exit(0);
 
