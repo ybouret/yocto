@@ -196,7 +196,7 @@ namespace yocto
                 size_t num_trials=0;
 
             NEW_TRIAL:
-                ++num_trials;
+                ++num_trials; // TODO: add a check...
 
                 //______________________________________________________________
                 //
@@ -215,7 +215,10 @@ namespace yocto
                 tao::mul(V,Q,C);
                 gen_C(C,V);
 
-                // initialiaze loop data
+                //______________________________________________________________
+                //
+                // initialize loop data
+                //______________________________________________________________
                 eqs.updatePhi(C);
                 double H0 = COMPUTE_H();
 
@@ -224,7 +227,10 @@ namespace yocto
                 std::cerr << "Vini=" << V << std::endl;
                 std::cerr << "\tH0=" << H0 << std::endl;
 
+                //______________________________________________________________
+                //
                 // initialize Newton's step
+                //______________________________________________________________
                 tao::mmul_rtrn(PhiQ, Phi, Q);
                 if( ! LU<double>::build(PhiQ) )
                 {
