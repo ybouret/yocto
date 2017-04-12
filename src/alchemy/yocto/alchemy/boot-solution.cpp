@@ -94,7 +94,7 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // create linear part
+                // create linear system
                 //______________________________________________________________
                 for(size_t i=1;i<=Nc;++i)
                 {
@@ -131,7 +131,7 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // compute orthonornal matrix
+                // compute orthonormal matrix
                 //______________________________________________________________
                 if( !SVD::orthonormal(Q,P) )
                 {
@@ -142,7 +142,8 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // compute concentration space
+                // compute concentration space, while loading constants
+                // for subsequent computations
                 //______________________________________________________________
                 double Cmin = 0;
                 double Cmax = 0;
@@ -155,7 +156,6 @@ namespace yocto
                         ++i;
                         const double Ki    = ( eqs.K[i] = eq.K(t) );
                         const double delta = eq.delta_nu();
-                        //std::cerr << "K_{" << eq.name << "}=" << Ki << ", delta_nu=" << delta << std::endl;
                         if(delta)
                         {
                             const double Ci = pow(Ki,1.0/delta);
@@ -173,8 +173,8 @@ namespace yocto
                     }
                 }
 
-                std::cerr << "\t\tCmin=" << Cmin << std::endl;
-                std::cerr << "\t\tCmax=" << Cmax << std::endl;
+                std::cerr << "\tCmin=" << Cmin << std::endl;
+                std::cerr << "\tCmax=" << Cmax << std::endl;
 
                 if(Cmax<=0)
                 {
@@ -185,23 +185,38 @@ namespace yocto
                 const double Camp = Cmax - Cmin;
 
 //#define COMPUTE_H() (eqs.Gamma2Value())
-#define COMPUTE_H() (tao::norm_sq(eqs.Gamma))
+#define COMPUTE_H() (0.5*tao::norm_sq(eqs.Gamma))
 
+                //______________________________________________________________
+                //
+                //
+                // Making a trial from a random configuration
+                //
+                //______________________________________________________________
                 size_t num_trials=0;
 
             NEW_TRIAL:
                 ++num_trials;
+
+                //______________________________________________________________
+                //
                 // generate initial configuration
+                //______________________________________________________________
                 for(size_t j=M;j>0;--j)
                 {
                     C[j] = Cmin + 100 * ran() * Camp;
                 }
                 std::cerr << "Cran=" << C << std::endl;
+
+                //______________________________________________________________
+                //
+                // project on the legal space to get initial V
+                //______________________________________________________________
                 tao::mul(V,Q,C);
                 gen_C(C,V);
-                //moveV();
-                eqs.updatePhi(C);
 
+                // initialiaze loop data
+                eqs.updatePhi(C);
                 double H0 = COMPUTE_H();
 
             LOOP:
@@ -209,9 +224,8 @@ namespace yocto
                 std::cerr << "Vini=" << V << std::endl;
                 std::cerr << "\tH0=" << H0 << std::endl;
 
-
+                // initialize Newton's step
                 tao::mmul_rtrn(PhiQ, Phi, Q);
-                //std::cerr << "PhiQ=" << PhiQ << std::endl;
                 if( ! LU<double>::build(PhiQ) )
                 {
                     std::cerr << "Need to restart..." << std::endl;
@@ -219,7 +233,8 @@ namespace yocto
                 }
                 tao::neg(dV,Gamma);
                 LU<double>::solve(PhiQ,dV);
-                //std::cerr << "dV=" << dV << std::endl;
+
+
                 double H1 = F(1.0);
                 std::cerr << "\tH1=" << H1 << std::endl;
 
@@ -274,6 +289,7 @@ namespace yocto
                 SVD::truncate(Ctry);
             }
 
+#if 0
             inline void moveV()
             {
                 bool bad = false;
@@ -356,7 +372,7 @@ namespace yocto
                 std::cerr << "conc1=" << C << std::endl;
                 std::cerr << "moveV=" << V << std::endl;
             }
-
+#endif
 
 
 
