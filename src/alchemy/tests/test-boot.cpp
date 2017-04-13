@@ -33,16 +33,16 @@ YOCTO_UNIT_TEST_IMPL(boot)
     loader.conserve("NH4+","NH3",1e-5);
 
     std::cerr << loader << std::endl;
-    equilibria chemsys(chemlib);
+    equilibria::pointer chemsys( new equilibria(chemlib) );
     
     {
-        equilibrium &eq = chemsys.add("water",1e-14);
+        equilibrium &eq = chemsys->add("water",1e-14);
         eq.add("H+", 1);
         eq.add("HO-",1);
     }
     
     {
-        equilibrium &eq = chemsys.add("base",1e-9);
+        equilibrium &eq = chemsys->add("base",1e-9);
         eq.add("NH3",1);
         eq.add("H+",1);
         eq.add("NH4+",-1);
@@ -50,7 +50,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
     }
 
     {
-        equilibrium &eq = chemsys.add("acid",1e-4);
+        equilibrium &eq = chemsys->add("acid",1e-4);
         eq.add("H+",1);
         eq.add("A-",1);
         eq.add("AH",-1);
@@ -58,7 +58,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
 
 
 
-    chemsys.compile();
+    chemsys->compile();
     vector<double> C0(chemlib->size(),0);
     loader.solution(C0,chemsys);
     chemlib->display(std::cerr,C0);

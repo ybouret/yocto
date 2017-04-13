@@ -473,13 +473,13 @@ namespace yocto
         
         
         
-        void boot::solution(array<double> &C0,
-                            equilibria    &eqs,
+        void boot::solution(array<double>        &C0,
+                            equilibria::pointer  &eqs,
                             const double t)
         {
-            assert(C0.size()>=eqs.M);
-            BootSol sol(*this,eqs,*(eqs.pLib),constraints,t);
-            for(size_t j=eqs.M;j>0;--j)
+            assert(C0.size()>=eqs->M);
+            BootSol sol(*this,*eqs,*(eqs->pLib),constraints,t);
+            for(size_t j=eqs->M;j>0;--j)
             {
                 C0[j] = sol.C[j];
             }

@@ -26,16 +26,16 @@ YOCTO_UNIT_TEST_IMPL(titration)
     chemlib->add("NH3",0);
 
 
-    equilibria chemsys(chemlib);
+    equilibria::pointer chemsys( new equilibria(chemlib) );
 
     {
-        equilibrium &eq = chemsys.add("water",1e-14);
+        equilibrium &eq = chemsys->add("water",1e-14);
         eq.add("H+", 1);
         eq.add("HO-",1);
     }
 
     {
-        equilibrium &eq = chemsys.add("base",1e-9);
+        equilibrium &eq = chemsys->add("base",1e-9);
         eq.add("NH3",1);
         eq.add("H+",1);
         eq.add("NH4+",-1);
@@ -43,7 +43,7 @@ YOCTO_UNIT_TEST_IMPL(titration)
     }
 
     {
-        equilibrium &eq = chemsys.add("acid",1e-4);
+        equilibrium &eq = chemsys->add("acid",1e-4);
         eq.add("H+",1);
         eq.add("A-",1);
         eq.add("AH",-1);
@@ -51,10 +51,10 @@ YOCTO_UNIT_TEST_IMPL(titration)
 
 
 
-    chemsys.compile();
+    chemsys->compile();
     const double C0 = 1e-4;
     std::cerr << "Computing Acid Composition" << std::endl;
-    vector<double> Cacid(chemsys.M);
+    vector<double> Cacid(chemsys->M);
     {
         boot loader(chemlib);
         loader.electroneutrality();
@@ -72,7 +72,7 @@ YOCTO_UNIT_TEST_IMPL(titration)
     }
 
     std::cerr << "Computing Basic Composition" << std::endl;
-    vector<double> Csoda(chemsys.M);
+    vector<double> Csoda(chemsys->M);
     {
         boot loader(chemlib);
         loader.electroneutrality();
@@ -87,7 +87,7 @@ YOCTO_UNIT_TEST_IMPL(titration)
         std::cerr << "pH=" << chemlib->pH(Csoda) << std::endl;
     }
     
-    vector<double> CC(chemsys.M);
+    vector<double> CC(chemsys->M);
     
     std::cerr << "Mixing..." << std::endl;
     {
@@ -96,7 +96,7 @@ YOCTO_UNIT_TEST_IMPL(titration)
         for(double Vsoda=0;Vsoda<=2*Vacid;Vsoda+=0.01)
         {
             const double Vtot = Vacid + Vsoda;
-            chemsys.mix(CC,Vacid/Vtot,Cacid,Vsoda/Vtot,Csoda);
+            chemsys->mix(CC,Vacid/Vtot,Cacid,Vsoda/Vtot,Csoda);
             fp("%g %g\n", Vsoda, chemlib->pH(CC));
         }
     }

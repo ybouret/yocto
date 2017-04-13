@@ -17,11 +17,31 @@ namespace yocto
             //__________________________________________________________________
             typedef functor<void,TL2(Lua::State&,species&)> species_callback;
 
+            //! add the content of libName to lib
             static void load(Lua::State::Pointer   &vm,
                              const string          &libName,
                              library               &lib,
                              species_callback      *cb = 0);
 
+
+            //! helper class
+            class Library : public library
+            {
+            public:
+                inline Library(Lua::State::Pointer   &vm,
+                               const string          &libName,
+                               species_callback      *cb = 0 ) : library()
+                {
+                    __lua::load(vm,libName,*this,cb);
+                }
+
+                inline virtual ~Library() throw()
+                {
+                }
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Library);
+            };
 
             //__________________________________________________________________
             //
@@ -32,6 +52,25 @@ namespace yocto
                              equilibria          &eqs
                              );
 
+
+            class Equilibria : public equilibria
+            {
+            public:
+                inline Equilibria(Lua::State::Pointer    &vm,
+                                  const string           &eqsName,
+                                  const library::pointer &plib ) : equilibria(plib)
+                {
+                    __lua::load(vm,eqsName,*this);
+                }
+
+                inline virtual ~Equilibria() throw()
+                {
+                }
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Equilibria);
+            };
+
             //__________________________________________________________________
             //
             // Boot API
@@ -39,6 +78,23 @@ namespace yocto
             static void load(Lua::State::Pointer &vm,
                              const string        &bootName,
                              boot                &loader);
+
+            class Boot : public boot
+            {
+            public:
+                inline Boot(Lua::State::Pointer    &vm,
+                            const string           &bootName,
+                            const library::pointer &plib) :
+                boot(plib)
+                {
+                }
+
+                inline virtual ~Boot() throw() {}
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Boot);
+            };
+
 
             //__________________________________________________________________
             //

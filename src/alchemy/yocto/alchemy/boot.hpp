@@ -85,7 +85,7 @@ namespace yocto
 
 
             //void initialize( array<double> &C0, equilibria &eqs, const double t=0);
-            void solution( array<double> &C0, equilibria &eqs, const double t=0);
+            void solution( array<double> &C0, equilibria::pointer &pEqs, const double t=0);
 
 
         private:

@@ -7,9 +7,9 @@ using namespace alchemy;
 
 YOCTO_UNIT_TEST_IMPL(var)
 {
-    library lib;
-    lib.add("H+", 1);
-    lib.add("HO-",1);
+    library::pointer lib( new library() );
+    lib->add("H+", 1);
+    lib->add("HO-",1);
 
     const char *v_name[] =  { "zeta", "V" };
     const char *p_name[] =  { "zeta0", "V0" };

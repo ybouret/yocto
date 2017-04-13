@@ -8,7 +8,6 @@ using namespace alchemy;
 YOCTO_UNIT_TEST_IMPL(lua)
 {
     
-    library::pointer    pLib( new library() );
     Lua::State::Pointer vm( new Lua::State() );
     if(argc>1)
     {
@@ -19,32 +18,25 @@ YOCTO_UNIT_TEST_IMPL(lua)
         }
     }
 
-    __lua::load(vm, "species", *pLib);
-    pLib->display(std::cerr);
-
-    equilibria::pointer pEqs( new equilibria(pLib) );
-
-    __lua::load(vm,"eqs",*pEqs);
-
-    pEqs->compile();
+    library::pointer chemlib( new __lua::Library(vm,"species") );
+    chemlib->display(std::cerr);
 
 
+    equilibria::pointer chemsys( new __lua::Equilibria(vm,"eqs",chemlib) );
+    chemsys->compile();
 
-    boot loader(pLib);
-    __lua::load(vm, "sol", loader);
+
+    __lua::Boot loader(vm,"sol",chemlib);
 
 
 
 
-    vector<double> C0( pLib->size() + 2 );
-    //pEqs->computeK(0.0);
-    //pEqs->warm_up(C0);
-    //pEqs->init0(C0);
-    loader.solution(C0,*pEqs,0);
+    vector<double> C0( chemlib->size() + 2 );
+    loader.solution(C0,chemsys,0);
     
-    if(pLib->search("H+"))
+    if(chemlib->search("H+"))
     {
-        std::cerr << "pH=" << pLib->pH(C0) << std::endl;
+        std::cerr << "pH=" << chemlib->pH(C0) << std::endl;
     }
 
 }

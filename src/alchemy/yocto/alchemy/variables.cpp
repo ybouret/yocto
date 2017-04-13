@@ -61,12 +61,12 @@ namespace yocto
 
 
 #define YCHEM_VARIABLES_CTOR(N) \
-lib(a_lib), count(lib.size()),extra(0),db(N,as_capacity)
+shlib(a_lib), count(shlib->size()),extra(0),db(N,as_capacity)
 
-        variables:: variables(const library &a_lib,
-                              const char    *names[],
-                              const char    *loads[],
-                              const size_t   num) :
+        variables:: variables(const library::pointer &a_lib,
+                              const char             *names[],
+                              const char             *loads[],
+                              const size_t            num) :
         YCHEM_VARIABLES_CTOR(num)
         {
             for(size_t i=0;i<num;++i)
@@ -79,9 +79,9 @@ lib(a_lib), count(lib.size()),extra(0),db(N,as_capacity)
             }
         }
 
-        variables:: variables(const library       &a_lib,
-                              const array<string> &names,
-                              const array<string> &loads) :
+        variables:: variables(const library::pointer &a_lib,
+                              const array<string>    &names,
+                              const array<string>    &loads) :
         YCHEM_VARIABLES_CTOR(names.size())
         {
             assert(names.size()==loads.size());
@@ -94,7 +94,7 @@ lib(a_lib), count(lib.size()),extra(0),db(N,as_capacity)
 
         void variables:: create_variable(const string &name, const string &load)
         {
-            const variable::ptr pV( new variable(lib.size()+db.size()+1,name,load) );
+            const variable::ptr pV( new variable(shlib->size()+db.size()+1,name,load) );
             if(!db.insert(pV))
             {
                 throw exception("mutiple variable '%s'", name.c_str());

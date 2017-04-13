@@ -19,8 +19,8 @@ namespace yocto
         
         void effector:: update( array<double> &rho, const variables &params) const throw()
         {
-            assert(rho.size()>=params.lib.size());
-            for(size_t j=params.lib.size();j>0;--j)
+            assert(rho.size()>=params.shlib->size());
+            for(size_t j=params.shlib->size();j>0;--j)
             {
                 rho[j] *= pace;
             }
@@ -60,7 +60,7 @@ namespace yocto
                              const array<double> &Cout,
                              const variables     &params)
         {
-            const size_t M = params.lib.size(); assert(rho.size()>=M);
+            const size_t M = params.shlib->size(); assert(rho.size()>=M);
             _rho.make(M,0.0);
             
             for(size_t j=M;j>0;--j)
