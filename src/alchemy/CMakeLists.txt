@@ -5,6 +5,9 @@ SET( srcs ${decl} ${impl} )
 INSTALL( FILES ${decl} DESTINATION include/yocto/alchemy )
 SOURCE_GROUP( alchemy FILES ${srcs} )
 
+#eqs
+FILE(GLOB eqs_impl yocto/alchemy/eqs/*.cpp)
+SOURCE_GROUP( alchemy/eqs FILES ${eqs_impl} )
 #lua
 FILE( GLOB lua_decl yocto/alchemy/lua/*.hpp)
 FILE( GLOB lua_impl yocto/alchemy/lua/*.cpp)
@@ -17,7 +20,7 @@ INCLUDE_DIRECTORIES( . .. ../yocto ../mk ../lua++ )
 
 
 #specific
-ADD_LIBRARY( y-alchemy STATIC ${srcs} ${lua_srcs})
+ADD_LIBRARY( y-alchemy STATIC ${srcs} ${eqs_impl} ${lua_srcs})
 INSTALL( TARGETS y-alchemy ARCHIVE DESTINATION lib )
 
 IF(YOCTO_BUILD_TESTS)
