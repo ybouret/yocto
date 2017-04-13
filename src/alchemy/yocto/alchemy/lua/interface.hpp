@@ -3,6 +3,7 @@
 
 #include "yocto/lua/lua-funcs.hpp"
 #include "yocto/alchemy/boot.hpp"
+#include "yocto/alchemy/effectors.hpp"
 
 namespace yocto
 {
@@ -87,6 +88,7 @@ namespace yocto
                             const library::pointer &plib) :
                 boot(plib)
                 {
+                    __lua::load(vm,bootName,*this);
                 }
 
                 inline virtual ~Boot() throw() {}
@@ -106,6 +108,43 @@ namespace yocto
 
             //! read solution on stack
             static void load( lua_State *L, array<double> &S, const library &lib);
+
+
+            //__________________________________________________________________
+            //
+            // parameters API
+            //__________________________________________________________________
+            //! push a table of parameters from the variables
+            static void push( lua_State *L, const array<double> &A, const variables &params);
+
+            //! load values from params loading name
+            static void load( lua_State *L, array<double> &A, const variables &params);
+
+
+            //__________________________________________________________________
+            //
+            // effectors API
+            //__________________________________________________________________
+            static void load( lua_State *L, effectors &edb, const string &id);
+
+            class Effectors : public effectors
+            {
+            public:
+                inline Effectors(Lua::State::Pointer    &vm,
+                                 const string           &edbName) :
+                effectors()
+                {
+                    __lua::load(**vm,*this,edbName);
+                }
+
+                inline virtual ~Effectors() throw() {}
+
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Effectors);
+            };
+
+
         };
 
     }

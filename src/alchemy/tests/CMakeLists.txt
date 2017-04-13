@@ -1,9 +1,10 @@
 FILE(GLOB test_srcs test-*.cpp)
 ADD_EXECUTABLE(test-alchemy main.cpp ${test_srcs}
-	acetic.lua
-	carbonic.lua
-	water.lua
-	phosphoric.lua
+acetic.lua
+carbonic.lua
+water.lua
+phosphoric.lua
+boot-ab.lua
 )
 TARGET_LINK_YOCTO( test-alchemy alchemy lua++)
 
