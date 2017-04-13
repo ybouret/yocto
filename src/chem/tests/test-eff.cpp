@@ -1,7 +1,6 @@
 #include "yocto/utest/run.hpp"
 
 #include "yocto/chemical/lua/io.hpp"
-#include "yocto/lua/lua-config.hpp"
 #include "yocto/lua/lua-state.hpp"
 #include "yocto/code/rand.hpp"
 

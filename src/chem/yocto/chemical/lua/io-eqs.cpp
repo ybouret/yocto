@@ -1,7 +1,7 @@
 #include "yocto/chemical/lua/io.hpp"
 #include "yocto/exception.hpp"
 
-#include "yocto/lua/lua-maths.hpp"
+#include "yocto/lua/lua-funcs.hpp"
 
 namespace yocto
 {
@@ -17,7 +17,7 @@ namespace yocto
                                          lua_State    *L,
                                          const string &fn) :
                 equilibrium(id),
-                F(L,fn,false)
+                F(L,fn)
                 {
                 }
                 
