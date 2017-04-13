@@ -216,8 +216,7 @@ namespace yocto
                 //______________________________________________________________
                 tao::mul(V,Q,C);
                 moveV(C,V);
-                gen_C(C,V);
-
+                
                 //______________________________________________________________
                 //
                 // initialize loop data
@@ -338,8 +337,7 @@ namespace yocto
                 // so beta is the vector to add to C to
                 // get minimal valid concentration
                 //______________________________________________________________
-
-                std::cerr << "beta0=" << beta << std::endl;
+                //std::cerr << "beta0 =" << beta << std::endl;
 
                 //______________________________________________________________
                 //
@@ -348,7 +346,10 @@ namespace yocto
 
                 tao::mul(eta,Q,beta);
                 tao::mul_trn(beta,Q,eta);
-                std::cerr << "beta =" << beta << std::endl;
+                //std::cerr << "eta   =" << eta  << std::endl;
+                //std::cerr << "beta1 =" << beta << std::endl;
+                SVD::truncate(beta);
+                //std::cerr << "beta  =" << beta << std::endl;
 
                 //______________________________________________________________
                 //
@@ -362,45 +363,26 @@ namespace yocto
                     if(!eqs.active[j]) continue;
                     const double conc_j = Ctry[j];
                     const double beta_j = beta[j];
-                    std::cerr << "#" << j << ", C=" << conc_j << ", beta=" << beta_j << " : ";
+                    //std::cerr << "#" << j << ", C=" << conc_j << ", beta=" << beta_j << " : ";
 
-                    //__________________________________________________________
-                    //
-                    // first case: C[j]>=0
-                    //__________________________________________________________
+
 
                     if(conc_j>=0)
                     {
+                        //______________________________________________________
+                        //
+                        // first case: conc_j>=0
+                        //______________________________________________________
                         if(beta_j>=0)
                         {
-                            std::cerr << "OK" << std::endl;
+                            //std::cerr << "OK" << std::endl;
                             continue;
                         }
                         else
                         {
                             assert(beta_j<0);
                             const double atemp = conc_j/(-beta_j);
-                            std::cerr << "decreasing limitation  = " << atemp;
-                            if(alpha<=0) alpha=atemp; else alpha=min_of(alpha,atemp);
-                            std::cerr << " => alpha=" << alpha << std::endl;
-                            continue;
-                        }
-                        assert(die("never get here"));
-                    }
-                    else
-                    {
-                        assert(conc_j<0);
-                        if(beta_j<=0)
-                        {
-                            std::cerr << " need to take alpha=0!" << std::endl;
-                            alpha = 0;
-                            break;
-                        }
-                        else
-                        {
-                            assert(beta_j>0);
-                            const double atemp = (-conc_j)/beta_j;
-                            std::cerr << "increasing requirement = " << atemp;
+                            //std::cerr << "decreasing limitation  = " << atemp;
                             if(alpha<=0)
                             {
                                 alpha=atemp;
@@ -409,7 +391,38 @@ namespace yocto
                             {
                                 alpha=min_of(alpha,atemp);
                             }
-                            std::cerr << " => alpha=" << alpha << std::endl;
+                            //std::cerr << " => alpha=" << alpha << std::endl;
+                            continue;
+                        }
+                        assert(die("never get here"));
+                    }
+                    else
+                    {
+                        //______________________________________________________
+                        //
+                        // second case: conc_j>=0
+                        //______________________________________________________
+                        assert(conc_j<0);
+                        if(beta_j<=0)
+                        {
+                            //std::cerr << " need to take alpha=0!" << std::endl;
+                            alpha = 0;
+                            break;
+                        }
+                        else
+                        {
+                            assert(beta_j>0);
+                            const double atemp = (-conc_j)/beta_j;
+                            //std::cerr << "increasing requirement = " << atemp;
+                            if(alpha<=0)
+                            {
+                                alpha=atemp;
+                            }
+                            else
+                            {
+                                alpha=min_of(alpha,atemp);
+                            }
+                            //std::cerr << " => alpha=" << alpha << std::endl;
                             continue;
                         }
                         assert(die("never get here"));
@@ -420,96 +433,13 @@ namespace yocto
 
                     std::cerr << std::endl;
                 }
+                std::cerr << "\talpha=" << alpha << std::endl;
 
-                exit(0);
-
+                tao::muladd(Vtry,alpha,eta);
+                gen_C(Ctry,Vtry);
+                std::cerr << "Cend=" << Ctry << std::endl;
 
             }
-
-#if 0
-            inline void moveV()
-            {
-                bool bad = false;
-                for(size_t j=M;j>0;--j)
-                {
-                    beta[j] = 0;
-                    if(eqs.active[j])
-                    {
-                        const double Cj = C[j];
-                        if(Cj<0)
-                        {
-                            beta[j] = -Cj;
-                            bad     = true;
-                        }
-                    }
-                }
-                if(!bad) return;
-                //std::cerr << "beta0=" << beta << std::endl;
-                tao::mul(eta,Q,beta);
-                //std::cerr << "eta  =" << eta  << std::endl;
-                tao::mul_trn(beta,Q,eta);
-                //std::cerr << "beta1=" << beta << std::endl;
-
-                // analyze
-                double alpha = 0;
-                for(size_t j=M;j>0;--j)
-                {
-                    if(!eqs.active[j]) continue;
-                    const double conc_j = C[j];
-                    const double beta_j = beta[j];
-
-                    if(conc_j>=0)
-                    {
-                        if(beta_j<0)
-                        {
-                            const double atemp = conc_j/(-beta_j);
-                            if(alpha<=0)
-                            {
-                                alpha = atemp;
-                            }
-                            else
-                            {
-                                alpha = min_of(alpha,atemp);
-                            }
-                            std::cerr << "#" << j << ": conc=" << conc_j << ", beta=" << beta_j << ": atemp=" << atemp << " => alpha=" << alpha << std::endl;
-                        }
-                    }
-                    else
-                    {
-                        assert(conc_j<0);
-                        if(beta_j<0)
-                        {
-                            alpha=0;
-                            std::cerr << "#" << j << ": conc=" << conc_j << ", beta=" << beta_j << ": take the risk alpha=0" << std::endl;
-                            break;
-                        }
-                        else
-                        {
-                            if(beta_j>0)
-                            {
-                                const double atemp = (-conc_j)/beta_j;
-                                if(alpha<=0)
-                                {
-                                    alpha = atemp;
-                                }
-                                else
-                                {
-                                    alpha = min_of(alpha,atemp);
-                                }
-                                std::cerr << "#" << j << ": conc=" << conc_j << ", beta=" << beta_j << ": atemp=" << atemp << " => alpha=" << alpha << std::endl;
-                            }
-                        }
-                    }
-                }
-
-                tao::muladd(V, alpha, eta);
-                std::cerr << "conc0=" << C    << std::endl;
-                gen_C(C,V);
-                tao::mul(V,Q,C);
-                std::cerr << "conc1=" << C << std::endl;
-                std::cerr << "moveV=" << V << std::endl;
-            }
-#endif
 
 
 
