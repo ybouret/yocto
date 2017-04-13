@@ -186,8 +186,8 @@ namespace yocto
 
                 const double Camp = Cmax - Cmin;
 
-//#define COMPUTE_H() (eqs.Gamma2Value())
-#define COMPUTE_H() (0.5*tao::norm_sq(eqs.Gamma))
+#define COMPUTE_H() (eqs.Gamma2Value())
+//#define COMPUTE_H() (0.5*tao::norm_sq(eqs.Gamma))
 
                 //______________________________________________________________
                 //
@@ -206,7 +206,7 @@ namespace yocto
                 //______________________________________________________________
                 for(size_t j=M;j>0;--j)
                 {
-                    C[j] = Cmin + 100 * ran() * Camp;
+                    C[j] = Cmin + ran() * Camp;
                 }
                 std::cerr << "Cran=" << C << std::endl;
 
@@ -216,7 +216,7 @@ namespace yocto
                 //______________________________________________________________
                 tao::mul(V,Q,C);
                 moveV(C,V);
-                
+
                 //______________________________________________________________
                 //
                 // initialize loop data
@@ -226,7 +226,7 @@ namespace yocto
 
             LOOP:
                 std::cerr << "Cini=" << C << std::endl;
-                std::cerr << "Vini=" << V << std::endl;
+                //std::cerr << "Vini=" << V << std::endl;
                 std::cerr << "\tH0=" << H0 << std::endl;
 
                 //______________________________________________________________
@@ -264,13 +264,15 @@ namespace yocto
                     triplet<double> xx = { 0.0, 0.5, -1 };
                     triplet<double> hh = { H0,  F(xx.b), -1 };
                     bracket<double>::expand(F,xx,hh);
-                    std::cerr << "xx=" << xx << ", hh=" << hh << std::endl;
                     optimize1D<double>::run(F,xx,hh,0.0);
                     const double alpha = max_of(0.0,xx.b);
-                    std::cerr << "alpha=" << alpha << std::endl;
                     H1 = F(alpha);
                     if(H1<H0)
                     {
+                        H0=H1;
+                        tao::set(V,Vtemp);
+                        tao::set(C,Ctemp);
+                        eqs.updatePhi(C);
                         goto LOOP;
                     }
                 }
@@ -284,15 +286,23 @@ namespace yocto
 
 
 
-
+            //__________________________________________________________________
+            //
+            // objective function to minimize
+            //__________________________________________________________________
             double call_F(double x)
             {
                 tao::setprobe(Vtemp,V,x,dV);
-                gen_C(Ctemp,Vtemp);
+                //gen_C(Ctemp,Vtemp);
+                moveV(Ctemp,Vtemp);
                 eqs.updateGamma(Ctemp);
                 return COMPUTE_H();
             }
 
+            //__________________________________________________________________
+            //
+            // generate a concentration set from Lagrange multipliers
+            //__________________________________________________________________
             inline void gen_C(array<double>       &Ctry,
                               const array<double> &Vtry) const throw()
             {
@@ -310,7 +320,7 @@ namespace yocto
                 //______________________________________________________________
                 bool bad = false;
                 gen_C(Ctry,Vtry);
-                std::cerr << "Ctry=" << Ctry << std::endl;
+                //std::cerr << "Ctry=" << Ctry << std::endl;
 
                 //______________________________________________________________
                 //
@@ -433,11 +443,11 @@ namespace yocto
 
                     std::cerr << std::endl;
                 }
-                std::cerr << "\talpha=" << alpha << std::endl;
+                //std::cerr << "\talpha=" << alpha << std::endl;
 
                 tao::muladd(Vtry,alpha,eta);
                 gen_C(Ctry,Vtry);
-                std::cerr << "Cend=" << Ctry << std::endl;
+                //std::cerr << "Cend=" << Ctry << std::endl;
 
             }
 
