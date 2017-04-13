@@ -53,6 +53,7 @@ namespace yocto
             N(eqs.size()),
             Nc(cst.size()),
             P(),
+            Q(),
             Lam(),
             C(),
             Cstar(),
@@ -115,6 +116,7 @@ namespace yocto
                 //
                 // compute Cstar = P'*inv(P*P')*Lam
                 //______________________________________________________________
+                vector<double> U(Nc);
                 {
                     matrix<double> P2(Nc);
                     tao::mmul_rtrn(P2,P,P);
@@ -123,7 +125,6 @@ namespace yocto
                     {
                         throw exception("%ssingular set of constraints",fn);
                     }
-                    vector<double> U(Nc);
                     tao::set(U,Lam);
                     LU<double>::solve(P2,U);
                     tao::mul_trn(Cstar,P,U);
@@ -248,7 +249,7 @@ namespace yocto
                 //______________________________________________________________
 
                 double H1 = F(1.0);
-                std::cerr << "\tH1=" << H1 << std::endl;
+                //std::cerr << "\tH1=" << H1 << std::endl;
 
                 if(H1<H0)
                 {
@@ -260,7 +261,6 @@ namespace yocto
                 }
                 else
                 {
-                    std::cerr << "-- Optimize H" << std::endl;
                     triplet<double> xx = { 0.0, 0.5, -1 };
                     triplet<double> hh = { H0,  F(xx.b), -1 };
                     bracket<double>::expand(F,xx,hh);
@@ -277,11 +277,20 @@ namespace yocto
                     }
                 }
 
-                // check result
-                std::cerr << "Done" << std::endl;
-                std::cerr << "C=" << C << std::endl;
-
-
+                //______________________________________________________________
+                //
+                // check results
+                //______________________________________________________________
+                std::cerr << "H=" << H0 << std::endl;
+                std::cerr << "C=" << C  << std::endl;
+                tao::mul(U,P,C);
+                tao::sub(U,Lam);
+                const double rms = tao::RMS(U);
+                std::cerr << "rms=" << rms << std::endl;
+                if(rms>numeric<double>::ftol)
+                {
+                    throw exception("%sunable to match constraints!",fn);
+                }
             }
 
 
@@ -311,6 +320,11 @@ namespace yocto
                 SVD::truncate(Ctry);
             }
 
+
+            //__________________________________________________________________
+            //
+            // make corrections to get most positive concentrations
+            //__________________________________________________________________
             inline void moveV(array<double> &Ctry,
                               array<double> &Vtry)  throw()
             {

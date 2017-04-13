@@ -90,7 +90,7 @@ YOCTO_UNIT_TEST_IMPL(ode)
     loader.conserve("AH", "A-", 1e-4);
 
     vector<double> C(chemlib->size());
-    loader.initialize(C,*chemsys);
+    loader.solution(C,*chemsys);
 
     Kinetic    scheme;
     ode_type   sigma( &scheme, & Kinetic::Sigma );

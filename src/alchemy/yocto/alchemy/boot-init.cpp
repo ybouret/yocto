@@ -1,3 +1,5 @@
+#if 0
+
 #include "yocto/alchemy/boot.hpp"
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/core/svd.hpp"
@@ -278,4 +280,4 @@ namespace yocto
     }
 
 }
-
+#endif
