@@ -88,6 +88,8 @@ YOCTO_UNIT_TEST_INIT(64)
     
     YOCTO_UNIT_TEST_DECL(contour2d);
 
+    YOCTO_UNIT_TEST_DECL(newton);
+    
 }
 YOCTO_UNIT_TEST_EXEC()
 

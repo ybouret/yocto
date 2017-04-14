@@ -162,6 +162,18 @@ namespace yocto
 #undef  Y_TAO_SETPROBE
             }
 
+            //! a = c-b
+            template <typename ARR, typename BRR, typename CRR>
+            static inline void setvec( ARR &a, const BRR &b, const CRR &c) throw()
+            {
+                assert(a.size()<=b.size());
+                assert(a.size()<=c.size());
+#define Y_TAO_SETVEC(I) a[I] = static_cast<typename ARR::type>(c[I]) - static_cast<typename ARR::type>(b[I])
+                YOCTO_TAO_LOOP(a.size(),SETVEC);
+#undef  Y_TAO_SETVEC
+            }
+
+
             //! a = b + x * (c-b)
             template <typename ARR, typename BRR, typename CRR>
             static inline void setbar( ARR &a, const BRR &b, typename ARR::param_type x, const CRR &c) throw()
