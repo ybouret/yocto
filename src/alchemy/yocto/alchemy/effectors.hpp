@@ -8,7 +8,10 @@ namespace yocto
 {
     namespace alchemy
     {
-        
+        //______________________________________________________________________
+        //
+        // an effector
+        //______________________________________________________________________
         class effector : public counted_object
         {
         public:
@@ -20,7 +23,7 @@ namespace yocto
             virtual ~effector() throw();
             const string & key() const throw();
             
-            //! compute the rate without pace
+            //! compute the inward rate without pace
             virtual void rate(array<double>       &rho,
                               const double         t,
                               const array<double> &Cin,

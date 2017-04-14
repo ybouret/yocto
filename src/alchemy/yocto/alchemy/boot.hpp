@@ -83,8 +83,7 @@ namespace yocto
 
             friend std::ostream & operator<<(std::ostream &,const boot &);
 
-
-            //void initialize( array<double> &C0, equilibria &eqs, const double t=0);
+            
             void solution( array<double> &C0, equilibria::pointer &pEqs, const double t=0);
 
 
