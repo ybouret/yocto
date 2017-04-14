@@ -4,13 +4,13 @@ namespace yocto
 {
     namespace alchemy
     {
-        void __lua:: push( lua_State *L, const array<double> &S, const library &lib)
+        void __lua:: push( lua_State *L, const array<double> &S, const library::pointer &lib)
         {
             assert(L);
-            assert(S.size()>=lib.size());
-            const size_t M = lib.size();
+            assert(S.size()>=lib->size());
+            const size_t M = lib->size();
             lua_createtable(L, 0, M);
-            library::const_iterator j = lib.begin();
+            library::const_iterator j = lib->begin();
             for(size_t i=1;i<=M;++i,++j)
             {
                 const species &sp    = **j; assert(sp.indx==i);
@@ -22,10 +22,10 @@ namespace yocto
             }
         }
 
-        void __lua:: load( lua_State *L, array<double> &S, const library &lib)
+        void __lua:: load( lua_State *L, array<double> &S, const library::pointer &lib)
         {
             static const char fn[] = "_lua::load(array as solution): ";
-            assert(S.size()<=lib.size());
+            assert(S.size()>=lib->size());
             if(!lua_istable(L,-1))
                 throw exception("%sno  LUA_TABLE but '%s'", fn, lua_typename(L, lua_type(L, -1)));
 
@@ -46,9 +46,9 @@ namespace yocto
 
                 const string which  = lua_tostring(L,-2);
                 const double value  = lua_tonumber(L,-1);
-                const size_t indx   = lib.index_of(which);
+                const size_t indx   = lib->index_of(which);
                 assert(indx>0);
-                assert(indx<=lib.size());
+                assert(indx<=lib->size());
                 S[indx] = value;
 
                 /* removes 'value'; keeps 'key' for next iteration */

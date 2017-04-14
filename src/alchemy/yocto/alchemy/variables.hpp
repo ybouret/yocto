@@ -56,8 +56,8 @@ namespace yocto
             size_t operator[](const string &) const;
             size_t operator[](const char   *) const;
 
-            const library::pointer &shlib;
-            const size_t            count; //!< lib.size() + db.size()
+            const library::pointer &shlib; //!
+            const size_t            count; //!< shlib->size() + db.size() = nvar
             const size_t            extra;
 
             friend  std::ostream & operator<<( std::ostream &os, const variables &);

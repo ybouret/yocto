@@ -76,38 +76,23 @@ namespace yocto
             //
             // Boot API
             //__________________________________________________________________
+            //! add a set of constraints to the loader
             static void load(Lua::State::Pointer &vm,
                              const string        &bootName,
                              boot                &loader);
 
-            class Boot : public boot
-            {
-            public:
-                inline Boot(Lua::State::Pointer    &vm,
-                            const string           &bootName,
-                            const library::pointer &plib) :
-                boot(plib)
-                {
-                    __lua::load(vm,bootName,*this);
-                }
-
-                inline virtual ~Boot() throw() {}
-
-            private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(Boot);
-            };
-
+            
 
             //__________________________________________________________________
             //
             // Solution API
             //__________________________________________________________________
             //! push array as a solution
-            static void push( lua_State *L, const array<double> &S, const library &lib);
+            static void push( lua_State *L, const array<double> &S, const library::pointer &lib);
 
 
             //! read solution on stack
-            static void load( lua_State *L, array<double> &S, const library &lib);
+            static void load( lua_State *L, array<double> &S, const library::pointer &lib);
 
 
             //__________________________________________________________________
@@ -125,7 +110,7 @@ namespace yocto
             //
             // effectors API
             //__________________________________________________________________
-            static void load( lua_State *L, effectors &edb, const string &id);
+            static void load( Lua::State::Pointer &vm, effectors &edb, const string &id);
 
             class Effectors : public effectors
             {
@@ -134,7 +119,7 @@ namespace yocto
                                  const string           &edbName) :
                 effectors()
                 {
-                    __lua::load(**vm,*this,edbName);
+                    __lua::load(vm,*this,edbName);
                 }
 
                 inline virtual ~Effectors() throw() {}

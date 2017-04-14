@@ -26,8 +26,8 @@ YOCTO_UNIT_TEST_IMPL(lua)
     chemsys->compile();
 
 
-    __lua::Boot loader(vm,"sol",chemlib);
-
+    boot loader(chemlib);
+    __lua::load(vm,"ini",loader);
 
 
 

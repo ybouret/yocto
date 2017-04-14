@@ -23,4 +23,4 @@ ADD_TEST(Acetic      test-alchemy lua ${HERE}/acetic.lua)
 ADD_TEST(Carbonic    test-alchemy lua ${HERE}/carbonic.lua)
 ADD_TEST(Water       test-alchemy lua ${HERE}/water.lua)
 ADD_TEST(Phosphoric  test-alchemy lua ${HERE}/phosphoric.lua)
-
+ADD_TEST(Effectors   test-alchemy eff ${HERE}/acetic.lua)

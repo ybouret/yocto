@@ -20,14 +20,14 @@ namespace yocto
             virtual ~effector() throw();
             const string & key() const throw();
             
-            //! compute the rate without Vmax
+            //! compute the rate without pace
             virtual void rate(array<double>       &rho,
                               const double         t,
                               const array<double> &Cin,
                               const array<double> &Cout,
                               const variables     &params) = 0;
 
-            //! multiply rho[1..params.lib.size] by pace
+            //! multiply rho[1..params.shlib->size] by pace
             void update(array<double> &rho, const variables &params) const throw();
 
             friend std::ostream & operator<<( std::ostream &, const effector &);

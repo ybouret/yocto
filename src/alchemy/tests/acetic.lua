@@ -19,7 +19,7 @@ eqs =
     { "amoniac", 10^(-9.8) , {1, "H+" }, {1, "NH3"}, {-1,"NH4+"}}
 };
 
-C0=0.0;
+C0=0.0001;
 C1=0.00001;
 
 sol =
@@ -29,4 +29,25 @@ sol =
     { 0,   {1,"Cl-"} },
     { C0,  {1,"AcH"},  {1,"Ac-"} },
     { C1,  {1,"NH4+"}, {1,"NH3"} }
+};
+
+function Soude(t,Cin,Cout,params)
+local zeta = params["zeta"];
+print( "Soude@t=" .. t .. ", zeta=" .. zeta);
+local a = {};
+local rho = 0.001;
+a["Na+"] = rho;
+a["HO-"] = rho;
+return a;
+end
+
+function DoNothing()
+a = {};
+return a;
+end
+
+eff =
+{
+    "Soude",
+    "DoNothing"
 };
