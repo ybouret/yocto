@@ -27,16 +27,17 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Newton);
 
-            vector<T>  X0;   //!< nvar
-            vector<T>  F0;   //!< nvar
-            matrix<T>  J0;   //!< nvar x nvar, jacobian
-            vector<T>  p;    //!< descent direction
-            vector<T>  G0;   //!< grad(f) = J0'*F0
+            vector<T>  X0;    //!< nvar
+            vector<T>  F0;    //!< nvar
+            matrix<T>  J0;    //!< nvar x nvar, jacobian
+            vector<T>  w;     //!< for SVD
+            matrix<T>  V;     //!< for SVD
+            vector<T>  xstep; //!< full descent direction
+            vector<T>  gradf; //!< grad(f) = J0'*F0
+            vector<T>  delta;
             vector<T>  Xtry;
             vector<T>  Ftry;
-            vector<T>  step; //!< Xtry - X0
-            Function  *pF;
-            T          sigma;
+            Function  *hook;
             typename numeric<T>::function g;
 
             T call_g(T u);
