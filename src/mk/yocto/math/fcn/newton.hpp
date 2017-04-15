@@ -30,11 +30,9 @@ namespace yocto
             vector<T>  X0;    //!< nvar
             vector<T>  F0;    //!< nvar
             matrix<T>  J0;    //!< nvar x nvar, jacobian
-            vector<T>  w;     //!< for SVD
-            matrix<T>  V;     //!< for SVD
             vector<T>  xstep; //!< full descent direction
             vector<T>  gradf; //!< grad(f) = J0'*F0
-            vector<T>  delta;
+            vector<T>  delta; //!< Xtry - X0
             vector<T>  Xtry;
             vector<T>  Ftry;
             Function  *hook;
@@ -42,7 +40,7 @@ namespace yocto
 
             T call_g(T u);
             bool accept_step(const T forg,const T ftry) throw();
-
+            bool xconverged() const throw();
         };
     }
 }

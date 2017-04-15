@@ -24,7 +24,7 @@ namespace
                           const array<double> &X)
         {
             F[1] = 1.0 - tao::norm_sq(X);
-            F[2] = X[2] - X[1];
+            F[2] = X[2] - X[1];//+0.5;
         }
 
         inline void getJ(matrix<double>      &J,
@@ -57,6 +57,6 @@ YOCTO_UNIT_TEST_IMPL(newton)
     }
 
     newton.run(F, J, X);
-    
+    std::cerr << "NewtonX=" << X << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()
