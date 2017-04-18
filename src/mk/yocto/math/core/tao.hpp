@@ -59,7 +59,7 @@ namespace yocto
 #undef Y_TAO_SET
             }
 
-            //! a += b
+            //! a += b, a.size() <= b.size()
             template <typename ARR, typename BRR>
             static inline void add( ARR &a, const BRR &b ) throw()
             {
@@ -69,7 +69,7 @@ namespace yocto
 #undef Y_TAO_ADD
             }
             
-            //! a -= b
+            //! a -= b, a.size() <= b.size()
             template <typename ARR, typename BRR>
             static inline void sub( ARR &a, const BRR &b ) throw()
             {
@@ -79,7 +79,7 @@ namespace yocto
 #undef Y_TAO_SUB
             }
             
-            //! a = b-a
+            //! a = b-a, a.size() <= b.size()
             template <typename ARR, typename BRR>
             static inline void subp( ARR &a, const BRR &b ) throw()
             {
