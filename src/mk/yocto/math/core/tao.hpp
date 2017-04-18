@@ -31,12 +31,21 @@ namespace yocto
 
             //! a = x
             template <typename ARRAY>
-            static inline void ld( ARRAY &a, typename ARRAY::param_type x ) throw()
+            static inline void ld(ARRAY &a, typename ARRAY::param_type x) throw()
             {
 #define Y_TAO_LD(I) a[I] = x
                 YOCTO_TAO_LOOP(a.size(),LD);
+            }
+
+            //! a = x
+            template <typename ARRAY>
+            static inline void ld(ARRAY &a, typename ARRAY::param_type x, const size_t nvar) throw()
+            {
+                assert(a.size()>=nvar);
+                YOCTO_TAO_LOOP(nvar,LD);
 #undef Y_TAO_LD
             }
+
             
             //! a = b, a.size() <= b.size()
             template <typename ARR, typename BRR>
@@ -45,16 +54,14 @@ namespace yocto
                 assert(a.size()<=b.size());
 #define Y_TAO_SET(I) a[I] = static_cast<typename ARR::type>(b[I])
                 YOCTO_TAO_LOOP(a.size(),SET);
-#undef Y_TAO_SET
             }
 
             //! a=b, a.size()>=nvar, b.size()>=nvar
             template <typename ARR,typename BRR>
-            static inline void set( ARR &a, const BRR &b, const size_t nvar) throw()
+            static inline void set(ARR &a, const BRR &b, const size_t nvar) throw()
             {
                 assert(a.size()>=nvar);
                 assert(b.size()>=nvar);
-#define Y_TAO_SET(I) a[I] = static_cast<typename ARR::type>(b[I])
                 YOCTO_TAO_LOOP(nvar,SET);
 #undef Y_TAO_SET
             }
@@ -66,8 +73,19 @@ namespace yocto
                 assert(a.size()<=b.size());
 #define Y_TAO_ADD(I) a[I] += static_cast<typename ARR::type>(b[I])
                 YOCTO_TAO_LOOP(a.size(),ADD);
+            }
+
+            //! a += b, a.size()>=nvar, b.size()>=nvar
+            template <typename ARR, typename BRR>
+            static inline void add( ARR &a, const BRR &b, const size_t nvar ) throw()
+            {
+                assert(a.size()>=nvar);
+                assert(b.size()>=nvar);
+                YOCTO_TAO_LOOP(nvar,ADD);
 #undef Y_TAO_ADD
             }
+
+
             
             //! a -= b, a.size() <= b.size()
             template <typename ARR, typename BRR>
