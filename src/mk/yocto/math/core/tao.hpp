@@ -47,8 +47,18 @@ namespace yocto
                 YOCTO_TAO_LOOP(a.size(),SET);
 #undef Y_TAO_SET
             }
-            
-            
+
+            //! a=b, a.size()>=nvar, b.size()>=nvar
+            template <typename ARR,typename BRR>
+            static inline void set( ARR &a, const BRR &b, const size_t nvar) throw()
+            {
+                assert(a.size()>=nvar);
+                assert(b.size()>=nvar);
+#define Y_TAO_SET(I) a[I] = static_cast<typename ARR::type>(b[I])
+                YOCTO_TAO_LOOP(nvar,SET);
+#undef Y_TAO_SET
+            }
+
             //! a += b
             template <typename ARR, typename BRR>
             static inline void add( ARR &a, const BRR &b ) throw()

@@ -91,10 +91,7 @@ namespace yocto
             // initialize
             //
             //__________________________________________________________________
-            for(size_t i=nvar;i>0;--i)
-            {
-                X0[i] = X[i];
-            }
+            tao::set(Xtry,X,nvar);
             hook = &F;
             F(F0,X0);
             J(J0,X0);
@@ -102,10 +99,7 @@ namespace yocto
             goto LOOP;
 
         SUCCESS:
-            for(size_t i=nvar;i>0;--i)
-            {
-                X[i] = Xtry[i];
-            }
+            tao::set(X,Xtry,nvar);
             return true;
 
         LOOP:
