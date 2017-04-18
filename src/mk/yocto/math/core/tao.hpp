@@ -90,7 +90,7 @@ namespace yocto
             }
             
             
-            //! a = -b
+            //! a = -b, a.size() <= b.size()
             template <typename ARR, typename BRR>
             static inline void neg( ARR &a, const BRR &b ) throw()
             {
