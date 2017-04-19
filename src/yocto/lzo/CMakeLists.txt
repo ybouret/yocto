@@ -1,4 +1,4 @@
-PROJECT(lzo)
+PROJECT(y-lzo)
 
 SET( decl 
 	minilzo.h 

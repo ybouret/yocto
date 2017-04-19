@@ -1,3 +1,4 @@
+PROJECT(y-kr)
 ## kr
 
 FILE( GLOB hashing_decl yocto/hashing/*.hpp)

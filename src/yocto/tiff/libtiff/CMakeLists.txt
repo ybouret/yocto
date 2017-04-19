@@ -1,3 +1,5 @@
+PROJECT(y-tiff)
+
 # CMake build for libtiff
 #
 # Copyright © 2015 Open Microscopy Environment / University of Dundee

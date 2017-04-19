@@ -1,3 +1,4 @@
+PROJECT(y-bz2)
 
 SET(srcs
 	bzlib.h 
