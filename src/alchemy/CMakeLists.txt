@@ -1,3 +1,4 @@
+PROJECT(alchemy)
 #core
 FILE( GLOB decl yocto/alchemy/*.hpp)
 FILE( GLOB impl yocto/alchemy/*.cpp)
