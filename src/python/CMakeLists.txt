@@ -1,4 +1,4 @@
-PROJECT(Python)
+PROJECT(python)
 
 FIND_PACKAGE(PythonLibs)
 

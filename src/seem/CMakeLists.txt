@@ -1,3 +1,5 @@
+PROJECT(seem)
+
 FILE( GLOB decl yocto/seem/*.hpp )
 FILE( GLOB impl yocto/seem/*.cpp )
 SET( srcs ${decl} ${impl} )

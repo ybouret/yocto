@@ -1,4 +1,4 @@
-PROJECT(y-z)
+PROJECT(z)
 
 include(CheckTypeSize)
 include(CheckFunctionExists)

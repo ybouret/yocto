@@ -1,3 +1,4 @@
+PROJECT(net)
 
 FILE( GLOB net_decl yocto/net/*.hpp)
 FILE( GLOB net_impl yocto/net/*.cpp)

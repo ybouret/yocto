@@ -1,4 +1,4 @@
-PROJECT(y-json)
+PROJECT(json)
 
 SET(JSON_GRAM ${CMAKE_CURRENT_SOURCE_DIR}/yocto/json/json.g)
 SET(JSON_INCL ${CMAKE_CURRENT_SOURCE_DIR}/yocto/json/json.inc)

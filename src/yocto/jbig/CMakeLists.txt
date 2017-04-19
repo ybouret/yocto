@@ -1,4 +1,4 @@
-PROJECT(y-jbig)
+PROJECT(jbig)
 
 SET(decl jbig.h jbig_ar.h)
 SET(impl jbig.c jbig_ar.c)

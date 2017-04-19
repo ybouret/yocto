@@ -1,4 +1,4 @@
-PROJECT(y-bz2)
+PROJECT(bz2)
 
 SET(srcs
 	bzlib.h 

@@ -1,3 +1,4 @@
+PROJECT(R++)
 INCLUDE(../../share/R.cmake)
 INCLUDE_DIRECTORIES(. ../yocto ../mpl)
 

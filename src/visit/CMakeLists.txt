@@ -1,3 +1,5 @@
+PROJECT(visit)
+
 INCLUDE(../../share/visit.cmake)
 
 IF(VISIT_FOUND)

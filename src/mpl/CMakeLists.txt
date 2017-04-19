@@ -1,3 +1,5 @@
+PROJECT(mpl)
+
 #common code
 FILE( GLOB mpl_decl yocto/mpl/*.hpp)
 FILE( GLOB mpl_impl yocto/mpl/*.cpp)

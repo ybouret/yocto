@@ -1,4 +1,4 @@
-PROJECT(y-png)
+PROJECT(png)
 
 INCLUDE_DIRECTORIES(../zlib ${CMAKE_CURRENT_BINARY_DIR}/../zlib)
 INCLUDE(png_files.cmake)

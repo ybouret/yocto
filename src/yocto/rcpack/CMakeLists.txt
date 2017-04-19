@@ -1,3 +1,5 @@
+PROJECT(rcpack)
+
 ADD_EXECUTABLE(yocto_rcpack rcpack.cpp)
 TARGET_LINK_YOCTO(yocto_rcpack)
 

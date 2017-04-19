@@ -1,3 +1,4 @@
+PROJECT(ocl)
 
 INCLUDE(../../share/opencl.cmake)
 
