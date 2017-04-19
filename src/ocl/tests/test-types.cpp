@@ -89,20 +89,18 @@ YOCTO_UNIT_TEST_IMPL(types)
 
         std::cerr << "Creating Buffer" << std::endl;
 
-        ocl::BufferOf<float> buf(context,CL_MEM_READ_WRITE,100,NULL);
+        ocl::BufferOf<float> buf(context,CL_MEM_READ_WRITE,10,NULL);
 
         std::cerr << "Creating Data" << std::endl;
         vector<float> data(buf.ITEMS);
-
+        for(size_t i=1;i<=data.size();++i) data[i] = i;
+        
         std::cerr << "Enqueue Write..." << std::endl;
-        //buf.EnqueueWrite(Q, CL_FALSE, &data[1], buf.SIZE, 0);
+        Q.EnqueueWriteBuffer(buf,CL_FALSE, &data[1], buf.SIZE, 0);
         std::cerr << "Enqueue Write Items..." << std::endl;
-        //buf.EnqueueWriteItems(Q,CL_FALSE, &data[1], 100, 0);
+        Q.EnqueueWriteItems(buf,CL_FALSE,&data[1],buf.ITEMS,0);
 
-        std::cerr << "Enqueue Read..." << std::endl;
-        //buf.EnqueueRead(Q, CL_FALSE, &data[1], buf.SIZE, 0);
-        std::cerr << "Enqueue Read Items..." << std::endl;
-       // buf.EnqueueReadItems(Q,CL_FALSE, &data[1], 100, 0);
+
 
         std::cerr << "Creating sources" << std::endl;
         ocl::Sources sources;
@@ -127,6 +125,19 @@ YOCTO_UNIT_TEST_IMPL(types)
             std::cerr << OpenCL.BuildLogs << std::endl;
             throw;
         }
+
+        ocl::Kernel K1(program,"add");
+        K1.SetBuffer(0,buf);
+        Q.EnqueueTask(K1);
+
+
+        std::cerr << "Enqueue Read..." << std::endl;
+        Q.EnqueueReadBuffer(buf,CL_FALSE,&data[1],buf.SIZE,0);
+        std::cerr << "Enqueue Read Items..." << std::endl;
+        Q.EnqueueReadItems(buf,CL_FALSE,&data[1],buf.ITEMS,0);
+
+
+
     }
 
 
