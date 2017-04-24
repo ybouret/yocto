@@ -28,9 +28,9 @@ namespace yocto
         explicit VisIt();
 
         static const threading::longevity life_time = -10;
-        static const char name[];
 
     public:
+        static const char name[];
 
         class Simulation
         {

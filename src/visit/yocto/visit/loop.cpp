@@ -3,7 +3,7 @@
 namespace yocto
 {
 
-    static const char fn[] = "[VISIT] ";
+    static const char *fn = VisIt::name;
 
 #define VISIT_COMMAND_FAILURE (-1)
 #define VISIT_COMMAND_SUCCESS (0)
@@ -15,7 +15,7 @@ namespace yocto
         assert(command);
         if( MPI_SUCCESS != MPI_Bcast(command, 1, MPI_INT, 0, MPI_COMM_WORLD) )
         {
-            throw exception("%sBroadcastSlaveCommand",fn);
+            throw exception("[%s] BroadcastSlaveCommand",fn);
         }
     }
 
@@ -59,7 +59,7 @@ namespace yocto
                     case VISIT_COMMAND_FAILURE: return false;
                     case VISIT_COMMAND_PROCESS: VisItProcessEngineCommand(); break;
                     default:
-                        throw exception("%sunexpected command=%d",fn,command);
+                        throw exception("[%s] unexpected command=%d",fn,command);
                 }
             }
         }
@@ -74,8 +74,8 @@ namespace yocto
         {
             const int blocking   = (VISIT_SIMMODE_STOPPED == runMode) ? 1 : 0;
             int       visitstate = 0;
-
-            MPI.Printf0(stderr, "%sblocking=%d\n",fn,blocking);
+            const int cnx        = VisItIsConnected();
+            MPI.Printf0(stderr, "[%s] blocking=%d, connected=%d\n",fn,blocking,cnx);
 
             //__________________________________________________________________
             //
@@ -99,7 +99,7 @@ namespace yocto
             // broadcast visitstate
             //__________________________________________________________________
             MPI.Bcast(visitstate,0,MPI_COMM_WORLD);
-            MPI.Printf(stderr,"visitstate=%d\n",visitstate);
+            MPI.Printf(stderr,"[%s] visitstate=%d\n",fn,visitstate);
 
             //__________________________________________________________________
             //
@@ -115,7 +115,7 @@ namespace yocto
                     //
                     // will step
                     //__________________________________________________________
-                    MPI.Printf0(stderr, "STEP\n");
+                    MPI.Printf0(stderr, "[%s] STEP\n",name);
                     break;
                     
                 case 1:
@@ -125,12 +125,12 @@ namespace yocto
                     //__________________________________________________________
                     if(VisItAttemptToCompleteConnection())
                     {
-                        MPI.Printf0(stderr,"%sconnected\n",fn);
+                        MPI.Printf0(stderr,"[%s] CONNECTED\n",fn);
                         VisItSetSlaveProcessCallback(SlaveProcessCallback);
                     }
                     else
                     {
-                        MPI.Printf0(stderr,"%sdit not connect\n",fn);
+                        MPI.Printf0(stderr,"[%s] DIT NOT CONNECT\n",fn);
                     }
                     break;
 

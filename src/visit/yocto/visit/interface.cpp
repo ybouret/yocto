@@ -65,16 +65,20 @@ namespace yocto
 
         if(MPI.IsFirst)
         {
-            VisItInitializeSocketAndDumpSimFile(__sim_name,
+            if(!VisItInitializeSocketAndDumpSimFile(__sim_name,
                                                 __sim_comm,
                                                 NULL, // path
                                                 NULL, // inputfile
                                                 NULL, // guifile
                                                 NULL  // absolute path
-                                                );
+                                                )
+               )
+            {
+                throw exception("%s VisItInitializeSocketAndDumpSimFile",name);
+            }
         }
 
-        MPI.Printf(stderr, "Visit Ready on %d.%d\n",MPI.CommWorldSize,MPI.CommWorldRank);
+        MPI.Printf(stderr, "%s Ready on %d.%d\n",name,MPI.CommWorldSize,MPI.CommWorldRank);
         
         
     }
