@@ -15,7 +15,7 @@ namespace yocto
         int          cycle;
         double       time;
         int          runMode;
-        int          done;
+        bool         done;
         const int    par_rank;
         const int    par_size;
         const bool   parallel;
@@ -25,6 +25,8 @@ namespace yocto
                             const string &sim_comment,
                             const mpi    &usrMPI);
 
+        void loop();
+        
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(VisIt);
         friend class singleton<VisIt>;

@@ -1,4 +1,4 @@
-#include "sim.hpp"
+#include "yocto/visit/sim.hpp"
 
 namespace yocto
 {
@@ -42,7 +42,7 @@ namespace yocto
     cycle(0),
     time(0),
     runMode(VISIT_SIMMODE_STOPPED),
-    done(0),
+    done(false),
     par_rank(MPI.CommWorldRank),
     par_size(MPI.CommWorldSize),
     parallel(par_size>1),
