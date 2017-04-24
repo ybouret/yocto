@@ -1,4 +1,4 @@
-#include "yocto/visit/sim.hpp"
+#include "yocto/visit/interface.hpp"
 
 namespace yocto
 {

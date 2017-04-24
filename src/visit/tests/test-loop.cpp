@@ -1,5 +1,5 @@
 #include "yocto/utest/run.hpp"
-#include "yocto/visit/sim.hpp"
+#include "yocto/visit/interface.hpp"
 
 using namespace yocto;
 
@@ -10,9 +10,10 @@ YOCTO_UNIT_TEST_IMPL(loop)
     const string sim_comm = "";
     YOCTO_MPI_ENV();
 
-    VisIt &sim = VisIt::Start(sim_name,
-                              sim_comm,
-                              MPI);
+    VisIt &visit = VisIt::Start(sim_name,
+                                sim_comm,
+                                MPI);
 
+    visit.loop();
 }
 YOCTO_UNIT_TEST_DONE()
