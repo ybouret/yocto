@@ -26,7 +26,11 @@ namespace yocto
         BroadcastSlaveCommand(&command);
     }
 
+    //__________________________________________________________________________
+    //
     // dispatch Viewer's command to CPU
+    //__________________________________________________________________________
+
     static inline
     bool ProcessVisItCommand( VisIt::Simulation &sim )
     {
