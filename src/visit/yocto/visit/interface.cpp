@@ -4,6 +4,10 @@ namespace yocto
 {
     VisIt :: ~VisIt() throw()
     {
+        if(MPI.IsFirst)
+        {
+            VisItCloseTraceFile();
+        }
     }
 
     static inline int visit_broadcast_int_callback(int *value, int sender) throw()
@@ -11,8 +15,8 @@ namespace yocto
         return MPI_Bcast(value, 1, MPI_INT, sender, MPI_COMM_WORLD);
     }
     static inline int visit_broadcast_string_callback(char *str,
-                                               int   len,
-                                               int   sender) throw()
+                                                      int   len,
+                                                      int   sender) throw()
     {
         return MPI_Bcast(str, len, MPI_CHAR, sender, MPI_COMM_WORLD);
     }
@@ -44,8 +48,16 @@ namespace yocto
         //
         // preparing visit
         //______________________________________________________________________
-        MPI.Printf(stderr, "Visit Setup on %d.%d\n",MPI.CommWorldSize,MPI.CommWorldRank);
-        VisItSetupEnvironment();
+        MPI.Printf(stderr, "%s Setup on %d.%d\n",name,MPI.CommWorldSize,MPI.CommWorldRank);
+        if(MPI.IsFirst)
+        {
+            VisItOpenTraceFile("visit_trace.txt");
+        }
+
+        if(!VisItSetupEnvironment())
+        {
+            throw exception("%s: in VisItSetupEnvironment",name);
+        }
         VisItSetBroadcastIntFunction(visit_broadcast_int_callback);
         VisItSetBroadcastStringFunction(visit_broadcast_string_callback);
         VisItSetParallel(MPI.IsParallel?1:0);
@@ -62,7 +74,9 @@ namespace yocto
                                                 );
         }
 
+        MPI.Printf(stderr, "Visit Ready on %d.%d\n",MPI.CommWorldSize,MPI.CommWorldRank);
+        
         
     }
-
+    
 }
