@@ -14,6 +14,7 @@ YOCTO_UNIT_TEST_IMPL(loop)
                                 sim_comm,
                                 MPI);
 
-    visit.loop();
+    VisIt::Simulation sim(visit);
+    
 }
 YOCTO_UNIT_TEST_DONE()

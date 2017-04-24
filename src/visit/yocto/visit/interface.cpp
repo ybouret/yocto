@@ -6,11 +6,11 @@ namespace yocto
     {
     }
 
-    static int visit_broadcast_int_callback(int *value, int sender) throw()
+    static inline int visit_broadcast_int_callback(int *value, int sender) throw()
     {
         return MPI_Bcast(value, 1, MPI_INT, sender, MPI_COMM_WORLD);
     }
-    static int visit_broadcast_string_callback(char *str,
+    static inline int visit_broadcast_string_callback(char *str,
                                                int   len,
                                                int   sender) throw()
     {
@@ -38,28 +38,20 @@ namespace yocto
     }
 
     VisIt:: VisIt() :
-    MPI(*__MPI),
-    cycle(0),
-    time(0),
-    runMode(VISIT_SIMMODE_STOPPED),
-    done(false),
-    par_rank(MPI.CommWorldRank),
-    par_size(MPI.CommWorldSize),
-    parallel(par_size>1),
-    par_main(0==par_rank)
+    MPI(*__MPI)
     {
         //______________________________________________________________________
         //
         // preparing visit
         //______________________________________________________________________
-        MPI.Printf(stderr, "Visit Setup on %d.%d\n",par_size,par_rank);
+        MPI.Printf(stderr, "Visit Setup on %d.%d\n",MPI.CommWorldSize,MPI.CommWorldRank);
         VisItSetupEnvironment();
         VisItSetBroadcastIntFunction(visit_broadcast_int_callback);
         VisItSetBroadcastStringFunction(visit_broadcast_string_callback);
-        VisItSetParallel(parallel);
-        VisItSetParallelRank(par_rank);
+        VisItSetParallel(MPI.IsParallel?1:0);
+        VisItSetParallelRank(MPI.CommWorldRank);
 
-        if(par_main)
+        if(MPI.IsFirst)
         {
             VisItInitializeSocketAndDumpSimFile(__sim_name,
                                                 __sim_comm,

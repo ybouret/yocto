@@ -11,21 +11,15 @@ namespace yocto
     class VisIt : public singleton<VisIt>
     {
     public:
-        const mpi   &MPI;
-        int          cycle;
-        double       time;
-        int          runMode;
-        bool         done;
-        const int    par_rank;
-        const int    par_size;
-        const bool   parallel;
-        const bool   par_main;
+        class Simulation; //!< forward
 
+        const mpi   &MPI;
+        
         static VisIt &Start(const string &sim_name,
                             const string &sim_comment,
                             const mpi    &usrMPI);
 
-        void loop();
+
         
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(VisIt);
@@ -35,6 +29,26 @@ namespace yocto
 
         static const threading::longevity life_time = -10;
         static const char name[];
+
+    public:
+
+        class Simulation
+        {
+        public:
+            const mpi &MPI;
+            int        runMode;
+            int        cycle;
+            double     runTime;
+            bool       done;
+
+            virtual ~Simulation() throw();
+            explicit Simulation( const VisIt &visit );
+
+            void loop();
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Simulation);
+        };
     };
 }
 

@@ -3,10 +3,10 @@
 namespace yocto
 {
 
-    void VisIt:: loop()
+    void VisIt:: Simulation:: loop()
     {
 
-        do
+        while(!done)
         {
             const int blocking   = (VISIT_SIMMODE_STOPPED == runMode) ? 1 : 0;
             int       visitstate = 0;
@@ -18,13 +18,13 @@ namespace yocto
             //
             //__________________________________________________________________
 
-            if(par_main)
+            if(MPI.IsFirst)
             {
+                assert(0==MPI.CommWorldRank);
                 //______________________________________________________________
                 //
                 // read status from main
                 //______________________________________________________________
-
                 visitstate = VisItDetectInput(blocking,-1);
             }
 
@@ -59,8 +59,7 @@ namespace yocto
 
 
         }
-        while(!done);
-        
+
     }
 
 }
