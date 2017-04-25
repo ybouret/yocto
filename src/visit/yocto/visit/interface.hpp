@@ -40,14 +40,18 @@ namespace yocto
             int        cycle;
             double     runTime;
             bool       done;
-
+            const int  connected;
+            
             virtual ~Simulation() throw();
             explicit Simulation( const VisIt &visit );
 
             void loop();
+            void step();
+            void addGenericCommand(visit_handle &md, const char *command_name);
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Simulation);
+            virtual void one_step();
         };
     };
 }

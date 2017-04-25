@@ -11,7 +11,34 @@ namespace yocto
     runMode(VISIT_SIMMODE_STOPPED),
     cycle(0),
     runTime(0),
-    done(false)
+    done(false),
+    connected(false)
     {
     }
+
+    void VisIt::Simulation:: one_step()
+    {
+        MPI.Printf0(stderr, "[%s] default one_step #%10d\n",name,cycle);
+    }
+
+    void VisIt::Simulation:: step()
+    {
+        one_step();
+        ++cycle;
+    }
+
+    void VisIt::Simulation :: addGenericCommand(visit_handle &md, const char *command_name)
+    {
+        assert(command_name);
+        visit_handle cmd = VISIT_INVALID_HANDLE;
+        if( VISIT_OKAY != VisIt_CommandMetaData_alloc(&cmd) )
+        {
+            throw exception("[%s] Visit_CommandMetaData_alloc",name);
+        }
+
+        VisIt_CommandMetaData_setName(cmd,command_name);
+        VisIt_SimulationMetaData_addGenericCommand(md,cmd);
+    }
+
+
 }

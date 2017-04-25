@@ -49,9 +49,13 @@ namespace yocto
         // preparing visit
         //______________________________________________________________________
         MPI.Printf(stderr, "%s Setup on %d.%d\n",name,MPI.CommWorldSize,MPI.CommWorldRank);
+
         if(MPI.IsFirst)
         {
-            VisItOpenTraceFile("visit_trace.txt");
+            string trace_file = "trace-";
+            trace_file += __sim_name;
+            trace_file += ".txt";
+            VisItOpenTraceFile(trace_file.c_str());
         }
 
         if(!VisItSetupEnvironment())
@@ -74,13 +78,11 @@ namespace yocto
                                                 )
                )
             {
-                throw exception("%s VisItInitializeSocketAndDumpSimFile",name);
+                throw exception("%s: in VisItInitializeSocketAndDumpSimFile",name);
             }
         }
 
-        MPI.Printf(stderr, "%s Ready on %d.%d\n",name,MPI.CommWorldSize,MPI.CommWorldRank);
-        
-        
+        MPI.Printf(stderr, "%s Ready on %d.%d\n",name,MPI.CommWorldSize,MPI.CommWorldRank);        
     }
     
 }
