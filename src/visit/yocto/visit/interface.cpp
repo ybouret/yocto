@@ -2,13 +2,7 @@
 
 namespace yocto
 {
-    VisIt :: ~VisIt() throw()
-    {
-        if(MPI.IsFirst)
-        {
-            VisItCloseTraceFile();
-        }
-    }
+
 
     static inline int visit_broadcast_int_callback(int *value, int sender) throw()
     {
@@ -25,19 +19,30 @@ namespace yocto
 
     namespace
     {
-        static const char * __sim_name = 0;
-        static const char * __sim_comm = 0;
-        static const mpi * __MPI       = 0;
+        static const char * __sim_name  = 0;
+        static const char * __sim_comm  = 0;
+        static const mpi *  __MPI       = 0;
+        static bool         __sim_trace = false;
+    }
+
+    VisIt :: ~VisIt() throw()
+    {
+        if(MPI.IsFirst)
+        {
+            VisItCloseTraceFile();
+        }
     }
 
     VisIt & VisIt:: Start(const string &sim_name,
                           const string &sim_comm,
-                          const mpi    &usrMPI)
+                          const mpi    &usrMPI,
+                          const bool    usrTrace)
     {
         YOCTO_LOCK(access);
-        __sim_name = sim_name.c_str();
-        __sim_comm = sim_comm.c_str();
-        __MPI      = &usrMPI;
+        __sim_name  = sim_name.c_str();
+        __sim_comm  = sim_comm.c_str();
+        __MPI       = &usrMPI;
+        __sim_trace = usrTrace;
         return VisIt::instance();
     }
 
@@ -50,7 +55,7 @@ namespace yocto
         //______________________________________________________________________
         MPI.Printf(stderr, "%s Setup on %d.%d\n",name,MPI.CommWorldSize,MPI.CommWorldRank);
 
-        if(MPI.IsFirst)
+        if(__sim_trace && MPI.IsFirst)
         {
             string trace_file = "trace-";
             trace_file += __sim_name;
