@@ -18,6 +18,7 @@ namespace yocto
         static VisIt &Start(const string &sim_name,
                             const string &sim_comment,
                             const mpi    &usrMPI,
+                            const string *sim_gui  = NULL,
                             const bool    usrTrace = false);
 
 

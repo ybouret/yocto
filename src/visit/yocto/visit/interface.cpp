@@ -23,6 +23,7 @@ namespace yocto
         static const char * __sim_comm  = 0;
         static const mpi *  __MPI       = 0;
         static bool         __sim_trace = false;
+        static const char * __sim_gui   = 0;
     }
 
     VisIt :: ~VisIt() throw()
@@ -36,6 +37,7 @@ namespace yocto
     VisIt & VisIt:: Start(const string &sim_name,
                           const string &sim_comm,
                           const mpi    &usrMPI,
+                          const string *sim_gui,
                           const bool    usrTrace)
     {
         YOCTO_LOCK(access);
@@ -43,6 +45,7 @@ namespace yocto
         __sim_comm  = sim_comm.c_str();
         __MPI       = &usrMPI;
         __sim_trace = usrTrace;
+        __sim_gui   = (sim_gui != NULL) ? sim_gui->c_str() : NULL;
         return VisIt::instance();
     }
 
@@ -75,12 +78,12 @@ namespace yocto
         if(MPI.IsFirst)
         {
             if(!VisItInitializeSocketAndDumpSimFile(__sim_name,
-                                                __sim_comm,
-                                                NULL, // path
-                                                NULL, // inputfile
-                                                NULL, // guifile
-                                                NULL  // absolute path
-                                                )
+                                                    __sim_comm,
+                                                    NULL, // path
+                                                    NULL, // inputfile
+                                                    NULL, // guifile
+                                                    NULL  // absolute path
+                                                    )
                )
             {
                 throw exception("%s: in VisItInitializeSocketAndDumpSimFile",name);
