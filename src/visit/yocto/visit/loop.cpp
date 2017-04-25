@@ -1,4 +1,6 @@
 #include "yocto/visit/interface.hpp"
+#include "yocto/sequence/vector.hpp"
+#include "yocto/string/tokenizer.hpp"
 
 namespace yocto
 {
@@ -110,22 +112,49 @@ namespace yocto
     //__________________________________________________________________________
     //
     //
-    // ControlCommand
+    // Console/Control
     //
     //__________________________________________________________________________
+    static inline bool isSeparator(char C) throw()
+    {
+        switch(C)
+        {
+            case ' ':
+            case ';':
+            case '\r':
+            case '\n':
+                return true;
+
+            default:
+                break;
+        }
+        return false;
+    }
+
     static inline
-    void ControlCommandCallback(const char *cmd_, const char *args_, void *addr)
+    void ProcessAnyCommand(const string &com,
+                           void         *addr)
     {
         assert(addr);
         VisIt::Simulation &sim = *static_cast<VisIt::Simulation *>(addr);
-        const string       cmd  = cmd_;
-        const string       args = args_;
-
+        const mpi         &MPI = sim.MPI;
         //______________________________________________________________________
         //
         // parse command
         //______________________________________________________________________
-        sim.MPI.Printf(stderr,"CMD=[%s], ARGS=[%s]\n", cmd.c_str(), args.c_str());
+        MPI.Printf(stderr,"CMD=[%s]\n",com.c_str());
+
+
+        vector<string> tokens(16,as_capacity);
+        tokenizer::split(tokens,com,isSeparator);
+
+        if(tokens.size()<=0)
+        {
+            return;
+        }
+
+        const string &cmd = tokens[1];
+
 
         if( cmd == "quit" )
         {
@@ -142,6 +171,7 @@ namespace yocto
         if( cmd == "step" )
         {
             sim.step(); // TODO: check
+            sim.runMode = VISIT_SIMMODE_STOPPED;
             return;
         }
 
@@ -151,6 +181,58 @@ namespace yocto
             return;
         }
         
+    }
+
+    //__________________________________________________________________________
+    //
+    //
+    // ControlCommand
+    //
+    //__________________________________________________________________________
+    static inline
+    void ControlCommandCallback(const char *cmd_,
+                                const char *args_,
+                                void       *addr)
+    {
+        assert(addr);
+        string cmd  = cmd_;
+        cmd += ';';
+        cmd += args_;
+        ProcessAnyCommand(cmd,addr);
+    }
+
+
+
+    static inline bool isENDL(char C) throw()
+    {
+        return ('\n' == C) || ('\r' == C);
+    }
+
+    static inline
+    void ProcessConsoleInput(void *addr)
+    {
+        assert(addr);
+        VisIt::Simulation &sim = *static_cast<VisIt::Simulation *>(addr);
+        const mpi         &MPI = sim.MPI;
+
+
+        string cmd;
+        if(MPI.IsFirst)
+        {
+            char buffer[1024];
+            memset(buffer,0,sizeof(buffer));
+            const bool   isEOF = (NULL == fgets(buffer,sizeof(buffer)-1,stdin));
+            if(isEOF)
+            {
+                memcpy(buffer,"quit",5);
+            }
+            cmd = buffer;
+            cmd.trim(isENDL);
+        }
+        MPI.Bcast(cmd, 0, MPI_COMM_WORLD);
+
+        MPI.Printf(stderr, "cmd=[%s]\n", cmd.c_str());
+        ProcessAnyCommand(cmd,addr);
     }
 
 
@@ -178,7 +260,7 @@ namespace yocto
                 //
                 // read status from main
                 //______________________________________________________________
-                visitstate = VisItDetectInput(blocking,-1);
+                visitstate = VisItDetectInput(blocking,fileno(stdin));
             }
 
             //__________________________________________________________________
@@ -200,7 +282,7 @@ namespace yocto
                 case 0:
                     //__________________________________________________________
                     //
-                    // will step
+                    // will step, doesn't change status
                     //__________________________________________________________
                     step();
                     break;
@@ -219,7 +301,11 @@ namespace yocto
                     }
                     else
                     {
-                        MPI.Printf0(stderr,"[%s] DIT NOT CONNECT\n",fn);
+                        if(MPI.IsFirst)
+                        {
+                            const string errMsg = VisItGetLastError();
+                            MPI.Printf0(stderr,"[%s] DIT NOT CONNECT: %s\n",fn,errMsg.c_str());
+                        }
                     }
                     break;
 
@@ -236,6 +322,13 @@ namespace yocto
                     }
                     break;
 
+                case 3:
+                    //__________________________________________________________
+                    //
+                    // Console Input
+                    //__________________________________________________________
+                    ProcessConsoleInput(this);
+                    break;
 
                 default:
                     throw exception("VisIt failure code=%d",visitstate);

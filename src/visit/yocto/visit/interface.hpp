@@ -47,6 +47,7 @@ namespace yocto
 
             void loop();
             void step();
+            void update() throw(); //!< send visit signal to update
             void addGenericCommand(visit_handle &md, const char *command_name);
 
         private:

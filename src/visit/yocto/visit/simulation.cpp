@@ -25,6 +25,7 @@ namespace yocto
     {
         one_step();
         ++cycle;
+        update();
     }
 
     void VisIt::Simulation :: addGenericCommand(visit_handle &md, const char *command_name)
@@ -40,5 +41,10 @@ namespace yocto
         VisIt_SimulationMetaData_addGenericCommand(md,cmd);
     }
 
+    void VisIt::Simulation:: update() throw()
+    {
+        VisItTimeStepChanged();
+        VisItUpdatePlots();
+    }
 
 }
