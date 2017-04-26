@@ -3,6 +3,11 @@
 
 using namespace yocto;
 
+static inline
+void doNothing(void *addr)
+{
+}
+
 YOCTO_UNIT_TEST_IMPL(loop)
 {
 
@@ -19,6 +24,8 @@ YOCTO_UNIT_TEST_IMPL(loop)
                                 false);
 
     VisIt::Simulation sim(visit);
+
+    //VisItUI_clicked("STEP", doNothing, NULL);
 
     sim.loop();
     

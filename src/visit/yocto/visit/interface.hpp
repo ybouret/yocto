@@ -21,7 +21,7 @@ namespace yocto
                             const string *sim_gui  = NULL,
                             const bool    usrTrace = false);
 
-
+        
         
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(VisIt);
