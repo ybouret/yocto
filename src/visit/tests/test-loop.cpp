@@ -14,7 +14,9 @@ YOCTO_UNIT_TEST_IMPL(loop)
 
     VisIt &visit = VisIt::Start(sim_name,
                                 sim_comm,
-                                MPI);
+                                MPI,
+                                &sim_gui,
+                                false);
 
     VisIt::Simulation sim(visit);
 

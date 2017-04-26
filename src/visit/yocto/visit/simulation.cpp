@@ -28,7 +28,8 @@ namespace yocto
         update();
     }
 
-    void VisIt::Simulation :: addGenericCommand(visit_handle &md, const char *command_name)
+    void VisIt::Simulation :: addGenericCommand(visit_handle &md,
+                                                const char *  command_name)
     {
         assert(command_name);
         visit_handle cmd = VISIT_INVALID_HANDLE;

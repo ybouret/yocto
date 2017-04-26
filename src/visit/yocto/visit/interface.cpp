@@ -56,7 +56,7 @@ namespace yocto
         //
         // preparing visit
         //______________________________________________________________________
-        MPI.Printf(stderr, "%s Setup on %d.%d\n",name,MPI.CommWorldSize,MPI.CommWorldRank);
+        MPI.Printf(stderr, "%s Setup on %d.%d...\n",name,MPI.CommWorldSize,MPI.CommWorldRank);
 
         if(__sim_trace && MPI.IsFirst)
         {
@@ -79,10 +79,10 @@ namespace yocto
         {
             if(!VisItInitializeSocketAndDumpSimFile(__sim_name,
                                                     __sim_comm,
-                                                    NULL, // path
-                                                    NULL, // inputfile
-                                                    NULL, // guifile
-                                                    NULL  // absolute path
+                                                    NULL,      // path
+                                                    NULL,      // inputfile
+                                                    __sim_gui, // guifile
+                                                    NULL       // absolute path
                                                     )
                )
             {
@@ -90,7 +90,7 @@ namespace yocto
             }
         }
 
-        MPI.Printf(stderr, "%s Ready on %d.%d\n",name,MPI.CommWorldSize,MPI.CommWorldRank);        
+        MPI.Printf(stderr, "%s Ready on %d.%d !\n",name,MPI.CommWorldSize,MPI.CommWorldRank);        
     }
     
 }

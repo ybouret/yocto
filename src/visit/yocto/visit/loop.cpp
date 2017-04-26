@@ -94,13 +94,20 @@ namespace yocto
             return VISIT_INVALID_HANDLE;
         }
 
+        //______________________________________________________________________
+        //
         // common status
+        //______________________________________________________________________
+
         {
             VisIt_SimulationMetaData_setMode(md,sim.runMode);
             VisIt_SimulationMetaData_setCycleTime(md,sim.cycle,sim.runTime);
         }
 
+        //______________________________________________________________________
+        //
         // default generic command
+        //______________________________________________________________________
         sim.addGenericCommand(md,"run");
         sim.addGenericCommand(md,"step");
         sim.addGenericCommand(md,"halt");
@@ -142,7 +149,7 @@ namespace yocto
         //
         // parse command
         //______________________________________________________________________
-        MPI.Printf(stderr,"CMD=[%s]\n",com.c_str());
+        MPI.Printf(stderr,"COMMAND=[%s]\n",com.c_str());
 
 
         vector<string> tokens(16,as_capacity);
@@ -170,7 +177,7 @@ namespace yocto
 
         if( cmd == "step" )
         {
-            sim.step(); // TODO: check
+            sim.step(); // TODO: check args
             sim.runMode = VISIT_SIMMODE_STOPPED;
             return;
         }
@@ -231,7 +238,7 @@ namespace yocto
         }
         MPI.Bcast(cmd, 0, MPI_COMM_WORLD);
 
-        MPI.Printf(stderr, "cmd=[%s]\n", cmd.c_str());
+        MPI.Printf(stderr, "console=[%s]\n", cmd.c_str());
         ProcessAnyCommand(cmd,addr);
     }
 
@@ -331,7 +338,7 @@ namespace yocto
                     break;
 
                 default:
-                    throw exception("VisIt failure code=%d",visitstate);
+                    throw exception("[%s] failure code=%d",fn,visitstate);
             }
 
 
