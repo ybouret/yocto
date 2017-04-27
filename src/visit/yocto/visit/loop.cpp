@@ -152,16 +152,16 @@ namespace yocto
         MPI.Printf(stderr,"COMMAND=[%s]\n",com.c_str());
 
 
-        vector<string> tokens(16,as_capacity);
-        tokenizer::split(tokens,com,isSeparator);
-
-        if(tokens.size()<=0)
+        vector<string> args(16,as_capacity);
+        const string   cmd = tokenizer::get_command(args,com,isSeparator);
+        if(MPI.IsFirst)
         {
-            return;
+            fflush(stderr);
+            for(size_t i=1;i<=args.size();++i)
+            {
+                MPI.Printf0(stderr, "arg#%u: '%s'\n", unsigned(i), args[i].c_str());
+            }
         }
-
-        const string &cmd = tokens[1];
-
 
         if( cmd == "quit" )
         {

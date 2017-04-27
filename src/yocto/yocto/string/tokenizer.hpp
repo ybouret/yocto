@@ -28,6 +28,9 @@ namespace yocto {
             { return basic::string<T>( token_, units_); }
 
             static void split( sequence< basic::string<T> > &seq, const basic::string<T> &input, bool (*is_separator)( T ) );
+            static basic::string<T> get_command(sequence< basic::string<T> > &args,
+                                                const basic::string<T>       &input,
+                                                bool                        (*is_separator)(T) );
 
 
 
