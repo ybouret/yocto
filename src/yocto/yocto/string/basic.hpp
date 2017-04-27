@@ -160,6 +160,25 @@ friend inline bool operator OP ( const T       _lhs, const string &_rhs ) throw(
             void clean( bool (*bad)(T) ) throw();
 			void to_upper() throw();
             void to_lower() throw();
+
+            inline string & operator<<(const string &rhs)
+            {
+                append(rhs);
+                return *this;
+            }
+
+
+            inline string & operator<<(const T *rhs)
+            {
+                append(rhs);
+                return *this;
+            }
+
+            inline string & operator<<(const T C)
+            {
+                append(C);
+                return *this;
+            }
             
 		private:
 			size_t size_; //!< #chars

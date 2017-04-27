@@ -202,9 +202,14 @@ namespace yocto
                                 void       *addr)
     {
         assert(addr);
+#if 0
         string cmd  = cmd_;
         cmd += ';';
         cmd += args_;
+#endif
+        string cmd = cmd_;
+        cmd << ';' << args_;
+        
         ProcessAnyCommand(cmd,addr);
     }
 
