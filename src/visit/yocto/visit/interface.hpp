@@ -36,10 +36,15 @@ namespace yocto
     public:
         static const char name[];
 
+
         class Simulation
         {
         public:
-            typedef functor<void,null_type> Callback;
+#define YOCTO_VISIT_SIMULATION_CALLBACK_FUNCT TL2(const string &, const array<string> &)
+#define YOCTO_VISIT_SIMULATION_CALLBACK_PROTO const string &cmd, const array<string> &args
+
+            typedef functor<void,YOCTO_VISIT_SIMULATION_CALLBACK_FUNCT> Callback;
+            typedef map<string,Callback>                                CallbackDB;
 
             const mpi &MPI;
             int        runMode;
@@ -48,6 +53,7 @@ namespace yocto
             bool       done;
             const int  connected;
             Callback   doNothing;
+            CallbackDB callbacks;
 
             virtual ~Simulation() throw();
             explicit Simulation( const VisIt &visit );
@@ -56,21 +62,36 @@ namespace yocto
             void step();
             void update() throw(); //!< send visit signal to update
 
-            void addGenericCommand(visit_handle   &md,
-                                     const char     *command_name);
+
 
             void addGenericCommand(visit_handle   &md,
                                    const char     *command_name,
                                    const Callback &cb);
 
+            template <typename OBJECT_POINTER,typename METHOD_POINTER> inline
+            void addGenericCommand(visit_handle  &md,
+                                   const char    *command_name,
+                                   OBJECT_POINTER host,
+                                   METHOD_POINTER method)
+            {
+                const Callback cb(host,method);
+                addGenericCommand(md,command_name,cb);
+            }
+
+            void on_quit(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
+            void on_step(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO);
+            void on_halt(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
+            void on_run( YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
+            void do_nope(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Simulation);
             virtual void one_step();
-            void __doNothing() throw();
-
-            typedef map<string,Callback> CallbackDB;
-            CallbackDB cbdb;
+            void addGenericCommand(visit_handle   &md,
+                                   const char     *command_name);
             
+
+
 
         };
     };

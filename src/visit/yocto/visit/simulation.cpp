@@ -6,7 +6,11 @@ namespace yocto
     {
     }
 
-    void VisIt:: Simulation:: __doNothing() throw() {}
+    void VisIt:: Simulation:: do_nope(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw()
+    {
+        (void)cmd;
+        (void)args;
+    }
     
     VisIt:: Simulation:: Simulation( const VisIt &visit ) :
     MPI(visit.MPI),
@@ -15,7 +19,8 @@ namespace yocto
     runTime(0),
     done(false),
     connected(false),
-    doNothing(this, & Simulation:: __doNothing)
+    doNothing(this, & Simulation:: do_nope),
+    callbacks(16,as_capacity)
     {
     }
 
@@ -52,10 +57,11 @@ namespace yocto
                                                 const Callback &cb)
     {
         const string cmd = command_name;
-        if(!cbdb.insert(cmd,cb))
+        if(!callbacks.insert(cmd,cb))
         {
             throw exception("%s: multiple callbacks for command '%s'", name, cmd.c_str());
         }
+        MPI.Printf0(stderr, "registering <%s>\n", cmd.c_str());
         addGenericCommand(md,cmd.c_str());
     }
 

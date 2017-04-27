@@ -108,9 +108,9 @@ namespace yocto
         //
         // default generic command
         //______________________________________________________________________
-        sim.addGenericCommand(md,"run");
-        sim.addGenericCommand(md,"step");
-        sim.addGenericCommand(md,"halt");
+        sim.addGenericCommand(md,"run", &sim ,& VisIt::Simulation::on_run);
+        sim.addGenericCommand(md,"step",&sim, & VisIt::Simulation::on_step);
+        sim.addGenericCommand(md,"halt",&sim, & VisIt::Simulation::on_halt);
         //sim.addGenericCommand(md,"quit");
         return md;
     }
@@ -138,6 +138,27 @@ namespace yocto
         return false;
     }
 
+    void VisIt::Simulation:: on_quit(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw()
+    {
+        done = true;
+    }
+
+    void VisIt::Simulation:: on_halt(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw()
+    {
+        runMode = VISIT_SIMMODE_STOPPED;
+    }
+
+    void VisIt::Simulation:: on_run(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw()
+    {
+        runMode = VISIT_SIMMODE_RUNNING;
+    }
+
+    void VisIt::Simulation:: on_step(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO)
+    {
+        step(); // TODO: check args
+        runMode = VISIT_SIMMODE_STOPPED;
+    }
+
     static inline
     void ProcessAnyCommand(const string &com,
                            void         *addr)
@@ -163,31 +184,16 @@ namespace yocto
             }
         }
 
-        if( cmd == "quit" )
+        VisIt::Simulation::Callback *hook = sim.callbacks.search(cmd);
+        if(hook)
         {
-            sim.done = true;
-            return;
+            MPI.Printf0(stderr, "calling <%s>\n", cmd.c_str());
+            (*hook)(cmd,args);
         }
-
-        if( cmd == "halt" )
+        else
         {
-            sim.runMode = VISIT_SIMMODE_STOPPED;
-            return;
+            MPI.Printf0(stderr, "no call to <%s>\n", cmd.c_str());
         }
-
-        if( cmd == "step" )
-        {
-            sim.step(); // TODO: check args
-            sim.runMode = VISIT_SIMMODE_STOPPED;
-            return;
-        }
-
-        if( cmd == "run" )
-        {
-            sim.runMode = VISIT_SIMMODE_RUNNING;
-            return;
-        }
-        
     }
 
     //__________________________________________________________________________
@@ -202,11 +208,6 @@ namespace yocto
                                 void       *addr)
     {
         assert(addr);
-#if 0
-        string cmd  = cmd_;
-        cmd += ';';
-        cmd += args_;
-#endif
         string cmd = cmd_;
         cmd << ';' << args_;
         
@@ -256,7 +257,13 @@ namespace yocto
             const int blocking   = (VISIT_SIMMODE_STOPPED == runMode) ? 1 : 0;
             int       visitstate = 0;
             (int &)   connected    = VisItIsConnected();
-            MPI.Printf0(stderr, "[%s] blocking=%d, connected=%d\n",fn,blocking,connected);
+            //MPI.Printf0(stderr, "[%s] blocking=%d, connected=%d\n",fn,blocking,connected);
+            if(blocking&&MPI.IsFirst)
+            {
+                MPI.Printf0(stderr, "Ready[%c]> ", (connected!=0?'+' : '-'));
+                fflush(stderr);
+            }
+
 
             //__________________________________________________________________
             //
