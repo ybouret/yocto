@@ -108,10 +108,8 @@ namespace yocto
         //
         // default generic command
         //______________________________________________________________________
-        sim.addGenericCommand(md,"run", &sim ,& VisIt::Simulation::on_run);
-        sim.addGenericCommand(md,"step",&sim, & VisIt::Simulation::on_step);
-        sim.addGenericCommand(md,"halt",&sim, & VisIt::Simulation::on_halt);
-        //sim.addGenericCommand(md,"quit");
+        sim.addGenericCommands(md);
+        
         return md;
     }
 
@@ -184,11 +182,11 @@ namespace yocto
             }
         }
 
-        VisIt::Simulation::Callback *hook = sim.callbacks.search(cmd);
+        VisIt::Simulation::CallbackInfo *hook = sim.callbacks.search(cmd);
         if(hook)
         {
             MPI.Printf0(stderr, "calling <%s>\n", cmd.c_str());
-            (*hook)(cmd,args);
+            hook->cb(cmd,args);
         }
         else
         {

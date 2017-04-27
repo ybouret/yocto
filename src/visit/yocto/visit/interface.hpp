@@ -44,7 +44,33 @@ namespace yocto
 #define YOCTO_VISIT_SIMULATION_CALLBACK_PROTO const string &cmd, const array<string> &args
 
             typedef functor<void,YOCTO_VISIT_SIMULATION_CALLBACK_FUNCT> Callback;
-            typedef map<string,Callback>                                CallbackDB;
+            class CallbackInfo
+            {
+            public:
+                Callback   cb;
+                const bool ui;
+                inline  CallbackInfo(const Callback &userCB, const bool userUI) :
+                cb(userCB),
+                ui(userUI)
+                {
+                }
+
+                inline ~CallbackInfo() throw()
+                {
+                }
+
+                inline CallbackInfo(const CallbackInfo &other) :
+                cb(other.cb),
+                ui(other.ui)
+                {
+                }
+                
+
+            private:
+                YOCTO_DISABLE_ASSIGN(CallbackInfo);
+            };
+
+            typedef map<string,CallbackInfo> CallbackDB;
 
             const mpi &MPI;
             int        runMode;
@@ -64,19 +90,21 @@ namespace yocto
 
 
 
-            void addGenericCommand(visit_handle   &md,
-                                   const char     *command_name,
-                                   const Callback &cb);
+            void addCommand( const char     *command_name,
+                            const Callback  &cb,
+                            const bool       ui);
 
             template <typename OBJECT_POINTER,typename METHOD_POINTER> inline
-            void addGenericCommand(visit_handle  &md,
-                                   const char    *command_name,
-                                   OBJECT_POINTER host,
-                                   METHOD_POINTER method)
+            void addCommand(const char    *command_name,
+                            OBJECT_POINTER host,
+                            METHOD_POINTER method,
+                            const bool     ui)
             {
                 const Callback cb(host,method);
-                addGenericCommand(md,command_name,cb);
+                addCommand(command_name,cb,ui);
             }
+
+            void addGenericCommands(visit_handle &md) const;
 
             void on_quit(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
             void on_step(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO);
@@ -88,7 +116,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(Simulation);
             virtual void one_step();
             void addGenericCommand(visit_handle   &md,
-                                   const char     *command_name);
+                                   const char     *command_name) const;
             
 
 

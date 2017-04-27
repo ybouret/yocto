@@ -22,6 +22,11 @@ namespace yocto
     doNothing(this, & Simulation:: do_nope),
     callbacks(16,as_capacity)
     {
+
+        addCommand("run",  this, &Simulation::on_run,  true);
+        addCommand("step", this, &Simulation::on_step, true);
+        addCommand("halt", this, &Simulation::on_halt, true);
+        addCommand("quit", this, &Simulation::on_quit, false);
     }
 
     void VisIt::Simulation:: one_step()
@@ -39,7 +44,7 @@ namespace yocto
 
 
     void VisIt::Simulation :: addGenericCommand(visit_handle   &md,
-                                                const char *    command_name)
+                                                const char *    command_name) const
     {
         assert(command_name);
         visit_handle cmd = VISIT_INVALID_HANDLE;
@@ -52,17 +57,30 @@ namespace yocto
         VisIt_SimulationMetaData_addGenericCommand(md,cmd);
     }
 
-    void VisIt::Simulation :: addGenericCommand(visit_handle   &md,
-                                                const char *    command_name,
-                                                const Callback &cb)
+    void VisIt::Simulation :: addCommand(const char *    command_name,
+                                         const Callback &cb,
+                                         const bool      ui)
     {
-        const string cmd = command_name;
-        if(!callbacks.insert(cmd,cb))
+        const string       cmd = command_name;
+        const CallbackInfo cbi(cb,ui);
+        MPI.Printf0(stderr, "registering <%s>, for UI=%s\n", cmd.c_str(), (ui?"TRUE":"FALSE"));
+        if(!callbacks.insert(cmd,cbi))
         {
             throw exception("%s: multiple callbacks for command '%s'", name, cmd.c_str());
         }
-        MPI.Printf0(stderr, "registering <%s>\n", cmd.c_str());
-        addGenericCommand(md,cmd.c_str());
+    }
+
+    void VisIt::Simulation ::addGenericCommands(visit_handle &md) const
+    {
+        for( CallbackDB::const_iterator it = callbacks.begin(); it != callbacks.end(); ++it)
+        {
+            const CallbackInfo &cbi = *it;
+            if(cbi.ui)
+            {
+                const string &cmd = it->key;
+                addGenericCommand(md,cmd.c_str());
+            }
+        }
     }
 
 
