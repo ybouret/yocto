@@ -6,13 +6,16 @@ namespace yocto
     {
     }
 
+    void VisIt:: Simulation:: __doNothing() throw() {}
+    
     VisIt:: Simulation:: Simulation( const VisIt &visit ) :
     MPI(visit.MPI),
     runMode(VISIT_SIMMODE_STOPPED),
     cycle(0),
     runTime(0),
     done(false),
-    connected(false)
+    connected(false),
+    doNothing(this, & Simulation:: __doNothing)
     {
     }
 
