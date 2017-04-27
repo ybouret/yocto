@@ -6,6 +6,7 @@
 #include "yocto/mpi/mpi.hpp"
 #include "yocto/threading/singleton.hpp"
 #include "yocto/functor.hpp"
+#include "yocto/associative/map.hpp"
 
 namespace yocto
 {
@@ -55,13 +56,22 @@ namespace yocto
             void step();
             void update() throw(); //!< send visit signal to update
 
-            void addGenericCommand(visit_handle &md,
-                                   const char   *command_name);
+            void addGenericCommand(visit_handle   &md,
+                                     const char     *command_name);
+
+            void addGenericCommand(visit_handle   &md,
+                                   const char     *command_name,
+                                   const Callback &cb);
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Simulation);
             virtual void one_step();
             void __doNothing() throw();
+
+            typedef map<string,Callback> CallbackDB;
+            CallbackDB cbdb;
+            
+
         };
     };
 }

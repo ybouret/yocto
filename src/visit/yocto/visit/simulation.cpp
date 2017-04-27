@@ -31,8 +31,10 @@ namespace yocto
         update();
     }
 
-    void VisIt::Simulation :: addGenericCommand(visit_handle &md,
-                                                const char *  command_name)
+
+
+    void VisIt::Simulation :: addGenericCommand(visit_handle   &md,
+                                                const char *    command_name)
     {
         assert(command_name);
         visit_handle cmd = VISIT_INVALID_HANDLE;
@@ -44,6 +46,20 @@ namespace yocto
         VisIt_CommandMetaData_setName(cmd,command_name);
         VisIt_SimulationMetaData_addGenericCommand(md,cmd);
     }
+
+    void VisIt::Simulation :: addGenericCommand(visit_handle   &md,
+                                                const char *    command_name,
+                                                const Callback &cb)
+    {
+        const string cmd = command_name;
+        if(!cbdb.insert(cmd,cb))
+        {
+            throw exception("%s: multiple callbacks for command '%s'", name, cmd.c_str());
+        }
+        addGenericCommand(md,cmd.c_str());
+    }
+
+
 
     void VisIt::Simulation:: update() throw()
     {
