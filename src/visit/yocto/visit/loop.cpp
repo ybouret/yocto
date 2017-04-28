@@ -287,6 +287,14 @@ namespace yocto
         return h;
     }
 
+
+    //__________________________________________________________________________
+    //
+    //
+    // Main Loop
+    //
+    //__________________________________________________________________________
+
     void VisIt:: Simulation:: loop()
     {
 
@@ -325,7 +333,6 @@ namespace yocto
             // broadcast visitstate
             //__________________________________________________________________
             MPI.Bcast(visitstate,0,MPI_COMM_WORLD);
-            //MPI.Printf(stderr,"[%s] visitstate=%d\n",fn,visitstate);
 
             //__________________________________________________________________
             //
@@ -347,7 +354,7 @@ namespace yocto
                 case 1:
                     //__________________________________________________________
                     //
-                    // attempting connection
+                    // attempting connection and install callbacks
                     //__________________________________________________________
                     if(VisItAttemptToCompleteConnection())
                     {
