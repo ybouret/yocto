@@ -24,7 +24,7 @@ namespace yocto
             }
 
             virtual size_t dimensions()   const throw() = 0;
-            const size_t owned_memory; //!< owned bytes
+            const   size_t owned_memory; //!< owned bytes
 
         protected:
             explicit field_info() throw() :

@@ -322,6 +322,19 @@ namespace yocto
         return h;
     }
 
+    //__________________________________________________________________________
+    //
+    //
+    // DomainBoundaries
+    //
+    //__________________________________________________________________________
+    static inline
+    visit_handle SimGetDomainBoundaries(const char *mesh_name,
+                                        void       *addr)
+    {
+        return VISIT_INVALID_HANDLE;
+    }
+    
 
     //__________________________________________________________________________
     //
@@ -400,6 +413,7 @@ namespace yocto
                         VisItSetGetDomainList(SimGetDomainList,this);
                         VisItSetGetMesh(SimGetMesh,this);
                         VisItSetGetVariable(SimGetVariable,this);
+                        VisItSetGetDomainBoundaries(SimGetDomainBoundaries,this);
                     }
                     else
                     {
