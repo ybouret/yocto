@@ -213,12 +213,17 @@ namespace yocto
     }
 
 
-
     static inline bool isENDL(char C) throw()
     {
         return ('\n' == C) || ('\r' == C);
     }
 
+    //__________________________________________________________________________
+    //
+    //
+    // dispatch console
+    //
+    //__________________________________________________________________________
     static inline
     void ProcessConsoleInput(void *addr)
     {
@@ -246,6 +251,41 @@ namespace yocto
         ProcessAnyCommand(cmd,addr);
     }
 
+
+    //__________________________________________________________________________
+    //
+    //
+    // DomainList
+    //
+    //__________________________________________________________________________
+
+    static inline
+    visit_handle SimGetDomainList(const char *id,void *addr)
+    {
+        assert(addr);
+        VisIt::Simulation &sim = *static_cast<VisIt::Simulation *>(addr);
+        const mpi         &MPI = sim.MPI;
+        if(id)
+        {
+            MPI.Printf(stderr, "SimGetDomainList id='%s'\n", id);
+        }
+        else
+        {
+            MPI.Printf(stderr,"SimGetDomainList id=NULL\n");
+        }
+        visit_handle h = VISIT_INVALID_HANDLE;
+        if(VISIT_ERROR != VisIt_DomainList_alloc(&h) )
+        {
+            visit_handle hdl = VISIT_INVALID_HANDLE;
+            if(VISIT_ERROR != VisIt_VariableData_alloc(&hdl) )
+            {
+                VisIt_VariableData_setDataI(hdl, VISIT_OWNER_SIM, 1, 1, (int *) &MPI.CommWorldRank);
+                VisIt_DomainList_setDomains(h,MPI.CommWorldSize,hdl);
+            }
+
+        }
+        return h;
+    }
 
     void VisIt:: Simulation:: loop()
     {
@@ -315,6 +355,7 @@ namespace yocto
                         VisItSetSlaveProcessCallback(SlaveProcessCallback);
                         VisItSetGetMetaData(SimGetMetaData,this);
                         VisItSetCommandCallback(ControlCommandCallback,this);
+                        VisItSetGetDomainList(SimGetDomainList,this);
                     }
                     else
                     {

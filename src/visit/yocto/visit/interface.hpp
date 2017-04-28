@@ -115,6 +115,7 @@ namespace yocto
             }
 
 
+            //! declare commands for UI
             void addGenericCommands(visit_handle &md) const;
 
             void on_quit(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
