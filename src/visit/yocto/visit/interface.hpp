@@ -16,7 +16,8 @@ namespace yocto
         class Simulation; //!< forward
 
         const mpi   &MPI;
-        
+
+        //! initialize VisIt interface
         static VisIt &Start(const string &sim_name,
                             const string &sim_comment,
                             const mpi    &usrMPI,
@@ -36,20 +37,28 @@ namespace yocto
     public:
         static const char name[];
 
-
+        //! base class for a simulation
         class Simulation
         {
         public:
+            //__________________________________________________________________
+            //
+            // wrapper to handle UI commands and user commands
+            //__________________________________________________________________
+
 #define YOCTO_VISIT_SIMULATION_CALLBACK_FUNCT TL2(const string &, const array<string> &)
 #define YOCTO_VISIT_SIMULATION_CALLBACK_PROTO const string &cmd, const array<string> &args
 
+            //! Callback definition, command + sequence of arguments
             typedef functor<void,YOCTO_VISIT_SIMULATION_CALLBACK_FUNCT> Callback;
+
             class CallbackInfo
             {
             public:
                 Callback   cb;
                 const bool ui;
-                inline  CallbackInfo(const Callback &userCB, const bool userUI) :
+                inline  CallbackInfo(const Callback &userCB,
+                                     const bool      userUI) :
                 cb(userCB),
                 ui(userUI)
                 {
@@ -73,13 +82,13 @@ namespace yocto
             typedef map<string,CallbackInfo> CallbackDB;
 
             const mpi &MPI;
-            int        runMode;
-            int        cycle;
-            double     runTime;
-            bool       done;
-            const int  connected;
-            Callback   doNothing;
-            CallbackDB callbacks;
+            int        runMode;   //!< Stopped/Running
+            int        cycle;     //!< counter
+            double     runTime;   //!< runTime
+            bool       done;      //!< will terminate simulation
+            const int  connected; //!< updated during each loop
+            Callback   doNothing; //!< a do nothing callback
+            CallbackDB callbacks; //!< database of callbacks
 
             virtual ~Simulation() throw();
             explicit Simulation( const VisIt &visit );
@@ -89,11 +98,12 @@ namespace yocto
             void update() throw(); //!< send visit signal to update
 
 
-
+            //! add a command, appearing in UI is true==ui
             void addCommand( const char     *command_name,
                             const Callback  &cb,
                             const bool       ui);
 
+            //! wrapper to add a command
             template <typename OBJECT_POINTER,typename METHOD_POINTER> inline
             void addCommand(const char    *command_name,
                             OBJECT_POINTER host,
@@ -104,6 +114,7 @@ namespace yocto
                 addCommand(command_name,cb,ui);
             }
 
+
             void addGenericCommands(visit_handle &md) const;
 
             void on_quit(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
@@ -113,6 +124,7 @@ namespace yocto
             void do_nope(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
 
         private:
+
             YOCTO_DISABLE_COPY_AND_ASSIGN(Simulation);
             virtual void one_step();
             void addGenericCommand(visit_handle   &md,

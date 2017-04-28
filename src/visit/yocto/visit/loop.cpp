@@ -285,7 +285,7 @@ namespace yocto
             // broadcast visitstate
             //__________________________________________________________________
             MPI.Bcast(visitstate,0,MPI_COMM_WORLD);
-            MPI.Printf(stderr,"[%s] visitstate=%d\n",fn,visitstate);
+            //MPI.Printf(stderr,"[%s] visitstate=%d\n",fn,visitstate);
 
             //__________________________________________________________________
             //

@@ -4,8 +4,25 @@
 using namespace yocto;
 
 static inline
-void doNothing(void *addr)
+void onClicked(void *addr)
 {
+    std::cerr << "doNothing..." << std::endl;
+}
+
+static inline
+void onValueChanged(int value, void *addr)
+{
+    fflush(stderr);
+    std::cerr << "valueChanged=" << value << std::endl;
+    std::cerr.flush();
+}
+
+static inline
+void onStateChanged(int value, void *addr)
+{
+    fflush(stderr);
+    std::cerr << "stateChanged=" << value << std::endl;
+    std::cerr.flush();
 }
 
 YOCTO_UNIT_TEST_IMPL(loop)
@@ -25,8 +42,9 @@ YOCTO_UNIT_TEST_IMPL(loop)
 
     VisIt::Simulation sim(visit);
 
-    //VisItUI_clicked("STEP", doNothing, NULL);
-
+    VisItUI_clicked("STEP", onClicked, NULL);
+    VisItUI_valueChanged("LEVELS",onValueChanged,NULL);
+    VisItUI_stateChanged("OPTION",onStateChanged,NULL);
     sim.loop();
     
 }
