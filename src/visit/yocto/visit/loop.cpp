@@ -322,6 +322,7 @@ namespace yocto
         return h;
     }
 
+#if 0
     //__________________________________________________________________________
     //
     //
@@ -334,6 +335,7 @@ namespace yocto
     {
         return VISIT_INVALID_HANDLE;
     }
+#endif
     
 
     //__________________________________________________________________________
@@ -413,7 +415,7 @@ namespace yocto
                         VisItSetGetDomainList(SimGetDomainList,this);
                         VisItSetGetMesh(SimGetMesh,this);
                         VisItSetGetVariable(SimGetVariable,this);
-                        VisItSetGetDomainBoundaries(SimGetDomainBoundaries,this);
+                        //VisItSetGetDomainBoundaries(SimGetDomainBoundaries,this);
                     }
                     else
                     {

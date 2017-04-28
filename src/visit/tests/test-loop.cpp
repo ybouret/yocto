@@ -106,6 +106,7 @@ public:
                 VisIt_MeshMetaData_setXLabel(m2, "Width");
                 VisIt_MeshMetaData_setYLabel(m2, "Height");
                 VisIt_MeshMetaData_setZLabel(m2, "Depth");
+                VisIt_MeshMetaData_setNumDomains(m2,1);
                 VisIt_SimulationMetaData_addMesh(md, m2);
             }
         }
