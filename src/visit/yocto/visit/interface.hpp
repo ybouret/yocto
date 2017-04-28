@@ -124,7 +124,9 @@ namespace yocto
             void on_run( YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw(); //!< runMode = RUNNING
             void do_nope(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw(); //!< do nothing...
 
-            virtual void setMetaData(visit_handle &md);
+            virtual void         setMetaData(visit_handle &md);
+            virtual visit_handle getMesh(const int domain, const string &mesh_name);
+            virtual visit_handle getVariable(const int domain, const string &variable_name);
 
         private:
 

@@ -119,6 +119,35 @@ namespace yocto
         return md;
     }
 
+    //__________________________________________________________________________
+    //
+    //
+    // Preparing Mesh I/O
+    //
+    //__________________________________________________________________________
+    static inline
+    visit_handle SimGetMesh(int domain,const char *name, void *addr)
+    {
+        assert(addr);
+        VisIt::Simulation &sim   = *static_cast<VisIt::Simulation *>(addr);
+        const string       mesh_name = name;
+        return sim.getMesh(domain,mesh_name);
+    }
+
+    //__________________________________________________________________________
+    //
+    //
+    // Preparing Variables I/O
+    //
+    //__________________________________________________________________________
+    static inline
+    visit_handle SimGetVariable(int domain, const char *name, void *addr )
+    {
+        assert(addr);
+        const string variable_name = name;
+        return static_cast<VisIt::Simulation *>(addr)->getVariable(domain,variable_name);
+    }
+
 
     //__________________________________________________________________________
     //
@@ -369,6 +398,8 @@ namespace yocto
                         VisItSetGetMetaData(SimGetMetaData,this);
                         VisItSetCommandCallback(ControlCommandCallback,this);
                         VisItSetGetDomainList(SimGetDomainList,this);
+                        VisItSetGetMesh(SimGetMesh,this);
+                        VisItSetGetVariable(SimGetVariable,this);
                     }
                     else
                     {

@@ -91,10 +91,19 @@ namespace yocto
         VisItUpdatePlots();
     }
 
-    void VisIt:: Simulation:: setMetaData(visit_handle &md)
+    void VisIt:: Simulation:: setMetaData(visit_handle &)
     {
         
     }
 
+    visit_handle VisIt:: Simulation:: getMesh(const int , const string &)
+    {
+        return VISIT_INVALID_HANDLE;
+    }
+
+    visit_handle  VisIt:: Simulation::  getVariable(const int , const string &)
+    {
+        return VISIT_INVALID_HANDLE;
+    }
 
 }
