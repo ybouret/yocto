@@ -91,4 +91,10 @@ namespace yocto
         VisItUpdatePlots();
     }
 
+    void VisIt:: Simulation:: setMetaData(visit_handle &md)
+    {
+        
+    }
+
+
 }

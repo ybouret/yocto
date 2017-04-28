@@ -94,12 +94,12 @@ namespace yocto
             explicit Simulation( const VisIt &visit );
 
             void loop();
-            void step();
             void update() throw(); //!< send visit signal to update
+            void step();           //!< one_step and update
 
 
             //! add a command, appearing in UI is true==ui
-            void addCommand( const char     *command_name,
+            void addCommand(const char      *command_name,
                             const Callback  &cb,
                             const bool       ui);
 
@@ -118,21 +118,21 @@ namespace yocto
             //! declare commands for UI
             void addGenericCommands(visit_handle &md) const;
 
-            void on_quit(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
-            void on_step(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO);
-            void on_halt(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
-            void on_run( YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
-            void do_nope(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw();
+            void on_quit(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw(); //!< done=true
+            void on_step(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO);         //!< step(s)
+            void on_halt(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw(); //!< runMode = STOPPED
+            void on_run( YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw(); //!< runMode = RUNNING
+            void do_nope(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw(); //!< do nothing...
+
+            virtual void setMetaData(visit_handle &md);
 
         private:
 
             YOCTO_DISABLE_COPY_AND_ASSIGN(Simulation);
-            virtual void one_step();
             void addGenericCommand(visit_handle   &md,
                                    const char     *command_name) const;
-            
 
-
+            virtual void one_step();
 
         };
     };
