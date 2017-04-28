@@ -4,6 +4,7 @@
 #include "yocto/code/rand.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/ios/ocstream.hpp"
+#include "yocto/math/trigconv.hpp"
 
 using namespace yocto;
 using namespace spade;
