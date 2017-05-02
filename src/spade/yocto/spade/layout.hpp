@@ -102,6 +102,10 @@ namespace yocto
             YOCTO_DISABLE_ASSIGN(layout_of);
         };
 
+
+        typedef layout_of<coord1D> layout1D;
+        typedef layout_of<coord2D> layout2D;
+        typedef layout_of<coord3D> layout3D;
     }
 }
 
