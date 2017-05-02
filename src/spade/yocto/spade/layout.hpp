@@ -50,7 +50,7 @@ namespace yocto
             lower(lower_coord),
             upper(upper_coord),
             pitch(coord_info<COORD>::zero),
-            width(coord_info<COORD>::zero), 
+            width(coord_info<COORD>::zero),
             items( setup(&lower,&upper,&pitch,&width) )
             {
             }
@@ -60,8 +60,8 @@ namespace yocto
             layout_info( other ),
             lower( other.lower ),
             upper( other.upper ),
-            width( other.width ),
             pitch( other.pitch ),
+            width( other.width ),
             items( other.items )
             {
             }
