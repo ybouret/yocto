@@ -4,13 +4,53 @@
 #include "yocto/math/point2d.hpp"
 #include "yocto/math/point3d.hpp"
 #include "yocto/math/types.hpp"
-#include "yocto/parallel/coord.hpp"
 
 namespace yocto
 {
     namespace spade
     {
-        using namespace parallel;
+        typedef unit_t           coord1D;
+        typedef point2d<coord1D> coord2D;
+        typedef point3d<coord1D> coord3D;
+
+        //! extract coord from compound COORD
+        template <typename COORD>
+        inline unit_t & __coord( COORD &C, size_t dim ) throw()
+        {
+            assert(dim<sizeof(COORD)/sizeof(unit_t));
+            return *(((unit_t *)&C)+dim);
+        }
+
+        //! extract coord from compound COORD (const)
+        template <typename COORD>
+        inline const unit_t & __coord( const COORD &C, size_t dim ) throw()
+        {
+            assert(dim<sizeof(COORD)/sizeof(unit_t));
+            return *(((unit_t *)&C)+dim);
+        }
+
+        //! decrease all coordinates
+        template <typename COORD>
+        void __coord_dec(COORD &C) throw();
+
+        template <> inline void __coord_dec<coord1D>(coord1D &C) throw() { --C;                 }
+        template <> inline void __coord_dec<coord2D>(coord2D &C) throw() { --C.x; --C.y;        }
+        template <> inline void __coord_dec<coord3D>(coord3D &C) throw() { --C.x; --C.y; --C.z; }
+
+        //! test equality
+        template <typename COORD>
+        bool are_same_coord(const COORD &lhs, const COORD &rhs) throw();
+
+        template <> inline bool are_same_coord<coord1D>(const coord1D &lhs, const coord1D &rhs) throw()
+        { return lhs == rhs; }
+
+        template <> inline bool are_same_coord<coord2D>(const coord2D &lhs, const coord2D &rhs) throw()
+        { return (lhs.x == rhs.x) && (lhs.y==rhs.y); }
+
+        template <> inline bool are_same_coord<coord3D>(const coord3D &lhs, const coord3D &rhs) throw()
+        { return (lhs.x == rhs.x) && (lhs.y==rhs.y) && (lhs.z==rhs.z); }
+
+
 
     }
 }
