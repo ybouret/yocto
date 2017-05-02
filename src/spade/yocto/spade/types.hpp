@@ -13,6 +13,12 @@ namespace yocto
         typedef point2d<coord1D> coord2D;
         typedef point3d<coord1D> coord3D;
 
+        template <typename COORD>
+        struct coord_info
+        {
+            static const COORD zero;
+        };
+        
         //! extract coord from compound COORD
         template <typename COORD>
         inline unit_t & __coord( COORD &C, size_t dim ) throw()
@@ -36,6 +42,21 @@ namespace yocto
         template <> inline void __coord_dec<coord1D>(coord1D &C) throw() { --C;                 }
         template <> inline void __coord_dec<coord2D>(coord2D &C) throw() { --C.x; --C.y;        }
         template <> inline void __coord_dec<coord3D>(coord3D &C) throw() { --C.x; --C.y; --C.z; }
+
+        //! keep positive par only
+        template <typename COORD>
+        COORD __coord_ge_zero(const COORD &C) throw();
+        
+        template <> inline coord1D __coord_ge_zero<coord1D>(const coord1D &C) throw() { return (C<0) ? 0 : C; }
+        template <> inline coord2D __coord_ge_zero<coord2D>(const coord2D &C) throw()
+        {
+            return coord2D( __coord_ge_zero(C.x), __coord_ge_zero(C.y) );
+        }
+        template <> inline coord3D __coord_ge_zero<coord3D>(const coord3D &C) throw()
+        {
+            return coord3D( __coord_ge_zero(C.x), __coord_ge_zero(C.y), __coord_ge_zero(C.z) );
+        }
+
 
         //! test equality
         template <typename COORD>

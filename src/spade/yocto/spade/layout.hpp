@@ -40,7 +40,7 @@ namespace yocto
             const_coord  upper;  //!< upper coordinate(s)
             const_coord  pitch;  //!< (1,nx,nx*ny)
             const_coord  width;  //!< upper-lower+1
-            const size_t items; //!< linear items in layout
+            const size_t items;  //!< linear items in layout
 
             inline virtual ~layout_of() throw() {}
 
