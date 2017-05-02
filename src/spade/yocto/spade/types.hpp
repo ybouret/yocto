@@ -50,6 +50,31 @@ namespace yocto
         template <> inline bool are_same_coord<coord3D>(const coord3D &lhs, const coord3D &rhs) throw()
         { return (lhs.x == rhs.x) && (lhs.y==rhs.y) && (lhs.z==rhs.z); }
 
+        //! test within
+        template <typename COORD>
+        bool is_coord_inside(const COORD &C, const COORD &lower, const COORD &upper) throw();
+
+        template <> inline bool is_coord_inside<coord1D>(const coord1D &C, const coord1D &lower, const coord1D &upper) throw()
+        {
+            assert(lower<=upper);
+            return (C>=lower) && (C<=upper);
+        }
+
+        template <> inline bool is_coord_inside<coord2D>(const coord2D &C, const coord2D &lower, const coord2D &upper) throw()
+        {
+            assert(lower.x<=upper.x);
+            assert(lower.y<=upper.y);
+            return ((C.x>=lower.x) && (C.x<=upper.x)) && ((C.y>=lower.y) && (C.y<=upper.y));
+        }
+
+        template <> inline bool is_coord_inside<coord3D>(const coord3D &C, const coord3D &lower, const coord3D &upper) throw()
+        {
+            assert(lower.x<=upper.x);
+            assert(lower.y<=upper.y);
+            assert(lower.z<=upper.z);
+            return ((C.x>=lower.x) && (C.x<=upper.x)) && ((C.y>=lower.y) && (C.y<=upper.y)) && ((C.z>=lower.z) && (C.z<=upper.z));
+        }
+
 
 
     }
