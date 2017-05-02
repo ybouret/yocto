@@ -13,7 +13,8 @@ namespace yocto
         {
         public:
             virtual ~field_info() throw();
-
+            const size_t owned_memory;
+            
             virtual size_t get_dimension() const throw() = 0;
 
         protected:
@@ -25,39 +26,38 @@ namespace yocto
         };
 
         template <typename T,typename COORD>
-        class field_of : public layout_of<COORD>
+        class field_of : public field_info, public layout_of<COORD>
         {
         public:
             YOCTO_SPADE_DECL_COORD();
             typedef layout_of<COORD> layout_type;
+            const layout_type        inner;
+            const_coord              lower_ghost;
+            const_coord              upper_ghost;
 
-            const layout_type inner;
-
-
-        protected:
-            explicit field_of(param_coord lo,
-                              param_coord hi) :
-            layout_type(lo,hi),
-            inner(*this)
-            {
-                compute_ghosts();
-            }
-
+        protected:            
             explicit field_of(param_coord lo,
                               param_coord up,
                               param_coord ghost_lo,
                               param_coord ghost_up) :
-            layout_type(__coord_lower_of(lo,up)-__coord_abs(ghost_lo),__coord_upper_of(lo,up)+__coord_abs(ghost_up)),
-            inner(lo,up)
+            layout_type(__coord_lower_of(lo,up)-__coord_abs(ghost_lo),
+                        __coord_upper_of(lo,up)+__coord_abs(ghost_up)),
+            inner(lo,up),
+            lower_ghost(inner.lower-this->lower),
+            upper_ghost(this->upper-inner.upper)
             {
-                compute_ghosts();
+                check_ghosts();
             }
 
-            virtual size_t get_dimension() const throw() { return layout_type::DIMENSION; }
+            virtual size_t      get_dimension() const throw() { return layout_type::DIMENSION; }
+            virtual const void *address_of( param_coord C ) const throw() = 0;
+
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_of);
-            inline void compute_ghosts()
+#if 1
+            inline void check_ghosts()
             {
                 std::cerr << "field" << get_dimension() << "D: ghosts:" << std::endl;
                 const layout_type &outer = *this;
@@ -71,7 +71,7 @@ namespace yocto
                     {
                         const coord1D outer_lo = __coord(outer.lower,dim);
                         const coord1D inner_lo = __coord(inner.lower,dim);
-                        const coord1D ghost_lo = inner_lo - outer_lo;
+                        const coord1D ghost_lo = __coord(lower_ghost,dim); assert(ghost_lo>=0);
                         std::cerr << "\t\touter_lo=" << outer_lo << std::endl;
                         std::cerr << "\t\tinner_lo=" << inner_lo << std::endl;
                         std::cerr << "\t\tghost_lo=" << ghost_lo << std::endl;
@@ -86,7 +86,7 @@ namespace yocto
                     {
                         const coord1D outer_up = __coord(outer.upper,dim);
                         const coord1D inner_up = __coord(inner.upper,dim);
-                        const coord1D ghost_up = outer_up - inner_up;
+                        const coord1D ghost_up = __coord(upper_ghost,dim); assert(ghost_up>=0);
                         std::cerr << "\t\touter_up=" << outer_up << std::endl;
                         std::cerr << "\t\tinner_up=" << inner_up << std::endl;
                         std::cerr << "\t\tghost_up=" << ghost_up << std::endl;
@@ -101,6 +101,7 @@ namespace yocto
 
                 }
             }
+#endif
 
         };
 
