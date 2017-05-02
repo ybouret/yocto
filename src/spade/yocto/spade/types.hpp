@@ -4,6 +4,7 @@
 #include "yocto/math/point2d.hpp"
 #include "yocto/math/point3d.hpp"
 #include "yocto/math/types.hpp"
+#include "yocto/code/utils.hpp"
 
 namespace yocto
 {
@@ -23,7 +24,7 @@ namespace yocto
         template <typename COORD>
         inline unit_t & __coord( COORD &C, size_t dim ) throw()
         {
-            assert(dim<sizeof(COORD)/sizeof(unit_t));
+            assert(dim<sizeof(COORD)/sizeof(coord1D));
             return *(((unit_t *)&C)+dim);
         }
 
@@ -31,9 +32,50 @@ namespace yocto
         template <typename COORD>
         inline const unit_t & __coord( const COORD &C, size_t dim ) throw()
         {
-            assert(dim<sizeof(COORD)/sizeof(unit_t));
+            assert(dim<sizeof(COORD)/sizeof(coord1D));
             return *(((unit_t *)&C)+dim);
         }
+
+        //! product of coordinates
+        template <typename COORD>
+        inline coord1D __coord_prod( const COORD &C) throw();
+
+        template <> inline coord1D __coord_prod<coord1D>(const coord1D &C) throw() { return C;           }
+        template <> inline coord1D __coord_prod<coord2D>(const coord2D &C) throw() { return C.x*C.y;     }
+        template <> inline coord1D __coord_prod<coord3D>(const coord3D &C) throw() { return C.x*C.y*C.z; }
+
+
+        //! inline lower/upper
+        template <typename COORD>
+        inline COORD __coord_lower_of(const COORD &lhs, const COORD &rhs) throw()
+        {
+            COORD          ans( coord_info<COORD>::zero );
+            coord1D       *p = (coord1D *) &ans;
+            const coord1D *l = (const coord1D *) &lhs;
+            const coord1D *r = (const coord1D *) &rhs;
+            for(size_t dim=0;dim<sizeof(COORD)/sizeof(coord1D);++dim)
+            {
+                p[dim] = min_of(l[dim],r[dim]);
+            }
+            return ans;
+        }
+
+        template <typename COORD>
+        inline COORD __coord_upper_of(const COORD &lhs, const COORD &rhs) throw()
+        {
+            COORD          ans( coord_info<COORD>::zero );
+            coord1D       *p = (coord1D *) &ans;
+            const coord1D *l = (const coord1D *) &lhs;
+            const coord1D *r = (const coord1D *) &rhs;
+            for(size_t dim=0;dim<sizeof(COORD)/sizeof(coord1D);++dim)
+            {
+                p[dim] = max_of(l[dim],r[dim]);
+            }
+            return ans;
+        }
+
+
+
 
         //! decrease all coordinates
         template <typename COORD>
@@ -45,16 +87,16 @@ namespace yocto
 
         //! keep positive par only
         template <typename COORD>
-        COORD __coord_ge_zero(const COORD &C) throw();
+        COORD __coord_abs(const COORD &C) throw();
         
-        template <> inline coord1D __coord_ge_zero<coord1D>(const coord1D &C) throw() { return (C<0) ? 0 : C; }
-        template <> inline coord2D __coord_ge_zero<coord2D>(const coord2D &C) throw()
+        template <> inline coord1D __coord_abs<coord1D>(const coord1D &C) throw() { return (C<0) ? -C : C; }
+        template <> inline coord2D __coord_abs<coord2D>(const coord2D &C) throw()
         {
-            return coord2D( __coord_ge_zero(C.x), __coord_ge_zero(C.y) );
+            return coord2D( __coord_abs(C.x), __coord_abs(C.y) );
         }
-        template <> inline coord3D __coord_ge_zero<coord3D>(const coord3D &C) throw()
+        template <> inline coord3D __coord_abs<coord3D>(const coord3D &C) throw()
         {
-            return coord3D( __coord_ge_zero(C.x), __coord_ge_zero(C.y), __coord_ge_zero(C.z) );
+            return coord3D( __coord_abs(C.x), __coord_abs(C.y), __coord_abs(C.z) );
         }
 
 
@@ -96,6 +138,10 @@ namespace yocto
             return ((C.x>=lower.x) && (C.x<=upper.x)) && ((C.y>=lower.y) && (C.y<=upper.y)) && ((C.z>=lower.z) && (C.z<=upper.z));
         }
 
+#define YOCTO_SPADE_DECL_COORD() \
+typedef COORD                                         coord;         \
+typedef const     COORD                               const_coord;   \
+typedef typename  type_traits<COORD>::parameter_type  param_coord;
 
 
     }

@@ -49,8 +49,8 @@ namespace yocto
             layout_info( DIMENSION ),
             lower(lower_coord),
             upper(upper_coord),
-            pitch(lower_coord), // dummy
-            width(lower_coord), // dummy
+            pitch(coord_info<COORD>::zero),
+            width(coord_info<COORD>::zero), 
             items( setup(&lower,&upper,&pitch,&width) )
             {
             }

@@ -10,9 +10,9 @@ namespace yocto
         const coord1D coord_info<coord1D>::zero = 0;
         
         template <>
-        const coord2D coord_info<coord2D>::zero;
+        const coord2D coord_info<coord2D>::zero(0,0);
         
         template <>
-        const coord3D coord_info<coord3D>::zero;
+        const coord3D coord_info<coord3D>::zero(0,0,0);
     }
 }

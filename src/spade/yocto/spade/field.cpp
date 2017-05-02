@@ -7,10 +7,9 @@ namespace yocto
 
         field_info:: ~field_info() throw() {}
 
-        field_info:: field_info() throw() :
-        owned_memory(0)
+        field_info:: field_info() throw() 
         {
         }
-        
+
     }
 }
