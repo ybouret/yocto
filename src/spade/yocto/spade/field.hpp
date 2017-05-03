@@ -26,29 +26,32 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_info);
         };
 
-        template <typename T, typename COORD>
-        class field_of : public field_info
+        template <typename COORD>
+        class field_layouts : public field_info
         {
         public:
             YOCTO_SPADE_DECL_COORD();
-            YOCTO_ARGUMENTS_DECL_T;
             typedef layout_of<coord> layout_type;
             typedef ghosts<coord>    ghosts_type;
             static const size_t      DIMENSION = layout_type::DIMENSION;
 
             const layout_type inner;
             const layout_type outer;
+            const ghosts_type ghosts;
 
+            inline virtual ~field_layouts() throw() {}
             virtual const void *address_of( param_coord ) const throw() = 0;
-            
+
+
         protected:
-            inline explicit field_of(const layout_type &L,
-                                     const ghosts_type &G) :
+            inline explicit field_layouts(const layout_type &L,
+                                          const ghosts_type &G) :
             field_info(DIMENSION),
             inner(L),
-            outer(inner.lower-G.lower.size,inner.upper+G.upper.size)
+            outer(inner.lower-G.lower.size,inner.upper+G.upper.size),
+            ghosts(G)
             {
-                std::cerr << "field" << DIMENSION << "D:" << std::endl;
+                std::cerr << "field_layouts" << DIMENSION << "D:" << std::endl;
                 std::cerr << "inner=" << inner << std::endl;
                 std::cerr << "outer=" << outer << std::endl;
                 for(size_t dim=0;dim<DIMENSION;++dim)
@@ -64,6 +67,33 @@ namespace yocto
                     }
                 }
             }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(field_layouts);
+        };
+
+        typedef field_layouts<coord1D> field_layouts1D;
+        typedef field_layouts<coord2D> field_layouts2D;
+        typedef field_layouts<coord3D> field_layouts3D;
+
+
+        template <typename T, typename COORD>
+        class field_of : public field_layouts<COORD>
+        {
+        public:
+            YOCTO_SPADE_DECL_COORD();
+            YOCTO_ARGUMENTS_DECL_T;
+
+            typedef layout_of<coord> layout_type;
+            typedef ghosts<coord>    ghosts_type;
+            //static const size_t      DIMENSION = layout_type::DIMENSION;
+
+
+        protected:
+            inline explicit field_of(const layout_type &L,
+                                     const ghosts_type &G) :
+            field_layouts<COORD>(L,G)
+            {}
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_of);

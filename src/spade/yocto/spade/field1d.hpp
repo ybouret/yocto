@@ -55,13 +55,13 @@ namespace yocto
                 return shift+C;
             }
 
-            inline type & operator[]( coord1D C ) throw()
+            inline virtual type & operator[]( const coord1D  C) throw()
             {
                 assert(this->outer.has(C));
                 return shift[C];
             }
 
-            inline const_type & operator[]( coord1D C ) const throw()
+            inline const_type & operator[](  const coord1D  C ) const throw()
             {
                 assert(this->outer.has(C));
                 return shift[C];

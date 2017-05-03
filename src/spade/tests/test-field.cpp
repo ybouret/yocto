@@ -1,4 +1,5 @@
 #include "yocto/spade/field2d.hpp"
+#include "yocto/spade/ghosts-io.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
@@ -26,6 +27,10 @@ namespace
                 throw exception("invalid F[%d]", int(i));
             }
         }
+
+        ghosts_io gIO(F);
+
+
     }
 
     template <typename T>
@@ -74,6 +79,7 @@ YOCTO_UNIT_TEST_IMPL(field)
         check_field1D(B);
     }
 
+    return 0;
 
     {
         const layout2D L( coord2D(1,1), coord2D(10,5) );

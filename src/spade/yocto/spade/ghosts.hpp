@@ -2,7 +2,6 @@
 #define YOCTO_SPADE_GHOSTS_INCLUDED 1
 
 #include "yocto/spade/types.hpp"
-#include "yocto/sequence/vector.hpp"
 
 namespace yocto
 {
