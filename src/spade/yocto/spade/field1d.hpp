@@ -21,14 +21,20 @@ namespace yocto
                 if(count)
                 {
                     memory::kind<memory::global>::release_as<type>(entry,count);
-                    shift = 0;
                     this->set_bytes(0);
                 }
+                shift = 0;
             }
 
+            //! build a field
+            /**
+             \param L a layout
+             \param G some ghosts decription
+             \param E optional entry with size >= outer.items*sizeof(T)
+             */
             explicit field1D(const layout_type &L,
                              const ghosts_type &G,
-                             type              *E = NULL):
+                             void              *E = NULL):
             field_type(L,G),
             count(0),
             entry((type *)E),

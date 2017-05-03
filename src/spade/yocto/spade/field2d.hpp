@@ -8,40 +8,46 @@ namespace yocto
     namespace spade
     {
 
-#if 0
         template <typename T>
         class field2D : public field_of<T,coord2D>
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
+            //__________________________________________________________________
+            //
+            // 2D types
+            //__________________________________________________________________
+            typedef layout2D            layout_type;
+            typedef ghosts2D            ghosts_type;
             typedef field_of<T,coord2D> field_type;
+
+            //__________________________________________________________________
+            //
+            // 1D types
+            //__________________________________________________________________
             typedef field_of<T,coord1D> row_type;
+            typedef layout1D            row_layout;
+            typedef ghosts1D            row_ghosts;
 
-
-
-            virtual ~field2D() throw() {}
-
-            explicit field2D(coord2D lo,
-                             coord2D up,
-                             coord2D ghost_lo = coord_info<coord2D>::zero,
-                             coord2D ghost_up = coord_info<coord2D>::zero,
-                             type   *usr_entry = NULL) :
-            field_type(lo,up,ghost_lo,ghost_up),
+            inline explicit field2D(const layout_type &L,
+                                    const ghosts_type &G,
+                                    void              *E = NULL ) :
             count(0),
-            entry(usr_entry),
+            entry(0),
             rows(0)
             {
-                const coord1D row_lower_coord = this->lower.x;
-                const coord1D row_upper_coord = this->upper.x;
-                const coord1D row_lower_ghost = this->lower_ghost.x;
-                const coord1D row_upper_ghost = this->upper_ghost.x;
-
+                
             }
+
+            inline virtual ~field2D() throw() {}
+
 
             const void *address_of( typename field_type::param_coord C ) const throw()
             {
                 return NULL;
             }
+
+
 
 
         private:
@@ -51,8 +57,7 @@ namespace yocto
             row_type *rows;
 
         };
-#endif
-        
+
     }
 }
 
