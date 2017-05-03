@@ -13,7 +13,6 @@ namespace yocto
         {
         public:
             const int peer;
-
             explicit ghost_info(const int which) throw();
             virtual ~ghost_info() throw();
             ghost_info(const ghost_info &) throw();

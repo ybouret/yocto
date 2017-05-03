@@ -3,6 +3,7 @@
 
 using namespace yocto;
 using namespace spade;
+#include <cstring>
 
 namespace
 {
