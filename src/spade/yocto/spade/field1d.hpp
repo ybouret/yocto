@@ -13,6 +13,8 @@ namespace yocto
         public:
             YOCTO_ARGUMENTS_DECL_T;
             typedef field_of<T,coord1D> field_type;
+            typedef layout1D            layout_type;
+            typedef ghosts<coord1D>     ghosts_type;
 
             virtual ~field1D() throw()
             {
@@ -20,44 +22,42 @@ namespace yocto
                 {
                     memory::kind<memory::global>::release_as<type>(entry,count);
                     shift = 0;
-                    (size_t &)(this->owned_memory) = 0;
+                    this->set_bytes(0);
                 }
             }
 
-            explicit field1D(coord1D lo,
-                             coord1D up,
-                             coord1D ghost_lo  = coord_info<coord1D>::zero,
-                             coord1D ghost_up  = coord_info<coord1D>::zero,
-                             type   *usr_entry = 0) :
-            field_type(lo,up,ghost_lo,ghost_up),
+            explicit field1D(const layout_type &L,
+                             const ghosts_type &G,
+                             type              *E = NULL):
+            field_type(L,G),
             count(0),
-            entry((type *)usr_entry),
-            shift(entry-this->lower)
+            entry((type *)E),
+            shift(entry-this->outer.lower)
             {
-                if(!usr_entry)
+                if(!E)
                 {
-                    count  = this->items;
+                    count  = this->outer.items;
                     entry  = memory::kind<memory::global>::acquire_as<type>(count);
-                    shift  = entry - this->lower;
-                    (size_t &)(this->owned_memory) = count * sizeof(T);
+                    shift  = entry - this->outer.lower;
+                    this->set_bytes(count * sizeof(T));
                 }
             }
 
             const void *address_of( typename field_type::param_coord C ) const throw()
             {
-                assert(this->has(C));
+                assert(this->outer.has(C));
                 return shift+C;
             }
 
             inline type & operator[]( coord1D C ) throw()
             {
-                assert(this->has(C));
+                assert(this->outer.has(C));
                 return shift[C];
             }
 
             inline const_type & operator[]( coord1D C ) const throw()
             {
-                assert(this->has(C));
+                assert(this->outer.has(C));
                 return shift[C];
             }
 
@@ -68,6 +68,7 @@ namespace yocto
             type  *shift;
 
         };
+
     }
 }
 

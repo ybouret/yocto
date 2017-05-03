@@ -7,6 +7,8 @@ namespace yocto
 {
     namespace spade
     {
+
+#if 0
         template <typename T>
         class field2D : public field_of<T,coord2D>
         {
@@ -49,6 +51,8 @@ namespace yocto
             row_type *rows;
 
         };
+#endif
+        
     }
 }
 
