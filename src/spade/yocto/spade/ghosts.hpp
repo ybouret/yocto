@@ -2,6 +2,7 @@
 #define YOCTO_SPADE_GHOSTS_INCLUDED 1
 
 #include "yocto/spade/types.hpp"
+#include "yocto/sequence/vector.hpp"
 
 namespace yocto
 {
@@ -83,6 +84,9 @@ namespace yocto
         typedef ghost<coord3D>  ghost3D;
         typedef ghosts<coord3D> ghosts3D;
 
+
+     
+        
     }
 }
 
