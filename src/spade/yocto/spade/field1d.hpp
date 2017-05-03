@@ -21,7 +21,7 @@ namespace yocto
                 if(count)
                 {
                     memory::kind<memory::global>::release_as<type>(entry,count);
-                    this->set_bytes(0);
+                    this->set_allocated(0);
                 }
                 shift = 0;
             }
@@ -45,7 +45,7 @@ namespace yocto
                     count  = this->outer.items;
                     entry  = memory::kind<memory::global>::acquire_as<type>(count);
                     shift  = entry - this->outer.lower;
-                    this->set_bytes(count * sizeof(T));
+                    this->set_allocated(count * sizeof(T));
                 }
             }
 

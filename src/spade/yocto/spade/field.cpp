@@ -9,13 +9,13 @@ namespace yocto
 
         field_info:: field_info(const size_t dim) throw() :
         dimension(dim),
-        bytes(0)
+        allocated(0)
         {
         }
 
-        void field_info:: set_bytes(const size_t n) throw()
+        void field_info:: set_allocated(const size_t n) throw()
         {
-            (size_t &)bytes = n;
+            (size_t &)allocated = n;
         }
     }
 }

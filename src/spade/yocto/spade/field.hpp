@@ -15,12 +15,12 @@ namespace yocto
         public:
             virtual ~field_info() throw();
             const size_t dimension;
-            const size_t bytes;
+            const size_t allocated;
 
 
         protected:
             explicit field_info(const size_t dim) throw();
-            void set_bytes(const size_t n) throw();
+            void set_allocated(const size_t n) throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_info);
@@ -54,11 +54,11 @@ namespace yocto
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     const coord1D w = __coord(inner.width,dim);
-                    if(G.lower.size>w)
+                    if(__coord(G.lower.size,dim)>w)
                     {
                         throw exception("field%uD, dim#%u: lower ghost too big", unsigned(DIMENSION), unsigned(dim) );
                     }
-                    if(G.upper.size>w)
+                    if(__coord(G.upper.size,dim)>w)
                     {
                         throw exception("field%uD, dim#%u: upper ghost too big", unsigned(DIMENSION), unsigned(dim) );
                     }
