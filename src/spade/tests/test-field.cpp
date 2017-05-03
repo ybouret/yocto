@@ -61,7 +61,7 @@ YOCTO_UNIT_TEST_IMPL(field)
 {
     {
         const layout1D  L_A(1,10);
-        const ghost1D   no_ghost(0);
+        const ghost1D   no_ghost;
         const ghosts1D  no_ghosts(0,no_ghost,no_ghost);
         field1D<double> A(L_A,no_ghosts);
         check_field1D(A);
@@ -77,13 +77,13 @@ YOCTO_UNIT_TEST_IMPL(field)
 
     {
         const layout2D L( coord2D(1,1), coord2D(10,5) );
-        const ghost2D  no_ghost(0);
+        const ghost2D  no_ghost;
         const ghosts2D no_ghosts(0,no_ghost,no_ghost);
         field2D<float> A(L, no_ghosts );
         check_field2D(A);
 
-        const ghost2D  glo(0,coord2D(1,2));
-        const ghost2D  gup(0,coord2D(1,2));
+        const ghost2D  glo(coord2D(0,0),coord2D(1,2));
+        const ghost2D  gup(coord2D(0,0),coord2D(1,2));
         const ghosts2D gs2(0,glo,gup);
         field2D< point2d<float> > B(L, gs2 );
         check_field2D(B);

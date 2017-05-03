@@ -8,33 +8,23 @@ namespace yocto
     namespace spade
     {
 
-        //! ghost info, to know the peer to communicate with
-        class ghost_info
-        {
-        public:
-            const int peer;
-            explicit ghost_info(const int which) throw();
-            virtual ~ghost_info() throw();
-            ghost_info(const ghost_info &) throw();
-
-        private:
-            YOCTO_DISABLE_ASSIGN(ghost_info);
-        };
 
         //! a ghost, ghost_info and abs size
         template <class COORD>
-        class ghost : public ghost_info
+        class ghost
         {
         public:
             YOCTO_SPADE_DECL_COORD();
+            const_coord peer;
             const_coord size;
 
-            inline ghost(const int which, param_coord sz) throw() :
-            ghost_info(which), size(__coord_abs<COORD>(sz))
+            inline ghost(const_coord who, param_coord num) throw() :
+            peer(who), size(__coord_abs<COORD>(num))
             {}
 
-            inline ghost(const int which) throw() :
-            ghost_info(which), size( coord_info<coord>::zero )
+            inline ghost() throw() :
+            peer(coord_info<coord>::zero),
+            size(coord_info<coord>::zero)
             {
             }
             
@@ -42,7 +32,7 @@ namespace yocto
             inline virtual ~ghost() throw() {}
 
             inline ghost(const ghost &other) throw() :
-            ghost_info(other),
+            peer(other.peer),
             size(other.size)
             {}
 

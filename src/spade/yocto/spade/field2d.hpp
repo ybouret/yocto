@@ -118,8 +118,8 @@ namespace yocto
                 std::cerr << "\tfield2D: linking rows..." << std::endl;
                 const coord1D    nr = this->outer.width.y;
                 const row_layout rowL(this->inner.lower.x,this->inner.upper.x);
-                const row_ghost  row_lower_ghost(G.lower.peer,G.lower.size.x);
-                const row_ghost  row_upper_ghost(G.upper.peer,G.upper.size.x);
+                const row_ghost  row_lower_ghost(G.lower.peer.x,G.lower.size.x);
+                const row_ghost  row_upper_ghost(G.upper.peer.x,G.upper.size.x);
                 const row_ghosts rowG(G.rank,row_lower_ghost,row_upper_ghost);
                 const size_t     stride = rowL.items;
 
