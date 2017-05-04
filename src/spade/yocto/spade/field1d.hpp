@@ -56,7 +56,7 @@ namespace yocto
                 return shift+C;
             }
 
-            inline virtual type & operator[]( const coord1D  C) throw()
+            inline  type & operator[]( const coord1D  C) throw()
             {
                 assert(this->outer.has(C));
                 return shift[C];
@@ -66,6 +66,12 @@ namespace yocto
             {
                 assert(this->outer.has(C));
                 return shift[C];
+            }
+
+            inline virtual const void *item_addr(const size_t indx) const throw()
+            {
+                assert(indx<this->outer.items);
+                return &entry[indx];
             }
 
         private:

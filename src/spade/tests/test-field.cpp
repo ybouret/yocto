@@ -1,4 +1,4 @@
-#include "yocto/spade/field2d.hpp"
+#include "yocto/spade/field3d.hpp"
 #include "yocto/spade/ghosts-io.hpp"
 #include "yocto/utest/run.hpp"
 

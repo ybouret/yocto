@@ -30,11 +30,28 @@ namespace yocto
             typedef Ghost1D             row_ghost;
             typedef Ghosts1D            row_ghosts;
 
+
+            //! compute data offset
+            static inline
+            size_t ComputeDataOffset(const Layout2D &Outer) throw()
+            {
+                return memory::align(Outer.width.y * sizeof(row));
+            }
+
+            //! size in bytes for one slice
+            static inline
+            size_t ComputeBufferSize(const Layout2D &Outer) throw()
+            {
+                const size_t data_offset = ComputeDataOffset(Outer);
+                const size_t data_length = Outer.items * sizeof(type);
+                return memory::align(data_offset+data_length);
+            }
+
             //! build a field in 2 dimension
             /**
              \param L the layout
              \param G the ghosts
-             \param E optional memory for rows+data
+             \param E optional memory for rows+data=memory for one slice
              */
             inline explicit Field2D(const string      &id,
                                     const layout_type &L,
@@ -43,7 +60,7 @@ namespace yocto
             field_type(id,L,G),
             buflen(0),
             buffer(0),
-            datjmp(memory::align(this->outer.width.y * sizeof(row))),
+            datjmp(ComputeDataOffset(this->outer)),
             rows(0),
             entry(0),
             shift(0)
@@ -106,7 +123,11 @@ namespace yocto
                 return shift[y];
             }
 
-
+            inline virtual const void *item_addr(const size_t indx) const throw()
+            {
+                assert(indx<this->outer.items);
+                return &entry[indx];
+            }
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Field2D);

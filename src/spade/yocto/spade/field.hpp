@@ -21,6 +21,7 @@ namespace yocto
 
             virtual size_t      items()     const throw() = 0;
             virtual size_t      item_size() const throw() = 0;
+            virtual const void *item_addr(const size_t indx) const throw() = 0;
 
         protected:
             explicit field_info(const string &id, const size_t dim) throw();
