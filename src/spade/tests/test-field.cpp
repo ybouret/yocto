@@ -100,5 +100,16 @@ YOCTO_UNIT_TEST_IMPL(field)
 
     }
 
+    {
+        const Layout3D L( coord3D(1,1,1), coord3D(5,6,8) );
+        const Ghost3D  glo( coord3D(10,11,12), coord3D(1,2,3) );
+        const Ghost3D  gup( coord3D(13,14,15), coord3D(3,2,1) );
+        const Ghosts3D gs3(0,glo,gup);
+
+        Field3D< double > A("A3",L,gs3);
+
+    }
+
+
 }
 YOCTO_UNIT_TEST_DONE()
