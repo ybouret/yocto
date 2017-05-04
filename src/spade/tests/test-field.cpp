@@ -10,7 +10,7 @@ namespace
 {
     template <typename T>
     static inline
-    void check_field1D( field1D<T> &F )
+    void check_field1D( Field1D<T> &F )
     {
         std::cerr << "Checking Field 1D..." << std::endl;
         std::cerr << "f1d.allocated=" <<  F.allocated << std::endl;
@@ -35,7 +35,7 @@ namespace
 
     template <typename T>
     static inline
-    void check_field2D( field2D<T> &F )
+    void check_field2D( Field2D<T> &F )
     {
         std::cerr << "Checking Field 2D..." << std::endl;
         std::cerr << "f2d.allocated=" <<  F.allocated << std::endl;
@@ -71,7 +71,7 @@ YOCTO_UNIT_TEST_IMPL(field)
 #if 1
         const Ghost1D   no_ghost;
         const Ghosts1D  no_ghosts(0,no_ghost,no_ghost);
-        field1D<double> A("A",L,no_ghosts);
+        Field1D<double> A("A",L,no_ghosts);
         check_field1D(A);
 #endif
 
@@ -79,7 +79,7 @@ YOCTO_UNIT_TEST_IMPL(field)
         const Ghost1D   g2(0,2);
         const Ghosts1D  gs1(0,g1,g2);
 
-        field1D<uint16_t> B("B",L,gs1);
+        Field1D<uint16_t> B("B",L,gs1);
         check_field1D(B);
     }
 
@@ -89,13 +89,13 @@ YOCTO_UNIT_TEST_IMPL(field)
 #if 1
         const Ghost2D  no_ghost;
         const Ghosts2D no_ghosts(-1,no_ghost,no_ghost);
-        field2D<float> A("A2",L, no_ghosts );
+        Field2D<float> A("A2",L, no_ghosts );
         check_field2D(A);
 #endif
         const Ghost2D  glo(coord2D(1,2),coord2D(1,2));
         const Ghost2D  gup(coord2D(3,4),coord2D(1,2));
         const Ghosts2D gs2(0,glo,gup);
-        field2D< point2d<float> > B("B2",L, gs2 );
+        Field2D< point2d<float> > B("B2",L, gs2 );
         check_field2D(B);
 
     }

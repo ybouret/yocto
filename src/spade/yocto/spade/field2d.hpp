@@ -9,7 +9,7 @@ namespace yocto
     {
 
         template <typename T>
-        class field2D : public field_of<T,coord2D>
+        class Field2D : public field_of<T,coord2D>
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
@@ -25,7 +25,7 @@ namespace yocto
             //
             // 1D types
             //__________________________________________________________________
-            typedef field1D<T>          row;
+            typedef Field1D<T>          row;
             typedef Layout1D            row_layout;
             typedef Ghost1D             row_ghost;
             typedef Ghosts1D            row_ghosts;
@@ -36,7 +36,7 @@ namespace yocto
              \param G the ghosts
              \param E optional memory for rows+data
              */
-            inline explicit field2D(const string      &id,
+            inline explicit Field2D(const string      &id,
                                     const layout_type &L,
                                     const ghosts_type &G,
                                     void              *E = NULL ) :
@@ -71,7 +71,7 @@ namespace yocto
                 }
             }
 
-            inline virtual ~field2D() throw()
+            inline virtual ~Field2D() throw()
             {
                 for(coord1D i=this->outer.width.y-1;i>=0;--i)
                 {
@@ -109,7 +109,7 @@ namespace yocto
 
 
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(field2D);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Field2D);
             size_t       buflen;
             void        *buffer;
             const size_t datjmp;

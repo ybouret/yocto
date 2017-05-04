@@ -8,7 +8,7 @@ namespace yocto
     namespace spade
     {
         template <typename T>
-        class field1D : public field_of<T,coord1D>
+        class Field1D : public field_of<T,coord1D>
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
@@ -16,7 +16,7 @@ namespace yocto
             typedef Layout1D            layout_type;
             typedef Ghosts<coord1D>     ghosts_type;
 
-            virtual ~field1D() throw()
+            virtual ~Field1D() throw()
             {
                 if(count)
                 {
@@ -32,7 +32,7 @@ namespace yocto
              \param G some ghosts decription
              \param E optional entry with size >= outer.items*sizeof(T)
              */
-            explicit field1D(const string      &id,
+            explicit Field1D(const string      &id,
                              const layout_type &L,
                              const ghosts_type &G,
                              void              *E = NULL):
@@ -69,7 +69,7 @@ namespace yocto
             }
 
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(field1D);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Field1D);
             size_t count;
             type  *entry;
             type  *shift;
