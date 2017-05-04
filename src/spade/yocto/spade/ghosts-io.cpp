@@ -97,20 +97,51 @@ namespace yocto
             // lower
             //__________________________________________________________________
             {
-                const ghost2D &g = gs.lower;
-                
+
                 //______________________________________________________________
                 //
                 // lower.x
                 //______________________________________________________________
                 {
+                    const ghost2D    &g  = gs.lower;
                     const coord1D     ny = outer.width.y;
                     coord1D           o  = outer.lower.x;
                     coord1D           i  = inner.lower.x;
                     const size_t      ng = g.size.x*ny;
                     exchange::pointer xch( new exchange(g.peer.x,ng) );
 
-                    std::cerr << "x_lower#ghosts=" << ng << std::endl;
+                    std::cerr << "x_lower#ghosts=" << ng << " @peer=" << xch->peer << std::endl;
+                    for(coord1D u=g.size.x;u>0;--u,++o,++i)
+                    {
+                        for(coord1D y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            const coord2D O(o,y);
+                            xch->recv.push_back(outer.offset_of(O));
+                            const coord2D I(i,y);
+                            xch->send.push_back(outer.offset_of(I));
+                        }
+                    }
+                    IO.push_back(xch);
+                    co_qsort(xch->recv,xch->send);
+                    std::cerr << "x_lower recv=" << xch->recv << std::endl;
+                    std::cerr << "x_lower send=" << xch->send << std::endl;
+
+                }
+
+
+                //______________________________________________________________
+                //
+                // upper.x
+                //______________________________________________________________
+                {
+                    const ghost2D    &g  = gs.upper;
+                    const coord1D     ny = outer.width.y;
+                    coord1D           o  = outer.upper.x;
+                    coord1D           i  = inner.upper.x;
+                    const size_t      ng = g.size.x*ny;
+                    exchange::pointer xch( new exchange(g.peer.x,ng) );
+
+                    std::cerr << "x_upper#ghosts=" << ng << " @peer=" << xch->peer << std::endl;
                     for(coord1D u=g.size.x;u>0;--u,--o,--i)
                     {
                         for(coord1D y=outer.lower.y;y<=outer.upper.y;++y)
@@ -118,11 +149,75 @@ namespace yocto
                             const coord2D O(o,y);
                             xch->recv.push_back(outer.offset_of(O));
                             const coord2D I(i,y);
-                            xch->send.push_back(inner.offset_of(I));
+                            xch->send.push_back(outer.offset_of(I));
                         }
                     }
-
+                    IO.push_back(xch);
+                    co_qsort(xch->recv,xch->send);
+                    std::cerr << "x_upper recv=" << xch->recv << std::endl;
+                    std::cerr << "x_upper send=" << xch->send << std::endl;
                 }
+
+
+                //______________________________________________________________
+                //
+                // lower.y
+                //______________________________________________________________
+                {
+                    const ghost2D    &g  = gs.lower;
+                    const coord1D     nx = outer.width.x;
+                    coord1D           o  = outer.lower.y;
+                    coord1D           i  = inner.lower.y;
+                    const size_t      ng = g.size.y*nx;
+                    exchange::pointer xch( new exchange(g.peer.y,ng) );
+
+                    std::cerr << "y_lower#ghosts=" << ng << " @peer=" << xch->peer << std::endl;
+                    for(coord1D u=g.size.y;u>0;--u,++o,++i)
+                    {
+                        for(coord1D x=outer.lower.x;x<=outer.upper.x;++x)
+                        {
+                            const coord2D O(x,o);
+                            xch->recv.push_back(outer.offset_of(O));
+                            const coord2D I(x,i);
+                            xch->send.push_back(outer.offset_of(I));
+                        }
+                    }
+                    IO.push_back(xch);
+                    co_qsort(xch->recv,xch->send);
+                    std::cerr << "y_lower recv=" << xch->recv << std::endl;
+                    std::cerr << "y_lower send=" << xch->send << std::endl;
+                }
+
+                //______________________________________________________________
+                //
+                // upper.y
+                //______________________________________________________________
+                {
+                    const ghost2D    &g  = gs.upper;
+                    const coord1D     nx = outer.width.x;
+                    coord1D           o  = outer.upper.y;
+                    coord1D           i  = inner.upper.y;
+                    const size_t      ng = g.size.y*nx;
+                    exchange::pointer xch( new exchange(g.peer.y,ng) );
+
+                    std::cerr << "x_upper#ghosts=" << ng << " @peer=" << xch->peer << std::endl;
+                    for(coord1D u=g.size.y;u>0;--u,--o,--i)
+                    {
+                        for(coord1D x=outer.lower.x;x<=outer.upper.x;++x)
+                        {
+                            const coord2D O(x,o);
+                            xch->recv.push_back(outer.offset_of(O));
+                            const coord2D I(x,i);
+                            xch->send.push_back(outer.offset_of(I));
+                        }
+                    }
+                    IO.push_back(xch);
+                    co_qsort(xch->recv,xch->send);
+                    std::cerr << "y_upper recv=" << xch->recv << std::endl;
+                    std::cerr << "y_upper send=" << xch->send << std::endl;
+                }
+
+                
             }
         }
 

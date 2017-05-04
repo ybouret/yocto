@@ -17,6 +17,7 @@ namespace yocto
             const size_t dimension;
             const size_t allocated;
 
+            virtual size_t      items() const throw() = 0;
 
         protected:
             explicit field_info(const size_t dim) throw();
@@ -41,7 +42,7 @@ namespace yocto
 
             inline virtual ~field_layouts() throw() {}
             virtual const void *address_of( param_coord ) const throw() = 0;
-
+            virtual size_t items() const throw() { return outer.items; }
 
         protected:
             inline explicit field_layouts(const layout_type &L,
@@ -51,9 +52,9 @@ namespace yocto
             outer(inner.lower-G.lower.size,inner.upper+G.upper.size),
             ghosts(G)
             {
-                std::cerr << "field_layouts" << DIMENSION << "D:" << std::endl;
-                std::cerr << "inner=" << inner << std::endl;
-                std::cerr << "outer=" << outer << std::endl;
+                //std::cerr << "field_layouts" << DIMENSION << "D:" << std::endl;
+                //std::cerr << "inner=" << inner << std::endl;
+                //std::cerr << "outer=" << outer << std::endl;
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     const coord1D w = __coord(inner.width,dim);
@@ -86,8 +87,7 @@ namespace yocto
 
             typedef layout_of<coord> layout_type;
             typedef ghosts<coord>    ghosts_type;
-            //static const size_t      DIMENSION = layout_type::DIMENSION;
-
+            
 
         protected:
             inline explicit field_of(const layout_type &L,

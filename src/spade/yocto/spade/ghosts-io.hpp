@@ -47,7 +47,7 @@ namespace yocto
             virtual ~ghosts_io() throw();
             explicit ghosts_io( const field_layouts1D &F );
             explicit ghosts_io( const field_layouts2D &F );
-
+            
 
             vector<const exchange::pointer> IO;
 
