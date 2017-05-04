@@ -39,7 +39,8 @@ namespace
     {
         std::cerr << "Checking Field 2D..." << std::endl;
         std::cerr << "f2d.allocated=" <<  F.allocated << std::endl;
-
+        std::cerr << "outer: " << F.outer << std::endl;
+        std::cerr << "inner: " << F.inner << std::endl;
         T src;
         memset(&src,1,sizeof(T));
 
@@ -52,6 +53,7 @@ namespace
             }
         }
 
+        ghosts_io gIO(F);
 
 
     }
@@ -65,29 +67,31 @@ namespace
 YOCTO_UNIT_TEST_IMPL(field)
 {
     {
-        const layout1D  L_A(1,10);
+        const layout1D  L(1,10);
+#if 0
         const ghost1D   no_ghost;
         const ghosts1D  no_ghosts(0,no_ghost,no_ghost);
-        field1D<double> A(L_A,no_ghosts);
+        field1D<double> A(L,no_ghosts);
         check_field1D(A);
+#endif
 
         const ghost1D   g1(0,1);
         const ghost1D   g2(0,2);
         const ghosts1D  gs1(0,g1,g2);
 
-        field1D<char> B(L_A,gs1);
+        field1D<uint16_t> B(L,gs1);
         check_field1D(B);
     }
 
-    return 0;
 
     {
         const layout2D L( coord2D(1,1), coord2D(10,5) );
+#if 0
         const ghost2D  no_ghost;
         const ghosts2D no_ghosts(0,no_ghost,no_ghost);
         field2D<float> A(L, no_ghosts );
         check_field2D(A);
-
+#endif
         const ghost2D  glo(coord2D(0,0),coord2D(1,2));
         const ghost2D  gup(coord2D(0,0),coord2D(1,2));
         const ghosts2D gs2(0,glo,gup);
