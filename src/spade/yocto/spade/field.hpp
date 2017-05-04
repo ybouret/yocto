@@ -4,6 +4,7 @@
 #include "yocto/spade/layout.hpp"
 #include "yocto/spade/ghosts.hpp"
 #include "yocto/exception.hpp"
+#include "yocto/string.hpp"
 
 namespace yocto
 {
@@ -14,13 +15,14 @@ namespace yocto
         {
         public:
             virtual ~field_info() throw();
+            const string name;
             const size_t dimension;
             const size_t allocated;
 
             virtual size_t      items() const throw() = 0;
 
         protected:
-            explicit field_info(const size_t dim) throw();
+            explicit field_info(const string &id, const size_t dim) throw();
             void set_allocated(const size_t n) throw();
 
         private:
@@ -45,9 +47,10 @@ namespace yocto
             virtual size_t items() const throw() { return outer.items; }
 
         protected:
-            inline explicit field_layouts(const layout_type &L,
+            inline explicit field_layouts(const string      &id,
+                                          const layout_type &L,
                                           const ghosts_type &G) :
-            field_info(DIMENSION),
+            field_info(id,DIMENSION),
             inner(L),
             outer(inner.lower-G.lower.size,inner.upper+G.upper.size),
             ghosts(G)
@@ -90,9 +93,10 @@ namespace yocto
             
 
         protected:
-            inline explicit field_of(const layout_type &L,
+            inline explicit field_of(const string      &id,
+                                     const layout_type &L,
                                      const ghosts_type &G) :
-            field_layouts<COORD>(L,G)
+            field_layouts<COORD>(id,L,G)
             {}
 
         private:

@@ -32,10 +32,11 @@ namespace yocto
              \param G some ghosts decription
              \param E optional entry with size >= outer.items*sizeof(T)
              */
-            explicit field1D(const layout_type &L,
+            explicit field1D(const string      &id,
+                             const layout_type &L,
                              const ghosts_type &G,
                              void              *E = NULL):
-            field_type(L,G),
+            field_type(id,L,G),
             count(0),
             entry((type *)E),
             shift(entry-this->outer.lower)

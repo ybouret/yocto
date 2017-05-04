@@ -7,7 +7,9 @@ namespace yocto
 
         field_info:: ~field_info() throw() {}
 
-        field_info:: field_info(const size_t dim) throw() :
+        field_info:: field_info(const string &id,
+                                const size_t dim) throw() :
+        name(id),
         dimension(dim),
         allocated(0)
         {

@@ -36,10 +36,11 @@ namespace yocto
              \param G the ghosts
              \param E optional memory for rows+data
              */
-            inline explicit field2D(const layout_type &L,
+            inline explicit field2D(const string      &id,
+                                    const layout_type &L,
                                     const ghosts_type &G,
                                     void              *E = NULL ) :
-            field_type(L,G),
+            field_type(id,L,G),
             buflen(0),
             buffer(0),
             datjmp(memory::align(this->outer.width.y * sizeof(row))),
@@ -72,6 +73,10 @@ namespace yocto
 
             inline virtual ~field2D() throw()
             {
+                for(coord1D i=this->outer.width.y-1;i>=0;--i)
+                {
+                    rows[i].~row();
+                }
                 if(buflen)
                 {
                     memory::kind<memory::global>::release(buffer,buflen);
@@ -129,9 +134,23 @@ namespace yocto
                 shift       = rows-this->outer.lower.y;
 
                 type *q = entry;
-                for(coord1D i=0;i<nr;++i,q+=stride)
+                coord1D     i=0;
+                try
                 {
-                    new ( &rows[i] ) row(rowL,rowG,q);
+                    const string id= this->name + "_row";
+                    for(;i<nr;++i,q+=stride)
+                    {
+                        new ( &rows[i] ) row(id,rowL,rowG,q);
+                    }
+                }
+                catch(...)
+                {
+                    while(i>=0)
+                    {
+                        rows[i].~row();
+                        --i;
+                    }
+                    throw;
                 }
             }
 
