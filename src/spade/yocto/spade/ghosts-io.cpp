@@ -22,7 +22,7 @@ namespace yocto
 
         ghosts_io:: ghosts_io( const field_layouts1D &F ) : IO(2,as_capacity)
         {
-            const ghosts1D &gs    = F.ghosts;
+            const Ghosts1D &gs    = F.ghosts;
             const layout1D &outer = F.outer;
             const layout1D &inner = F.inner;
 
@@ -31,7 +31,7 @@ namespace yocto
             // lower
             //__________________________________________________________________
             {
-                const ghost1D    &g = gs.lower;
+                const Ghost1D    &g = gs.lower;
                 coord1D           o = outer.lower;
                 coord1D           i = inner.lower;
                 exchange::pointer xch( new exchange(g.peer,g.size) );
@@ -54,7 +54,7 @@ namespace yocto
             // upper
             //__________________________________________________________________
             {
-                const ghost1D    &g = gs.upper;
+                const Ghost1D    &g = gs.upper;
                 coord1D           o = outer.upper;
                 coord1D           i = inner.upper;
                 exchange::pointer xch( new exchange(g.peer,g.size) );
@@ -88,7 +88,7 @@ namespace yocto
         IO(4,as_capacity)
         {
 
-            const ghosts2D &gs    = F.ghosts;
+            const Ghosts2D &gs    = F.ghosts;
             const layout2D &outer = F.outer;
             const layout2D &inner = F.inner;
 
@@ -103,7 +103,7 @@ namespace yocto
                 // lower.x
                 //______________________________________________________________
                 {
-                    const ghost2D    &g  = gs.lower;
+                    const Ghost2D    &g  = gs.lower;
                     const coord1D     ny = outer.width.y;
                     coord1D           o  = outer.lower.x;
                     coord1D           i  = inner.lower.x;
@@ -134,7 +134,7 @@ namespace yocto
                 // upper.x
                 //______________________________________________________________
                 {
-                    const ghost2D    &g  = gs.upper;
+                    const Ghost2D    &g  = gs.upper;
                     const coord1D     ny = outer.width.y;
                     coord1D           o  = outer.upper.x;
                     coord1D           i  = inner.upper.x;
@@ -164,7 +164,7 @@ namespace yocto
                 // lower.y
                 //______________________________________________________________
                 {
-                    const ghost2D    &g  = gs.lower;
+                    const Ghost2D    &g  = gs.lower;
                     const coord1D     nx = outer.width.x;
                     coord1D           o  = outer.lower.y;
                     coord1D           i  = inner.lower.y;
@@ -193,7 +193,7 @@ namespace yocto
                 // upper.y
                 //______________________________________________________________
                 {
-                    const ghost2D    &g  = gs.upper;
+                    const Ghost2D    &g  = gs.upper;
                     const coord1D     nx = outer.width.x;
                     coord1D           o  = outer.upper.y;
                     coord1D           i  = inner.upper.y;

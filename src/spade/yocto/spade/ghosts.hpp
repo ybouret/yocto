@@ -11,49 +11,49 @@ namespace yocto
 
         //! a ghost, ghost_info and abs size
         template <class COORD>
-        class ghost
+        class Ghost
         {
         public:
             YOCTO_SPADE_DECL_COORD();
             const_coord peer;
             const_coord size;
 
-            inline ghost(const_coord who, param_coord num) throw() :
+            inline Ghost(const_coord who, param_coord num) throw() :
             peer(who), size(__coord_abs<COORD>(num))
             {}
 
-            inline ghost() throw() :
+            inline Ghost() throw() :
             peer(coord_info<coord>::zero),
             size(coord_info<coord>::zero)
             {
             }
             
 
-            inline virtual ~ghost() throw() {}
+            inline virtual ~Ghost() throw() {}
 
-            inline ghost(const ghost &other) throw() :
+            inline Ghost(const Ghost &other) throw() :
             peer(other.peer),
             size(other.size)
             {}
 
 
         private:
-            YOCTO_DISABLE_ASSIGN(ghost);
+            YOCTO_DISABLE_ASSIGN(Ghost);
         };
 
 
         //! a pair of ghosts with origin rank
         template <typename COORD>
-        class ghosts : public object
+        class Ghosts : public object
         {
         public:
-            typedef ghost<COORD>     ghost_type;
+            typedef Ghost<COORD>     ghost_type;
             typedef const ghost_type const_ghost;
             const int   rank;
             const_ghost lower;
             const_ghost upper;
 
-            inline ghosts(const int   where,
+            inline Ghosts(const int   where,
                           const_ghost lo,
                           const_ghost up) throw() :
             rank(where),
@@ -63,7 +63,7 @@ namespace yocto
             }
 
             
-            inline ghosts(const ghosts &other) throw() :
+            inline Ghosts(const Ghosts &other) throw() :
             rank(other.rank),
             lower(other.lower),
             upper(other.upper)
@@ -71,17 +71,17 @@ namespace yocto
             }
 
         private:
-            YOCTO_DISABLE_ASSIGN(ghosts);
+            YOCTO_DISABLE_ASSIGN(Ghosts);
         };
 
-        typedef ghost<coord1D>  ghost1D;
-        typedef ghosts<coord1D> ghosts1D;
+        typedef Ghost<coord1D>  Ghost1D;
+        typedef Ghosts<coord1D> Ghosts1D;
 
-        typedef ghost<coord2D>  ghost2D;
-        typedef ghosts<coord2D> ghosts2D;
+        typedef Ghost<coord2D>  Ghost2D;
+        typedef Ghosts<coord2D> Ghosts2D;
 
-        typedef ghost<coord3D>  ghost3D;
-        typedef ghosts<coord3D> ghosts3D;
+        typedef Ghost<coord3D>  Ghost3D;
+        typedef Ghosts<coord3D> Ghosts3D;
 
 
      

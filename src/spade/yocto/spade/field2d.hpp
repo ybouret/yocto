@@ -18,7 +18,7 @@ namespace yocto
             // 2D types
             //__________________________________________________________________
             typedef layout2D            layout_type;
-            typedef ghosts2D            ghosts_type;
+            typedef Ghosts2D            ghosts_type;
             typedef field_of<T,coord2D> field_type;
 
             //__________________________________________________________________
@@ -27,8 +27,8 @@ namespace yocto
             //__________________________________________________________________
             typedef field1D<T>          row;
             typedef layout1D            row_layout;
-            typedef ghost1D             row_ghost;
-            typedef ghosts1D            row_ghosts;
+            typedef Ghost1D             row_ghost;
+            typedef Ghosts1D            row_ghosts;
 
             //! build a field in 2 dimension
             /**

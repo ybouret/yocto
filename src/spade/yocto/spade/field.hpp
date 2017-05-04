@@ -35,7 +35,7 @@ namespace yocto
         public:
             YOCTO_SPADE_DECL_COORD();
             typedef layout_of<coord> layout_type;
-            typedef ghosts<coord>    ghosts_type;
+            typedef Ghosts<coord>    ghosts_type;
             static const size_t      DIMENSION = layout_type::DIMENSION;
 
             const layout_type inner;
@@ -55,9 +55,7 @@ namespace yocto
             outer(inner.lower-G.lower.size,inner.upper+G.upper.size),
             ghosts(G)
             {
-                //std::cerr << "field_layouts" << DIMENSION << "D:" << std::endl;
-                //std::cerr << "inner=" << inner << std::endl;
-                //std::cerr << "outer=" << outer << std::endl;
+
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     const coord1D w = __coord(inner.width,dim);
@@ -89,7 +87,7 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
 
             typedef layout_of<coord> layout_type;
-            typedef ghosts<coord>    ghosts_type;
+            typedef Ghosts<coord>    ghosts_type;
             
 
         protected:
