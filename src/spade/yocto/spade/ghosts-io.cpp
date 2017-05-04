@@ -23,8 +23,8 @@ namespace yocto
         ghosts_io:: ghosts_io( const field_layouts1D &F ) : IO(2,as_capacity)
         {
             const Ghosts1D &gs    = F.ghosts;
-            const layout1D &outer = F.outer;
-            const layout1D &inner = F.inner;
+            const Layout1D &outer = F.outer;
+            const Layout1D &inner = F.inner;
 
             //__________________________________________________________________
             //
@@ -89,8 +89,8 @@ namespace yocto
         {
 
             const Ghosts2D &gs    = F.ghosts;
-            const layout2D &outer = F.outer;
-            const layout2D &inner = F.inner;
+            const Layout2D &outer = F.outer;
+            const Layout2D &inner = F.inner;
 
             //__________________________________________________________________
             //

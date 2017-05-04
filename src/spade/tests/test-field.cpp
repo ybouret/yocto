@@ -67,7 +67,7 @@ namespace
 YOCTO_UNIT_TEST_IMPL(field)
 {
     {
-        const layout1D  L(1,10);
+        const Layout1D  L(1,10);
 #if 1
         const Ghost1D   no_ghost;
         const Ghosts1D  no_ghosts(0,no_ghost,no_ghost);
@@ -85,7 +85,7 @@ YOCTO_UNIT_TEST_IMPL(field)
 
 
     {
-        const layout2D L( coord2D(1,1), coord2D(10,5) );
+        const Layout2D L( coord2D(1,1), coord2D(10,5) );
 #if 1
         const Ghost2D  no_ghost;
         const Ghosts2D no_ghosts(-1,no_ghost,no_ghost);

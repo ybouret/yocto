@@ -103,9 +103,9 @@ namespace yocto
         };
 
 
-        typedef layout_of<coord1D> layout1D;
-        typedef layout_of<coord2D> layout2D;
-        typedef layout_of<coord3D> layout3D;
+        typedef layout_of<coord1D> Layout1D;
+        typedef layout_of<coord2D> Layout2D;
+        typedef layout_of<coord3D> Layout3D;
     }
 }
 

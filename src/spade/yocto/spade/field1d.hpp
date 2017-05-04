@@ -13,7 +13,7 @@ namespace yocto
         public:
             YOCTO_ARGUMENTS_DECL_T;
             typedef field_of<T,coord1D> field_type;
-            typedef layout1D            layout_type;
+            typedef Layout1D            layout_type;
             typedef Ghosts<coord1D>     ghosts_type;
 
             virtual ~field1D() throw()
