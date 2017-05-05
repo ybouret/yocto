@@ -44,6 +44,7 @@ namespace yocto
             slices(0),
             shift(0)
             {
+#if 0
                 const size_t   num_slices  = this->outer.width.z;
                 const Layout2D slice_layout( coord2D(L.lower.x,L.lower.y), coord2D(L.upper.x,L.upper.y) );
                 const Ghost2D  slice_lower_ghost( coord2D(G.lower.peer.x,G.lower.peer.y), coord2D(G.lower.size.x,G.lower.size.y) );
@@ -61,6 +62,7 @@ namespace yocto
                 uint8_t *p = (uint8_t*)buffer;
                 slices     = (slice  *) &p[slices_offset];
                 shift      = slices-this->outer.lower.z;
+#endif
             }
 
 

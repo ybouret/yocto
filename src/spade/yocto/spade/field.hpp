@@ -37,7 +37,7 @@ namespace yocto
         public:
             YOCTO_SPADE_DECL_COORD();
             typedef layout_of<coord> layout_type;
-            typedef Ghosts<coord>    ghosts_type;
+            typedef ghosts_of<coord> ghosts_type;
             static const size_t      DIMENSION = layout_type::DIMENSION;
 
             const layout_type inner;
@@ -89,7 +89,7 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
 
             typedef layout_of<coord> layout_type;
-            typedef Ghosts<coord>    ghosts_type;
+            typedef ghosts_of<coord> ghosts_type;
             
             virtual size_t      item_size() const throw() { return sizeof(type); }
 

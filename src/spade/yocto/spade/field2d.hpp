@@ -2,6 +2,7 @@
 #define YOCTO_SPADE_FIELD2D_INCLUDED 1
 
 #include "yocto/spade/field1d.hpp"
+#include "yocto/code/cast.hpp"
 
 namespace yocto
 {
@@ -31,6 +32,7 @@ namespace yocto
             typedef Ghosts1D            row_ghosts;
 
 
+#if 0
             //! compute data offset
             static inline
             size_t ComputeDataOffset(const Layout2D &Outer) throw()
@@ -46,6 +48,7 @@ namespace yocto
                 const size_t data_length = Outer.items * sizeof(type);
                 return memory::align(data_offset+data_length);
             }
+#endif
 
             //! build a field in 2 dimension
             /**
@@ -56,24 +59,34 @@ namespace yocto
             inline explicit Field2D(const string      &id,
                                     const layout_type &L,
                                     const ghosts_type &G,
-                                    void              *E = NULL ) :
+                                    void              *rows_wksp = NULL,
+                                    void              *data_wksp = NULL) :
             field_type(id,L,G),
             buflen(0),
             buffer(0),
-            datjmp(ComputeDataOffset(this->outer)),
             rows(0),
             entry(0),
             shift(0)
             {
-                if(!E)
+                if(!rows_wksp)
                 {
-                    const size_t data_offset = datjmp;
+                    assert(!data_wksp);
+                    const size_t nr          = this->outer.width.y;
+                    const size_t rows_offset = 0;
+                    const size_t rows_length = nr * sizeof(rows);
+                    const size_t data_offset = memory::align(rows_offset+rows_length);
                     const size_t data_length = this->outer.items   * sizeof(type);
                     buflen = memory::align(data_offset+data_length);
                     buffer = memory::kind<memory::global>::acquire(buflen);
+                    std::cerr << "Allocating Memory for Field2D" << std::endl;
+                    std::cerr << "rows_length=" << rows_length << "@" << rows_offset << std::endl;
+                    std::cerr << "data_length=" << data_length << "@" << data_offset << std::endl;
+
                     try
                     {
-                        build_on(buffer,G);
+                        rows_wksp = buffer;
+                        data_wksp = _cast::shift(buffer,data_offset);
+                        build_on(rows_wksp,data_wksp,G);
                     }
                     catch(...)
                     {
@@ -84,7 +97,7 @@ namespace yocto
                 }
                 else
                 {
-                    build_on(E,G);
+                    build_on(rows_wksp,data_wksp,G);
                 }
             }
 
@@ -133,12 +146,12 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(Field2D);
             size_t       buflen;
             void        *buffer;
-            const size_t datjmp;
             row         *rows;
             type        *entry;
             row         *shift;
 
-            inline void build_on(void *data,
+            inline void build_on(void *rows_wksp,
+                                 void *data_wksp,
                                  const ghosts_type &G)
             {
                 std::cerr << "\tfield2D: linking rows..." << std::endl;
@@ -149,13 +162,12 @@ namespace yocto
                 const row_ghosts rowG(G.rank,row_lower_ghost,row_upper_ghost);
                 const size_t     stride = rowL.items;
 
-                uint8_t *p  = static_cast<uint8_t *>(data);
-                rows        = (row  *)( &p[0]     );
-                entry       = (type *)( &p[datjmp]);
+                rows        = (row  *)(rows_wksp);
+                entry       = (type *)(data_wksp);
                 shift       = rows-this->outer.lower.y;
 
-                type *q = entry;
-                coord1D     i=0;
+                type   *q = entry;
+                coord1D i = 0;
                 try
                 {
                     const string id= this->name + "_row";

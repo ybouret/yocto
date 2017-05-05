@@ -14,7 +14,7 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
             typedef field_of<T,coord1D> field_type;
             typedef Layout1D            layout_type;
-            typedef Ghosts<coord1D>     ghosts_type;
+            typedef Ghosts1D            ghosts_type;
 
             virtual ~Field1D() throw()
             {
@@ -35,13 +35,13 @@ namespace yocto
             explicit Field1D(const string      &id,
                              const layout_type &L,
                              const ghosts_type &G,
-                             void              *E = NULL):
+                             void              *data_wksp = NULL):
             field_type(id,L,G),
             count(0),
-            entry((type *)E),
+            entry((type *)data_wksp),
             shift(entry-this->outer.lower)
             {
-                if(!E)
+                if(!data_wksp)
                 {
                     count  = this->outer.items;
                     entry  = memory::kind<memory::global>::acquire_as<type>(count);
