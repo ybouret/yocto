@@ -49,6 +49,7 @@ namespace yocto
             field_type(id,L,G),
             buflen(0),
             buffer(0),
+            entry(0),
             slices(0),
             shift(0)
             {
@@ -98,7 +99,7 @@ namespace yocto
                     type *p = entry;
                     row  *r = (row   *) _cast::shift(buffer,rows_offset);
                     const string slice_name = this->name + "_slice";
-                    for(;k<num_slices;++k,p+=items_by_slice,r+=rows_per_slice)
+                    for(;k<coord1D(num_slices);++k,p+=items_by_slice,r+=rows_per_slice)
                     {
                         new ( &slices[k] ) slice(slice_name,slice_layout,slice_ghosts,r,p);
                     }

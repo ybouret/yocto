@@ -12,9 +12,10 @@ YOCTO_UNIT_TEST_IMPL(split)
         for(size_t np=1;np<=8;++np)
         {
             std::cerr << "NP=" << np << std::endl;
+            const Split::In1D in1D(full,np);
             for(size_t r=0;r<np;++r)
             {
-                const Layout1D sub = split_ops::in1D(np,r,full);
+                const Layout1D sub = in1D(r);
                 std::cerr << "\tsub#" << r << "=" << sub << std::endl;
             }
         }
