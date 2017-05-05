@@ -37,11 +37,16 @@ namespace yocto
             class In2D : public Layout2D
             {
             public:
-                const size_t size;
                 const size_t x_size;
                 const size_t y_size;
-                explicit In2D(const Layout2D &full, const size_t ncpu);
+                const size_t size;
+
+                explicit In2D(const Layout2D &full, const size_t xcpu, const size_t ycpu);
                 virtual ~In2D() throw();
+
+                Layout2D operator()(const size_t rank) const;
+
+                // TODO: implement rank to x,y and reverse
                 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(In2D);

@@ -20,5 +20,25 @@ YOCTO_UNIT_TEST_IMPL(split)
             }
         }
     }
+
+    {
+        Layout2D full( coord2D(1,1), coord2D(100,100) );
+        std::cerr << "full=" << full << std::endl;
+        for(size_t nx=1;nx<=4;++nx)
+        {
+            for(size_t ny=1;ny<=4;++ny)
+            {
+
+                const size_t nn = nx*ny;
+                std::cerr << "nx=" << nx << ", ny=" << ny << ", nn=" << nn << std::endl;
+                const Split::In2D in2D(full,nx,ny);
+                for(size_t r=0;r<nn;++r)
+                {
+                    const Layout2D sub = in2D(r);
+                    std::cerr << "\tsub#" << r << "=" << sub << std::endl;
+                }
+            }
+        }
+    }
 }
 YOCTO_UNIT_TEST_DONE()

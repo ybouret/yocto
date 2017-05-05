@@ -10,11 +10,7 @@ namespace yocto
         split2D:: ~split2D() throw()
         {
         }
-
-
-
-
-
+        
         split2D:: split2D(const size_t num_procs, const patch2D &p ) :
         patch2D(p),
         cores(0),

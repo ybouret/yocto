@@ -75,19 +75,39 @@ namespace yocto
     namespace spade
     {
 
-        Split::In2D:: In2D(const Layout2D &full, const size_t ncpu) :
+        Split::In2D:: In2D(const Layout2D &full,
+                           const size_t    xcpu,
+                           const size_t    ycpu) :
         Layout2D(full),
-        size(ncpu),
-        x_size(0),
-        y_size(0)
+        x_size(max_of<size_t>(xcpu,1)),
+        y_size(max_of<size_t>(ycpu,1)),
+        size(x_size*y_size)
         {
-
+            if(x_size>size_t(full.width.x)) throw exception("spade.split.in2d: too many X domains");
+            if(y_size>size_t(full.width.y)) throw exception("spade.split.in2d: too many Y domains");
         }
 
         Split:: In2D:: ~In2D() throw()
         {
         }
 
+
+        Layout2D Split::In2D:: operator()(size_t rank) const
+        {
+            assert(rank<size);
+            const ldiv_t d         = ldiv(rank,x_size);
+            const size_t y_rank    = d.quot;
+            const size_t x_rank    = d.rem;
+            coord2D      start     = lower;
+            coord2D      final     = width;
+
+            Basic(x_size, x_rank,start.x, final.x);
+            Basic(y_size, y_rank,start.y, final.y);
+            final += start;
+            --final.x;
+            --final.y;
+            return Layout2D(start,final);
+        }
 
     }
 
