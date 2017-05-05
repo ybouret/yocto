@@ -43,7 +43,7 @@ namespace
         std::cerr << "inner: " << F.inner << std::endl;
         T src;
         memset(&src,1,sizeof(T));
-
+        std::cerr << "\tchecking IO" << std::endl;
         coord2D p;
         for(p.y=F.outer.lower.y;p.y<=F.outer.upper.y;++p.y)
         {

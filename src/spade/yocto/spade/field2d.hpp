@@ -73,18 +73,15 @@ namespace yocto
                     assert(!data_wksp);
                     const size_t nr          = this->outer.width.y;
                     const size_t rows_offset = 0;
-                    const size_t rows_length = nr * sizeof(rows);
+                    const size_t rows_length = nr * sizeof(row);
                     const size_t data_offset = memory::align(rows_offset+rows_length);
                     const size_t data_length = this->outer.items   * sizeof(type);
                     buflen = memory::align(data_offset+data_length);
                     buffer = memory::kind<memory::global>::acquire(buflen);
-                    std::cerr << "Allocating Memory for Field2D" << std::endl;
-                    std::cerr << "rows_length=" << rows_length << "@" << rows_offset << std::endl;
-                    std::cerr << "data_length=" << data_length << "@" << data_offset << std::endl;
 
                     try
                     {
-                        rows_wksp = buffer;
+                        rows_wksp = _cast::shift(buffer,rows_offset);
                         data_wksp = _cast::shift(buffer,data_offset);
                         build_on(rows_wksp,data_wksp,G);
                     }
@@ -154,26 +151,28 @@ namespace yocto
                                  void *data_wksp,
                                  const ghosts_type &G)
             {
-                std::cerr << "\tfield2D: linking rows..." << std::endl;
+                // computing 1D parameters
                 const coord1D    nr = this->outer.width.y;
-                const row_layout rowL(this->inner.lower.x,this->inner.upper.x);
+                const row_layout l(this->inner.lower.x,this->inner.upper.x);
                 const row_ghost  row_lower_ghost(G.lower.peer.x,G.lower.size.x);
                 const row_ghost  row_upper_ghost(G.upper.peer.x,G.upper.size.x);
-                const row_ghosts rowG(G.rank,row_lower_ghost,row_upper_ghost);
-                const size_t     stride = rowL.items;
+                const row_ghosts rg(G.rank,row_lower_ghost,row_upper_ghost);
+                const size_t     items_per_row = this->outer.width.x;
 
+                // assigning memory
                 rows        = (row  *)(rows_wksp);
                 entry       = (type *)(data_wksp);
                 shift       = rows-this->outer.lower.y;
 
+                // linking
                 type   *q = entry;
                 coord1D i = 0;
                 try
                 {
                     const string id= this->name + "_row";
-                    for(;i<nr;++i,q+=stride)
+                    for(;i<nr;++i,q+=items_per_row)
                     {
-                        new ( &rows[i] ) row(id,rowL,rowG,q);
+                        new ( &rows[i] ) row(id,l,rg,q);
                     }
                 }
                 catch(...)
