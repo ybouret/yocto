@@ -179,7 +179,7 @@ namespace yocto
                 {
                     while(i>=0)
                     {
-                        rows[i].~row();
+                        destruct(&rows[i]);
                         --i;
                     }
                     throw;

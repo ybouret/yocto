@@ -29,10 +29,18 @@ namespace yocto
             //typedef Ghosts2D            slice_ghosts;
             //typedef Ghost2D             slice_ghost;
             typedef Field2D<T>          slice;
+            typedef typename slice::row row;
 
             virtual ~Field3D() throw()
             {
-
+                for(coord1D k=this->outer.width.z-1;k>=0;--k)
+                {
+                    destruct( &slices[k] );
+                }
+                memory::kind<memory::global>::release(buffer,buflen);
+                slices=0;
+                entry =0;
+                shift =0;
             }
 
             explicit Field3D(const string      &id,
@@ -44,25 +52,68 @@ namespace yocto
             slices(0),
             shift(0)
             {
-#if 0
-                const size_t   num_slices  = this->outer.width.z;
+
+                std::cerr << "3D outer: " << this->outer << std::endl;
+                std::cerr << "3D inner: " << this->inner << std::endl;
+
+                // computing 2D parameters
                 const Layout2D slice_layout( coord2D(L.lower.x,L.lower.y), coord2D(L.upper.x,L.upper.y) );
                 const Ghost2D  slice_lower_ghost( coord2D(G.lower.peer.x,G.lower.peer.y), coord2D(G.lower.size.x,G.lower.size.y) );
                 const Ghost2D  slice_upper_ghost( coord2D(G.upper.peer.x,G.upper.peer.y), coord2D(G.upper.size.x,G.upper.size.y) );
                 const Ghosts2D slice_ghosts(G.rank,slice_lower_ghost,slice_upper_ghost);
-                const size_t   bytes_per_slice = slice::ComputeBufferSize(slice_layout);
-                const size_t   slices_offset   = 0;
-                const size_t   slices_length   = num_slices * sizeof(slice);
-                const size_t   data_offset     = memory::align(slices_offset+slices_length);
-                const size_t   data_length     = num_slices * bytes_per_slice;
 
+                // memory for slices
+                const size_t   num_slices    = this->outer.width.z;
+                const size_t   slices_offset = 0;
+                const size_t   slices_length = num_slices * sizeof(slice);
+
+                // memory for rows
+                const size_t   rows_per_slice = this->outer.width.y;
+                const size_t   num_rows       = num_slices * rows_per_slice;
+                const size_t   rows_offset    = memory::align(slices_offset+slices_length);
+                const size_t   rows_length    = num_rows * sizeof(row);
+
+                // memory for data
+                const size_t   data_offset    = memory::align(rows_offset+rows_length);
+                const size_t   data_length    = this->outer.items * sizeof(type);
+
+                std::cerr << "num_slices   =" << num_slices << "#" << sizeof(slice) << std::endl;
+                std::cerr << "num_rows     =" << num_rows   << "#" << sizeof(typename slice::row) << std::endl;
+                std::cerr << "slices_length=" << slices_length << "@" << slices_offset << std::endl;
+                std::cerr << "rows_length  =" << rows_length << "@" << rows_offset << std::endl;
+                std::cerr << "data_length  =" << data_length << "@" << data_offset << std::endl;
+
+                // allocating
                 buflen = memory::align(data_offset+data_length);
                 buffer = memory::kind<memory::global>::acquire(buflen);
 
-                uint8_t *p = (uint8_t*)buffer;
-                slices     = (slice  *) &p[slices_offset];
-                shift      = slices-this->outer.lower.z;
-#endif
+                const size_t items_by_slice = this->outer.width.x * this->outer.width.y;
+                assert(items_by_slice*num_slices==this->outer.items);
+                slices     = (slice *) _cast::shift(buffer,slices_offset);
+                entry      = (type  *) _cast::shift(buffer,data_offset);
+                shift      = slices - this->outer.lower.z;
+                coord1D k = 0;
+                try
+                {
+                    type *p = entry;
+                    row  *r = (row   *) _cast::shift(buffer,rows_offset);
+                    const string slice_name = this->name + "_slice";
+                    for(;k<num_slices;++k,p+=items_by_slice,r+=rows_per_slice)
+                    {
+                        new ( &slices[k] ) slice(slice_name,slice_layout,slice_ghosts,r,p);
+                    }
+                }
+                catch(...)
+                {
+                    while(k>0)
+                    {
+                        destruct(&slices[k]);
+                        --k;
+                    }
+                    throw;
+                }
+
+
             }
 
 
@@ -76,6 +127,20 @@ namespace yocto
             {
                 assert(indx<this->outer.items);
                 return &entry[indx];
+            }
+
+            inline slice & operator[](const coord1D z) throw()
+            {
+                assert(z>=this->outer.lower.z);
+                assert(z<=this->outer.upper.z);
+                return shift[z];
+            }
+
+            inline const slice & operator[](const coord1D z) const throw()
+            {
+                assert(z>=this->outer.lower.z);
+                assert(z<=this->outer.upper.z);
+                return shift[z];
             }
 
 

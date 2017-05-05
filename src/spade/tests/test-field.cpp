@@ -58,6 +58,32 @@ namespace
 
     }
 
+    template <typename T>
+    static inline
+    void check_field3D( Field3D<T> &F )
+    {
+        std::cerr << "Checking Field 3D..." << std::endl;
+        std::cerr << "f3d.allocated=" <<  F.allocated << std::endl;
+        std::cerr << "outer: " << F.outer << std::endl;
+        std::cerr << "inner: " << F.inner << std::endl;
+        T src;
+        memset(&src,1,sizeof(T));
+        std::cerr << "\tchecking IO" << std::endl;
+        coord3D p;
+        for(p.z=F.outer.lower.z;p.z<=F.outer.upper.z;++p.z)
+        {
+            for(p.y=F.outer.lower.y;p.y<=F.outer.upper.y;++p.y)
+            {
+                for(p.x=F.outer.lower.x;p.x<F.outer.upper.x;++p.x)
+                {
+                    F[p.z][p.y][p.x] = src;
+                }
+            }
+        }
+        //ghosts_io gIO(F);
+
+
+    }
 
 }
 
@@ -105,11 +131,11 @@ YOCTO_UNIT_TEST_IMPL(field)
         const Ghost3D  glo( coord3D(10,11,12), coord3D(1,2,3) );
         const Ghost3D  gup( coord3D(13,14,15), coord3D(3,2,1) );
         const Ghosts3D gs3(0,glo,gup);
-
+        
         Field3D< double > A("A3",L,gs3);
-
+        check_field3D(A);
     }
-
-
+    
+    
 }
 YOCTO_UNIT_TEST_DONE()
