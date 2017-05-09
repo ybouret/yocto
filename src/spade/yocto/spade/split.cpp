@@ -151,7 +151,7 @@ namespace yocto
         coord3D Split:: In3D:: getRanks(const coord1D rank) const throw()
         {
             assert(rank>=0);
-            assert(rank<size);
+            assert(rank<coord1D(size));
             const ldiv_t  dz     = ldiv(rank,zcof);
             const coord1D z_rank = dz.quot;
             const coord1D rz     = dz.rem;
