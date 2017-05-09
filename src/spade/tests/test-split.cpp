@@ -40,5 +40,27 @@ YOCTO_UNIT_TEST_IMPL(split)
             }
         }
     }
+
+    {
+        Layout3D full( coord3D(1,1,1), coord3D(100,100,100) );
+        std::cerr << "full=" << full << std::endl;
+        for(size_t nx=1;nx<=4;++nx)
+        {
+            for(size_t ny=1;ny<=4;++ny)
+            {
+                for(size_t nz=1;nz<=4;++nz)
+                {
+                    const size_t nn = nx*ny*nz;
+                    std::cerr << "nx=" << nx << ", ny=" << ny << ", nn=" << nn << std::endl;
+                    const Split::In3D in3D(full,nx,ny,nz);
+                    for(size_t r=0;r<nn;++r)
+                    {
+                        const coord3D ranks = in3D.getRanks(r);
+                        std::cerr << "\trank=" << r << " => " << ranks << std::endl;
+                    }
+                }
+            }
+        }
+    }
 }
 YOCTO_UNIT_TEST_DONE()
