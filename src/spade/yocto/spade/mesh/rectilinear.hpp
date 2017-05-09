@@ -12,6 +12,7 @@ namespace yocto
     namespace spade
     {
 
+        //! a rectilinear mesh
         template <typename T,typename COORD>
         class RectilinearMesh : public Mesh
         {
@@ -97,10 +98,18 @@ namespace yocto
                     const coord1D imax = U.inner.upper;
                     const coord1D idif = imax-imin;
 
-                    // TODO: check 0 width !
-                    for(coord1D p=ini;p<=end;++p)
+                    if(idif<=0)
                     {
-                        U[p] = umin + (type((p-imin) * udif))/idif;
+                        const_type *upper = B.__upper();
+                        const_type  umax  = upper[dim];
+                        U[imin] = (umin+umax)/2;
+                    }
+                    else
+                    {
+                        for(coord1D p=ini;p<=end;++p)
+                        {
+                            U[p] = umin + (type((p-imin) * udif))/idif;
+                        }
                     }
                 }
             }
