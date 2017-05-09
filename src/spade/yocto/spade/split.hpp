@@ -24,10 +24,11 @@ namespace yocto
             public:
                 const size_t size;
 
-                explicit In1D(const Layout1D &full, const size_t ncpu);
+                explicit In1D(const Layout1D &full,
+                              const size_t    ncpu);
                 virtual ~In1D() throw();
 
-                Layout1D operator()(const size_t rank) const;
+                Layout1D operator()(const coord1D rank) const;
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(In1D);
@@ -37,19 +38,45 @@ namespace yocto
             class In2D : public Layout2D
             {
             public:
-                const size_t x_size;
-                const size_t y_size;
-                const size_t size;
+                const coord2D sizes;
+                const size_t  size;
 
-                explicit In2D(const Layout2D &full, const size_t xcpu, const size_t ycpu);
+                explicit In2D(const Layout2D &full,
+                              const size_t    xcpu,
+                              const size_t    ycpu);
                 virtual ~In2D() throw();
 
-                Layout2D operator()(const size_t rank) const;
+                Layout2D operator()(const coord1D rank) const;
 
                 // TODO: implement rank to x,y and reverse
-                
+
+                //! get ranks for rank<size
+                coord2D getRanks(const coord1D rank) const throw();
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(In2D);
+            };
+
+
+            class In3D : public Layout3D
+            {
+            public:
+                const coord3D sizes;
+                const coord1D zcof;
+                const size_t  size;
+
+                explicit In3D(const Layout3D &full,
+                              const size_t    xcpu,
+                              const size_t    ycpu,
+                              const size_t    zcpu);
+                virtual ~In3D() throw();
+
+                //! get ranks for rank<size
+                coord3D getRanks(const coord1D rank) const throw();
+
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(In3D);
             };
 
         };

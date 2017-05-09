@@ -58,10 +58,13 @@ namespace yocto
         {
         }
 
-        Layout1D  Split:: In1D:: operator()(const size_t rank) const
+        Layout1D  Split:: In1D:: operator()(const coord1D rank) const
         {
+            assert(rank>=0);
+            assert(rank<coord1D(size));
             coord1D offset = lower;
             coord1D length = width;
+            Basic(size,rank,offset,length);
             return Layout1D(offset,offset+length-1);
         }
 
@@ -79,12 +82,11 @@ namespace yocto
                            const size_t    xcpu,
                            const size_t    ycpu) :
         Layout2D(full),
-        x_size(max_of<size_t>(xcpu,1)),
-        y_size(max_of<size_t>(ycpu,1)),
-        size(x_size*y_size)
+        sizes(max_of<coord1D>(xcpu,1),max_of<coord1D>(ycpu,1)),
+        size(sizes.x*sizes.y)
         {
-            if(x_size>size_t(full.width.x)) throw exception("spade.split.in2d: too many X domains");
-            if(y_size>size_t(full.width.y)) throw exception("spade.split.in2d: too many Y domains");
+            if(sizes.x>full.width.x) throw exception("spade.split.in2d: too many X domains");
+            if(sizes.y>full.width.y) throw exception("spade.split.in2d: too many Y domains");
         }
 
         Split:: In2D:: ~In2D() throw()
@@ -92,24 +94,70 @@ namespace yocto
         }
 
 
-        Layout2D Split::In2D:: operator()(size_t rank) const
+        Layout2D Split::In2D:: operator()(const coord1D rank) const
         {
-            assert(rank<size);
-            const ldiv_t d         = ldiv(rank,x_size);
-            const size_t y_rank    = d.quot;
-            const size_t x_rank    = d.rem;
-            coord2D      start     = lower;
-            coord2D      final     = width;
+            assert(rank>=0);
+            assert(rank<coord1D(size));
+            const coord2D ranks  = getRanks(rank);
+            coord2D       start  = lower;
+            coord2D       final  = width;
 
-            Basic(x_size, x_rank,start.x, final.x);
-            Basic(y_size, y_rank,start.y, final.y);
+            Basic(sizes.x, ranks.x,start.x, final.x);
+            Basic(sizes.y, ranks.y,start.y, final.y);
             final += start;
             --final.x;
             --final.y;
             return Layout2D(start,final);
         }
 
+        coord2D Split::In2D:: getRanks(const coord1D rank) const throw()
+        {
+            assert(rank>=0);
+            assert(rank<coord1D(size));
+            const ldiv_t  d         = ldiv(rank,sizes.x);
+            const coord1D y_rank    = d.quot;
+            const coord1D x_rank    = d.rem;
+            return coord2D(x_rank,y_rank);
+        }
+
+
     }
 
 }
 
+
+namespace yocto
+{
+    namespace spade
+    {
+        Split::In3D::In3D(const Layout3D &full,
+                          const size_t    xcpu,
+                          const size_t    ycpu,
+                          const size_t    zcpu) :
+        Layout3D(full),
+        sizes(max_of<coord1D>(xcpu,1),max_of<coord1D>(ycpu,1),max_of<coord1D>(zcpu,1)),
+        zcof(sizes.x*sizes.y),
+        size(zcof*sizes.z)
+        {
+        }
+
+        Split:: In3D:: ~In3D() throw()
+        {
+        }
+
+        coord3D Split:: In3D:: getRanks(const coord1D rank) const throw()
+        {
+            assert(rank>=0);
+            assert(rank<size);
+            const ldiv_t  dz     = ldiv(rank,zcof);
+            const coord1D z_rank = dz.quot;
+            const coord1D rz     = dz.rem;
+
+            const ldiv_t  d      = ldiv(rz,sizes.x);
+            const coord1D y_rank = d.quot;
+            const coord1D x_rank = d.rem;
+            return coord3D(x_rank,y_rank,z_rank);
+        }
+
+    }
+}
