@@ -1,6 +1,8 @@
 #include "yocto/spade/split.hpp"
 #include "yocto/exception.hpp"
 
+#include <cstdlib>
+
 namespace yocto
 {
     namespace spade
@@ -117,7 +119,7 @@ namespace yocto
             const ldiv_t  d         = ldiv(rank,sizes.x);
             const coord1D y_rank    = d.quot;
             const coord1D x_rank    = d.rem;
-            
+
             return coord2D(x_rank,y_rank);
         }
 
