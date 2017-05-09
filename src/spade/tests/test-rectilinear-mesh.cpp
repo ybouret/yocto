@@ -1,0 +1,18 @@
+#include "yocto/spade/mesh/rectilinear.hpp"
+#include "yocto/utest/run.hpp"
+
+using namespace yocto;
+using namespace spade;
+#include <cstring>
+
+YOCTO_UNIT_TEST_IMPL(rmesh)
+{
+    {
+        const Layout1D L(-5,8);
+        const Ghost1D  no_ghost;
+        const Ghosts1D G(-1,no_ghost,no_ghost);
+        RectilinearMesh<double,coord1D> rm("mesh1d",L,G);
+    }
+}
+YOCTO_UNIT_TEST_DONE()
+

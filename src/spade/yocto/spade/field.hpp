@@ -5,13 +5,14 @@
 #include "yocto/spade/ghosts.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/string.hpp"
+#include "yocto/counted-object.hpp"
 
 namespace yocto
 {
     namespace spade
     {
 
-        class field_info : public object
+        class field_info : public counted_object
         {
         public:
             virtual ~field_info() throw();

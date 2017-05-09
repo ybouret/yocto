@@ -10,10 +10,16 @@ namespace yocto
 {
     namespace spade
     {
-        typedef unit_t           coord1D;
-        typedef point2d<coord1D> coord2D;
-        typedef point3d<coord1D> coord3D;
+        typedef unit_t           coord1D; //!< alias for signed coordinate
+        typedef point2d<coord1D> coord2D; //!< in 2D
+        typedef point3d<coord1D> coord3D; //!< in 3D
 
+        struct coord_data
+        {
+            static const char *axis_name(const size_t dim) throw();
+        };
+
+        //! define a zero coordinate
         template <typename COORD>
         struct coord_info
         {
@@ -45,7 +51,7 @@ namespace yocto
         template <> inline coord1D __coord_prod<coord3D>(const coord3D &C) throw() { return C.x*C.y*C.z; }
 
 
-        //! inline lower/upper
+        //! inline lower
         template <typename COORD>
         inline COORD __coord_lower_of(const COORD &lhs, const COORD &rhs) throw()
         {
@@ -60,6 +66,8 @@ namespace yocto
             return ans;
         }
 
+
+        //! inline upper
         template <typename COORD>
         inline COORD __coord_upper_of(const COORD &lhs, const COORD &rhs) throw()
         {
@@ -142,6 +150,8 @@ namespace yocto
 typedef COORD                                         coord;         \
 typedef const     COORD                               const_coord;   \
 typedef typename  type_traits<COORD>::parameter_type  param_coord;
+
+
 
 
     }

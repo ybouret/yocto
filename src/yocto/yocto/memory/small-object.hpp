@@ -98,7 +98,6 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(provider);
                 
                 kBlocks blocks_;
-                //blocks blocks_;
                 
                 friend class singleton<provider>;
                 static const char name[];
