@@ -43,7 +43,7 @@ namespace yocto
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     const AxisLayout  axis_layout = layout_ops::extract<layout_type>(L,dim);
-                    const ghosts_type axis_ghosts = ghosts_ops::extract<ghosts_type>(G,dim);
+                    const AxisGhosts  axis_ghosts = ghosts_ops::extract<ghosts_type>(G,dim);
                     const string      axis_name   = name + coord_data::axis_name(dim);
                     AxisPointer       axis_ptr( new Axis(axis_name,axis_layout,axis_ghosts) );
                     axis__.push_back(axis_ptr);
