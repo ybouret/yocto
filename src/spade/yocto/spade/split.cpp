@@ -163,5 +163,25 @@ namespace yocto
             return coord3D(x_rank,y_rank,z_rank);
         }
 
+        Layout3D Split:: In3D:: operator()(const coord1D rank) const throw()
+        {
+            assert(rank>=0);
+            assert(rank<coord1D(size));
+            const coord3D ranks = getRanks(rank);
+            coord3D       start  = lower;
+            coord3D       final  = width;
+
+            Basic(sizes.x, ranks.x,start.x, final.x);
+            Basic(sizes.y, ranks.y,start.y, final.y);
+            Basic(sizes.z, ranks.z,start.z, final.z);
+            final += start;
+            --final.x;
+            --final.y;
+            --final.z;
+            return Layout3D(start,final);
+
+        }
+
+
     }
 }

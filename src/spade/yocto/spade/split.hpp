@@ -74,6 +74,8 @@ namespace yocto
                 //! get ranks for rank<size
                 coord3D getRanks(const coord1D rank) const throw();
 
+                Layout3D operator()(const coord1D rank) const throw();
+
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(In3D);

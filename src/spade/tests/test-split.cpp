@@ -51,12 +51,14 @@ YOCTO_UNIT_TEST_IMPL(split)
                 for(size_t nz=1;nz<=4;++nz)
                 {
                     const size_t nn = nx*ny*nz;
-                    std::cerr << "nx=" << nx << ", ny=" << ny << ", nn=" << nn << std::endl;
+                    std::cerr << "nx=" << nx << ", ny=" << ny << ", nz=" << nz << ", nn=" << nn << std::endl;
                     const Split::In3D in3D(full,nx,ny,nz);
                     for(size_t r=0;r<nn;++r)
                     {
                         const coord3D ranks = in3D.getRanks(r);
                         std::cerr << "\trank=" << r << " => " << ranks << std::endl;
+                        const Layout3D sub = in3D(r);
+                        std::cerr << "\tsub#" << r << "=" << sub << std::endl;
                     }
                 }
             }
