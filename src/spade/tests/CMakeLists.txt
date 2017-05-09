@@ -1,3 +1,11 @@
 FILE(GLOB test_srcs test-*.cpp *.hpp)
 ADD_EXECUTABLE(test-spade main.cpp ${test_srcs})
 TARGET_LINK_YOCTO( test-spade mk gfx spade png z )
+
+ENABLE_TESTING()
+ADD_TEST(STL        test-spade stl)
+ADD_TEST(Triangle2D test-spade tr2d)
+ADD_TEST(Types      test-spade types)
+ADD_TEST(Layout     test-spade layout)
+ADD_TEST(Field      test-spade field)
+ADD_TEST(Split      test-spade split)
