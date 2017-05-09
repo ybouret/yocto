@@ -58,10 +58,8 @@ namespace yocto
                 std::cerr << "3D inner: " << this->inner << std::endl;
 
                 // computing 2D parameters
-                const Layout2D slice_layout( coord2D(L.lower.x,L.lower.y), coord2D(L.upper.x,L.upper.y) );
-                const Ghost2D  slice_lower_ghost( coord2D(G.lower.peer.x,G.lower.peer.y), coord2D(G.lower.size.x,G.lower.size.y) );
-                const Ghost2D  slice_upper_ghost( coord2D(G.upper.peer.x,G.upper.peer.y), coord2D(G.upper.size.x,G.upper.size.y) );
-                const Ghosts2D slice_ghosts(G.rank,slice_lower_ghost,slice_upper_ghost);
+                const Layout2D slice_layout = layout_ops::extract(L);
+                const Ghosts2D slice_ghosts = ghosts_ops::extract(G);
 
                 // memory for slices
                 const size_t   num_slices    = this->outer.width.z;

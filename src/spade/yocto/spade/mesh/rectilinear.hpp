@@ -19,9 +19,9 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
             typedef Field1D<type>    Axis;
             typedef arc_ptr<Axis>    AxisPointer;
-            typedef Ghost1D          axis_ghost;
-            typedef Ghosts1D         axis_ghosts;
-            typedef Layout1D         axis_layout;
+            typedef Ghost1D          AxisGhost;
+            typedef Ghosts1D         AxisGhosts;
+            typedef Layout1D         AxisLayout;
 
             typedef layout_of<COORD> layout_type;
             typedef ghost_of<COORD>  ghost_type;
@@ -37,14 +37,18 @@ namespace yocto
                                             const ghosts_type &G
                                             ) :
             Mesh(id,DIMENSION),
-            axis__(DIMENSION,as_capacity)
+            axis__(DIMENSION,as_capacity),
+            pAxis(0)
             {
-
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
-                    const coord1D lower = __coord(L.lower,dim);
-                    const coord1D upper = __coord(L.upper,dim);
+                    const AxisLayout  axis_layout = layout_ops::extract<layout_type>(L,dim);
+                    const ghosts_type axis_ghosts = ghosts_ops::extract<ghosts_type>(G,dim);
+                    const string      axis_name   = name + coord_data::axis_name(dim);
+                    AxisPointer       axis_ptr( new Axis(axis_name,axis_layout,axis_ghosts) );
+                    axis__.push_back(axis_ptr);
                 }
+                pAxis = &axis__[1];
 
             }
             
@@ -52,7 +56,7 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(RectilinearMesh);
             vector<AxisPointer> axis__;
-
+            AxisPointer        *pAxis;
         };
 
 

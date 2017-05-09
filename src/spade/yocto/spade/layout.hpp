@@ -88,6 +88,12 @@ namespace yocto
                 return are_same_coord(lower,other.lower) && are_same_coord(upper,other.upper);
             }
 
+            friend inline
+            bool operator==(const layout_of &lhs, const layout_of &rhs) throw()
+            {
+                return lhs.same_metrics_than(rhs);
+            }
+
             //! test coordinate inside layout
             inline bool has( param_coord C ) const throw() { return is_coord_inside(C,lower,upper); }
 
@@ -106,6 +112,26 @@ namespace yocto
         typedef layout_of<coord1D> Layout1D;
         typedef layout_of<coord2D> Layout2D;
         typedef layout_of<coord3D> Layout3D;
+
+        struct layout_ops
+        {
+            template <typename LAYOUT> static inline
+            Layout1D extract(const LAYOUT &L, const size_t dim) throw()
+            {
+                const coord1D lower = __coord(L.lower,dim);
+                const coord1D upper = __coord(L.upper,dim);
+                return Layout1D(lower,upper);
+            }
+
+            static inline
+            Layout2D extract(const Layout3D &L) throw()
+            {
+                const coord2D lower(L.lower.x,L.lower.y);
+                const coord2D upper(L.upper.x,L.upper.y);
+                return Layout2D(lower,upper);
+            }
+
+        };
     }
 }
 

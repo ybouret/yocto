@@ -151,28 +151,36 @@ namespace yocto
                                  void *data_wksp,
                                  const ghosts_type &G)
             {
+                //______________________________________________________________
+                //
                 // computing 1D parameters
-                const coord1D    nr = this->outer.width.y;
-                const row_layout l(this->inner.lower.x,this->inner.upper.x);
-                const row_ghost  row_lower_ghost(G.lower.peer.x,G.lower.size.x);
-                const row_ghost  row_upper_ghost(G.upper.peer.x,G.upper.size.x);
-                const row_ghosts rg(G.rank,row_lower_ghost,row_upper_ghost);
+                //______________________________________________________________
+
+                const coord1D    r_count       = this->outer.width.y;
+                const row_layout r_layout      = layout_ops::extract(this->inner,0);
+                const row_ghosts r_ghosts      = ghosts_ops::extract(G,0);
                 const size_t     items_per_row = this->outer.width.x;
 
+                //______________________________________________________________
+                //
                 // assigning memory
+                //______________________________________________________________
                 rows        = (row  *)(rows_wksp);
                 entry       = (type *)(data_wksp);
                 shift       = rows-this->outer.lower.y;
 
-                // linking
+                //______________________________________________________________
+                //
+                // linking with memory check
+                //______________________________________________________________
                 type   *q = entry;
                 coord1D i = 0;
                 try
                 {
                     const string id= this->name + "_row";
-                    for(;i<nr;++i,q+=items_per_row)
+                    for(;i<r_count;++i,q+=items_per_row)
                     {
-                        new ( &rows[i] ) row(id,l,rg,q);
+                        new ( &rows[i] ) row(id,r_layout,r_ghosts,q);
                     }
                 }
                 catch(...)
