@@ -36,7 +36,7 @@ namespace yocto
         class field_layouts : public field_info
         {
         public:
-            YOCTO_SPADE_DECL_COORD();
+            YOCTO_SPADE_DECL_COORD;
             typedef layout_of<coord> layout_type;
             typedef ghosts_of<coord> ghosts_type;
             static const size_t      DIMENSION = layout_type::DIMENSION;
@@ -86,7 +86,7 @@ namespace yocto
         class field_of : public field_layouts<COORD>
         {
         public:
-            YOCTO_SPADE_DECL_COORD();
+            YOCTO_SPADE_DECL_COORD;
             YOCTO_ARGUMENTS_DECL_T;
 
             typedef layout_of<coord> layout_type;

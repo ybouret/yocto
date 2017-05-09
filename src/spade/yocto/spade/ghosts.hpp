@@ -14,7 +14,7 @@ namespace yocto
         class ghost_of
         {
         public:
-            YOCTO_SPADE_DECL_COORD();
+            YOCTO_SPADE_DECL_COORD;
             const_coord peer;
             const_coord size;
 

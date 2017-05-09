@@ -25,7 +25,7 @@ namespace yocto
         {
             static const COORD zero;
         };
-        
+
         //! extract coord from compound COORD
         template <typename COORD>
         inline unit_t & __coord( COORD &C, size_t dim ) throw()
@@ -146,12 +146,105 @@ namespace yocto
             return ((C.x>=lower.x) && (C.x<=upper.x)) && ((C.y>=lower.y) && (C.y<=upper.y)) && ((C.z>=lower.z) && (C.z<=upper.z));
         }
 
-#define YOCTO_SPADE_DECL_COORD() \
+#define YOCTO_SPADE_DECL_COORD \
 typedef COORD                                         coord;         \
 typedef const     COORD                               const_coord;   \
 typedef typename  type_traits<COORD>::parameter_type  param_coord;
 
+        //______________________________________________________________________
+        //
+        //
+        //
+        //______________________________________________________________________
 
+        template <typename T,typename COORD>
+        struct vertex_for;
+
+        template <typename T>
+        struct vertex_for<T,coord1D>
+        {
+            typedef T type;
+        };
+
+        template <typename T>
+        struct vertex_for<T,coord2D>
+        {
+            typedef point2d<T> type;
+        };
+
+        template <typename T>
+        struct vertex_for<T,coord3D>
+        {
+            typedef point3d<T> type;
+        };
+
+        //______________________________________________________________________
+        //
+        //
+        //
+        //______________________________________________________________________
+
+        template <typename T,typename COORD>
+        class box_of
+        {
+        public:
+            static const size_t DIMENSION = sizeof(COORD)/sizeof(coord1D);
+            YOCTO_ARGUMENTS_DECL_T;
+            YOCTO_SPADE_DECL_COORD;
+
+            typedef typename vertex_for<T,COORD>::type        vtx;
+            typedef typename type_traits<vtx>::parameter_type param_vtx;
+            typedef          const vtx                        const_vtx;
+
+
+            const_vtx  lower;
+            const_vtx  upper;
+            const_vtx  width;
+            const_type volume;
+
+            inline virtual ~box_of() throw() {}
+            inline explicit box_of( param_vtx lo, param_vtx up ) throw() :
+            lower(lo),
+            upper(up),
+            width(lo),//dummy
+            volume(1)
+            {
+                type *L = (type *)&lower;
+                type *U = (type *)&upper;
+                type *W = (type *)&width;
+                type &V = (type &)volume;
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    if(U[dim]<L[dim]) cswap(U[dim],L[dim]);
+                    assert(L[dim]<=U[dim]);
+                    V *= (W[dim]=U[dim]-L[dim]);
+                }
+            }
+
+            inline box_of( const box_of &other ) throw() :
+            lower(other.lower),
+            upper(other.upper),
+            volume(other.volume)
+            {
+            }
+            
+
+            inline const_type *__lower() const throw() { return (const_type *) &lower; }
+            inline const_type *__upper() const throw() { return (const_type *) &upper; }
+            inline const_type *__width() const throw() { return (const_type *) &width; }
+            
+
+
+            inline friend std::ostream & operator<<( std::ostream &os, const box_of &p )
+            {
+                os << "| " << p.lower << " -> " << p.upper << ", volume=" << p.volume << " |";
+                return os;
+            }
+
+
+        private:
+            YOCTO_DISABLE_ASSIGN(box_of);
+        };
 
 
     }

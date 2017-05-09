@@ -26,7 +26,7 @@ namespace yocto
             typedef layout_of<COORD> layout_type;
             typedef ghost_of<COORD>  ghost_type;
             typedef ghosts_of<COORD> ghosts_type;
-
+            typedef box_of<T,COORD>  box_type;
 
             static const size_t DIMENSION = sizeof(COORD)/sizeof(coord1D);
 
@@ -34,21 +34,18 @@ namespace yocto
 
             inline explicit RectilinearMesh(const string      &id,
                                             const layout_type &L,
-                                            const ghosts_type &G
+                                            const ghosts_type &G,
+                                            const box_type    *pBox = 0
                                             ) :
             Mesh(id,DIMENSION),
             axis__(DIMENSION,as_capacity),
             pAxis(0)
             {
-                for(size_t dim=0;dim<DIMENSION;++dim)
+                build_with(L,G);
+                if(pBox)
                 {
-                    const AxisLayout  axis_layout = layout_ops::extract<layout_type>(L,dim);
-                    const AxisGhosts  axis_ghosts = ghosts_ops::extract<ghosts_type>(G,dim);
-                    const string      axis_name   = name + coord_data::axis_name(dim);
-                    AxisPointer       axis_ptr( new Axis(axis_name,axis_layout,axis_ghosts) );
-                    axis__.push_back(axis_ptr);
+                    map_inner(*pBox);
                 }
-                pAxis = &axis__[1];
             }
 
             inline Axis & operator[](const size_t dim) throw()
@@ -70,6 +67,44 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(RectilinearMesh);
             vector<AxisPointer> axis__;
             AxisPointer        *pAxis;
+
+            inline void build_with(const layout_type &L,const ghosts_type &G)
+            {
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    const AxisLayout  axis_layout = layout_ops::extract<layout_type>(L,dim);
+                    const AxisGhosts  axis_ghosts = ghosts_ops::extract<ghosts_type>(G,dim);
+                    const string      axis_name   = name + coord_data::axis_name(dim);
+                    AxisPointer       axis_ptr( new Axis(axis_name,axis_layout,axis_ghosts) );
+                    axis__.push_back(axis_ptr);
+                }
+                pAxis = &axis__[1];
+            }
+
+            inline void map_inner( const box_type &B) throw()
+            {
+                RectilinearMesh &self = *this;
+                const_type     *lower = B.__lower();
+                const_type     *width = B.__width();
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    const_type umin    = lower[dim];
+                    const_type udif    = width[dim];
+                    Axis      &U       = self[dim];
+                    const coord1D ini  = U.outer.lower;
+                    const coord1D end  = U.outer.upper;
+                    const coord1D imin = U.inner.lower;
+                    const coord1D imax = U.inner.upper;
+                    const coord1D idif = imax-imin;
+
+                    // TODO: check 0 width !
+                    for(coord1D p=ini;p<=end;++p)
+                    {
+                        U[p] = umin + (type((p-imin) * udif))/idif;
+                    }
+                }
+            }
+
         };
 
 
