@@ -117,6 +117,7 @@ namespace yocto
             const ldiv_t  d         = ldiv(rank,sizes.x);
             const coord1D y_rank    = d.quot;
             const coord1D x_rank    = d.rem;
+            
             return coord2D(x_rank,y_rank);
         }
 
@@ -156,6 +157,7 @@ namespace yocto
             const ldiv_t  d      = ldiv(rz,sizes.x);
             const coord1D y_rank = d.quot;
             const coord1D x_rank = d.rem;
+
             return coord3D(x_rank,y_rank,z_rank);
         }
 
