@@ -135,8 +135,16 @@ namespace yocto
                                    const char     *command_name) const;
 
             virtual void one_step();
-
         };
+
+        //______________________________________________________________________
+        //
+        // Helpers
+        //______________________________________________________________________
+    public:
+        template <typename T>
+        static visit_handle VariableData_Set(const T*,const size_t nTuples);
+        
     };
 }
 
