@@ -144,7 +144,7 @@ namespace yocto
     public:
         template <typename T>
         static visit_handle VariableData_Set(const T*,const size_t nTuples);
-        
+
     };
 }
 
