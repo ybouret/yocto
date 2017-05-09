@@ -49,9 +49,22 @@ namespace yocto
                     axis__.push_back(axis_ptr);
                 }
                 pAxis = &axis__[1];
-
             }
-            
+
+            inline Axis & operator[](const size_t dim) throw()
+            {
+                assert(dim<DIMENSION);
+                assert(pAxis!=NULL);
+                return *pAxis[dim];
+            }
+
+            inline const Axis & operator[](const size_t dim) const throw()
+            {
+                assert(dim<DIMENSION);
+                assert(pAxis!=NULL);
+                return *pAxis[dim];
+            }
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(RectilinearMesh);
