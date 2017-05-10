@@ -156,9 +156,10 @@ namespace yocto
         template <typename T>
         static inline visit_handle VariableData_Set(const float *arr,const size_t nTuples)
         {
+            assert(arr!=NULL);
             visit_handle h = VariableData_alloc();
             try { VariableData_Set<T>(h,arr,nTuples); } catch(...){ VariableData_free(h); throw; }
-            return VISIT_INVALID_HANDLE;
+            return h;
         }
 
         static visit_handle MeshMetaData_alloc();

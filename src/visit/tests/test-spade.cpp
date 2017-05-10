@@ -1,5 +1,4 @@
-#include "yocto/spade/mesh/rectilinear.hpp"
-#include "yocto/visit/interface.hpp"
+#include "yocto/spade/visit.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
@@ -34,13 +33,31 @@ namespace
 
         virtual void one_step()
         {
-            MPI.Printf0(stderr, "LoopSim/OneStep\n");
+            MPI.Printf0(stderr, "Sim/OneStep\n");
         }
 
         virtual void setMetaData(visit_handle &md)
         {
-            
+            {
+                visit_handle m2 = __visit::MeshMetaData(mesh2);
+                // TODO: add other meta data
+                VisIt_SimulationMetaData_addMesh(md,m2);
+            }
         }
+
+        virtual visit_handle getMesh(const int     domain,
+                                     const string &mesh_name)
+        {
+
+            if( mesh_name == "mesh2" )
+            {
+                return __visit::MeshData(mesh2);
+            }
+
+            return VISIT_INVALID_HANDLE;
+        }
+
+
 
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(Sim);
@@ -61,6 +78,6 @@ YOCTO_UNIT_TEST_IMPL(spade)
                                 false);
 
     Sim sim(visit);
-
+    sim.loop();
 }
 YOCTO_UNIT_TEST_DONE()

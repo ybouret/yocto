@@ -74,6 +74,10 @@ namespace yocto
                 return &entry[indx];
             }
 
+            inline type       *base() throw()       { assert(entry); return entry; }
+            inline const_type *base() const throw() { assert(entry); return entry; }
+            inline size_t      tuples() const throw() { return this->outer.items; }
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Field1D);
             size_t count;
