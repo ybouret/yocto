@@ -122,10 +122,9 @@ namespace yocto
                 return &shift[C.z][C.y][C.x];
             }
 
-            inline virtual const void * item_addr(const size_t indx) const throw()
+            inline virtual const void *base() const throw()
             {
-                assert(indx<this->outer.items);
-                return &entry[indx];
+                return entry;
             }
 
             inline slice & operator[](const coord1D z) throw()

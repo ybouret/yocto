@@ -133,10 +133,9 @@ namespace yocto
                 return shift[y];
             }
 
-            inline virtual const void *item_addr(const size_t indx) const throw()
+            inline virtual const void *base() const throw()
             {
-                assert(indx<this->outer.items);
-                return &entry[indx];
+                return entry;
             }
 
         private:

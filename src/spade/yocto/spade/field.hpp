@@ -22,7 +22,7 @@ namespace yocto
 
             virtual size_t      items()     const throw() = 0;
             virtual size_t      item_size() const throw() = 0;
-            virtual const void *item_addr(const size_t indx) const throw() = 0;
+            virtual const void *base()      const throw() = 0;
 
         protected:
             explicit field_info(const string &id, const size_t dim) throw();
@@ -48,7 +48,7 @@ namespace yocto
             inline virtual ~field_layouts() throw() {}
             virtual const void *address_of( param_coord ) const throw() = 0;
             virtual size_t      items() const throw() { return outer.items; }
-
+            
         protected:
             inline explicit field_layouts(const string      &id,
                                           const layout_type &L,
@@ -91,8 +91,25 @@ namespace yocto
 
             typedef layout_of<coord> layout_type;
             typedef ghosts_of<coord> ghosts_type;
-            
+
+
             virtual size_t      item_size() const throw() { return sizeof(type); }
+            inline  type       *first() throw()       { return static_cast<type *>(this->base());       }
+            inline  const_type *first() const throw() { return static_cast<const_type *>(this->base()); }
+
+            inline  type       *at(const size_t indx) throw()
+            {
+                assert(indx<this->items());
+                return static_cast<type *>(this->base()) + indx;
+            }
+
+            inline  const_type *at(const size_t indx) const throw()
+            {
+                assert(indx<this->items());
+                return static_cast<type *>(this->base()) + indx;
+            }
+
+
 
         protected:
             inline explicit field_of(const string      &id,
@@ -103,6 +120,7 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_of);
+
         };
 
     }

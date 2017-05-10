@@ -50,14 +50,20 @@ namespace yocto
                     {
                         case 2: {
                             const Field1D<T> &X = rmesh[0];
-                            visit_handle      hx = VisIt::VariableData_Set<T>(X.base(),X.tuples());
+                            visit_handle      hx = VisIt::VariableData_Set<T>(X.first(),X.items());
                             const Field1D<T> &Y = rmesh[1];
-                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.base(),Y.tuples());
+                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.first(),Y.items());
                             VisIt_RectilinearMesh_setCoordsXY(mesh,hx,hy);
                         } break;
 
                         case 3: {
-
+                            const Field1D<T> &X = rmesh[0];
+                            visit_handle      hx = VisIt::VariableData_Set<T>(X.first(),X.items());
+                            const Field1D<T> &Y = rmesh[1];
+                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.first(),Y.items());
+                            const Field1D<T> &Z = rmesh[2];
+                            visit_handle      hz = VisIt::VariableData_Set<T>(Z.first(),Z.items());
+                            VisIt_RectilinearMesh_setCoordsXYZ(mesh,hx,hy,hz);
                         } break;
 
                         default:

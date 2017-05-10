@@ -68,16 +68,12 @@ namespace yocto
                 return shift[C];
             }
 
-            inline virtual const void *item_addr(const size_t indx) const throw()
+            inline virtual const void *base() const throw()
             {
-                assert(indx<this->outer.items);
-                return &entry[indx];
+                return entry;
             }
 
-            inline type       *base() throw()       { assert(entry); return entry; }
-            inline const_type *base() const throw() { assert(entry); return entry; }
-            inline size_t      tuples() const throw() { return this->outer.items; }
-
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Field1D);
             size_t count;

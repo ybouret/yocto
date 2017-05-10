@@ -154,7 +154,7 @@ namespace yocto
 
         //! inline wrapper
         template <typename T>
-        static inline visit_handle VariableData_Set(const float *arr,const size_t nTuples)
+        static inline visit_handle VariableData_Set(const T *arr,const size_t nTuples)
         {
             assert(arr!=NULL);
             visit_handle h = VariableData_alloc();
