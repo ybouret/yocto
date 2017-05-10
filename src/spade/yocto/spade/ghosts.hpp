@@ -27,7 +27,7 @@ namespace yocto
             size(coord_info<coord>::zero)
             {
             }
-            
+
 
             inline  ~ghost_of() throw() {}
 
@@ -59,16 +59,23 @@ namespace yocto
             const_ghost lower;
             const_ghost upper;
 
-            inline ghosts_of(const int  where,
-                            const_ghost lo,
-                            const_ghost up) throw() :
+            inline ghosts_of(const int   where,
+                             const_ghost lo,
+                             const_ghost up) throw() :
             rank(where),
             lower(lo),
             upper(up)
             {
             }
 
-            
+            //! no ghost
+            inline ghosts_of(const int where) throw() :
+            rank(where),
+            lower(),
+            upper()
+            {
+            }
+
             inline ghosts_of(const ghosts_of &other) throw() :
             rank(other.rank),
             lower(other.lower),
@@ -125,7 +132,7 @@ namespace yocto
                 const int     rank = G.rank;
                 const Ghost1D g_lo = ghost_ops::extract(G.lower,dim);
                 const Ghost1D g_up = ghost_ops::extract(G.upper,dim);
-                
+
                 return Ghosts1D(rank,g_lo,g_up);
             }
 
@@ -135,14 +142,14 @@ namespace yocto
                 const int      rank = G.rank;
                 const Ghost2D  g_lo = ghost_ops::extract(G.lower);
                 const Ghost2D  g_up = ghost_ops::extract(G.upper);
-
+                
                 return Ghosts2D(rank,g_lo,g_up);
             }
-
-
+            
+            
         };
-
-
+        
+        
     }
 }
 

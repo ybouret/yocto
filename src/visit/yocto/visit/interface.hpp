@@ -8,6 +8,9 @@
 #include "yocto/functor.hpp"
 #include "yocto/associative/map.hpp"
 
+#include "yocto/math/point2d.hpp"
+#include "yocto/math/point3d.hpp"
+
 namespace yocto
 {
     class VisIt : public singleton<VisIt>
@@ -142,8 +145,25 @@ namespace yocto
         // Helpers
         //______________________________________________________________________
     public:
+        static visit_handle VariableData_alloc();
+        static void         VariableData_free( visit_handle & ) throw();
+
+        //! specific to type: float,double,point2d<float>,point2d<double>?
         template <typename T>
-        static visit_handle VariableData_Set(const T*,const size_t nTuples);
+        static void VariableData_Set(visit_handle &h,const T *arr,const size_t nTuples);
+
+        //! inline wrapper
+        template <typename T>
+        static inline visit_handle VariableData_Set(const float *arr,const size_t nTuples)
+        {
+            visit_handle h = VariableData_alloc();
+            try { VariableData_Set<T>(h,arr,nTuples); } catch(...){ VariableData_free(h); throw; }
+            return VISIT_INVALID_HANDLE;
+        }
+
+        static visit_handle MeshMetaData_alloc();
+        static void         MeshMetaData_free(visit_handle &) throw();
+
 
     };
 }

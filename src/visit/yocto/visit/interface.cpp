@@ -90,7 +90,97 @@ namespace yocto
             }
         }
 
-        MPI.Printf(stderr, "%s Ready on %d.%d !\n",name,MPI.CommWorldSize,MPI.CommWorldRank);        
+        MPI.Printf(stderr, "%s Ready on %d.%d !\n",name,MPI.CommWorldSize,MPI.CommWorldRank);
     }
+
+}
+
+namespace yocto
+{
+
+    visit_handle VisIt:: VariableData_alloc()
+    {
+        visit_handle h = VISIT_INVALID_HANDLE;
+        if( VISIT_OKAY != VisIt_VariableData_alloc(&h) )
+        {
+            throw exception("VisIt_VariableData_alloc");
+        }
+        return h;
+    }
+
+    void VisIt:: VariableData_free( visit_handle &h ) throw()
+    {
+        (void) VisIt_VariableData_free(h);
+        h = VISIT_INVALID_HANDLE;
+    }
+
+    template <>
+    void VisIt:: VariableData_Set<float>(visit_handle &h,
+                                         const float *arr,
+                                         const size_t nTuples)
+    {
+        if(VISIT_OKAY!=VisIt_VariableData_setDataF(h,VISIT_OWNER_SIM,1, nTuples, (float *)arr))
+        {
+            throw exception("VisIt_VariableData_setDataF");
+        }
+    }
+
+    template <>
+    void VisIt:: VariableData_Set<double>(visit_handle &h,
+                                          const double *arr,
+                                          const size_t  nTuples)
+    {
+        if(VISIT_OKAY!=VisIt_VariableData_setDataD(h,VISIT_OWNER_SIM,1, nTuples, (double *)arr))
+        {
+            throw exception("VisIt_VariableData_setDataD");
+        }
+    }
+
+    template <>
+    void VisIt:: VariableData_Set< point2d<float> >(visit_handle         &h,
+                                                    const point2d<float> *arr,
+                                                    const size_t          nTuples)
+    {
+        if(VISIT_OKAY!=VisIt_VariableData_setDataF(h,VISIT_OWNER_SIM,2, nTuples, (float *)arr))
+        {
+            throw exception("VisIt_VariableData_setDataF/point2d");
+        }
+    }
+
+    template <>
+    void VisIt:: VariableData_Set< point2d<double> >(visit_handle         &h,
+                                                    const point2d<double> *arr,
+                                                    const size_t          nTuples)
+    {
+        if(VISIT_OKAY!=VisIt_VariableData_setDataD(h,VISIT_OWNER_SIM,2, nTuples, (double *)arr))
+        {
+            throw exception("VisIt_VariableData_setDataD/point2d");
+        }
+    }
+
+
     
 }
+
+namespace yocto
+{
+
+    visit_handle VisIt:: MeshMetaData_alloc()
+    {
+        visit_handle h = VISIT_INVALID_HANDLE;
+        if( VISIT_OKAY != VisIt_MeshMetaData_alloc(&h) )
+        {
+            throw exception("VisIt_MeshMetaData_alloc");
+        }
+        return h;
+    }
+
+    void VisIt:: MeshMetaData_free(visit_handle &h) throw()
+    {
+        (void) VisIt_MeshMetaData_free(h);
+        h = VISIT_INVALID_HANDLE;
+    }
+
+}
+
+
