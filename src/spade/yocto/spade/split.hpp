@@ -81,6 +81,8 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(In3D);
             };
 
+            static coord2D DispatchCPUs(const Layout2D &L, const size_t cpus);
+
         };
     }
 }

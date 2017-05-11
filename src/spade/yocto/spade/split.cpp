@@ -185,3 +185,28 @@ namespace yocto
 
     }
 }
+
+
+namespace yocto
+{
+    namespace spade
+    {
+        coord2D Split:: DispatchCPUs(const Layout2D &L, const size_t cpus)
+        {
+            assert(cpus>0);
+            bool match = false;
+            for(size_t nx=1;nx<=cpus;++nx)
+            {
+                for(size_t ny=1;ny<=cpus;++ny)
+                {
+                    if(nx*ny==cpus)
+                    {
+                        std::cerr << "Found " << nx << "x" << ny << std::endl;
+                    }
+                }
+            }
+            return coord2D();
+        }
+
+    }
+}
