@@ -60,6 +60,7 @@ namespace
 
             {
                 visit_handle m3 = __visit::MeshMetaData(mesh3);
+                // TODO: add other meta data
                 VisIt_SimulationMetaData_addMesh(md,m3);
             }
         }
@@ -90,7 +91,7 @@ namespace
 
 YOCTO_UNIT_TEST_IMPL(spade)
 {
-    const string sim_name = "SPADE_example";
+    const string sim_name = "spade_example";
     const string sim_comm = "testing Spade interface with visit";
 
     YOCTO_MPI_ENV();
