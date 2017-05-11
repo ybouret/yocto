@@ -89,7 +89,7 @@ namespace
     };
 }
 
-YOCTO_UNIT_TEST_IMPL(spade)
+YOCTO_UNIT_TEST_IMPL(spade_mesh)
 {
     const string sim_name = "spade_example";
     const string sim_comm = "testing Spade interface with visit";

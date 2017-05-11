@@ -3,6 +3,7 @@
 YOCTO_UNIT_TEST_INIT(16)
 {
     YOCTO_UNIT_TEST_DECL(loop);
-    YOCTO_UNIT_TEST_DECL(spade);
+    YOCTO_UNIT_TEST_DECL(spade_mesh);
+    YOCTO_UNIT_TEST_DECL(spade_mesh_split);
 }
 YOCTO_UNIT_TEST_EXEC()
