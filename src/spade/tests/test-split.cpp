@@ -40,6 +40,8 @@ YOCTO_UNIT_TEST_IMPL(split)
             }
         }
     }
+    
+    return 0;
 
     {
         Layout3D full( coord3D(1,1,1), coord3D(100,100,100) );

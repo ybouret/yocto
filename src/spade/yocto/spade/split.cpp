@@ -92,27 +92,21 @@ namespace yocto
         {
             assert(rank>=0);
             assert(rank<coord1D(size));
-            const coord2D ranks  = getRanks(rank);
             coord2D       start  = lower;
             coord2D       final  = width;
-            
-            Basic(sizes.x, ranks.x,start.x, final.x);
-            Basic(sizes.y, ranks.y,start.y, final.y);
+            mpi_split::perform(rank, sizes, start, final);
             final += start;
             --final.x;
             --final.y;
             return Layout2D(start,final);
+            
         }
         
         coord2D Split::In2D:: getRanks(const coord1D rank) const throw()
         {
             assert(rank>=0);
             assert(rank<coord1D(size));
-            const ldiv_t  d         = ldiv(rank,sizes.x);
-            const coord1D y_rank    = d.quot;
-            const coord1D x_rank    = d.rem;
-            
-            return coord2D(x_rank,y_rank);
+            return mpi_split::local_ranks(rank,sizes);
         }
         
         
@@ -144,28 +138,16 @@ namespace yocto
         {
             assert(rank>=0);
             assert(rank<coord1D(size));
-            const ldiv_t  dz     = ldiv(rank,zcof);
-            const coord1D z_rank = dz.quot;
-            const coord1D rz     = dz.rem;
-            
-            const ldiv_t  d      = ldiv(rz,sizes.x);
-            const coord1D y_rank = d.quot;
-            const coord1D x_rank = d.rem;
-            
-            return coord3D(x_rank,y_rank,z_rank);
+            return mpi_split::local_ranks(rank,sizes);
         }
         
         Layout3D Split:: In3D:: operator()(const coord1D rank) const throw()
         {
             assert(rank>=0);
             assert(rank<coord1D(size));
-            const coord3D ranks  = getRanks(rank);
             coord3D       start  = lower;
             coord3D       final  = width;
-            
-            Basic(sizes.x, ranks.x,start.x, final.x);
-            Basic(sizes.y, ranks.y,start.y, final.y);
-            Basic(sizes.z, ranks.z,start.z, final.z);
+            mpi_split::perform(rank, sizes, start, final);
             final += start;
             --final.x;
             --final.y;
