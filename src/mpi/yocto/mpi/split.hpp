@@ -78,6 +78,23 @@ namespace yocto
             perform(ranks.y,sizes.y,offset.y,length.y);
         }
         
+        template <typename T> static inline
+        point2d<T> compute_sizes(const int        size,
+                                 const point2d<T> width)
+        {
+            assert(width.x>0);
+            assert(width.y>0);
+            for(int sx=1;sx<=size;++sx)
+            {
+                for(int sy=1;sy<=size;++sy)
+                {
+                    
+                }
+            }
+            return point2d<T>();
+        }
+        
+        
         //______________________________________________________________________
         //
         //
