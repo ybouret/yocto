@@ -29,7 +29,7 @@ SET( mesh_srcs ${mesh_decl} ${mesh_impl} )
 INSTALL( FILES ${mesh_decl} DESTINATION include/yocto/spade/mesh )
 SOURCE_GROUP( spade/mesh FILES ${mesh_srcs} )
 
-INCLUDE_DIRECTORIES( . ../yocto ../mk ../gfx)
+INCLUDE_DIRECTORIES( . ../yocto ../mk ../gfx ../mpi)
 
 ADD_LIBRARY(y-spade STATIC 
 	${srcs}
