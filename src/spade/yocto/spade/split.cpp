@@ -186,6 +186,7 @@ namespace yocto
     }
 }
 
+#include <cmath>
 
 namespace yocto
 {
@@ -194,17 +195,46 @@ namespace yocto
         coord2D Split:: DispatchCPUs(const Layout2D &L, const size_t cpus)
         {
             assert(cpus>0);
-            bool match = false;
+            bool   match = false;
+            double dmin  = 0;
+            const double nsq = sqrt(double(cpus));
+            size_t xopt  = 0;
+            size_t yopt  = 0;
             for(size_t nx=1;nx<=cpus;++nx)
             {
+                const double rx(nx);
+                const double dx = rx-nsq;
+                const double dx2 = dx*dx;
                 for(size_t ny=1;ny<=cpus;++ny)
                 {
                     if(nx*ny==cpus)
                     {
                         std::cerr << "Found " << nx << "x" << ny << std::endl;
+                        const double ry(ny);
+                        const double dy   = ry - nsq;
+                        const double dy2  = dy*dy;
+                        const double dtmp = dx2+dy2;
+                        if(match)
+                        {
+                            if( (dtmp<dmin) )
+                            {
+                                dmin  = dtmp;
+                                xopt  = nx;
+                                yopt  = ny;
+                            }
+                        }
+                        else
+                        {
+                            // initialize match
+                            dmin  = dtmp;
+                            xopt  = nx;
+                            yopt  = ny;
+                            match = true;
+                        }
                     }
                 }
             }
+            std::cerr << "xopt=" << xopt << ", yopt=" << yopt << std::endl;
             return coord2D();
         }
 

@@ -14,7 +14,7 @@ YOCTO_UNIT_TEST_IMPL(dispatch)
 
         const Layout2D Lsq( coord2D(1,1), coord2D(256,256) );
         const coord2D  nsq = Split::DispatchCPUs(Lsq,cpus);
-        std::cerr << "nsq=" << nsq << std::endl;
+        std::cerr <<  "nsq=" << nsq << std::endl;
 
     }
 }
