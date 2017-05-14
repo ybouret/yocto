@@ -10,15 +10,33 @@ YOCTO_UNIT_TEST_IMPL(split)
     {
         for(int sy=1;sy<=smax;++sy)
         {
-            const int size = sx * sy;
-            const point2d<long> sizes(sx,sy);
-            std::cerr << "sizes=" << sizes << ", size=" << size << std::endl;
-            for(int rank=0;rank<size;++rank)
+            // 2D
             {
-                const point2d<long> ranks = mpi_split::local_ranks(rank,sizes);
-                std::cerr << "\trank=" << rank << " => " << ranks << std::endl;
-                const int           r     = mpi_split::get_rank_of(ranks,sizes);
-                if(r!=rank) throw exception("ranks mismatch");
+                const int size = sx * sy;
+                const point2d<long> sizes(sx,sy);
+                std::cerr << "sizes=" << sizes << ", size=" << size << std::endl;
+                for(int rank=0;rank<size;++rank)
+                {
+                    const point2d<long> ranks = mpi_split::local_ranks(rank,sizes);
+                    const int           r     = mpi_split::get_rank_of(ranks,sizes);
+                    std::cerr << "\trank=" << rank << " => " << ranks << std::endl;
+                    if(r!=rank) throw exception("ranks 2D mismatch");
+                }
+            }
+            
+            // 3D
+            for(int sz=1;sz<=smax;++sz)
+            {
+                const int size=sx*sy*sz;
+                const point3d<int> sizes(sx,sy,sz);
+                std::cerr << "sizes=" << sizes << ", size=" << size << std::endl;
+                for(int rank=0;rank<size;++rank)
+                {
+                    const point3d<int> ranks = mpi_split::local_ranks(rank,sizes);
+                    const int          r     = mpi_split::get_rank_of(ranks,sizes);
+                    std::cerr << "\trank=" << rank << " => " << ranks << std::endl;
+                    if(r!=rank) throw exception("ranks 3D mismatch");
+                }
             }
         }
     }
