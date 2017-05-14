@@ -209,7 +209,7 @@ namespace yocto
                 {
                     if(nx*ny==cpus)
                     {
-                        std::cerr << "Found " << nx << "x" << ny << std::endl;
+                        //std::cerr << "Found " << nx << "x" << ny << std::endl;
                         const double ry(ny);
                         const double dy   = ry - nsq;
                         const double dy2  = dy*dy;
@@ -234,8 +234,8 @@ namespace yocto
                     }
                 }
             }
-            std::cerr << "xopt=" << xopt << ", yopt=" << yopt << std::endl;
-            return coord2D();
+            //std::cerr << "xopt=" << xopt << ", yopt=" << yopt << std::endl;
+            return coord2D(xopt,yopt);
         }
 
     }
