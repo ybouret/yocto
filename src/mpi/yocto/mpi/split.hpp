@@ -8,14 +8,21 @@ namespace yocto
 {
     struct mpi_split
     {
+        //______________________________________________________________________
+        //
+        //
+        // 1D API
+        //
+        //______________________________________________________________________
         template <typename T> static inline
-        void in1D(const int rank,
-                  const int size,
-                  T        &offset,
-                  T        &length) throw()
+        void perform(const int rank,
+                     const int size,
+                     T        &offset,
+                     T        &length) throw()
         {
             assert(size>0);
             assert(rank<size);
+            assert(length>=T(size));
             T todo(length/size);
             for(int r=1;r<=rank;++r)
             {
@@ -25,6 +32,13 @@ namespace yocto
             }
             length = todo;
         }
+        
+        //______________________________________________________________________
+        //
+        //
+        // 2D API
+        //
+        //______________________________________________________________________
         
         //! rank = ranks.x + sizes.x * ranks.y;
         template <typename T> static inline
@@ -52,6 +66,24 @@ namespace yocto
             assert(ranks.y<sizes.y);
             return ranks.x + sizes.x * ranks.y;
         }
+        
+        template <typename T> static inline
+        void perform(const int         rank,
+                     const point2d<T> &sizes,
+                     point2d<T>       &offset,
+                     point2d<T>       &length) throw()
+        {
+            const point2d<T> ranks = local_ranks(rank,sizes);
+            perform(ranks.x,sizes.x,offset.x,length.x);
+            perform(ranks.y,sizes.y,offset.y,length.y);
+        }
+        
+        //______________________________________________________________________
+        //
+        //
+        // 3D API
+        //
+        //______________________________________________________________________
         
         //! rank = ranks.x + sizes.x * rank.y + sizes.x * sizes.y * rank.z;
         /**
@@ -87,7 +119,20 @@ namespace yocto
 
             return ranks.x + sizes.x*(ranks.y + sizes.y*ranks.z);
         }
+        
+        template <typename T> static inline
+        void perform(const int         rank,
+                     const point3d<T> &sizes,
+                     point3d<T>       &offset,
+                     point3d<T>       &length) throw()
+        {
+            const point3d<T> ranks = local_ranks(rank,sizes);
+            perform(ranks.x,sizes.x,offset.x,length.x);
+            perform(ranks.y,sizes.y,offset.y,length.y);
+            perform(ranks.z,sizes.z,offset.z,length.z);
+        }
 
+        
         
     };
 }
