@@ -4,6 +4,7 @@
 #include "yocto/math/point3d.hpp"
 #include "yocto/code/utils.hpp"
 #include <cmath>
+#include <cstdlib>
 
 namespace yocto
 {
