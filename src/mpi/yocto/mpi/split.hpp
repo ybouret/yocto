@@ -87,7 +87,18 @@ namespace yocto
             {
                 for(int sy=1;sy<=size;++sy)
                 {
+                    // find valid sizes
+                    if(sx*sy!=size) continue;
+                    const point2d<T> sizes(sx,sy);
                     
+                    // loop over all ranks
+                    for(int rank=0;rank<size;++rank)
+                    {
+                        point2d<T> offset(1,1);
+                        point2d<T> length(width);
+                        perform(rank,sizes,offset,length);
+                        
+                    }
                 }
             }
             return point2d<T>();
