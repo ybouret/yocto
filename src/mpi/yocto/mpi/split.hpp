@@ -85,14 +85,20 @@ namespace yocto
         {
             assert(width.x>0);
             assert(width.y>0);
+
             std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << std::endl;
+            if(size<=0)
+            {
+                return point2d<T>(size,size);
+            }
 
             //__________________________________________________________________
             //
             // find reference split
             //__________________________________________________________________
-            size_t ref_work = 0;
-            size_t ref_coms = 0;
+            const size_t all_work = size_t(width.x) * size_t(width.y);
+            size_t       ref_work = 0;
+            size_t       ref_coms = 0;
             if(width.y>=width.x)
             {
                 // ref case is split along y
@@ -126,8 +132,11 @@ namespace yocto
                 std::cerr << "reference: splitting along x" << std::endl;
             }
             std::cerr << "ref_work=" << ref_work << ", ref_coms=" << ref_coms << std::endl;
+            const size_t alpha_num = all_work - ref_work;
+            const size_t alpha_den = ref_coms;
+            std::cerr << "alpha=" << alpha_num << "/" << alpha_den << std::endl;
+            const double all_time = all_work;
 
-            
             //__________________________________________________________________
             //
             // find all partitions
@@ -166,6 +175,8 @@ namespace yocto
                     }
                     std::cerr << "\tmax_work = " << max_work << std::endl;
                     std::cerr << "\tmax_coms = " << max_coms << std::endl;
+                    const double sub_time = max_work + double(alpha_num*max_coms)/alpha_den;
+                    std::cerr << "sub_time=" << sub_time << "/" << all_time << std::endl;
                 }
             }
             return point2d<T>();
