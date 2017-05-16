@@ -118,7 +118,9 @@ namespace yocto
                 return point3d(hx+hx,hy+hy,T(1)-(r2+r2));
             }
         }
-        
+
+        inline type __prod() const throw() { return x*y*z; }
+        inline type __sum()  const throw() { return x+y+z; }
 
     };
     

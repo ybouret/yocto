@@ -113,6 +113,10 @@ namespace yocto
 		return -1;
 		
 	}
-	
+
+    const char *plural_s(const size_t count) throw()
+    {
+        return (count>1) ? "s" : "";
+    }
 	
 }

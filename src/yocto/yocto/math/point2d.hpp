@@ -126,6 +126,9 @@ namespace yocto
                 return point2d(X,Y);
             }
         }
+
+        inline type __prod() const throw() { return x*y; }
+        inline type __sum()  const throw() { return x+y; }
     };
 
 

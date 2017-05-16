@@ -2,6 +2,7 @@
 #define YOCTO_MPI_SPLIT_INCLUDED 1
 
 #include "yocto/math/point3d.hpp"
+#include "yocto/code/utils.hpp"
 #include <cmath>
 
 namespace yocto
@@ -31,14 +32,14 @@ namespace yocto
             }
             length = todo;
         }
-        
+
         //______________________________________________________________________
         //
         //
         // 2D API
         //
         //______________________________________________________________________
-        
+
         //! rank = ranks.x + sizes.x * ranks.y;
         template <typename T> static inline
         point2d<T> local_ranks(const int         rank,
@@ -53,7 +54,7 @@ namespace yocto
             const T      ry(d.quot);
             return point2d<T>(rx,ry);
         }
-        
+
         //! rank = ranks.x + sizes.x * ranks.y;
         template <typename T> static inline
         int get_rank_of(const point2d<T> &ranks,
@@ -65,7 +66,7 @@ namespace yocto
             assert(ranks.y<sizes.y);
             return ranks.x + sizes.x * ranks.y;
         }
-        
+
         template <typename T> static inline
         void perform(const int         rank,
                      const point2d<T> &sizes,
@@ -76,13 +77,19 @@ namespace yocto
             perform(ranks.x,sizes.x,offset.x,length.x);
             perform(ranks.y,sizes.y,offset.y,length.y);
         }
-        
+
         template <typename T> static inline
-        point2d<T> compute_sizes(const int        size,
-                                 const point2d<T> width)
+        point2d<T> compute_sizes(const int         size,
+                                 const point2d<T> &width)
         {
             assert(width.x>0);
             assert(width.y>0);
+            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << std::endl;
+
+            //__________________________________________________________________
+            //
+            // find all partitions
+            //__________________________________________________________________
             for(int sx=1;sx<=size;++sx)
             {
                 for(int sy=1;sy<=size;++sy)
@@ -90,28 +97,34 @@ namespace yocto
                     // find valid sizes
                     if(sx*sy!=size) continue;
                     const point2d<T> sizes(sx,sy);
-                    
+                    std::cerr << "-- " << sizes << std::endl;
                     // loop over all ranks
+                    size_t max_work = 0;
+                    size_t num_coms = 0;
                     for(int rank=0;rank<size;++rank)
                     {
                         point2d<T> offset(1,1);
                         point2d<T> length(width);
                         perform(rank,sizes,offset,length);
-                        
+                        const size_t local_work = size_t(length.__prod());
+                        max_work  = max_of(local_work,max_work);
+                        num_coms += size_t(length.__sum());
                     }
+                    std::cerr << "\tmax_work = " << max_work << std::endl;
+                    std::cerr << "\tnum_coms = " << num_coms << std::endl;
                 }
             }
             return point2d<T>();
         }
-        
-        
+
+
         //______________________________________________________________________
         //
         //
         // 3D API
         //
         //______________________________________________________________________
-        
+
         //! rank = ranks.x + sizes.x * rank.y + sizes.x * sizes.y * rank.z;
         /**
          rank = ranks.x + sizes.x * (rank.y+sizes.y*rank.z)
@@ -146,7 +159,7 @@ namespace yocto
 
             return ranks.x + sizes.x*(ranks.y + sizes.y*ranks.z);
         }
-        
+
         template <typename T> static inline
         void perform(const int         rank,
                      const point3d<T> &sizes,
@@ -159,6 +172,49 @@ namespace yocto
             perform(ranks.z,sizes.z,offset.z,length.z);
         }
 
+        template <typename T> static inline
+        point3d<T> compute_sizes(const int         size,
+                                 const point3d<T> &width)
+        {
+            assert(width.x>0);
+            assert(width.y>0);
+            assert(width.z>0);
+
+            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << std::endl;
+
+            //__________________________________________________________________
+            //
+            // find all partitions
+            //__________________________________________________________________
+            for(int sx=1;sx<=size;++sx)
+            {
+                for(int sy=1;sy<=size;++sy)
+                {
+                    for(int sz=1;sz<=size;++sz)
+                    {
+                        // find valid sizes
+                        if(sx*sy*sz!=size) continue;
+                        const point3d<T> sizes(sx,sy,sz);
+                        std::cerr << "-- " << sizes << std::endl;
+                        // loop over all ranks
+                        size_t max_work = 0;
+                        size_t num_coms = 0;
+                        for(int rank=0;rank<size;++rank)
+                        {
+                            point3d<T> offset(1,1,1);
+                            point3d<T> length(width);
+                            perform(rank,sizes,offset,length);
+                            const size_t local_work = size_t(length.__prod());
+                            max_work  = max_of(local_work,max_work);
+                            num_coms += size_t(length.__sum());
+                        }
+                        std::cerr << "\tmax_work = " << max_work << std::endl;
+                        std::cerr << "\tnum_coms = " << num_coms << std::endl;
+                    }
+                }
+            }
+            return point3d<T>();
+        }
         
         
     };
