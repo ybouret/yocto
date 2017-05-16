@@ -105,7 +105,7 @@ namespace yocto
                 }
                 if(size>1)
                 {
-                    ref_coms += size * size_t(width.x);
+                    ref_coms = size_t(width.x);
                 }
                 std::cerr << "reference: splitting along y" << std::endl;
             }
@@ -121,12 +121,13 @@ namespace yocto
                 }
                 if(size>1)
                 {
-                    ref_coms += size * size_t(width.y);
+                    ref_coms = size * size_t(width.y);
                 }
                 std::cerr << "reference: splitting along x" << std::endl;
             }
             std::cerr << "ref_work=" << ref_work << ", ref_coms=" << ref_coms << std::endl;
 
+            
             //__________________________________________________________________
             //
             // find all partitions
@@ -144,7 +145,7 @@ namespace yocto
 
                     // loop over all ranks
                     size_t max_work = 0;
-                    size_t num_coms = 0;
+                    size_t max_coms = 0;
                     for(int rank=0;rank<size;++rank)
                     {
                         point2d<T> offset(1,1);
@@ -154,15 +155,17 @@ namespace yocto
                         max_work  = max_of(local_work,max_work);
                         if(async_x)
                         {
-                            num_coms += size_t(length.y);
+                            const size_t local_coms = size_t(length.y);
+                            max_coms = max_of(max_coms,local_coms);
                         }
                         if(async_y)
                         {
-                            num_coms += size_t(length.x);
+                            const size_t local_coms = size_t(length.x);
+                            max_coms = max_of(max_coms,local_coms);
                         }
                     }
                     std::cerr << "\tmax_work = " << max_work << std::endl;
-                    std::cerr << "\tnum_coms = " << num_coms << std::endl;
+                    std::cerr << "\tmax_coms = " << max_coms << std::endl;
                 }
             }
             return point2d<T>();
