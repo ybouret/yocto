@@ -89,16 +89,59 @@ namespace yocto
 
             //__________________________________________________________________
             //
+            // find reference split
+            //__________________________________________________________________
+            size_t ref_work = 0;
+            size_t ref_coms = 0;
+            if(width.y>=width.x)
+            {
+                // ref case is split along y
+                for(int rank=0;rank<size;++rank)
+                {
+                    T offset = 1;
+                    T length = width.y;
+                    perform(rank,size,offset,length);
+                    ref_work = max_of(ref_work,size_t(length)*size_t(width.x));
+                }
+                if(size>1)
+                {
+                    ref_coms += size * size_t(width.x);
+                }
+                std::cerr << "reference: splitting along y" << std::endl;
+            }
+            else
+            {
+                // ref case is split along x
+                for(int rank=0;rank<size;++rank)
+                {
+                    T offset = 1;
+                    T length = width.x;
+                    perform(rank,size,offset,length);
+                    ref_work = max_of(ref_work,size_t(length)*size_t(width.y));
+                }
+                if(size>1)
+                {
+                    ref_coms += size * size_t(width.y);
+                }
+                std::cerr << "reference: splitting along x" << std::endl;
+            }
+            std::cerr << "ref_work=" << ref_work << ", ref_coms=" << ref_coms << std::endl;
+
+            //__________________________________________________________________
+            //
             // find all partitions
             //__________________________________________________________________
             for(int sx=1;sx<=size;++sx)
             {
+                const bool async_x = (sx>1);
                 for(int sy=1;sy<=size;++sy)
                 {
                     // find valid sizes
                     if(sx*sy!=size) continue;
+                    const bool       async_y = (sy>1);
                     const point2d<T> sizes(sx,sy);
                     std::cerr << "-- " << sizes << std::endl;
+
                     // loop over all ranks
                     size_t max_work = 0;
                     size_t num_coms = 0;
@@ -109,11 +152,11 @@ namespace yocto
                         perform(rank,sizes,offset,length);
                         const size_t local_work = size_t(length.__prod());
                         max_work  = max_of(local_work,max_work);
-                        if(length.x>1)
+                        if(async_x)
                         {
                             num_coms += size_t(length.y);
                         }
-                        if(length.y>1)
+                        if(async_y)
                         {
                             num_coms += size_t(length.x);
                         }
@@ -196,12 +239,15 @@ namespace yocto
             //__________________________________________________________________
             for(int sx=1;sx<=size;++sx)
             {
+                const bool async_x = (sx>1);
                 for(int sy=1;sy<=size;++sy)
                 {
+                    const bool async_y = (sy>1);
                     for(int sz=1;sz<=size;++sz)
                     {
                         // find valid sizes
                         if(sx*sy*sz!=size) continue;
+                        const bool       async_z = (sz>1);
                         const point3d<T> sizes(sx,sy,sz);
                         std::cerr << "-- " << sizes << std::endl;
                         // loop over all ranks
@@ -214,15 +260,15 @@ namespace yocto
                             perform(rank,sizes,offset,length);
                             const size_t local_work = size_t(length.__prod());
                             max_work  = max_of(local_work,max_work);
-                            if(length.x>1)
+                            if(async_x)
                             {
                                 num_coms += size_t(length.y)*size_t(length.z);
                             }
-                            if(length.y>1)
+                            if(async_y)
                             {
                                 num_coms += size_t(length.x)*size_t(length.z);
                             }
-                            if(length.z>1)
+                            if(async_z)
                             {
                                 num_coms += size_t(length.x)*size_t(length.y);
                             }
