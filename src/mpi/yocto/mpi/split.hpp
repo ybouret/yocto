@@ -109,7 +109,14 @@ namespace yocto
                         perform(rank,sizes,offset,length);
                         const size_t local_work = size_t(length.__prod());
                         max_work  = max_of(local_work,max_work);
-                        num_coms += size_t(length.__sum());
+                        if(length.x>1)
+                        {
+                            num_coms += size_t(length.y);
+                        }
+                        if(length.y>1)
+                        {
+                            num_coms += size_t(length.x);
+                        }
                     }
                     std::cerr << "\tmax_work = " << max_work << std::endl;
                     std::cerr << "\tnum_coms = " << num_coms << std::endl;
@@ -207,7 +214,18 @@ namespace yocto
                             perform(rank,sizes,offset,length);
                             const size_t local_work = size_t(length.__prod());
                             max_work  = max_of(local_work,max_work);
-                            num_coms += size_t(length.__sum());
+                            if(length.x>1)
+                            {
+                                num_coms += size_t(length.y)*size_t(length.z);
+                            }
+                            if(length.y>1)
+                            {
+                                num_coms += size_t(length.x)*size_t(length.z);
+                            }
+                            if(length.z>1)
+                            {
+                                num_coms += size_t(length.x)*size_t(length.y);
+                            }
                         }
                         std::cerr << "\tmax_work = " << max_work << std::endl;
                         std::cerr << "\tnum_coms = " << num_coms << std::endl;
