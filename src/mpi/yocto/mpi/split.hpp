@@ -3,6 +3,9 @@
 
 #include "yocto/math/point3d.hpp"
 #include "yocto/code/utils.hpp"
+#include "yocto/container/tuple.hpp"
+#include "yocto/exception.hpp"
+
 #include <cmath>
 #include <cstdlib>
 
@@ -79,6 +82,47 @@ namespace yocto
             perform(ranks.y,sizes.y,offset.y,length.y);
         }
 
+        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,task,size_t,work,size_t,coms);
+        inline task() throw() : work(0), coms(0) {}
+        inline task(const size_t n) throw() : work(n), coms(0) {}
+
+        //! find the work load and the coms load for a given rank and partition
+        template <typename T>
+        inline void set_from(const int         rank,
+                             const point2d<T> &sizes,
+                             const point2d<T> &width) throw()
+        {
+            assert(width.x>=sizes.x);
+            assert(width.y>=sizes.y);
+            assert(rank>=0);
+            assert(rank<=int(sizes.__prod()));
+            point2d<T> offset(1,1);
+            point2d<T> length(width);
+            perform(rank,sizes,offset,length);
+            work = size_t( length.__prod() );
+            coms = 0;
+            if(sizes.x>1) coms += size_t(length.y);
+            if(sizes.y>1) coms += size_t(length.x);
+        }
+
+        template <typename T>
+        inline void max_from(const int         size,
+                             const point2d<T> &sizes,
+                             const point2d<T> &width) throw()
+        {
+            assert(size==int(sizes.__prod()));
+            work = coms = 0;
+            task sub;
+            for(int rank=0;rank<size;++rank)
+            {
+                sub.set_from(rank,sizes,width);
+                work = max_of(work,sub.work);
+                coms = max_of(coms,sub.coms);
+            }
+        }
+
+        YOCTO_PAIR_END();
+
         template <typename T> static inline
         point2d<T> compute_sizes(const int         size,
                                  const point2d<T> &width)
@@ -87,16 +131,60 @@ namespace yocto
             assert(width.y>0);
 
             std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << std::endl;
-            if(size<=0)
+            if(size<=1)
             {
                 return point2d<T>(size,size);
             }
 
+
+            const task all( width.__prod() );
+            task       ref;
+            if(width.y>=width.x)
+            {
+                std::cerr << "\treference: splitting along y" << std::endl;
+                const point2d<T> sizes(1,size);
+                if(sizes.y>width.y) throw exception("mpi_split: too many domains, even for greatest dimension Y");
+                ref.max_from(size,sizes,width);
+            }
+            else
+            {
+                std::cerr << "\treference: splitting along x" << std::endl;
+                const point2d<T> sizes(size,1);
+                if(sizes.x>width.x) throw exception("mpi_split: too many domains, even for greatest dimension X");
+                ref.max_from(size,sizes,width);
+            }
+            std::cerr << "\tall=" << all << std::endl;
+            std::cerr << "\tref=" << ref << std::endl;
+            const size_t alpha_num = all.work - ref.work;
+            const size_t alpha_den = ref.coms;
+            std::cerr << "\t\talpha=" << alpha_num << "/" << alpha_den << std::endl;
+
+            //__________________________________________________________________
+            //
+            // scan all partitions
+            //__________________________________________________________________
+            for(int sx=1;sx<=size;++sx)
+            {
+                for(int sy=1;sy<=size;++sy)
+                {
+                    // find valid sizes
+                    if(sx*sy!=size) continue;
+                    const point2d<T> sizes(sx,sy);
+                    std::cerr << "\t\t-- " << sizes << std::endl;
+                    task sub;
+                    sub.max_from(size,sizes,width);
+                    std::cerr << "\t\t\tsub=" << sub << std::endl;
+                }
+            }
+
+            return point2d<T>();
+
+#if 0
             //__________________________________________________________________
             //
             // find reference split
             //__________________________________________________________________
-            const size_t all_work = size_t(width.x) * size_t(width.y);
+            const size_t all_work = size_t(width.__prod());
             size_t       ref_work = 0;
             size_t       ref_coms = 0;
             if(width.y>=width.x)
@@ -109,10 +197,8 @@ namespace yocto
                     perform(rank,size,offset,length);
                     ref_work = max_of(ref_work,size_t(length)*size_t(width.x));
                 }
-                if(size>1)
-                {
-                    ref_coms = size_t(width.x);
-                }
+                // the number to items to coms is the same...
+                ref_coms = size_t(width.x);
                 std::cerr << "reference: splitting along y" << std::endl;
             }
             else
@@ -125,10 +211,8 @@ namespace yocto
                     perform(rank,size,offset,length);
                     ref_work = max_of(ref_work,size_t(length)*size_t(width.y));
                 }
-                if(size>1)
-                {
-                    ref_coms = size * size_t(width.y);
-                }
+                // the number of items to coms is the same
+                ref_coms = size_t(width.y);
                 std::cerr << "reference: splitting along x" << std::endl;
             }
             std::cerr << "ref_work=" << ref_work << ", ref_coms=" << ref_coms << std::endl;
@@ -136,6 +220,8 @@ namespace yocto
             const size_t alpha_den = ref_coms;
             std::cerr << "alpha=" << alpha_num << "/" << alpha_den << std::endl;
             const double all_time = all_work;
+
+            return point2d<T>();
 
             //__________________________________________________________________
             //
@@ -180,6 +266,7 @@ namespace yocto
                 }
             }
             return point2d<T>();
+#endif
         }
 
 
