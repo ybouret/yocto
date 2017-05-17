@@ -121,6 +121,7 @@ namespace yocto
             }
         }
 
+
         YOCTO_PAIR_END();
 
         template <typename T> static inline
@@ -158,6 +159,7 @@ namespace yocto
             const size_t alpha_num = all.work - ref.work;
             const size_t alpha_den = ref.coms;
             std::cerr << "\t\talpha=" << alpha_num << "/" << alpha_den << std::endl;
+
 
             //__________________________________________________________________
             //
