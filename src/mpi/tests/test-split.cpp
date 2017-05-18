@@ -45,8 +45,8 @@ YOCTO_UNIT_TEST_IMPL(split)
     std::cerr << "Testing Auto Split" << std::endl;
 
 
-    point2d<int>  sizes2D(100,100);
-    point3d<long> sizes3D(100,100,100);
+    point2d<int>  sizes2D(101,101);
+    //point3d<long> sizes3D(100,100,100);
     for(size_t sz=1;sz<=9;++sz)
     {
         (void) mpi_split::compute_sizes(sz,sizes2D);

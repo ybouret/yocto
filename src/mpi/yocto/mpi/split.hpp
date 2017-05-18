@@ -149,8 +149,9 @@ namespace yocto
                 }
             }
 
-            static int compare(const task &lhs, const task &rhs)
+            static int compare(const task2d &lhs, const task2d &rhs)
             {
+                assert(lhs.width==rhs.width);
                 if(lhs.indx<rhs.indx)
                 {
                     return -1;
@@ -163,14 +164,23 @@ namespace yocto
                     }
                     else
                     {
-                        
+                        const point2d<T> &w = lhs.width;
+                        if(w.y>=w.x)
+                        {
+                            return int(rhs.sizes.y)-int(lhs.sizes.y);
+                        }
+                        else
+                        {
+                            return int(rhs.sizes.x)-int(lhs.sizes.x);
+                        }
+                        return 0;
                     }
                 }
             }
 
             inline friend std::ostream & operator<<( std::ostream &os, const task2d &t)
             {
-                os << t.sizes << " => " << t.indx;
+                os << t.sizes << " => " << t.indx << "\t(work=" << t.work << ",coms=" << t.coms << ")";
                 return os;
             }
 
@@ -188,7 +198,7 @@ namespace yocto
             assert(width.x>0);
             assert(width.y>0);
 
-            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << std::endl;
+            std::cerr << std::endl << "splitting " << width << " on " << size << " domain" << plural_s(size) << std::endl;
             if(size<=1)
             {
                 return point2d<T>(size,size);
@@ -216,12 +226,38 @@ namespace yocto
             ref.max_from(size);
 
             const size_t alpha_num = all.work - ref.work;
-            const size_t alpha_den = ref.coms;
+            size_t alpha_den = ref.coms;
+            //alpha_den *= 2;
             std::cerr << "\t\talpha=" << alpha_num << "/" << alpha_den << std::endl;
             all.set_index(alpha_num,alpha_den);
             ref.set_index(alpha_num,alpha_den);
-            std::cerr << "\tall=" << all << std::endl;
-            std::cerr << "\tref=" << ref << std::endl;
+            std::cerr << "\tall=" << all << " / ref=" << ref << std::endl;
+
+            vector< task2d<T>  > tasks(size,as_capacity);
+            vector< point2d<T> > sizes(size,as_capacity);
+
+            for(int sx=1;sx<=size;++sx)
+            {
+                for(int sy=1;sy<=size;++sy)
+                {
+                    // find valid sizes
+                    if(sx*sy!=size) continue;
+                    const point2d<T> trial(sx,sy);
+                    //std::cerr << "\t\t-- " << trial << std::endl;
+                    task2d<T> sub(trial,width);
+                    sub.max_from(size);
+                    sub.set_index(alpha_num,alpha_den);
+                    //std::cerr << "\t\t\tsub=" << sub << std::endl;
+                    tasks.push_back(sub);
+                    sizes.push_back(trial);
+                }
+            }
+            c_shuffle(tasks(),sizes(),tasks.size());
+            co_qsort(tasks,sizes,task2d<T>::compare);
+            for(size_t i=1;i<=tasks.size();++i)
+            {
+                std::cerr << "\t\t" << tasks[i] << std::endl;
+            }
 
 
 #if 0
