@@ -91,9 +91,10 @@ namespace yocto
         public:
             size_t items;
             size_t async;
+            size_t lcopy;
             word_t indx;
-            inline task() throw() : items(0), async(0), indx(0) {}
-            inline task(const task &other) throw() : items(other.items), async(other.async), indx(other.indx) {}
+            inline task() throw() : items(0), async(0), lcopy(0), indx(0) {}
+            inline task(const task &other) throw() : items(other.items), async(other.async), lcopy(other.lcopy), indx(other.indx) {}
             inline virtual ~task() throw() {}
 
             inline void set_index(const size_t num, const size_t den)  throw()
@@ -127,25 +128,44 @@ namespace yocto
 
                 assert(rank>=0);
                 assert(rank<=int(sizes.__prod()));
+                assert(sizes.x>0);
+                assert(sizes.y>0);
+
                 point2d<T> offset(1,1);
                 point2d<T> length(width);
                 perform(rank,sizes,offset,length);
                 items = size_t( length.__prod() );
                 async = 0;
-                if(sizes.x>1) async += size_t(length.y);
-                if(sizes.y>1) async += size_t(length.x);
+                lcopy = 0;
+                if(sizes.x>1)
+                {
+                    async += size_t(length.y);
+                }
+                else
+                {
+                    lcopy += size_t(length.y);
+                }
+                if(sizes.y>1)
+                {
+                    async += size_t(length.x);
+                }
+                else
+                {
+                    lcopy += size_t(length.x);
+                }
             }
 
             inline void max_from(const int size) throw()
             {
                 assert(size==int(sizes.__prod()));
-                items = async = 0;
+                items = async = lcopy = 0;
                 task2d sub(*this);
                 for(int rank=0;rank<size;++rank)
                 {
                     sub.set_from(rank);
                     items = max_of(items,sub.items);
                     async = max_of(async,sub.async);
+                    lcopy = max_of(lcopy,sub.lcopy);
                 }
             }
 
@@ -180,7 +200,7 @@ namespace yocto
 
             inline friend std::ostream & operator<<( std::ostream &os, const task2d &t)
             {
-                os << t.sizes << " => " << t.indx << "\t(items=" << t.items << ",async=" << t.async << ")";
+                os << t.sizes << " => " << t.indx << "\t(items=" << t.items << ",async=" << t.async << ",lcopy=" << t.lcopy << ")";
                 return os;
             }
 
