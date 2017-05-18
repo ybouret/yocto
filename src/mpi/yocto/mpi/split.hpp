@@ -155,7 +155,7 @@ namespace yocto
                 }
             }
 
-            inline void max_from(const int size) throw()
+            inline void max_from(const int size, const size_t num, const size_t den) throw()
             {
                 assert(size==int(sizes.__prod()));
                 items = async = lcopy = 0;
@@ -168,6 +168,8 @@ namespace yocto
                     lcopy = max_of(lcopy,sub.lcopy);
                 }
             }
+
+
 
             static int compare(const task2d &lhs, const task2d &rhs)
             {
@@ -242,6 +244,51 @@ namespace yocto
                 r_split = &x_split;
             }
 
+            const size_t count = size-1;
+            task2d<T> ref(*r_split,width);
+            size_t alpha_num = 0;
+            size_t alpha_den = 0;
+            {
+                double alpha = -1;
+                for(int rank=0;rank<size;++rank)
+                {
+                    ref.set_from(rank);
+                    //std::cerr << "rank=" << rank << "\titems=" << ref.items << "/" << double(all.items)/count <<  ", async=" << ref.async << std::endl;
+                    const size_t anum = all.items - count * ref.items;
+                    const size_t aden = count * ref.async;
+                    const double atmp = double(anum)/aden;
+                    //std::cerr << "\t\talpha=" << anum << "/" << aden << "=" << atmp << std::endl;
+                    if( (alpha<0) || (atmp<alpha) )
+                    {
+                        alpha_num = anum;
+                        alpha_den = aden;
+                        alpha     = atmp;
+                    }
+                }
+                std::cerr << "alpha=" << alpha << std::endl;
+
+            }
+
+
+#if 0
+            const point2d<T>  seq(1,1);
+            task2d<T>         all(seq,width); all.items = width.__prod();
+            const point2d<T>  x_split(size,1);
+            const point2d<T>  y_split(1,size);
+            const point2d<T> *r_split = 0;
+            if(width.y>=width.x)
+            {
+                std::cerr << "\treference: splitting along y" << std::endl;
+                if(y_split.y>width.y) throw exception("mpi_split: too many domains, even for greatest dimension Y");
+                r_split = &y_split;
+            }
+            else
+            {
+                std::cerr << "\treference: splitting along x" << std::endl;
+                if(x_split.x>width.x) throw exception("mpi_split: too many domains, even for greatest dimension X");
+                r_split = &x_split;
+            }
+
             task2d<T> ref(*r_split,width);
             ref.max_from(size);
 
@@ -278,7 +325,7 @@ namespace yocto
             {
                 std::cerr << "\t\t" << tasks[i] << std::endl;
             }
-
+#endif
 
 #if 0
             task all( width.__prod() );
