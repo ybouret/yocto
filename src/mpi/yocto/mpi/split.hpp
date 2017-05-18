@@ -89,16 +89,16 @@ namespace yocto
         class task
         {
         public:
-            size_t work;
-            size_t coms;
+            size_t items;
+            size_t async;
             word_t indx;
-            inline task() throw() : work(0), coms(0), indx(0) {}
-            inline task(const task &other) throw() : work(other.work), coms(other.coms), indx(other.indx) {}
+            inline task() throw() : items(0), async(0), indx(0) {}
+            inline task(const task &other) throw() : items(other.items), async(other.async), indx(other.indx) {}
             inline virtual ~task() throw() {}
 
             inline void set_index(const size_t num, const size_t den)  throw()
             {
-                indx = word_t(den) * word_t(work) + word_t(num) * word_t(coms);
+                indx = word_t(den) * word_t(items) + word_t(num) * word_t(async);
             }
 
         private:
@@ -130,22 +130,22 @@ namespace yocto
                 point2d<T> offset(1,1);
                 point2d<T> length(width);
                 perform(rank,sizes,offset,length);
-                work = size_t( length.__prod() );
-                coms = 0;
-                if(sizes.x>1) coms += size_t(length.y);
-                if(sizes.y>1) coms += size_t(length.x);
+                items = size_t( length.__prod() );
+                async = 0;
+                if(sizes.x>1) async += size_t(length.y);
+                if(sizes.y>1) async += size_t(length.x);
             }
 
             inline void max_from(const int size) throw()
             {
                 assert(size==int(sizes.__prod()));
-                work = coms = 0;
+                items = async = 0;
                 task2d sub(*this);
                 for(int rank=0;rank<size;++rank)
                 {
                     sub.set_from(rank);
-                    work = max_of(work,sub.work);
-                    coms = max_of(coms,sub.coms);
+                    items = max_of(items,sub.items);
+                    async = max_of(async,sub.async);
                 }
             }
 
@@ -180,7 +180,7 @@ namespace yocto
 
             inline friend std::ostream & operator<<( std::ostream &os, const task2d &t)
             {
-                os << t.sizes << " => " << t.indx << "\t(work=" << t.work << ",coms=" << t.coms << ")";
+                os << t.sizes << " => " << t.indx << "\t(items=" << t.items << ",async=" << t.async << ")";
                 return os;
             }
 
@@ -205,7 +205,7 @@ namespace yocto
             }
 
             const point2d<T>  seq(1,1);
-            task2d<T>         all(seq,width); all.work = width.__prod();
+            task2d<T>         all(seq,width); all.items = width.__prod();
             const point2d<T>  x_split(size,1);
             const point2d<T>  y_split(1,size);
             const point2d<T> *r_split = 0;
@@ -225,8 +225,8 @@ namespace yocto
             task2d<T> ref(*r_split,width);
             ref.max_from(size);
 
-            const size_t alpha_num = all.work - ref.work;
-            size_t alpha_den = ref.coms;
+            const size_t alpha_num = all.items - ref.items;
+            const size_t alpha_den = ref.async;
             //alpha_den *= 2;
             std::cerr << "\t\talpha=" << alpha_num << "/" << alpha_den << std::endl;
             all.set_index(alpha_num,alpha_den);
