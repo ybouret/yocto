@@ -25,7 +25,12 @@ namespace yocto
 	
     
 	//! thread unsafe
-	template <typename T> inline void c_shuffle( T *base, size_t n ) throw() { _rand.shuffle(base,n);    }
+	template <typename T> inline void c_shuffle( T *base, const size_t n ) throw() { _rand.shuffle(base,n);    }
+    //! thread unsafe
+    template <typename T,typename U>
+    inline void c_shuffle( T *base, U *basu, const size_t n ) throw() { _rand.shuffle(base,basu,n);    }
+
+
 }
 
 #endif

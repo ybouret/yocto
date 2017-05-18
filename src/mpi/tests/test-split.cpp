@@ -47,7 +47,7 @@ YOCTO_UNIT_TEST_IMPL(split)
 
     point2d<int>  sizes2D(100,100);
     point3d<long> sizes3D(100,100,100);
-    for(size_t sz=1;sz<=6;++sz)
+    for(size_t sz=1;sz<=9;++sz)
     {
         (void) mpi_split::compute_sizes(sz,sizes2D);
         //(void) mpi_split::compute_sizes(sz,sizes3D);

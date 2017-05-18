@@ -7,8 +7,8 @@
 #define YOCTO_TUPLE_INI()   {
 #define YOCTO_TUPLE_END()   }
 
-#define YOCTO_TUPLE_STANDARD(T) type_traits<T>::parameter_type
-#define YOCTO_TUPLE_TEMPLATE(T) typename type_traits<T>::parameter_type
+#define YOCTO_TUPLE_STANDARD(T) type_traits< T >::parameter_type
+#define YOCTO_TUPLE_TEMPLATE(T) typename type_traits< T >::parameter_type
 
 #define YOCTO_PAIR_DECL(YOCTO_TUPLE_PARAM,CLASS,T1,N1,T2,N2) \
 class CLASS \
