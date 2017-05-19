@@ -97,7 +97,7 @@ namespace yocto
             inline task(const task &other) throw() : items(other.items), async(other.async), lcopy(other.lcopy), indx(other.indx) {}
             inline virtual ~task() throw() {}
 
-            inline void set_index(const size_t num, const size_t den)  throw()
+            inline void set_index(const size_t num, const size_t den)   throw()
             {
                 indx = word_t(den) * word_t(items) + word_t(num) * word_t(async);
             }
@@ -112,22 +112,24 @@ namespace yocto
         public:
             const point2d<T> sizes;
             const point2d<T> width;
+            const int        size; //!< sizes.__prod
 
             inline task2d(const point2d<T> &s,const point2d<T> &w) throw() :
             task(),
             sizes(s),
-            width(w)
+            width(w),
+            size( sizes.__prod() )
             {
             }
 
-            inline task2d(const task2d &other) throw() : task(other), sizes(other.sizes), width(other.width) {}
+            inline task2d(const task2d &other) throw() : task(other), sizes(other.sizes), width(other.width), size(other.size) {}
             inline virtual ~task2d() throw() {}
 
             inline void set_from(const int rank) throw()
             {
 
                 assert(rank>=0);
-                assert(rank<=int(sizes.__prod()));
+                assert(rank<size);
                 assert(sizes.x>0);
                 assert(sizes.y>0);
 
@@ -155,22 +157,28 @@ namespace yocto
                 }
             }
 
-            inline void max_from(const int size, const size_t num, const size_t den) throw()
+            inline void max_from(const size_t num, const size_t den) throw()
             {
                 assert(size==int(sizes.__prod()));
                 items = async = lcopy = 0;
+                indx  = 0;
                 task2d sub(*this);
                 for(int rank=0;rank<size;++rank)
                 {
                     sub.set_from(rank);
-                    items = max_of(items,sub.items);
-                    async = max_of(async,sub.async);
-                    lcopy = max_of(lcopy,sub.lcopy);
+                    sub.set_index(num,den);
+                    if(sub.indx>indx)
+                    {
+                        items = sub.items;
+                        async = sub.async;
+                        lcopy = sub.lcopy;
+                        indx  = sub.indx;
+                    }
                 }
             }
 
 
-
+            // compare by index then preferential direction
             static int compare(const task2d &lhs, const task2d &rhs)
             {
                 assert(lhs.width==rhs.width);
@@ -195,7 +203,6 @@ namespace yocto
                         {
                             return int(rhs.sizes.x)-int(lhs.sizes.x);
                         }
-                        return 0;
                     }
                 }
             }
@@ -220,9 +227,10 @@ namespace yocto
             assert(width.x>0);
             assert(width.y>0);
 
-            std::cerr << std::endl << "splitting " << width << " on " << size << " domain" << plural_s(size) << std::endl;
+            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << " => ";
             if(size<=1)
             {
+                std::cerr << "no split" << std::endl;
                 return point2d<T>(size,size);
             }
 
@@ -233,7 +241,7 @@ namespace yocto
             const point2d<T> *r_split = 0;
             if(width.y>=width.x)
             {
-                std::cerr << "\treference: splitting along y" << std::endl;
+                std::cerr << "reference: splitting along y" << std::endl;
                 if(y_split.y>width.y) throw exception("mpi_split: too many domains, even for greatest dimension Y");
                 r_split = &y_split;
             }
@@ -265,44 +273,10 @@ namespace yocto
                         alpha     = atmp;
                     }
                 }
-                std::cerr << "alpha=" << alpha << std::endl;
-
+                //std::cerr << "alpha=" << alpha << "=" << alpha_num << "/" << alpha_den << std::endl;
             }
 
-
-#if 0
-            const point2d<T>  seq(1,1);
-            task2d<T>         all(seq,width); all.items = width.__prod();
-            const point2d<T>  x_split(size,1);
-            const point2d<T>  y_split(1,size);
-            const point2d<T> *r_split = 0;
-            if(width.y>=width.x)
-            {
-                std::cerr << "\treference: splitting along y" << std::endl;
-                if(y_split.y>width.y) throw exception("mpi_split: too many domains, even for greatest dimension Y");
-                r_split = &y_split;
-            }
-            else
-            {
-                std::cerr << "\treference: splitting along x" << std::endl;
-                if(x_split.x>width.x) throw exception("mpi_split: too many domains, even for greatest dimension X");
-                r_split = &x_split;
-            }
-
-            task2d<T> ref(*r_split,width);
-            ref.max_from(size);
-
-            const size_t alpha_num = all.items - ref.items;
-            const size_t alpha_den = ref.async;
-            //alpha_den *= 2;
-            std::cerr << "\t\talpha=" << alpha_num << "/" << alpha_den << std::endl;
-            all.set_index(alpha_num,alpha_den);
-            ref.set_index(alpha_num,alpha_den);
-            std::cerr << "\tall=" << all << " / ref=" << ref << std::endl;
-
-            vector< task2d<T>  > tasks(size,as_capacity);
-            vector< point2d<T> > sizes(size,as_capacity);
-
+            vector< task2d<T> > tasks(size,as_capacity);
             for(int sx=1;sx<=size;++sx)
             {
                 for(int sy=1;sy<=size;++sy)
@@ -312,83 +286,14 @@ namespace yocto
                     const point2d<T> trial(sx,sy);
                     //std::cerr << "\t\t-- " << trial << std::endl;
                     task2d<T> sub(trial,width);
-                    sub.max_from(size);
-                    sub.set_index(alpha_num,alpha_den);
-                    //std::cerr << "\t\t\tsub=" << sub << std::endl;
+                    sub.max_from(alpha_num,alpha_den);
                     tasks.push_back(sub);
-                    sizes.push_back(trial);
                 }
             }
-            c_shuffle(tasks(),sizes(),tasks.size());
-            co_qsort(tasks,sizes,task2d<T>::compare);
-            for(size_t i=1;i<=tasks.size();++i)
-            {
-                std::cerr << "\t\t" << tasks[i] << std::endl;
-            }
-#endif
-
-#if 0
-            task all( width.__prod() );
-            task ref;
-            if(width.y>=width.x)
-            {
-                std::cerr << "\treference: splitting along y" << std::endl;
-                const point2d<T> sizes(1,size);
-                if(sizes.y>width.y) throw exception("mpi_split: too many domains, even for greatest dimension Y");
-                ref.max_from(size,sizes,width);
-            }
-            else
-            {
-                std::cerr << "\treference: splitting along x" << std::endl;
-                const point2d<T> sizes(size,1);
-                if(sizes.x>width.x) throw exception("mpi_split: too many domains, even for greatest dimension X");
-                ref.max_from(size,sizes,width);
-            }
-
-            const size_t alpha_num = all.work - ref.work;
-            const size_t alpha_den = ref.coms;
-            std::cerr << "\t\talpha=" << alpha_num << "/" << alpha_den << std::endl;
-            all.set_index(alpha_num,alpha_den);
-            ref.set_index(alpha_num,alpha_den);
-            std::cerr << "\tall=" << all << std::endl;
-            std::cerr << "\tref=" << ref << std::endl;
-
-
-
-            //__________________________________________________________________
-            //
-            // scan all partitions
-            //__________________________________________________________________
-            vector<task>         tasks(size,as_capacity);
-            vector< point2d<T> > sizes(size,as_capacity);
-            for(int sx=1;sx<=size;++sx)
-            {
-                for(int sy=1;sy<=size;++sy)
-                {
-                    // find valid sizes
-                    if(sx*sy!=size) continue;
-                    const point2d<T> trial(sx,sy);
-                    std::cerr << "\t\t-- " << trial << std::endl;
-                    task sub;
-                    sub.max_from(size,trial,width);
-                    sub.set_index(alpha_num,alpha_den);
-                    std::cerr << "\t\t\tsub=" << sub << std::endl;
-                    tasks.push_back(sub);
-                    sizes.push_back(trial);
-                }
-            }
-
-
-            c_shuffle(tasks(),sizes(),tasks.size());
-            co_qsort(tasks,sizes,task::compare);
-            for(size_t i=1;i<=tasks.size();++i)
-            {
-                std::cerr << sizes[i] << " => " << tasks[i] << std::endl;
-            }
-#endif
-
-            return point2d<T>();
-
+            c_shuffle(tasks(),tasks.size());
+            quicksort(tasks,task2d<T>::compare);
+            //std::cerr << "\t\t" << tasks[1] << std::endl;
+            return tasks[1].sizes;
         }
 
 

@@ -49,7 +49,8 @@ YOCTO_UNIT_TEST_IMPL(split)
     //point3d<long> sizes3D(100,100,100);
     for(size_t sz=1;sz<=9;++sz)
     {
-        (void) mpi_split::compute_sizes(sz,sizes2D);
+        const point2d<int> map2d = mpi_split::compute_sizes(sz,sizes2D);
+        std::cerr << "map2d=" << map2d << std::endl;
         //(void) mpi_split::compute_sizes(sz,sizes3D);
 
     }
