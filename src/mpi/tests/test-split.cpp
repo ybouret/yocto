@@ -3,6 +3,20 @@
 
 using namespace yocto;
 
+namespace
+{
+    template <typename T>
+    static inline
+    void test_split( const point2d<T> &layout, const size_t sz_max)
+    {
+        for(size_t sz=1;sz<=sz_max;++sz)
+        {
+            const point2d<T> map2d = mpi_split::compute_sizes(sz,layout);
+            std::cerr << "map2d=" << map2d << std::endl;
+        }
+    }
+}
+
 YOCTO_UNIT_TEST_IMPL(split)
 {
     std::cerr << "Testing Split..." << std::endl;
@@ -44,16 +58,23 @@ YOCTO_UNIT_TEST_IMPL(split)
 
     std::cerr << "Testing Auto Split" << std::endl;
 
-
-    point2d<int>  sizes2D(101,101);
-    //point3d<long> sizes3D(100,100,100);
-    for(size_t sz=1;sz<=9;++sz)
+    const size_t sz_max = 9;
     {
-        const point2d<int> map2d = mpi_split::compute_sizes(sz,sizes2D);
-        std::cerr << "map2d=" << map2d << std::endl;
-        //(void) mpi_split::compute_sizes(sz,sizes3D);
-
+        point2d<int>  l2d_sq(100,100);
+        test_split(l2d_sq,sz_max);
     }
+
+    {
+        point2d<long> l2d_xmajor(100,80);
+        test_split(l2d_xmajor,sz_max);
+    }
+
+    {
+        point2d<long> l2d_ymajor(80,100);
+        test_split(l2d_ymajor,sz_max);
+    }
+
+
 
 }
 YOCTO_UNIT_TEST_DONE()

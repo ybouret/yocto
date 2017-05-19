@@ -261,11 +261,9 @@ namespace yocto
                 for(int rank=0;rank<size;++rank)
                 {
                     ref.set_from(rank);
-                    //std::cerr << "rank=" << rank << "\titems=" << ref.items << "/" << double(all.items)/count <<  ", async=" << ref.async << std::endl;
                     const size_t anum = all.items - count * ref.items;
                     const size_t aden = count * ref.async;
                     const double atmp = double(anum)/aden;
-                    //std::cerr << "\t\talpha=" << anum << "/" << aden << "=" << atmp << std::endl;
                     if( (alpha<0) || (atmp<alpha) )
                     {
                         alpha_num = anum;
@@ -273,7 +271,6 @@ namespace yocto
                         alpha     = atmp;
                     }
                 }
-                //std::cerr << "alpha=" << alpha << "=" << alpha_num << "/" << alpha_den << std::endl;
             }
 
             vector< task2d<T> > tasks(size,as_capacity);
@@ -290,8 +287,12 @@ namespace yocto
                     tasks.push_back(sub);
                 }
             }
-            c_shuffle(tasks(),tasks.size());
+            //c_shuffle(tasks(),tasks.size());
             quicksort(tasks,task2d<T>::compare);
+            for(size_t i=1;i<=tasks.size();++i)
+            {
+                std::cerr << "\t" << tasks[i] << std::endl;
+            }
             //std::cerr << "\t\t" << tasks[1] << std::endl;
             return tasks[1].sizes;
         }
