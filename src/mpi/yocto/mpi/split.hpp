@@ -227,6 +227,10 @@ namespace yocto
             assert(width.x>0);
             assert(width.y>0);
 
+            //__________________________________________________________________
+            //
+            // start algorithm, get rid of trivial cases
+            //__________________________________________________________________
             std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << " => ";
             if(size<=1)
             {
@@ -234,6 +238,7 @@ namespace yocto
                 return point2d<T>(size,size);
             }
 
+            
             const point2d<T>  seq(1,1);
             task2d<T>         all(seq,width); all.items = width.__prod();
             const point2d<T>  x_split(size,1);
