@@ -1,0 +1,13 @@
+#include "yocto/associative/multi-set.hpp"
+#include "yocto/utest/run.hpp"
+#include "yocto/string.hpp"
+
+using namespace yocto;
+
+YOCTO_UNIT_TEST_IMPL(multi_set)
+{
+    multi_set<string,double> ms;
+
+    
+}
+YOCTO_UNIT_TEST_DONE()
