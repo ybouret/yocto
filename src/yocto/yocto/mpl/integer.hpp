@@ -463,6 +463,15 @@ integer tmp = (*this) + rhs; xch(tmp); return *this; }
                     h.run(I.n.ro(),I.n.length());
                     return h.template key<size_t>();
                 }
+
+                inline size_t operator()( const natural &n) throw()
+                {
+                    h.set();
+                    h.run( n.ro(), n.length() );
+                    return h.template key<size_t>();
+                }
+
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(key_hasher);
             };
