@@ -238,9 +238,18 @@ namespace yocto
                 return point2d<T>(size,size);
             }
 
-            
+
+            //__________________________________________________________________
+            //
+            // compute total work load
+            //__________________________________________________________________
             const point2d<T>  seq(1,1);
             task2d<T>         all(seq,width); all.items = width.__prod();
+
+            //__________________________________________________________________
+            //
+            // take the linear splitting...
+            //__________________________________________________________________
             const point2d<T>  x_split(size,1);
             const point2d<T>  y_split(1,size);
             const point2d<T> *r_split = 0;
@@ -256,9 +265,20 @@ namespace yocto
                 if(x_split.x>width.x) throw exception("mpi_split: too many domains, even for greatest dimension X");
                 r_split = &x_split;
             }
-
-            const size_t count = size-1;
+            //__________________________________________________________________
+            //
+            // ...and make of it the reference splitting
+            //__________________________________________________________________
             task2d<T> ref(*r_split,width);
+
+            //__________________________________________________________________
+            //
+            // if we choose #cpu=size, it's because we think
+            // that it is faster than (size-1) compute engines !
+            // so we find alpha such that
+            // sub.items + alpha * sub.async <= all.items/(size-1)
+            //__________________________________________________________________
+            const size_t count = size-1;
             size_t alpha_num = 0;
             size_t alpha_den = 0;
             {
@@ -278,6 +298,10 @@ namespace yocto
                 }
             }
 
+            //__________________________________________________________________
+            //
+            // we now study all possible partitions
+            //__________________________________________________________________
             vector< task2d<T> > tasks(size,as_capacity);
             for(int sx=1;sx<=size;++sx)
             {
@@ -286,19 +310,21 @@ namespace yocto
                     // find valid sizes
                     if(sx*sy!=size) continue;
                     const point2d<T> trial(sx,sy);
-                    //std::cerr << "\t\t-- " << trial << std::endl;
-                    task2d<T> sub(trial,width);
+                    task2d<T>        sub(trial,width);
                     sub.max_from(alpha_num,alpha_den);
                     tasks.push_back(sub);
                 }
             }
-            //c_shuffle(tasks(),tasks.size());
+
+            //__________________________________________________________________
+            //
+            // and rank them
+            //__________________________________________________________________
             quicksort(tasks,task2d<T>::compare);
             for(size_t i=1;i<=tasks.size();++i)
             {
                 std::cerr << "\t" << tasks[i] << std::endl;
             }
-            //std::cerr << "\t\t" << tasks[1] << std::endl;
             return tasks[1].sizes;
         }
 
