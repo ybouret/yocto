@@ -5,10 +5,15 @@
 #include "yocto/memory/buffers.hpp"
 #include "yocto/code/endian.hpp"
 #include "yocto/code/bswap.hpp"
+
 #include "yocto/xnumeric.hpp"
+
 #include "yocto/ios/bitio.hpp"
 #include "yocto/ios/ostream.hpp"
 #include "yocto/ios/istream.hpp"
+
+#include "yocto/hashing/sfh.hpp"
+#include "yocto/hashing/sha1.hpp"
 
 #include <iosfwd>
 
@@ -534,6 +539,21 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
             //__________________________________________________________________
             double to_real() const;
             static double ratio_of(const natural &num,const natural &den);
+
+            template <typename HASHING_FUNCTION = hashing::sfh >
+            class key_hasher
+            {
+            public:
+                HASHING_FUNCTION h;
+                inline explicit key_hasher() : h() {}
+                inline virtual ~key_hasher() throw() {}
+                inline size_t operator()( const natural &n ) throw()
+                {
+                    h.set(); h.run(n.byte,n.size); return h.template key<size_t>();
+                }
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(key_hasher);
+            };
 
         private:
             size_t   maxi; //!< maximum #bytes

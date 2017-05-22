@@ -187,6 +187,43 @@ inline friend bool operator OP(const rational &lhs, const rational  &rhs) throw(
                 }
                 return 0.0;
             }
+
+            template <typename HASHING_FUNCTION = hashing::sfh >
+            class key_hasher
+            {
+            public:
+                HASHING_FUNCTION h;
+                inline explicit key_hasher() : h() {}
+                inline virtual ~key_hasher() throw() {}
+                inline size_t operator()( const rational &q ) throw()
+                {
+                    h.set();
+                    h.run(&q.num.s,sizeof(sign_type) );
+                    h.run(q.num.n.ro(),q.num.n.length()  );
+                    h.run(q.den.ro(),q.den.length());
+                    return h.template key<size_t>();
+                }
+
+                inline size_t operator()( const natural &n ) throw()
+                {
+                    h.set();
+                    h.run( n.ro(), n.length() );
+                    return h.template key<size_t>();
+                }
+
+                inline size_t operator()( const integer &I ) throw()
+                {
+                    h.set();
+                    h.run(&I.s, sizeof(sign_type) );
+                    h.run( I.n.ro(), I.n.length() );
+                    return h.template key<size_t>();
+                }
+
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(key_hasher);
+            };
+
         };
     }
 

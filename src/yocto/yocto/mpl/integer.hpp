@@ -448,6 +448,26 @@ integer tmp = (*this) + rhs; xch(tmp); return *this; }
                 return integer(lhs.s,q);
             }
 
+
+            template <typename HASHING_FUNCTION = hashing::sfh >
+            class key_hasher
+            {
+            public:
+                HASHING_FUNCTION h;
+                inline explicit key_hasher() : h() {}
+                inline virtual ~key_hasher() throw() {}
+                inline size_t operator()( const integer &I ) throw()
+                {
+                    h.set();
+                    h.run(&I.s,sizeof(sign_type) );
+                    h.run(I.n.ro(),I.n.length());
+                    return h.template key<size_t>();
+                }
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(key_hasher);
+            };
+
+
         };
         
         

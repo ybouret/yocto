@@ -15,10 +15,11 @@ TARGET_LINK_YOCTO(test-mpl)
 
 
 ENABLE_TESTING()
-ADD_TEST(mem test-mpl mem)
-ADD_TEST(mpn test-mpl mpn)
-ADD_TEST(mpz test-mpl mpz)
-ADD_TEST(mpq test-mpl mpq)
+ADD_TEST(mem test-mpl  mem)
+ADD_TEST(mpn test-mpl  mpn)
+ADD_TEST(mpz test-mpl  mpz)
+ADD_TEST(mpq test-mpl  mpq)
+ADD_TEST(hash test-mpl hash)
 
 FIND_PACKAGE(MPI)
 
