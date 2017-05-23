@@ -1,6 +1,7 @@
 #include "yocto/mpl/rational.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
+#include <cstdio>
 
 using namespace yocto;
 using namespace mpl;
