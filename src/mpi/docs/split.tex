@@ -1,4 +1,4 @@
-\documentclass[aps]{revtex4}
+\documentclass[aps,12pt]{revtex4}
 \usepackage{graphicx}
 \usepackage{amssymb,amsfonts,amsmath}
 \usepackage{chemarr}
@@ -11,50 +11,25 @@
 \title{Regular splitting of quad meshes}
 \maketitle
 
-\section{Notation}
+\section{Notations}
+Let us assume that we have a layout of dimension $D$
+with $L_{i=1\ldots D}$ points per dimension, so
+that the total number of points is
+$$
+	N_0 = \prod_{i=1}^{d} L_i,
+$$
+and that we want to split into almost regular regions
+dispatched on $C$ compute engines.
 
-Let us assume that we have a quad mesh of dimension $D$,
-with layout $\vec{L}$ that we want to dispatch
-on $C$ compute engines.\\
-We also assume that the compute time per slot is 
-$$\tau$$ and
-that the communication time per boundary slot is 
-$$\alpha.$$
-The sequential compute time is
-$$
-	\tau \left(\prod_{d=1}^{D} L_d\right)=N_0 \tau
-$$
-For any number of compute engines, we have $P$ ways to
-subdivide the layout in $C$ partitions, so that we may test
-the partions
-$$
-	Q_{ij},\;{i=1\ldots P,\;j=1\ldots C},
-$$
-with the corresponding boundaries $B_{ij}$, where we neglect the local copies.
+We have $Q\geq D$ ways to split $\vec{L}$ into $C\geq2$ almost equal partitions
+that we note 
+$$P_{qj},\;q=1\ldots Q,\;j=1\ldots C$$.
 
-\subsection{Reference partition}
-The reference partition is found by using the partition $Q_r$ corresponding
-to a regular split in the widest direction. The number of items to process
-is then $N_r = \sup_{j}\left\lbrace \#Q_{rj} \right\rbrace$ 
-with the corresponding number of items to transfer $A_r = \#B_{rj_r}$.
-We hence assume that choosing $C$ compute engines yields a speed up, so that
-$$
-	N_r\tau+A_r \alpha \leq N_0 \tau,
-$$
-meaning that
-$$
-	\alpha \leq \dfrac{N_0-N_r}{A_r} \tau.
-$$
+For each partions, we have a number of items $I_{qj} = \# P_{qj}$, a
+number of asynchronous data $A_{qj}$ and a number of local copy $B_{qj}$.
 
-\subsection{Finding out the partition}
 
-For each partition, we have to compute the total compute time
-assuming that $\alpha$ is the value corresponding to the reference time, and
-see if it is faster.
-For any partition $Q_p$, we compute
-$$
-	N_p = \sup_{j}\left\lbrace ... \right\rbrace
-$$
+\section{Reference Partition}
 
 \end{document}
 
