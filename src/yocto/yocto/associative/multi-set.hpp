@@ -126,7 +126,21 @@ namespace yocto
                 assert(NULL==gdb.search(key));
             }
         }
-        
+
+        template <typename FUNC>
+        inline void remove_if( FUNC &is_bad_data )
+        {
+            vector<const_key,ALLOCATOR> keys(gdb.size(),as_capacity);
+            for(iterator i=gdb.begin();i!=gdb.end();++i)
+            {
+                keys.push_back( (*i)->group_key );
+            }
+            for(size_t i=1;i<=keys.size();++i)
+            {
+                remove_if(keys[i],is_bad_data);
+            }
+        }
+
         inline friend
         std::ostream & operator <<( std::ostream &os, const multi_set &ms )
         {

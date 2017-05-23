@@ -21,7 +21,7 @@ YOCTO_UNIT_TEST_IMPL(multi_set)
     {
         const string k = gen<string>::get();
 
-        for(size_t j=2+alea_leq(10);j>0;--j)
+        for(size_t j=2+alea_leq(2);j>0;--j)
         {
             ms.insert(k,alea<double>());
         }
@@ -32,11 +32,11 @@ YOCTO_UNIT_TEST_IMPL(multi_set)
     std::cerr << ms << std::endl;
 
     limit=0.5;
-    ms.remove_if("hello",is_bad_data);
+    ms.remove_if(is_bad_data);
     std::cerr << ms << std::endl;
 
     limit=10;
-    ms.remove_if("hello",is_bad_data);
+    ms.remove_if(is_bad_data);
     std::cerr << ms << std::endl;
 
 
