@@ -25,7 +25,7 @@ namespace
 
 YOCTO_UNIT_TEST_IMPL(spade_mesh_split)
 {
-    const string sim_name = "spade_example";
+    const string sim_name = "spade_split_example";
     const string sim_comm = "testing Spade interface with visit";
 
     YOCTO_MPI_ENV();
@@ -39,6 +39,10 @@ YOCTO_UNIT_TEST_IMPL(spade_mesh_split)
                                 false);
 
 
+    
+    Layout2D full( coord2D(1,1), coord2D(100,80) );
+    
+    
 
     Sim sim(visit);
     sim.loop();
