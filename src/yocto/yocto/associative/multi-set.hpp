@@ -68,10 +68,11 @@ namespace yocto
         typedef typename gDataBase::iterator           iterator;
         typedef typename gDataBase::const_iterator     const_iterator;
 
+        //! name for sub-class
         virtual const char *name() const throw() { return hidden::multi_set_name; }
 
 
-        inline explicit multi_set()
+        inline explicit multi_set() throw(): gdb()
         {
         }
 
@@ -85,16 +86,17 @@ namespace yocto
         inline const_iterator end()   const throw() { return gdb.end();   }
 
 
-        inline void insert(param_key key, param_type arg)
+        //! insert a pair key/value
+        inline void insert(param_key key, param_type value)
         {
             gPointer *ppG = gdb.search(key);
             if(ppG)
             {
-                (*ppG)->content.push_back(arg);
+                (*ppG)->content.push_back(value);
             }
             else
             {
-                gPointer pG( new group(key,arg) );
+                gPointer pG( new group(key,value) );
                 if(!gdb.insert(pG))
                 {
                     throw exception("%s: unexpected insert failure", name() );
@@ -102,11 +104,24 @@ namespace yocto
             }
         }
 
+
+        //! get a group
         inline const group *search(param_key key) const throw()
         {
             const gPointer *ppG = gdb.search(key);
             return (ppG) ? & **ppG : 0;
         }
+
+        //! remove bad key/value
+        template <typename FUNC>
+        inline void remove_if( param_key key, FUNC &is_bad_data ) throw()
+        {
+            group *ppG = gdb.search(key);
+            if(!ppG) return;
+            
+
+        }
+        
 
 
     private:

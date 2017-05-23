@@ -330,7 +330,7 @@ namespace yocto
         
 
         //======================================================================
-        //! in place removing
+        //! in place removing of bad DATA
         //======================================================================
         template <typename FUNC>
         inline void remove_if( FUNC &is_bad ) throw()
