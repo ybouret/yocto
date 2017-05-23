@@ -11,6 +11,7 @@
 #include "yocto/container/iter-linked.hpp"
 #include "yocto/type/key.hpp"
 #include "yocto/sort/merge.hpp"
+#include <iostream>
 
 namespace yocto
 {
@@ -275,24 +276,58 @@ namespace yocto
         }
 
         //======================================================================
+        // output
+        //======================================================================
+        inline friend
+        std::ostream & operator<<( std::ostream &os, const set &S )
+        {
+            os << "{";
+            for(const KNode *node = S.klist.head; node; node=node->next )
+            {
+                os << ' ' << node->data;
+                //os << ' ' << *i;
+            }
+            os <<" }";
+            return os;
+        }
+
+        //======================================================================
         // ordering
         //======================================================================
-        typedef int (*data_compare)(const_type &lhs, const_type &rhs);
-        
-        static inline int node_compare( const KNode *lhs, const KNode *rhs, void *args ) throw()
+        template <typename FUNC>
+        static inline int __data_compare(const KNode *lhs, const KNode *rhs, void *args ) throw()
         {
             assert(lhs);
             assert(rhs);
             assert(args);
-            
-            data_compare proc  = (data_compare)args;
+            FUNC &proc = *(FUNC *)(args);
             return proc(lhs->data,rhs->data);
         }
-        
-        inline void sort_by( data_compare proc )
+
+        template <typename FUNC>
+        inline void sort_data_by( FUNC &proc )
         {
-            core::merging<KNode>::sort(klist,node_compare,(void*)proc);
+            core::merging<KNode>::sort(klist,__data_compare<FUNC>,(void*)&proc);
         }
+
+        template <typename FUNC>
+        static inline int __key_compare(const KNode *lhs, const KNode *rhs, void *args ) throw()
+        {
+            assert(lhs);
+            assert(rhs);
+            assert(args);
+            FUNC &proc = *(FUNC *)(args);
+            return proc(lhs->data.key(),rhs->data.key());
+        }
+
+        template <typename FUNC>
+        inline void sort_key_by( FUNC &proc )
+        {
+            core::merging<KNode>::sort(klist,__key_compare<FUNC>,(void*)&proc);
+        }
+
+
+        
 
         //======================================================================
         //! in place removing

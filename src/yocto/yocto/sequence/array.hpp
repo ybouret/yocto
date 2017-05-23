@@ -63,10 +63,10 @@ namespace yocto
 		inline array() throw() {}
 		
 	private:
-		virtual const_type *get_item() const throw() = 0; //!< for a 1..size access
-		inline  type       *item(size_t index) throw()        { return (type *)get_item() + index; }
-		inline  const_type *item(size_t index) const throw()  { return get_item()+index; }
-        virtual const void *get_address() const throw() { return item(1); }
+		virtual const_type *get_item()         const throw() = 0; //!< for a 1..size access
+		inline  type       *item(size_t index) throw()        { return ((type *)get_item()) + index; }
+		inline  const_type *item(size_t index) const throw()  { return get_item()+index;             }
+        virtual const void *get_address()      const throw()  { return item(1);                      }
 	};
 	
 }

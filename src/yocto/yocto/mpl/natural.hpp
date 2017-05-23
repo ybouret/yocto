@@ -540,6 +540,12 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
             double to_real() const;
             static double ratio_of(const natural &num,const natural &den);
 
+            //__________________________________________________________________
+            //
+            //
+            // hashing
+            //
+            //__________________________________________________________________
             template <typename HASHING_FUNCTION = hashing::sfh >
             class key_hasher
             {

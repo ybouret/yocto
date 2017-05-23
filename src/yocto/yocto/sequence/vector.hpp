@@ -280,6 +280,7 @@ item_(addr_-1)
         }
 
 
+        virtual const_type *get_item()  const throw() { return item_; }
 
 
 
@@ -511,8 +512,7 @@ item_(addr_-1)
         //----------------------------------------------------------------------
         virtual const_type &get_front() const throw() { assert(size_>0); return item_[1];     }
         virtual const_type &get_back()  const throw() { assert(size_>0); return item_[size_]; }
-        virtual const_type *get_item()  const throw() { return item_; }
-        
+
     };
 }
 

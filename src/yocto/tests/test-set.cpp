@@ -5,6 +5,7 @@
 #include "yocto/hashing/sha1.hpp"
 #include "yocto/memory/pooled.hpp"
 #include "yocto/sequence/list.hpp"
+#include "yocto/comparator.hpp"
 
 #include "support.hpp"
 #include <typeinfo>
@@ -32,7 +33,25 @@ namespace
 		~dummy() throw() {}
 		
 		const_key & key() const throw() { return id; }
-		
+
+        inline friend std::ostream & operator<<( std::ostream &os, const dummy &d )
+        {
+            os << d.id;
+            return os;
+        }
+
+        static inline
+        int cmp_data( const dummy &lhs, const dummy &rhs)
+        {
+            return __compare<KEY>(lhs.id,rhs.id);
+        }
+
+        static inline
+        int cmp_key( const dummy &lhs, const dummy &rhs)
+        {
+            return __compare<KEY>(rhs.id,lhs.id);
+        }
+
 	private:
 		YOCTO_DISABLE_ASSIGN(dummy);
 		
@@ -87,7 +106,8 @@ namespace
 
 
 	}
-	
+
+
 }
 
 
@@ -98,7 +118,25 @@ YOCTO_UNIT_TEST_IMPL(set)
 	test_set<int,key_hasher<int,hashing::sfh>,memory::global::allocator>();
 	test_set<string,key_hasher<string,hashing::elf>,memory::global::allocator>();
 	test_set<const string,key_hasher<string,hashing::sha1>,memory::pooled::allocator>();
-	
+
+    {
+        set<string, dummy<string> > ds;
+        for(size_t i=0;i<10;++i)
+        {
+            const string k = gen<string>::get();
+            const string a = gen<string>::get();
+            const dummy<string> d(a);
+            (void) ds.insert(d);
+        }
+        std::cerr << ds << std::endl;
+
+        ds.sort_data_by(dummy<string>::cmp_data);
+        std::cerr << ds << std::endl;
+
+        ds.sort_key_by(dummy<string>::cmp_key);
+        std::cerr << ds << std::endl;
+    }
+
 }
 YOCTO_UNIT_TEST_DONE()
 
