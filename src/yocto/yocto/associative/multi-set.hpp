@@ -133,8 +133,10 @@ namespace yocto
             os << '{';
             for( const_iterator i=ms.begin();i!=ms.end();++i)
             {
-                const group &g = **i;
-                os << ' ' << '(' << g.key()  << ':' << g.content << ')';
+                const group    &g = **i;
+                const array<T> &a = g;
+
+                os << ' ' << '(' << g.key()  << ':' << a << ')';
             }
             os << ' ' << '}';
             return os;
