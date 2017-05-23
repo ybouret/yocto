@@ -85,6 +85,16 @@ namespace yocto
         inline iterator       end()   throw()       { return gdb.end();   }
         inline const_iterator end()   const throw() { return gdb.end();   }
 
+        inline size_t groups()   const throw() { return gdb.size(); }
+        inline size_t stored()   const throw()
+        {
+            size_t count = 0;
+            for(const_iterator i=gdb.begin();i!=gdb.end();++i)
+            {
+                count += (*i)->size();
+            }
+            return count;
+        }
 
         //! insert a pair key/value
         inline void insert(param_key key, param_type value)
