@@ -116,13 +116,29 @@ namespace yocto
         template <typename FUNC>
         inline void remove_if( param_key key, FUNC &is_bad_data ) throw()
         {
-            group *ppG = gdb.search(key);
+            gPointer *ppG = gdb.search(key);
             if(!ppG) return;
-            
-
+            group    &g   = **ppG;
+            g.content.__remove_if(is_bad_data);
+            if(g.content.size()<=0)
+            {
+                (void) gdb.remove(key);
+                assert(NULL==gdb.search(key));
+            }
         }
         
-
+        inline friend
+        std::ostream & operator <<( std::ostream &os, const multi_set &ms )
+        {
+            os << '{';
+            for( const_iterator i=ms.begin();i!=ms.end();++i)
+            {
+                const group &g = **i;
+                os << ' ' << '(' << g.key()  << ':' << g.content << ')';
+            }
+            os << ' ' << '}';
+            return os;
+        }
 
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(multi_set);

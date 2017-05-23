@@ -282,6 +282,32 @@ item_(addr_-1)
 
         virtual const_type *get_item()  const throw() { return item_; }
 
+        //! for bitwise ops object only
+        inline void __remove(const size_t indx) throw()
+        {
+            assert(indx>0);
+            assert(indx<=size_);
+            mutable_type *source = & item_[indx];
+            destruct(source);
+            memmove(source,source+1,( (size_--) - indx) * sizeof(type) );
+        }
+
+        template <typename FUNC>
+        inline void __remove_if( FUNC &is_bad ) throw()
+        {
+            size_t indx = 1;
+            while(indx<=size_)
+            {
+                if(is_bad( item_[indx] ) )
+                {
+                    __remove(indx);
+                }
+                else
+                {
+                    ++indx;
+                }
+            }
+        }
 
 
     private:
