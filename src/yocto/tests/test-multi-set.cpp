@@ -33,13 +33,13 @@ YOCTO_UNIT_TEST_IMPL(multi_set)
     std::cerr << ms << std::endl;
 
     limit=0.8;
-    ms.remove_if(is_bad_data);
+    ms.__remove_if(is_bad_data);
     std::cerr << "#groups=" << ms.groups() << std::endl;
     std::cerr << "#stored=" << ms.stored() << std::endl;
     std::cerr << ms << std::endl;
 
     limit=1.0;
-    ms.remove_if(is_bad_data);
+    ms.__remove_if(is_bad_data);
     std::cerr << "#groups=" << ms.groups() << std::endl;
     std::cerr << "#stored=" << ms.stored() << std::endl;
     std::cerr << ms << std::endl;

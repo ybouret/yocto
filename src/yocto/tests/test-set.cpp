@@ -47,7 +47,7 @@ namespace
         }
 
         static inline
-        int cmp_key( const dummy &lhs, const dummy &rhs)
+        int cmp_keys( const dummy &lhs, const dummy &rhs)
         {
             return __compare<KEY>(rhs.id,lhs.id);
         }
@@ -133,7 +133,7 @@ YOCTO_UNIT_TEST_IMPL(set)
         ds.sort_data_by(dummy<string>::cmp_data);
         std::cerr << ds << std::endl;
 
-        ds.sort_key_by(dummy<string>::cmp_key);
+        ds.sort_keys_by(dummy<string>::cmp_keys);
         std::cerr << ds << std::endl;
     }
 

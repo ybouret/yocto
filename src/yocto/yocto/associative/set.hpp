@@ -321,7 +321,7 @@ namespace yocto
         }
 
         template <typename FUNC>
-        inline void sort_key_by( FUNC &proc )
+        inline void sort_keys_by( FUNC &proc )
         {
             core::merging<KNode>::sort(klist,__key_compare<FUNC>,(void*)&proc);
         }

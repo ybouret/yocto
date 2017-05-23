@@ -124,7 +124,7 @@ namespace yocto
 
         //! remove bad key/value
         template <typename FUNC>
-        inline void remove_if( param_key key, FUNC &is_bad_data ) throw()
+        inline void __remove_if( param_key key, FUNC &is_bad_data ) throw()
         {
             gPointer *ppG = gdb.search(key);
             if(!ppG) return;
@@ -138,7 +138,7 @@ namespace yocto
         }
 
         template <typename FUNC>
-        inline void remove_if( FUNC &is_bad_data )
+        inline void __remove_if( FUNC &is_bad_data )
         {
             vector<const_key,ALLOCATOR> keys(gdb.size(),as_capacity);
             for(iterator i=gdb.begin();i!=gdb.end();++i)
@@ -147,7 +147,7 @@ namespace yocto
             }
             for(size_t i=1;i<=keys.size();++i)
             {
-                remove_if(keys[i],is_bad_data);
+                __remove_if(keys[i],is_bad_data);
             }
         }
 
@@ -165,6 +165,13 @@ namespace yocto
             os << ' ' << '}';
             return os;
         }
+
+        template <typename FUNC>
+        void sort( FUNC &func )
+        {
+            gdb.template sort_keys_by<FUNC>(func);
+        }
+
 
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(multi_set);
