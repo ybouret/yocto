@@ -23,13 +23,20 @@ dispatched on $C$ compute engines.
 
 We have $Q\geq D$ ways to split $\vec{L}$ into $C\geq2$ almost equal partitions
 that we note 
-$$P_{qj},\;q=1\ldots Q,\;j=1\ldots C$$.
+$$P_{qj},\;q=1\ldots Q,\;j=1\ldots C.$$
 
 For each partions, we have a number of items $I_{qj} = \# P_{qj}$, a
-number of asynchronous data $A_{qj}$ and a number of local copy $B_{qj}$.
-
+number of asynchronous data $A_{qj}$ and a number of local block copy $B_{qj}$.
+We note $\alpha$ the asynchronous time transfer w.r.t to the average
+compute time per slot, and $\beta$ the local copy time per slot, so that
+the effective compute time for a partition is
+$$
+	\Theta_q = \max_{j}\left\lbrace  I_{qj} + \alpha A_{qj} + \beta B_{qj} \right\rbrace
+$$
 
 \section{Reference Partition}
+The reference partition $q_0$ is the regular splitting in $C$ pieces
+along the largest direction $d_0$.
 
 \end{document}
 
