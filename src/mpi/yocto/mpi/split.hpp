@@ -8,6 +8,7 @@
 #include "yocto/exception.hpp"
 #include "yocto/sort/quick.hpp"
 #include "yocto/code/rand.hpp"
+#include "yocto/mpl/rational.hpp"
 
 #include <cmath>
 #include <cstdlib>
@@ -85,7 +86,131 @@ namespace yocto
             perform(ranks.x,sizes.x,offset.x,length.x);
             perform(ranks.y,sizes.y,offset.y,length.y);
         }
-
+        
+        template <typename T> static inline
+        point2d<T> compute_length(const int         rank,
+                                  const point2d<T> &sizes,
+                                  const point2d<T> &width)
+        {
+            point2d<T>       offset(1,1);
+            point2d<T>       length(width);
+            perform<T>(rank,sizes,offset,length);
+            return length;
+        }
+        
+        template <typename T>
+        class task2d
+        {
+        public:
+            const point2d<T> sizes;
+            const mpq        work;
+            const mpq        async;
+            const mpq        lcopy;
+            
+            inline explicit task2d(const point2d<T> &sz,
+                                   const mpq        &w,
+                                   const mpq        &a,
+                                   const mpq        &l) :
+            sizes(w),
+            work(w),
+            async(a),
+            lcopy(l)
+            {
+            }
+            
+            
+        private:
+            YOCTO_DISABLE_ASSIGN(task2d);
+        };
+        
+        template <typename T> static inline
+        void compute_new_time(const point2d<T> &width,
+                              const mpq        &N_old,
+                              const int         size)
+        {
+            assert(size>1);
+            std::cerr << "N" << size-1 << "=" << N_old << std::endl;
+            mpq        alpha = -1;
+            point2d<T> sizes;
+            int        rank=-1;
+            bool       found=false;
+            
+            for(int sx=1;sx<=size;++sx)
+            {
+                for(int sy=1;sy<=size;++sy)
+                {
+                    // find valid sizes
+                    if(sx*sy!=size) continue;
+                    const point2d<T> trial(sx,sy);
+                    std::cerr << "\ttrial=" << trial << std::endl;
+                    for(int r=0;r<size;++r)
+                    {
+                        const point2d<T> length = compute_length(r,trial,width);
+                        mpq work  = int(length.__prod());
+                        mpq async = 0;
+                        mpq lcopy = 0;
+                        if(trial.x>1)
+                        {
+                            async = length.y;
+                        }
+                        else
+                        {
+                            lcopy = length.y;
+                        }
+                        
+                        if(trial.y>1)
+                        {
+                            async = length.x;
+                        }
+                        else
+                        {
+                            lcopy = length.x;
+                        }
+                        std::cerr << "\t\trank=" << r << ", work=" << work << ", async=" << async << ", lcopy=" << lcopy << std::endl;
+                        mpq atemp = (N_old-work)/async;
+                        std::cerr << "\t\t\talpha=" << atemp << std::endl;
+                        if(!found||atemp<alpha)
+                        {
+                            found=true;
+                            alpha = atemp;
+                            sizes = trial;
+                            rank  = r;
+                        }
+                    }
+                }
+            }
+            std::cerr << "best=" << alpha << ", sizes=" << sizes << std::endl;
+            
+        }
+        
+        template <typename T> static inline
+        point2d<T> compute_sizes(const int         size,
+                                 const point2d<T> &width)
+        {
+            
+            assert(width.x>0);
+            assert(width.y>0);
+            
+            //__________________________________________________________________
+            //
+            // start algorithm, get rid of trivial cases
+            //__________________________________________________________________
+            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << " => ";
+            if(size<=1)
+            {
+                std::cerr << "no split" << std::endl;
+                return point2d<T>(size,size);
+            }
+            
+            mpq N_old = width.__prod();
+            compute_new_time(width,N_old,2);
+            
+            
+            
+            return point2d<T>();
+        }
+        
+#if 0
         class task
         {
         public:
@@ -327,7 +452,8 @@ namespace yocto
             }
             return tasks[1].sizes;
         }
-
+#endif
+        
 
         //______________________________________________________________________
         //
