@@ -41,14 +41,14 @@ namespace yocto
             }
             length = todo;
         }
-
+        
         //______________________________________________________________________
         //
         //
         // 2D API
         //
         //______________________________________________________________________
-
+        
         //! rank = ranks.x + sizes.x * ranks.y;
         template <typename T> static inline
         point2d<T> local_ranks(const int         rank,
@@ -63,7 +63,7 @@ namespace yocto
             const T      ry(d.quot);
             return point2d<T>(rx,ry);
         }
-
+        
         //! rank = ranks.x + sizes.x * ranks.y;
         template <typename T> static inline
         int get_rank_of(const point2d<T> &ranks,
@@ -75,7 +75,7 @@ namespace yocto
             assert(ranks.y<sizes.y);
             return ranks.x + sizes.x * ranks.y;
         }
-
+        
         template <typename T> static inline
         void perform(const int         rank,
                      const point2d<T> &sizes,
@@ -108,7 +108,7 @@ namespace yocto
             inline virtual ~task() throw() {}
             inline task(const task &other) :
             items(other.items), async(other.async), lcopy(other.lcopy) {}
-        
+            
         private:
             YOCTO_DISABLE_ASSIGN(task);
         };
@@ -253,9 +253,9 @@ namespace yocto
         template <typename T>
         static inline
         void find_task(const int         size,
-                            const point2d<T> &width,
-                            mpq              &indx,
-                            const mpq        &alpha)
+                       const point2d<T> &width,
+                       mpq              &indx,
+                       const mpq        &alpha)
         {
             bool       found = false;
             point2d<T> split;
@@ -318,16 +318,16 @@ namespace yocto
             inline task() throw() : items(0), async(0), lcopy(0), indx(0) {}
             inline task(const task &other) throw() : items(other.items), async(other.async), lcopy(other.lcopy), indx(other.indx) {}
             inline virtual ~task() throw() {}
-
+            
             inline void set_index(const size_t num, const size_t den)   throw()
             {
                 indx = word_t(den) * word_t(items) + word_t(num) * word_t(async);
             }
-
+            
         private:
             YOCTO_DISABLE_ASSIGN(task);
         };
-
+        
         template <typename T>
         class task2d : public task
         {
@@ -335,7 +335,7 @@ namespace yocto
             const point2d<T> sizes;
             const point2d<T> width;
             const int        size; //!< sizes.__prod
-
+            
             inline task2d(const point2d<T> &s,const point2d<T> &w) throw() :
             task(),
             sizes(s),
@@ -343,18 +343,18 @@ namespace yocto
             size( sizes.__prod() )
             {
             }
-
+            
             inline task2d(const task2d &other) throw() : task(other), sizes(other.sizes), width(other.width), size(other.size) {}
             inline virtual ~task2d() throw() {}
-
+            
             inline void set_from(const int rank) throw()
             {
-
+                
                 assert(rank>=0);
                 assert(rank<size);
                 assert(sizes.x>0);
                 assert(sizes.y>0);
-
+                
                 point2d<T> offset(1,1);
                 point2d<T> length(width);
                 perform(rank,sizes,offset,length);
@@ -378,7 +378,7 @@ namespace yocto
                     lcopy += size_t(length.x);
                 }
             }
-
+            
             inline void max_from(const size_t num, const size_t den) throw()
             {
                 assert(size==int(sizes.__prod()));
@@ -398,8 +398,8 @@ namespace yocto
                     }
                 }
             }
-
-
+            
+            
             // compare by index then preferential direction
             static int compare(const task2d &lhs, const task2d &rhs)
             {
@@ -428,27 +428,27 @@ namespace yocto
                     }
                 }
             }
-
+            
             inline friend std::ostream & operator<<( std::ostream &os, const task2d &t)
             {
                 os << t.sizes << " => " << t.indx << "\t(items=" << t.items << ",async=" << t.async << ",lcopy=" << t.lcopy << ")";
                 return os;
             }
-
+            
         private:
             YOCTO_DISABLE_ASSIGN(task2d);
         };
-
-
-
+        
+        
+        
         template <typename T> static inline
         point2d<T> compute_sizes(const int         size,
                                  const point2d<T> &width)
         {
-
+            
             assert(width.x>0);
             assert(width.y>0);
-
+            
             //__________________________________________________________________
             //
             // start algorithm, get rid of trivial cases
@@ -459,15 +459,15 @@ namespace yocto
                 std::cerr << "no split" << std::endl;
                 return point2d<T>(size,size);
             }
-
-
+            
+            
             //__________________________________________________________________
             //
             // compute total work load
             //__________________________________________________________________
             const point2d<T>  seq(1,1);
             task2d<T>         all(seq,width); all.items = width.__prod();
-
+            
             //__________________________________________________________________
             //
             // take the linear splitting...
@@ -492,7 +492,7 @@ namespace yocto
             // ...and make of it the reference splitting
             //__________________________________________________________________
             task2d<T> ref(*r_split,width);
-
+            
             //__________________________________________________________________
             //
             // if we choose #cpu=size, it's because we think
@@ -519,7 +519,7 @@ namespace yocto
                     }
                 }
             }
-
+            
             //__________________________________________________________________
             //
             // we now study all possible partitions
@@ -537,7 +537,7 @@ namespace yocto
                     tasks.push_back(sub);
                 }
             }
-
+            
             //__________________________________________________________________
             //
             // and rank them
@@ -551,14 +551,14 @@ namespace yocto
         }
 #endif
         
-
+        
         //______________________________________________________________________
         //
         //
         // 3D API
         //
         //______________________________________________________________________
-
+        
         //! rank = ranks.x + sizes.x * rank.y + sizes.x * sizes.y * rank.z;
         /**
          rank = ranks.x + sizes.x * (rank.y+sizes.y*rank.z)
@@ -579,7 +579,7 @@ namespace yocto
             const T      rz(dy.quot);
             return point3d<T>(rx,ry,rz);
         }
-
+        
         //!  rank = ranks.x + sizes.x * (rank.y+sizes.y*rank.z)
         template <typename T> static inline
         int get_rank_of(const point3d<T> &ranks,
@@ -590,10 +590,10 @@ namespace yocto
             assert(ranks.x<sizes.x);
             assert(ranks.y<sizes.y);
             assert(ranks.z<sizes.z);
-
+            
             return ranks.x + sizes.x*(ranks.y + sizes.y*ranks.z);
         }
-
+        
         template <typename T> static inline
         void perform(const int         rank,
                      const point3d<T> &sizes,
@@ -605,7 +605,7 @@ namespace yocto
             perform(ranks.y,sizes.y,offset.y,length.y);
             perform(ranks.z,sizes.z,offset.z,length.z);
         }
-
+        
         template <typename T> static inline
         point3d<T> compute_sizes(const int         size,
                                  const point3d<T> &width)
@@ -613,9 +613,9 @@ namespace yocto
             assert(width.x>0);
             assert(width.y>0);
             assert(width.z>0);
-
+            
             std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << std::endl;
-
+            
             //__________________________________________________________________
             //
             // find all partitions
