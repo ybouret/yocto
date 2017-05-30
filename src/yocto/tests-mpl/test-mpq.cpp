@@ -15,7 +15,7 @@ YOCTO_UNIT_TEST_IMPL(mpq)
     mpq x(1,2);
     mpq y(1,3);
     std::cerr << x << "-" << y << "=" << x-y << std::endl;
-    matrix<mpq> M(5);
+    matrix<mpq>    M(5);
     matrix<double> A(5);
     for(size_t i=1;i<=M.rows;++i)
     {
@@ -41,9 +41,21 @@ YOCTO_UNIT_TEST_IMPL(mpq)
     {
         math::LU<mpq>::solve(M,IM);
         std::cerr << "IM=" << IM << std::endl;
+        matrix<double> IMr(M.cols,M.rows);
+        for(size_t i=1;i<=M.rows;++i)
+        {
+            for(size_t j=1;j<=M.cols;++j)
+            {
+                IMr[i][j] = IM[i][j].to_double();
+            }
+        }
+        std::cerr << "IMr=" << IMr << std::endl;
         matrix<mpq> P(M.rows);
         math::tao::mmul(P, M0, IM);
         std::cerr << "P=" << P << std::endl;
+        matrix<double> Pr(M.rows);
+        math::tao::mmul(Pr,A,IMr);
+        std::cerr << "Pr=" << Pr << std::endl;
     }
 
 

@@ -11,8 +11,11 @@ namespace
     {
         for(size_t sz=1;sz<=sz_max;++sz)
         {
-            const point2d<T> map2d = mpi_split::compute_sizes(sz,layout);
-            std::cerr << "map2d=" << map2d << std::endl;
+            if(sz==4||sz==9)
+            {
+                const point2d<T> map2d = mpi_split::compute_sizes(sz,layout);
+                std::cerr << "map2d=" << map2d << std::endl;
+            }
         }
     }
 }
@@ -28,6 +31,7 @@ YOCTO_UNIT_TEST_IMPL(split)
             // 2D
             {
                 const int size = sx * sy;
+               
                 const point2d<long> sizes(sx,sy);
                 std::cerr << "sizes=" << sizes << ", size=" << size << std::endl;
                 for(int rank=0;rank<size;++rank)

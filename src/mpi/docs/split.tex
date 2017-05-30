@@ -36,8 +36,16 @@ $$
 
 \section{Reference Partition}
 The reference partition $q_0$ is the regular splitting in $C$ pieces
-along the largest direction $d_0$.
-
+along the largest direction $d_0$. Since we choose $C$ compute engines, 
+it is because we know that it is faster than $C-1$ compute engines.
+So that the condition is
+$$
+	\Theta_{q_0} \leq \dfrac{N_0}{C-1}
+$$
+meaning that
+$$
+	\forall j,\; I_{q_0j} + \alpha A_{q_0j} + \beta B_{q_0j} \leq \dfrac{N_0}{C-1}
+$$
 \end{document}
 
 \section{Generic}
