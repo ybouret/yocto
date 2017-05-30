@@ -311,7 +311,9 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
             //__________________________________________________________________
             //! helper
             inline void    ldz() throw() { size=0; }
-
+            inline void    ld1() throw() { size=1; byte[0]=1; }
+            
+            
 #define Y_MPL_CLR(I) ( (uint8_t &)byte[I] ) = 0
             inline void    __clr() const throw()
             {

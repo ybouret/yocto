@@ -25,7 +25,8 @@ namespace yocto
                 ( (integer &)num ).xch( (integer &)(r.num) );
                 ( (natural &)den ).xch( (natural &)(r.den) );
             }
-
+            
+            
             inline rational & operator=(const rational &r)
             {
                 rational q(r);
@@ -44,6 +45,13 @@ namespace yocto
                 natural::simplify( (natural &)(num.n), (natural &)(den) );
             }
 
+            inline void ldz() throw()
+            {
+                ( (integer &)num ).ldz();
+                ( (natural &)den ).ld1();
+            }
+            
+            
             inline friend std::ostream & operator<<( std::ostream &os, const rational &r)
             {
                 if(r.den<=1)

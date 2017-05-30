@@ -136,6 +136,12 @@ namespace yocto
                 return os;
             }
             
+            inline void ldz() throw()
+            {
+                (sign_type  &)s = __zero;
+                ((natural   &)n).ldz();
+            }
+            
             //__________________________________________________________________
             //
             //

@@ -98,90 +98,182 @@ namespace yocto
             return length;
         }
         
-        template <typename T>
-        class task2d
+        class task
         {
         public:
-            const point2d<T> sizes;
-            const mpq        work;
-            const mpq        async;
-            const mpq        lcopy;
+            mpq items;
+            mpq async;
+            mpq lcopy;
+            inline explicit task() : items(), async(), lcopy() {}
+            inline virtual ~task() throw() {}
+            inline task(const task &other) :
+            items(other.items), async(other.async), lcopy(other.lcopy) {}
+        
+        private:
+            YOCTO_DISABLE_ASSIGN(task);
+        };
+        
+        template <typename T>
+        class task2d : public task
+        {
+        public:
+            const point2d<T> sizes;  //!< the partition
+            const int        size;   //!< sizes.__prod()
+            const point2d<T> width;  //!< the layout
+            point2d<T>       offset; //!< the sub layout offset
+            point2d<T>       length; //!< the sub layout length
             
-            inline explicit task2d(const point2d<T> &sz,
-                                   const mpq        &w,
-                                   const mpq        &a,
-                                   const mpq        &l) :
-            sizes(w),
-            work(w),
-            async(a),
-            lcopy(l)
+            inline explicit task2d(const point2d<T> &s,
+                                   const point2d<T> &w) :
+            task(), sizes(s),
+            size(sizes.__prod()),
+            width(w),
+            offset(),
+            length()
             {
             }
             
+            inline virtual ~task2d() throw()
+            {
+            }
+            
+            inline task2d(const task2d &other) : task(other),
+            sizes(other.sizes),
+            size(other.size),
+            width(other.width),
+            offset(other.offset),
+            length(other.length)
+            {}
+            
+            // compute sub-partition spec
+            inline void set(const int rank)
+            {
+                assert(rank<size);
+                offset = point2d<T>(1,1);
+                length = width;
+                perform(rank,size, offset, length);
+                items = int(length.__prod());
+                async = 0;
+                lcopy = 0;
+                if(sizes.x>1)
+                {
+                    async += int(length.y);
+                }
+                else
+                {
+                    lcopy += int(length.y);
+                }
+                
+                if(sizes.y>1)
+                {
+                    async += int(length.x);
+                }
+                else
+                {
+                    lcopy += int(length.x);
+                }
+            }
+            
+            inline friend std::ostream & operator<<(std::ostream &os, const task2d &t)
+            {
+                os << "(items=" << t.items << ",async=" << t.async << ",lcopy=" << t.lcopy << ")";
+                return os;
+            }
+            
+            // find alpha such that the splitting is faster than indx_old
+            inline mpq find_alpha(const mpq &indx)
+            {
+                int r=-1;
+                mpq alpha;
+                for(int rank=0;rank<size;++rank)
+                {
+                    set(rank);
+                    const mpq atemp = (indx-items)/async;
+                    if(r<0||atemp<alpha)
+                    {
+                        r     = rank;
+                        alpha = atemp;
+                    }
+                    std::cerr << "\t\t." << rank << "=>" << *this << std::endl;
+                }
+                set(r);
+                return alpha;
+            }
+            
+            inline mpq find_indx(const mpq &alpha)
+            {
+                int r=-1;
+                mpq indx;
+                for(int rank=0;rank<size;++rank)
+                {
+                    set(rank);
+                    const mpq itmp = items + alpha * async;
+                    if(r<0||itmp<indx)
+                    {
+                        r=rank;
+                        indx=itmp;
+                    }
+                }
+                set(r);
+                return indx;
+            }
             
         private:
             YOCTO_DISABLE_ASSIGN(task2d);
         };
         
-        template <typename T> static inline
-        void compute_new_time(const point2d<T> &width,
-                              const mpq        &N_old,
-                              const int         size)
+        template <typename T>
+        static inline
+        mpq find_alpha(const int              size,
+                       const point2d<T>      &width,
+                       const mpq             &indx)
         {
-            assert(size>1);
-            std::cerr << "N" << size-1 << "=" << N_old << std::endl;
-            mpq        alpha = -1;
-            point2d<T> sizes;
-            int        rank=-1;
-            bool       found=false;
-            
+            bool found = false;
+            mpq  alpha;
             for(int sx=1;sx<=size;++sx)
             {
                 for(int sy=1;sy<=size;++sy)
                 {
-                    // find valid sizes
                     if(sx*sy!=size) continue;
-                    const point2d<T> trial(sx,sy);
-                    std::cerr << "\ttrial=" << trial << std::endl;
-                    for(int r=0;r<size;++r)
+                    const point2d<T> sizes(sx,sy);
+                    std::cerr << "\tsizes=" << sizes << std::endl;
+                    task2d<T>        q(sizes,width);
+                    const mpq  atemp = q.find_alpha(indx);
+                    if(!found || atemp<alpha)
                     {
-                        const point2d<T> length = compute_length(r,trial,width);
-                        mpq work  = int(length.__prod());
-                        mpq async = 0;
-                        mpq lcopy = 0;
-                        if(trial.x>1)
-                        {
-                            async = length.y;
-                        }
-                        else
-                        {
-                            lcopy = length.y;
-                        }
-                        
-                        if(trial.y>1)
-                        {
-                            async = length.x;
-                        }
-                        else
-                        {
-                            lcopy = length.x;
-                        }
-                        std::cerr << "\t\trank=" << r << ", work=" << work << ", async=" << async << ", lcopy=" << lcopy << std::endl;
-                        mpq atemp = (N_old-work)/async;
-                        std::cerr << "\t\t\talpha=" << atemp << std::endl;
-                        if(!found||atemp<alpha)
-                        {
-                            found=true;
-                            alpha = atemp;
-                            sizes = trial;
-                            rank  = r;
-                        }
+                        found=true;
+                        alpha=atemp;
                     }
+                    
                 }
             }
-            std::cerr << "best=" << alpha << ", sizes=" << sizes << std::endl;
+            return alpha;
+        }
+        
+        template <typename T>
+        static inline
+        void find_task(const int         size,
+                            const point2d<T> &width,
+                            mpq              &indx,
+                            const mpq        &alpha)
+        {
+            bool       found = false;
+            point2d<T> split;
+            for(int sx=1;sx<=size;++sx)
+            {
+                for(int sy=1;sy<=size;++sy)
+                {
+                    if(sx*sy!=size) continue;
+                    const point2d<T> sizes(sx,sy);
+                    task2d<T>        q(sizes,width);
+                    const mpq        itmp = q.find_indx(alpha);
+                    std::cerr << "sizes=" << sizes << " => " << itmp << std::endl;
+                }
+            }
             
         }
+        
+        
         
         template <typename T> static inline
         point2d<T> compute_sizes(const int         size,
@@ -201,12 +293,17 @@ namespace yocto
                 std::cerr << "no split" << std::endl;
                 return point2d<T>(size,size);
             }
+            std::cerr << std::endl;
             
-            mpq N_old = width.__prod();
-            compute_new_time(width,N_old,2);
-            
-            
-            
+            mpq indx = int(width.__prod());
+            for(int sz=2;sz<=size;++sz)
+            {
+                std::cerr << "indx=" << indx << std::endl;
+                const mpq alpha = find_alpha(sz,width,indx);
+                std::cerr << "alpha" << sz <<" = " << alpha << std::endl;
+                find_task(sz,width,indx,alpha);
+                break;
+            }
             return point2d<T>();
         }
         

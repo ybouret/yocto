@@ -11,7 +11,7 @@ namespace
     {
         for(size_t sz=1;sz<=sz_max;++sz)
         {
-            if(sz==4||sz==9)
+            if(sz==4||sz==4)
             {
                 const point2d<T> map2d = mpi_split::compute_sizes(sz,layout);
                 std::cerr << "map2d=" << map2d << std::endl;
