@@ -35,13 +35,13 @@ namespace yocto
             explicit Field1D(const string      &id,
                              const layout_type &L,
                              const ghosts_type &G,
-                             void              *data_wksp = NULL):
+                             void              *E = NULL):
             field_type(id,L,G),
             count(0),
-            entry((type *)data_wksp),
+            entry((type *)E),
             shift(entry-this->outer.lower)
             {
-                if(!data_wksp)
+                if(!E)
                 {
                     count  = this->outer.items;
                     entry  = memory::kind<memory::global>::acquire_as<type>(count);

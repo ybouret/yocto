@@ -94,8 +94,8 @@ namespace yocto
 
 
             virtual size_t      item_size() const throw() { return sizeof(type); }
-            inline  type       *first() throw()       { return static_cast<type *>(this->base());       }
-            inline  const_type *first() const throw() { return static_cast<const_type *>(this->base()); }
+            inline  type       *first()           throw() { return static_cast<type *>(this->base());       }
+            inline  const_type *first()     const throw() { return static_cast<const_type *>(this->base()); }
 
             inline  type       *at(const size_t indx) throw()
             {

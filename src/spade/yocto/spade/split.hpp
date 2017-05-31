@@ -78,7 +78,7 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(In3D);
             };
 
-            //! x*y=cpus, y>=x, smallest distance to sqrt(cpus)
+            static coord1D DispatchCPUS(const Layout1D &L, const size_t cpus);
             static coord2D DispatchCPUs(const Layout2D &L, const size_t cpus);
             static coord3D DispatchCPUs(const Layout3D &L, const size_t cpus);
 

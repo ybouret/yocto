@@ -162,6 +162,12 @@ namespace yocto
 {
     namespace spade
     {
+        coord1D Split:: DispatchCPUS(const Layout1D &L, const size_t cpus)
+        {
+            assert(cpus>0);
+            return cpus;
+        }
+        
         coord2D Split:: DispatchCPUs(const Layout2D &L, const size_t cpus)
         {
             assert(cpus>0);
