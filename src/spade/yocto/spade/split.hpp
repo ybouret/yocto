@@ -82,7 +82,30 @@ namespace yocto
             static coord2D DispatchCPUs(const Layout2D &L, const size_t cpus);
             static coord3D DispatchCPUs(const Layout3D &L, const size_t cpus);
 
+            template <typename COORD>
+            struct For;
+            
         };
+        
+        template <>
+        struct Split::For<coord1D>
+        {
+            typedef Split::In1D Type;
+        };
+        
+        template <>
+        struct Split::For<coord2D>
+        {
+            typedef Split::In2D Type;
+        };
+        
+        template <>
+        struct Split::For<coord3D>
+        {
+            typedef Split::In3D Type;
+        };
+        
+        
     }
 }
 
