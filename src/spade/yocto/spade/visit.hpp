@@ -3,6 +3,7 @@
 
 #include "yocto/visit/interface.hpp"
 #include "yocto/spade/mesh/rectilinear.hpp"
+#include "yocto/spade/split.hpp"
 
 namespace yocto
 {
