@@ -51,6 +51,23 @@ namespace yocto
         return 0;
     }
     
+    template <typename T,size_t N>
+    inline int __lexicographic_dec_fwd(const void *lhs, const void *rhs) throw()
+    {
+        assert(lhs); assert(rhs);
+        const T *L = (const T *)lhs;
+        const T *R = (const T *)rhs;
+        for(size_t i=0;i<N;++i)
+        {
+            const T &l = L[i];
+            const T &r = R[i];
+            if(l<r) return  1;
+            if(r<l) return -1;
+        }
+        return 0;
+    }
+
+    
     
     
     template <typename T,size_t N>
