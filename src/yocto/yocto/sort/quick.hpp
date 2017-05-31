@@ -169,6 +169,15 @@ namespace yocto
     {
         co_qsort(arr,brr,__compare<T>);
     }
+
+    //! C-style sorting
+    template<typename T,typename FUNC>
+    inline void quicksort( T *a, size_t n, FUNC &compare )
+    {
+        lw_array<T> A(a,n);
+        quicksort<T,FUNC>(A,compare);
+    }
+    
 }
 
 #endif

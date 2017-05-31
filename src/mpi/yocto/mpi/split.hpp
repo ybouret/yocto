@@ -484,7 +484,7 @@ namespace yocto
                 // same cost and and same lcopy, split along largest last dim
                 assert(lhs->lcopy==rhs->lcopy);
                 
-                return __compare_decreasing(lhs->sizes.y,rhs->sizes.y);
+                return __lexicographic_dec_rev<T,2>(&(lhs->sizes),&(rhs->sizes));
             }
             
             inline static int compare_costs3d( const pointer &lhs, const pointer &rhs) throw()
@@ -501,7 +501,7 @@ namespace yocto
                 // same cost and and same lcopy, split along largest last dim
                 assert(lhs->lcopy==rhs->lcopy);
                 
-                return __compare_decreasing(lhs->sizes.z,rhs->sizes.z);
+                return __lexicographic_dec_rev<T,3>(&(lhs->sizes),&(rhs->sizes));
             }
 
             

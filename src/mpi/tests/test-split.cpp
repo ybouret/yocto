@@ -96,6 +96,8 @@ YOCTO_UNIT_TEST_IMPL(split)
         }
     }
     
+    //return 0;
+    
     std::cerr << "Testing Auto Split 3D" << std::endl;
     {
         const size_t sz_max = 8;
@@ -104,6 +106,7 @@ YOCTO_UNIT_TEST_IMPL(split)
             test_split(l3d_sq,sz_max);
         }
     }
+    
     
     
     
