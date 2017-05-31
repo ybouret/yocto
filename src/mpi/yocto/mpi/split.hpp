@@ -189,7 +189,7 @@ namespace yocto
             
             inline explicit partition(const point_t &s, const point_t &w) :
             sizes(s), width(w), size( sizes.__prod() ), full( width.__prod() ),
-            rank(-1), items(), async(), lcopy(), cost()
+            rank(-1), items(), async(), lcopy(), alpha(), cost()
             {
             }
             

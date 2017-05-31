@@ -25,7 +25,7 @@ namespace yocto
                 const size_t size;
 
                 explicit In1D(const Layout1D &full,
-                              const size_t    ncpu);
+                              const coord1D   ncpu);
                 virtual ~In1D() throw();
 
                 Layout1D operator()(const coord1D rank) const;
@@ -42,8 +42,7 @@ namespace yocto
                 const size_t  size;
 
                 explicit In2D(const Layout2D &full,
-                              const size_t    xcpu,
-                              const size_t    ycpu);
+                              const coord2D   cpus);
                 virtual ~In2D() throw();
 
                 Layout2D operator()(const coord1D rank) const;
@@ -66,9 +65,7 @@ namespace yocto
                 const size_t  size;
 
                 explicit In3D(const Layout3D &full,
-                              const size_t    xcpu,
-                              const size_t    ycpu,
-                              const size_t    zcpu);
+                              const coord3D   cpus);
                 virtual ~In3D() throw();
 
                 //! get ranks for rank<size

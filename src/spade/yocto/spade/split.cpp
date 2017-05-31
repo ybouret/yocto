@@ -40,11 +40,11 @@ namespace yocto
     namespace spade
     {
         
-        Split::In1D:: In1D(const Layout1D &full, const size_t ncpu):
+        Split::In1D:: In1D(const Layout1D &full, const coord1D ncpu):
         Layout1D(full),
-        size(max_of<size_t>(1,ncpu))
+        size(max_of<coord1D>(1,ncpu))
         {
-            if(size>size_t(full.width))
+            if(size>full.width)
                 throw exception("spade.split.in1d: too many domains");
         }
         
@@ -73,10 +73,9 @@ namespace yocto
     {
         
         Split::In2D:: In2D(const Layout2D &full,
-                           const size_t    xcpu,
-                           const size_t    ycpu) :
+                           const coord2D   cpus) :
         Layout2D(full),
-        sizes(max_of<coord1D>(xcpu,1),max_of<coord1D>(ycpu,1)),
+        sizes(max_of<coord1D>(cpus.x,1),max_of<coord1D>(cpus.y,1)),
         size(sizes.x*sizes.y)
         {
             if(sizes.x>full.width.x) throw exception("spade.split.in2d: too many X domains");
@@ -120,11 +119,9 @@ namespace yocto
     namespace spade
     {
         Split::In3D::In3D(const Layout3D &full,
-                          const size_t    xcpu,
-                          const size_t    ycpu,
-                          const size_t    zcpu) :
+                          const coord3D   cpus) :
         Layout3D(full),
-        sizes(max_of<coord1D>(xcpu,1),max_of<coord1D>(ycpu,1),max_of<coord1D>(zcpu,1)),
+        sizes(max_of<coord1D>(cpus.x,1),max_of<coord1D>(cpus.y,1),max_of<coord1D>(cpus.z,1)),
         zcof(sizes.x*sizes.y),
         size(zcof*sizes.z)
         {

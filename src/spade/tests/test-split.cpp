@@ -31,7 +31,7 @@ YOCTO_UNIT_TEST_IMPL(split)
 
                 const size_t nn = nx*ny;
                 std::cerr << "nx=" << nx << ", ny=" << ny << ", nn=" << nn << std::endl;
-                const Split::In2D in2D(full,nx,ny);
+                const Split::In2D in2D(full,coord2D(nx,ny));
                 for(size_t r=0;r<nn;++r)
                 {
                     const Layout2D sub = in2D(r);
@@ -41,7 +41,6 @@ YOCTO_UNIT_TEST_IMPL(split)
         }
     }
     
-    return 0;
 
     {
         Layout3D full( coord3D(1,1,1), coord3D(100,100,100) );
@@ -54,7 +53,7 @@ YOCTO_UNIT_TEST_IMPL(split)
                 {
                     const size_t nn = nx*ny*nz;
                     std::cerr << "nx=" << nx << ", ny=" << ny << ", nz=" << nz << ", nn=" << nn << std::endl;
-                    const Split::In3D in3D(full,nx,ny,nz);
+                    const Split::In3D in3D(full,coord3D(nx,ny,nz));
                     for(size_t r=0;r<nn;++r)
                     {
                         const coord3D ranks = in3D.getRanks(r);
