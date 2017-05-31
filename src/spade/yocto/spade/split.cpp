@@ -44,7 +44,7 @@ namespace yocto
         Layout1D(full),
         size(max_of<coord1D>(1,ncpu))
         {
-            if(size>full.width)
+            if(size>size_t(full.width))
                 throw exception("spade.split.in1d: too many domains");
         }
         
