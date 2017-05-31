@@ -217,8 +217,38 @@ namespace yocto
                     }
                 }
                 if(parts.size()<=0)
+                    throw exception("split2d: no possible partitions"); // TODO: change
+            }
+            
+            //__________________________________________________________________
+            //
+            //! gather all possible partitions, checking sizes/width
+            //__________________________________________________________________
+            static inline
+            void build3d( const int C, const point_t &w, sequence<pointer> &parts)
+            {
+                assert(C>=2);
+                parts.free();
+                for(int sx=1;sx<=C;++sx)
+                {
+                    for(int sy=1;sy<=C;++sy)
+                    {
+                        for(int sz=1;sz<=C;++sz)
+                        {
+                            if(C!=sx*sy*sz) continue;
+                            const point_t s(sx,sy,sz);
+                            if(s.x>w.x) continue;
+                            if(s.y>w.y) continue;
+                            if(s.z>w.z) continue;
+                            const pointer ptr(new partition(s,w) );
+                            parts.push_back(ptr);
+                        }
+                    }
+                }
+                if(parts.size()<=0)
                     throw exception("no possible partitions"); // TODO: change
             }
+
             
             //__________________________________________________________________
             //
@@ -235,7 +265,7 @@ namespace yocto
             
             //__________________________________________________________________
             //
-            //! compute local domain specs
+            //! compute local domain specs, 2D
             //__________________________________________________________________
             inline void set_domain2d(const int r)
             {
@@ -274,6 +304,65 @@ namespace yocto
             
             //__________________________________________________________________
             //
+            //! compute local domain specs, 3D
+            //__________________________________________________________________
+            inline void set_domain3d(const int r)
+            {
+                assert(r<size);
+                try
+                {
+                    reset();
+                    rank = r;
+                    const point_t length = compute_length(r,sizes,width);
+                    items = int(length.__prod());
+                    {
+                        const int yz = int(length.y*length.z);
+                        if(sizes.x>1)
+                        {
+                            async += yz;
+                        }
+                        else
+                        {
+                            lcopy += yz;
+                        }
+                    }
+                    
+                    
+                    {
+                        const int xz = int(length.x*length.z);
+                        if(sizes.y>1)
+                        {
+                            async += xz;
+                        }
+                        else
+                        {
+                            lcopy += xz;
+                        }
+                    }
+                    
+                    {
+                        const int xy = int(length.x*length.y);
+                        if(sizes.z>1)
+                        {
+                            async += xy;
+                        }
+                        else
+                        {
+                            lcopy += xy;
+                        }
+                    }
+                    
+                }
+                catch(...)
+                {
+                    reset();
+                    throw;
+                }
+            }
+
+            
+            //__________________________________________________________________
+            //
             // after a set_domain
             //__________________________________________________________________
             inline mpq __alpha() const {  return (full-items)/async; }
@@ -281,7 +370,7 @@ namespace yocto
             
             //__________________________________________________________________
             //
-            //! find alpha such that all compute time < full
+            //! find alpha such that all compute time < full, 2D
             //__________________________________________________________________
             inline void  set_alpha2d()
             {
@@ -301,7 +390,28 @@ namespace yocto
             
             //__________________________________________________________________
             //
-            //! find the highest cost, and associated domain
+            //! find alpha such that all compute time < full, 3D
+            //__________________________________________________________________
+            inline void  set_alpha3d()
+            {
+                alpha.ldz();
+                bool found = false;
+                for(int r=0;r<size;++r)
+                {
+                    set_domain3d(r);
+                    const mpq atemp = __alpha();
+                    if(!found||atemp<alpha)
+                    {
+                        found = true;
+                        alpha = atemp;
+                    }
+                }
+            }
+
+            
+            //__________________________________________________________________
+            //
+            //! find the highest cost, and associated domain, 2D
             //__________________________________________________________________
             inline void cost2d()
             {
@@ -322,6 +432,32 @@ namespace yocto
                 assert(ropt<size);
                 set_domain2d(ropt);
             }
+            
+            //__________________________________________________________________
+            //
+            //! find the highest cost, and associated domain, 3D
+            //__________________________________________________________________
+            inline void cost3d()
+            {
+                cost.ldz();
+                int ropt=-1;
+                for(int r=0;r<size;++r)
+                {
+                    (void)set_domain3d(r);
+                    const mpq ctmp = items + alpha * async;
+                    if(ctmp>cost)
+                    {
+                        cost = ctmp;
+                        ropt = r;
+                    }
+                }
+                // set associated domain
+                assert(ropt>=0);
+                assert(ropt<size);
+                set_domain3d(ropt);
+            }
+
+            
             
             inline friend std::ostream & operator<<( std::ostream &os, const partition &p )
             {
@@ -351,6 +487,24 @@ namespace yocto
                 return __compare_decreasing(lhs->sizes.y,rhs->sizes.y);
             }
             
+            inline static int compare_costs3d( const pointer &lhs, const pointer &rhs) throw()
+            {
+                // cost major
+                if(lhs->cost<rhs->cost) return -1;
+                if(rhs->cost<lhs->cost) return  1;
+                
+                // same cost, check lcopy
+                assert(lhs->cost==rhs->cost);
+                if(lhs->lcopy<rhs->lcopy) return -1;
+                if(rhs->lcopy<lhs->lcopy) return  1;
+                
+                // same cost and and same lcopy, split along largest last dim
+                assert(lhs->lcopy==rhs->lcopy);
+                
+                return __compare_decreasing(lhs->sizes.z,rhs->sizes.z);
+            }
+
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
         };
@@ -371,13 +525,12 @@ namespace yocto
             //
             // start algorithm, get rid of trivial cases
             //__________________________________________________________________
-            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << ":";
+            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << ":" << std::endl;
             if(size<=1)
             {
                 std::cerr << "no split" << std::endl;
                 return point2d<T>(size,size);
             }
-            std::cerr << std::endl;
             
             //__________________________________________________________________
             //
@@ -425,55 +578,52 @@ namespace yocto
             assert(width.x>0);
             assert(width.y>0);
             assert(width.z>0);
-            
-            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << std::endl;
+            typedef partition<T,point3d>     part_t;
+            typedef typename part_t::pointer part_p;
+            //__________________________________________________________________
+            //
+            // start algorithm, get rid of trivial cases
+            //__________________________________________________________________
+            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << ":" << std::endl;
+            if(size<=1)
+            {
+                std::cerr << "no split" << std::endl;
+                return point3d<T>(size,size,size);
+            }
             
             //__________________________________________________________________
             //
-            // find all partitions
+            // compute partitions, and set alpha from domains
             //__________________________________________________________________
-            for(int sx=1;sx<=size;++sx)
+            vector<part_p> parts(size,as_capacity);
+            part_t::build3d(size,width,parts);
+            for(size_t i=1;i<=parts.size();++i)
             {
-                const bool async_x = (sx>1);
-                for(int sy=1;sy<=size;++sy)
-                {
-                    const bool async_y = (sy>1);
-                    for(int sz=1;sz<=size;++sz)
-                    {
-                        // find valid sizes
-                        if(sx*sy*sz!=size) continue;
-                        const bool       async_z = (sz>1);
-                        const point3d<T> sizes(sx,sy,sz);
-                        std::cerr << "-- " << sizes << std::endl;
-                        // loop over all ranks
-                        size_t max_work = 0;
-                        size_t num_coms = 0;
-                        for(int rank=0;rank<size;++rank)
-                        {
-                            point3d<T> offset(1,1,1);
-                            point3d<T> length(width);
-                            perform(rank,sizes,offset,length);
-                            const size_t local_work = size_t(length.__prod());
-                            max_work  = max_of(local_work,max_work);
-                            if(async_x)
-                            {
-                                num_coms += size_t(length.y)*size_t(length.z);
-                            }
-                            if(async_y)
-                            {
-                                num_coms += size_t(length.x)*size_t(length.z);
-                            }
-                            if(async_z)
-                            {
-                                num_coms += size_t(length.x)*size_t(length.y);
-                            }
-                        }
-                        std::cerr << "\tmax_work = " << max_work << std::endl;
-                        std::cerr << "\tnum_coms = " << num_coms << std::endl;
-                    }
-                }
+                //std::cerr << parts[i] << std::endl;
+                parts[i]->set_alpha3d();
             }
-            return point3d<T>();
+            //std::cerr << "SORTING/ALPHA" << std::endl;
+            quicksort(parts,part_t::compare_alpha);
+            const mpq alpha = parts[1]->alpha;
+            std::cerr << "\talpha=" << alpha.to_double() << std::endl;
+            
+            //__________________________________________________________________
+            //
+            // set alpha for partitions, and compute cost
+            //__________________________________________________________________
+            for(size_t i=1;i<=parts.size();++i)
+            {
+                parts[i]->alpha = alpha;
+                parts[i]->cost3d();
+            }
+            c_shuffle(parts(),parts.size());
+            quicksort(parts,part_t::compare_costs3d);
+            for(size_t i=1;i<=parts.size();++i)
+            {
+                const part_t &p = *parts[i];
+                std::cerr << p << " => " << parts[i]->cost.to_double() << " (items=" << p.items << ",async=" << p.async << ",lcopy=" << p.lcopy <<")" << std::endl;
+            }
+            return parts[1]->sizes;
         }
         
         

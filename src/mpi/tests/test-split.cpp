@@ -19,6 +19,22 @@ namespace
             }
         }
     }
+    
+    template <typename T>
+    static inline
+    void test_split( const point3d<T> &layout, const size_t sz_max)
+    {
+        std::cerr << std::endl;
+        for(size_t sz=1;sz<=sz_max;++sz)
+        {
+            //if(sz==4||sz==9)
+            {
+                const point3d<T> map3d = mpi_split::compute_sizes(sz,layout);
+                std::cerr << "map3d=" << map3d << std::endl;
+            }
+        }
+    }
+
 }
 
 YOCTO_UNIT_TEST_IMPL(split)
@@ -32,7 +48,7 @@ YOCTO_UNIT_TEST_IMPL(split)
             // 2D
             {
                 const int size = sx * sy;
-               
+                
                 const point2d<long> sizes(sx,sy);
                 std::cerr << "sizes=" << sizes << ", size=" << size << std::endl;
                 for(int rank=0;rank<size;++rank)
@@ -60,28 +76,36 @@ YOCTO_UNIT_TEST_IMPL(split)
             }
         }
     }
-
-    std::cerr << "Testing Auto Split" << std::endl;
-
-    const size_t sz_max = 9;
-    {
-        point2d<int>  l2d_sq(100,100);
-        test_split(l2d_sq,sz_max);
-    }
-
-    //return 0;
     
+    std::cerr << "Testing Auto Split 2D" << std::endl;
     {
-        point2d<long> l2d_xmajor(100,80);
-        test_split(l2d_xmajor,sz_max);
+        const size_t sz_max = 9;
+        {
+            point2d<int>  l2d_sq(100,100);
+            test_split(l2d_sq,sz_max);
+        }
+        
+        {
+            point2d<long> l2d_xmajor(100,80);
+            test_split(l2d_xmajor,sz_max);
+        }
+        
+        {
+            point2d<short> l2d_ymajor(80,100);
+            test_split(l2d_ymajor,sz_max);
+        }
     }
-
+    
+    std::cerr << "Testing Auto Split 3D" << std::endl;
     {
-        point2d<short> l2d_ymajor(80,100);
-        test_split(l2d_ymajor,sz_max);
+        const size_t sz_max = 8;
+        {
+            point3d<int>  l3d_sq(100,100,100);
+            test_split(l3d_sq,sz_max);
+        }
     }
-
-
-
+    
+    
+    
 }
 YOCTO_UNIT_TEST_DONE()
