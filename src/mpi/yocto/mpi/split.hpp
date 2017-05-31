@@ -9,6 +9,8 @@
 #include "yocto/sort/quick.hpp"
 #include "yocto/code/rand.hpp"
 #include "yocto/mpl/rational.hpp"
+#include "yocto/counted-object.hpp"
+#include "yocto/ptr/arc.hpp"
 
 #include <cmath>
 #include <cstdlib>
@@ -45,7 +47,7 @@ namespace yocto
         //______________________________________________________________________
         //
         //
-        // 2D API
+        // 2D API for ranks and split
         //
         //______________________________________________________________________
         
@@ -87,6 +89,86 @@ namespace yocto
             perform(ranks.y,sizes.y,offset.y,length.y);
         }
         
+        
+        //______________________________________________________________________
+        //
+        //
+        // 3D API for ranks and split
+        //
+        //______________________________________________________________________
+        
+        //! rank = ranks.x + sizes.x * rank.y + sizes.x * sizes.y * rank.z;
+        /**
+         rank = ranks.x + sizes.x * (rank.y+sizes.y*rank.z)
+         */
+        template <typename T> static inline
+        point3d<T> local_ranks(const int         rank,
+                               const point3d<T> &sizes) throw()
+        {
+            assert(rank>=0);
+            assert(sizes.x>0);
+            assert(sizes.y>0);
+            assert(sizes.z>0);
+            assert(rank<sizes.x*sizes.y*sizes.z);
+            const ldiv_t dx  = ldiv(rank,sizes.x);
+            const T      rx(dx.rem);
+            const ldiv_t dy  = ldiv(dx.quot,sizes.y);
+            const T      ry(dy.rem);
+            const T      rz(dy.quot);
+            return point3d<T>(rx,ry,rz);
+        }
+        
+        //!  rank = ranks.x + sizes.x * (rank.y+sizes.y*rank.z)
+        template <typename T> static inline
+        int get_rank_of(const point3d<T> &ranks,
+                        const point3d<T> &sizes) throw()
+        {
+            assert(ranks.x>=0);
+            assert(ranks.y>=0);
+            assert(ranks.x<sizes.x);
+            assert(ranks.y<sizes.y);
+            assert(ranks.z<sizes.z);
+            
+            return ranks.x + sizes.x*(ranks.y + sizes.y*ranks.z);
+        }
+        
+        template <typename T> static inline
+        void perform(const int         rank,
+                     const point3d<T> &sizes,
+                     point3d<T>       &offset,
+                     point3d<T>       &length) throw()
+        {
+            const point3d<T> ranks = local_ranks(rank,sizes);
+            perform(ranks.x,sizes.x,offset.x,length.x);
+            perform(ranks.y,sizes.y,offset.y,length.y);
+            perform(ranks.z,sizes.z,offset.z,length.z);
+        }
+        
+        //______________________________________________________________________
+        //
+        //
+        // helpers
+        //
+        //______________________________________________________________________
+        
+        template <typename T, template <typename> class POINT >
+        static inline
+        POINT<T> compute_length(const int       rank,
+                                const POINT<T> &sizes,
+                                const POINT<T> &width)
+        {
+            POINT<T> length(width);
+            POINT<T> offset;
+            {
+                T *v = (T *)&offset;
+                for(size_t i=0;i<sizeof(POINT<T>)/sizeof(T);++i)
+                    v[i] = 1;
+            }
+            perform(rank,sizes,offset,length);
+            return length;
+        }
+        
+#if 0
         template <typename T> static inline
         point2d<T> compute_length(const int         rank,
                                   const point2d<T> &sizes,
@@ -273,7 +355,141 @@ namespace yocto
             
         }
         
+#endif
         
+        template <typename T, template <typename> class POINT >
+        class partition : public counted_object
+        {
+        public:
+            typedef POINT<T>           point_t;
+            typedef arc_ptr<partition> pointer;
+            
+            const point_t sizes; //!< partition sizes
+            const point_t width; //!< original width
+            const int     size;  //!< size product
+            const mpq     full;  //!< width product
+
+            int           rank;
+            mpq           items;
+            mpq           async;
+            mpq           lcopy;
+            mpq           alpha;
+            mpq           cost;
+            
+            
+            inline explicit partition(const point_t &s, const point_t &w) :
+            sizes(s), width(w), size( sizes.__prod() ), full( width.__prod() ),
+            rank(-1), items(), async(), lcopy(), cost()
+            {
+            }
+            
+            static inline
+            void build2d( const int C, const point_t &w, sequence<pointer> &parts)
+            {
+                assert(C>=2);
+                parts.free();
+                for(int sx=1;sx<=C;++sx)
+                {
+                    for(int sy=1;sy<=C;++sy)
+                    {
+                        if(C!=sx*sy) continue;
+                        const point_t s(sx,sy);
+                        if(s.x>w.x) continue;
+                        if(s.y>w.y) continue;
+                        const pointer ptr(new partition(s,w) );
+                        parts.push_back(ptr);
+                    }
+                }
+                if(parts.size()<=0)
+                    throw exception("no possible partitions"); // TODO: change
+            }
+            
+            inline void reset() throw()
+            {
+                rank=-1;
+                items.ldz();
+                async.ldz();
+                lcopy.ldz();
+            }
+            
+            inline mpq set2d(const int r)
+            {
+                assert(r<size);
+                try
+                {
+                    reset();
+                    rank = r;
+                    const point_t length = compute_length(r,sizes,width);
+                    items = int(length.__prod());
+                    if(sizes.x>1)
+                    {
+                        async += int(length.y);
+                    }
+                    else
+                    {
+                        lcopy += int(length.y);
+                    }
+                    
+                    if(sizes.y>1)
+                    {
+                        async += int(length.x);
+                    }
+                    else
+                    {
+                        lcopy += int(length.x);
+                    }
+                    
+                }
+                catch(...)
+                {
+                    reset();
+                    throw;
+                }
+                std::cerr << "\t." << rank << "(items=" << items << ",async=" << async << ",lcopy=" << lcopy <<")" << std::endl;
+                return (full-items)/async;
+            }
+            
+            //! find alpha such that all compute time < full
+            inline void  set_alpha2d()
+            {
+                alpha.ldz();
+                bool found = false;
+                for(int r=0;r<size;++r)
+                {
+                    const mpq atemp = set2d(r);
+                    if(!found||atemp<alpha)
+                    {
+                        found = true;
+                        alpha = atemp;
+                    }
+                }
+            }
+            
+            inline void cost2d()
+            {
+                cost.ldz();
+                for(int r=0;r<size;++r)
+                {
+                    set2d(r);
+                    const mpq ctmp = items + alpha * async;
+                    if(ctmp>cost) cost = ctmp;
+                }
+            }
+            
+            inline friend std::ostream & operator<<( std::ostream &os, const partition &p )
+            {
+                os << "#" << p.size << ":" << p.sizes << "/" << p.width;
+                return os;
+            }
+            
+            inline static int compare_alpha( const pointer &lhs, const pointer &rhs ) throw()
+            {
+                return __compare<mpq>(lhs->alpha,rhs->alpha);
+            }
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
+        };
         
         template <typename T> static inline
         point2d<T> compute_sizes(const int         size,
@@ -282,6 +498,8 @@ namespace yocto
             
             assert(width.x>0);
             assert(width.y>0);
+            typedef partition<T,point2d>     part_t;
+            typedef typename part_t::pointer part_p;
             
             //__________________________________________________________________
             //
@@ -294,317 +512,32 @@ namespace yocto
                 return point2d<T>(size,size);
             }
             std::cerr << std::endl;
-            
-            mpq indx = int(width.__prod());
-            for(int sz=2;sz<=size;++sz)
+            vector<part_p> parts(size,as_capacity);
+            part_t::build2d(size,width,parts);
+            for(size_t i=1;i<=parts.size();++i)
             {
-                std::cerr << "indx=" << indx << std::endl;
-                const mpq alpha = find_alpha(sz,width,indx);
-                std::cerr << "alpha" << sz <<" = " << alpha << std::endl;
-                find_task(sz,width,indx,alpha);
-                break;
+                std::cerr << parts[i] << std::endl;
+                parts[i]->set_alpha2d();
+                std::cerr << "\t\talpha=" << parts[i]->alpha << std::endl;
+                //const mpq &cost = parts[i]->compute_cost(
             }
+            std::cerr << "SORTING/ALPHA" << std::endl;
+            quicksort(parts,part_t::compare_alpha);
+            const mpq alpha = parts[1]->alpha;
+            std::cerr << "\tALPHA=" << alpha.to_double() << std::endl;
+            for(size_t i=1;i<=parts.size();++i)
+            {
+                parts[i]->alpha = alpha;
+                parts[i]->cost2d();
+                std::cerr << parts[i] << std::endl;
+                std::cerr << "\t\tcost=" << parts[i]->cost << std::endl;
+            }
+            
             return point2d<T>();
         }
         
-#if 0
-        class task
-        {
-        public:
-            size_t items;
-            size_t async;
-            size_t lcopy;
-            word_t indx;
-            inline task() throw() : items(0), async(0), lcopy(0), indx(0) {}
-            inline task(const task &other) throw() : items(other.items), async(other.async), lcopy(other.lcopy), indx(other.indx) {}
-            inline virtual ~task() throw() {}
-            
-            inline void set_index(const size_t num, const size_t den)   throw()
-            {
-                indx = word_t(den) * word_t(items) + word_t(num) * word_t(async);
-            }
-            
-        private:
-            YOCTO_DISABLE_ASSIGN(task);
-        };
-        
-        template <typename T>
-        class task2d : public task
-        {
-        public:
-            const point2d<T> sizes;
-            const point2d<T> width;
-            const int        size; //!< sizes.__prod
-            
-            inline task2d(const point2d<T> &s,const point2d<T> &w) throw() :
-            task(),
-            sizes(s),
-            width(w),
-            size( sizes.__prod() )
-            {
-            }
-            
-            inline task2d(const task2d &other) throw() : task(other), sizes(other.sizes), width(other.width), size(other.size) {}
-            inline virtual ~task2d() throw() {}
-            
-            inline void set_from(const int rank) throw()
-            {
-                
-                assert(rank>=0);
-                assert(rank<size);
-                assert(sizes.x>0);
-                assert(sizes.y>0);
-                
-                point2d<T> offset(1,1);
-                point2d<T> length(width);
-                perform(rank,sizes,offset,length);
-                items = size_t( length.__prod() );
-                async = 0;
-                lcopy = 0;
-                if(sizes.x>1)
-                {
-                    async += size_t(length.y);
-                }
-                else
-                {
-                    lcopy += size_t(length.y);
-                }
-                if(sizes.y>1)
-                {
-                    async += size_t(length.x);
-                }
-                else
-                {
-                    lcopy += size_t(length.x);
-                }
-            }
-            
-            inline void max_from(const size_t num, const size_t den) throw()
-            {
-                assert(size==int(sizes.__prod()));
-                items = async = lcopy = 0;
-                indx  = 0;
-                task2d sub(*this);
-                for(int rank=0;rank<size;++rank)
-                {
-                    sub.set_from(rank);
-                    sub.set_index(num,den);
-                    if(sub.indx>indx)
-                    {
-                        items = sub.items;
-                        async = sub.async;
-                        lcopy = sub.lcopy;
-                        indx  = sub.indx;
-                    }
-                }
-            }
-            
-            
-            // compare by index then preferential direction
-            static int compare(const task2d &lhs, const task2d &rhs)
-            {
-                assert(lhs.width==rhs.width);
-                if(lhs.indx<rhs.indx)
-                {
-                    return -1;
-                }
-                else
-                {
-                    if(rhs.indx<lhs.indx)
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        const point2d<T> &w = lhs.width;
-                        if(w.y>=w.x)
-                        {
-                            return int(rhs.sizes.y)-int(lhs.sizes.y);
-                        }
-                        else
-                        {
-                            return int(rhs.sizes.x)-int(lhs.sizes.x);
-                        }
-                    }
-                }
-            }
-            
-            inline friend std::ostream & operator<<( std::ostream &os, const task2d &t)
-            {
-                os << t.sizes << " => " << t.indx << "\t(items=" << t.items << ",async=" << t.async << ",lcopy=" << t.lcopy << ")";
-                return os;
-            }
-            
-        private:
-            YOCTO_DISABLE_ASSIGN(task2d);
-        };
         
         
-        
-        template <typename T> static inline
-        point2d<T> compute_sizes(const int         size,
-                                 const point2d<T> &width)
-        {
-            
-            assert(width.x>0);
-            assert(width.y>0);
-            
-            //__________________________________________________________________
-            //
-            // start algorithm, get rid of trivial cases
-            //__________________________________________________________________
-            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << " => ";
-            if(size<=1)
-            {
-                std::cerr << "no split" << std::endl;
-                return point2d<T>(size,size);
-            }
-            
-            
-            //__________________________________________________________________
-            //
-            // compute total work load
-            //__________________________________________________________________
-            const point2d<T>  seq(1,1);
-            task2d<T>         all(seq,width); all.items = width.__prod();
-            
-            //__________________________________________________________________
-            //
-            // take the linear splitting...
-            //__________________________________________________________________
-            const point2d<T>  x_split(size,1);
-            const point2d<T>  y_split(1,size);
-            const point2d<T> *r_split = 0;
-            if(width.y>=width.x)
-            {
-                std::cerr << "reference: splitting along y" << std::endl;
-                if(y_split.y>width.y) throw exception("mpi_split: too many domains, even for greatest dimension Y");
-                r_split = &y_split;
-            }
-            else
-            {
-                std::cerr << "\treference: splitting along x" << std::endl;
-                if(x_split.x>width.x) throw exception("mpi_split: too many domains, even for greatest dimension X");
-                r_split = &x_split;
-            }
-            //__________________________________________________________________
-            //
-            // ...and make of it the reference splitting
-            //__________________________________________________________________
-            task2d<T> ref(*r_split,width);
-            
-            //__________________________________________________________________
-            //
-            // if we choose #cpu=size, it's because we think
-            // that it is faster than (size-1) compute engines !
-            // so we find alpha such that
-            // sub.items + alpha * sub.async <= all.items/(size-1)
-            //__________________________________________________________________
-            const size_t count = size-1;
-            size_t alpha_num = 0;
-            size_t alpha_den = 0;
-            {
-                double alpha = -1;
-                for(int rank=0;rank<size;++rank)
-                {
-                    ref.set_from(rank);
-                    const size_t anum = all.items - count * ref.items;
-                    const size_t aden = count * ref.async;
-                    const double atmp = double(anum)/aden;
-                    if( (alpha<0) || (atmp<alpha) )
-                    {
-                        alpha_num = anum;
-                        alpha_den = aden;
-                        alpha     = atmp;
-                    }
-                }
-            }
-            
-            //__________________________________________________________________
-            //
-            // we now study all possible partitions
-            //__________________________________________________________________
-            vector< task2d<T> > tasks(size,as_capacity);
-            for(int sx=1;sx<=size;++sx)
-            {
-                for(int sy=1;sy<=size;++sy)
-                {
-                    // find valid sizes
-                    if(sx*sy!=size) continue;
-                    const point2d<T> trial(sx,sy);
-                    task2d<T>        sub(trial,width);
-                    sub.max_from(alpha_num,alpha_den);
-                    tasks.push_back(sub);
-                }
-            }
-            
-            //__________________________________________________________________
-            //
-            // and rank them
-            //__________________________________________________________________
-            quicksort(tasks,task2d<T>::compare);
-            for(size_t i=1;i<=tasks.size();++i)
-            {
-                std::cerr << "\t" << tasks[i] << std::endl;
-            }
-            return tasks[1].sizes;
-        }
-#endif
-        
-        
-        //______________________________________________________________________
-        //
-        //
-        // 3D API
-        //
-        //______________________________________________________________________
-        
-        //! rank = ranks.x + sizes.x * rank.y + sizes.x * sizes.y * rank.z;
-        /**
-         rank = ranks.x + sizes.x * (rank.y+sizes.y*rank.z)
-         */
-        template <typename T> static inline
-        point3d<T> local_ranks(const int         rank,
-                               const point3d<T> &sizes) throw()
-        {
-            assert(rank>=0);
-            assert(sizes.x>0);
-            assert(sizes.y>0);
-            assert(sizes.z>0);
-            assert(rank<sizes.x*sizes.y*sizes.z);
-            const ldiv_t dx  = ldiv(rank,sizes.x);
-            const T      rx(dx.rem);
-            const ldiv_t dy  = ldiv(dx.quot,sizes.y);
-            const T      ry(dy.rem);
-            const T      rz(dy.quot);
-            return point3d<T>(rx,ry,rz);
-        }
-        
-        //!  rank = ranks.x + sizes.x * (rank.y+sizes.y*rank.z)
-        template <typename T> static inline
-        int get_rank_of(const point3d<T> &ranks,
-                        const point3d<T> &sizes) throw()
-        {
-            assert(ranks.x>=0);
-            assert(ranks.y>=0);
-            assert(ranks.x<sizes.x);
-            assert(ranks.y<sizes.y);
-            assert(ranks.z<sizes.z);
-            
-            return ranks.x + sizes.x*(ranks.y + sizes.y*ranks.z);
-        }
-        
-        template <typename T> static inline
-        void perform(const int         rank,
-                     const point3d<T> &sizes,
-                     point3d<T>       &offset,
-                     point3d<T>       &length) throw()
-        {
-            const point3d<T> ranks = local_ranks(rank,sizes);
-            perform(ranks.x,sizes.x,offset.x,length.x);
-            perform(ranks.y,sizes.y,offset.y,length.y);
-            perform(ranks.z,sizes.z,offset.z,length.z);
-        }
         
         template <typename T> static inline
         point3d<T> compute_sizes(const int         size,

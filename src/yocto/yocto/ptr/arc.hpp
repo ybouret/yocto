@@ -2,6 +2,7 @@
 #define YOCTO_POINTER_ARC_INCLUDED 1
 
 #include "yocto/type/args.hpp"
+#include <iosfwd>
 
 namespace yocto
 {
@@ -74,6 +75,11 @@ namespace yocto
             pointee_          = tmp;
         }
         
+        inline friend std::ostream & operator<<( std::ostream &os, const arc_ptr &p)
+        {
+            os << *p;
+            return os;
+        }
 		
 	private:
 		mutable_type *pointee_;
