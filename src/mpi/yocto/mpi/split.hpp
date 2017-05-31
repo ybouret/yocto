@@ -410,7 +410,7 @@ namespace yocto
             for(size_t i=1;i<=parts.size();++i)
             {
                 const part_t &p = *parts[i];
-                std::cerr << p << " => " << parts[i]->cost << " (items=" << p.items << ",async=" << p.async << ",lcopy=" << p.lcopy <<")" << std::endl;
+                std::cerr << p << " => " << parts[i]->cost.to_double() << " (items=" << p.items << ",async=" << p.async << ",lcopy=" << p.lcopy <<")" << std::endl;
             }
             return parts[1]->sizes;
         }
