@@ -9,9 +9,10 @@ namespace
     static inline
     void test_split( const point2d<T> &layout, const size_t sz_max)
     {
+        std::cerr << std::endl;
         for(size_t sz=1;sz<=sz_max;++sz)
         {
-            if(sz==4||sz==9)
+            //if(sz==4||sz==9)
             {
                 const point2d<T> map2d = mpi_split::compute_sizes(sz,layout);
                 std::cerr << "map2d=" << map2d << std::endl;
@@ -68,7 +69,7 @@ YOCTO_UNIT_TEST_IMPL(split)
         test_split(l2d_sq,sz_max);
     }
 
-    return;
+    //return 0;
     
     {
         point2d<long> l2d_xmajor(100,80);
@@ -76,7 +77,7 @@ YOCTO_UNIT_TEST_IMPL(split)
     }
 
     {
-        point2d<long> l2d_ymajor(80,100);
+        point2d<short> l2d_ymajor(80,100);
         test_split(l2d_ymajor,sz_max);
     }
 

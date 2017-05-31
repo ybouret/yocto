@@ -195,6 +195,10 @@ namespace yocto
             {
             }
             
+            //__________________________________________________________________
+            //
+            //! gather all possible partitions, checking sizes/width
+            //__________________________________________________________________
             static inline
             void build2d( const int C, const point_t &w, sequence<pointer> &parts)
             {
@@ -216,6 +220,10 @@ namespace yocto
                     throw exception("no possible partitions"); // TODO: change
             }
             
+            //__________________________________________________________________
+            //
+            //! reset local domain
+            //__________________________________________________________________
             inline void reset() throw()
             {
                 rank=-1;
@@ -223,11 +231,13 @@ namespace yocto
                 async.ldz();
                 lcopy.ldz();
             }
+          
             
-            template <size_t DIM>
-            mpq set(const int r);
-            
-            inline mpq set2d(const int r)
+            //__________________________________________________________________
+            //
+            //! compute local domain specs
+            //__________________________________________________________________
+            inline void set_domain2d(const int r)
             {
                 assert(r<size);
                 try
@@ -260,18 +270,27 @@ namespace yocto
                     reset();
                     throw;
                 }
-                std::cerr << "\t." << rank << "(items=" << items << ",async=" << async << ",lcopy=" << lcopy <<")" << std::endl;
-                return (full-items)/async;
             }
             
+            //__________________________________________________________________
+            //
+            // after a set_domain
+            //__________________________________________________________________
+            inline mpq __alpha() const {  return (full-items)/async; }
+            
+            
+            //__________________________________________________________________
+            //
             //! find alpha such that all compute time < full
+            //__________________________________________________________________
             inline void  set_alpha2d()
             {
                 alpha.ldz();
                 bool found = false;
                 for(int r=0;r<size;++r)
                 {
-                    const mpq atemp = set2d(r);
+                    set_domain2d(r);
+                    const mpq atemp = __alpha();
                     if(!found||atemp<alpha)
                     {
                         found = true;
@@ -280,15 +299,28 @@ namespace yocto
                 }
             }
             
+            //__________________________________________________________________
+            //
+            //! find the highest cost, and associated domain
+            //__________________________________________________________________
             inline void cost2d()
             {
                 cost.ldz();
+                int ropt=-1;
                 for(int r=0;r<size;++r)
                 {
-                    set2d(r);
+                    (void)set_domain2d(r);
                     const mpq ctmp = items + alpha * async;
-                    if(ctmp>cost) cost = ctmp;
+                    if(ctmp>cost)
+                    {
+                        cost = ctmp;
+                        ropt = r;
+                    }
                 }
+                // set associated domain
+                assert(ropt>=0);
+                assert(ropt<size);
+                set_domain2d(ropt);
             }
             
             inline friend std::ostream & operator<<( std::ostream &os, const partition &p )
@@ -304,6 +336,7 @@ namespace yocto
             
             inline static int compare_costs2d( const pointer &lhs, const pointer &rhs) throw()
             {
+                // cost major
                 if(lhs->cost<rhs->cost) return -1;
                 if(rhs->cost<lhs->cost) return  1;
                 
@@ -312,10 +345,10 @@ namespace yocto
                 if(lhs->lcopy<rhs->lcopy) return -1;
                 if(rhs->lcopy<lhs->lcopy) return  1;
                 
-                // same cost and and same lcopy, split along largest dim
+                // same cost and and same lcopy, split along largest last dim
                 assert(lhs->lcopy==rhs->lcopy);
                 
-                return 0;
+                return __compare_decreasing(lhs->sizes.y,rhs->sizes.y);
             }
             
         private:
@@ -338,7 +371,7 @@ namespace yocto
             //
             // start algorithm, get rid of trivial cases
             //__________________________________________________________________
-            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << " => ";
+            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << ":";
             if(size<=1)
             {
                 std::cerr << "no split" << std::endl;
@@ -354,14 +387,14 @@ namespace yocto
             part_t::build2d(size,width,parts);
             for(size_t i=1;i<=parts.size();++i)
             {
-                std::cerr << parts[i] << std::endl;
+                //std::cerr << parts[i] << std::endl;
                 parts[i]->set_alpha2d();
-                std::cerr << "\t\talpha=" << parts[i]->alpha << std::endl;
+                //std::cerr << "\t\talpha=" << parts[i]->alpha << std::endl;
             }
-            std::cerr << "SORTING/ALPHA" << std::endl;
+            //std::cerr << "SORTING/ALPHA" << std::endl;
             quicksort(parts,part_t::compare_alpha);
             const mpq alpha = parts[1]->alpha;
-            std::cerr << "\tALPHA=" << alpha.to_double() << std::endl;
+            std::cerr << "\talpha=" << alpha.to_double() << std::endl;
             
             //__________________________________________________________________
             //
@@ -371,17 +404,15 @@ namespace yocto
             {
                 parts[i]->alpha = alpha;
                 parts[i]->cost2d();
-                std::cerr << parts[i] << std::endl;
-                std::cerr << "\t\tcost=" << parts[i]->cost << std::endl;
             }
-            std::cerr << "SORTING/COSTS" << std::endl;
             c_shuffle(parts(),parts.size());
             quicksort(parts,part_t::compare_costs2d);
             for(size_t i=1;i<=parts.size();++i)
             {
-                std::cerr << parts[i] << " => " << parts[i]->cost << std::endl;
+                const part_t &p = *parts[i];
+                std::cerr << p << " => " << parts[i]->cost << " (items=" << p.items << ",async=" << p.async << ",lcopy=" << p.lcopy <<")" << std::endl;
             }
-            return point2d<T>();
+            return parts[1]->sizes;
         }
         
         
