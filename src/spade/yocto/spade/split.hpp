@@ -83,6 +83,7 @@ namespace yocto
 
             //! x*y=cpus, y>=x, smallest distance to sqrt(cpus)
             static coord2D DispatchCPUs(const Layout2D &L, const size_t cpus);
+            static coord3D DispatchCPUs(const Layout3D &L, const size_t cpus);
 
         };
     }

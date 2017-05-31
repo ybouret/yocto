@@ -3,7 +3,6 @@
 
 #include "yocto/math/point3d.hpp"
 #include "yocto/code/utils.hpp"
-#include "yocto/container/tuple.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/sort/quick.hpp"
@@ -19,7 +18,6 @@ namespace yocto
 {
     struct mpi_split
     {
-        typedef uint64_t word_t;
         //______________________________________________________________________
         //
         //
@@ -246,7 +244,7 @@ namespace yocto
                     }
                 }
                 if(parts.size()<=0)
-                    throw exception("no possible partitions"); // TODO: change
+                    throw exception("split3d: no possible partitions"); // TODO: change
             }
 
             
