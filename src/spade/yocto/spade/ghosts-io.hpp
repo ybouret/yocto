@@ -13,7 +13,7 @@ namespace yocto
     {
 
 
-
+        // collection of indices to exchange
         class ghosts_io
         {
         public:
