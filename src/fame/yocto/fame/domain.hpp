@@ -146,10 +146,10 @@ namespace yocto
                 // building neighbors' list, per dimension
                 //
                 //______________________________________________________________
-                std::cerr << "Sizes=" << full.sizes << std::endl;
+                //std::cerr << "Sizes=" << full.sizes << std::endl;
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
-                    std::cerr << "Dimension#" << dim << std::endl;
+                    //std::cerr << "Dimension#" << dim << std::endl;
                     const coord1d local_size = __coord(full.sizes,dim);
                     const bool    periodic   = __coord(pbc,dim) != 0;
                     if(local_size>1)
@@ -172,12 +172,12 @@ namespace yocto
                                 rank = next_rank1d(rank,rmax);
                                 const coord1d global_rank = full.global_rank(ranks);
                                 const peer p(global_rank,ranks,false);
-                                std::cerr << "next(" << self << ")=" << p << std::endl;
+                                //std::cerr << "next(" << self << ")=" << p << std::endl;
                                 ((link &)links[dim]).set_next(p);
                             }
                             else
                             {
-                                std::cerr << "next(" << self << ")=none" << std::endl;
+                                //std::cerr << "next(" << self << ")=none" << std::endl;
                             }
                         }
                         
@@ -194,12 +194,12 @@ namespace yocto
                                 rank = prev_rank1d(rank,rmax);
                                 const coord1d global_rank = full.global_rank(ranks);
                                 const peer p(global_rank,ranks,false);
-                                std::cerr << "prev(" << self << ")=" << p << std::endl;
+                                //std::cerr << "prev(" << self << ")=" << p << std::endl;
                                 ((link &)links[dim]).set_prev(p);
                             }
                             else
                             {
-                                std::cerr << "prev(" << self << ")=none" << std::endl;
+                                //std::cerr << "prev(" << self << ")=none" << std::endl;
                             }
                         }
                     }
@@ -216,8 +216,8 @@ namespace yocto
                             // will create 'local' neighbor
                             //__________________________________________________
                             const peer p(self.rank,self.ranks,true);
-                            std::cerr << "next(" << self << ")=" << p << std::endl;
-                            std::cerr << "prev(" << self << ")=" << p << std::endl;
+                            //std::cerr << "next(" << self << ")=" << p << std::endl;
+                            //std::cerr << "prev(" << self << ")=" << p << std::endl;
                             ((link &)links[dim]).set_next(p);
                             ((link &)links[dim]).set_prev(p);
 
@@ -228,8 +228,8 @@ namespace yocto
                             //
                             // do nothing
                             //__________________________________________________
-                            std::cerr << "next(" << self << ")=" << "none" << std::endl;
-                            std::cerr << "prev(" << self << ")=" << "none" << std::endl;
+                            //std::cerr << "next(" << self << ")=" << "none" << std::endl;
+                            //std::cerr << "prev(" << self << ")=" << "none" << std::endl;
                         }
                         
                     }
