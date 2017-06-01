@@ -48,7 +48,7 @@ namespace yocto
             else
             {
                 // automatic splitting
-                return Split::DispatchCPUS(full,size);
+                return Split::DispatchCPUs(full,size);
             }
         }
         
@@ -77,7 +77,7 @@ namespace yocto
                                        const int          the_size,
                                        const_coord       *the_cpus = NULL) :
             _Domain(the_rank,the_size),
-            sizes( DomainComputeSizes(size,the_cpus,the_full) ),
+            sizes( DomainComputeSizes<coord>(size,the_cpus,the_full) ),
             full(the_full,sizes),
             ranks( full.getRanks(rank) ),
             part(  full(rank) )

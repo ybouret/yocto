@@ -523,10 +523,10 @@ namespace yocto
             //
             // start algorithm, get rid of trivial cases
             //__________________________________________________________________
-            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << ":" << std::endl;
+            //std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << ":" << std::endl;
             if(size<=1)
             {
-                std::cerr << "no split" << std::endl;
+                //std::cerr << "no split" << std::endl;
                 return point2d<T>(size,size);
             }
             
@@ -545,7 +545,7 @@ namespace yocto
             //std::cerr << "SORTING/ALPHA" << std::endl;
             quicksort(parts,part_t::compare_alpha);
             const mpq alpha = parts[1]->alpha;
-            std::cerr << "\talpha=" << alpha.to_double() << std::endl;
+            //std::cerr << "\talpha=" << alpha.to_double() << std::endl;
             
             //__________________________________________________________________
             //
@@ -558,11 +558,13 @@ namespace yocto
             }
             c_shuffle(parts(),parts.size());
             quicksort(parts,part_t::compare_costs2d);
+#if 0
             for(size_t i=1;i<=parts.size();++i)
             {
                 const part_t &p = *parts[i];
                 std::cerr << p << " => " << parts[i]->cost.to_double() << " (items=" << p.items << ",async=" << p.async << ",lcopy=" << p.lcopy <<")" << std::endl;
             }
+#endif
             return parts[1]->sizes;
         }
         
@@ -582,10 +584,10 @@ namespace yocto
             //
             // start algorithm, get rid of trivial cases
             //__________________________________________________________________
-            std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << ":" << std::endl;
+            //std::cerr << "splitting " << width << " on " << size << " domain" << plural_s(size) << ":" << std::endl;
             if(size<=1)
             {
-                std::cerr << "no split" << std::endl;
+                //std::cerr << "no split" << std::endl;
                 return point3d<T>(size,size,size);
             }
             
@@ -603,7 +605,7 @@ namespace yocto
             //std::cerr << "SORTING/ALPHA" << std::endl;
             quicksort(parts,part_t::compare_alpha);
             const mpq alpha = parts[1]->alpha;
-            std::cerr << "\talpha=" << alpha.to_double() << std::endl;
+            //std::cerr << "\talpha=" << alpha.to_double() << std::endl;
             
             //__________________________________________________________________
             //
@@ -616,11 +618,13 @@ namespace yocto
             }
             c_shuffle(parts(),parts.size());
             quicksort(parts,part_t::compare_costs3d);
+#if 0
             for(size_t i=1;i<=parts.size();++i)
             {
                 const part_t &p = *parts[i];
                 std::cerr << p << " => " << parts[i]->cost.to_double() << " (items=" << p.items << ",async=" << p.async << ",lcopy=" << p.lcopy <<")" << std::endl;
             }
+#endif
             return parts[1]->sizes;
         }
         
