@@ -43,7 +43,7 @@ namespace yocto
                 {
                     if( __coord(sizes,dim) > __coord(this->width,dim) )
                     {
-                        throw exception("fame.split: too many domains in dimension #%d",dim);
+                        throw exception("fame.split: too many domains in dimension #%d",int(dim));
                     }
                 }
                 __coord_add( (coord &)rmax, -1);
