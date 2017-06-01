@@ -3,6 +3,8 @@
 
 #include "yocto/spade/field3d.hpp"
 #include "yocto/spade/split.hpp"
+#include "yocto/container/tuple.hpp"
+#include "yocto/sequence/slots.hpp"
 
 namespace yocto
 {
@@ -55,9 +57,58 @@ namespace yocto
             }
         }
         
+        template <typename COORD>
+        YOCTO_PAIR_DECL(YOCTO_TUPLE_TEMPLATE,DomainPeer,const COORD,ranks,const coord1D,rank);
+        YOCTO_PAIR_END();
         
-        
+        template <typename COORD>
+        class DomainPeers
+        {
+        public:
+            YOCTO_SPADE_DECL_COORD;
+            typedef DomainPeer<COORD>  PeerType;
+            typedef slots_of<const PeerType> PeerSlots;
+            static  const size_t DIMENSION = sizeof(COORD)/sizeof(coord1D);
+            
+            const PeerType self;
+            PeerSlots      next;
+            PeerSlots      prev;
 
+            inline ~DomainPeers() throw() {}
+            inline  DomainPeers(const coord1D                     rank,
+                                typename Split::For<COORD>::Type &split) :
+            self(split.getRanks(rank),rank),
+            next(DIMENSION)
+            {
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    {
+                        const_coord    ranks = split.next(self.ranks,dim);
+                        const coord1D  rank  = split.getRank(ranks);
+                        const PeerType peer(ranks,rank);
+                        next.push_back(peer);
+                    }
+                    
+                    {
+                        const_coord    ranks = split.prev(self.ranks,dim);
+                        const coord1D  rank  = split.getRank(ranks);
+                        const PeerType peer(ranks,rank);
+                        prev.push_back(peer);
+                    }
+                }
+                
+            }
+            
+            inline DomainPeers(const DomainPeers &other) throw() :
+            self(other.self)
+            {
+            }
+            
+            
+        private:
+            YOCTO_DISABLE_ASSIGN(DomainPeers);
+        };
+        
         //! setting topology
         template <
         typename COORD
@@ -68,11 +119,13 @@ namespace yocto
             YOCTO_SPADE_DECL_COORD;
             typedef typename Split::For<COORD>::Type splitter;
             typedef layout_of<COORD>                 layout_type;
+            typedef DomainPeers<COORD>               peers_type;
             
             const_coord       sizes; //!< the compute engines per dim
             splitter          full;  //!< full layout to be splitted
             const_coord       ranks; //!< local ranks
             const layout_type part;  //!< simulation layout.
+            const peers_type  peers; //!< topology
             
             inline virtual ~DomainInfo() throw() {}
             
@@ -84,7 +137,8 @@ namespace yocto
             sizes( DomainComputeSizes<coord>(size,the_cpus,the_full) ),
             full(the_full,sizes),
             ranks( full.getRanks(rank) ),
-            part(  full(rank) )
+            part(  full(rank) ),
+            peers(rank,full)
             {
                 
             }
@@ -94,7 +148,8 @@ namespace yocto
             sizes(other.sizes),
             full(other.full),
             ranks(other.ranks),
-            part(other.part)
+            part(other.part),
+            peers(other.peers)
             {
             }
             
