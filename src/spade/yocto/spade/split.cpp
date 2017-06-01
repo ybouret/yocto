@@ -42,7 +42,8 @@ namespace yocto
         
         Split::In1D:: In1D(const Layout1D &full, const coord1D ncpu):
         Layout1D(full),
-        size(max_of<coord1D>(1,ncpu))
+        size(max_of<coord1D>(1,ncpu)),
+        rmax( coord1D(size)-1 )
         {
             if(size>size_t(full.width))
                 throw exception("spade.split.in1d: too many domains");
@@ -69,9 +70,18 @@ namespace yocto
             return rank;
         }
         
+        coord1D  Split:: In1D:: getRank(const coord1D ranks) const throw()
+        {
+            assert(ranks>=0);
+            assert(ranks<coord1D(size));
+            return ranks;
+        }
+
+        
         Split:: In1D:: In1D( const In1D &other ) throw() :
         Layout1D(*this),
-        size(other.size)
+        size(other.size),
+        rmax(other.rmax)
         {
             
         }
@@ -87,7 +97,8 @@ namespace yocto
                            const coord2D   cpus) :
         Layout2D(full),
         sizes(max_of<coord1D>(cpus.x,1),max_of<coord1D>(cpus.y,1)),
-        size(sizes.x*sizes.y)
+        size(sizes.x*sizes.y),
+        rmax(sizes.x-1,sizes.y-1)
         {
             if(sizes.x>full.width.x) throw exception("spade.split.in2d: too many X domains");
             if(sizes.y>full.width.y) throw exception("spade.split.in2d: too many Y domains");
@@ -100,7 +111,8 @@ namespace yocto
         Split:: In2D:: In2D( const In2D &other ) throw() :
         Layout2D(*this),
         sizes(other.sizes),
-        size(other.size)
+        size(other.size),
+        rmax(other.rmax)
         {
             
         }
@@ -127,6 +139,18 @@ namespace yocto
             return mpi_split::local_ranks(rank,sizes);
         }
         
+        coord1D Split:: In2D:: getRank(const coord2D ranks) const throw()
+        {
+            assert(ranks.x>=0);
+            assert(ranks.y>=0);
+            assert(ranks.x<sizes.x);
+            assert(ranks.y<sizes.y);
+            const coord1D rank = ranks.y * sizes.x + ranks.x;
+            assert(rank>=0);
+            assert(rank<coord1D(size));
+            return rank;
+        }
+
         
     }
     
@@ -142,7 +166,8 @@ namespace yocto
         Layout3D(full),
         sizes(max_of<coord1D>(cpus.x,1),max_of<coord1D>(cpus.y,1),max_of<coord1D>(cpus.z,1)),
         zcof(sizes.x*sizes.y),
-        size(zcof*sizes.z)
+        size(zcof*sizes.z),
+        rmax(sizes.x-1,sizes.y-1,sizes.z-1)
         {
         }
         
@@ -154,7 +179,8 @@ namespace yocto
         Layout3D(*this),
         sizes(other.sizes),
         zcof(other.zcof),
-        size(other.size)
+        size(other.size),
+        rmax(other.rmax)
         {
             
         }
@@ -165,6 +191,22 @@ namespace yocto
             assert(rank<coord1D(size));
             return mpi_split::local_ranks(rank,sizes);
         }
+        
+        coord1D Split:: In3D:: getRank(const coord3D ranks) const throw()
+        {
+            assert(ranks.x>=0);
+            assert(ranks.y>=0);
+            assert(ranks.z>=0);
+            assert(ranks.x<sizes.x);
+            assert(ranks.y<sizes.y);
+            assert(ranks.z<sizes.z);
+            const coord1D rank = ranks.z * zcof + ranks.y * sizes.x + ranks.x;
+            assert(rank>=0);
+            assert(rank<coord1D(size));
+            return rank;
+        }
+        
+
         
         Layout3D Split:: In3D:: operator()(const coord1D rank) const throw()
         {

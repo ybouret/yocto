@@ -18,8 +18,15 @@ YOCTO_UNIT_TEST_IMPL(split)
                 const Layout1D sub = in1D(r);
                 std::cerr << "\tsub#" << r << "=" << sub << std::endl;
             }
+            for(size_t r=0;r<np;++r)
+            {
+                
+                std::cerr << "\t\t" << in1D.prev(r,0) << "->" << r << "->" << in1D.next(r,0) << std::endl;
+            }
         }
     }
+    
+    
 
     {
         Layout2D full( coord2D(1,1), coord2D(100,100) );
@@ -36,6 +43,18 @@ YOCTO_UNIT_TEST_IMPL(split)
                 {
                     const Layout2D sub = in2D(r);
                     std::cerr << "\tsub#" << r << "=" << sub << std::endl;
+                }
+                
+                for(size_t r=0;r<nn;++r)
+                {
+                    const coord2D ranks = in2D.getRanks(r);
+                    std::cerr << "rank=" << r << " -> ranks=" << ranks << std::endl;
+                    for(size_t dim=0;dim<2;++dim)
+                    {
+                        const coord2D prev = in2D.prev(ranks,dim);
+                        const coord2D next = in2D.next(ranks,dim);
+                        std::cerr << "\tdim" << dim << ": " << prev << "->" << ranks << "->" << next << std::endl;
+                    }
                 }
             }
         }
@@ -61,9 +80,24 @@ YOCTO_UNIT_TEST_IMPL(split)
                         const Layout3D sub = in3D(r);
                         std::cerr << "\tsub#" << r << "=" << sub << std::endl;
                     }
+                    
+                    for(size_t r=0;r<nn;++r)
+                    {
+                        const coord3D ranks = in3D.getRanks(r);
+                        std::cerr << "rank=" << r << " -> ranks=" << ranks << std::endl;
+                        for(size_t dim=0;dim<3;++dim)
+                        {
+                            const coord3D prev = in3D.prev(ranks,dim);
+                            const coord3D next = in3D.next(ranks,dim);
+                            std::cerr << "\tdim" << dim << ": " << prev << "->" << ranks << "->" << next << std::endl;
+                        }
+                    }
+
+                    
                 }
             }
         }
     }
+    
 }
 YOCTO_UNIT_TEST_DONE()

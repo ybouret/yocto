@@ -19,17 +19,53 @@ namespace yocto
                                    const size_t    rank,
                                    const Layout1D &full);
 
+            template <typename COORD> static inline
+            COORD __coord_next_rank(const COORD &ranks, const COORD &rmax, const size_t dim) throw()
+            {
+                COORD          ans(ranks);
+                coord1D       &nxt = *( ((coord1D *)&ans )+dim);
+                const coord1D  lim = *( ((coord1D *)&rmax)+dim);
+                if(nxt>=lim) nxt=0; else ++nxt;
+                return ans;
+            }
+            
+            template <typename COORD> static inline
+            COORD __coord_prev_rank(const COORD &ranks, const COORD &rmax, const size_t dim) throw()
+            {
+                COORD          ans(ranks);
+                coord1D       &nxt = *( ((coord1D *)&ans )+dim);
+                const coord1D  lim = *( ((coord1D *)&rmax)+dim);
+                if(nxt<=0) nxt=lim; else --nxt;
+                return ans;
+            }
+            
             class In1D : public Layout1D
             {
             public:
-                const size_t size;
-
+                const size_t  size;
+                const coord1D rmax;
+                
                 explicit In1D(const Layout1D &full,
                               const coord1D   ncpu);
                 virtual ~In1D() throw();
 
                 Layout1D operator()(const coord1D rank) const;
                 coord1D  getRanks(const coord1D rank) const throw();
+                coord1D  getRank(const coord1D ranks) const throw();
+                
+                //! next rank from local ranks
+                inline coord1D  next(const coord1D ranks,const size_t dim) const throw()
+                {
+                    assert(dim<=0);
+                    return __coord_next_rank<coord1D>(ranks,rmax,dim);
+                }
+                
+                //! prev rank from local ranks
+                inline coord1D prev(const coord1D ranks,const size_t dim) const throw()
+                {
+                    assert(dim<=0);
+                    return __coord_prev_rank<coord1D>(ranks,rmax,dim);
+                }
                 
                 In1D(const In1D &other) throw();
                 
@@ -43,7 +79,8 @@ namespace yocto
             public:
                 const coord2D sizes;
                 const size_t  size;
-
+                const coord2D rmax;
+                
                 explicit In2D(const Layout2D &full,
                               const coord2D   cpus);
                 virtual ~In2D() throw();
@@ -55,7 +92,25 @@ namespace yocto
 
                 //! get ranks for rank<size
                 coord2D getRanks(const coord1D rank) const throw();
+                
+                //! get rank from ranks
+                coord1D getRank(const coord2D ranks) const throw();
+                
+                //! next rank from local ranks
+                inline coord2D  next(const coord2D ranks,const size_t dim) const throw()
+                {
+                    assert(dim<=1);
+                    return __coord_next_rank<coord2D>(ranks,rmax,dim);
+                }
+                
+                //! next rank from local ranks
+                inline coord2D  prev(const coord2D ranks,const size_t dim) const throw()
+                {
+                    assert(dim<=1);
+                    return __coord_prev_rank<coord2D>(ranks,rmax,dim);
+                }
 
+                
             private:
                 YOCTO_DISABLE_ASSIGN(In2D);
             };
@@ -67,7 +122,8 @@ namespace yocto
                 const coord3D sizes;
                 const coord1D zcof;
                 const size_t  size;
-
+                const coord3D rmax;
+                
                 explicit In3D(const Layout3D &full,
                               const coord3D   cpus);
                 virtual ~In3D() throw();
@@ -76,8 +132,25 @@ namespace yocto
                 //! get ranks for rank<size
                 coord3D getRanks(const coord1D rank) const throw();
 
+                //! get rank from ranks
+                coord1D  getRank(const coord3D ranks) const throw();
+
+                
                 Layout3D operator()(const coord1D rank) const throw();
 
+                //! next rank from local ranks
+                inline coord3D  next(const coord3D ranks,const size_t dim) const throw()
+                {
+                    assert(dim<=2);
+                    return __coord_next_rank<coord3D>(ranks,rmax,dim);
+                }
+                
+                //! next rank from local ranks
+                inline coord3D  prev(const coord3D ranks,const size_t dim) const throw()
+                {
+                    assert(dim<=2);
+                    return __coord_prev_rank<coord3D>(ranks,rmax,dim);
+                }
 
             private:
                 YOCTO_DISABLE_ASSIGN(In3D);
