@@ -39,7 +39,7 @@ namespace yocto
             rmax(sizes)
             {
                 // checking in any case
-                for(int dim=0;dim<DIMENSION;++dim)
+                for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     if( __coord(sizes,dim) > __coord(this->width,dim) )
                     {
