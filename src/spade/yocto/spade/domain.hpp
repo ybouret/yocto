@@ -11,7 +11,10 @@ namespace yocto
     namespace spade
     {
         
+        //______________________________________________________________________
+        //
         //! base class, marker for size/rank
+        //______________________________________________________________________
         class _Domain
         {
         public:
@@ -31,7 +34,10 @@ namespace yocto
             
         };
         
+        //______________________________________________________________________
+        //
         // finding topology
+        //______________________________________________________________________
         template <typename COORD> inline
         COORD DomainComputeSizes(const int               size,
                                  const COORD            *cpus,
@@ -43,7 +49,7 @@ namespace yocto
                 // user wants to set the topology
                 COORD ans = *cpus;
                 const int num_cpus = __coord_prod(ans);
-                if( size == num_cpus )
+                if( size != num_cpus )
                 {
                     throw exception("%s: #cpus=%d != size=%d", _Domain::Name, num_cpus,size);
                 }
@@ -57,18 +63,26 @@ namespace yocto
             }
         }
         
+        //______________________________________________________________________
+        //
+        //! peer local ranks and global rank
+        //______________________________________________________________________
         template <typename COORD>
         YOCTO_PAIR_DECL(YOCTO_TUPLE_TEMPLATE,DomainPeer,const COORD,ranks,const coord1D,rank);
         YOCTO_PAIR_END();
         
+        //______________________________________________________________________
+        //
+        //! local topology
+        //______________________________________________________________________
         template <typename COORD>
         class DomainPeers
         {
         public:
             YOCTO_SPADE_DECL_COORD;
-            typedef DomainPeer<COORD>  PeerType;
+            typedef DomainPeer<COORD>        PeerType;
             typedef slots_of<const PeerType> PeerSlots;
-            static  const size_t DIMENSION = sizeof(COORD)/sizeof(coord1D);
+            static  const size_t             DIMENSION = sizeof(COORD)/sizeof(coord1D);
             
             const PeerType self;
             PeerSlots      next;
@@ -78,7 +92,8 @@ namespace yocto
             inline  DomainPeers(const coord1D                     rank,
                                 typename Split::For<COORD>::Type &split) :
             self(split.getRanks(rank),rank),
-            next(DIMENSION)
+            next(DIMENSION),
+            prev(DIMENSION)
             {
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
@@ -100,8 +115,15 @@ namespace yocto
             }
             
             inline DomainPeers(const DomainPeers &other) throw() :
-            self(other.self)
+            self(other.self),
+            next(DIMENSION),
+            prev(DIMENSION)
             {
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    next.push_back(other.next[dim]);
+                    prev.push_back(other.prev[dim]);
+                }
             }
             
             
@@ -109,7 +131,10 @@ namespace yocto
             YOCTO_DISABLE_ASSIGN(DomainPeers);
         };
         
+        //______________________________________________________________________
+        //
         //! setting topology
+        //______________________________________________________________________
         template <
         typename COORD
         >

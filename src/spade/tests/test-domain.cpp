@@ -24,10 +24,13 @@ YOCTO_UNIT_TEST_IMPL(domain)
                     DomainInfo<coord1D> D(L,rank,size);
                     std::cerr << "\t." << rank << "@" << D.ranks << "/" << D.sizes << ":" << D.part << std::endl;
                     Domain<double,coord1D> F(D,"F1",G);
+                    std::cerr << "self=" << F.peers.self << std::endl;
                 }
             }
         }
     }
+    
+    return 0;
     
     {
         const Layout2D L( coord2D(1,1), coord2D(30,30) );
