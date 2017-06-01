@@ -62,7 +62,12 @@ namespace yocto
             return Layout1D(offset,offset+length-1);
         }
         
-        
+        coord1D Split:: In1D:: getRanks(const coord1D rank) const throw()
+        {
+            assert(rank>=0);
+            assert(rank<coord1D(size));
+            return rank;
+        }
         
     }
 }

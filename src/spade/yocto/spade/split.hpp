@@ -29,7 +29,8 @@ namespace yocto
                 virtual ~In1D() throw();
 
                 Layout1D operator()(const coord1D rank) const;
-
+                coord1D  getRanks(const coord1D rank) const throw();
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(In1D);
             };
