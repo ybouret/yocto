@@ -22,6 +22,9 @@ YOCTO_UNIT_TEST_IMPL(split)
                 const coord1d rr    = S.global_rank(ranks);
                 std::cerr << rank << "->" << ranks << "->" << rr << std::endl;
             }
+            std::cerr << "Auto Split..." << std::endl;
+            split<coord1d> AS(L,np);
+            std::cerr << " => " << AS.sizes << std::endl;
             std::cerr << std::endl;
         }
     }
@@ -53,6 +56,9 @@ YOCTO_UNIT_TEST_IMPL(split)
                     
                 }
             }
+            std::cerr << "Auto Split..." << std::endl;
+            split<coord2d> AS(L,np);
+            std::cerr << " => " << AS.sizes << std::endl;
             std::cerr << std::endl;
         }
     }
@@ -87,6 +93,9 @@ YOCTO_UNIT_TEST_IMPL(split)
                     }
                 }
             }
+            std::cerr << "Auto Split..." << std::endl;
+            split<coord3d> AS(L,np);
+            std::cerr << " => " << AS.sizes << std::endl;
             std::cerr << std::endl;
         }
     }

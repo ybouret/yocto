@@ -527,7 +527,14 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
         };
         
-        
+        template <typename T> static inline
+        T compute_sizes(const int size, const T &width)
+        {
+            const T ans(size);
+            if(ans<=1) return ans;
+            if(ans>width) throw exception("compute_sizes1d: required size is too big!");
+            return ans;
+        }
         
         template <typename T> static inline
         point2d<T> compute_sizes(const int         size,

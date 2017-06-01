@@ -19,7 +19,8 @@ namespace yocto
             const_coord   sizes;
             const coord1d size;
             
-            inline explicit split(const layout_type &full, param_coord user_sizes) :
+            inline explicit split(const layout_type &full,
+                                  param_coord        user_sizes) :
             layout_type(full),
             sizes(user_sizes),
             size(__coord_prod(sizes))
@@ -32,6 +33,15 @@ namespace yocto
                     }
                 }
             }
+            
+            inline explicit split(const layout_type &full, const size_t cpus) :
+            layout_type(full),
+            sizes( mpi_split::compute_sizes(cpus,full.width) ),
+            size(__coord_prod(sizes))
+            {
+                
+            }
+            
             
             inline virtual ~split() throw()
             {
