@@ -30,7 +30,7 @@ YOCTO_UNIT_TEST_IMPL(domain)
         }
     }
     
-    return 0;
+    //return 0;
     
     {
         const Layout2D L( coord2D(1,1), coord2D(30,30) );
