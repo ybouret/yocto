@@ -34,10 +34,11 @@ namespace yocto
                 {
                     coord1d *l = __coord_addr(lower);
                     coord1d *u = __coord_addr(upper);
+                    size_t  &n = (size_t&)items;
                     for(size_t dim=0;dim<DIMENSION;++dim)
                     {
                         if(l[dim]>u[dim]) cswap(l[dim],u[dim]);
-                        items *= ( w[dim]=1+(u[dim]-l[dim]));
+                        n *= ( w[dim]=1+(u[dim]-l[dim]));
                     }
                 }
                 
@@ -55,8 +56,8 @@ namespace yocto
             inline layout_of(const layout_of &other) throw() :
             lower(other.lower),
             upper(other.upper),
-            pitch(other.picth),
-            width(other.pitch),
+            pitch(other.pitch),
+            width(other.width),
             items(other.items)
             {
                 

@@ -42,6 +42,26 @@ namespace yocto
             length = todo;
         }
         
+        template <typename T> static inline
+        T local_ranks(const int rank, const T sizes) throw()
+        {
+            assert(sizes>0);
+            assert(rank>=0);
+            assert(rank<int(sizes));
+            return rank;
+        }
+        
+        template <typename T> static inline
+        int get_rank_of(const T ranks,
+                        const T sizes) throw()
+        {
+            assert(sizes>0);
+            assert(ranks>=0);
+            assert(ranks<sizes);
+            return ranks;
+            
+        }
+        
         //______________________________________________________________________
         //
         //

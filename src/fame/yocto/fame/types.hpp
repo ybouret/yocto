@@ -63,6 +63,16 @@ static const size_t DIMENSION = YOCTO_FAME_DIM_OF(COORD)
             return p;
         }
         
+        template <typename COORD>
+        inline void __coord_add(COORD &C, const coord1d value) throw()
+        {
+            coord1d *q = __coord_addr(C);
+            for(size_t dim=0;dim<YOCTO_FAME_DIM_OF(COORD);++dim)
+            {
+                q[dim] += value;
+            }
+        }
+        
         //! test for integral types
         template <typename COORD> inline
         bool are_same_coord(const YOCTO_FAME_PARAM(COORD) lhs,
