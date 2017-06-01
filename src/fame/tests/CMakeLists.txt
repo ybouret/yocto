@@ -3,4 +3,6 @@ ADD_EXECUTABLE(test-fame main.cpp ${test_srcs})
 TARGET_LINK_YOCTO( test-fame mk gfx fame png z )
 
 ENABLE_TESTING()
-ADD_TEST(Types test-fame types)
+ADD_TEST(Types  test-fame types)
+ADD_TEST(Layout test-fame layout)
+ADD_TEST(Split  test-fame split)

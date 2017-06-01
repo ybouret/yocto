@@ -21,11 +21,13 @@ namespace yocto
             const coord1d size;
             
             inline explicit split(const layout_type &full,
-                                  param_coord        user_sizes) :
+                                  const coord1d      size,
+                                  const_coord       *cpus = NULL) :
             layout_type(full),
-            sizes(user_sizes),
+            sizes(ComputeSizes(full,size,cpus)),
             size(__coord_prod(sizes))
             {
+                // checking in any case
                 for(int dim=0;dim<DIMENSION;++dim)
                 {
                     if( __coord(sizes,dim) > __coord(this->width,dim) )
@@ -35,13 +37,7 @@ namespace yocto
                 }
             }
             
-            inline explicit split(const layout_type &full, const size_t cpus) :
-            layout_type(full),
-            sizes( mpi_split::compute_sizes(cpus,full.width) ),
-            size(__coord_prod(sizes))
-            {
-                
-            }
+            
             
             
             inline virtual ~split() throw()
@@ -75,6 +71,22 @@ namespace yocto
             
         private:
             YOCTO_DISABLE_ASSIGN(split);
+            static inline coord ComputeSizes(const layout_type &full,
+                                      const coord1d      size,
+                                      const_coord       *cpus)
+            {
+                if(cpus)
+                {
+                    // user choosen partition
+                    const_coord ans = *cpus;
+                    assert(size==__coord_prod(ans));
+                    return ans;
+                }
+                else
+                {
+                    return mpi_split::compute_sizes(size,full.width);
+                }
+            }
         };
         
         
