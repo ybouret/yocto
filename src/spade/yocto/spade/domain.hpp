@@ -107,7 +107,7 @@ namespace yocto
         typedef DomainInfo<coord2D> DomainInfo2D;
         typedef DomainInfo<coord3D> DomainInfo3D;
 
-        
+        //! need to compute ghost with ranks !
         template <typename T,typename COORD>
         class Domain : public DomainInfo<COORD>, public  field_for<T,COORD>::type
         {
