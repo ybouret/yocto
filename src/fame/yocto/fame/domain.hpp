@@ -3,6 +3,7 @@
 
 #include "yocto/fame/split.hpp"
 #include "yocto/container/tuple.hpp"
+#include "yocto/sequence/slots.hpp"
 
 namespace yocto
 {
@@ -16,7 +17,7 @@ namespace yocto
         public:
             YOCTO_FAME_DECL_COORD;
             
-            // information about this and neigbors
+            //! information about this and neigbors
             YOCTO_TRIPLE_DECL(YOCTO_TUPLE_TEMPLATE,peer,
                               const coord1d,rank,
                               const_coord,ranks,
@@ -24,11 +25,81 @@ namespace yocto
             YOCTO_TUPLE_END();
             
             
+            class link
+            {
+            public:
+                peer *next;
+                peer *prev;
+                inline  link() throw() : next(0), prev(0) {}
+                
+                inline ~link() throw() { clear(); }
+                
+                inline void set_next(const peer &p)
+                {
+                    assert(0==next);
+                    next = __create(p);
+                }
+                
+                inline void set_prev(const peer &p)
+                {
+                    assert(0==prev);
+                    prev = __create(p);
+                }
+                
+                inline link(const link &other) : next(0), prev(0)
+                {
+                    try
+                    {
+                        if(other.next) set_next( * other.next );
+                        if(other.prev) set_prev( * other.prev );
+                    }
+                    catch(...)
+                    {
+                        clear();
+                        throw;
+                    }
+                }
+                
+            private:
+                YOCTO_DISABLE_ASSIGN(link);
+                inline void clear() throw()
+                {
+                    if(prev)
+                    {
+                        __delete(prev);
+                    }
+                    
+                    if(next)
+                    {
+                        __delete(next);
+                    }
+
+                }
+                
+                
+                static inline peer * __create(const peer &p)
+                {
+                    peer *q = object::acquire1<peer>();
+                    try { new (q) peer(p); } catch(...) { object::release1<peer>(q); throw; }
+                    return q;
+                }
+                
+                static inline void __delete(peer * &p) throw()
+                {
+                    assert(p);
+                    p->~peer();
+                    object::release1<peer>(p);
+                    p=0;
+                }
+            };
+            
             typedef layout_of<COORD> layout_type;
             typedef split<COORD>     split_type;
             
-            split_type full; //!< used to split
-            const peer self; //!< this information
+            split_type           full;  //!< used to split
+            const peer           self;  //!< this information
+            layout_type          inner; //!< for simulation
+            slots_of<const link> links;
             
             inline explicit domain_of(const coord1d      user_rank,
                                       const coord1d      user_size,
@@ -36,8 +107,15 @@ namespace yocto
                                       const layout_type &user_full,
                                       param_coord        pbc) :
             full(user_full,user_size,user_cpus),
-            self(user_rank,full.local_ranks(user_rank),false)
+            self(user_rank,full.local_ranks(user_rank),false),
+            inner( full(self.rank) ),
+            links(DIMENSION)
             {
+                for(size_t i=0;i<DIMENSION;++i)
+                {
+                    links.push_back();
+                }
+                
                 //______________________________________________________________
                 //
                 //
@@ -71,6 +149,7 @@ namespace yocto
                                 const coord1d global_rank = full.global_rank(ranks);
                                 const peer p(global_rank,ranks,false);
                                 std::cerr << "next(" << self << ")=" << p << std::endl;
+                                ((link &)links[dim]).set_next(p);
                             }
                             else
                             {
@@ -92,6 +171,7 @@ namespace yocto
                                 const coord1d global_rank = full.global_rank(ranks);
                                 const peer p(global_rank,ranks,false);
                                 std::cerr << "prev(" << self << ")=" << p << std::endl;
+                                ((link &)links[dim]).set_prev(p);
                             }
                             else
                             {
@@ -114,6 +194,9 @@ namespace yocto
                             const peer p(self.rank,self.ranks,true);
                             std::cerr << "next(" << self << ")=" << p << std::endl;
                             std::cerr << "prev(" << self << ")=" << p << std::endl;
+                            ((link &)links[dim]).set_next(p);
+                            ((link &)links[dim]).set_prev(p);
+
                         }
                         else
                         {
@@ -132,8 +215,14 @@ namespace yocto
             
             inline domain_of(const domain_of &other) :
             full(other.full),
-            self(other.self)
+            self(other.self),
+            inner(other.inner),
+            links(DIMENSION)
             {
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    links.push_back(other.links[dim]);
+                }
             }
             
             

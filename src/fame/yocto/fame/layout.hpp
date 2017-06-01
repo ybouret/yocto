@@ -99,6 +99,14 @@ namespace yocto
                 return has(sub.lower) && has(sub.upper);
             }
 
+            inline void run_hash( hashing::function &h ) const throw()
+            {
+                h.run_type(lower);
+                h.run_type(upper);
+                h.run_type(pitch);
+                h.run_type(width);
+                h.run_type(items);
+            }
             
         private:
             YOCTO_DISABLE_ASSIGN(layout_of);

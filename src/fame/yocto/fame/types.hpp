@@ -4,6 +4,7 @@
 
 #include "yocto/math/point3d.hpp"
 #include "yocto/type/traits.hpp"
+#include "yocto/hashing/function.hpp"
 
 namespace yocto
 {

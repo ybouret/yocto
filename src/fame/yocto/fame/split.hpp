@@ -9,14 +9,6 @@ namespace yocto
     namespace fame
     {
         
-#define Y_FAME_X_LOWER (0x01<<0)
-#define Y_FAME_X_UPPER (0x01<<1)
-        
-#define Y_FAME_Y_LOWER (0x01<<2)
-#define Y_FAME_Y_UPPER (0x01<<3)
-        
-#define Y_FAME_Z_LOWER (0x01<<4)
-#define Y_FAME_Z_UPPER (0x01<<5)
         
         //! routines to split a layout
         template <typename COORD>
@@ -57,9 +49,7 @@ namespace yocto
             {
             }
             
-            
-            
-            
+                    
             
             inline virtual ~split() throw()
             {
