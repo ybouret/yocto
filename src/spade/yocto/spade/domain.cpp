@@ -17,6 +17,13 @@ namespace yocto
         {
         }
         
+        _Domain:: _Domain(const _Domain &other) throw() :
+        size(other.size),
+        rank(other.rank)
+        {
+        }
+        
+
     }
 }
 

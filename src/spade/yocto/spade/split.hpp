@@ -31,8 +31,10 @@ namespace yocto
                 Layout1D operator()(const coord1D rank) const;
                 coord1D  getRanks(const coord1D rank) const throw();
                 
+                In1D(const In1D &other) throw();
+                
             private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(In1D);
+                YOCTO_DISABLE_ASSIGN(In1D);
             };
 
 
@@ -45,7 +47,8 @@ namespace yocto
                 explicit In2D(const Layout2D &full,
                               const coord2D   cpus);
                 virtual ~In2D() throw();
-
+                In2D(const In2D &other) throw();
+                
                 Layout2D operator()(const coord1D rank) const;
 
                 // TODO: implement rank to x,y and reverse
@@ -54,7 +57,7 @@ namespace yocto
                 coord2D getRanks(const coord1D rank) const throw();
 
             private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(In2D);
+                YOCTO_DISABLE_ASSIGN(In2D);
             };
 
 
@@ -68,6 +71,7 @@ namespace yocto
                 explicit In3D(const Layout3D &full,
                               const coord3D   cpus);
                 virtual ~In3D() throw();
+                In3D(const In3D &other) throw();
 
                 //! get ranks for rank<size
                 coord3D getRanks(const coord1D rank) const throw();
@@ -76,7 +80,7 @@ namespace yocto
 
 
             private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(In3D);
+                YOCTO_DISABLE_ASSIGN(In3D);
             };
 
             static coord1D DispatchCPUs(const Layout1D &L, const size_t cpus);

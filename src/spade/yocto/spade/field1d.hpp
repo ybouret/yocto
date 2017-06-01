@@ -82,6 +82,13 @@ namespace yocto
 
         };
 
+        template <typename T>
+        struct field_for<T,coord1D>
+        {
+            typedef Field1D<T> type;
+        };
+        
+        
     }
 }
 

@@ -69,6 +69,12 @@ namespace yocto
             return rank;
         }
         
+        Split:: In1D:: In1D( const In1D &other ) throw() :
+        Layout1D(*this),
+        size(other.size)
+        {
+            
+        }
     }
 }
 
@@ -89,6 +95,14 @@ namespace yocto
         
         Split:: In2D:: ~In2D() throw()
         {
+        }
+        
+        Split:: In2D:: In2D( const In2D &other ) throw() :
+        Layout2D(*this),
+        sizes(other.sizes),
+        size(other.size)
+        {
+            
         }
         
         
@@ -134,6 +148,15 @@ namespace yocto
         
         Split:: In3D:: ~In3D() throw()
         {
+        }
+        
+        Split:: In3D:: In3D( const In3D &other ) throw() :
+        Layout3D(*this),
+        sizes(other.sizes),
+        zcof(other.zcof),
+        size(other.size)
+        {
+            
         }
         
         coord3D Split:: In3D:: getRanks(const coord1D rank) const throw()

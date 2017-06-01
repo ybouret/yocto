@@ -123,6 +123,9 @@ namespace yocto
 
         };
 
+        template <typename T,typename COORD>
+        struct field_for;
+        
     }
 }
 

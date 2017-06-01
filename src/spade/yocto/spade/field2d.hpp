@@ -195,6 +195,12 @@ namespace yocto
 
 
         };
+        
+        template <typename T>
+        struct field_for<T,coord2D>
+        {
+            typedef Field2D<T> type;
+        };
 
     }
 }

@@ -151,6 +151,13 @@ namespace yocto
             slice *shift;
         };
 
+        
+        template <typename T>
+        struct field_for<T,coord3D>
+        {
+            typedef Field3D<T> type;
+        };
+        
     }
 
 }
