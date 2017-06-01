@@ -36,8 +36,6 @@ namespace yocto
             full(user_full,user_size,user_cpus),
             self(user_rank,full.local_ranks(user_rank),false)
             {
-                std::cerr << "sizes=" << full.sizes << std::endl;
-                std::cerr << "rmax =" << full.rmax  << std::endl;
                 // building neighbors' list
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
@@ -45,14 +43,41 @@ namespace yocto
                     const bool    periodic   = __coord(pbc,dim) != 0;
                     if(local_size>1)
                     {
+                        const coord1d rmax = __coord(full.rmax,dim);
                         {
-                            const peer    next_peer( create_peer(next_rank1d,dim,pbc) );
-                            std::cerr << "next(" << self << ")=" << next_peer << std::endl;
+                            // building next neighbor
+                            coord    ranks(self.ranks);
+                            coord1d &rank = __coord(ranks,dim);
+                            if(periodic||rank<rmax)
+                            {
+                                assert(next_rank1d(rank,rmax)!=rank);
+                                rank = next_rank1d(rank,rmax);
+                                const coord1d global_rank = full.global_rank(ranks);
+                                const peer p(global_rank,ranks,false);
+                                std::cerr << "next(" << self << ")=" << p << std::endl;
+                            }
+                            else
+                            {
+                                std::cerr << "next(" << self << ")=none" << std::endl;
+                            }
                         }
                         
                         {
-                            const peer    prev_peer( create_peer(prev_rank1d,dim,pbc) );
-                            std::cerr << "prev(" << self << ")=" << prev_peer << std::endl;
+                            // building prev neihgbor
+                            coord    ranks(self.ranks);
+                            coord1d &rank = __coord(ranks,dim);
+                            if(periodic||rank>0)
+                            {
+                                assert(prev_rank1d(rank,rmax)!=rank);
+                                rank = prev_rank1d(rank,rmax);
+                                const coord1d global_rank = full.global_rank(ranks);
+                                const peer p(global_rank,ranks,false);
+                                std::cerr << "prev(" << self << ")=" << p << std::endl;
+                            }
+                            else
+                            {
+                                std::cerr << "prev(" << self << ")=none" << std::endl;
+                            }
                         }
                     }
                     else

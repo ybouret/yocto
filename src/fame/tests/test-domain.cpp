@@ -12,10 +12,19 @@ YOCTO_UNIT_TEST_IMPL(domain)
         {
             std::cerr << std::endl;
             std::cerr << "size=" << size << std::endl;
+            
+            std::cerr << "IS  periodic:" << std::endl;
+            for(size_t rank=0;rank<size;++rank)
+            {
+                domain_of<coord1d> D(rank,size,NULL,L,1);
+            }
+            
+            std::cerr << "NOT periodic:" << std::endl;
             for(size_t rank=0;rank<size;++rank)
             {
                 domain_of<coord1d> D(rank,size,NULL,L,0);
             }
+            
         }
     }
 }
