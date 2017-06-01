@@ -22,6 +22,12 @@ namespace yocto
                               const coord1d,rank,
                               const_coord,ranks,
                               bool,local);
+            inline void run_hash( hashing::function &h ) const throw()
+            {
+                h.run_type(rank);
+                h.run_type(ranks);
+                h.run_type(local);
+            }
             YOCTO_TUPLE_END();
             
             
@@ -58,6 +64,12 @@ namespace yocto
                         clear();
                         throw;
                     }
+                }
+                
+                inline void run_hash( hashing::function &H ) const throw()
+                {
+                    if(next) { next->run_hash(H); }
+                    if(prev) { prev->run_hash(H); }
                 }
                 
             private:
@@ -100,6 +112,18 @@ namespace yocto
             const peer           self;  //!< this information
             layout_type          inner; //!< for simulation
             slots_of<const link> links;
+            
+            inline void run_hash( hashing::function &h ) const throw()
+            {
+                full.run_hash(h);
+                self.run_hash(h);
+                inner.run_hash(h);
+
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    links[dim].run_hash(h);
+                }
+            }
             
             inline explicit domain_of(const coord1d      user_rank,
                                       const coord1d      user_size,

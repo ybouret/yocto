@@ -22,6 +22,14 @@ namespace yocto
             const coord1d size;
             const_coord   rmax;
             
+            inline void run_hash( hashing::function &h ) const throw()
+            {
+                this->layout_type::run_hash(h);
+                h.run_type(sizes);
+                h.run_type(size);
+                h.run_type(rmax);
+            }
+            
             inline explicit split(const layout_type &full,
                                   const coord1d      size,
                                   const_coord       *cpus = NULL) :
@@ -79,28 +87,6 @@ namespace yocto
                 return mpi_split::get_rank_of(ranks,sizes);
             }
             
-            inline int get_side_index_of(param_coord ranks) const throw()
-            {
-                int idx  = 0;
-                int code = 0x01;
-                for(size_t dim=0;dim<DIMENSION;++dim)
-                {
-                    const coord1d r  = __coord(ranks,dim);
-                    const coord1d rm = __coord(rmax,dim);
-                    if(r<=0)
-                    {
-                        idx|= code;
-                    }
-                    code <<= 1;
-                    if(r>=rm)
-                    {
-                        idx|=code;
-                    }
-                    code <<= 1;
-                    
-                }
-                return idx;
-            }
             
         private:
             YOCTO_DISABLE_ASSIGN(split);
