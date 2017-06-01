@@ -13,6 +13,11 @@ namespace yocto
         typedef point2d<coord1d> coord2d;
         typedef point3d<coord1d> coord3d;
         
+        struct coord_info
+        {
+            static const char *axis_name(const size_t dim) throw();
+        };
+        
 #define YOCTO_FAME_DIM_OF(COORD) ( sizeof(COORD)/sizeof(coord1d) )
         
 #define YOCTO_FAME_PARAM(COORD)  typename type_traits<COORD>::parameter_type
@@ -24,7 +29,7 @@ typedef YOCTO_FAME_PARAM(COORD)                       param_coord;   \
 static const size_t DIMENSION = YOCTO_FAME_DIM_OF(COORD)
         
         template <typename COORD>
-        struct coord_info
+        struct coord_data
         {
             YOCTO_FAME_DECL_COORD;
             static const_coord  zero;
@@ -39,14 +44,14 @@ static const size_t DIMENSION = YOCTO_FAME_DIM_OF(COORD)
         template <typename COORD>
         inline coord1d & __coord(COORD &C,const size_t dim) throw()
         {
-            assert(dim<coord_info<COORD>::DIMENSION);
+            assert(dim<coord_data<COORD>::DIMENSION);
             return *(((coord1d *)&C)+dim);
         }
         
         template <typename COORD>
         inline const coord1d & __coord(const COORD &C,const size_t dim) throw()
         {
-            assert(dim<coord_info<COORD>::DIMENSION);
+            assert(dim<coord_data<COORD>::DIMENSION);
             return *(((const coord1d *)&C)+dim);
         }
 

@@ -25,8 +25,8 @@ namespace yocto
             inline explicit layout_of(param_coord L,param_coord U) throw() :
             lower(L),
             upper(U),
-            pitch( coord_info<coord>::zero ),
-            width( coord_info<coord>::zero ),
+            pitch( coord_data<coord>::zero ),
+            width( coord_data<coord>::zero ),
             items(1)
             {
                 

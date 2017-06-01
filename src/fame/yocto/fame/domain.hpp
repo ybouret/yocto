@@ -9,12 +9,14 @@ namespace yocto
     namespace fame
     {
         
+        //! a domain, used to build topology
         template <typename COORD>
         class domain_of
         {
         public:
             YOCTO_FAME_DECL_COORD;
             
+            // information about this and neigbors
             YOCTO_TRIPLE_DECL(YOCTO_TUPLE_TEMPLATE,peer,
                               const coord1d,rank,
                               const_coord,ranks,
@@ -25,8 +27,8 @@ namespace yocto
             typedef layout_of<COORD> layout_type;
             typedef split<COORD>     split_type;
             
-            split_type full;
-            const peer self;
+            split_type full; //!< used to split
+            const peer self; //!< this information
             
             inline explicit domain_of(const coord1d      user_rank,
                                       const coord1d      user_size,
@@ -36,16 +38,30 @@ namespace yocto
             full(user_full,user_size,user_cpus),
             self(user_rank,full.local_ranks(user_rank),false)
             {
-                // building neighbors' list
+                //______________________________________________________________
+                //
+                //
+                // building neighbors' list, per dimension
+                //
+                //______________________________________________________________
+                std::cerr << "Sizes=" << full.sizes << std::endl;
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
+                    std::cerr << "Dimension#" << dim << std::endl;
                     const coord1d local_size = __coord(full.sizes,dim);
                     const bool    periodic   = __coord(pbc,dim) != 0;
                     if(local_size>1)
                     {
+                        //______________________________________________________
+                        //
+                        // we have at least one neighbor, next or prev
+                        //______________________________________________________
                         const coord1d rmax = __coord(full.rmax,dim);
                         {
+                            //__________________________________________________
+                            //
                             // building next neighbor
+                            //__________________________________________________
                             coord    ranks(self.ranks);
                             coord1d &rank = __coord(ranks,dim);
                             if(periodic||rank<rmax)
@@ -63,7 +79,10 @@ namespace yocto
                         }
                         
                         {
+                            //__________________________________________________
+                            //
                             // building prev neihgbor
+                            //__________________________________________________
                             coord    ranks(self.ranks);
                             coord1d &rank = __coord(ranks,dim);
                             if(periodic||rank>0)
@@ -82,15 +101,28 @@ namespace yocto
                     }
                     else
                     {
-                        std::cerr << "local" << std::endl;
+                        //______________________________________________________
+                        //
                         // only one
+                        //______________________________________________________
                         if(periodic)
                         {
+                            //__________________________________________________
+                            //
                             // will create 'local' neighbor
+                            //__________________________________________________
+                            const peer p(self.rank,self.ranks,true);
+                            std::cerr << "next(" << self << ")=" << p << std::endl;
+                            std::cerr << "prev(" << self << ")=" << p << std::endl;
                         }
                         else
                         {
+                            //__________________________________________________
+                            //
                             // do nothing
+                            //__________________________________________________
+                            std::cerr << "next(" << self << ")=" << "none" << std::endl;
+                            std::cerr << "prev(" << self << ")=" << "none" << std::endl;
                         }
                         
                     }
