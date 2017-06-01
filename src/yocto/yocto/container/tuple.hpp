@@ -24,7 +24,7 @@ inline ~CLASS() throw() {} \
 friend inline \
 std::ostream & operator<<( std::ostream &pair_os, const CLASS &self )\
 {\
-pair_os << '(' << self.N1 << ',' << self.N2 << ')';\
+pair_os << '(' << #N1 << '=' << self.N1 << ',' << #N2 << '=' << self.N2 << ')';\
 return pair_os;\
 }\
 T1 N1;\
@@ -48,7 +48,7 @@ inline ~CLASS() throw() {} \
 friend inline \
 std::ostream & operator<<( std::ostream &os, const CLASS &self )\
 {\
-os << '(' << self.N1 << ',' << self.N2 << ',' << self.N3 << ')';\
+os << '(' << #N1 << '=' << self.N1 << ',' << #N2 << '=' << self.N2 << ',' << #N3 << '=' << self.N3 << ')';\
 return os;\
 }\
 T1 N1;\

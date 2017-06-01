@@ -9,6 +9,15 @@ namespace yocto
     namespace fame
     {
         
+#define Y_FAME_X_LOWER (0x01<<0)
+#define Y_FAME_X_UPPER (0x01<<1)
+        
+#define Y_FAME_Y_LOWER (0x01<<2)
+#define Y_FAME_Y_UPPER (0x01<<3)
+        
+#define Y_FAME_Z_LOWER (0x01<<4)
+#define Y_FAME_Z_UPPER (0x01<<5)
+        
         //! routines to split a layout
         template <typename COORD>
         class split : public layout_of<COORD>
@@ -19,13 +28,15 @@ namespace yocto
             
             const_coord   sizes;
             const coord1d size;
+            const_coord   rmax;
             
             inline explicit split(const layout_type &full,
                                   const coord1d      size,
                                   const_coord       *cpus = NULL) :
             layout_type(full),
             sizes(ComputeSizes(full,size,cpus)),
-            size(__coord_prod(sizes))
+            size(__coord_prod(sizes)),
+            rmax(sizes)
             {
                 // checking in any case
                 for(int dim=0;dim<DIMENSION;++dim)
@@ -35,7 +46,17 @@ namespace yocto
                         throw exception("fame.split: too many domains in dimension #%d",dim);
                     }
                 }
+                __coord_add( (coord &)rmax, -1);
             }
+            
+            inline split(const split &other) throw() :
+            layout_type(other),
+            sizes(other.sizes),
+            size(other.size),
+            rmax(other.rmax)
+            {
+            }
+            
             
             
             
@@ -68,12 +89,34 @@ namespace yocto
                 return mpi_split::get_rank_of(ranks,sizes);
             }
             
+            inline int get_side_index_of(param_coord ranks) const throw()
+            {
+                int idx  = 0;
+                int code = 0x01;
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    const coord1d r  = __coord(ranks,dim);
+                    const coord1d rm = __coord(rmax,dim);
+                    if(r<=0)
+                    {
+                        idx|= code;
+                    }
+                    code <<= 1;
+                    if(r>=rm)
+                    {
+                        idx|=code;
+                    }
+                    code <<= 1;
+                    
+                }
+                return idx;
+            }
             
         private:
             YOCTO_DISABLE_ASSIGN(split);
             static inline coord ComputeSizes(const layout_type &full,
-                                      const coord1d      size,
-                                      const_coord       *cpus)
+                                             const coord1d      size,
+                                             const_coord       *cpus)
             {
                 if(cpus)
                 {

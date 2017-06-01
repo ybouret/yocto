@@ -104,6 +104,19 @@ static const size_t DIMENSION = YOCTO_FAME_DIM_OF(COORD)
             return true;
         }
         
+        inline coord1d next_rank1d(const coord1d rank, const coord1d rmax) throw()
+        {
+            if(rank>=rmax) return 0; else return rank+1;
+        }
+        
+        inline coord1d prev_rank1d(const coord1d rank, const coord1d rmax) throw()
+        {
+            if(rank<=0) return rmax; else return rank-1;
+        }
+
+        
+        
+        
     }
     
 }
