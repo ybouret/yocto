@@ -19,6 +19,28 @@ void display_topo( const domain_of<COORD> &D )
     
     for(size_t dim=0;dim<YOCTO_FAME_DIM_OF(COORD);++dim)
     {
+        std::cerr << "\tdim#" << dim << " : ";
+        const typename domain_of<COORD>::link &lnk = D.links[dim];
+        if(lnk.prev)
+        {
+            std::cerr << ((lnk.prev->local) ? "." : "+");
+            std::cerr << "prev@" << lnk.prev->ranks;
+        }
+        else
+        {
+            std::cerr << "!prev";
+        }
+        std::cerr << " ";
+        if(lnk.next)
+        {
+            std::cerr << ((lnk.next->local) ? "." : "+");
+            std::cerr << "next@" << lnk.next->ranks;
+        }
+        else
+        {
+            std::cerr << "!next";
+        }
+        std::cerr << std::endl;
     }
     
 }
@@ -56,6 +78,7 @@ YOCTO_UNIT_TEST_IMPL(domain)
             
         }
     }
+    
 
     
     {
@@ -83,7 +106,6 @@ YOCTO_UNIT_TEST_IMPL(domain)
             
         }
     }
-    
     
     {
         layout_of<coord3d> L( coord3d(1,1,1), coord3d(16,16,16) );
