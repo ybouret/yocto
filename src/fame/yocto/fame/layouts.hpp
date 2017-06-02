@@ -54,9 +54,7 @@ namespace yocto
                     }
                 }
                 
-                const layout_type o(Lower,Upper);
-                
-                return 0;
+                return layout_type(Lower,Upper);
             }
         };
     }
