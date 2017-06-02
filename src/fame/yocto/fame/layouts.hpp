@@ -21,8 +21,8 @@ namespace yocto
             
             inline virtual ~layouts_of() throw() {}
             
-            inline layouts_of(const domain_type &dom,
-                              const coord1d      num_ghosts) :
+            inline explicit layouts_of(const domain_type &dom,
+                                       const coord1d      num_ghosts) :
             domain_type(dom),
             outer( __expand(this->inner,*this,num_ghosts) )
             {
@@ -54,7 +54,9 @@ namespace yocto
                     }
                 }
                 
-                return layout_type(Lower,Upper);
+                const layout_type o(Lower,Upper);
+                
+                return 0;
             }
         };
     }
