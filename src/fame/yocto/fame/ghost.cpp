@@ -4,8 +4,8 @@ namespace yocto
 {
     namespace fame
     {
-        _ghost::_ghost(const coord1d r) throw():
-        indices_type(),
+        _ghost::_ghost(const coord1d r, const size_t n):
+        indices_type(n,as_capacity),
         rank(r)
         {
         }
@@ -13,6 +13,128 @@ namespace yocto
         _ghost:: ~_ghost() throw() {}
         
 
+        template <>
+        ghosts_of<coord1d>:: ghosts_of( const layouts_of<coord1d> &L )
+        {
+            std::cerr << "Ghost1D" << std::endl;
+            const domain_of<coord1d>::link &xlnk = L.links[0];
+            const size_t ng = L.depth;
+            if(xlnk.prev)
+            {
+                _ghost g(xlnk.prev->rank,ng);
+                for(coord1d x=L.outer.lower;x<L.inner.lower;++x)
+                {
+                    const coord1d v = L.outer.offset_of(x);
+                    std::cerr << "prev@" << x << " => " << v <<std::endl;
+                    g.push_back(v);
+                }
+                assert(g.size()==ng);
+            }
+            if(xlnk.next)
+            {
+                _ghost g(xlnk.next->rank,ng);
+                for(coord1d x=L.inner.upper+1;x<=L.outer.upper;++x)
+                {
+                    const coord1d v = L.outer.offset_of(x);
+                    std::cerr << "next@" << x << " => " << v <<std::endl;
+                    g.push_back(v);
+                }
+                assert(g.size()==ng);
+            }
+        }
+        
+        template <>
+        ghosts_of<coord2d>:: ghosts_of( const layouts_of<coord2d> &L )
+        {
+            std::cerr << "Ghost2D" << std::endl;
+            const layout_of<coord2d> &outer = L.outer;
+            const layout_of<coord2d> &inner = L.inner;
+
+            //__________________________________________________________________
+            //
+            // X
+            //__________________________________________________________________
+            {
+                const domain_of<coord2d>::link &xlnk = L.links[0];
+                const size_t                     ng  = L.depth*outer.width.y;
+                if(xlnk.prev)
+                {
+                    _ghost g(xlnk.prev->rank,ng);
+                    for(coord1d x=outer.lower.x;x<inner.lower.x;++x)
+                    {
+                        for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            const coord2d q(x,y);
+                            const coord1d v = outer.offset_of(q);
+                            std::cerr << "xprev@" << q << " => " << v <<std::endl;
+                            g.push_back(v);
+                        }
+                    }
+                    assert(g.size()==ng);
+                }
+                
+                if(xlnk.next)
+                {
+                    _ghost g(xlnk.next->rank,ng);
+                    for(coord1d x=inner.upper.x+1;x<=outer.upper.x;++x)
+                    {
+                        for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            const coord2d q(x,y);
+                            const coord1d v = outer.offset_of(q);
+                            std::cerr << "xnext@" << q << " => " << v <<std::endl;
+                            g.push_back(v);
+                        }
+                    }
+                    assert(g.size()==ng);
+                }
+            }
+            
+            
+            //__________________________________________________________________
+            //
+            // X
+            //__________________________________________________________________
+            {
+                const domain_of<coord2d>::link &ylnk = L.links[1];
+                const size_t                     ng  = L.depth*outer.width.x;
+                if(ylnk.prev)
+                {
+                    _ghost g(ylnk.prev->rank,ng);
+                    for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
+                    {
+                        for(coord1d y=outer.lower.y;y<inner.lower.y;++y)
+                        {
+                            const coord2d q(x,y);
+                            const coord1d v = outer.offset_of(q);
+                            std::cerr << "yprev@" << q << " => " << v <<std::endl;
+                            g.push_back(v);
+                        }
+                    }
+                    assert(g.size()==ng);
+                }
+                
+                if(ylnk.next)
+                {
+                    _ghost g(ylnk.next->rank,ng);
+                    for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
+                    {
+                        for(coord1d y=inner.upper.y+1;y<=outer.upper.y;++y)
+                        {
+                            const coord2d q(x,y);
+                            const coord1d v = outer.offset_of(q);
+                            std::cerr << "ynext@" << q << " => " << v <<std::endl;
+                            g.push_back(v);
+                        }
+                    }
+                    assert(g.size()==ng);
+                }
+
+            }
+        }
+        
+        
+        
     }
 
 }

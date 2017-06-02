@@ -14,7 +14,7 @@ namespace yocto
         {
         public:
             const coord1d rank;  //!< target
-            explicit _ghost(const coord1d r) throw();
+            explicit _ghost(const coord1d r,const size_t n);
             virtual ~_ghost() throw();
             
             
@@ -23,23 +23,18 @@ namespace yocto
         };
         
         template <class COORD>
-        class ghost_of : public _ghost
+        class ghosts_of
         {
         public:
-            inline virtual ~ghost_of() throw()
+            inline virtual ~ghosts_of() throw()
             {
             }
             
-            inline explicit ghost_of(const layouts_of<COORD>               &L,
-                                     const typename domain_of<COORD>::peer &p) :
-            _ghost(p.rank)
-            {
-                
-            }
-            
+            explicit ghosts_of(const layouts_of<COORD> &L);
+
             
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(ghost_of);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_of);
         };
         
     }

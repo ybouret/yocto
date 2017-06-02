@@ -17,16 +17,19 @@ namespace yocto
             typedef layout_of<COORD>           layout_type;
             typedef typename domain_type::link link;
             
+            const coord1d     depth; //!< ghost depths
             const layout_type outer;
-            
             inline virtual ~layouts_of() throw() {}
             
             inline explicit layouts_of(const domain_type &dom,
                                        const coord1d      num_ghosts) :
             domain_type(dom),
-            outer( __expand(this->inner,*this,num_ghosts) )
+            depth(num_ghosts<0?0:num_ghosts),
+            outer( __expand(this->inner,*this,depth) )
             {
+                
             }
+            
             
             
         private:
@@ -34,9 +37,9 @@ namespace yocto
             static inline
             layout_type __expand(const layout_type &L,
                                  const domain_type &D,
-                                 coord1d           num_ghosts)
+                                 coord1d           ng)
             {
-                if(num_ghosts<0) num_ghosts=0;
+                assert(ng>=0);
                 coord Lower = L.lower;
                 coord Upper = L.upper;
                 for(size_t dim=0;dim<DIMENSION;++dim)
@@ -46,16 +49,18 @@ namespace yocto
                     const link  &lnk   = D.links[dim];
                     if(lnk.prev)
                     {
-                        lower -= num_ghosts;
+                        lower -= ng;
                     }
                     if(lnk.next)
                     {
-                        upper += num_ghosts;
+                        upper += ng;
                     }
                 }
                 
                 return layout_type(Lower,Upper);
             }
+            
+            
         };
     }
     

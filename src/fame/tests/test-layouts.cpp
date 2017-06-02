@@ -1,4 +1,4 @@
-#include "yocto/fame/layouts.hpp"
+#include "yocto/fame/ghost.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
@@ -28,6 +28,7 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 const domain_of<coord1d> D(rank,size,NULL,L,1);
                 layouts_of<coord1d>      W(D,1);
                 display_lay(W);
+                ghosts_of<coord1d> G(W);
             }
             
             std::cerr << std::endl;
@@ -37,11 +38,11 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 domain_of<coord1d>  D(rank,size,NULL,L,0);
                 layouts_of<coord1d> W(D,1);
                 display_lay(W);
+                ghosts_of<coord1d> G(W);
             }
             
         }
     }
-    
     
     {
         layout_of<coord2d> L( coord2d(1,1), coord2d(16,16) );
@@ -56,6 +57,8 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 domain_of<coord2d>  D(rank,size,NULL,L,coord2d(1,1));
                 layouts_of<coord2d> W(D,1);
                 display_lay(W);
+                ghosts_of<coord2d> G(W);
+
             }
             
             std::cerr << "NOT periodic:" << std::endl;
@@ -64,12 +67,14 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 domain_of<coord2d> D(rank,size,NULL,L,coord2d(0,0));
                 layouts_of<coord2d> W(D,1);
                 display_lay(W);
-
+                ghosts_of<coord2d> G(W);
             }
             
         }
     }
 
+    return 0;
+    
     {
         layout_of<coord3d> L( coord3d(1,1,1), coord3d(16,16,16) );
         for(size_t size=1;size<=8;++size)
