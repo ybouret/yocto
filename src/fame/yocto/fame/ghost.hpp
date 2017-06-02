@@ -1,37 +1,67 @@
 #ifndef YOCTO_FAME_GHOST_INCLUDED
 #define YOCTO_FAME_GHOST_INCLUDED 1
 
-#include "yocto/fame/layouts.hpp"
+#include "yocto/fame/layout.hpp"
+#include "yocto/sequence/vector.hpp"
 
 namespace yocto
 {
     namespace fame
     {
         
-        typedef vector<coord1d> indices_type;
+        typedef vector<coord1d>   indices_type;
+        template <typename COORD> class layouts_of;
         
-        class _ghost : public indices_type
+        class ghost : public indices_type
         {
         public:
             const coord1d rank;  //!< target
-            explicit _ghost(const coord1d r,const size_t n);
-            virtual ~_ghost() throw();
+            explicit ghost(const coord1d r,const size_t n);
+            virtual ~ghost() throw();
             
             
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(_ghost);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(ghost);
         };
         
-        template <class COORD>
-        class ghosts_of
+        class ghosts
         {
         public:
-            inline virtual ~ghosts_of() throw()
-            {
-            }
+            ghosts() throw();
+            ~ghosts() throw();
+            ghost *next;
+            ghost *prev;
             
-            explicit ghosts_of(const layouts_of<COORD> &L);
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts);
+            void clear() throw();
+        };
 
+        template <class COORD>
+        class ghosts_base : public slots_of<ghosts>
+        {
+        public:
+            inline virtual ~ghosts_base() throw() {}
+            inline explicit ghosts_base() :
+            slots_of<ghosts>(YOCTO_FAME_DIM_OF(COORD))
+            {
+                for(size_t dim=0;dim<YOCTO_FAME_DIM_OF(COORD);++dim)
+                {
+                    (void)push_back();
+                }
+            }
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_base);
+        };
+    
+        template <class COORD>
+        class ghosts_of : public ghosts_base<COORD>
+        {
+        public:
+            YOCTO_FAME_DECL_COORD;
+            inline virtual ~ghosts_of() throw() {}
+            explicit ghosts_of(const layouts_of<COORD> &L);
+            
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_of);

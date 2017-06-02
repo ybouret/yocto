@@ -1,4 +1,4 @@
-#include "yocto/fame/ghost.hpp"
+#include "yocto/fame/layouts.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;

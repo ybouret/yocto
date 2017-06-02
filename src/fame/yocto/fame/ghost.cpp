@@ -1,17 +1,28 @@
-#include "yocto/fame/ghost.hpp"
+#include "yocto/fame/layouts.hpp"
 
 namespace yocto
 {
     namespace fame
     {
-        _ghost::_ghost(const coord1d r, const size_t n):
+        ghost::ghost(const coord1d r, const size_t n):
         indices_type(n,as_capacity),
         rank(r)
         {
         }
 
-        _ghost:: ~_ghost() throw() {}
+        ghost:: ~ghost() throw() {}
         
+        ghosts::  ghosts() throw() : next(0), prev(0) {}
+        ghosts:: ~ghosts() throw()
+        {
+            clear();
+        }
+        
+        void ghosts:: clear() throw()
+        {
+            if(prev) { delete prev; prev=0; }
+            if(next) { delete next; next=0; }
+        }
 
         template <>
         ghosts_of<coord1d>:: ghosts_of( const layouts_of<coord1d> &L )
@@ -19,9 +30,11 @@ namespace yocto
             std::cerr << "Ghost1D" << std::endl;
             const domain_of<coord1d>::link &xlnk = L.links[0];
             const size_t ng = L.depth;
+            ghosts &G = (*this)[0];
             if(xlnk.prev)
             {
-                _ghost g(xlnk.prev->rank,ng);
+                
+                ghost &g = * (G.prev = new ghost(xlnk.prev->rank,ng));
                 for(coord1d x=L.outer.lower;x<L.inner.lower;++x)
                 {
                     const coord1d v = L.outer.offset_of(x);
@@ -32,7 +45,7 @@ namespace yocto
             }
             if(xlnk.next)
             {
-                _ghost g(xlnk.next->rank,ng);
+                ghost &g = * (G.next = new ghost(xlnk.next->rank,ng));
                 for(coord1d x=L.inner.upper+1;x<=L.outer.upper;++x)
                 {
                     const coord1d v = L.outer.offset_of(x);
@@ -57,9 +70,10 @@ namespace yocto
             {
                 const domain_of<coord2d>::link &xlnk = L.links[0];
                 const size_t                     ng  = L.depth*outer.width.y;
+                ghosts &G = (*this)[0];
                 if(xlnk.prev)
                 {
-                    _ghost g(xlnk.prev->rank,ng);
+                    ghost &g = * (G.prev = new ghost(xlnk.prev->rank,ng));
                     for(coord1d x=outer.lower.x;x<inner.lower.x;++x)
                     {
                         for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
@@ -75,7 +89,7 @@ namespace yocto
                 
                 if(xlnk.next)
                 {
-                    _ghost g(xlnk.next->rank,ng);
+                    ghost &g = * (G.next = new ghost(xlnk.next->rank,ng));
                     for(coord1d x=inner.upper.x+1;x<=outer.upper.x;++x)
                     {
                         for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
@@ -93,14 +107,14 @@ namespace yocto
             
             //__________________________________________________________________
             //
-            // X
+            // Y
             //__________________________________________________________________
             {
                 const domain_of<coord2d>::link &ylnk = L.links[1];
                 const size_t                     ng  = L.depth*outer.width.x;
                 if(ylnk.prev)
                 {
-                    _ghost g(ylnk.prev->rank,ng);
+                    ghost g(ylnk.prev->rank,ng);
                     for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
                     {
                         for(coord1d y=outer.lower.y;y<inner.lower.y;++y)
@@ -116,7 +130,7 @@ namespace yocto
                 
                 if(ylnk.next)
                 {
-                    _ghost g(ylnk.next->rank,ng);
+                    ghost g(ylnk.next->rank,ng);
                     for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
                     {
                         for(coord1d y=inner.upper.y+1;y<=outer.upper.y;++y)
