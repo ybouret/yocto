@@ -112,9 +112,10 @@ namespace yocto
             {
                 const domain_of<coord2d>::link &ylnk = L.links[1];
                 const size_t                     ng  = L.depth*outer.width.x;
+                ghosts &G = (*this)[1];
                 if(ylnk.prev)
                 {
-                    ghost g(ylnk.prev->rank,ng);
+                    ghost &g = *( G.prev = new ghost(ylnk.prev->rank,ng));
                     for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
                     {
                         for(coord1d y=outer.lower.y;y<inner.lower.y;++y)
@@ -130,7 +131,7 @@ namespace yocto
                 
                 if(ylnk.next)
                 {
-                    ghost g(ylnk.next->rank,ng);
+                    ghost &g = *( G.next = new ghost(ylnk.next->rank,ng));
                     for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
                     {
                         for(coord1d y=inner.upper.y+1;y<=outer.upper.y;++y)
