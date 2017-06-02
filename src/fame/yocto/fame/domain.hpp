@@ -37,20 +37,9 @@ namespace yocto
                 peer *next;
                 peer *prev;
                 inline  link() throw() : next(0), prev(0) {}
-                
                 inline ~link() throw() { clear(); }
-                
-                inline void set_next(const peer &p)
-                {
-                    assert(0==next);
-                    next = __create(p);
-                }
-                
-                inline void set_prev(const peer &p)
-                {
-                    assert(0==prev);
-                    prev = __create(p);
-                }
+                inline void set_next(const peer &p) { assert(0==next); next = __create(p); }
+                inline void set_prev(const peer &p) { assert(0==prev); prev = __create(p); }
                 
                 inline link(const link &other) : next(0), prev(0)
                 {
@@ -76,16 +65,8 @@ namespace yocto
                 YOCTO_DISABLE_ASSIGN(link);
                 inline void clear() throw()
                 {
-                    if(prev)
-                    {
-                        __delete(prev);
-                    }
-                    
-                    if(next)
-                    {
-                        __delete(next);
-                    }
-
+                    if(prev) { __delete(prev); }
+                    if(next) { __delete(next); }
                 }
                 
                 
@@ -111,14 +92,13 @@ namespace yocto
             split_type           full;  //!< used to split
             const peer           self;  //!< this information
             layout_type          inner; //!< for simulation
-            slots_of<const link> links;
+            slots_of<const link> links; //!< for topology
             
             inline void run_hash( hashing::function &h ) const throw()
             {
                 full.run_hash(h);
                 self.run_hash(h);
                 inner.run_hash(h);
-
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     links[dim].run_hash(h);
@@ -131,7 +111,7 @@ namespace yocto
                                       const layout_type &user_full,
                                       param_coord        pbc) :
             full(user_full,user_size,user_cpus),
-            self(user_rank,full.local_ranks(user_rank),false),
+            self(user_rank,full.local_ranks(user_rank),true),
             inner( full(self.rank) ),
             links(DIMENSION)
             {
@@ -146,10 +126,8 @@ namespace yocto
                 // building neighbors' list, per dimension
                 //
                 //______________________________________________________________
-                //std::cerr << "Sizes=" << full.sizes << std::endl;
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
-                    //std::cerr << "Dimension#" << dim << std::endl;
                     const coord1d local_size = __coord(full.sizes,dim);
                     const bool    periodic   = __coord(pbc,dim) != 0;
                     if(local_size>1)
@@ -172,7 +150,6 @@ namespace yocto
                                 rank = next_rank1d(rank,rmax);
                                 const coord1d global_rank = full.global_rank(ranks);
                                 const peer p(global_rank,ranks,false);
-                                //std::cerr << "next(" << self << ")=" << p << std::endl;
                                 ((link &)links[dim]).set_next(p);
                             }
                             else
@@ -194,7 +171,6 @@ namespace yocto
                                 rank = prev_rank1d(rank,rmax);
                                 const coord1d global_rank = full.global_rank(ranks);
                                 const peer p(global_rank,ranks,false);
-                                //std::cerr << "prev(" << self << ")=" << p << std::endl;
                                 ((link &)links[dim]).set_prev(p);
                             }
                             else
@@ -258,19 +234,6 @@ namespace yocto
             
         private:
             YOCTO_DISABLE_ASSIGN(domain_of);
-            inline peer create_peer(coord1d (*proc)(const coord1d,const coord1d),
-                                    const size_t dim,
-                                    const_coord &pbc)
-            {
-                assert(proc);
-                const coord1d local_rmax = __coord(full.rmax,dim);
-                coord         ranks(self.ranks);
-                coord1d      &local_rank = __coord(ranks,dim);
-                assert(proc(local_rank,local_rmax)!=local_rank);
-                local_rank = proc(local_rank,local_rmax);
-                const coord1d rank = full.global_rank(ranks);
-                return peer(rank,ranks,false);
-            }
         };
     }
 }
