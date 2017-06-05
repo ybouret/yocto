@@ -3,6 +3,7 @@
 
 #include "yocto/fame/layout.hpp"
 #include "yocto/sequence/vector.hpp"
+#include "yocto/sequence/slots.hpp"
 
 namespace yocto
 {

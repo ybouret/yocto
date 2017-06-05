@@ -19,7 +19,7 @@ namespace yocto
             typedef typename domain_type::link link;
             
             const coord1d     depth; //!< ghost depths
-            const layout_type outer;
+            const layout_type outer; //!< outer layouts
             inline virtual ~layouts_of() throw() {}
             
             inline explicit layouts_of(const domain_type &dom,

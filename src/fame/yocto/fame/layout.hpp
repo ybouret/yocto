@@ -66,6 +66,7 @@ namespace yocto
             //! get the offset
             inline coord1d offset_of( param_coord c ) const throw()
             {
+                assert(this->has(c));
                 coord1d ans = __coord(c,0) - __coord(lower,0);
                 for( size_t i=1; i < DIMENSION; ++i )
                     ans += __coord(pitch,i) * ( __coord(c,i) - __coord(lower,i) );
@@ -91,7 +92,7 @@ namespace yocto
             }
             
             //! test coordinate inside layout
-            inline bool has( param_coord C ) const throw() { return is_coord_inside(C,lower,upper); }
+            inline bool has( param_coord C ) const throw() { return is_coord_inside<COORD>(C,lower,upper); }
             
             //! test sub layout inside this layout
             inline bool contains( const layout_of &sub ) const throw()
