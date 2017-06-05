@@ -38,8 +38,8 @@ namespace yocto
                 peer *prev;
                 inline  link() throw() : next(0), prev(0) {}
                 inline ~link() throw() { clear(); }
-                inline void set_next(const peer &p) { assert(0==next); next = __create(p); }
-                inline void set_prev(const peer &p) { assert(0==prev); prev = __create(p); }
+                inline void set_next(const peer &p) { assert(0==next); next = new peer(p); }
+                inline void set_prev(const peer &p) { assert(0==prev); prev = new peer(p); }
                 
                 inline link(const link &other) : next(0), prev(0)
                 {
@@ -65,25 +65,10 @@ namespace yocto
                 YOCTO_DISABLE_ASSIGN(link);
                 inline void clear() throw()
                 {
-                    if(prev) { __delete(prev); }
-                    if(next) { __delete(next); }
+                    if(prev) { delete prev; prev=0; }
+                    if(next) { delete next; next=0; }
                 }
                 
-                
-                static inline peer * __create(const peer &p)
-                {
-                    peer *q = object::acquire1<peer>();
-                    try { new (q) peer(p); } catch(...) { object::release1<peer>(q); throw; }
-                    return q;
-                }
-                
-                static inline void __delete(peer * &p) throw()
-                {
-                    assert(p);
-                    p->~peer();
-                    object::release1<peer>(p);
-                    p=0;
-                }
             };
             
             typedef layout_of<COORD> layout_type;
