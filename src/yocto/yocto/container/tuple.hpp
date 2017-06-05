@@ -2,6 +2,7 @@
 #define YOCTO_TUPLE_INCLUDED 1
 
 #include "yocto/type/traits.hpp"
+#include "yocto/object.hpp"
 #include <iostream>
 
 #define YOCTO_TUPLE_INI()   {
@@ -11,7 +12,7 @@
 #define YOCTO_TUPLE_TEMPLATE(T) typename type_traits< T >::parameter_type
 
 #define YOCTO_PAIR_DECL(YOCTO_TUPLE_PARAM,CLASS,T1,N1,T2,N2) \
-class CLASS \
+class CLASS : public virtual object \
 YOCTO_TUPLE_INI() \
 public:\
 typedef YOCTO_TUPLE_PARAM(T1) PARAM1;\
@@ -20,7 +21,7 @@ inline CLASS( PARAM1 P1, PARAM2 P2) :\
 N1(P1),N2(P2) {} \
 inline CLASS(const CLASS &other) : \
 N1(other.N1), N2(other.N2) {}\
-inline ~CLASS() throw() {} \
+inline virtual ~CLASS() throw() {} \
 friend inline \
 std::ostream & operator<<( std::ostream &pair_os, const CLASS &self )\
 {\
@@ -34,7 +35,7 @@ T2 N2
 
 
 #define YOCTO_TRIPLE_DECL(YOCTO_TUPLE_PARAM,CLASS,T1,N1,T2,N2,T3,N3) \
-class CLASS \
+class CLASS : public virtual object \
 YOCTO_TUPLE_INI() \
 public:\
 typedef YOCTO_TUPLE_PARAM(T1) PARAM1;\
@@ -44,7 +45,7 @@ inline CLASS( PARAM1 P1, PARAM2 P2, PARAM3 P3) :\
 N1(P1),N2(P2),N3(P3) {} \
 inline CLASS(const CLASS &other) : \
 N1(other.N1), N2(other.N2), N3(other.N3) {}\
-inline ~CLASS() throw() {} \
+inline virtual ~CLASS() throw() {} \
 friend inline \
 std::ostream & operator<<( std::ostream &os, const CLASS &self )\
 {\
@@ -58,7 +59,7 @@ T3 N3
 #define YOCTO_TRIPLE_END() YOCTO_TUPLE_END()
 
 #define YOCTO_QUAD_DECL(YOCTO_TUPLE_PARAM,CLASS,T1,N1,T2,N2,T3,N3,T4,N4) \
-class CLASS \
+class CLASS : public virtual object \
 YOCTO_TUPLE_INI() \
 public:\
 typedef YOCTO_TUPLE_PARAM(T1) PARAM1;\
@@ -69,7 +70,7 @@ inline CLASS( PARAM1 P1, PARAM2 P2, PARAM3 P3, PARAM4 P4) :\
 N1(P1),N2(P2),N3(P3),N4(P4) {} \
 inline CLASS(const CLASS &other) : \
 N1(other.N1), N2(other.N2), N3(other.N3),N4(other.N4) {}\
-inline ~CLASS() throw() {} \
+inline virtual ~CLASS() throw() {} \
 friend inline \
 std::ostream & operator<<( std::ostream &os, const CLASS &self )\
 {\
@@ -85,7 +86,7 @@ T4 N4
 
 
 #define YOCTO_PENTUPLE_DECL(YOCTO_TUPLE_PARAM,CLASS,T1,N1,T2,N2,T3,N3,T4,N4,T5,N5) \
-class CLASS \
+class CLASS : public virtual object \
 YOCTO_TUPLE_INI() \
 public:\
 typedef YOCTO_TUPLE_PARAM(T1) PARAM1;\
@@ -97,7 +98,7 @@ inline CLASS( PARAM1 P1, PARAM2 P2, PARAM3 P3, PARAM4 P4, PARAM5 P5) :\
 N1(P1),N2(P2),N3(P3),N4(P4),N5(P5) {} \
 inline CLASS(const CLASS &other) : \
 N1(other.N1),N2(other.N2),N3(other.N3),N4(other.N4),N5(other.N5) {}\
-inline ~CLASS() throw() {} \
+inline virtual ~CLASS() throw() {} \
 friend inline \
 std::ostream & operator<<( std::ostream &os, const CLASS &self )\
 {\
@@ -113,7 +114,7 @@ T5 N5
 #define YOCTO_PENTUPLE_END() YOCTO_TUPLE_END()
 
 #define YOCTO_SEXTUPLE_DECL(YOCTO_TUPLE_PARAM,CLASS,T1,N1,T2,N2,T3,N3,T4,N4,T5,N5,T6,N6) \
-class CLASS \
+class CLASS : public virtual object \
 YOCTO_TUPLE_INI() \
 public:\
 typedef YOCTO_TUPLE_PARAM(T1) PARAM1;\
@@ -126,7 +127,7 @@ inline CLASS( PARAM1 P1, PARAM2 P2, PARAM3 P3, PARAM4 P4, PARAM5 P5, PARAM6 P6) 
 N1(P1),N2(P2),N3(P3),N4(P4),N5(P5),N6(P6) {} \
 inline CLASS(const CLASS &other) : \
 N1(other.N1),N2(other.N2),N3(other.N3),N4(other.N4),N5(other.N5),N6(other.N6) {}\
-inline ~CLASS() throw() {} \
+inline virtual ~CLASS() throw() {} \
 friend inline \
 std::ostream & operator<<( std::ostream &os, const CLASS &self )\
 {\
@@ -143,7 +144,7 @@ T6 N6
 #define YOCTO_SEXTUPLE_END() YOCTO_TUPLE_END()
 
 #define YOCTO_HEPTUPLE_DECL(YOCTO_TUPLE_PARAM,CLASS,T1,N1,T2,N2,T3,N3,T4,N4,T5,N5,T6,N6,T7,N7) \
-class CLASS \
+class CLASS : public virtual object \
 YOCTO_TUPLE_INI() \
 public:\
 typedef YOCTO_TUPLE_PARAM(T1) PARAM1;\
@@ -157,7 +158,7 @@ inline CLASS( PARAM1 P1, PARAM2 P2, PARAM3 P3, PARAM4 P4, PARAM5 P5, PARAM6 P6, 
 N1(P1),N2(P2),N3(P3),N4(P4),N5(P5),N6(P6),N7(P7) {} \
 inline CLASS(const CLASS &other) : \
 N1(other.N1),N2(other.N2),N3(other.N3),N4(other.N4),N5(other.N5),N6(other.N6),N7(other.N7) {}\
-inline ~CLASS() throw() {} \
+inline virtual ~CLASS() throw() {} \
 friend inline \
 std::ostream & operator<<( std::ostream &os, const CLASS &self )\
 {\

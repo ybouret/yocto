@@ -9,9 +9,10 @@ namespace yocto
     namespace fame
     {
         
-        typedef vector<coord1d>   indices_type;
+        typedef vector<coord1d>         indices_type;
         template <typename COORD> class layouts_of;
-        
+
+        //! a ghost is a list of indices to be transeferred
         class ghost : public indices_type
         {
         public:
@@ -23,7 +24,8 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghost);
         };
-        
+
+        //! one dimensional next/prev ghost
         class ghosts
         {
         public:
@@ -37,6 +39,7 @@ namespace yocto
             void clear() throw();
         };
 
+        //! a base class to store YOCTO_FAME_DIM_OF(COORD) ghosts
         template <class COORD>
         class ghosts_base : public slots_of<ghosts>
         {
@@ -53,7 +56,8 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_base);
         };
-    
+
+        //! implementation of ghosts
         template <class COORD>
         class ghosts_of : public ghosts_base<COORD>
         {

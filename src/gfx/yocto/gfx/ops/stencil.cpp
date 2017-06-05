@@ -38,7 +38,11 @@ tgt(0), src(0), chn(0), global()
         is_rescaling(other.is_rescaling)
         {
             assert(size>0);
-            memcpy(masks,other.masks,size*sizeof(mask));
+            //memcpy(masks,other.masks,size*sizeof(mask));
+            for(size_t i=0;i<size;++i)
+            {
+                masks[i] = other.masks[i];
+            }
         }
         
         

@@ -18,6 +18,12 @@ namespace yocto
         {
         public:
             YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,mask,vertex,r,float,weight);
+            inline mask & operator=(const mask &other) throw()
+            {
+                r=other.r;
+                weight=other.weight;
+                return *this;
+            }
             YOCTO_PAIR_END();
 
             YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,info,float,vmin,float,vmax);

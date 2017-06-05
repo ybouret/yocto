@@ -17,7 +17,7 @@ namespace yocto
         public:
             YOCTO_FAME_DECL_COORD;
             
-            //! information about this and neigbors
+            //! peer information about this and neigbors
             YOCTO_TRIPLE_DECL(YOCTO_TUPLE_TEMPLATE,peer,
                               const coord1d,rank,
                               const_coord,ranks,
