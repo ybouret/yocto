@@ -73,8 +73,7 @@ YOCTO_UNIT_TEST_IMPL(layouts)
         }
     }
 
-    return 0;
-    
+
     {
         layout_of<coord3d> L( coord3d(1,1,1), coord3d(16,16,16) );
         for(size_t size=1;size<=8;++size)
@@ -88,6 +87,7 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 domain_of<coord3d> D(rank,size,NULL,L,coord3d(1,1,1));
                 layouts_of<coord3d> W(D,1);
                 display_lay(W);
+                ghosts_of<coord3d> G(W);
             }
             
             std::cerr << "NOT periodic:" << std::endl;
@@ -96,8 +96,9 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 domain_of<coord3d> D(rank,size,NULL,L,coord3d(0,0,0));
                 layouts_of<coord3d> W(D,1);
                 display_lay(W);
+                ghosts_of<coord3d> G(W);
             }
-            
+
         }
     }
 

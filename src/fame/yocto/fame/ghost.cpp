@@ -11,13 +11,13 @@ namespace yocto
         }
 
         ghost:: ~ghost() throw() {}
-        
+
         ghosts::  ghosts() throw() : next(0), prev(0) {}
         ghosts:: ~ghosts() throw()
         {
             clear();
         }
-        
+
         void ghosts:: clear() throw()
         {
             if(prev) { delete prev; prev=0; }
@@ -33,7 +33,7 @@ namespace yocto
             ghosts &G = (*this)[0];
             if(xlnk.prev)
             {
-                
+
                 ghost &g = * (G.prev = new ghost(xlnk.prev->rank,ng));
                 for(coord1d x=L.outer.lower;x<L.inner.lower;++x)
                 {
@@ -55,7 +55,7 @@ namespace yocto
                 assert(g.size()==ng);
             }
         }
-        
+
         template <>
         ghosts_of<coord2d>:: ghosts_of( const layouts_of<coord2d> &L )
         {
@@ -86,7 +86,7 @@ namespace yocto
                     }
                     assert(g.size()==ng);
                 }
-                
+
                 if(xlnk.next)
                 {
                     ghost &g = * (G.next = new ghost(xlnk.next->rank,ng));
@@ -103,8 +103,8 @@ namespace yocto
                     assert(g.size()==ng);
                 }
             }
-            
-            
+
+
             //__________________________________________________________________
             //
             // Y
@@ -128,7 +128,7 @@ namespace yocto
                     }
                     assert(g.size()==ng);
                 }
-                
+
                 if(ylnk.next)
                 {
                     ghost &g = *( G.next = new ghost(ylnk.next->rank,ng));
@@ -147,9 +147,165 @@ namespace yocto
 
             }
         }
+
+
+        template <>
+        ghosts_of<coord3d>:: ghosts_of( const layouts_of<coord3d> &L )
+        {
+            std::cerr << "Ghost3D" << std::endl;
+            const layout_of<coord3d> &outer = L.outer;
+            const layout_of<coord3d> &inner = L.inner;
+
+            //__________________________________________________________________
+            //
+            // X
+            //__________________________________________________________________
+            {
+                const domain_of<coord3d>::link &xlnk = L.links[0];
+                const size_t                     ng  = L.depth*outer.width.y*outer.width.z;
+                ghosts &G = (*this)[0];
+                if(xlnk.prev)
+                {
+                    ghost &g = * (G.prev = new ghost(xlnk.prev->rank,ng));
+                    for(coord1d x=outer.lower.x;x<inner.lower.x;++x)
+                    {
+                        for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            for(coord1d z=outer.lower.z;z<=outer.upper.z;++z)
+                            {
+                                const coord3d q(x,y,z);
+                                const coord1d v = outer.offset_of(q);
+                                std::cerr << "xprev@" << q << " => " << v <<std::endl;
+                                g.push_back(v);
+                            }
+                        }
+                    }
+                    assert(g.size()==ng);
+                }
+
+                if(xlnk.next)
+                {
+                    ghost &g = * (G.next = new ghost(xlnk.next->rank,ng));
+                    for(coord1d x=inner.upper.x+1;x<=outer.upper.x;++x)
+                    {
+                        for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            for(coord1d z=outer.lower.z;z<=outer.upper.z;++z)
+                            {
+                                const coord3d q(x,y,z);
+                                const coord1d v = outer.offset_of(q);
+                                std::cerr << "xnext@" << q << " => " << v <<std::endl;
+                                g.push_back(v);
+                            }
+                        }
+                    }
+                    assert(g.size()==ng);
+                }
+            }
+
+            //__________________________________________________________________
+            //
+            // Y
+            //__________________________________________________________________
+            {
+                const domain_of<coord3d>::link &ylnk = L.links[1];
+                const size_t                     ng  = L.depth*outer.width.x*outer.width.z;
+                ghosts &G = (*this)[1];
+                if(ylnk.prev)
+                {
+                    ghost &g = *( G.prev = new ghost(ylnk.prev->rank,ng));
+                    for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
+                    {
+                        for(coord1d y=outer.lower.y;y<inner.lower.y;++y)
+                        {
+                            for(coord1d z=outer.lower.z;z<=outer.upper.z;++z)
+                            {
+                                const coord3d q(x,y,z);
+                                const coord1d v = outer.offset_of(q);
+                                std::cerr << "yprev@" << q << " => " << v <<std::endl;
+                                g.push_back(v);
+                            }
+                        }
+                    }
+                    assert(g.size()==ng);
+                }
+
+                if(ylnk.next)
+                {
+                    ghost &g = *( G.next = new ghost(ylnk.next->rank,ng));
+                    for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
+                    {
+                        for(coord1d y=inner.upper.y+1;y<=outer.upper.y;++y)
+                        {
+                            for(coord1d z=outer.lower.z;z<=outer.upper.z;++z)
+                            {
+                                const coord3d q(x,y,z);
+                                const coord1d v = outer.offset_of(q);
+                                std::cerr << "yprev@" << q << " => " << v <<std::endl;
+                                g.push_back(v);
+                            }
+                        }
+                    }
+                    assert(g.size()==ng);
+                }
+                
+            }
+
+
+            //__________________________________________________________________
+            //
+            // Z
+            //__________________________________________________________________
+            {
+                const domain_of<coord3d>::link &zlnk = L.links[2];
+                const size_t                     ng  = L.depth*outer.width.x*outer.width.y;
+                ghosts &G = (*this)[2];
+                if(zlnk.prev)
+                {
+                    ghost &g = *( G.prev = new ghost(zlnk.prev->rank,ng));
+                    for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
+                    {
+                        for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            for(coord1d z=outer.lower.z;z<inner.lower.z;++z)
+                            {
+                                const coord3d q(x,y,z);
+                                const coord1d v = outer.offset_of(q);
+                                std::cerr << "zprev@" << q << " => " << v <<std::endl;
+                                g.push_back(v);
+                            }
+                        }
+                    }
+                    assert(g.size()==ng);
+                }
+
+                if(zlnk.next)
+                {
+                    ghost &g = *( G.next = new ghost(zlnk.next->rank,ng));
+                    for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
+                    {
+                        for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            for(coord1d z=inner.upper.z+1;z<=outer.upper.z;++z)
+                            {
+                                const coord3d q(x,y,z);
+                                const coord1d v = outer.offset_of(q);
+                                std::cerr << "zprev@" << q << " => " << v <<std::endl;
+                                g.push_back(v);
+                            }
+                        }
+                    }
+                    assert(g.size()==ng);
+                }
+
+
+
+            }
+
+        }
         
         
         
     }
-
+    
 }
