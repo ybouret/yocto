@@ -66,9 +66,13 @@ namespace yocto
 
                 // build rows
                 rows -= this->outer.lower.y;
-                for(coord1d y = this->outer.lower.y; y <= this->outer.upper.y; ++y )
+                for(coord1d y = this->outer.lower.y; y <= this->outer.upper.y; ++y)
                 {
-                    
+                    const layout_of<coord1d> full1d = layout_ops::project(this->inner);
+                    const coord1d rank1d = 0;
+                    const coord1d size1d = 1;
+                    const domain_of<coord1d> dom1d(rank1d,size1d,&size1d,full1d,this->pbc.x);
+                    new (rows[y]) row(dom1d);
                 }
             }
 
