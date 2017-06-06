@@ -27,7 +27,7 @@ namespace yocto
         template <>
         ghosts_of<coord1d>:: ghosts_of( const layouts_of<coord1d> &L )
         {
-            std::cerr << "Ghost1D" << std::endl;
+            //std::cerr << "Ghost1D" << std::endl;
             const domain_of<coord1d>::link &xlnk = L.links[0];
             const size_t ng = L.depth;
             ghosts &G = (*this)[0];
@@ -38,7 +38,7 @@ namespace yocto
                 for(coord1d x=L.outer.lower;x<L.inner.lower;++x)
                 {
                     const coord1d v = L.outer.offset_of(x);
-                    std::cerr << "prev@" << x << " => " << v <<std::endl;
+                    //std::cerr << "prev@" << x << " => " << v <<std::endl;
                     g.push_back(v);
                 }
                 assert(g.size()==ng);
@@ -49,7 +49,7 @@ namespace yocto
                 for(coord1d x=L.inner.upper+1;x<=L.outer.upper;++x)
                 {
                     const coord1d v = L.outer.offset_of(x);
-                    std::cerr << "next@" << x << " => " << v <<std::endl;
+                    //std::cerr << "next@" << x << " => " << v <<std::endl;
                     g.push_back(v);
                 }
                 assert(g.size()==ng);
@@ -59,7 +59,7 @@ namespace yocto
         template <>
         ghosts_of<coord2d>:: ghosts_of( const layouts_of<coord2d> &L )
         {
-            std::cerr << "Ghost2D" << std::endl;
+            //std::cerr << "Ghost2D" << std::endl;
             const layout_of<coord2d> &outer = L.outer;
             const layout_of<coord2d> &inner = L.inner;
 
@@ -80,7 +80,7 @@ namespace yocto
                         {
                             const coord2d q(x,y);
                             const coord1d v = outer.offset_of(q);
-                            std::cerr << "xprev@" << q << " => " << v <<std::endl;
+                            //std::cerr << "xprev@" << q << " => " << v <<std::endl;
                             g.push_back(v);
                         }
                     }
@@ -96,7 +96,7 @@ namespace yocto
                         {
                             const coord2d q(x,y);
                             const coord1d v = outer.offset_of(q);
-                            std::cerr << "xnext@" << q << " => " << v <<std::endl;
+                            //std::cerr << "xnext@" << q << " => " << v <<std::endl;
                             g.push_back(v);
                         }
                     }
@@ -122,7 +122,7 @@ namespace yocto
                         {
                             const coord2d q(x,y);
                             const coord1d v = outer.offset_of(q);
-                            std::cerr << "yprev@" << q << " => " << v <<std::endl;
+                            //std::cerr << "yprev@" << q << " => " << v <<std::endl;
                             g.push_back(v);
                         }
                     }
@@ -138,7 +138,7 @@ namespace yocto
                         {
                             const coord2d q(x,y);
                             const coord1d v = outer.offset_of(q);
-                            std::cerr << "ynext@" << q << " => " << v <<std::endl;
+                            //std::cerr << "ynext@" << q << " => " << v <<std::endl;
                             g.push_back(v);
                         }
                     }
@@ -152,7 +152,7 @@ namespace yocto
         template <>
         ghosts_of<coord3d>:: ghosts_of( const layouts_of<coord3d> &L )
         {
-            std::cerr << "Ghost3D" << std::endl;
+            //std::cerr << "Ghost3D" << std::endl;
             const layout_of<coord3d> &outer = L.outer;
             const layout_of<coord3d> &inner = L.inner;
 
@@ -175,7 +175,7 @@ namespace yocto
                             {
                                 const coord3d q(x,y,z);
                                 const coord1d v = outer.offset_of(q);
-                                std::cerr << "xprev@" << q << " => " << v <<std::endl;
+                                //std::cerr << "xprev@" << q << " => " << v <<std::endl;
                                 g.push_back(v);
                             }
                         }
@@ -194,7 +194,7 @@ namespace yocto
                             {
                                 const coord3d q(x,y,z);
                                 const coord1d v = outer.offset_of(q);
-                                std::cerr << "xnext@" << q << " => " << v <<std::endl;
+                                //std::cerr << "xnext@" << q << " => " << v <<std::endl;
                                 g.push_back(v);
                             }
                         }
@@ -222,7 +222,7 @@ namespace yocto
                             {
                                 const coord3d q(x,y,z);
                                 const coord1d v = outer.offset_of(q);
-                                std::cerr << "yprev@" << q << " => " << v <<std::endl;
+                                //std::cerr << "yprev@" << q << " => " << v <<std::endl;
                                 g.push_back(v);
                             }
                         }
@@ -241,7 +241,7 @@ namespace yocto
                             {
                                 const coord3d q(x,y,z);
                                 const coord1d v = outer.offset_of(q);
-                                std::cerr << "yprev@" << q << " => " << v <<std::endl;
+                                //std::cerr << "yprev@" << q << " => " << v <<std::endl;
                                 g.push_back(v);
                             }
                         }
@@ -271,7 +271,7 @@ namespace yocto
                             {
                                 const coord3d q(x,y,z);
                                 const coord1d v = outer.offset_of(q);
-                                std::cerr << "zprev@" << q << " => " << v <<std::endl;
+                                //std::cerr << "zprev@" << q << " => " << v <<std::endl;
                                 g.push_back(v);
                             }
                         }
@@ -290,7 +290,7 @@ namespace yocto
                             {
                                 const coord3d q(x,y,z);
                                 const coord1d v = outer.offset_of(q);
-                                std::cerr << "zprev@" << q << " => " << v <<std::endl;
+                                //std::cerr << "zprev@" << q << " => " << v <<std::endl;
                                 g.push_back(v);
                             }
                         }

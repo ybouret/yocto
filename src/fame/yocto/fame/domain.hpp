@@ -9,15 +9,21 @@ namespace yocto
 {
     namespace fame
     {
-        
+
+        //______________________________________________________________________
+        //
         //! a domain, used to build topology
+        //______________________________________________________________________
         template <typename COORD>
         class domain_of
         {
         public:
             YOCTO_FAME_DECL_COORD;
-            
+
+            //__________________________________________________________________
+            //
             //! peer information about this and neigbors
+            //__________________________________________________________________
             YOCTO_TRIPLE_DECL(YOCTO_TUPLE_TEMPLATE,peer,
                               const coord1d,rank,
                               const_coord,ranks,
@@ -30,7 +36,10 @@ namespace yocto
             }
             YOCTO_TUPLE_END();
             
-            
+            //______________________________________________________________________
+            //
+            //! holds a pair or peers
+            //______________________________________________________________________
             class link
             {
             public:
@@ -78,7 +87,8 @@ namespace yocto
             const peer           self;  //!< this information
             layout_type          inner; //!< for simulation
             slots_of<const link> links; //!< for topology
-            
+
+            //! to debug
             inline void run_hash( hashing::function &h ) const throw()
             {
                 full.run_hash(h);
