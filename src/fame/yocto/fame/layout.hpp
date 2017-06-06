@@ -112,7 +112,22 @@ namespace yocto
         private:
             YOCTO_DISABLE_ASSIGN(layout_of);
         };
-        
+
+        struct layout_ops
+        {
+            static inline layout_of<coord1d> project( const layout_of<coord2d> &L ) throw()
+            {
+                return layout_of<coord1d>(L.lower.x,L.upper.x);
+            }
+
+            static inline layout_of<coord2d> project( const layout_of<coord3d> &L ) throw()
+            {
+                const coord2d lo(L.lower.x,L.lower.y);
+                const coord2d up(L.upper.x,L.upper.y);
+                return layout_of<coord2d>(lo,up);
+            }
+        };
+
     }
 }
 

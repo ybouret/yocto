@@ -56,7 +56,7 @@ namespace yocto
             {
             }
 
-            size_t count; //!< owned objects
+            size_t count; //!< used for items of bytes
             type  *entry; //!< linear space of outer.items items...
 
             field_of(const field_of &other) :

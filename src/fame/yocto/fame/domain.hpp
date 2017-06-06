@@ -87,6 +87,7 @@ namespace yocto
             const peer           self;  //!< this information
             layout_type          inner; //!< for simulation
             slots_of<const link> links; //!< for topology
+            const_coord          pbc;   //!< to keep track
 
             //! to debug
             inline void run_hash( hashing::function &h ) const throw()
@@ -104,11 +105,12 @@ namespace yocto
                                       const coord1d      user_size,
                                       const_coord       *user_cpus,
                                       const layout_type &user_full,
-                                      param_coord        pbc) :
+                                      param_coord        user_pbc) :
             full(user_full,user_size,user_cpus),
             self(user_rank,full.local_ranks(user_rank),true),
             inner( full(self.rank) ),
-            links(DIMENSION)
+            links(DIMENSION),
+            pbc(user_pbc)
             {
                 for(size_t i=0;i<DIMENSION;++i)
                 {
@@ -212,7 +214,8 @@ namespace yocto
             full(other.full),
             self(other.self),
             inner(other.inner),
-            links(DIMENSION)
+            links(DIMENSION),
+            pbc(other.pbc)
             {
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {

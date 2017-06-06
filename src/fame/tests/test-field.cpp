@@ -1,4 +1,4 @@
-#include "yocto/fame/field1d.hpp"
+#include "yocto/fame/field2d.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
