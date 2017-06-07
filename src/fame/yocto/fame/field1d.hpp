@@ -81,6 +81,7 @@ namespace yocto
                 {
                     this->count = this->num_outer;
                     this->entry = memory::kind<memory::global>::acquire_as<type>(this->count);
+                    this->set_allocated(this->count*sizeof(T));
                 }
                 shift = this->entry - this->outer.lower;
             }

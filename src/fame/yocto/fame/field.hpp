@@ -15,6 +15,7 @@ namespace yocto
             const size_t item_size;
             const size_t num_outer;
             const size_t num_inner;
+            const size_t allocated_bytes;
 
             virtual ~field_data() throw();
             explicit field_data(const string &id,
@@ -22,6 +23,9 @@ namespace yocto
                                 const size_t  n_outer,
                                 const size_t  n_inner);
             field_data(const field_data &other);
+
+        protected:
+            void set_allocated(const size_t bytes) throw();
 
         private:
             YOCTO_DISABLE_ASSIGN(field_data);

@@ -57,11 +57,16 @@ namespace yocto
                 assert(this->outer.has(C));
                 return rows[C.y][C.x];
             }
-            
+
+            inline const row & first() const throw()
+            {
+                return rows[this->outer.lower.y];
+            }
+
         private:
             YOCTO_DISABLE_ASSIGN(field2d);
-            row   *rows;
-            size_t nr;
+            row   *rows; //!< the rows
+            size_t nr;   //!< internal built rows counter
             
             inline void clear() throw()
             {
@@ -105,6 +110,8 @@ namespace yocto
                     uint8_t  *p = (uint8_t *) memory::kind<memory::global>::acquire(this->count);
                     rows        = (row  *)&p[rows_offset];
                     this->entry = (type *)&p[items_offset];
+
+                    this->set_allocated(this->count);
                 }
 
                 //______________________________________________________________
@@ -129,9 +136,8 @@ namespace yocto
                     // build each row
                     for(coord1d y = this->outer.lower.y; y <= this->outer.upper.y; ++y, t_addr += stride)
                     {
-                        const string fid = this->name + ".row#" + vformat("%ld",y);
+                        const string fid = this->name + ".row#" + vformat("%ld",long(y));
                         new (&rows[y]) row(fid,dom_x,ng,t_addr);
-                        //std::cerr << "rows[" << y << "] inner=" << rows[y].inner << ", outer=" << rows[y].outer << std::endl;
                         ++nr;
                     }
 

@@ -15,7 +15,8 @@ namespace yocto
         name(id),
         item_size(b_item),
         num_outer(n_outer),
-        num_inner(n_inner)
+        num_inner(n_inner),
+        allocated_bytes(0)
         {
         }
 
@@ -23,8 +24,14 @@ namespace yocto
         name( other.name ),
         item_size(other.item_size),
         num_outer(other.num_outer),
-        num_inner(other.num_inner)
+        num_inner(other.num_inner),
+        allocated_bytes(0)
         {
+        }
+
+        void  field_data:: set_allocated(const size_t bytes) throw()
+        {
+            (size_t &)allocated_bytes = bytes;
         }
 
 
