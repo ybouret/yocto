@@ -110,31 +110,32 @@ namespace yocto
                 //______________________________________________________________
                 //
                 // build rows
+                //______________________________________________________________
                 rows -= this->outer.lower.y;
                 try
                 {
+                    // data walking
                     type                    *t_addr = this->entry;
                     const size_t             stride = this->outer.width.x;
-                    
 
-#if 0
-                    const layout_of<coord1d> full_x = layout_ops::project(this->inner);
-                    std::cerr << "self.inner=" << this->inner << std::endl;
-                    std::cerr << "self.outer=" << this->outer << std::endl;
-                    std::cerr << "self.depth=" << this->depth << std::endl;
-                    for(coord1d y = this->outer.lower.y; y <= this->outer.upper.y; ++y, q += stride)
+                    // preparing sub-domain
+                    const layout<coord1d>    full_x = layout_ops::project(this->full);
+                    const coord1d            rank_x = this->self.ranks.x;
+                    const coord1d            size_x = this->full.sizes.x;
+                    const coord1d            pbc_x  = this->pbc.x;
+                    const coord1d            ng     = this->depth;
+                    const domain<coord1d>    dom_x(rank_x,size_x,&size_x,full_x,pbc_x);
+
+                    // build each row
+                    for(coord1d y = this->outer.lower.y; y <= this->outer.upper.y; ++y, t_addr += stride)
                     {
-                        const coord1d rank1d = 0;
-                        const coord1d size1d = 1;
-                        const domain_of<coord1d> dom1d(rank1d,size1d,&size1d,full_x,this->pbc.x);
                         const string fid = this->name + ".row#" + vformat("%ld",y);
-                        new (&rows[y]) row(fid,dom1d,this->depth,q);
-                        std::cerr << "rows[" << y << "] inner=" << rows[y].inner << ", outer=" << rows[y].outer << std::endl;
+                        new (&rows[y]) row(fid,dom_x,ng,t_addr);
+                        //std::cerr << "rows[" << y << "] inner=" << rows[y].inner << ", outer=" << rows[y].outer << std::endl;
                         ++nr;
                     }
-#endif
 
-
+                    
                 }
                 catch(...)
                 {

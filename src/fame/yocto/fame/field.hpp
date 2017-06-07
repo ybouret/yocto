@@ -66,7 +66,7 @@ namespace yocto
             entry(0)
             {
             }
-            
+
         private:
             YOCTO_DISABLE_ASSIGN(field);
         };

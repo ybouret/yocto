@@ -96,13 +96,20 @@ namespace yocto
             {
                 if(cpus)
                 {
+                    //__________________________________________________________
+                    //
                     // user choosen partition
+                    //__________________________________________________________
                     const_coord ans = *cpus;
                     assert(size==__coord_prod(ans));
                     return ans;
                 }
                 else
                 {
+                    //__________________________________________________________
+                    //
+                    // find best partition according to parameters
+                    //__________________________________________________________
                     return mpi_split::compute_sizes(size,full.width);
                 }
             }
