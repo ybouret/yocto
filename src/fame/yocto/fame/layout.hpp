@@ -10,7 +10,7 @@ namespace yocto
     {
         
         template <typename COORD>
-        class layout_of
+        class layout
         {
         public:
             YOCTO_FAME_DECL_COORD;
@@ -21,8 +21,8 @@ namespace yocto
             const_coord  width;  //!< upper-lower+1
             const size_t items;  //!< linear items in layout
 
-            inline virtual ~layout_of() throw() {}
-            inline explicit layout_of(param_coord L,param_coord U) throw() :
+            inline virtual ~layout() throw() {}
+            inline explicit layout(param_coord L,param_coord U) throw() :
             lower(L),
             upper(U),
             pitch( coord_data<coord>::zero ),
@@ -53,7 +53,7 @@ namespace yocto
                 
             }
             
-            inline layout_of(const layout_of &other) throw() :
+            inline layout(const layout &other) throw() :
             lower(other.lower),
             upper(other.upper),
             pitch(other.pitch),
@@ -74,19 +74,19 @@ namespace yocto
             }
             
             //! show it
-            friend inline std::ostream & operator<<( std::ostream &lay_os, const layout_of &p )
+            friend inline std::ostream & operator<<( std::ostream &lay_os, const layout &p )
             {
                 lay_os << "{ " << p.lower << " -> " << p.upper << " : width=" << p.width << " => #" << p.items << " pitch=" << p.pitch << " }";
                 return lay_os;
             }
 
-            inline bool equals( const layout_of &other ) const throw()
+            inline bool equals( const layout &other ) const throw()
             {
                 return are_same_coord(lower,other.lower) && are_same_coord(upper,other.upper);
             }
             
             friend inline
-            bool operator==(const layout_of &lhs, const layout_of &rhs) throw()
+            bool operator==(const layout &lhs, const layout &rhs) throw()
             {
                 return lhs.equals(rhs);
             }
@@ -95,7 +95,7 @@ namespace yocto
             inline bool has( param_coord C ) const throw() { return is_coord_inside<COORD>(C,lower,upper); }
             
             //! test sub layout inside this layout
-            inline bool contains( const layout_of &sub ) const throw()
+            inline bool contains( const layout &sub ) const throw()
             {
                 return has(sub.lower) && has(sub.upper);
             }
@@ -110,21 +110,21 @@ namespace yocto
             }
             
         private:
-            YOCTO_DISABLE_ASSIGN(layout_of);
+            YOCTO_DISABLE_ASSIGN(layout);
         };
 
         struct layout_ops
         {
-            static inline layout_of<coord1d> project( const layout_of<coord2d> &L ) throw()
+            static inline layout<coord1d> project( const layout<coord2d> &L ) throw()
             {
-                return layout_of<coord1d>(L.lower.x,L.upper.x);
+                return layout<coord1d>(L.lower.x,L.upper.x);
             }
 
-            static inline layout_of<coord2d> project( const layout_of<coord3d> &L ) throw()
+            static inline layout<coord2d> project( const layout<coord3d> &L ) throw()
             {
                 const coord2d lo(L.lower.x,L.lower.y);
                 const coord2d up(L.upper.x,L.upper.y);
-                return layout_of<coord2d>(lo,up);
+                return layout<coord2d>(lo,up);
             }
         };
 

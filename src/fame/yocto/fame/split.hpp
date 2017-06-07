@@ -12,11 +12,11 @@ namespace yocto
         
         //! routines to split a layout
         template <typename COORD>
-        class split : public layout_of<COORD>
+        class split : public layout<COORD>
         {
         public:
             YOCTO_FAME_DECL_COORD;
-            typedef layout_of<COORD> layout_type;
+            typedef layout<COORD> layout_type;
             
             const_coord   sizes;
             const coord1d size;

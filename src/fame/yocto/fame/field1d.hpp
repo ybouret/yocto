@@ -10,12 +10,12 @@ namespace yocto
     {
 
         template <typename T>
-        class field1d : public field_of<T,coord1d>
+        class field1d : public field<T,coord1d>
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
-            typedef field_of<T,coord1d>              field_type;
-            typedef domain_of<coord1d>               domain_type;
+            typedef field<T,coord1d>                 field_type;
+            typedef domain<coord1d>                  domain_type;
             typedef typename field_type::param_coord param_coord;
 
             inline explicit field1d(const string      &fid,

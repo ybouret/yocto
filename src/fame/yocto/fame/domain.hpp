@@ -15,7 +15,7 @@ namespace yocto
         //! a domain, used to build topology
         //______________________________________________________________________
         template <typename COORD>
-        class domain_of
+        class domain
         {
         public:
             YOCTO_FAME_DECL_COORD;
@@ -35,7 +35,7 @@ namespace yocto
                 h.run_type(local);
             }
             YOCTO_TUPLE_END();
-            
+
             //______________________________________________________________________
             //
             //! holds a pair or peers
@@ -49,7 +49,7 @@ namespace yocto
                 inline ~link() throw() { clear(); }
                 inline void set_next(const peer &p) { assert(0==next); next = new peer(p); }
                 inline void set_prev(const peer &p) { assert(0==prev); prev = new peer(p); }
-                
+
                 inline link(const link &other) : next(0), prev(0)
                 {
                     try
@@ -63,13 +63,13 @@ namespace yocto
                         throw;
                     }
                 }
-                
+
                 inline void run_hash( hashing::function &H ) const throw()
                 {
                     if(next) { next->run_hash(H); }
                     if(prev) { prev->run_hash(H); }
                 }
-                
+
             private:
                 YOCTO_DISABLE_ASSIGN(link);
                 inline void clear() throw()
@@ -77,12 +77,12 @@ namespace yocto
                     if(prev) { delete prev; prev=0; }
                     if(next) { delete next; next=0; }
                 }
-                
+
             };
-            
-            typedef layout_of<COORD> layout_type;
-            typedef split<COORD>     split_type;
-            
+
+            typedef layout<COORD> layout_type;
+            typedef split<COORD>  split_type;
+
             split_type           full;  //!< used to split
             const peer           self;  //!< this information
             layout_type          inner; //!< for simulation
@@ -100,12 +100,12 @@ namespace yocto
                     links[dim].run_hash(h);
                 }
             }
-            
-            inline explicit domain_of(const coord1d      user_rank,
-                                      const coord1d      user_size,
-                                      const_coord       *user_cpus,
-                                      const layout_type &user_full,
-                                      param_coord        user_pbc) :
+
+            inline explicit domain(const coord1d      user_rank,
+                                   const coord1d      user_size,
+                                   const_coord       *user_cpus,
+                                   const layout_type &user_full,
+                                   param_coord        user_pbc) :
             full(user_full,user_size,user_cpus),
             self(user_rank,full.local_ranks(user_rank),true),
             inner( full(self.rank) ),
@@ -116,7 +116,7 @@ namespace yocto
                 {
                     links.push_back();
                 }
-                
+
                 //______________________________________________________________
                 //
                 //
@@ -154,7 +154,7 @@ namespace yocto
                                 //std::cerr << "next(" << self << ")=none" << std::endl;
                             }
                         }
-                        
+
                         {
                             //__________________________________________________
                             //
@@ -204,13 +204,13 @@ namespace yocto
                             //std::cerr << "next(" << self << ")=" << "none" << std::endl;
                             //std::cerr << "prev(" << self << ")=" << "none" << std::endl;
                         }
-                        
+
                     }
-                    
+
                 }
             }
-            
-            inline domain_of(const domain_of &other) :
+
+            inline domain(const domain &other) :
             full(other.full),
             self(other.self),
             inner(other.inner),
@@ -224,14 +224,14 @@ namespace yocto
             }
             
             
-            inline virtual ~domain_of() throw()
+            inline virtual ~domain() throw()
             {
             }
             
             
             
         private:
-            YOCTO_DISABLE_ASSIGN(domain_of);
+            YOCTO_DISABLE_ASSIGN(domain);
         };
     }
 }

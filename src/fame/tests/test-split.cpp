@@ -7,14 +7,14 @@ using namespace fame;
 YOCTO_UNIT_TEST_IMPL(split)
 {
     {
-        layout_of<coord1d> L(1,16);
+        layout<coord1d> L(1,16);
         for(size_t np=1;np<=16;++np)
         {
             coord1d sizes = np;
             split<coord1d> S(L,np,&sizes);
             for(size_t r=0;r<np;++r)
             {
-                const layout_of<coord1d> sub = S(r);
+                const layout<coord1d> sub = S(r);
                 std::cerr << np << "." << r << ":" << sub << std::endl;
             }
             for(size_t rank=0;rank<np;++rank)
@@ -31,7 +31,7 @@ YOCTO_UNIT_TEST_IMPL(split)
     }
     
     {
-        layout_of<coord2d> L( coord2d(1,1), coord2d(16,16) );
+        layout<coord2d> L( coord2d(1,1), coord2d(16,16) );
         for(size_t np=1;np<=16;++np)
         {
             for(size_t sx=1;sx<=np;++sx)
@@ -44,7 +44,7 @@ YOCTO_UNIT_TEST_IMPL(split)
                     split<coord2d> S(L,np,&sizes);
                     for(size_t r=0;r<np;++r)
                     {
-                        const layout_of<coord2d> sub = S(r);
+                        const layout<coord2d> sub = S(r);
                         std::cerr << np << "." << r << ":" << sub << std::endl;
                     }
                     
@@ -65,7 +65,7 @@ YOCTO_UNIT_TEST_IMPL(split)
     }
     
     {
-        layout_of<coord3d> L( coord3d(1,1,1), coord3d(16,16,16) );
+        layout<coord3d> L( coord3d(1,1,1), coord3d(16,16,16) );
         for(size_t np=1;np<=16;++np)
         {
             for(size_t sx=1;sx<=np;++sx)
@@ -80,7 +80,7 @@ YOCTO_UNIT_TEST_IMPL(split)
                         split<coord3d> S(L,np,&sizes);
                         for(size_t r=0;r<np;++r)
                         {
-                            const layout_of<coord3d> sub = S(r);
+                            const layout<coord3d> sub = S(r);
                             std::cerr << np << "." << r << ":" << sub << std::endl;
                         }
                         

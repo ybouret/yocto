@@ -29,23 +29,23 @@ namespace yocto
 
         template <typename T,
         typename COORD>
-        class field_of : public layouts_of<COORD>, public field_data
+        class field : public layouts<COORD>, public field_data
         {
         public:
             YOCTO_FAME_DECL_COORD;
             YOCTO_ARGUMENTS_DECL_T;
 
-            typedef layouts_of<COORD> layouts_type;
-            typedef layout_of<COORD>  layout_type;
-            typedef domain_of<COORD>  domain_type;
+            typedef layouts<COORD> layouts_type;
+            typedef layout<COORD>  layout_type;
+            typedef domain<COORD>  domain_type;
 
             virtual type       &at(param_coord C) throw()       = 0;
             virtual const_type &at(param_coord C) const throw() = 0;
 
         protected:
-            inline explicit field_of(const string      &fid,
-                                     const domain_type &dom,
-                                     const coord1d      num_ghosts) :
+            inline explicit field(const string      &fid,
+                                  const domain_type &dom,
+                                  const coord1d      num_ghosts) :
             layouts_type(dom,num_ghosts),
             field_data(fid,
                        sizeof(type),
@@ -59,7 +59,7 @@ namespace yocto
             size_t count; //!< used for items of bytes
             type  *entry; //!< linear space of outer.items items...
 
-            field_of(const field_of &other) :
+            field(const field &other) :
             layouts_type(other),
             field_data(other),
             count(0),
@@ -68,7 +68,7 @@ namespace yocto
             }
             
         private:
-            YOCTO_DISABLE_ASSIGN(field_of);
+            YOCTO_DISABLE_ASSIGN(field);
         };
     }
 }

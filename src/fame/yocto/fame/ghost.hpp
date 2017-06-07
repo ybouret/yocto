@@ -11,7 +11,7 @@ namespace yocto
     {
         
         typedef vector<coord1d>         indices_type;
-        template <typename COORD> class layouts_of;
+        template <typename COORD> class layouts;
 
         //______________________________________________________________________
         //
@@ -77,7 +77,7 @@ namespace yocto
         public:
             YOCTO_FAME_DECL_COORD;
             inline virtual ~ghosts_of() throw() {}
-            explicit ghosts_of(const layouts_of<COORD> &L);
+            explicit ghosts_of(const layouts<COORD> &L);
             
             
         private:

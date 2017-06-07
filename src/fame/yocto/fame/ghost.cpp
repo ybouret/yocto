@@ -25,10 +25,10 @@ namespace yocto
         }
 
         template <>
-        ghosts_of<coord1d>:: ghosts_of( const layouts_of<coord1d> &L )
+        ghosts_of<coord1d>:: ghosts_of( const layouts<coord1d> &L )
         {
             //std::cerr << "Ghost1D" << std::endl;
-            const domain_of<coord1d>::link &xlnk = L.links[0];
+            const domain<coord1d>::link &xlnk = L.links[0];
             const size_t ng = L.depth;
             ghosts &G = (*this)[0];
             if(xlnk.prev)
@@ -57,18 +57,18 @@ namespace yocto
         }
 
         template <>
-        ghosts_of<coord2d>:: ghosts_of( const layouts_of<coord2d> &L )
+        ghosts_of<coord2d>:: ghosts_of( const layouts<coord2d> &L )
         {
             //std::cerr << "Ghost2D" << std::endl;
-            const layout_of<coord2d> &outer = L.outer;
-            const layout_of<coord2d> &inner = L.inner;
+            const layout<coord2d> &outer = L.outer;
+            const layout<coord2d> &inner = L.inner;
 
             //__________________________________________________________________
             //
             // X
             //__________________________________________________________________
             {
-                const domain_of<coord2d>::link &xlnk = L.links[0];
+                const domain<coord2d>::link &xlnk = L.links[0];
                 const size_t                     ng  = L.depth*outer.width.y;
                 ghosts &G = (*this)[0];
                 if(xlnk.prev)
@@ -110,7 +110,7 @@ namespace yocto
             // Y
             //__________________________________________________________________
             {
-                const domain_of<coord2d>::link &ylnk = L.links[1];
+                const domain<coord2d>::link &ylnk = L.links[1];
                 const size_t                     ng  = L.depth*outer.width.x;
                 ghosts &G = (*this)[1];
                 if(ylnk.prev)
@@ -150,18 +150,18 @@ namespace yocto
 
 
         template <>
-        ghosts_of<coord3d>:: ghosts_of( const layouts_of<coord3d> &L )
+        ghosts_of<coord3d>:: ghosts_of( const layouts<coord3d> &L )
         {
             //std::cerr << "Ghost3D" << std::endl;
-            const layout_of<coord3d> &outer = L.outer;
-            const layout_of<coord3d> &inner = L.inner;
+            const layout<coord3d> &outer = L.outer;
+            const layout<coord3d> &inner = L.inner;
 
             //__________________________________________________________________
             //
             // X
             //__________________________________________________________________
             {
-                const domain_of<coord3d>::link &xlnk = L.links[0];
+                const domain<coord3d>::link &xlnk = L.links[0];
                 const size_t                     ng  = L.depth*outer.width.y*outer.width.z;
                 ghosts &G = (*this)[0];
                 if(xlnk.prev)
@@ -208,7 +208,7 @@ namespace yocto
             // Y
             //__________________________________________________________________
             {
-                const domain_of<coord3d>::link &ylnk = L.links[1];
+                const domain<coord3d>::link &ylnk = L.links[1];
                 const size_t                     ng  = L.depth*outer.width.x*outer.width.z;
                 ghosts &G = (*this)[1];
                 if(ylnk.prev)
@@ -257,7 +257,7 @@ namespace yocto
             // Z
             //__________________________________________________________________
             {
-                const domain_of<coord3d>::link &zlnk = L.links[2];
+                const domain<coord3d>::link &zlnk = L.links[2];
                 const size_t                     ng  = L.depth*outer.width.x*outer.width.y;
                 ghosts &G = (*this)[2];
                 if(zlnk.prev)

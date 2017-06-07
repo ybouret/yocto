@@ -13,10 +13,10 @@ YOCTO_PROGRAM_START()
     YOCTO_MPI_ENV();
 
     {
-        const layout_of<coord1d> full(-10,10);
+        const layout<coord1d> full(-10,10);
         MPI.Printf0(stderr,"IS  periodic\n");
-        const domain_of<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,1);
-        layouts_of<coord1d>      W(D,2);
+        const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,1);
+        layouts<coord1d>      W(D,2);
         ghosts_of<coord1d>       G(W);
         MPI.Printf(stderr,"is %2ld.%2ld: layout: inner=[%5ld:%5ld], outer=[%5ld:%5ld]\n",
                    D.full.size,D.self.rank,

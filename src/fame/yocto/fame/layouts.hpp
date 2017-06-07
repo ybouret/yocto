@@ -6,35 +6,35 @@
 
 namespace yocto
 {
-    
+
     namespace fame
     {
         template <typename COORD>
-        class layouts_of : public domain_of<COORD>
+        class layouts : public domain<COORD>
         {
         public:
             YOCTO_FAME_DECL_COORD;
-            typedef domain_of<COORD>           domain_type;
-            typedef layout_of<COORD>           layout_type;
+            typedef domain<COORD>           domain_type;
+            typedef layout<COORD>           layout_type;
             typedef typename domain_type::link link;
-            
+
             const coord1d     depth; //!< ghost depths
             const layout_type outer; //!< outer layouts
-            inline virtual ~layouts_of() throw() {}
-            
-            inline explicit layouts_of(const domain_type &dom,
-                                       const coord1d      num_ghosts) :
+            inline virtual ~layouts() throw() {}
+
+            inline explicit layouts(const domain_type &dom,
+                                    const coord1d      num_ghosts) :
             domain_type(dom),
             depth(num_ghosts<0?0:num_ghosts),
             outer( __expand(this->inner,*this,depth) )
             {
                 //std::cerr << "[new layout with depth=" << depth << "]" << std::endl;
             }
+
             
-            
-            
+
         private:
-            YOCTO_DISABLE_ASSIGN(layouts_of);
+            YOCTO_DISABLE_ASSIGN(layouts);
             static inline
             layout_type __expand(const layout_type &L,
                                  const domain_type &D,
@@ -57,14 +57,14 @@ namespace yocto
                         upper += ng;
                     }
                 }
-                
+
                 return layout_type(Lower,Upper);
             }
-            
-            
+
+
         };
     }
-    
+
 }
 
 #endif

@@ -10,12 +10,12 @@ namespace yocto
     {
         
         template <typename T>
-        class field2d : public field_of<T,coord2d>
+        class field2d : public field<T,coord2d>
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
-            typedef field_of<T,coord2d>              field_type;
-            typedef domain_of<coord2d>               domain_type;
+            typedef field<T,coord2d>                 field_type;
+            typedef domain<coord2d>                  domain_type;
             typedef typename field_type::param_coord param_coord;
             typedef field1d<T>                       row;
             
@@ -113,8 +113,11 @@ namespace yocto
                 rows -= this->outer.lower.y;
                 try
                 {
-                    type                    *q      = this->entry;
+                    type                    *t_addr = this->entry;
                     const size_t             stride = this->outer.width.x;
+                    
+
+#if 0
                     const layout_of<coord1d> full_x = layout_ops::project(this->inner);
                     std::cerr << "self.inner=" << this->inner << std::endl;
                     std::cerr << "self.outer=" << this->outer << std::endl;
@@ -129,6 +132,9 @@ namespace yocto
                         std::cerr << "rows[" << y << "] inner=" << rows[y].inner << ", outer=" << rows[y].outer << std::endl;
                         ++nr;
                     }
+#endif
+
+
                 }
                 catch(...)
                 {
