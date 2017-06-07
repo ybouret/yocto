@@ -26,6 +26,77 @@ namespace yocto
                 clear();
             }
 
+            inline explicit field3d(const string      &fid,
+                                    const domain_type &dom,
+                                    const coord1d      num_ghosts) :
+            field_type(fid,dom,num_ghosts),
+            slices(0),
+            ns(0)
+            {
+                const size_t num_slices     = this->outer.width.z;
+                const size_t slices_offset  = 0;
+                const size_t slices_length  = num_slices * sizeof(slice);
+
+                const size_t rows_per_slice = this->outer.width.y;
+                const size_t num_rows       = num_slices * rows_per_slice;
+                const size_t rows_offset    = memory::align(slices_offset+slices_length);
+                const size_t rows_length    = num_rows * sizeof(row);
+
+                const size_t num_data       = this->outer.items;
+                const size_t data_offset    = memory::align(rows_offset+rows_length);
+                const size_t data_length    = num_data * sizeof(T);
+
+                this->count = memory::align(data_offset + data_length);
+                uint8_t *p  = (uint8_t *)memory::kind<memory::global>::acquire(this->count);
+                slices      = (slice *) &p[slices_offset];
+                row  *r     = (row   *) &p[rows_offset  ];
+                this->entry = (type  *) &p[data_offset  ];
+
+                slices -= this->outer.lower.z;
+                type *t = this->entry;
+                const size_t data_per_slice = this->outer.width.x * this->outer.width.y;
+                try
+                {
+                    // create the sub-domain 2D
+
+                    for(coord1d z=this->outer.lower.z;z<=this->outer.upper.z;++z,r+=rows_per_slice,t+=data_per_slice)
+                    {
+
+                        //++ns;
+                    }
+                    //assert(num_slices==ns);
+                }
+                catch(...)
+                {
+                    clear();
+                    throw;
+                }
+
+            }
+
+            inline slice & operator[](const coord1d z) throw()
+            {
+                assert(z>=this->outer.lower.z); assert(z<=this->outer.upper.z);
+                return slices[z];
+            }
+
+            inline const slice & operator[](const coord1d z) const throw()
+            {
+                assert(z>=this->outer.lower.z); assert(z<=this->outer.upper.z);
+                return slices[z];
+            }
+
+            inline virtual type & at(param_coord C) throw()
+            {
+                assert(this->outer.has(C));
+                return slices[C.z][C.y][C.x];
+            }
+
+            inline virtual const_type & at(param_coord C) const throw()
+            {
+                assert(this->outer.has(C));
+                return slices[C.z][C.y][C.x];
+            }
 
         private:
             YOCTO_DISABLE_ASSIGN(field3d);
@@ -34,6 +105,18 @@ namespace yocto
             
             inline void clear() throw()
             {
+                assert(slices!=NULL);
+                slices += this->outer.lower.z;
+                while(ns>0)
+                {
+                    --ns;
+                    slices[ns].~slice();
+                }
+                if(this->count)
+                {
+                    void *p = slices;
+                    memory::kind<memory::global>::release(p,this->count);
+                }
             }
 
         };

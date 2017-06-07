@@ -54,12 +54,30 @@ YOCTO_UNIT_TEST_IMPL(field)
                     std::cerr << "\t\t\t1D inner=" << F.first().inner << std::endl;
                     std::cerr << "\t\t\t2D outer=" << F.outer << std::endl;
                     std::cerr << "\t\t\t1D outer=" << F.first().outer << std::endl;
-
+                }
+                {
+                    std::cerr << "\t\t\tNOT PERIODIC:" << std::endl;
+                    const domain<coord2d> dom(rank,size,NULL,full,coord2d(0,0));
+                    field2d<char> F("F",dom,1);
+                    std::cerr << "\t\t\tsizes=" << F.full.sizes << ".ranks=" << F.self.ranks << std::endl;
+                    std::cerr << "\t\t\t2D inner=" << F.inner << std::endl;
+                    std::cerr << "\t\t\t1D inner=" << F.first().inner << std::endl;
+                    std::cerr << "\t\t\t2D outer=" << F.outer << std::endl;
+                    std::cerr << "\t\t\t1D outer=" << F.first().outer << std::endl;
                 }
             }
         }
         
     }
+
+    {
+        const layout<coord3d> full( coord3d(1,1,1), coord3d(16,16,16) );
+        {
+            const domain<coord3d> dom0(0,1,NULL,full,coord3d(1,1,1));
+            field3d< point3d<int> > Fp("Fp",dom0,2);
+        }
+    }
+
     
 }
 YOCTO_UNIT_TEST_DONE()
