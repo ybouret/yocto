@@ -81,8 +81,11 @@ namespace yocto
             
             inline void build_from(void *rows_entry,void *user_entry)
             {
-                
+
+                //______________________________________________________________
+                //
                 // prepare memory
+                //______________________________________________________________
                 if(rows_entry)
                 {
                     assert(user_entry!=NULL);
@@ -103,21 +106,27 @@ namespace yocto
                     rows        = (row  *)&p[rows_offset];
                     this->entry = (type *)&p[items_offset];
                 }
-                
+
+                //______________________________________________________________
+                //
                 // build rows
                 rows -= this->outer.lower.y;
                 try
                 {
                     type                    *q      = this->entry;
                     const size_t             stride = this->outer.width.x;
-                    const layout_of<coord1d> fullx  = layout_ops::project(this->inner);
+                    const layout_of<coord1d> full_x = layout_ops::project(this->inner);
+                    std::cerr << "self.inner=" << this->inner << std::endl;
+                    std::cerr << "self.outer=" << this->outer << std::endl;
+                    std::cerr << "self.depth=" << this->depth << std::endl;
                     for(coord1d y = this->outer.lower.y; y <= this->outer.upper.y; ++y, q += stride)
                     {
                         const coord1d rank1d = 0;
                         const coord1d size1d = 1;
-                        const domain_of<coord1d> dom1d(rank1d,size1d,&size1d,fullx,0);
+                        const domain_of<coord1d> dom1d(rank1d,size1d,&size1d,full_x,this->pbc.x);
                         const string fid = this->name + ".row#" + vformat("%ld",y);
                         new (&rows[y]) row(fid,dom1d,this->depth,q);
+                        std::cerr << "rows[" << y << "] inner=" << rows[y].inner << ", outer=" << rows[y].outer << std::endl;
                         ++nr;
                     }
                 }

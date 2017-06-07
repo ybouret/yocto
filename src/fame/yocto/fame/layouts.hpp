@@ -28,7 +28,7 @@ namespace yocto
             depth(num_ghosts<0?0:num_ghosts),
             outer( __expand(this->inner,*this,depth) )
             {
-                
+                //std::cerr << "[new layout with depth=" << depth << "]" << std::endl;
             }
             
             
