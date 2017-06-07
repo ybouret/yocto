@@ -58,6 +58,13 @@ namespace yocto
                 try
                 {
                     // create the sub-domain 2D
+                    const layout<coord3d> &full_xyz = this->full;
+                    const layout<coord2d>  full_xy  = layout_ops::project(full_xyz);
+                    const coord2d          rank_xy(this->self.ranks.x,this->self.ranks.y);
+                    const coord2d          size_xy(this->full.sizes.x,this->full.sizes.y);
+                    const coord2d          pbc_xy(this->pbc.x,this->pbc.y);
+                    const coord1d          ng  = this->depth;
+                    //const domain<coord2d>  dom_xy(rank_xy,size_xy,&size_xy,full_xy,pbc_xy);
 
                     for(coord1d z=this->outer.lower.z;z<=this->outer.upper.z;++z,r+=rows_per_slice,t+=data_per_slice)
                     {
