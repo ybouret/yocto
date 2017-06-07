@@ -63,6 +63,11 @@ namespace yocto
                 return rows[this->outer.lower.y];
             }
 
+            inline void run_hash( hashing::function &h ) const throw()
+            {
+                
+            }
+
         private:
             YOCTO_DISABLE_ASSIGN(field2d);
             row   *rows; //!< the rows

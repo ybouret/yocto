@@ -29,7 +29,8 @@ namespace yocto
             }
 
             inline field1d(const field1d &other) :
-            field_type(other)
+            field_type(other),
+            shift(0)
             {
                 build_from(NULL);
                 memcpy(this->entry,other.entry,this->num_outer*sizeof(T));
@@ -67,6 +68,7 @@ namespace yocto
                 assert(this->outer.has(C));
                 return shift[C];
             }
+
 
         private:
             YOCTO_DISABLE_ASSIGN(field1d);
