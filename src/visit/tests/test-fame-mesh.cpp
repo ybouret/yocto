@@ -29,7 +29,7 @@ public:
     mesh2p("mesh2p",D2periodic,1),
     mesh2s("mesh2s",D2straight,1),
     B2f( v2f(-1,-1), v2f(1,1) ),
-    B2d( v2d(0,0), v2d(1,1) )
+    B2d( v2d(0,0),   v2d(1,1) )
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -38,8 +38,8 @@ public:
                    int(mesh2s[0].outer.lower), int(mesh2s[0].outer.upper),
                    int(mesh2s[1].outer.lower), int(mesh2s[1].outer.upper));
         
-        mesh2p.map_to(B2f);
-        mesh2s.map_to(B2d);
+        mesh2p.map_to(B2f,full2d);
+        mesh2s.map_to(B2d,full2d);
     }
 
     virtual void setMetaData(visit_handle &md)
