@@ -33,6 +33,45 @@ namespace yocto
             slices(0),
             ns(0)
             {
+                build();
+            }
+
+            inline slice & operator[](const coord1d z) throw()
+            {
+                assert(z>=this->outer.lower.z); assert(z<=this->outer.upper.z);
+                return slices[z];
+            }
+
+            inline const slice & operator[](const coord1d z) const throw()
+            {
+                assert(z>=this->outer.lower.z); assert(z<=this->outer.upper.z);
+                return slices[z];
+            }
+
+            inline virtual type & at(param_coord C) throw()
+            {
+                assert(this->outer.has(C));
+                return slices[C.z][C.y][C.x];
+            }
+
+            inline virtual const_type & at(param_coord C) const throw()
+            {
+                assert(this->outer.has(C));
+                return slices[C.z][C.y][C.x];
+            }
+
+            inline const slice & first() const throw()
+            {
+                return slices[this->outer.lower.z];
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(field3d);
+            slice *slices;
+            size_t ns;
+
+            inline void build()
+            {
                 const size_t num_slices     = this->outer.width.z;
                 const size_t slices_offset  = 0;
                 const size_t slices_length  = num_slices * sizeof(slice);
@@ -70,7 +109,7 @@ namespace yocto
                     const coord2d          pbc_xy(this->pbc.x,this->pbc.y);
                     const coord1d          ng  = this->depth;
                     const domain<coord2d>  dom_xy(rank_xy,size_xy,&sizes_xy,full_xy,pbc_xy);
-                    
+
                     for(coord1d z=this->outer.lower.z;z<=this->outer.upper.z;++z,r+=rows_per_slice,t+=data_per_slice)
                     {
                         const string slice_id = this->name + ".slice#" + vformat("%ld",long(z));
@@ -87,40 +126,6 @@ namespace yocto
 
             }
 
-            inline slice & operator[](const coord1d z) throw()
-            {
-                assert(z>=this->outer.lower.z); assert(z<=this->outer.upper.z);
-                return slices[z];
-            }
-
-            inline const slice & operator[](const coord1d z) const throw()
-            {
-                assert(z>=this->outer.lower.z); assert(z<=this->outer.upper.z);
-                return slices[z];
-            }
-
-            inline virtual type & at(param_coord C) throw()
-            {
-                assert(this->outer.has(C));
-                return slices[C.z][C.y][C.x];
-            }
-
-            inline virtual const_type & at(param_coord C) const throw()
-            {
-                assert(this->outer.has(C));
-                return slices[C.z][C.y][C.x];
-            }
-
-            inline const slice & first() const throw()
-            {
-                return slices[this->outer.lower.z];
-            }
-
-        private:
-            YOCTO_DISABLE_ASSIGN(field3d);
-            slice *slices;
-            size_t ns;
-            
             inline void clear() throw()
             {
                 assert(slices!=NULL);

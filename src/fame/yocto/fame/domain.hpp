@@ -236,7 +236,18 @@ namespace yocto
 
         struct domain_ops
         {
-
+            template <typename COORD>
+            static inline
+            domain<coord1d> extract1( const domain<COORD> &D, const size_t dim)
+            {
+                const coord1d         lower = __coord(D.full.lower,dim);
+                const coord1d         upper = __coord(D.full.upper,dim);
+                const layout<coord1d> full(lower,upper);
+                const coord1d         rank = __coord(D.self.ranks,dim);
+                const coord1d         size = __coord(D.full.sizes,dim);
+                const coord1d         pbc  = __coord(D.pbc,dim);
+                return domain<coord1d>(rank,size,&size,full,pbc);
+            }
         };
 
     }
