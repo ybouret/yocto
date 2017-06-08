@@ -122,6 +122,19 @@ namespace yocto
         inline type __prod() const throw() { return x*y*z; }
         inline type __sum()  const throw() { return x+y+z; }
 
+        //! equal operator for integer types only
+        inline friend bool operator==(const point3d &lhs, const point3d &rhs) throw()
+        {
+            return (lhs.x==rhs.x) && (lhs.y==rhs.y) && (lhs.z==rhs.z);
+        }
+
+        //! for integer types only...
+        inline friend bool operator!=(const point3d &lhs, const point3d &rhs) throw()
+        {
+            return (lhs.x!=rhs.x) || (lhs.y!=rhs.y) || (lhs.z!=rhs.z);
+        }
+
+
     };
     
     

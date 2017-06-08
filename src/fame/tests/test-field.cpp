@@ -67,17 +67,56 @@ YOCTO_UNIT_TEST_IMPL(field)
                 }
             }
         }
-        
+
     }
 
+
     {
+        std::cerr << std::endl << "IN 3D" << std::endl;
         const layout<coord3d> full( coord3d(1,1,1), coord3d(16,16,16) );
         {
             const domain<coord3d> dom0(0,1,NULL,full,coord3d(1,1,1));
             field3d< point3d<int> > Fp("Fp",dom0,2);
+            for(coord1d z=Fp.outer.lower.z;z<=Fp.outer.upper.z;++z)
+            {
+                for(coord1d y=Fp.outer.lower.y;y<=Fp.outer.upper.y;++y)
+                {
+                    for(coord1d x=Fp.outer.lower.x;x<=Fp.outer.upper.x;++x)
+                    {
+                        const point3d<int> p(x,y,z);
+                        Fp[z][y][x] = p;
+                        if( Fp.at( coord3d(x,y,z) ) != p )
+                        {
+                            throw exception("invalid@(%d,%d,%d)",int(x),int(y),int(z));
+                        }
+                    }
+                }
+            }
+
+        }
+
+        {
+            for(size_t size=1;size<=8;++size)
+            {
+                std::cerr << "\tsize=" << size << std::endl;
+                for(size_t rank=0;rank<size;++rank)
+                {
+                    std::cerr << "\t\trank=" << rank << std::endl;
+                    {
+                        std::cerr << "\t\t\tPERIODIC:" << std::endl;
+                        const domain<coord3d> dom(rank,size,NULL,full,coord3d(1,1,1));
+                        field3d<double> F("F",dom,1);
+                        std::cerr << "\t\t\tsizes=" << F.full.sizes << ".ranks=" << F.self.ranks << std::endl;
+                        std::cerr << "\t\t\t3D inner=" << F.inner << std::endl;
+                        std::cerr << "\t\t\t2D inner=" << F.first().inner << std::endl;
+                        std::cerr << "\t\t\t3D outer=" << F.outer << std::endl;
+                        std::cerr << "\t\t\t2D outer=" << F.first().outer << std::endl;
+                    }
+                }
+            }
         }
     }
-
+    
     
 }
 YOCTO_UNIT_TEST_DONE()
