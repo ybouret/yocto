@@ -14,8 +14,8 @@ namespace yocto
         {
         public:
             YOCTO_FAME_DECL_COORD;
-            typedef domain<COORD>           domain_type;
-            typedef layout<COORD>           layout_type;
+            typedef domain<COORD>              domain_type;
+            typedef layout<COORD>              layout_type;
             typedef typename domain_type::link link;
 
             const coord1d     depth; //!< ghost depths
