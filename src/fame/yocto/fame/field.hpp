@@ -45,7 +45,10 @@ namespace yocto
 
             virtual type       &at(param_coord C) throw()       = 0;
             virtual const_type &at(param_coord C) const throw() = 0;
-
+            
+            type       * get_outer() throw()       { assert(entry); return entry; }
+            const_type * get_outer() const throw() { assert(entry); return entry; }
+            
         protected:
             inline explicit field(const string      &fid,
                                   const domain_type &dom,

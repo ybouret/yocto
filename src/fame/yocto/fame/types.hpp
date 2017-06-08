@@ -120,7 +120,100 @@ static const size_t DIMENSION = YOCTO_FAME_DIM_OF(COORD)
             if(rank<=0) return rmax; else return rank-1;
         }
 
+        //______________________________________________________________________
+        //
+        //
+        //
+        //______________________________________________________________________
         
+        template <typename T,typename COORD>
+        struct vertex_for;
+        
+        template <typename T>
+        struct vertex_for<T,coord1d>
+        {
+            typedef T type;
+        };
+        
+        template <typename T>
+        struct vertex_for<T,coord2d>
+        {
+            typedef point2d<T> type;
+        };
+        
+        template <typename T>
+        struct vertex_for<T,coord3d>
+        {
+            typedef point3d<T> type;
+        };
+        
+        //______________________________________________________________________
+        //
+        //
+        //
+        //______________________________________________________________________
+        
+        template <typename T,typename COORD>
+        class box
+        {
+        public:
+            YOCTO_ARGUMENTS_DECL_T;
+            YOCTO_FAME_DECL_COORD;
+            
+            typedef typename vertex_for<T,COORD>::type        vtx;
+            typedef typename type_traits<vtx>::parameter_type param_vtx;
+            typedef          const vtx                        const_vtx;
+            
+            
+            const_vtx  lower;
+            const_vtx  upper;
+            const_vtx  width;
+            const_type volume;
+            
+            inline virtual ~box() throw() {}
+            inline explicit box( param_vtx lo, param_vtx up ) throw() :
+            lower(lo),
+            upper(up),
+            width(lo),//dummy
+            volume(1)
+            {
+                type *L = (type *)&lower;
+                type *U = (type *)&upper;
+                type *W = (type *)&width;
+                type &V = (type &)volume;
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    if(U[dim]<L[dim]) cswap(U[dim],L[dim]);
+                    assert(L[dim]<=U[dim]);
+                    V *= (W[dim]=U[dim]-L[dim]);
+                }
+            }
+            
+            inline box( const box &other ) throw() :
+            lower(other.lower),
+            upper(other.upper),
+            volume(other.volume)
+            {
+            }
+            
+            
+            inline const_type *__lower() const throw() { return (const_type *) &lower; }
+            inline const_type *__upper() const throw() { return (const_type *) &upper; }
+            inline const_type *__width() const throw() { return (const_type *) &width; }
+            
+            
+            
+            inline friend std::ostream & operator<<( std::ostream &os, const box &p )
+            {
+                os << "| " << p.lower << " -> " << p.upper << ", volume=" << p.volume << " |";
+                return os;
+            }
+            
+            
+        private:
+            YOCTO_DISABLE_ASSIGN(box);
+        };
+
         
         
     }
