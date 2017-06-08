@@ -30,7 +30,19 @@ namespace yocto
             {
                 build_from(rows_entry,user_entry);
             }
+
+
+            inline field2d(const string &fid, const field2d &other) :
+            field_type(fid,other,other.depth),
+            rows(0),
+            nr(0)
+            {
+                build_from(NULL,NULL);
+                assert(this->num_outer==other.num_outer);
+                memcpy(this->entry,other.entry,this->num_outer*sizeof(T));
+            }
             
+
             inline virtual ~field2d() throw()
             {
                 clear();
@@ -69,7 +81,7 @@ namespace yocto
             }
 
         private:
-            YOCTO_DISABLE_ASSIGN(field2d);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(field2d);
             row   *rows; //!< the rows
             size_t nr;   //!< internal built rows counter
             

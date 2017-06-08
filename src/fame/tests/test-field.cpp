@@ -11,7 +11,7 @@ YOCTO_UNIT_TEST_IMPL(field)
         const layout<coord1d> full(1,16);
         const domain<coord1d> dom0(0,1,NULL,full,1);
         field1d<int> Fi("Fi",dom0,0);
-        field1d<int> FiCopy(Fi);
+        field1d<int> FiCopy("Fi2",Fi);
         for(coord1d x=Fi.outer.lower;x<=Fi.outer.upper;++x)
         {
             Fi[x] = x;
@@ -38,6 +38,10 @@ YOCTO_UNIT_TEST_IMPL(field)
                     }
                 }
             }
+
+            field2d<float> FF2("FF2",Ff);
+            
+
         }
         for(size_t size=1;size<=4;++size)
         {

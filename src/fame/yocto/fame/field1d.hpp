@@ -28,11 +28,14 @@ namespace yocto
                 build_from(user_entry);
             }
 
-            inline field1d(const field1d &other) :
-            field_type(other),
+            //! copy with name change
+            inline field1d(const string  &fid,
+                           const field1d &other) :
+            field_type(fid,other,other.depth),
             shift(0)
             {
                 build_from(NULL);
+                assert(this->num_outer==other.num_outer);
                 memcpy(this->entry,other.entry,this->num_outer*sizeof(T));
             }
 
@@ -71,7 +74,7 @@ namespace yocto
 
 
         private:
-            YOCTO_DISABLE_ASSIGN(field1d);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(field1d);
             type *shift;
             inline void build_from(void *user_entry)
             {

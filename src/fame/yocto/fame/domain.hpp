@@ -233,6 +233,12 @@ namespace yocto
         private:
             YOCTO_DISABLE_ASSIGN(domain);
         };
+
+        struct domain_ops
+        {
+
+        };
+
     }
 }
 
