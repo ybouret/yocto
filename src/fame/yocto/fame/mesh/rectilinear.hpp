@@ -76,7 +76,6 @@ namespace yocto
                     {
                         for(coord1d i = a.outer.lower; i <= a.outer.upper; ++i)
                         {
-                            
                             a[i] = l + ( (i-ilo)*w )/del;
                         }
                     }
@@ -95,6 +94,7 @@ namespace yocto
                     const axis_domain ax_dom = domain_ops::extract1(*this,dim);
                     const string      ax_tag = this->name + "_" + coord_info::axis_name(dim);
                     self.template append<string,const axis_domain &,coord1d>(ax_tag,ax_dom,num_ghosts);
+                    assert(dim+1==self.size);
                     imin[dim] = self[dim].imin[0];
                     imax[dim] = self[dim].imax[0];
                 }
