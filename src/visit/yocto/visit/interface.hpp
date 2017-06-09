@@ -165,6 +165,11 @@ namespace yocto
         static visit_handle MeshMetaData_alloc();
         static void         MeshMetaData_free(visit_handle &) throw();
 
+        static visit_handle VariableMetaData_alloc();
+        static void         VariableMetaData_free(visit_handle &) throw();
+
+        template <typename T> static int getVariableType()          throw();
+        template <typename T> static int getVariableNumComponents() throw();
 
     };
 }

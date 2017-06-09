@@ -25,8 +25,13 @@ public:
     const domain<coord3d>                  D3straight;
     const rectilinear_mesh<double,coord3d> mesh3s;
 
+    field2d<float>             f2p;
+    field2d< point2d<double> > c2s;
+
     typedef box<float,coord2d>::vtx   v2f;
     typedef box<double,coord3d>::vtx  v3d;
+
+
 
     virtual ~Sim() throw()
     {
@@ -46,7 +51,9 @@ public:
     B3( v3d(0,0,0), v3d(1,1,1) ),
     mesh3p("mesh3per",D3periodic,1,B3),
     D3straight(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full3d,coord3d(0,0,0)),
-    mesh3s("mesh3str",D3straight,1,B3)
+    mesh3s("mesh3str",D3straight,1,B3),
+    f2p("f2p",D2periodic,1),
+    c2s("c2s",D2straight,ng_straight)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -59,9 +66,39 @@ public:
         mesh2p.map_to(B2p);
         MPI.Printf(stderr,"mesh2s: indices_x=%d->%d, indices_y=%d->%d\n",mesh2s.imin[0],mesh2s.imax[0],mesh2s.imin[1],mesh2s.imax[1]);
 
-        //for(size_t i=0;i<3;++i) mesh3p.imin[i] = 0 ;
         MPI.Printf(stderr,"mesh3p: indices_x=%d->%d, indices_y=%d->%d, indices_z=%d->%d\n",mesh3p.imin[0],mesh3p.imax[0],mesh3p.imin[1],mesh3p.imax[1],mesh3p.imin[2],mesh3p.imax[2]);
         MPI.Printf(stderr,"mesh3s: indices_x=%d->%d, indices_y=%d->%d, indices_z=%d->%d\n",mesh3s.imin[0],mesh3s.imax[0],mesh3s.imin[1],mesh3s.imax[1],mesh3s.imin[2],mesh3s.imax[2]);
+
+
+        {
+            const layout<coord2d> &outer = f2p.outer;
+            for(coord1d j=outer.lower.y;j<=outer.upper.y;++j)
+            {
+                const float y = mesh2p[1][j];
+                for(coord1d i=outer.lower.x;i<=outer.upper.x;++i)
+                {
+                    const float x = mesh2p[0][i];
+                    f2p[j][i]   = cos(6*((x-0.5)*(y-0.5)));
+
+                }
+            }
+        }
+
+        if(true)
+        {
+            const layout<coord2d> &outer = c2s.outer;
+            for(coord1d j=outer.lower.y;j<=outer.upper.y;++j)
+            {
+                const float y = mesh2s[1][j];
+                for(coord1d i=outer.lower.x;i<=outer.upper.x;++i)
+                {
+                    const float x = mesh2s[0][i];
+                    c2s[j][i].x = cos(6*x);
+                    c2s[j][i].y = sin(6*y);
+                }
+            }
+        }
+
 
     }
 
@@ -91,6 +128,15 @@ public:
             VisIt_SimulationMetaData_addMesh(md,m);
         }
 
+        {
+            visit_handle vmd = __visit::VariableMetaData(f2p,mesh2p);
+            VisIt_SimulationMetaData_addVariable(md,vmd);
+        }
+
+        {
+            visit_handle vmd = __visit::VariableMetaData(c2s,mesh2s);
+            VisIt_SimulationMetaData_addVariable(md,vmd);
+        }
 
     }
     
@@ -121,7 +167,26 @@ public:
         
         return VISIT_INVALID_HANDLE;
     }
-    
+
+    virtual visit_handle getVariable(const int domain, const string &variable_name)
+    {
+
+
+        if( "f2p" == variable_name )
+        {
+            return __visit::VariableData(f2p);
+        }
+
+        if( "c2s" == variable_name )
+        {
+            return __visit::VariableData(c2s);
+        }
+
+
+
+        return VISIT_INVALID_HANDLE;
+    }
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Sim);
 };

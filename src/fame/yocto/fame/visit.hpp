@@ -82,7 +82,32 @@ namespace yocto
                 
             }
 
-            
+            template <typename T,typename COORD,typename MESH> static inline
+            visit_handle VariableMetaData( const field<T,COORD> &F, const MESH &mesh )
+            {
+                visit_handle vmd = VisIt::VariableMetaData_alloc();
+                try
+                {
+                    VisIt_VariableMetaData_setName(vmd,F.name.c_str());
+                    VisIt_VariableMetaData_setMeshName(vmd,mesh.name.c_str());
+                    VisIt_VariableMetaData_setType(vmd, VisIt::getVariableType<T>() );
+                    VisIt_VariableMetaData_setNumComponents(vmd, VisIt::getVariableNumComponents<T>() );
+                    VisIt_VariableMetaData_setCentering(vmd, VISIT_VARCENTERING_NODE);
+                }
+                catch(...)
+                {
+                    VisIt::VariableMetaData_free(vmd);
+                    throw;
+                }
+                return vmd;
+            }
+
+            template <typename T,typename COORD> static inline
+            visit_handle VariableData(const field<T,COORD> &F)
+            {
+                return VisIt::VariableData_Set<T>(F.get_outer(),F.num_outer);
+            }
+
             
         };
 

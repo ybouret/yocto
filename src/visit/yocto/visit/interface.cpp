@@ -158,6 +158,16 @@ namespace yocto
         }
     }
 
+    template <>
+    void VisIt:: VariableData_Set< point3d<float> >(visit_handle         &h,
+                                                    const point3d<float> *arr,
+                                                    const size_t          nTuples)
+    {
+        if(VISIT_OKAY!=VisIt_VariableData_setDataF(h,VISIT_OWNER_SIM,3, nTuples, (float *)arr))
+        {
+            throw exception("VisIt_VariableData_setDataF/point3d");
+        }
+    }
 
     
 }
@@ -180,6 +190,43 @@ namespace yocto
         (void) VisIt_MeshMetaData_free(h);
         h = VISIT_INVALID_HANDLE;
     }
+
+}
+
+namespace yocto
+{
+    visit_handle VisIt:: VariableMetaData_alloc()
+    {
+        visit_handle h = VISIT_INVALID_HANDLE;
+        if( VISIT_OKAY != VisIt_VariableMetaData_alloc(&h) )
+        {
+            throw exception("VisIt_VariableMetaData_alloc");
+        }
+        return h;
+    }
+
+    void      VisIt::VariableMetaData_free(visit_handle &h) throw()
+    {
+        VisIt_VariableMetaData_free(h);
+        h=VISIT_INVALID_HANDLE;
+    }
+
+    template <>  int VisIt:: getVariableType<float>()  throw() { return VISIT_VARTYPE_SCALAR; }
+    template <>  int VisIt:: getVariableType<double>() throw() { return VISIT_VARTYPE_SCALAR; }
+    template <>  int VisIt:: getVariableType< point2d<float> >() throw() { return VISIT_VARTYPE_VECTOR; }
+    template <>  int VisIt:: getVariableType< point3d<float> >() throw() { return VISIT_VARTYPE_VECTOR; }
+    template <>  int VisIt:: getVariableType< point2d<double> >() throw() { return VISIT_VARTYPE_VECTOR; }
+    template <>  int VisIt:: getVariableType< point3d<double> >() throw() { return VISIT_VARTYPE_VECTOR; }
+
+
+    template <>  int VisIt:: getVariableNumComponents<float>()  throw() { return 1; }
+    template <>  int VisIt:: getVariableNumComponents<double>() throw() { return 1; }
+    template <>  int VisIt:: getVariableNumComponents< point2d<float> >() throw() { return 2; }
+    template <>  int VisIt:: getVariableNumComponents< point3d<float> >() throw() { return 3; }
+    template <>  int VisIt:: getVariableNumComponents< point2d<double> >() throw() { return 2; }
+    template <>  int VisIt:: getVariableNumComponents< point3d<double> >() throw() { return 3; }
+
+
 
 }
 
