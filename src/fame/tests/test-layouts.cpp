@@ -15,6 +15,9 @@ void display_lay( const layouts<COORD> &L )
 
 YOCTO_UNIT_TEST_IMPL(layouts)
 {
+    int idxMin[4] = { 0 };
+    int idxMax[4] = { 0 };
+
     {
         layout<coord1d> L(1,16);
         for(size_t size=1;size<=4;++size)
@@ -29,6 +32,7 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 layouts<coord1d>      W(D,1);
                 display_lay(W);
                 ghosts_of<coord1d> G(W);
+                W.compute_real_indices_on(0,idxMin[0],idxMax[0]);
             }
             
             std::cerr << std::endl;
@@ -39,10 +43,13 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 layouts<coord1d> W(D,1);
                 display_lay(W);
                 ghosts_of<coord1d> G(W);
+                W.compute_real_indices_on(0,idxMin[0],idxMax[0]);
             }
-            
+
         }
     }
+
+    return 0;
     
     {
         layout<coord2d> L( coord2d(1,1), coord2d(16,16) );

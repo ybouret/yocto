@@ -9,6 +9,7 @@ namespace yocto
 
     namespace fame
     {
+
         template <typename COORD>
         class layouts : public domain<COORD>
         {
@@ -19,7 +20,7 @@ namespace yocto
             typedef typename domain_type::link link;
 
             const coord1d     depth; //!< ghost depths
-            const layout_type outer; //!< outer layouts
+            const layout_type outer; //!< outer layout, inner is from domain
             inline virtual ~layouts() throw() {}
 
             inline explicit layouts(const domain_type &dom,
@@ -28,10 +29,40 @@ namespace yocto
             depth(num_ghosts<0?0:num_ghosts),
             outer( __expand(this->inner,*this,depth) )
             {
-                //std::cerr << "[new layout with depth=" << depth << "]" << std::endl;
             }
 
-            
+            inline void compute_real_indices_on(const size_t dim,
+                                                int         &idxMin,
+                                                int         &idxMax)
+            {
+                assert(depth>0);
+                idxMin = 0;
+                idxMax = __coord(outer.upper,dim)-1;
+                std::cerr << "computing real indices..." << std::endl;
+                const coord1d dim_rank = __coord(this->self.ranks,dim);
+                //const coord1d dim_size = __coord(this->full.sizes,dim);
+                const coord1d dim_rmax = __coord(this->full.rmax,dim);
+                std::cerr << "dim_rank=" << dim_rank << ", dim_rmax=" << dim_rmax << std::endl;
+                if(dim_rank<=0)
+                {
+                    // no ghost on lower bound
+                    idxMin += depth;
+                }
+                else
+                {
+                    if(dim_rank>=dim_rmax)
+                    {
+                        // no ghost on upper bound
+                        idxMax -= depth;
+                    }
+                    else
+                    {
+                        // 'in the middle'
+
+                    }
+                }
+            }
+
 
         private:
             YOCTO_DISABLE_ASSIGN(layouts);
