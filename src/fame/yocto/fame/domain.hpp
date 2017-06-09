@@ -244,6 +244,7 @@ namespace yocto
                     const coord1d dim_rmax = __coord(this->full.rmax,dim);
                     const link   &dim_link = links[dim];
                     const size_t  lo_shift = num_ghosts-1;
+
                     if(dim_rank<=0)
                     {
                         //__________________________________________________________
@@ -268,24 +269,24 @@ namespace yocto
                         }
                     }
 
-
-#if 0
-                    else
+                    if(dim_rank<dim_rmax)
                     {
+                        // 'in the middle': remove upper ghost
+                        if(dim_link.next != NULL )
                         {
-                            // 'in the middle': keep lower and remove upper...
-                            if(dim_link.next != NULL )
-                            {
-                                idxMax -= num_ghosts;
-                            }
-
-                            if(dim_link.prev != NULL )
-                            {
-                                idxMin += lo_shift;
-                            }
+                            idxMax -= num_ghosts;
                         }
                     }
-#endif
+
+                    if(dim_rank>0)
+                    {
+                        // 'in the middle': keep only one ghost
+                        if(dim_link.prev != NULL )
+                        {
+                            idxMin += lo_shift;
+                        }
+                    }
+
                 }
             }
 

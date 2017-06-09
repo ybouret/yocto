@@ -18,7 +18,10 @@ public:
     box<float,coord2d>                     B2s;
     const rectilinear_mesh<double,coord2d> mesh2s;
 
+    box<double,coord3d>                    B3;
+
     typedef box<float,coord2d>::vtx   v2f;
+    typedef box<double,coord3d>::vtx  v3d;
 
     virtual ~Sim() throw()
     {
@@ -32,7 +35,8 @@ public:
     B2p( v2f(0,0),   v2f(1,1) ),
     mesh2p("mesh2periodic",D2periodic,1),
     B2s( v2f(0,0),   v2f(1,1) ),
-    mesh2s("mesh2straight",D2straight,ng_straight,B2s)
+    mesh2s("mesh2straight",D2straight,ng_straight,B2s),
+    B3( v3d(0,0,0), v3d(10,10,10) )
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -43,7 +47,7 @@ public:
                    int(mesh2s[1].outer.lower), int(mesh2s[1].outer.upper));
         
         mesh2p.map_to(B2p);
-        MPI.Printf(stderr,"mesh2straigth: indices_x=%d->%d\n", 0,0);
+        MPI.Printf(stderr,"mesh2straigth: indices_x=%d->%d, indices_y=%d->%d\n",mesh2s.imin[0],mesh2s.imax[0],mesh2s.imin[1],mesh2s.imax[1]);
     }
 
     virtual void setMetaData(visit_handle &md)
