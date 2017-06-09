@@ -227,8 +227,60 @@ namespace yocto
             inline virtual ~domain() throw()
             {
             }
-            
-            
+
+            inline void compute_real_indices_for(const size_t        dim,
+                                                 const layout_type & outer,
+                                                 const int           num_ghosts,
+                                                 int &               idxMin,
+                                                 int &               idxMax) const throw()
+            {
+                assert(num_ghosts>0);
+                idxMin = 0;
+                idxMax = __coord(outer.upper,dim)-1;
+                const coord1d dim_rank = __coord(this->self.ranks,dim);
+                const coord1d dim_rmax = __coord(this->full.rmax,dim);
+                const link   &dim_link = links[dim];
+                if(dim_rank<=0)
+                {
+                    // no ghost on lower bound (if periodic)
+                    if(dim_link.prev != NULL )
+                    {
+                        assert(0!=__coord(pbc,dim));
+                        idxMin += num_ghosts;
+                    }
+                }
+                else
+                {
+                    if(dim_rank>=dim_rmax)
+                    {
+                        // no ghost on upper bound (if periodic)
+                        if(dim_link.next)
+                        {
+                            assert(0!=__coord(pbc,dim));
+                            idxMax -= num_ghosts;
+                        }
+                    }
+                    else
+                    {
+                        // 'in the middle': keep lower and remove upper...
+                        idxMax -= num_ghosts;
+                    }
+                }
+            }
+
+            inline void compute_real_indices(const layout_type &  outer,
+                                              const int           num_ghosts,
+                                              int *               idxMin,
+                                              int *               idxMax) const throw()
+            {
+                assert(idxMin);
+                assert(idxMax);
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    compute_real_indices_for(dim,outer,num_ghosts,idxMin[dim],idxMax[dim]);
+                }
+
+            }
             
         private:
             YOCTO_DISABLE_ASSIGN(domain);

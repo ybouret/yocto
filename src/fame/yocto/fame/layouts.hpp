@@ -18,51 +18,39 @@ namespace yocto
             typedef domain<COORD>              domain_type;
             typedef layout<COORD>              layout_type;
             typedef typename domain_type::link link;
+            static const size_t NUM_INDICES = YOCTO_ROUND4(DIMENSION);
+
 
             const coord1d     depth; //!< ghost depths
             const layout_type outer; //!< outer layout, inner is from domain
+            int               minRealIndices[NUM_INDICES];
+            int               maxRealIndices[NUM_INDICES];
+            
             inline virtual ~layouts() throw() {}
 
             inline explicit layouts(const domain_type &dom,
                                     const coord1d      num_ghosts) :
             domain_type(dom),
             depth(num_ghosts<0?0:num_ghosts),
-            outer( __expand(this->inner,*this,depth) )
+            outer( __expand(this->inner,*this,depth) ),
+            minRealIndices(),
+            maxRealIndices()
             {
+                memset(minRealIndices,0,sizeof(minRealIndices));
+                memset(maxRealIndices,0,sizeof(maxRealIndices));
+                this->compute_real_indices(outer,depth,minRealIndices,maxRealIndices);
             }
-
-            inline void compute_real_indices_on(const size_t dim,
-                                                int         &idxMin,
-                                                int         &idxMax)
+            
+            inline layouts(const layouts &other) :
+            domain_type(*other),
+            depth(other.depth),
+            outer(other.outer),
+            minRealIndices(),
+            maxRealIndices()
             {
-                assert(depth>0);
-                idxMin = 0;
-                idxMax = __coord(outer.upper,dim)-1;
-                std::cerr << "computing real indices..." << std::endl;
-                const coord1d dim_rank = __coord(this->self.ranks,dim);
-                //const coord1d dim_size = __coord(this->full.sizes,dim);
-                const coord1d dim_rmax = __coord(this->full.rmax,dim);
-                std::cerr << "dim_rank=" << dim_rank << ", dim_rmax=" << dim_rmax << std::endl;
-                if(dim_rank<=0)
-                {
-                    // no ghost on lower bound
-                    idxMin += depth;
-                }
-                else
-                {
-                    if(dim_rank>=dim_rmax)
-                    {
-                        // no ghost on upper bound
-                        idxMax -= depth;
-                    }
-                    else
-                    {
-                        // 'in the middle'
-
-                    }
-                }
+                memcpy(minRealIndices,other.minRealIndices,sizeof(minRealIndices));
+                memcpy(maxRealIndices,other.maxRealIndices,sizeof(maxRealIndices));
             }
-
 
         private:
             YOCTO_DISABLE_ASSIGN(layouts);
