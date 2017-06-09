@@ -63,7 +63,7 @@ namespace yocto
                             const field1d<T> &Z = rmesh[2];
                             visit_handle      hz = VisIt::VariableData_Set<T>(Z.get_outer(),Z.num_outer);
                             VisIt_RectilinearMesh_setCoordsXYZ(mesh,hx,hy,hz);
-                            VisIt_RectilinearMesh_setRealIndices(mesh,rmesh.imin,rmesh.imax);
+                            //VisIt_RectilinearMesh_setRealIndices(mesh,rmesh.imin,rmesh.imax);
                         } break;
                             
                         default:

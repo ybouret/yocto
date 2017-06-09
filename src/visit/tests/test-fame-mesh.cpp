@@ -28,6 +28,8 @@ public:
     field2d<float>             f2p;
     field2d< point2d<double> > c2s;
 
+    field3d<double>            f3p;
+
     typedef box<float,coord2d>::vtx   v2f;
     typedef box<double,coord3d>::vtx  v3d;
 
@@ -53,7 +55,8 @@ public:
     D3straight(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full3d,coord3d(0,0,0)),
     mesh3s("mesh3str",D3straight,1,B3),
     f2p("f2p",D2periodic,1),
-    c2s("c2s",D2straight,ng_straight)
+    c2s("c2s",D2straight,ng_straight),
+    f3p("f3p",D3periodic,1)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -99,6 +102,24 @@ public:
             }
         }
 
+        {
+            const layout<coord3d> &outer = f3p.outer;
+            for(coord1d k=outer.lower.z;k<=outer.upper.z;++k)
+            {
+                const float z = mesh3p[2][k];
+                for(coord1d j=outer.lower.y;j<=outer.upper.y;++j)
+                {
+                    const float y = mesh3p[1][j];
+                    for(coord1d i=outer.lower.x;i<=outer.upper.x;++i)
+                    {
+                        const float x = mesh3p[0][i];
+                        f3p[k][j][i] = exp( - 0.1 * (square_of(x-0.5)+square_of(y-0.5)+square_of(z-0.5) ) );
+                    }
+                }
+            }
+
+        }
+
 
     }
 
@@ -135,6 +156,11 @@ public:
 
         {
             visit_handle vmd = __visit::VariableMetaData(c2s,mesh2s);
+            VisIt_SimulationMetaData_addVariable(md,vmd);
+        }
+
+        {
+            visit_handle vmd = __visit::VariableMetaData(f3p,mesh3p);
             VisIt_SimulationMetaData_addVariable(md,vmd);
         }
 
@@ -181,6 +207,12 @@ public:
         {
             return __visit::VariableData(c2s);
         }
+
+        if( "f3p" == variable_name )
+        {
+            return __visit::VariableData(f3p);
+        }
+
 
 
 
