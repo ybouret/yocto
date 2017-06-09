@@ -81,6 +81,8 @@ private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Sim);
 };
 
+#include "yocto/string/conv.hpp"
+
 YOCTO_UNIT_TEST_IMPL(fame_mesh)
 {
     const string sim_name = "fame_mesh";
@@ -95,7 +97,18 @@ YOCTO_UNIT_TEST_IMPL(fame_mesh)
                                 NULL,
                                 false);
 
-    const layout<coord2d> full2d( coord2d(1,1), coord2d(10,8) );
+    size_t Nx = 10;
+    size_t Ny = 10;
+    if(argc>1)
+    {
+        Nx = strconv::to_size(argv[1],"Nx");
+    }
+    if(argc>2)
+    {
+        Ny = strconv::to_size(argv[2],"Ny");
+    }
+
+    const layout<coord2d> full2d( coord2d(1,1), coord2d(Nx,Ny) );
     Sim sim(visit,full2d);
 
     sim.loop();
