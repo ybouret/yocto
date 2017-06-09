@@ -222,8 +222,8 @@ namespace yocto
                     links.push_back(other.links[dim]);
                 }
             }
-            
-            
+
+
             inline virtual ~domain() throw()
             {
             }
@@ -236,43 +236,63 @@ namespace yocto
             {
                 assert(num_ghosts>=0);
                 idxMin = 0;
-                idxMax = __coord(outer.upper,dim)-1;
-                const coord1d dim_rank = __coord(this->self.ranks,dim);
-                const coord1d dim_rmax = __coord(this->full.rmax,dim);
-                const link   &dim_link = links[dim];
-                if(dim_rank<=0)
+                idxMax = __coord(outer.width,dim)-1;
+
+                if(num_ghosts>0)
                 {
-                    //__________________________________________________________
-                    //
-                    // no ghost on lower bound (if periodic)
-                    //__________________________________________________________
-                    if(dim_link.prev != NULL )
+                    const coord1d dim_rank = __coord(this->self.ranks,dim);
+                    const coord1d dim_rmax = __coord(this->full.rmax,dim);
+                    const link   &dim_link = links[dim];
+                    const size_t  lo_shift = num_ghosts-1;
+                    if(dim_rank<=0)
                     {
-                        idxMin += num_ghosts;
+                        //__________________________________________________________
+                        //
+                        // no ghost on lower bound
+                        //__________________________________________________________
+                        if(dim_link.prev != NULL )
+                        {
+                            idxMin += num_ghosts;
+                        }
                     }
-                }
-                else
-                {
+
                     if(dim_rank>=dim_rmax)
                     {
+                        //______________________________________________________
+                        //
                         // no ghost on upper bound (if periodic)
-                        if(dim_link.next)
+                        //______________________________________________________
+                        if(dim_link.next != NULL)
                         {
                             idxMax -= num_ghosts;
                         }
                     }
+
+
+#if 0
                     else
                     {
-                        // 'in the middle': keep lower and remove upper...
-                        idxMax -= num_ghosts;
+                        {
+                            // 'in the middle': keep lower and remove upper...
+                            if(dim_link.next != NULL )
+                            {
+                                idxMax -= num_ghosts;
+                            }
+
+                            if(dim_link.prev != NULL )
+                            {
+                                idxMin += lo_shift;
+                            }
+                        }
                     }
+#endif
                 }
             }
 
             inline void compute_real_indices(const layout_type &  outer,
-                                              const int           num_ghosts,
-                                              int *               idxMin,
-                                              int *               idxMax) const throw()
+                                             const int           num_ghosts,
+                                             int *               idxMin,
+                                             int *               idxMax) const throw()
             {
                 assert(idxMin);
                 assert(idxMax);
@@ -282,7 +302,7 @@ namespace yocto
                 }
 
             }
-            
+
         private:
             YOCTO_DISABLE_ASSIGN(domain);
         };
@@ -302,7 +322,7 @@ namespace yocto
                 return domain<coord1d>(rank,size,&size,full,pbc);
             }
         };
-
+        
     }
 }
 

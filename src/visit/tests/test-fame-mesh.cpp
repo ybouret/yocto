@@ -4,7 +4,7 @@
 using namespace yocto;
 using namespace fame;
 
-static const int ng_straight = 0;
+static const int ng_straight = 1;
 
 class Sim : public VisIt::Simulation
 {
@@ -29,7 +29,7 @@ public:
     VisIt::Simulation(visit),
     D2periodic(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full2d,coord2d(1,1)),
     D2straight(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full2d,coord2d(0,0)),
-    B2p( v2f(-1,-1), v2f(1,1) ),
+    B2p( v2f(0,0),   v2f(1,1) ),
     mesh2p("mesh2periodic",D2periodic,1),
     B2s( v2f(0,0),   v2f(1,1) ),
     mesh2s("mesh2straight",D2straight,ng_straight,B2s)
