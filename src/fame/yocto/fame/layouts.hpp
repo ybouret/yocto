@@ -10,8 +10,36 @@ namespace yocto
     namespace fame
     {
 
+        class real_indices
+        {
+        public:
+            mutable int imin[4];
+            mutable int imax[4];
+
+            inline explicit real_indices() throw() : imin(), imax() { ldz(); }
+            inline virtual ~real_indices() throw() {ldz();}
+            inline real_indices(const real_indices &other) throw() : imin(), imax() { cpy(other); }
+            inline real_indices & operator=(const real_indices &other) throw()
+            {
+                cpy(other);
+                return *this;
+            }
+
+            inline void ldz() throw()
+            {
+                memset(imin,0,sizeof(imin));
+                memset(imax,0,sizeof(imax));
+            }
+
+            inline void cpy(const real_indices &other) throw()
+            {
+                memmove(imin,other.imin,sizeof(imin));
+                memmove(imax,other.imax,sizeof(imax));
+            }
+        };
+
         template <typename COORD>
-        class layouts : public domain<COORD>
+        class layouts : public domain<COORD>, public real_indices
         {
         public:
             YOCTO_FAME_DECL_COORD;
@@ -23,33 +51,25 @@ namespace yocto
 
             const coord1d     depth; //!< ghost depths
             const layout_type outer; //!< outer layout, inner is from domain
-            int               minRealIndices[NUM_INDICES];
-            int               maxRealIndices[NUM_INDICES];
-            
+
             inline virtual ~layouts() throw() {}
 
             inline explicit layouts(const domain_type &dom,
                                     const coord1d      num_ghosts) :
             domain_type(dom),
+            real_indices(),
             depth(num_ghosts<0?0:num_ghosts),
-            outer( __expand(this->inner,*this,depth) ),
-            minRealIndices(),
-            maxRealIndices()
+            outer( __expand(this->inner,*this,depth) )
             {
-                memset(minRealIndices,0,sizeof(minRealIndices));
-                memset(maxRealIndices,0,sizeof(maxRealIndices));
-                this->compute_real_indices(outer,depth,minRealIndices,maxRealIndices);
+                this->compute_real_indices(outer,depth,imin,imax);
             }
             
             inline layouts(const layouts &other) :
-            domain_type(*other),
+            domain_type(other),
+            real_indices(other),
             depth(other.depth),
-            outer(other.outer),
-            minRealIndices(),
-            maxRealIndices()
+            outer(other.outer)
             {
-                memcpy(minRealIndices,other.minRealIndices,sizeof(minRealIndices));
-                memcpy(maxRealIndices,other.maxRealIndices,sizeof(maxRealIndices));
             }
 
         private:

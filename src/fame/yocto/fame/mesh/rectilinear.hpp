@@ -12,7 +12,8 @@ namespace yocto
         class rectilinear_mesh :
         public mesh_info,
         public slots_of< field1d<T> >,
-        public domain<COORD>
+        public domain<COORD>,
+        public real_indices
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
@@ -33,7 +34,8 @@ namespace yocto
                                              const coord1d      num_ghosts) :
             mesh_info(tag),
             holder_type(DIMENSION),
-            domain_type(dom)
+            domain_type(dom),
+            real_indices()
             {
                 build_axis(num_ghosts);
             }
@@ -45,7 +47,8 @@ namespace yocto
                                              const box<U,COORD> &B) :
             mesh_info(tag),
             holder_type(DIMENSION),
-            domain_type(dom)
+            domain_type(dom),
+            real_indices()
             {
                 build_axis(num_ghosts);
                 this->template map_to<U>(B);
@@ -92,6 +95,8 @@ namespace yocto
                     const axis_domain ax_dom = domain_ops::extract1(*this,dim);
                     const string      ax_tag = this->name + "_" + coord_info::axis_name(dim);
                     self.template append<string,const axis_domain &,coord1d>(ax_tag,ax_dom,num_ghosts);
+                    imin[dim] = self[dim].imin[0];
+                    imax[dim] = self[dim].imax[0];
                 }
             }
         };

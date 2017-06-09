@@ -234,7 +234,7 @@ namespace yocto
                                                  int &               idxMin,
                                                  int &               idxMax) const throw()
             {
-                assert(num_ghosts>0);
+                assert(num_ghosts>=0);
                 idxMin = 0;
                 idxMax = __coord(outer.upper,dim)-1;
                 const coord1d dim_rank = __coord(this->self.ranks,dim);
@@ -242,10 +242,12 @@ namespace yocto
                 const link   &dim_link = links[dim];
                 if(dim_rank<=0)
                 {
+                    //__________________________________________________________
+                    //
                     // no ghost on lower bound (if periodic)
+                    //__________________________________________________________
                     if(dim_link.prev != NULL )
                     {
-                        assert(0!=__coord(pbc,dim));
                         idxMin += num_ghosts;
                     }
                 }
@@ -256,7 +258,6 @@ namespace yocto
                         // no ghost on upper bound (if periodic)
                         if(dim_link.next)
                         {
-                            assert(0!=__coord(pbc,dim));
                             idxMax -= num_ghosts;
                         }
                     }

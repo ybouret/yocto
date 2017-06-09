@@ -11,8 +11,8 @@ void display_lay( const layouts<COORD> &L )
     std::cerr << L.full.sizes << "." << L.self.ranks << std::endl;
     std::cerr << "\tinner=" << L.inner << std::endl;
     std::cerr << "\touter=" << L.outer << std::endl;
-    std::cerr << "\t\tminRealIndices:"; for(size_t i=0;i<YOCTO_FAME_DIM_OF(COORD);++i) { std::cerr << " " << L.minRealIndices[i]; } std::cerr << std::endl;
-    std::cerr << "\t\tmaxRealIndices:"; for(size_t i=0;i<YOCTO_FAME_DIM_OF(COORD);++i) { std::cerr << " " << L.maxRealIndices[i]; } std::cerr << std::endl;
+    std::cerr << "\t\tminRealIndices:"; for(size_t i=0;i<YOCTO_FAME_DIM_OF(COORD);++i) { std::cerr << " " << L.imin[i]; } std::cerr << std::endl;
+    std::cerr << "\t\tmaxRealIndices:"; for(size_t i=0;i<YOCTO_FAME_DIM_OF(COORD);++i) { std::cerr << " " << L.imax[i]; } std::cerr << std::endl;
 
 }
 
@@ -44,13 +44,11 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 layouts<coord1d> W(D,1);
                 display_lay(W);
                 ghosts_of<coord1d> G(W);
-                //W.compute_real_indices_on(0,idxMin[0],idxMax[0]);
             }
 
         }
     }
 
-    return 0;
     
     {
         layout<coord2d> L( coord2d(1,1), coord2d(16,16) );

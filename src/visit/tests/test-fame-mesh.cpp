@@ -30,19 +30,20 @@ public:
     D2periodic(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full2d,coord2d(1,1)),
     D2straight(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full2d,coord2d(0,0)),
     B2p( v2f(-1,-1), v2f(1,1) ),
-    mesh2p("mesh2p",D2periodic,1),
+    mesh2p("mesh2periodic",D2periodic,1),
     B2s( v2f(0,0),   v2f(1,1) ),
-    mesh2s("mesh2s",D2straight,ng_straight,B2s)
+    mesh2s("mesh2straight",D2straight,ng_straight,B2s)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
                    int(mesh2p[1].outer.lower), int(mesh2p[1].outer.upper));
+        
         MPI.Printf(stderr,"mesh2s: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2s[0].outer.lower), int(mesh2s[0].outer.upper),
                    int(mesh2s[1].outer.lower), int(mesh2s[1].outer.upper));
         
         mesh2p.map_to(B2p);
-        //mesh2s.map_to(B2d);
+        MPI.Printf(stderr,"mesh2straigth: indices_x=%d->%d\n", 0,0);
     }
 
     virtual void setMetaData(visit_handle &md)
@@ -64,12 +65,12 @@ public:
                                  const string &mesh_name)
     {
         
-        if( mesh_name == "mesh2p" )
+        if( mesh_name == "mesh2periodic" )
         {
             return __visit::MeshData(mesh2p);
         }
         
-        if( mesh_name == "mesh2s" )
+        if( mesh_name == "mesh2straight" )
         {
             return __visit::MeshData(mesh2s);
         }

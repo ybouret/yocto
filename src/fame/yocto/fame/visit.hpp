@@ -52,10 +52,7 @@ namespace yocto
                             const field1d<T> &Y  = rmesh[1];
                             visit_handle      hy = VisIt::VariableData_Set<T>(Y.get_outer(),Y.num_outer);
                             VisIt_RectilinearMesh_setCoordsXY(mesh,hx,hy);
-                            int minIdx[4] = { 1,1,0,0 };
-                            int maxIdx[4] = { rmesh[0].outer.width-2, rmesh[1].outer.width-2, 0, 0 };
-                            
-                            VisIt_RectilinearMesh_setRealIndices(mesh,minIdx,maxIdx);
+                            VisIt_RectilinearMesh_setRealIndices(mesh,rmesh.imin,rmesh.imax);
                         } break;
                             
                         case 3: {
