@@ -137,7 +137,10 @@ YOCTO_UNIT_TEST_IMPL(domain)
         }
     }
 
-    
+    std::cerr << "sizeof(domain1d)=" << sizeof(domain<coord1d>) << std::endl;
+    std::cerr << "sizeof(domain2d)=" << sizeof(domain<coord2d>) << std::endl;
+    std::cerr << "sizeof(domain3d)=" << sizeof(domain<coord3d>) << std::endl;
+
     
     
 }

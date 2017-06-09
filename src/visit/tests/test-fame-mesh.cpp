@@ -9,13 +9,14 @@ class Sim : public VisIt::Simulation
 public:
     const domain<coord2d> D2periodic;
     const domain<coord2d> D2straight;
-    rectilinear_mesh<float,coord2d>  mesh2p;
-    rectilinear_mesh<double,coord2d> mesh2s;
-    box<float,coord2d>                B2f;
-    box<double,coord2d>               B2d;
+
+    box<float,coord2d>                     B2p;
+    rectilinear_mesh<float,coord2d>        mesh2p;
+
+    box<float,coord2d>                     B2s;
+    const rectilinear_mesh<double,coord2d> mesh2s;
 
     typedef box<float,coord2d>::vtx   v2f;
-    typedef box<double,coord2d>::vtx  v2d;
 
     virtual ~Sim() throw()
     {
@@ -26,10 +27,10 @@ public:
     VisIt::Simulation(visit),
     D2periodic(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full2d,coord2d(1,1)),
     D2straight(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full2d,coord2d(0,0)),
+    B2p( v2f(-1,-1), v2f(1,1) ),
     mesh2p("mesh2p",D2periodic,1),
-    mesh2s("mesh2s",D2straight,1),
-    B2f( v2f(-1,-1), v2f(1,1) ),
-    B2d( v2d(0,0),   v2d(1,1) )
+    B2s( v2f(0,0),   v2f(1,1) ),
+    mesh2s("mesh2s",D2straight,1,B2s)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -38,8 +39,8 @@ public:
                    int(mesh2s[0].outer.lower), int(mesh2s[0].outer.upper),
                    int(mesh2s[1].outer.lower), int(mesh2s[1].outer.upper));
         
-        mesh2p.map_to(B2f,full2d);
-        mesh2s.map_to(B2d,full2d);
+        mesh2p.map_to(B2p);
+        //mesh2s.map_to(B2d);
     }
 
     virtual void setMetaData(visit_handle &md)
@@ -92,7 +93,7 @@ YOCTO_UNIT_TEST_IMPL(fame_mesh)
                                 NULL,
                                 false);
 
-    const layout<coord2d> full2d( coord2d(1,1), coord2d(20,15) );
+    const layout<coord2d> full2d( coord2d(1,1), coord2d(8,5) );
     Sim sim(visit,full2d);
 
     sim.loop();
