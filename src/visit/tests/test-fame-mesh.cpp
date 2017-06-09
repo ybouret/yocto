@@ -18,7 +18,9 @@ public:
     box<float,coord2d>                     B2s;
     const rectilinear_mesh<double,coord2d> mesh2s;
 
+    const domain<coord3d>                  D3periodic;
     box<double,coord3d>                    B3;
+    const rectilinear_mesh<double,coord3d> mesh3p;
 
     typedef box<float,coord2d>::vtx   v2f;
     typedef box<double,coord3d>::vtx  v3d;
@@ -28,7 +30,8 @@ public:
     }
 
     explicit Sim( VisIt                &visit,
-                 const layout<coord2d> &full2d ) :
+                 const layout<coord2d> &full2d,
+                 const layout<coord3d> &full3d) :
     VisIt::Simulation(visit),
     D2periodic(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full2d,coord2d(1,1)),
     D2straight(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full2d,coord2d(0,0)),
@@ -36,7 +39,9 @@ public:
     mesh2p("mesh2periodic",D2periodic,1),
     B2s( v2f(0,0),   v2f(1,1) ),
     mesh2s("mesh2straight",D2straight,ng_straight,B2s),
-    B3( v3d(0,0,0), v3d(10,10,10) )
+    D3periodic(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full3d,coord3d(1,1,1)),
+    B3( v3d(0,0,0), v3d(1,1,1) ),
+    mesh3p("mesh3per",D3periodic,1,B3)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -63,6 +68,15 @@ public:
             VisIt_MeshMetaData_setNumDomains(m,D2straight.full.size);
             VisIt_SimulationMetaData_addMesh(md,m);
         }
+
+        {
+            visit_handle m = __visit::MeshMetaData(mesh3p);
+            VisIt_MeshMetaData_setNumDomains(m,D3periodic.full.size);
+            VisIt_SimulationMetaData_addMesh(md,m);
+        }
+
+
+
     }
     
     virtual visit_handle getMesh(const int     domain,
@@ -78,6 +92,13 @@ public:
         {
             return __visit::MeshData(mesh2s);
         }
+
+        if( mesh_name == "mesh3per" )
+        {
+            return __visit::MeshData(mesh3p);
+        }
+
+
         
         return VISIT_INVALID_HANDLE;
     }
@@ -104,6 +125,7 @@ YOCTO_UNIT_TEST_IMPL(fame_mesh)
 
     size_t Nx = 10;
     size_t Ny = 10;
+    size_t Nz = 10;
     if(argc>1)
     {
         Nx = strconv::to_size(argv[1],"Nx");
@@ -112,9 +134,15 @@ YOCTO_UNIT_TEST_IMPL(fame_mesh)
     {
         Ny = strconv::to_size(argv[2],"Ny");
     }
+    if(argc>3)
+    {
+        Nz = strconv::to_size(argv[3],"Nz");
+    }
 
-    const layout<coord2d> full2d( coord2d(1,1), coord2d(Nx,Ny) );
-    Sim sim(visit,full2d);
+    const layout<coord2d> full2d( coord2d(1,1),   coord2d(Nx,Ny)    );
+    const layout<coord3d> full3d( coord3d(1,1,1), coord3d(Nx,Ny,Nz) );
+
+    Sim sim(visit,full2d,full3d);
 
     sim.loop();
 
