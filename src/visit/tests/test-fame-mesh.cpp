@@ -4,6 +4,8 @@
 using namespace yocto;
 using namespace fame;
 
+static const int ng_straight = 0;
+
 class Sim : public VisIt::Simulation
 {
 public:
@@ -30,7 +32,7 @@ public:
     B2p( v2f(-1,-1), v2f(1,1) ),
     mesh2p("mesh2p",D2periodic,1),
     B2s( v2f(0,0),   v2f(1,1) ),
-    mesh2s("mesh2s",D2straight,1,B2s)
+    mesh2s("mesh2s",D2straight,ng_straight,B2s)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -93,7 +95,7 @@ YOCTO_UNIT_TEST_IMPL(fame_mesh)
                                 NULL,
                                 false);
 
-    const layout<coord2d> full2d( coord2d(1,1), coord2d(8,5) );
+    const layout<coord2d> full2d( coord2d(1,1), coord2d(10,8) );
     Sim sim(visit,full2d);
 
     sim.loop();
