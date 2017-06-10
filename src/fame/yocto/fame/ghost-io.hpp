@@ -14,7 +14,6 @@ namespace yocto
             explicit ghostIO();
             virtual ~ghostIO() throw();
 
-            void increase_for( const field_data &F, const ghosts &G ) throw();
 
         private:
             size_t capacity;
