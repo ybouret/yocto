@@ -113,8 +113,9 @@ namespace yocto
             YOCTO_FAME_DECL_COORD;
 
             inline virtual ~ghosts_base() throw() {}
-            inline explicit ghosts_base() :
+            inline explicit ghosts_base(const coord1d r) :
             slots_of<ghosts>(DIMENSION),
+            rank(r),
             num_async(0),
             num_lcopy(0),
             num_empty(0),
@@ -122,6 +123,7 @@ namespace yocto
             lcopy(),
             empty()
             {
+                assert(rank>=0);
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     (void)push_back();
@@ -131,12 +133,13 @@ namespace yocto
                 }
             }
 
-            const size_t num_async; //!< should use MPI
-            const size_t num_lcopy; //!< should use lcopy
-            const size_t num_empty; //!< do nothing
-            ghosts *     async[DIMENSION];
-            ghosts *     lcopy[DIMENSION];
-            ghosts *     empty[DIMENSION];
+            const coord1d rank;      //!< self rank
+            const size_t  num_async; //!< should use MPI
+            const size_t  num_lcopy; //!< should use lcopy
+            const size_t  num_empty; //!< do nothing
+            ghosts *      async[DIMENSION];
+            ghosts *      lcopy[DIMENSION];
+            ghosts *      empty[DIMENSION];
 
             inline void collect_exchange_info() throw()
             {
@@ -150,6 +153,7 @@ namespace yocto
                 size_t & na = (size_t&)num_async;
                 size_t & nl = (size_t&)num_lcopy;
                 size_t & ne = (size_t&)num_empty;
+                
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     ghosts *g    = & (*this)[dim];
@@ -160,30 +164,32 @@ namespace yocto
                     switch(flag)
                     {
                         case has_none:
-                            g->kind = ghosts::empty;
+                            g->kind     = ghosts::empty;
                             empty[ne++] = g;
                             break;
 
                         case has_prev:
-                            g->kind = ghosts::async;
+                            g->kind     = ghosts::async;
                             async[na++] = g;
                             break;
 
                         case has_next:
-                            g->kind = ghosts::async;
+                            g->kind     = ghosts::async;
                             async[na++] = g;
                             break;
 
                         case has_both:
-                            if(g->prev->rank!=g->next->rank)
+                            if( (g->prev->rank==rank) && (g->next->rank==rank) )
                             {
-                                g->kind = ghosts::async;
-                                async[na++] = g;
+                                g->kind     = ghosts::lcopy;
+                                lcopy[nl++] = g;
+
                             }
                             else
                             {
-                                g->kind = ghosts::lcopy;
-                                lcopy[nl++] = g;
+                                assert( (g->prev->rank!=rank) && (g->next->rank!=rank) );
+                                g->kind = ghosts::async;
+                                async[na++] = g;
                             }
                             break;
 

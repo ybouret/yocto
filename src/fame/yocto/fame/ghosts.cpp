@@ -65,9 +65,8 @@ namespace yocto
     {
         template <>
         ghosts_of<coord1d>:: ghosts_of( const layouts<coord1d> &L ) :
-        ghosts_base<coord1d>()
+        ghosts_base<coord1d>(L.self.rank)
         {
-
             ghosts_base            &the_ghosts = *this;
             const size_t            num_ghosts = L.depth;
             const size_t            ng         = num_ghosts * 1;

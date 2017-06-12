@@ -448,6 +448,7 @@ namespace yocto
 
 #define YOCTO_MPI(THE_LEVEL) const mpi & MPI = mpi::init(&argc,&argv,THE_LEVEL)
 #define YOCTO_MPI_ENV()             YOCTO_MPI( mpi::EnvThreadLevel() )
+#define YOCTO_MPI_GET()      const mpi & MPI = *(mpi::location())
 
 #define MPI_CTIME_DEBUG 0
 
