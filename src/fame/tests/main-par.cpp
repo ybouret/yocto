@@ -1,8 +1,6 @@
-#include "yocto/fame/ghost-io.hpp"
 #include "yocto/fame/field1d.hpp"
 #include "yocto/program.hpp"
-#include "yocto/mpi/mpi.hpp"
-#include "yocto/container/cslot.hpp"
+#include "yocto/fame/mpi.hpp"
 
 using namespace yocto;
 using namespace fame;
