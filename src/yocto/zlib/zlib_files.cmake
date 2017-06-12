@@ -35,4 +35,4 @@ set(ZLIB_SRCS
     zutil.c
 )
 
-set(ZLIB_EXAMPLES test/example.c test/minigzip.c)
+set(ZLIB_EXAMPLES test/example.c test/minigzip.c test/infcover.c)

@@ -64,5 +64,9 @@ add_test(zlib_example zlib_example)
 
 add_executable(minigzip test/minigzip.c)
 target_link_libraries(minigzip y-z)
+
+add_executable(zlib_infcover test/infcover.c)
+target_link_libraries(zlib_infcover y-z)
+
 ENDIF()
 
