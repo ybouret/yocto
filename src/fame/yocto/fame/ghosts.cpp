@@ -27,7 +27,10 @@ namespace yocto
     namespace fame
     {
 
-        ghosts:: ghosts() throw() : prev(0), next(0)
+        ghosts:: ghosts() throw() :
+        prev(0),
+        next(0),
+        kind(empty)
         {
         }
         
@@ -41,6 +44,17 @@ namespace yocto
             if(next) { delete next; next = 0; }
             if(prev) { delete prev; prev = 0; }
         }
+
+        const char  * ghosts:: kind_text() const throw()
+        {
+            switch(kind)
+            {
+                case empty: return "EMPTY";
+                case async: return "ASYNC";
+                case lcopy: return "LCOPY";
+            }
+            return "UNKNOWN";
+        }
     }
 }
 
@@ -50,8 +64,10 @@ namespace yocto
     namespace fame
     {
         template <>
-        ghosts_of<coord1d>:: ghosts_of( const layouts<coord1d> &L )
+        ghosts_of<coord1d>:: ghosts_of( const layouts<coord1d> &L ) :
+        ghosts_base<coord1d>()
         {
+
             ghosts_base            &the_ghosts = *this;
             const size_t            num_ghosts = L.depth;
             const size_t            ng         = num_ghosts * 1;
@@ -85,7 +101,8 @@ namespace yocto
 
             }
 
-
+            // finalize
+            collect_exchange_info();
         }
     }
 }

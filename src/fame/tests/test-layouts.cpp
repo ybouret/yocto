@@ -28,10 +28,12 @@ template <typename COORD>
 static inline
 void display_ghosts(const ghosts_of<COORD> &G )
 {
+    
     for(size_t dim=0;dim<YOCTO_FAME_DIM_OF(COORD);++dim)
     {
-        std::cerr << "ghosts" << dim << ":" << std::endl;
         const ghosts &g = G[dim];
+        std::cerr << "ghosts" << dim << ", kind=" << g.kind_text() << std::endl;
+
         if(g.prev)
         {
             std::cerr << "\tprev#" << g.prev->size << std::endl;
@@ -41,6 +43,7 @@ void display_ghosts(const ghosts_of<COORD> &G )
         {
             std::cerr << "\t!prev" << std::endl;
         }
+
         if(g.next)
         {
             std::cerr << "\tnext#" << g.next->size << std::endl;

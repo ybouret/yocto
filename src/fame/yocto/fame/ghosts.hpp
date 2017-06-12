@@ -4,6 +4,7 @@
 #include "yocto/fame/layout.hpp"
 #include "yocto/sequence/slots.hpp"
 #include "yocto/sequence/some-arrays.hpp"
+#include "yocto/code/bmove.hpp"
 
 namespace yocto
 {
@@ -29,6 +30,44 @@ namespace yocto
             ghost_type   &outer; //!< to be received
             ghost_type   &inner; //!< to be sent
 
+            //! load inner content in to memory
+            template <typename FIELD>
+            inline void load( const FIELD &F, uint8_t * &p ) const throw()
+            {
+                const ghost_type &g = inner;
+                for(size_t i=size;i>0;--i)
+                {
+                    const void *ptr = & F.at( g[i] );
+                    core::bmove< sizeof( typename FIELD::type) >(p,ptr);
+                    p += sizeof( typename FIELD::type);
+                }
+            }
+
+            //! save memory into outer content
+            template <typename FIELD>
+            inline void save( FIELD &F, const uint8_t * &p ) const throw()
+            {
+                const ghost_type &g = outer;
+                for(size_t i=size;i>0;--i)
+                {
+                    void *ptr = & F.at( g[i] );
+                    core::bmove< sizeof( typename FIELD::type) >(ptr,p);
+                    p += sizeof( typename FIELD::type);
+                }
+            }
+
+            //! local exchange
+            template <typename FIELD> static inline
+            void exchange( FIELD &F, const ghosts_pair &lhs, const ghosts_pair &rhs)
+            {
+                assert(lhs.size==rhs.size);
+                for(size_t i=lhs.size;i>0;--i)
+                {
+                    F.at( lhs.outer[i] ) = F.at( rhs.inner[i] );
+                    F.at( rhs.outer[i] ) = F.at( lhs.inner[i] );
+                }
+            }
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_pair);
         };
@@ -41,17 +80,27 @@ namespace yocto
         class ghosts
         {
         public:
+            enum status
+            {
+                empty,
+                async,
+                lcopy
+            };
+
             ghosts() throw();
             ~ghosts() throw();
 
             ghosts_pair *prev;
             ghosts_pair *next;
-
+            status       kind;
+            const char  *kind_text() const throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts);
             void cleanup() throw();
         };
+
+
 
         //______________________________________________________________________
         //
@@ -61,15 +110,88 @@ namespace yocto
         class ghosts_base : public slots_of<ghosts>
         {
         public:
+            YOCTO_FAME_DECL_COORD;
+
             inline virtual ~ghosts_base() throw() {}
             inline explicit ghosts_base() :
-            slots_of<ghosts>(YOCTO_FAME_DIM_OF(COORD))
+            slots_of<ghosts>(DIMENSION),
+            num_async(0),
+            num_lcopy(0),
+            num_empty(0),
+            async(),
+            lcopy(),
+            empty()
             {
-                for(size_t dim=0;dim<YOCTO_FAME_DIM_OF(COORD);++dim)
+                for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     (void)push_back();
+                    async[dim] = 0;
+                    lcopy[dim] = 0;
+                    empty[dim] = 0;
                 }
             }
+
+            const size_t num_async; //!< should use MPI
+            const size_t num_lcopy; //!< should use lcopy
+            const size_t num_empty; //!< do nothing
+            ghosts *     async[DIMENSION];
+            ghosts *     lcopy[DIMENSION];
+            ghosts *     empty[DIMENSION];
+
+            inline void collect_exchange_info() throw()
+            {
+                static const int has_none = 0x00;
+                static const int has_prev = 0x01;
+                static const int has_next = 0x02;
+                static const int has_both = has_prev|has_next;
+
+                assert(0==num_async);
+                assert(0==num_lcopy);
+                size_t & na = (size_t&)num_async;
+                size_t & nl = (size_t&)num_lcopy;
+                size_t & ne = (size_t&)num_empty;
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    ghosts *g    = & (*this)[dim];
+                    int     flag = has_none;
+                    if(g->prev!=0)  { flag |= has_prev; }
+                    if(g->next!=0)  { flag |= has_next; }
+
+                    switch(flag)
+                    {
+                        case has_none:
+                            g->kind = ghosts::empty;
+                            empty[ne++] = g;
+                            break;
+
+                        case has_prev:
+                            g->kind = ghosts::async;
+                            async[na++] = g;
+                            break;
+
+                        case has_next:
+                            g->kind = ghosts::async;
+                            async[na++] = g;
+                            break;
+
+                        case has_both:
+                            if(g->prev->rank!=g->next->rank)
+                            {
+                                g->kind = ghosts::async;
+                                async[na++] = g;
+                            }
+                            else
+                            {
+                                g->kind = ghosts::lcopy;
+                                lcopy[nl++] = g;
+                            }
+                            break;
+
+                    }
+                }
+                assert(DIMENSION==num_empty+num_async+num_lcopy);
+            }
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_base);
         };
@@ -82,9 +204,9 @@ namespace yocto
         class ghosts_of : public ghosts_base<COORD>
         {
         public:
-            YOCTO_FAME_DECL_COORD;
             inline virtual ~ghosts_of() throw() {}
             explicit ghosts_of(const layouts<COORD> &L);
+
 
 
         private:
