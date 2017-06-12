@@ -12,6 +12,35 @@ namespace yocto
 
         ghost:: ~ghost() throw() {}
 
+    }
+}
+
+namespace yocto
+{
+    namespace fame
+    {
+        ghosts_pair:: ~ghosts_pair() throw()
+        {
+        }
+
+
+        ghosts_pair:: ghosts_pair(const coord1d r, const size_t n) :
+        indices_arrays(),
+        rank(r),
+        outer( next_array() ),
+        inner( next_array() )
+        {
+            allocate(n);
+        }
+
+    }
+}
+
+
+namespace yocto
+{
+    namespace fame
+    {
         ghosts::  ghosts() throw() : next(0), prev(0) {}
         ghosts:: ~ghosts() throw()
         {
@@ -23,6 +52,7 @@ namespace yocto
             if(prev) { delete prev; prev=0; }
             if(next) { delete next; next=0; }
         }
+
 
         template <>
         ghosts_of<coord1d>:: ghosts_of( const layouts<coord1d> &L )

@@ -4,6 +4,7 @@
 #include "yocto/fame/layout.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/sequence/slots.hpp"
+#include "yocto/sequence/some-arrays.hpp"
 
 namespace yocto
 {
@@ -27,6 +28,24 @@ namespace yocto
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghost);
+        };
+
+
+        typedef array<coord1d>                        indices_array;
+        typedef some_arrays<2,coord1d,memory::global> indices_arrays;
+
+        class ghosts_pair : public indices_arrays
+        {
+        public:
+            ~ghosts_pair() throw();
+            const coord1d rank;
+            ghosts_pair(const coord1d r, const size_t n);
+
+            indices_array &outer;
+            indices_array &inner;
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_pair);
         };
 
         //______________________________________________________________________
