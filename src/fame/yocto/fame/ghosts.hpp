@@ -1,8 +1,7 @@
-#ifndef YOCTO_FAME_GHOST_INCLUDED
-#define YOCTO_FAME_GHOST_INCLUDED 1
+#ifndef YOCTO_FAME_GHOSTS_INCLUDED
+#define YOCTO_FAME_GHOSTS_INCLUDED 1
 
 #include "yocto/fame/layout.hpp"
-#include "yocto/sequence/vector.hpp"
 #include "yocto/sequence/slots.hpp"
 #include "yocto/sequence/some-arrays.hpp"
 
@@ -11,42 +10,47 @@ namespace yocto
     namespace fame
     {
 
-#if 0
-        typedef vector<coord1d>         indices_type;
-        template <typename COORD> class layouts;
+        template <typename COORD> class layouts; //!< forward declaration
+
+        typedef array<coord1d>                        ghost_type;    //!< an array of indices
+        typedef some_arrays<2,coord1d,memory::global> ghosts_type;   //!< 2 arrays of indices
 
         //______________________________________________________________________
         //
-        //! a ghost is a list of indices to be transeferred
+        //! a pair of ghosts on one side, one dimension
         //______________________________________________________________________
-        class ghost : public indices_type
+        class ghosts_pair : public ghosts_type
         {
         public:
-            const coord1d rank;  //!< target
-            explicit ghost(const coord1d r,const size_t n);
-            virtual ~ghost() throw();
-            
-            
+            virtual ~ghosts_pair() throw();
+            explicit ghosts_pair(const coord1d r, const size_t n);
+
+            const coord1d rank;
+            ghost_type   &outer; //!< to be received
+            ghost_type   &inner; //!< to be sent
+
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(ghost);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_pair);
         };
 
 
         //______________________________________________________________________
         //
-        //! one dimensional next/prev ghost
+        //! two ghosts_pair, one dimension
         //______________________________________________________________________
         class ghosts
         {
         public:
             ghosts() throw();
             ~ghosts() throw();
-            ghost *next;
-            ghost *prev;
-            
+
+            ghosts_pair *prev;
+            ghosts_pair *next;
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts);
-            void clear() throw();
+            void cleanup() throw();
         };
 
         //______________________________________________________________________
@@ -81,14 +85,14 @@ namespace yocto
             YOCTO_FAME_DECL_COORD;
             inline virtual ~ghosts_of() throw() {}
             explicit ghosts_of(const layouts<COORD> &L);
-            
-            
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_of);
         };
-#endif
 
     }
+
 }
 
 #endif

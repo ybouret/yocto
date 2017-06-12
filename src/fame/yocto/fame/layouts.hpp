@@ -2,7 +2,7 @@
 #define YOCTO_FAME_LAYOUTS_INCLUDED 1
 
 #include "yocto/fame/domain.hpp"
-#include "yocto/fame/ghost.hpp"
+#include "yocto/fame/ghosts.hpp"
 
 namespace yocto
 {

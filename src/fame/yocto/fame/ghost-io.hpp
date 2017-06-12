@@ -15,6 +15,7 @@ namespace yocto
             explicit ghostIO();
             virtual ~ghostIO() throw();
 
+#if 0
             template <typename FIELD>
             inline void load( const FIELD &F, const ghost &g, uint8_t * &p )
             {
@@ -40,7 +41,7 @@ namespace yocto
                     p +=  sizeof( typename FIELD::type );
                 }
             }
-
+#endif
 
             
 

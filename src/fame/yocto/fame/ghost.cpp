@@ -1,5 +1,6 @@
 #include "yocto/fame/layouts.hpp"
 
+#if 0
 namespace yocto
 {
     namespace fame
@@ -339,3 +340,4 @@ namespace yocto
     }
     
 }
+#endif

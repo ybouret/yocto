@@ -8,7 +8,7 @@ namespace yocto
 {
     
     template <typename T>
-    class arrays_manager
+    class arrays_manager : public virtual object
     {
     public:
         typedef T                                     type;

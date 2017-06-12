@@ -16,6 +16,44 @@ void display_lay( const layouts<COORD> &L )
 
 }
 
+
+static inline void display_ghost(const ghosts_pair &gp)
+{
+    std::cerr << "\t\touter@["; for(size_t i=1;i<=gp.size;++i) std::cerr << " " << gp.outer[i]; std::cerr << " ]" << std::endl;
+    std::cerr << "\t\tinner@["; for(size_t i=1;i<=gp.size;++i) std::cerr << " " << gp.inner[i]; std::cerr << " ]" << std::endl;
+
+}
+
+template <typename COORD>
+static inline
+void display_ghosts(const ghosts_of<COORD> &G )
+{
+    for(size_t dim=0;dim<YOCTO_FAME_DIM_OF(COORD);++dim)
+    {
+        std::cerr << "ghosts" << dim << ":" << std::endl;
+        const ghosts &g = G[dim];
+        if(g.prev)
+        {
+            std::cerr << "\tprev#" << g.prev->size << std::endl;
+            display_ghost(*g.prev);
+        }
+        else
+        {
+            std::cerr << "\t!prev" << std::endl;
+        }
+        if(g.next)
+        {
+            std::cerr << "\tnext#" << g.next->size << std::endl;
+            display_ghost(*g.next);
+        }
+        else
+        {
+            std::cerr << "\t!next" << std::endl;
+        }
+    }
+}
+
+
 YOCTO_UNIT_TEST_IMPL(layouts)
 {
 
@@ -33,6 +71,7 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 layouts<coord1d>      W(D,1);
                 display_lay(W);
                 ghosts_of<coord1d> G(W);
+                display_ghosts(G);
 
             }
             
@@ -44,12 +83,14 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 layouts<coord1d> W(D,1);
                 display_lay(W);
                 ghosts_of<coord1d> G(W);
+                display_ghosts(G);
             }
 
         }
     }
 
-    
+    return 0;
+
     {
         layout<coord2d> L( coord2d(1,1), coord2d(16,16) );
         for(size_t size=1;size<=4;++size)
@@ -63,7 +104,7 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 domain<coord2d>  D(rank,size,NULL,L,coord2d(1,1));
                 layouts<coord2d> W(D,1);
                 display_lay(W);
-                ghosts_of<coord2d> G(W);
+                //ghosts_of<coord2d> G(W);
 
             }
             
@@ -73,7 +114,7 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 domain<coord2d> D(rank,size,NULL,L,coord2d(0,0));
                 layouts<coord2d> W(D,1);
                 display_lay(W);
-                ghosts_of<coord2d> G(W);
+                //ghosts_of<coord2d> G(W);
             }
             
         }
@@ -93,7 +134,7 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 domain<coord3d> D(rank,size,NULL,L,coord3d(1,1,1));
                 layouts<coord3d> W(D,1);
                 display_lay(W);
-                ghosts_of<coord3d> G(W);
+                //ghosts_of<coord3d> G(W);
             }
             
             std::cerr << "NOT periodic:" << std::endl;
@@ -102,7 +143,7 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 domain<coord3d> D(rank,size,NULL,L,coord3d(0,0,0));
                 layouts<coord3d> W(D,1);
                 display_lay(W);
-                ghosts_of<coord3d> G(W);
+                //ghosts_of<coord3d> G(W);
             }
 
         }
