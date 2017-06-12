@@ -24,6 +24,8 @@ namespace yocto
                                 const size_t  n_inner);
             field_data(const field_data &other);
 
+
+
         protected:
             void set_allocated(const size_t bytes) throw();
 
@@ -45,10 +47,8 @@ namespace yocto
 
             virtual type       &at(param_coord C) throw()       = 0;
             virtual const_type &at(param_coord C) const throw() = 0;
-            
-            type       * get_outer() throw()       { assert(entry); return entry; }
-            const_type * get_outer() const throw() { assert(entry); return entry; }
-            
+
+
         protected:
             inline explicit field(const string      &fid,
                                   const domain_type &dom,
@@ -63,9 +63,6 @@ namespace yocto
             {
             }
 
-            size_t count; //!< used for items of bytes
-            type  *entry; //!< linear space of outer.items items...
-
             field(const field &other) :
             layouts_type(other),
             field_data(other),
@@ -73,6 +70,11 @@ namespace yocto
             entry(0)
             {
             }
+
+            size_t count; //!< used for items of bytes
+
+        public:
+            type  *entry; //!< linear space of outer.items items...
 
         private:
             YOCTO_DISABLE_ASSIGN(field);

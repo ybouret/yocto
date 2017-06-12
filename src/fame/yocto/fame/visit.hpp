@@ -48,20 +48,20 @@ namespace yocto
                     {
                         case 2: {
                             const field1d<T> &X  = rmesh[0];
-                            visit_handle      hx = VisIt::VariableData_Set<T>(X.get_outer(),X.num_outer);
+                            visit_handle      hx = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
                             const field1d<T> &Y  = rmesh[1];
-                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.get_outer(),Y.num_outer);
+                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
                             VisIt_RectilinearMesh_setCoordsXY(mesh,hx,hy);
                             VisIt_RectilinearMesh_setRealIndices(mesh,rmesh.imin,rmesh.imax);
                         } break;
                             
                         case 3: {
                             const field1d<T> &X = rmesh[0];
-                            visit_handle      hx = VisIt::VariableData_Set<T>(X.get_outer(),X.num_outer);
+                            visit_handle      hx = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
                             const field1d<T> &Y = rmesh[1];
-                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.get_outer(),Y.num_outer);
+                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
                             const field1d<T> &Z = rmesh[2];
-                            visit_handle      hz = VisIt::VariableData_Set<T>(Z.get_outer(),Z.num_outer);
+                            visit_handle      hz = VisIt::VariableData_Set<T>(Z.entry,Z.num_outer);
                             VisIt_RectilinearMesh_setCoordsXYZ(mesh,hx,hy,hz);
                             //VisIt_RectilinearMesh_setRealIndices(mesh,rmesh.imin,rmesh.imax);
                         } break;
@@ -105,7 +105,7 @@ namespace yocto
             template <typename T,typename COORD> static inline
             visit_handle VariableData(const field<T,COORD> &F)
             {
-                return VisIt::VariableData_Set<T>(F.get_outer(),F.num_outer);
+                return VisIt::VariableData_Set<T>(F.entry,F.num_outer);
             }
 
             

@@ -14,6 +14,8 @@ namespace yocto
             explicit ghostIO();
             virtual ~ghostIO() throw();
 
+            
+            void read_from( const ghost &g );
 
         private:
             size_t capacity;
