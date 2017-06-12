@@ -170,21 +170,21 @@ assert(ng==gg);                                   \
             //
             // along Y
             //__________________________________________________________________
-#define Y_FAME_G2D_Y() \
-do { \
-size_t       gg = 0;\
-            for(size_t g=1;g<=num_ghosts;++g,++o,++i)\
-            {\
-                for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)\
-                {\
-                    const coord2d I(x,i);\
-                    const coord2d O(x,o);\
-                    ++gg;\
-                    gp.inner[gg] = outer.offset_of(I);\
-                    gp.outer[gg] = outer.offset_of(O);\
-                }\
-            }\
-            assert(ng==gg);\
+#define Y_FAME_G2D_Y()                            \
+do {                                              \
+size_t gg = 0;                                    \
+for(size_t g=1;g<=num_ghosts;++g,++o,++i)         \
+{                                                 \
+for(coord1d x=outer.lower.x;x<=outer.upper.x;++x) \
+{                                                 \
+const coord2d I(x,i);                             \
+const coord2d O(x,o);                             \
+++gg;                                             \
+gp.inner[gg] = outer.offset_of(I);                \
+gp.outer[gg] = outer.offset_of(O);                \
+}                                                 \
+}                                                 \
+assert(ng==gg);                                   \
 } while(false)
 
             {
@@ -211,8 +211,8 @@ size_t       gg = 0;\
 
             collect_exchange_info();
         }
-
+        
     }
-
+    
 }
 
