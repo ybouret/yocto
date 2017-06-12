@@ -19,6 +19,7 @@ namespace yocto
             allocate(n);
         }
 
+
     }
 }
 
@@ -55,6 +56,28 @@ namespace yocto
             }
             return "UNKNOWN";
         }
+
+        size_t ghosts:: size() const throw()
+        {
+            if(prev)
+            {
+                assert(!(next!=0&&next->size!=prev->size));
+                return prev->size;
+            }
+            else
+            {
+                if(next)
+                {
+                    assert(0==prev);
+                    return next->size;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
     }
 }
 
@@ -206,9 +229,9 @@ assert(ng==gg);                                   \
                     ghosts_pair &gp = * (G.next= new ghosts_pair(lnk.next->rank,ng) );
                     Y_FAME_G2D_Y();
                 }
-
+                
             }
-
+            
             collect_exchange_info();
         }
         

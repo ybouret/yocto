@@ -94,7 +94,7 @@ namespace yocto
             ghosts_pair *next;
             status       kind;
             const char  *kind_text() const throw();
-
+            size_t       size() const throw(); //!< common size
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts);
             void cleanup() throw();
@@ -179,11 +179,11 @@ namespace yocto
                             break;
 
                         case has_both:
+                            assert(g->prev->size==g->next->size);
                             if( (g->prev->rank==rank) && (g->next->rank==rank) )
                             {
                                 g->kind     = ghosts::lcopy;
                                 lcopy[nl++] = g;
-
                             }
                             else
                             {

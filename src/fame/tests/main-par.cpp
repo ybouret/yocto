@@ -64,12 +64,13 @@ YOCTO_PROGRAM_START()
 
 
 
-            //const field1d<char>              Fi("Fi",D,ng);
 
-            const field1d<float>             Ff("Ff",D,ng);
-
-            //const field1d< point3d<double> > Fv3("Fv3",D,ng);
-
+            field1d<float>             Ff("Ff",D,ng);
+            const size_t xchBytes = __MPI::BytesToExchange(G,Ff);
+            MPI.Printf(stderr,"xchBytes=%u\n", unsigned(xchBytes));
+            cslot cmem(xchBytes);
+            
+            __MPI::Exchange(MPI,G,Ff,cmem);
 
 
         }
@@ -92,7 +93,9 @@ YOCTO_PROGRAM_START()
                        );
 
             display_ghosts(G);
-
+            const field1d<double>     Fd("Fd",D,ng);
+            const size_t xchBytes = __MPI::BytesToExchange(G,Fd);
+            MPI.Printf(stderr,"xchBytes=%u\n", unsigned(xchBytes));
         }
     }
 }

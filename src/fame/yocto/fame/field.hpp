@@ -12,10 +12,10 @@ namespace yocto
         {
         public:
             const string name;
-            const size_t item_size; //!< bytes per
-            const size_t num_outer;
-            const size_t num_inner;
-            const size_t allocated_bytes;
+            const size_t item_size;       //!< bytes per item
+            const size_t num_outer;       //!< total number of items, on outer layout
+            const size_t num_inner;       //!< on inner layout, for information
+            const size_t allocated_bytes; //!< owned bytes
 
             virtual ~field_data() throw();
             explicit field_data(const string &id,
