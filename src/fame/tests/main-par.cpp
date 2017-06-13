@@ -16,7 +16,7 @@ void display_ghosts(const ghosts_of<COORD> &G )
     for(size_t dim=0;dim<YOCTO_FAME_DIM_OF(COORD);++dim)
     {
         const ghosts &g    = G[dim];
-        string        info = vformat("ghosts#%u: kind=%s:\n", unsigned(dim), g.kind_text());
+        string        info = vformat("ghosts#%u: kind=%s:\n", unsigned(dim), g.kind_text() );
         if(g.prev)
         {
             info  += vformat("\t+prev@%d\n", int(g.prev->rank));
