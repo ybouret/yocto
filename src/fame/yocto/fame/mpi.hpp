@@ -62,6 +62,26 @@ namespace yocto
 
 
             template <typename T>
+            inline void send(const ghosts_pair    &gp,
+                             const ghosts_io      &gio,
+                             const field<T,COORD> &F)
+            {
+                const size_t       ns = gio.load_into_send(gp,F);
+                MPI.Send(gio.send_addr(),ns, MPI_BYTE, gp.rank, 0, MPI_COMM_WORLD);
+            }
+
+            template <typename T>
+            inline void recv(const ghosts_pair    &gp,
+                             const ghosts_io      &gio,
+                             field<T,COORD>       &F)
+            {
+                MPI_Status status;
+                const size_t nr = gp.size * sizeof(T);
+                MPI.Recv(gio.recv_addr(),nr,MPI_BYTE,gp.rank,0,MPI_COMM_WORLD,status);
+                gio.save_from_recv(gp,F);
+            }
+
+            template <typename T>
             inline void perform( const ghosts_of<COORD> &G, field<T,COORD> &F )
             {
                 //______________________________________________________________
@@ -76,27 +96,65 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // second pass: async exchange
+                // second pass: async exchange : send prev, recv next
                 //______________________________________________________________
-
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
 
                     const ghosts &g = G[dim];
-                    const int     c = __coord(F.color,dim);
                     if(g.kind!=ghosts::async)
                         continue;
+                    const int     color = __coord(F.color,dim);
+                    ghosts_io    &gio   = (*this)[dim]; assert(gio.capacity>=g.size()*sizeof(T));
 
-                    ghosts_io &gio = (*this)[dim]; assert(gio.capacity>=g.size()*sizeof(T));
-
-                    if(g.prev)
+                    if(color)
                     {
-                        const ghosts_pair &gp = *(g.prev);
-                        const size_t       ns = gio.load_to_send(gp,F);
+                        if(g.prev)
+                        {
+                            send(*g.prev,gio,F);
+                        }
                     }
-                    
+                    else
+                    {
+                        if(g.next)
+                        {
+                            recv(*g.next,gio,F);
+                        }
+                    }
                 }
-                
+
+                //______________________________________________________________
+                //
+                // third pass: async exchange : recv prev, send next
+                //______________________________________________________________
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+
+                    const ghosts &g = G[dim];
+                    if(g.kind!=ghosts::async)
+                        continue;
+                    const int     color = __coord(F.color,dim);
+                    ghosts_io    &gio   = (*this)[dim]; assert(gio.capacity>=g.size()*sizeof(T));
+
+                    if(color)
+                    {
+                        if(g.prev)
+                        {
+                            recv(*g.prev,gio,F);
+                        }
+                    }
+                    else
+                    {
+                        if(g.next)
+                        {
+                            send(*g.next,gio,F);
+                        }
+                    }
+                }
+
+
+
+
             }
             
             

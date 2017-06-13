@@ -24,7 +24,7 @@ namespace yocto
 
             //! load data into send_addr
             template <typename FIELD>
-            inline size_t load_to_send( const ghosts_pair &gp, const FIELD &F ) const throw()
+            inline size_t load_into_send( const ghosts_pair &gp, const FIELD &F ) const throw()
             {
                 assert(capacity>=gp.size*sizeof(typename FIELD::type));
                 uint8_t *p = send_addr();
@@ -33,6 +33,14 @@ namespace yocto
                 return static_cast<size_t>(p-s);
             }
 
+            //! save data from recv_addr
+            template <typename FIELD>
+            inline void save_from_recv( const ghosts_pair &gp, FIELD &F ) const throw()
+            {
+                assert(capacity>=gp.size*sizeof(typename FIELD::type));
+                const uint8_t *p = recv_addr();
+                gp.save(F,p);
+            }
             
 
 
