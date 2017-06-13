@@ -78,9 +78,12 @@ namespace yocto
                 //
                 // second pass: async exchange
                 //______________________________________________________________
+
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
+
                     const ghosts &g = G[dim];
+                    const int     c = __coord(F.color,dim);
                     if(g.kind!=ghosts::async)
                         continue;
 
@@ -88,10 +91,8 @@ namespace yocto
 
                     if(g.prev)
                     {
-                        //MPI_Status         status;
                         const ghosts_pair &gp = *(g.prev);
                         const size_t       ns = gio.load_to_send(gp,F);
-                        
                     }
                     
                 }
