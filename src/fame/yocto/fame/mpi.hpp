@@ -82,76 +82,63 @@ namespace yocto
             }
 
             template <typename T>
-            inline void perform( const ghosts_of<COORD> &G, field<T,COORD> &F )
+            inline void perform( const ghosts_of<COORD> &Ghosts, field<T,COORD> &F )
             {
+
+                slots_of<ghosts_io> &GhostsIO = *this;
+
                 //______________________________________________________________
                 //
                 // first pass: local exchange
                 //______________________________________________________________
-                for(size_t i=0;i<G.num_lcopy;++i)
+                for(size_t i=0;i<Ghosts.num_lcopy;++i)
                 {
-                    const ghosts *g = G.lcopy[i];
+                    const ghosts *g = Ghosts.lcopy[i];
                     ghosts_pair::exchange(F,*(g->prev),*(g->next));
                 }
 
                 //______________________________________________________________
                 //
-                // second pass: async exchange : send prev, recv next
+                // async exchange 1 : send to next, recv from prev
                 //______________________________________________________________
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
 
-                    const ghosts &g = G[dim];
+                    const ghosts &g = Ghosts[dim];
                     if(g.kind!=ghosts::async)
+                    {
+                        MPI.Printf(stderr,"NOT ASYNC\n");
                         continue;
+                    }
+
                     const int     color = __coord(F.color,dim);
-                    ghosts_io    &gio   = (*this)[dim]; assert(gio.capacity>=g.size()*sizeof(T));
+                    ghosts_io    &IO    = GhostsIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
 
                     if(color)
                     {
-                        if(g.prev)
+                        if(g.next)
                         {
-                            send(*g.prev,gio,F);
+                            MPI.Printf(stderr,"color=%d: send to next@%d\n",color,int(g.next->rank));
+                            send( *g.next, IO, F );
+                        }
+                        else
+                        {
+                            MPI.Printf(stderr,"color=%d: no next\n",color);
                         }
                     }
                     else
                     {
-                        if(g.next)
-                        {
-                            recv(*g.next,gio,F);
-                        }
-                    }
-                }
-
-                //______________________________________________________________
-                //
-                // third pass: async exchange : recv prev, send next
-                //______________________________________________________________
-                for(size_t dim=0;dim<DIMENSION;++dim)
-                {
-
-                    const ghosts &g = G[dim];
-                    if(g.kind!=ghosts::async)
-                        continue;
-                    const int     color = __coord(F.color,dim);
-                    ghosts_io    &gio   = (*this)[dim]; assert(gio.capacity>=g.size()*sizeof(T));
-
-                    if(color)
-                    {
                         if(g.prev)
                         {
-                            recv(*g.prev,gio,F);
+                            MPI.Printf(stderr,"color=%d: recv from prev@%d\n",color,int(g.prev->rank));
+                            recv( *g.prev, IO, F);
                         }
-                    }
-                    else
-                    {
-                        if(g.next)
+                        else
                         {
-                            send(*g.next,gio,F);
+                            MPI.Printf(stderr,"color=%d: no prev\n",color);
                         }
                     }
                 }
-
 
 
 

@@ -60,7 +60,7 @@ YOCTO_PROGRAM_START()
                        long(W.inner.upper),
                        long(W.outer.lower),
                        long(W.outer.upper),
-                       W.color
+                       int(W.color)
                        );
 
             display_ghosts(G);
@@ -91,11 +91,14 @@ YOCTO_PROGRAM_START()
                        long(W.inner.upper),
                        long(W.outer.lower),
                        long(W.outer.upper),
-                       W.color
+                       int(W.color)
                        );
 
             display_ghosts(G);
-            const field1d<double>     Fd("Fd",D,ng);
+            field1d<double>     Fd("Fd",D,ng);
+            //xch.prepare_for(G,Fd);
+
+            //xch.perform(G,Fd);
         }
     }
 }
