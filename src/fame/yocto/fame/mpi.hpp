@@ -100,7 +100,7 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // async exchange 1 : send to next, recv from prev
+                // async exchange 1/2
                 //______________________________________________________________
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
@@ -112,11 +112,39 @@ namespace yocto
                         continue;
                     }
 
-
                     const int     color = __coord(F.color,dim);
                     ghosts_io    &IO    = GhostsIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
 
-                    if(color==0)
+                    if(color)
+                    {
+                        if(g.prev) {  MPI.Printf(stderr,"color=%d: recv@prev=%ld\n", color, g.prev->rank); recv(*g.prev,IO,F); } else { MPI.Printf(stderr,"no prev\n"); }
+                        if(g.next) {  MPI.Printf(stderr,"color=%d: recv@next=%ld\n", color, g.next->rank); recv(*g.next,IO,F); } else { MPI.Printf(stderr,"no next\n"); }
+                    }
+                    else
+                    {
+                        if(g.next) {  MPI.Printf(stderr, "color=%d: send@next=%ld\n", color, g.next->rank); send(*g.next,IO,F); } else { MPI.Printf(stderr,"no next\n"); }
+                        if(g.prev) {  MPI.Printf(stderr, "color=%d: send@prev=%ld\n", color, g.prev->rank); send(*g.prev,IO,F); } else { MPI.Printf(stderr,"no prev\n"); }
+                    }
+                }
+
+                //______________________________________________________________
+                //
+                // async exchange 2/2
+                //______________________________________________________________
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+
+                    const ghosts &g = Ghosts[dim];
+                    MPI.Printf(stderr,"is %s\n",g.kind_text());
+                    if(g.kind!=ghosts::async)
+                    {
+                        continue;
+                    }
+
+                    const int     color = __coord(F.color,dim);
+                    ghosts_io    &IO    = GhostsIO[dim];
+
+                    if(color)
                     {
                         if(g.next) {  MPI.Printf(stderr, "color=%d: send@next=%ld\n", color, g.next->rank); send(*g.next,IO,F); } else { MPI.Printf(stderr,"no next\n"); }
                         if(g.prev) {  MPI.Printf(stderr, "color=%d: send@prev=%ld\n", color, g.prev->rank); send(*g.prev,IO,F); } else { MPI.Printf(stderr,"no prev\n"); }
@@ -126,8 +154,9 @@ namespace yocto
                         if(g.prev) {  MPI.Printf(stderr,"color=%d: recv@prev=%ld\n", color, g.prev->rank); recv(*g.prev,IO,F); } else { MPI.Printf(stderr,"no prev\n"); }
                         if(g.next) {  MPI.Printf(stderr,"color=%d: recv@next=%ld\n", color, g.next->rank); recv(*g.next,IO,F); } else { MPI.Printf(stderr,"no next\n"); }
                     }
-                }
 
+
+                }
 
 
             }
