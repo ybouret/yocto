@@ -85,6 +85,7 @@ namespace yocto
             inline void perform( const ghosts_of<COORD> &Ghosts, field<T,COORD> &F )
             {
 
+                MPI.Printf0(stderr, "-- perform exchange --\n");
                 slots_of<ghosts_io> &GhostsIO = *this;
 
                 //______________________________________________________________
@@ -105,38 +106,25 @@ namespace yocto
                 {
 
                     const ghosts &g = Ghosts[dim];
+                    MPI.Printf(stderr,"is %s\n",g.kind_text());
                     if(g.kind!=ghosts::async)
                     {
-                        MPI.Printf(stderr,"NOT ASYNC\n");
                         continue;
                     }
+
 
                     const int     color = __coord(F.color,dim);
                     ghosts_io    &IO    = GhostsIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
 
-                    if(color)
+                    if(color==0)
                     {
-                        if(g.next)
-                        {
-                            MPI.Printf(stderr,"color=%d: send to next@%d\n",color,int(g.next->rank));
-                            send( *g.next, IO, F );
-                        }
-                        else
-                        {
-                            MPI.Printf(stderr,"color=%d: no next\n",color);
-                        }
+                        if(g.next) {  MPI.Printf(stderr, "color=%d: send@next=%ld\n", color, g.next->rank); send(*g.next,IO,F); } else { MPI.Printf(stderr,"no next\n"); }
+                        if(g.prev) {  MPI.Printf(stderr, "color=%d: send@prev=%ld\n", color, g.prev->rank); send(*g.prev,IO,F); } else { MPI.Printf(stderr,"no prev\n"); }
                     }
                     else
                     {
-                        if(g.prev)
-                        {
-                            MPI.Printf(stderr,"color=%d: recv from prev@%d\n",color,int(g.prev->rank));
-                            recv( *g.prev, IO, F);
-                        }
-                        else
-                        {
-                            MPI.Printf(stderr,"color=%d: no prev\n",color);
-                        }
+                        if(g.prev) {  MPI.Printf(stderr,"color=%d: recv@prev=%ld\n", color, g.prev->rank); recv(*g.prev,IO,F); } else { MPI.Printf(stderr,"no prev\n"); }
+                        if(g.next) {  MPI.Printf(stderr,"color=%d: recv@next=%ld\n", color, g.next->rank); recv(*g.next,IO,F); } else { MPI.Printf(stderr,"no next\n"); }
                     }
                 }
 

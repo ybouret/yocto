@@ -96,9 +96,9 @@ YOCTO_PROGRAM_START()
 
             display_ghosts(G);
             field1d<double>     Fd("Fd",D,ng);
-            //xch.prepare_for(G,Fd);
+            xch.prepare_for(G,Fd);
 
-            //xch.perform(G,Fd);
+            xch.perform(G,Fd);
         }
     }
 }

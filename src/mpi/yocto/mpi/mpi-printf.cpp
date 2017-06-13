@@ -51,7 +51,8 @@ namespace yocto
                     MPI_Status status;
                     const string msg = Recv(i, tag, MPI_COMM_WORLD, status);
                     fprintf(fp,"%d.%d> ", CommWorldSize, i);
-                    fprintf(stderr, "%s", msg.c_str());
+                    fprintf(fp, "%s", msg.c_str());
+                    fflush(fp);
                 }
             }
             else
