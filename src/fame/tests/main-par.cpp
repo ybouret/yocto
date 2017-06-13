@@ -45,7 +45,8 @@ YOCTO_PROGRAM_START()
     MPI.Printf0(stderr, "sizeof(ghosts_io)=%ld\n", sizeof(ghosts_io) );
     {
         const layout<coord1d> full(1,16);
-
+        mpi_ghosts<coord1d>   xch(MPI);
+        
         {
             MPI.Printf0(stderr,"IS  periodic\n");
             const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,1);
@@ -67,6 +68,10 @@ YOCTO_PROGRAM_START()
 
 
             field1d<float>             Ff("Ff",D,ng);
+            xch.prepare_for(G,Ff);
+
+
+            xch.perform(G,Ff);
 
         }
 

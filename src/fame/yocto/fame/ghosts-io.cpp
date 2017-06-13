@@ -12,7 +12,6 @@ namespace yocto
 
         ghosts_io:: ghosts_io() throw() :
         capacity(0),
-        half(0),
         cmem()
         {
         }
@@ -21,15 +20,30 @@ namespace yocto
         {
             if(n>capacity)
             {
-                const size_t tmp_half = memory::align(n);
-                const size_t tmp_capa = tmp_half * 2;
-                cmem.prepare(tmp_capa);
+                const size_t tmp_capa = memory::align(n);
+                const size_t tmp_full = tmp_capa * 2;
+                if(cmem.size<tmp_full)
+                {
+                    cslot ctmp(tmp_full);
+                    cmem.swap_with(ctmp);
+                }
+                assert(cmem.size>=tmp_full);
                 (size_t&)capacity = tmp_capa;
-                half              = tmp_half;
             }
             
         }
 
+        uint8_t * ghosts_io:: recv_addr() const throw()
+        {
+            assert(cmem.size>=capacity*2);
+            return (uint8_t *)(cmem.data);
+        }
+
+        uint8_t * ghosts_io:: send_addr() const throw()
+        {
+            assert(cmem.size>=capacity*2);
+            return ((uint8_t *)(cmem.data)+capacity);
+        }
 
     }
 }

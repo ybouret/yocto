@@ -30,27 +30,27 @@ namespace yocto
             ghost_type   &outer; //!< to be received
             ghost_type   &inner; //!< to be sent
 
-            //! load inner content in to memory
+            //! load inner content in to memory, to be sent
             template <typename FIELD>
             inline void load( const FIELD &F, uint8_t * &p ) const throw()
             {
                 const ghost_type &g = inner;
                 for(size_t i=size;i>0;--i)
                 {
-                    const void *ptr = & F.at( g[i] );
+                    const void *ptr = & F.entry[ g[i] ];
                     core::bmove< sizeof( typename FIELD::type) >(p,ptr);
                     p += sizeof( typename FIELD::type );
                 }
             }
 
-            //! save memory into outer content
+            //! save (received) memory into outer content
             template <typename FIELD>
             inline void save( FIELD &F, const uint8_t * &p ) const throw()
             {
                 const ghost_type &g = outer;
                 for(size_t i=size;i>0;--i)
                 {
-                    void *ptr = & F.at( g[i] );
+                    void *ptr = & F.entry[ g[i] ];
                     core::bmove< sizeof( typename FIELD::type) >(ptr,p);
                     p += sizeof( typename FIELD::type);
                 }
@@ -63,8 +63,8 @@ namespace yocto
                 assert(lhs.size==rhs.size);
                 for(size_t i=lhs.size;i>0;--i)
                 {
-                    F.at( lhs.outer[i] ) = F.at( rhs.inner[i] );
-                    F.at( rhs.outer[i] ) = F.at( lhs.inner[i] );
+                    F.entry[ lhs.outer[i] ] = F.entry[ rhs.inner[i] ];
+                    F.entry[ rhs.outer[i] ] = F.entry[ lhs.inner[i] ];
                 }
             }
 

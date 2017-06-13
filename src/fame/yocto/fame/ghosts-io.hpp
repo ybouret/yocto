@@ -21,10 +21,22 @@ namespace yocto
             uint8_t * send_addr() const throw();
 
             const size_t capacity; //!< in bytes
-           
+
+            //! load data into send_addr
+            template <typename FIELD>
+            inline size_t load_to_send( const ghosts_pair &gp, const FIELD &F ) const throw()
+            {
+                assert(capacity>=gp.size*sizeof(typename FIELD::type));
+                uint8_t *p = send_addr();
+                uint8_t *s = p;
+                gp.load(F,p);
+                return static_cast<size_t>(p-s);
+            }
+
+            
+
 
         private:
-            size_t half;
             cslot  cmem;
 
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_io);
