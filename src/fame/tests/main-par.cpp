@@ -45,7 +45,6 @@ YOCTO_PROGRAM_START()
 {
     YOCTO_MPI_ENV();
 
-    MPI.Printf0(stderr, "sizeof(ghosts_io)=%ld\n", sizeof(ghosts_io) );
     {
         const layout<coord1d> full(1,32);
         mpi_ghosts<coord1d>   xch(MPI);
@@ -147,6 +146,26 @@ YOCTO_PROGRAM_START()
             }
         }
     }
+
+    MPI.Printf0(stderr, "\n\n-------- IN 2D --------\n\n");
+    {
+        mpi_ghosts<coord2d>   xch(MPI);
+
+        const layout<coord2d> full( coord2d(1,1), coord2d(32,32) );
+        {
+            MPI.Printf0(stderr,"IS  periodic XY\n");
+            const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(1,1));
+            field2d<double>       F("F",D,ng);
+            ghosts_of<coord2d>    G(F);
+            display_ghosts(G);
+
+            xch.prepare_for(G,F);
+
+            xch.perform(G,F);
+
+        }
+    }
+
 }
 YOCTO_PROGRAM_END()
 
