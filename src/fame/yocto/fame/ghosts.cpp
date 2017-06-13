@@ -150,6 +150,7 @@ namespace yocto
         {
             ghosts_base            &the_ghosts = *this;
             const size_t            num_ghosts = L.depth;
+            const size_t            num_shifts = num_ghosts-1;
             const layout<coord2d>  &inner      = L.inner;
             const layout<coord2d>  &outer      = L.outer;
 
@@ -187,8 +188,8 @@ assert(ng==gg);                                   \
 
                 if(lnk.next)
                 {
-                    coord1d      i  = inner.upper.x-num_ghosts;
-                    coord1d      o  = outer.upper.x-num_ghosts;
+                    coord1d      i  = inner.upper.x-num_shifts;
+                    coord1d      o  = outer.upper.x-num_shifts;
                     ghosts_pair &gp = * (G.next= new ghosts_pair(lnk.next->rank,ng) );
                     Y_FAME_G2D_X();
                 }
@@ -232,8 +233,8 @@ assert(ng==gg);                                   \
 
                 if(lnk.next)
                 {
-                    coord1d      i  = inner.upper.y-num_ghosts;
-                    coord1d      o  = outer.upper.y-num_ghosts;
+                    coord1d      i  = inner.upper.y-num_shifts;
+                    coord1d      o  = outer.upper.y-num_shifts;
                     ghosts_pair &gp = * (G.next= new ghosts_pair(lnk.next->rank,ng) );
                     Y_FAME_G2D_Y();
                 }

@@ -40,6 +40,7 @@ void display_ghosts(const ghosts_of<COORD> &G )
 
 #include "yocto/ios/ocstream.hpp"
 
+
 YOCTO_PROGRAM_START()
 {
     YOCTO_MPI_ENV();
@@ -71,7 +72,11 @@ YOCTO_PROGRAM_START()
 
 
             field1d<float>             Ff("Ff",D,ng);
-            Ff.ld(MPI.CommWorldRank);
+            Ff.ld(-(MPI.CommWorldRank+1));
+            for(coord1d i=Ff.inner.lower;i<=Ff.inner.upper;++i)
+            {
+                Ff[i] = double(i) / double(full.upper);
+            }
 
             xch.prepare_for(G,Ff);
 
@@ -116,7 +121,30 @@ YOCTO_PROGRAM_START()
             field1d<double>     Fd("Fd",D,ng);
             xch.prepare_for(G,Fd);
 
+            Fd.ld(-(MPI.CommWorldRank+1));
+            for(coord1d i=Fd.inner.lower;i<=Fd.inner.upper;++i)
+            {
+                Fd[i] = double(i) / double(full.upper);
+            }
+
+            {
+                const string output = vformat("%d.%d.ini_np.dat",MPI.CommWorldSize,MPI.CommWorldRank);
+                ios::wcstream fp(output);
+                for(coord1d i=Fd.outer.lower;i<=Fd.outer.upper;++i)
+                {
+                    fp("%g %g\n", double(i), double(Fd[i]));
+                }
+            }
+
             xch.perform(G,Fd);
+            {
+                const string output = vformat("%d.%d.end_np.dat",MPI.CommWorldSize,MPI.CommWorldRank);
+                ios::wcstream fp(output);
+                for(coord1d i=Fd.outer.lower;i<=Fd.outer.upper;++i)
+                {
+                    fp("%g %g\n", double(i), double(Fd[i]));
+                }
+            }
         }
     }
 }
