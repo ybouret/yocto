@@ -42,6 +42,7 @@ YOCTO_PROGRAM_START()
 {
     YOCTO_MPI_ENV();
 
+    MPI.Printf0(stderr, "sizeof(ghosts_io)=%ld\n", sizeof(ghosts_io) );
     {
         const layout<coord1d> full(1,16);
 
@@ -66,12 +67,6 @@ YOCTO_PROGRAM_START()
 
 
             field1d<float>             Ff("Ff",D,ng);
-            const size_t xchBytes = __MPI::BytesToExchange(G,Ff);
-            MPI.Printf(stderr,"xchBytes=%u\n", unsigned(xchBytes));
-            cslot cmem(xchBytes);
-            
-            __MPI::Exchange(MPI,G,Ff,cmem);
-
 
         }
 
@@ -94,8 +89,6 @@ YOCTO_PROGRAM_START()
 
             display_ghosts(G);
             const field1d<double>     Fd("Fd",D,ng);
-            const size_t xchBytes = __MPI::BytesToExchange(G,Fd);
-            MPI.Printf(stderr,"xchBytes=%u\n", unsigned(xchBytes));
         }
     }
 }

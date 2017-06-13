@@ -1,7 +1,7 @@
 #ifndef YOCTO_FAME_GHOSTS_IO_INCLUDED
 #define YOCTO_FAME_GHOSTS_IO_INCLUDED 1
 
-#include "yocto/fame/ghosts.hpp"
+#include "yocto/fame/field3d.hpp"
 #include "yocto/container/cslot.hpp"
 
 namespace yocto
@@ -17,10 +17,15 @@ namespace yocto
 
             void ensure(const size_t n);
 
-            const size_t capacity;
-            
+            uint8_t * recv_addr() const throw();
+            uint8_t * send_addr() const throw();
+
+            const size_t capacity; //!< in bytes
+           
+
         private:
-            cslot cmem;
+            size_t half;
+            cslot  cmem;
 
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_io);
         };

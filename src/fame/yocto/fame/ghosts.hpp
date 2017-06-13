@@ -39,7 +39,7 @@ namespace yocto
                 {
                     const void *ptr = & F.at( g[i] );
                     core::bmove< sizeof( typename FIELD::type) >(p,ptr);
-                    p += sizeof( typename FIELD::type);
+                    p += sizeof( typename FIELD::type );
                 }
             }
 
