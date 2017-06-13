@@ -24,9 +24,12 @@ namespace yocto
         {
         public:
             virtual ~ghosts_pair() throw();
-            explicit ghosts_pair(const coord1d r, const size_t n);
+            explicit ghosts_pair(const coord1d r,
+                                 const int     c,
+                                 const size_t  n);
 
             const coord1d rank;
+            const int     color;
             ghost_type   &outer; //!< to be received
             ghost_type   &inner; //!< to be sent
 

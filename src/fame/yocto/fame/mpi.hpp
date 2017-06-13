@@ -88,13 +88,14 @@ namespace yocto
 
                     if(g.prev)
                     {
-                        MPI_Status         status;
+                        //MPI_Status         status;
                         const ghosts_pair &gp = *(g.prev);
                         const size_t       ns = gio.load_to_send(gp,F);
-                        
+#if 0
                         MPI.Sendrecv(gio.send_addr(), ns, MPI_BYTE, g.prev->rank, 0,
                                      gio.recv_addr(), ns, MPI_BYTE, F.self.rank, 0,
                                      MPI_COMM_WORLD, status);
+#endif
                     }
                     
                 }

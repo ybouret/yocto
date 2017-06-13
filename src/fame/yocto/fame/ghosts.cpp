@@ -10,9 +10,10 @@ namespace yocto
         }
 
 
-        ghosts_pair:: ghosts_pair(const coord1d r, const size_t n) :
+        ghosts_pair:: ghosts_pair(const coord1d r, const int c, const size_t n) :
         ghosts_type(),
         rank(r),
+        color(c),
         outer( next_array() ),
         inner( next_array() )
         {
@@ -86,6 +87,13 @@ namespace yocto
 {
     namespace fame
     {
+
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // 1 D ghost
+        //
+        ////////////////////////////////////////////////////////////////////////
+
         template <>
         ghosts_of<coord1d>:: ghosts_of( const layouts<coord1d> &L ) :
         ghosts_base<coord1d>(L.self.rank)
@@ -109,12 +117,12 @@ gp.outer[g] = outer.offset_of(o);         \
 }                                         \
 while(false)
 
-
+            const int color = (L.self.ranks & 0x01);
             if(xlnk.prev)
             {
                 coord1d o = outer.lower;
                 coord1d i = inner.lower;
-                ghosts_pair &gp = * (G.prev=new ghosts_pair(xlnk.prev->rank,ng));
+                ghosts_pair &gp = * (G.prev=new ghosts_pair(xlnk.prev->rank,color,ng));
                 Y_FAME_G1D();
             }
 
@@ -122,7 +130,7 @@ while(false)
             {
                 coord1d i = inner.upper-num_ghosts;
                 coord1d o = outer.upper-num_ghosts;
-                ghosts_pair &gp = * (G.next=new ghosts_pair(xlnk.next->rank,ng));
+                ghosts_pair &gp = * (G.next=new ghosts_pair(xlnk.next->rank,color,ng));
                 Y_FAME_G1D();
             }
 
@@ -167,14 +175,15 @@ assert(ng==gg);                                   \
 } while(false)
 
             {
-                const domain<coord2d>::link &lnk = L.links[0];
-                ghosts                      &G   = the_ghosts[0];
-                const size_t                 ng  = num_ghosts * outer.width.y;
+                const domain<coord2d>::link &lnk   = L.links[0];
+                ghosts                      &G     = the_ghosts[0];
+                const size_t                 ng    = num_ghosts * outer.width.y;
+                const int                    color = (L.self.ranks.x & 0x01);
                 if(lnk.prev)
                 {
                     coord1d      i  = inner.lower.x;
                     coord1d      o  = outer.lower.x;
-                    ghosts_pair &gp = * (G.prev= new ghosts_pair(lnk.prev->rank,ng) );
+                    ghosts_pair &gp = * (G.prev= new ghosts_pair(lnk.prev->rank,color,ng) );
                     Y_FAME_G2D_X();
                 }
 
@@ -182,7 +191,7 @@ assert(ng==gg);                                   \
                 {
                     coord1d      i  = inner.upper.x-num_ghosts;
                     coord1d      o  = outer.upper.x-num_ghosts;
-                    ghosts_pair &gp = * (G.next= new ghosts_pair(lnk.next->rank,ng) );
+                    ghosts_pair &gp = * (G.next= new ghosts_pair(lnk.next->rank,color,ng) );
                     Y_FAME_G2D_X();
                 }
 
@@ -211,14 +220,16 @@ assert(ng==gg);                                   \
 } while(false)
 
             {
-                const domain<coord2d>::link &lnk = L.links[1];
-                ghosts                      &G   = the_ghosts[1];
-                const size_t                 ng  = num_ghosts * outer.width.x;
+                const domain<coord2d>::link &lnk   = L.links[1];
+                ghosts                      &G     = the_ghosts[1];
+                const size_t                 ng    = num_ghosts * outer.width.x;
+                const int                    color = (L.self.ranks.y & 0x01);
+
                 if(lnk.prev)
                 {
                     coord1d      i  = inner.lower.y;
                     coord1d      o  = outer.lower.y;
-                    ghosts_pair &gp = * (G.prev= new ghosts_pair(lnk.prev->rank,ng) );
+                    ghosts_pair &gp = * (G.prev= new ghosts_pair(lnk.prev->rank,color,ng) );
                     Y_FAME_G2D_Y();
                 }
 
@@ -226,7 +237,7 @@ assert(ng==gg);                                   \
                 {
                     coord1d      i  = inner.upper.y-num_ghosts;
                     coord1d      o  = outer.upper.y-num_ghosts;
-                    ghosts_pair &gp = * (G.next= new ghosts_pair(lnk.next->rank,ng) );
+                    ghosts_pair &gp = * (G.next= new ghosts_pair(lnk.next->rank,color,ng) );
                     Y_FAME_G2D_Y();
                 }
                 
