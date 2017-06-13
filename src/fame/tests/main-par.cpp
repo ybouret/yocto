@@ -160,10 +160,48 @@ YOCTO_PROGRAM_START()
             display_ghosts(G);
 
             xch.prepare_for(G,F);
-
             xch.perform(G,F);
 
         }
+
+        {
+            MPI.Printf0(stderr,"IS  periodic X\n");
+            const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(1,0));
+            field2d<double>       F("F",D,ng);
+            ghosts_of<coord2d>    G(F);
+            display_ghosts(G);
+
+            xch.prepare_for(G,F);
+            xch.perform(G,F);
+            
+        }
+
+        {
+            MPI.Printf0(stderr,"IS  periodic Y\n");
+            const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(0,1));
+            field2d<double>       F("F",D,ng);
+            ghosts_of<coord2d>    G(F);
+            display_ghosts(G);
+
+            xch.prepare_for(G,F);
+            xch.perform(G,F);
+
+        }
+
+        {
+            MPI.Printf0(stderr,"IS  NOT periodic\n");
+            const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(0,0));
+            field2d<double>       F("F",D,ng);
+            ghosts_of<coord2d>    G(F);
+            display_ghosts(G);
+
+            xch.prepare_for(G,F);
+            xch.perform(G,F);
+            
+        }
+
+
+
     }
 
 }
