@@ -46,6 +46,14 @@ namespace yocto
             virtual type       &at(param_coord C) throw()       = 0;
             virtual const_type &at(param_coord C) const throw() = 0;
 
+            inline void ld(param_type args)
+            {
+                for(size_t i=0;i<num_outer;++i)
+                {
+                    entry[i] = args;
+                }
+            }
+
 
         protected:
             inline explicit field(const string      &fid,
