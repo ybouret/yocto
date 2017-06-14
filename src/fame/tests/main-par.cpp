@@ -41,6 +41,27 @@ void display_ghosts(const ghosts_of<COORD> &G )
 #include "yocto/ios/ocstream.hpp"
 
 
+template <typename T>
+static inline void fill2d(  field2d<T> &F )
+{
+    for(coord1d y=F.outer.lower.y;y<=F.outer.upper.y;++y)
+    {
+        const bool out_y = (y<F.inner.lower.y||y>F.inner.upper.y);
+
+        for(coord1d x=F.outer.lower.x;x<=F.outer.upper.x;++x)
+        {
+            if(out_y || (x<F.inner.lower.x||x>F.inner.upper.x) )
+            {
+                F[y][x] = -(1+F.self.rank);
+            }
+            else
+            {
+                assert( F.inner.has( coord2d(x,y) ) );
+            }
+        }
+    }
+}
+
 YOCTO_PROGRAM_START()
 {
     YOCTO_MPI_ENV();
@@ -155,8 +176,11 @@ YOCTO_PROGRAM_START()
             field2d<double>       F("F",D,ng);
             ghosts_of<coord2d>    G(F);
             display_ghosts(G);
-
             xch.prepare_for(G,F);
+
+
+            fill2d(F);
+
             xch.perform(G,F);
 
         }
@@ -169,6 +193,8 @@ YOCTO_PROGRAM_START()
             display_ghosts(G);
 
             xch.prepare_for(G,F);
+
+            fill2d(F);
             xch.perform(G,F);
             
         }
@@ -181,6 +207,8 @@ YOCTO_PROGRAM_START()
             display_ghosts(G);
 
             xch.prepare_for(G,F);
+
+            fill2d(F);
             xch.perform(G,F);
 
         }
@@ -193,6 +221,8 @@ YOCTO_PROGRAM_START()
             display_ghosts(G);
 
             xch.prepare_for(G,F);
+
+            fill2d(F);
             xch.perform(G,F);
             
         }
