@@ -433,9 +433,7 @@ namespace yocto
 
             }
 
-            
-            
-            //collect_exchange_info();
+            collect_exchange_info();
         }
         
     }
