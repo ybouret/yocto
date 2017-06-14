@@ -42,14 +42,15 @@ void display_ghosts(const ghosts_of<COORD> &G )
 
 
 template <typename T>
-static inline void fill2d(  field2d<T> &F )
+static inline void fill2d(  field2d<T> &F, const layout<coord2d> &full)
 {
     for(coord1d y=F.outer.lower.y;y<=F.outer.upper.y;++y)
     {
         const bool out_y = (y<F.inner.lower.y||y>F.inner.upper.y);
-
+        const double Y = ( double(y)-double(full.lower.y) ) / double(full.width.y-1);
         for(coord1d x=F.outer.lower.x;x<=F.outer.upper.x;++x)
         {
+            const double X = ( double(x) - double(full.lower.x) ) / double(full.width.x-1);
             if(out_y || (x<F.inner.lower.x||x>F.inner.upper.x) )
             {
                 F[y][x] = -(1+F.self.rank);
@@ -57,6 +58,7 @@ static inline void fill2d(  field2d<T> &F )
             else
             {
                 assert( F.inner.has( coord2d(x,y) ) );
+                F[y][x] = T(cos(3*X)+sin(6*Y));
             }
         }
     }
@@ -179,7 +181,7 @@ YOCTO_PROGRAM_START()
             xch.prepare_for(G,F);
 
 
-            fill2d(F);
+            fill2d(F,full);
 
             xch.perform(G,F);
 
@@ -194,7 +196,7 @@ YOCTO_PROGRAM_START()
 
             xch.prepare_for(G,F);
 
-            fill2d(F);
+            fill2d(F,full);
             xch.perform(G,F);
             
         }
@@ -208,7 +210,7 @@ YOCTO_PROGRAM_START()
 
             xch.prepare_for(G,F);
 
-            fill2d(F);
+            fill2d(F,full);
             xch.perform(G,F);
 
         }
@@ -222,7 +224,7 @@ YOCTO_PROGRAM_START()
 
             xch.prepare_for(G,F);
 
-            fill2d(F);
+            fill2d(F,full);
             xch.perform(G,F);
             
         }
