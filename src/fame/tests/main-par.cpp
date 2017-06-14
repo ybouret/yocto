@@ -149,7 +149,7 @@ YOCTO_PROGRAM_START()
             }
 
             {
-                const string output = vformat("%d.%d.ini_np.dat",MPI.CommWorldSize,MPI.CommWorldRank);
+                const string output = vformat("%d.%d.ini_np.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
                 ios::wcstream fp(output);
                 VTK::SaveLayout(fp, "Fields", Fd.outer);
                 const string fid = vformat("fd%d.%d",MPI.CommWorldSize,MPI.CommWorldRank);
@@ -159,7 +159,7 @@ YOCTO_PROGRAM_START()
 
             xch.perform(G,Fd);
             {
-                const string output = vformat("%d.%d.end_np.dat",MPI.CommWorldSize,MPI.CommWorldRank);
+                const string output = vformat("%d.%d.end_np.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
                 ios::wcstream fp(output);
                 VTK::SaveLayout(fp, "Fields", Fd.outer);
                 const string fid = vformat("fd%d.%d",MPI.CommWorldSize,MPI.CommWorldRank);
@@ -182,9 +182,15 @@ YOCTO_PROGRAM_START()
 
 
             fill2d(F,full);
-
+            {
+                const string output = vformat("%d.%d.2d.ini11.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+                VTK::SaveField(output, "in 2d", F, F.outer);
+            }
             xch.perform(G,F);
-
+            {
+                const string output = vformat("%d.%d.2d.end11.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+                VTK::SaveField(output, "in 2d", F, F.outer);
+            }
         }
 
         {

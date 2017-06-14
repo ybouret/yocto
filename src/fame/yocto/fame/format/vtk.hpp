@@ -3,7 +3,7 @@
 
 
 #include "yocto/fame/field.hpp"
-#include "yocto/ios/ostream.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 namespace yocto
 {
@@ -153,6 +153,19 @@ namespace yocto
             {
                 Header(fp,title);
                 StructuredPoints<COORD>(fp,L);
+            }
+
+
+            template <typename T,typename COORD>
+            static inline void SaveField(const string         &filename,
+                                         const string         &title,
+                                         const field<T,COORD> &F,
+                                         const layout<COORD>  &L
+                                         )
+            {
+                ios::wcstream fp(filename);
+                SaveLayout(fp, title, L);
+                SaveScalars(fp,F.name,F,L);
             }
 
 
