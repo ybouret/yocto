@@ -288,7 +288,7 @@ namespace yocto
                                 ++gg;
                                 gp.inner[gg] = outer.offset_of(I);
                                 gp.outer[gg] = outer.offset_of(O);
-                            }                                           
+                            }
                         }
                     }
                     assert(ng==gg);
@@ -302,8 +302,8 @@ namespace yocto
                     {
                         for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
                         {
-                            coord1d      i  = inner.lower.x-num_shifts;
-                            coord1d      o  = outer.lower.x-num_shifts;
+                            coord1d      i  = inner.upper.x-num_shifts;
+                            coord1d      o  = outer.upper.x-num_shifts;
                             for(size_t g=1;g<=num_ghosts;++g,++o,++i)
                             {
 
@@ -317,8 +317,123 @@ namespace yocto
                     }
                     assert(ng==gg);
                 }
-                
+
             }
+
+
+            //__________________________________________________________________
+            //
+            // along Y
+            //__________________________________________________________________
+            {
+                const domain<coord3d>::link &lnk   = L.links[1];
+                ghosts                      &G     = the_ghosts[1];
+                const size_t                 ng    = num_ghosts * outer.width.x * outer.width.z;
+                if(lnk.prev)
+                {
+                    ghosts_pair &gp = * (G.prev= new ghosts_pair(lnk.prev->rank,ng) );
+                    size_t       gg = 0;
+                    for(coord1d z=outer.lower.z;z<=outer.upper.z;++z)
+                    {
+                        coord1d      i  = inner.lower.y;
+                        coord1d      o  = outer.lower.y;
+                        for(size_t g=1;g<=num_ghosts;++g,++o,++i)
+                        {
+                            for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
+                            {
+                                const coord3d I(x,i,z);
+                                const coord3d O(x,o,z);
+                                ++gg;
+                                gp.inner[gg] = outer.offset_of(I);
+                                gp.outer[gg] = outer.offset_of(O);
+                            }
+                        }
+                    }
+                    assert(ng==gg);
+                }
+
+                if(lnk.next)
+                {
+                    ghosts_pair &gp = * (G.next = new ghosts_pair(lnk.next->rank,ng) );
+                    size_t       gg = 0;
+                    for(coord1d z=outer.lower.z;z<=outer.upper.z;++z)
+                    {
+                        coord1d      i  = inner.upper.y-num_shifts;
+                        coord1d      o  = outer.upper.y-num_shifts;
+                        for(size_t g=1;g<=num_ghosts;++g,++o,++i)
+                        {
+                            for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
+                            {
+                                const coord3d I(x,i,z);
+                                const coord3d O(x,o,z);
+                                ++gg;
+                                gp.inner[gg] = outer.offset_of(I);
+                                gp.outer[gg] = outer.offset_of(O);
+                            }
+                        }
+                    }
+                    assert(ng==gg);
+                }
+
+            }
+
+
+            //__________________________________________________________________
+            //
+            // along Z
+            //__________________________________________________________________
+            {
+                const domain<coord3d>::link &lnk   = L.links[2];
+                ghosts                      &G     = the_ghosts[2];
+                const size_t                 ng    = num_ghosts * outer.width.x * outer.width.y;
+                if(lnk.prev)
+                {
+                    ghosts_pair &gp = * (G.prev= new ghosts_pair(lnk.prev->rank,ng) );
+                    size_t       gg = 0;
+                    coord1d      i  = inner.lower.z;
+                    coord1d      o  = outer.lower.z;
+                    for(size_t g=1;g<=num_ghosts;++g,++o,++i)
+                    {
+                        for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
+                            {
+                                const coord3d I(x,y,i);
+                                const coord3d O(x,y,o);
+                                ++gg;
+                                gp.inner[gg] = outer.offset_of(I);
+                                gp.outer[gg] = outer.offset_of(O);
+                            }
+                        }
+                    }
+                }
+
+                if(lnk.next)
+                {
+                    ghosts_pair &gp = * (G.next = new ghosts_pair(lnk.next->rank,ng) );
+                    size_t       gg = 0;
+                    coord1d      i  = inner.upper.z-num_shifts;
+                    coord1d      o  = outer.upper.z-num_shifts;
+                    for(size_t g=1;g<=num_ghosts;++g,++o,++i)
+                    {
+                        for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            for(coord1d x=outer.lower.x;x<=outer.upper.x;++x)
+                            {
+                                const coord3d I(x,y,i);
+                                const coord3d O(x,y,o);
+                                ++gg;
+                                gp.inner[gg] = outer.offset_of(I);
+                                gp.outer[gg] = outer.offset_of(O);
+                            }
+                        }
+                    }
+                }
+
+
+            }
+
+            
             
             //collect_exchange_info();
         }
