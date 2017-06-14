@@ -1,5 +1,7 @@
 #include "yocto/fame/field3d.hpp"
 #include "yocto/utest/run.hpp"
+#include "yocto/fame/format/vtk.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 using namespace yocto;
 using namespace fame;
@@ -40,7 +42,13 @@ YOCTO_UNIT_TEST_IMPL(field)
             }
 
             field2d<float> FF2("FF2",Ff);
-            
+
+            {
+                ios::wcstream fp("f2d.vtk");
+                VTK::SaveLayout(fp, "fields", FF2.inner);
+                VTK::SaveScalars(fp,FF2.name,FF2,FF2.inner);
+                
+            }
 
         }
         for(size_t size=1;size<=4;++size)
