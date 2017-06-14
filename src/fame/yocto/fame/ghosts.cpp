@@ -238,6 +238,57 @@ assert(ng==gg);                                   \
                     ghosts_pair &gp = * (G.next= new ghosts_pair(lnk.next->rank,ng) );
                     Y_FAME_G2D_Y();
                 }
+
+            }
+
+            collect_exchange_info();
+        }
+
+    }
+
+}
+
+namespace yocto
+{
+    namespace fame
+    {
+        template <>
+        ghosts_of<coord3d>:: ghosts_of( const layouts<coord3d> &L ) :
+        ghosts_base<coord3d>(L.self.rank)
+        {
+            ghosts_base            &the_ghosts = *this;
+            const size_t            num_ghosts = L.depth;
+            const size_t            num_shifts = num_ghosts-1;
+            const layout<coord3d>  &inner      = L.inner;
+            const layout<coord3d>  &outer      = L.outer;
+
+            {
+                const domain<coord3d>::link &lnk   = L.links[0];
+                ghosts                      &G     = the_ghosts[0];
+                const size_t                 ng    = num_ghosts * outer.width.y * outer.width.z;
+                if(lnk.prev)
+                {
+                    coord1d      i  = inner.lower.x;
+                    coord1d      o  = outer.lower.x;
+                    ghosts_pair &gp = * (G.prev= new ghosts_pair(lnk.prev->rank,ng) );
+                    size_t       gg = 0;
+                    for(coord1d z=outer.lower.z;z<=outer.upper.z;++z)
+                    {
+                        for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            for(size_t g=1;g<=num_ghosts;++g,++o,++i)
+                            {
+
+                                const coord3d I(i,y,z);
+                                const coord3d O(o,y,z);
+                                ++gg;
+                                gp.inner[gg] = outer.offset_of(I);
+                                gp.outer[gg] = outer.offset_of(O);      
+                            }                                           
+                        }
+                    }
+                    assert(ng==gg);
+                }
                 
             }
             
@@ -245,6 +296,8 @@ assert(ng==gg);                                   \
         }
         
     }
-    
 }
+
+
+
 
