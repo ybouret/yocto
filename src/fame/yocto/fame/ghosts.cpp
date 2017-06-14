@@ -262,20 +262,24 @@ namespace yocto
             const layout<coord3d>  &inner      = L.inner;
             const layout<coord3d>  &outer      = L.outer;
 
+            //__________________________________________________________________
+            //
+            // along X
+            //__________________________________________________________________
             {
                 const domain<coord3d>::link &lnk   = L.links[0];
                 ghosts                      &G     = the_ghosts[0];
                 const size_t                 ng    = num_ghosts * outer.width.y * outer.width.z;
                 if(lnk.prev)
                 {
-                    coord1d      i  = inner.lower.x;
-                    coord1d      o  = outer.lower.x;
                     ghosts_pair &gp = * (G.prev= new ghosts_pair(lnk.prev->rank,ng) );
                     size_t       gg = 0;
                     for(coord1d z=outer.lower.z;z<=outer.upper.z;++z)
                     {
                         for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
                         {
+                            coord1d      i  = inner.lower.x;
+                            coord1d      o  = outer.lower.x;
                             for(size_t g=1;g<=num_ghosts;++g,++o,++i)
                             {
 
@@ -283,8 +287,32 @@ namespace yocto
                                 const coord3d O(o,y,z);
                                 ++gg;
                                 gp.inner[gg] = outer.offset_of(I);
-                                gp.outer[gg] = outer.offset_of(O);      
+                                gp.outer[gg] = outer.offset_of(O);
                             }                                           
+                        }
+                    }
+                    assert(ng==gg);
+                }
+
+                if(lnk.next)
+                {
+                    ghosts_pair &gp = * (G.next = new ghosts_pair(lnk.next->rank,ng) );
+                    size_t       gg = 0;
+                    for(coord1d z=outer.lower.z;z<=outer.upper.z;++z)
+                    {
+                        for(coord1d y=outer.lower.y;y<=outer.upper.y;++y)
+                        {
+                            coord1d      i  = inner.lower.x-num_shifts;
+                            coord1d      o  = outer.lower.x-num_shifts;
+                            for(size_t g=1;g<=num_ghosts;++g,++o,++i)
+                            {
+
+                                const coord3d I(i,y,z);
+                                const coord3d O(o,y,z);
+                                ++gg;
+                                gp.inner[gg] = outer.offset_of(I);
+                                gp.outer[gg] = outer.offset_of(O);
+                            }
                         }
                     }
                     assert(ng==gg);
@@ -292,7 +320,7 @@ namespace yocto
                 
             }
             
-            collect_exchange_info();
+            //collect_exchange_info();
         }
         
     }

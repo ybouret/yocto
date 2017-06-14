@@ -123,7 +123,6 @@ YOCTO_UNIT_TEST_IMPL(layouts)
         }
     }
 
-    return 0;
 
     {
         layout<coord3d> L( coord3d(1,1,1), coord3d(16,16,16) );
@@ -138,7 +137,7 @@ YOCTO_UNIT_TEST_IMPL(layouts)
                 domain<coord3d> D(rank,size,NULL,L,coord3d(1,1,1));
                 layouts<coord3d> W(D,1);
                 display_lay(W);
-                //ghosts_of<coord3d> G(W);
+                ghosts_of<coord3d> G(W);
             }
             
             std::cerr << "NOT periodic:" << std::endl;
