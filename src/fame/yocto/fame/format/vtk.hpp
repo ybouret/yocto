@@ -107,6 +107,28 @@ namespace yocto
                 }
             };
 
+            template <typename T>
+            struct OutputScalars<T,coord3d>
+            {
+                static inline
+                void Write(ios::ostream          &fp,
+                           const field<T,coord3d> &F,
+                           const layout<coord3d>  &L)
+                {
+                    for(coord1d z=L.lower.z;z<=L.upper.z;++z)
+                    {
+                        for(coord1d y=L.lower.y;y<=L.upper.y;++y)
+                        {
+                            for(coord1d x=L.lower.x;x<=L.upper.x;++x)
+                            {
+                                OutputValue(fp,F.at(coord3d(x,y,z))); fp << "\n";
+                            }
+                        }
+                    }
+                }
+            };
+
+
 
 
             template <typename T,typename COORD> static inline
