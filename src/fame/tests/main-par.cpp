@@ -1,4 +1,4 @@
-#include "yocto/fame/field1d.hpp"
+#include "yocto/fame/format/vtk.hpp"
 #include "yocto/program.hpp"
 #include "yocto/fame/mpi.hpp"
 
@@ -80,21 +80,20 @@ YOCTO_PROGRAM_START()
             xch.prepare_for(G,Ff);
 
             {
-                const string output = vformat("%d.%d.ini.dat",MPI.CommWorldSize,MPI.CommWorldRank);
+                const string output = vformat("%d.%d.ini.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
                 ios::wcstream fp(output);
-                for(coord1d i=Ff.outer.lower;i<=Ff.outer.upper;++i)
-                {
-                    fp("%g %g\n", double(i), double(Ff[i]));
-                }
+                VTK::SaveLayout(fp, "Fields", Ff.outer);
+                const string fid = vformat("ff%d.%d",MPI.CommWorldSize,MPI.CommWorldRank);
+                VTK::SaveScalars(fp,fid, Ff, Ff.outer);
+
             }
             xch.perform(G,Ff);
             {
-                const string output = vformat("%d.%d.end.dat",MPI.CommWorldSize,MPI.CommWorldRank);
+                const string output = vformat("%d.%d.end.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
                 ios::wcstream fp(output);
-                for(coord1d i=Ff.outer.lower;i<=Ff.outer.upper;++i)
-                {
-                    fp("%g %g\n", double(i), double(Ff[i]));
-                }
+                VTK::SaveLayout(fp, "Fields", Ff.outer);
+                const string fid = vformat("ff%d.%d",MPI.CommWorldSize,MPI.CommWorldRank);
+                VTK::SaveScalars(fp,fid, Ff, Ff.outer);
             }
         }
 
@@ -129,21 +128,19 @@ YOCTO_PROGRAM_START()
             {
                 const string output = vformat("%d.%d.ini_np.dat",MPI.CommWorldSize,MPI.CommWorldRank);
                 ios::wcstream fp(output);
-                for(coord1d i=Fd.outer.lower;i<=Fd.outer.upper;++i)
-                {
-                    fp("%g %g\n", double(i), double(Fd[i]));
-                }
+                VTK::SaveLayout(fp, "Fields", Fd.outer);
+                const string fid = vformat("fd%d.%d",MPI.CommWorldSize,MPI.CommWorldRank);
+                VTK::SaveScalars(fp,fid, Fd, Fd.outer);
+
             }
 
             xch.perform(G,Fd);
             {
                 const string output = vformat("%d.%d.end_np.dat",MPI.CommWorldSize,MPI.CommWorldRank);
                 ios::wcstream fp(output);
-                for(coord1d i=Fd.outer.lower;i<=Fd.outer.upper;++i)
-                {
-                    fp("%g %g\n", double(i), double(Fd[i]));
-                }
-            }
+                VTK::SaveLayout(fp, "Fields", Fd.outer);
+                const string fid = vformat("fd%d.%d",MPI.CommWorldSize,MPI.CommWorldRank);
+                VTK::SaveScalars(fp,fid, Fd, Fd.outer);            }
         }
     }
 

@@ -84,7 +84,7 @@ namespace yocto
                 {
                     for(coord1d x=L.lower;x<=L.upper;++x)
                     {
-                        OutputValue(fp,F[x]); fp << "\n";
+                        OutputValue(fp,F.at(x)); fp << "\n";
                     }
                 }
             };
