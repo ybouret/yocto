@@ -64,6 +64,13 @@ static inline void fill2d(  field2d<T> &F, const layout<coord2d> &full)
     }
 }
 
+template <typename T>
+static inline
+void fill3d( field3d<T> &F, const layout<coord3d> &full )
+{
+
+}
+
 YOCTO_PROGRAM_START()
 {
     YOCTO_MPI_ENV();
@@ -104,7 +111,7 @@ YOCTO_PROGRAM_START()
 
             const string  output = vformat("1d_%d.%d.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
             ios::wcstream fp(output);
-            VTK::Header(fp, "field1d");
+            VTK::Header(fp, "field1d, periodic");
             VTK::StructuredPoints(fp,F.outer);
             VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
             xch.perform(G,F);
@@ -131,16 +138,22 @@ YOCTO_PROGRAM_START()
                        );
 
             display_ghosts(G);
-            field1d<double>     Fd("Fd",D,ng);
-            xch.prepare_for(G,Fd);
+            field1d<double>     F("F",D,ng);
+            xch.prepare_for(G,F);
 
-            Fd.ld(-(MPI.CommWorldRank+1));
-            for(coord1d i=Fd.inner.lower;i<=Fd.inner.upper;++i)
+            F.ld(-(MPI.CommWorldRank+1));
+            for(coord1d i=F.inner.lower;i<=F.inner.upper;++i)
             {
-                Fd[i] = double(i) / double(full.upper);
+                F[i] = double(i) / double(full.upper);
             }
 
-            xch.perform(G,Fd);
+            const string  output = vformat("1d_%d.%d_np.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+            ios::wcstream fp(output);
+            VTK::Header(fp, "field1d, not periodic");
+            VTK::StructuredPoints(fp,F.outer);
+            VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
+            xch.perform(G,F);
+            VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
 
         }
 
@@ -161,7 +174,7 @@ YOCTO_PROGRAM_START()
 
 
             fill2d(F,full);
-            const string  output = vformat("2d_%d.%d.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+            const string  output = vformat("2d_%d.%d_pbcXY.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
             ios::wcstream fp(output);
 
             VTK::Header(fp, "field2d");
@@ -183,8 +196,15 @@ YOCTO_PROGRAM_START()
             xch.prepare_for(G,F);
 
             fill2d(F,full);
-            xch.perform(G,F);
+            const string  output = vformat("2d_%d.%d_pbcX.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+            ios::wcstream fp(output);
 
+            VTK::Header(fp, "field2d");
+            VTK::StructuredPoints(fp,F.outer);
+
+            VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
+            xch.perform(G,F);
+            VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
         }
 
         {
@@ -197,8 +217,15 @@ YOCTO_PROGRAM_START()
             xch.prepare_for(G,F);
 
             fill2d(F,full);
-            xch.perform(G,F);
+            const string  output = vformat("2d_%d.%d_pbcY.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+            ios::wcstream fp(output);
 
+            VTK::Header(fp, "field2d");
+            VTK::StructuredPoints(fp,F.outer);
+
+            VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
+            xch.perform(G,F);
+            VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
         }
         
         {
@@ -211,12 +238,47 @@ YOCTO_PROGRAM_START()
             xch.prepare_for(G,F);
             
             fill2d(F,full);
+            const string  output = vformat("2d_%d.%d_no_pbc.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+            ios::wcstream fp(output);
+
+            VTK::Header(fp, "field2d");
+            VTK::StructuredPoints(fp,F.outer);
+
+            VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
             xch.perform(G,F);
-            
+            VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
         }
         
         
         
+    }
+
+    MPI.Printf0(stderr, "\n\n-------- IN 3D --------\n\n");
+    {
+        mpi_ghosts<coord3d>   xch(MPI);
+
+        const layout<coord3d> full( coord3d(1,1,1), coord3d(32,32,32) );
+        {
+            MPI.Printf0(stderr,"IS  periodic XY\n");
+            const domain<coord3d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord3d(1,1,1));
+            field3d<float>        F("F",D,ng);
+            ghosts_of<coord3d>    G(F);
+            display_ghosts(G);
+            xch.prepare_for(G,F);
+
+
+            fill3d(F,full);
+            const string  output = vformat("3d_%d.%d_XYZ.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+            ios::wcstream fp(output);
+
+            VTK::Header(fp, "field3d");
+            VTK::StructuredPoints(fp,F.outer);
+
+            VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
+            xch.perform(G,F);
+            VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
+            
+        }
     }
     
 }

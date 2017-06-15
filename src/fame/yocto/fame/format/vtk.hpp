@@ -17,7 +17,6 @@ namespace yocto
                                       const string &title)
             {
                 fp << "# vtk DataFile Version 3.0\n";
-                //fp << "# ";
                 const size_t n = min_of<size_t>(title.size(),250);
                 for(size_t i=0;i<n;++i)
                 {
