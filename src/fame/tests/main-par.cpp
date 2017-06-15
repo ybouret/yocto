@@ -68,7 +68,20 @@ template <typename T>
 static inline
 void fill3d( field3d<T> &F, const layout<coord3d> &full )
 {
-
+    F.ld( -(1+F.self.rank) );
+    for(coord1d z=F.inner.lower.z;z<=F.inner.upper.z;++z)
+    {
+        const double dZ = (z-full.lower.z)/double(full.width.z-1) - 0.5;
+        for(coord1d y=F.inner.lower.y;y<=F.inner.upper.y;++y)
+        {
+            const double dY = (y-full.lower.y)/double(full.width.y-1) - 0.5;
+            for(coord1d x=F.inner.lower.x;x<=F.inner.upper.x;++x)
+            {
+                const double dX = (x-full.lower.x)/double(full.width.x-1) - 0.5;
+                F[z][y][x] = exp(-0.5*( square_of(dX) + square_of(dY) + square_of(dZ) ));
+            }
+        }
+    }
 }
 
 YOCTO_PROGRAM_START()
