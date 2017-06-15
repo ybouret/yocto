@@ -16,8 +16,8 @@ namespace yocto
             static inline void Header(ios::ostream &fp,
                                       const string &title)
             {
-                fp << "# vtk DataFile Version 2.0\n";
-                fp << "# ";
+                fp << "# vtk DataFile Version 3.0\n";
+                //fp << "# ";
                 const size_t n = min_of<size_t>(title.size(),250);
                 for(size_t i=0;i<n;++i)
                 {
@@ -64,6 +64,7 @@ namespace yocto
                     fp << " 1";
                 }
                 fp << "\n";
+                fp << "POINT_DATA "; fp(" %u\n", unsigned(L.items) );
             }
 
             template <typename T>
@@ -137,7 +138,6 @@ namespace yocto
                              const field<T,COORD> &F,
                              const layout<COORD>  &L)
             {
-                fp << "POINT_DATA "; fp(" %u\n", unsigned(L.items) );
                 fp << "SCALARS " << label << ' ';
                 OutputType<T>(fp);
                 fp << "\n";
@@ -145,28 +145,7 @@ namespace yocto
                 OutputScalars<T,COORD>::Write(fp,F,L);
             }
 
-
-            template <typename COORD>
-            static inline void SaveLayout(ios::ostream  &fp,
-                                          const string  &title,
-                                          const layout<COORD> &L)
-            {
-                Header(fp,title);
-                StructuredPoints<COORD>(fp,L);
-            }
-
-
-            template <typename T,typename COORD>
-            static inline void SaveField(const string         &filename,
-                                         const string         &title,
-                                         const field<T,COORD> &F,
-                                         const layout<COORD>  &L
-                                         )
-            {
-                ios::wcstream fp(filename);
-                SaveLayout(fp, title, L);
-                SaveScalars(fp,F.name,F,L);
-            }
+            
 
 
         };

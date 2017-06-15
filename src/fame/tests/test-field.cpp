@@ -45,7 +45,8 @@ YOCTO_UNIT_TEST_IMPL(field)
 
             {
                 ios::wcstream fp("f2d.vtk");
-                VTK::SaveLayout(fp, "fields", FF2.inner);
+                VTK::Header(fp, "field2d" );
+                VTK::StructuredPoints(fp,FF2.inner);
                 VTK::SaveScalars(fp,FF2.name,FF2,FF2.inner);
                 
             }

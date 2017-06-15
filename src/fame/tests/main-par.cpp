@@ -58,7 +58,7 @@ static inline void fill2d(  field2d<T> &F, const layout<coord2d> &full)
             else
             {
                 assert( F.inner.has( coord2d(x,y) ) );
-                F[y][x] = T(cos(3*X)+sin(6*Y));
+                F[y][x] = T(cos(6*X)+sin(6*Y));
             }
         }
     }
@@ -71,7 +71,7 @@ YOCTO_PROGRAM_START()
     {
         const layout<coord1d> full(1,32);
         mpi_ghosts<coord1d>   xch(MPI);
-        
+
         {
             MPI.Printf0(stderr,"IS  periodic\n");
             const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,1);
@@ -102,22 +102,10 @@ YOCTO_PROGRAM_START()
 
             xch.prepare_for(G,Ff);
 
-            {
-                const string output = vformat("%d.%d.ini.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
-                ios::wcstream fp(output);
-                VTK::SaveLayout(fp, "Fields", Ff.outer);
-                const string fid = vformat("ff%d.%d",MPI.CommWorldSize,MPI.CommWorldRank);
-                VTK::SaveScalars(fp,fid, Ff, Ff.outer);
 
-            }
+
             xch.perform(G,Ff);
-            {
-                const string output = vformat("%d.%d.end.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
-                ios::wcstream fp(output);
-                VTK::SaveLayout(fp, "Fields", Ff.outer);
-                const string fid = vformat("ff%d.%d",MPI.CommWorldSize,MPI.CommWorldRank);
-                VTK::SaveScalars(fp,fid, Ff, Ff.outer);
-            }
+
         }
 
 
@@ -148,23 +136,10 @@ YOCTO_PROGRAM_START()
                 Fd[i] = double(i) / double(full.upper);
             }
 
-            {
-                const string output = vformat("%d.%d.ini_np.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
-                ios::wcstream fp(output);
-                VTK::SaveLayout(fp, "Fields", Fd.outer);
-                const string fid = vformat("fd%d.%d",MPI.CommWorldSize,MPI.CommWorldRank);
-                VTK::SaveScalars(fp,fid, Fd, Fd.outer);
-
-            }
-
             xch.perform(G,Fd);
-            {
-                const string output = vformat("%d.%d.end_np.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
-                ios::wcstream fp(output);
-                VTK::SaveLayout(fp, "Fields", Fd.outer);
-                const string fid = vformat("fd%d.%d",MPI.CommWorldSize,MPI.CommWorldRank);
-                VTK::SaveScalars(fp,fid, Fd, Fd.outer);            }
+
         }
+
     }
 
     MPI.Printf0(stderr, "\n\n-------- IN 2D --------\n\n");
@@ -182,15 +157,16 @@ YOCTO_PROGRAM_START()
 
 
             fill2d(F,full);
-            {
-                const string output = vformat("%d.%d.2d.ini11.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
-                VTK::SaveField(output, "in 2d", F, F.outer);
-            }
+            const string  output = vformat("2d_%d.%d.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+            ios::wcstream fp(output);
+
+            VTK::Header(fp, "field2d");
+            VTK::StructuredPoints(fp,F.outer);
+
+            VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
             xch.perform(G,F);
-            {
-                const string output = vformat("%d.%d.2d.end11.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
-                VTK::SaveField(output, "in 2d", F, F.outer);
-            }
+            VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
+
         }
 
         {
@@ -204,7 +180,7 @@ YOCTO_PROGRAM_START()
 
             fill2d(F,full);
             xch.perform(G,F);
-            
+
         }
 
         {
@@ -220,25 +196,25 @@ YOCTO_PROGRAM_START()
             xch.perform(G,F);
 
         }
-
+        
         {
             MPI.Printf0(stderr,"IS  NOT periodic\n");
             const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(0,0));
             field2d<double>       F("F",D,ng);
             ghosts_of<coord2d>    G(F);
             display_ghosts(G);
-
+            
             xch.prepare_for(G,F);
-
+            
             fill2d(F,full);
             xch.perform(G,F);
             
         }
-
-
-
+        
+        
+        
     }
-
+    
 }
 YOCTO_PROGRAM_END()
 
