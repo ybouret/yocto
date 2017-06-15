@@ -97,7 +97,7 @@ namespace yocto
         ghosts_of<coord1d>:: ghosts_of( const layouts<coord1d> &L ) :
         ghosts_base<coord1d>(L.self.rank)
         {
-            ghosts_base            &the_ghosts = *this;
+            ghosts_base<coord1d>   &the_ghosts = *this;
             const size_t            num_ghosts = L.depth;
             const size_t            num_shifts = num_ghosts-1;
             const size_t            ng         = num_ghosts * 1;
@@ -148,7 +148,7 @@ namespace yocto
         ghosts_of<coord2d>:: ghosts_of( const layouts<coord2d> &L ) :
         ghosts_base<coord2d>(L.self.rank)
         {
-            ghosts_base            &the_ghosts = *this;
+            ghosts_base<coord2d>   &the_ghosts = *this;
             const size_t            num_ghosts = L.depth;
             const size_t            num_shifts = num_ghosts-1;
             const layout<coord2d>  &inner      = L.inner;
@@ -256,7 +256,7 @@ namespace yocto
         ghosts_of<coord3d>:: ghosts_of( const layouts<coord3d> &L ) :
         ghosts_base<coord3d>(L.self.rank)
         {
-            ghosts_base            &the_ghosts = *this;
+            ghosts_base<coord3d>   &the_ghosts = *this;
             const size_t            num_ghosts = L.depth;
             const size_t            num_shifts = num_ghosts-1;
             const layout<coord3d>  &inner      = L.inner;
