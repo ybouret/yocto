@@ -93,18 +93,22 @@ YOCTO_PROGRAM_START()
 
 
 
-            field1d<float>             Ff("Ff",D,ng);
-            Ff.ld(-(MPI.CommWorldRank+1));
-            for(coord1d i=Ff.inner.lower;i<=Ff.inner.upper;++i)
+            field1d<float>             F("F",D,ng);
+            F.ld(-(MPI.CommWorldRank+1));
+            for(coord1d i=F.inner.lower;i<=F.inner.upper;++i)
             {
-                Ff[i] = double(i) / double(full.upper);
+                F[i] = double(i) / double(full.upper);
             }
 
-            xch.prepare_for(G,Ff);
+            xch.prepare_for(G,F);
 
-
-
-            xch.perform(G,Ff);
+            const string  output = vformat("1d_%d.%d.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+            ios::wcstream fp(output);
+            VTK::Header(fp, "field1d");
+            VTK::StructuredPoints(fp,F.outer);
+            VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
+            xch.perform(G,F);
+            VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
 
         }
 
