@@ -100,12 +100,9 @@ namespace yocto
                     const layout<coord2d>  full_xy  = layout_ops::project(this->full);
                     const coord2d          ranks_xy(this->self.ranks.x,this->self.ranks.y);
                     const coord2d          sizes_xy(this->full.sizes.x,this->full.sizes.y);
-                    std::cerr << "sub3D: " << this->full.sizes << "." << this->self.ranks << std::endl;
-                    std::cerr << "sub2D: " << sizes_xy << "." << ranks_xy << std::endl;
                     split<coord2d>         split_xy(full_xy,sizes_xy.__prod(),&sizes_xy);
                     const coord1d          rank_xy = split_xy.global_rank(ranks_xy);
                     const coord1d          size_xy = split_xy.size;
-                    std::cerr << "\tsub2D: " << size_xy << "." << rank_xy << std::endl;
                     const coord2d          pbc_xy(this->pbc.x,this->pbc.y);
                     const coord1d          ng  = this->depth;
                     const domain<coord2d>  dom_xy(rank_xy,size_xy,&sizes_xy,full_xy,pbc_xy);
