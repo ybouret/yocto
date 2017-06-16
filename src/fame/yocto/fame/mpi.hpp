@@ -99,6 +99,68 @@ namespace yocto
                     ghosts_pair::exchange(F,*(g->prev),*(g->next));
                 }
 
+                for(coord1d pass=0;pass<2;++pass)
+                {
+                    MPI.Printf0(stderr,"--\tPass #%d\n",int(pass));
+
+                    for(size_t dim=0;dim<DIMENSION;++dim)
+                    {
+
+                        const ghosts &g    = Ghosts[dim];
+                        const string  gk   = g.kind_text() + vformat("@%s",coord_info::axis_name(dim));
+                        const char   *kind = gk.c_str();
+
+                        if(g.kind!=ghosts::async)
+                        {
+                            MPI.Printf(stderr,"%s\n",kind);
+                            continue;
+                        }
+                        const int     color = __coord(F.color,dim);
+                        ghosts_io    &IO    = GhostsIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
+                        const int     sz    = F.full.size;
+                        if(color==pass)
+                        {
+                            // send
+                            switch(g.flag)
+                            {
+                                case ghosts::has_prev: {
+                                    MPI.Printf(stderr, "color=%d: send->prev=%d.%d\n",color,sz,int(g.prev->rank));
+                                } break;
+                                case ghosts::has_next: {
+                                    MPI.Printf(stderr, "color=%d: send->next=%d.%d\n",color,sz,int(g.next->rank));
+                                } break;
+                                case ghosts::has_both: {
+                                    MPI.Printf(stderr, "color=%d: send->prev=%d.%d and send->next=%d.%d\n",color,sz,int(g.prev->rank),sz,int(g.next->rank));
+                                } break;
+                                default:
+                                    throw exception("mpi_exchange: invalid ghosts flag=%d", g.flag);
+                            }
+                        }
+                        else
+                        {
+                            // recv mode
+                            switch(g.flag)
+                            {
+                                case ghosts::has_prev: {
+                                    MPI.Printf(stderr, "color=%d: recv<-prev=%d.%d\n",color,sz,int(g.prev->rank));
+                                } break;
+                                case ghosts::has_next: {
+                                    MPI.Printf(stderr, "color=%d: recv<-next=%d.%d\n",color,sz,int(g.next->rank));
+                                } break;
+                                case ghosts::has_both: {
+                                    MPI.Printf(stderr, "color=%d: recv<-prev=%d.%d and recv<-next=%d.%d\n",color,sz,int(g.prev->rank),sz,int(g.next->rank));
+                                } break;
+                                default:
+                                    throw exception("mpi_exchange: invalid ghosts flag=%d", g.flag);
+                            }
+
+                        }
+                    }
+
+                }
+
+
+#if 0
                 //______________________________________________________________
                 //
                 // async exchange 1/2
@@ -161,11 +223,12 @@ namespace yocto
                         if(g.prev) {  MPI.Printf(stderr,"%s: color=%d: recv<-prev=%ld\n", kind, color, g.prev->rank); recv(*g.prev,IO,F); } else { MPI.Printf(stderr,"%s: no prev\n",kind); }
                         if(g.next) {  MPI.Printf(stderr,"%s: color=%d: recv<-next=%ld\n", kind, color, g.next->rank); recv(*g.next,IO,F); } else { MPI.Printf(stderr,"%s: no next\n",kind); }
                     }
-
-
+                    
+                    
                 }
-
-
+#endif
+                
+                
             }
             
             

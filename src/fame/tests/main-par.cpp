@@ -133,7 +133,7 @@ YOCTO_PROGRAM_START()
         }
         
         
-        if(false)
+        if(true)
         {
             MPI.Printf0(stderr,"\nNOT  periodic\n");
             const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,0);
@@ -173,7 +173,7 @@ YOCTO_PROGRAM_START()
         
     }
     
-    if(false)
+    if(true)
     {
         MPI.Printf0(stderr, "\n\n-------- IN 2D --------\n\n");
         {
