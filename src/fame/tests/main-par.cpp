@@ -25,7 +25,7 @@ void display_ghosts(const ghosts_of<COORD> &G )
         {
             info  += vformat("\t!prev\n");
         }
-        
+
         if(g.next)
         {
             info  += vformat("\t+next@%d\n", int(g.next->rank));
@@ -87,18 +87,18 @@ void fill3d( field3d<T> &F, const layout<coord3d> &full )
 YOCTO_PROGRAM_START()
 {
     YOCTO_MPI_ENV();
-    
+
     {
         const layout<coord1d> full(1,32);
         mpi_ghosts<coord1d>   xch(MPI);
-        
+
         {
             MPI.Printf0(stderr,"IS  periodic\n");
             const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,1);
             layouts<coord1d>      W(D,ng);
             ghosts_of<coord1d>    G(W);
-            
-            
+
+
             MPI.Printf(stderr,"is %2ld.%2ld: layout: inner=[%5ld:%5ld], outer=[%5ld:%5ld], color=%d\n",
                        long(D.full.size),long(D.self.rank),
                        long(W.inner.lower),
@@ -107,21 +107,21 @@ YOCTO_PROGRAM_START()
                        long(W.outer.upper),
                        int(W.color)
                        );
-            
+
             //display_ghosts(G);
-            
-            
-            
-            
+
+
+
+
             field1d<float>             F("F",D,ng);
             F.ld(-(MPI.CommWorldRank+1));
             for(coord1d i=F.inner.lower;i<=F.inner.upper;++i)
             {
                 F[i] = double(i) / double(full.upper);
             }
-            
+
             xch.prepare_for(G,F);
-            
+
             const string  output = vformat("1d_%d.%d.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
             ios::wcstream fp(output);
             VTK::Header(fp, "field1d, periodic");
@@ -129,19 +129,18 @@ YOCTO_PROGRAM_START()
             VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
             xch.perform(G,F);
             VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
-            
         }
-        
-        
-        if(true)
+
+
+        if(false)
         {
             MPI.Printf0(stderr,"\nNOT  periodic\n");
             const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,0);
             layouts<coord1d>      W(D,ng);
             ghosts_of<coord1d>    G(W);
-            
-            
-            
+
+
+
             MPI.Printf(stderr,"is %2ld.%2ld: layout: inner=[%5ld:%5ld], outer=[%5ld:%5ld], color=%d\n",
                        long(D.full.size),long(D.self.rank),
                        long(W.inner.lower),
@@ -150,17 +149,17 @@ YOCTO_PROGRAM_START()
                        long(W.outer.upper),
                        int(W.color)
                        );
-            
-            display_ghosts(G);
+
+            //display_ghosts(G);
             field1d<double>     F("F",D,ng);
             xch.prepare_for(G,F);
-            
+
             F.ld(-(MPI.CommWorldRank+1));
             for(coord1d i=F.inner.lower;i<=F.inner.upper;++i)
             {
                 F[i] = double(i) / double(full.upper);
             }
-            
+
             const string  output = vformat("1d_%d.%d_np.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
             ios::wcstream fp(output);
             VTK::Header(fp, "field1d, not periodic");
@@ -168,134 +167,139 @@ YOCTO_PROGRAM_START()
             VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
             xch.perform(G,F);
             VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
-            
+
         }
-        
+
     }
-    
-    if(true)
+
+
+    if(false)
     {
         MPI.Printf0(stderr, "\n\n-------- IN 2D --------\n\n");
         {
             mpi_ghosts<coord2d>   xch(MPI);
-            
+
             const layout<coord2d> full( coord2d(1,1), coord2d(32,32) );
             {
                 MPI.Printf0(stderr,"IS  periodic XY\n");
                 const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(1,1));
                 field2d<double>       F("F",D,ng);
                 ghosts_of<coord2d>    G(F);
-                display_ghosts(G);
+                //display_ghosts(G);
                 xch.prepare_for(G,F);
-                
-                
+
+
                 fill2d(F,full);
                 const string  output = vformat("2d_%d.%d_pbcXY.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
                 ios::wcstream fp(output);
-                
+
                 VTK::Header(fp, "field2d");
                 VTK::StructuredPoints(fp,F.outer);
-                
+
                 VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
                 xch.perform(G,F);
                 VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
-                
+
             }
-            
+
             {
                 MPI.Printf0(stderr,"IS  periodic X\n");
                 const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(1,0));
                 field2d<double>       F("F",D,ng);
                 ghosts_of<coord2d>    G(F);
-                display_ghosts(G);
-                
+                //display_ghosts(G);
+
                 xch.prepare_for(G,F);
-                
+
                 fill2d(F,full);
                 const string  output = vformat("2d_%d.%d_pbcX.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
                 ios::wcstream fp(output);
-                
+
                 VTK::Header(fp, "field2d");
                 VTK::StructuredPoints(fp,F.outer);
-                
+
                 VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
                 xch.perform(G,F);
                 VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
             }
-            
+
             {
                 MPI.Printf0(stderr,"IS  periodic Y\n");
                 const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(0,1));
                 field2d<double>       F("F",D,ng);
                 ghosts_of<coord2d>    G(F);
-                display_ghosts(G);
-                
+                //display_ghosts(G);
+
                 xch.prepare_for(G,F);
-                
+
                 fill2d(F,full);
                 const string  output = vformat("2d_%d.%d_pbcY.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
                 ios::wcstream fp(output);
-                
+
                 VTK::Header(fp, "field2d");
                 VTK::StructuredPoints(fp,F.outer);
-                
+
                 VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
                 xch.perform(G,F);
                 VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
             }
-            
+
             {
                 MPI.Printf0(stderr,"IS  NOT periodic\n");
                 const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(0,0));
                 field2d<double>       F("F",D,ng);
                 ghosts_of<coord2d>    G(F);
-                display_ghosts(G);
-                
+                //display_ghosts(G);
+
                 xch.prepare_for(G,F);
-                
+
                 fill2d(F,full);
                 const string  output = vformat("2d_%d.%d_no_pbc.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
                 ios::wcstream fp(output);
-                
+
                 VTK::Header(fp, "field2d");
+                VTK::StructuredPoints(fp,F.outer);
+
+                VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
+                xch.perform(G,F);
+                VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
+            }
+
+
+
+        }
+
+    }
+
+
+    if(true)
+    {
+        MPI.Printf0(stderr, "\n\n-------- IN 3D --------\n\n");
+        {
+            mpi_ghosts<coord3d>   xch(MPI);
+
+            const layout<coord3d> full( coord3d(1,1,1), coord3d(32,32,32) );
+            {
+                MPI.Printf0(stderr,"IS  periodic XY\n");
+                const domain<coord3d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord3d(1,1,1));
+                field3d<float>        F("F",D,ng);
+                ghosts_of<coord3d>    G(F);
+                //display_ghosts(G);
+                xch.prepare_for(G,F);
+
+                
+                fill3d(F,full);
+                const string  output = vformat("3d_%d.%d_XYZ.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+                ios::wcstream fp(output);
+                
+                VTK::Header(fp, "field3d");
                 VTK::StructuredPoints(fp,F.outer);
                 
                 VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
                 xch.perform(G,F);
                 VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
+                
             }
-            
-            
-            
-        }
-        
-    }
-    
-    MPI.Printf0(stderr, "\n\n-------- IN 3D --------\n\n");
-    {
-        mpi_ghosts<coord3d>   xch(MPI);
-        
-        const layout<coord3d> full( coord3d(1,1,1), coord3d(32,32,32) );
-        {
-            MPI.Printf0(stderr,"IS  periodic XY\n");
-            const domain<coord3d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord3d(1,1,1));
-            field3d<float>        F("F",D,ng);
-            ghosts_of<coord3d>    G(F);
-            //display_ghosts(G);
-            xch.prepare_for(G,F);
-            
-            
-            fill3d(F,full);
-            const string  output = vformat("3d_%d.%d_XYZ.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
-            ios::wcstream fp(output);
-            
-            VTK::Header(fp, "field3d");
-            VTK::StructuredPoints(fp,F.outer);
-            
-            VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
-            xch.perform(G,F);
-            VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
-            
         }
     }
     
