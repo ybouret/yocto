@@ -27,7 +27,7 @@ namespace yocto
             explicit ghosts_pair(const coord1d r,
                                  const size_t  n);
 
-            const coord1d rank;
+            const coord1d rank;  //!< would be MPI rank
             ghost_type   &outer; //!< to be received
             ghost_type   &inner; //!< to be sent
 
@@ -137,7 +137,7 @@ namespace yocto
             const coord1d rank;      //!< self rank
             const size_t  num_async; //!< should use MPI
             const size_t  num_lcopy; //!< should use lcopy
-            const size_t  num_empty; //!< do nothing
+            const size_t  num_empty; //!< would do nothing
             ghosts *      async[DIMENSION];
             ghosts *      lcopy[DIMENSION];
             ghosts *      empty[DIMENSION];

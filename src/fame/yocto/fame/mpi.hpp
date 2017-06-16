@@ -41,7 +41,7 @@ namespace yocto
                             const size_t num_indices = g.size();
                             const size_t num_bytes   = num_indices * max_item_size;
                             (*this)[dim].ensure(num_bytes);
-                            MPI.Printf(stderr, "mpi_ghosts@dim#%u: ASYNC: #bytes=%u\n", unsigned(dim), unsigned(num_bytes));
+                            MPI.Printf(stderr, "mpi_ghosts@dim#%u: ASYNC: #bytes=%u/#indices=%u\n", unsigned(dim), unsigned(num_bytes), unsigned(num_indices));
                         } break;
 
                         case ghosts::empty:
@@ -85,13 +85,14 @@ namespace yocto
             inline void perform( const ghosts_of<COORD> &Ghosts, field<T,COORD> &F )
             {
 
-                MPI.Printf0(stderr, "-- perform exchange --\n");
+                MPI.Printf0(stderr, "-- perform exchange\n");
                 slots_of<ghosts_io> &GhostsIO = *this;
 
                 //______________________________________________________________
                 //
                 // first pass: local exchange
                 //______________________________________________________________
+                MPI.Printf0(stderr,"\t#LocalCopy=%u\n", unsigned(Ghosts.num_lcopy));
                 for(size_t i=0;i<Ghosts.num_lcopy;++i)
                 {
                     const ghosts *g = Ghosts.lcopy[i];
@@ -102,13 +103,16 @@ namespace yocto
                 //
                 // async exchange 1/2
                 //______________________________________________________________
+                MPI.Printf0(stderr,"\tPass 1/2\n");
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
 
-                    const ghosts &g = Ghosts[dim];
-                    MPI.Printf(stderr,"is %s\n",g.kind_text());
+                    const ghosts &g    = Ghosts[dim];
+                    const string  gk   = g.kind_text() + vformat("$%s",coord_info::axis_name(dim));
+                    const char   *kind = gk.c_str();
                     if(g.kind!=ghosts::async)
                     {
+                        MPI.Printf(stderr,"%s-already done\n",kind);
                         continue;
                     }
 
@@ -117,13 +121,13 @@ namespace yocto
 
                     if(color)
                     {
-                        if(g.prev) {  MPI.Printf(stderr,"color=%d: recv@prev=%ld\n", color, g.prev->rank); recv(*g.prev,IO,F); } else { MPI.Printf(stderr,"no prev\n"); }
-                        if(g.next) {  MPI.Printf(stderr,"color=%d: recv@next=%ld\n", color, g.next->rank); recv(*g.next,IO,F); } else { MPI.Printf(stderr,"no next\n"); }
+                        if(g.prev) {  MPI.Printf(stderr,"%s: color=%d: recv<-prev=%ld\n", kind, color, g.prev->rank); recv(*g.prev,IO,F); } else { MPI.Printf(stderr,"%s: no prev\n",kind); }
+                        if(g.next) {  MPI.Printf(stderr,"%s: color=%d: recv<-next=%ld\n", kind, color, g.next->rank); recv(*g.next,IO,F); } else { MPI.Printf(stderr,"%s: no next\n",kind); }
                     }
                     else
                     {
-                        if(g.next) {  MPI.Printf(stderr, "color=%d: send@next=%ld\n", color, g.next->rank); send(*g.next,IO,F); } else { MPI.Printf(stderr,"no next\n"); }
-                        if(g.prev) {  MPI.Printf(stderr, "color=%d: send@prev=%ld\n", color, g.prev->rank); send(*g.prev,IO,F); } else { MPI.Printf(stderr,"no prev\n"); }
+                        if(g.next) {  MPI.Printf(stderr, "%s: color=%d: send->next=%ld\n", kind, color, g.next->rank); send(*g.next,IO,F); } else { MPI.Printf(stderr,"%s: no next\n",kind); }
+                        if(g.prev) {  MPI.Printf(stderr, "%s: color=%d: send->prev=%ld\n", kind, color, g.prev->rank); send(*g.prev,IO,F); } else { MPI.Printf(stderr,"%s: no prev\n",kind); }
                     }
                 }
 
@@ -131,13 +135,16 @@ namespace yocto
                 //
                 // async exchange 2/2
                 //______________________________________________________________
+                MPI.Printf0(stderr,"\tPass 2/2\n");
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
 
-                    const ghosts &g = Ghosts[dim];
-                    MPI.Printf(stderr,"is %s\n",g.kind_text());
+                    const ghosts &g    = Ghosts[dim];
+                    const string  gk   = g.kind_text() + vformat("$%s",coord_info::axis_name(dim));
+                    const char   *kind = gk.c_str();
                     if(g.kind!=ghosts::async)
                     {
+                        MPI.Printf(stderr,"%s-already done\n",kind);
                         continue;
                     }
 
@@ -146,13 +153,13 @@ namespace yocto
 
                     if(color)
                     {
-                        if(g.next) {  MPI.Printf(stderr, "color=%d: send@next=%ld\n", color, g.next->rank); send(*g.next,IO,F); } else { MPI.Printf(stderr,"no next\n"); }
-                        if(g.prev) {  MPI.Printf(stderr, "color=%d: send@prev=%ld\n", color, g.prev->rank); send(*g.prev,IO,F); } else { MPI.Printf(stderr,"no prev\n"); }
+                        if(g.next) {  MPI.Printf(stderr, "%s: color=%d: send->next=%ld\n", kind, color, g.next->rank); send(*g.next,IO,F); } else { MPI.Printf(stderr,"%s: no next\n",kind); }
+                        if(g.prev) {  MPI.Printf(stderr, "%s: color=%d: send->prev=%ld\n", kind, color, g.prev->rank); send(*g.prev,IO,F); } else { MPI.Printf(stderr,"%s: no prev\n",kind); }
                     }
                     else
                     {
-                        if(g.prev) {  MPI.Printf(stderr,"color=%d: recv@prev=%ld\n", color, g.prev->rank); recv(*g.prev,IO,F); } else { MPI.Printf(stderr,"no prev\n"); }
-                        if(g.next) {  MPI.Printf(stderr,"color=%d: recv@next=%ld\n", color, g.next->rank); recv(*g.next,IO,F); } else { MPI.Printf(stderr,"no next\n"); }
+                        if(g.prev) {  MPI.Printf(stderr,"%s: color=%d: recv<-prev=%ld\n", kind, color, g.prev->rank); recv(*g.prev,IO,F); } else { MPI.Printf(stderr,"%s: no prev\n",kind); }
+                        if(g.next) {  MPI.Printf(stderr,"%s: color=%d: recv<-next=%ld\n", kind, color, g.next->rank); recv(*g.next,IO,F); } else { MPI.Printf(stderr,"%s: no next\n",kind); }
                     }
 
 

@@ -281,7 +281,7 @@ YOCTO_PROGRAM_START()
             const domain<coord3d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord3d(1,1,1));
             field3d<float>        F("F",D,ng);
             ghosts_of<coord3d>    G(F);
-            display_ghosts(G);
+            //display_ghosts(G);
             xch.prepare_for(G,F);
             
             
