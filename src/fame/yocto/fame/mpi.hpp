@@ -67,7 +67,7 @@ namespace yocto
                              const field<T,COORD> &F)
             {
                 const size_t       ns = gio.load_into_send(gp,F);
-                MPI.Send(gio.send_addr(),ns, MPI_BYTE, gp.rank, 0, MPI_COMM_WORLD);
+                MPI.Send(gio.send_addr(),ns, MPI_BYTE, gp.rank,0,MPI_COMM_WORLD);
             }
 
             template <typename T>
@@ -85,14 +85,14 @@ namespace yocto
             inline void perform( const ghosts_of<COORD> &Ghosts, field<T,COORD> &F )
             {
 
-                MPI.Printf0(stderr, "-- perform exchange\n");
+                MPI.Printf0(stderr, "-- Perform Exchange\n");
                 slots_of<ghosts_io> &GhostsIO = *this;
 
                 //______________________________________________________________
                 //
                 // first pass: local exchange
                 //______________________________________________________________
-                MPI.Printf0(stderr,"\t#LocalCopy=%u\n", unsigned(Ghosts.num_lcopy));
+                MPI.Printf0(stderr,"--\t#LocalCopy=%u\n", unsigned(Ghosts.num_lcopy));
                 for(size_t i=0;i<Ghosts.num_lcopy;++i)
                 {
                     const ghosts *g = Ghosts.lcopy[i];
@@ -103,7 +103,7 @@ namespace yocto
                 //
                 // async exchange 1/2
                 //______________________________________________________________
-                MPI.Printf0(stderr,"\tPass 1/2\n");
+                MPI.Printf0(stderr,"--\tPass 1/2\n");
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
 
@@ -112,7 +112,7 @@ namespace yocto
                     const char   *kind = gk.c_str();
                     if(g.kind!=ghosts::async)
                     {
-                        MPI.Printf(stderr,"%s-already done\n",kind);
+                        MPI.Printf(stderr,"%s\n",kind);
                         continue;
                     }
 
@@ -135,7 +135,7 @@ namespace yocto
                 //
                 // async exchange 2/2
                 //______________________________________________________________
-                MPI.Printf0(stderr,"\tPass 2/2\n");
+                MPI.Printf0(stderr,"--\tPass 2/2\n");
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
 
@@ -144,7 +144,7 @@ namespace yocto
                     const char   *kind = gk.c_str();
                     if(g.kind!=ghosts::async)
                     {
-                        MPI.Printf(stderr,"%s-already done\n",kind);
+                        MPI.Printf(stderr,"%s\n",kind);
                         continue;
                     }
 
