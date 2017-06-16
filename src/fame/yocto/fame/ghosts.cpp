@@ -31,7 +31,8 @@ namespace yocto
         ghosts:: ghosts() throw() :
         prev(0),
         next(0),
-        kind(empty)
+        kind(empty),
+        flag(has_none)
         {
         }
 

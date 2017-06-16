@@ -108,7 +108,7 @@ YOCTO_PROGRAM_START()
                        int(W.color)
                        );
             
-            display_ghosts(G);
+            //display_ghosts(G);
             
             
             

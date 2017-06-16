@@ -87,6 +87,10 @@ namespace yocto
                 async,
                 lcopy
             };
+            static const int has_none = 0x00;
+            static const int has_prev = 0x01;
+            static const int has_next = 0x02;
+            static const int has_both = has_prev|has_next;
 
             ghosts() throw();
             ~ghosts() throw();
@@ -94,6 +98,7 @@ namespace yocto
             ghosts_pair *prev;
             ghosts_pair *next;
             status       kind;
+            int          flag;
             const char  *kind_text() const throw();
             size_t       size() const throw(); //!< common size
         private:
@@ -144,11 +149,6 @@ namespace yocto
 
             inline void collect_exchange_info() throw()
             {
-                static const int has_none = 0x00;
-                static const int has_prev = 0x01;
-                static const int has_next = 0x02;
-                static const int has_both = has_prev|has_next;
-
                 assert(0==num_async);
                 assert(0==num_lcopy);
                 size_t & na = (size_t&)num_async;
@@ -158,28 +158,28 @@ namespace yocto
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     ghosts *g    = & (*this)[dim];
-                    int     flag = has_none;
-                    if(g->prev!=0)  { flag |= has_prev; }
-                    if(g->next!=0)  { flag |= has_next; }
+                    int    &flag = g->flag; assert(ghosts::has_none==flag);
+                    if(g->prev!=0)  { flag |= ghosts::has_prev; }
+                    if(g->next!=0)  { flag |= ghosts::has_next; }
 
                     switch(flag)
                     {
-                        case has_none:
+                        case ghosts::has_none:
                             g->kind     = ghosts::empty;
                             empty[ne++] = g;
                             break;
 
-                        case has_prev:
+                        case ghosts::has_prev:
                             g->kind     = ghosts::async;
                             async[na++] = g;
                             break;
 
-                        case has_next:
+                        case ghosts::has_next:
                             g->kind     = ghosts::async;
                             async[na++] = g;
                             break;
 
-                        case has_both:
+                        case ghosts::has_both:
                             assert(g->prev->size==g->next->size);
                             if( (g->prev->rank==rank) && (g->next->rank==rank) )
                             {
