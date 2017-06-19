@@ -89,6 +89,7 @@ YOCTO_PROGRAM_START()
     YOCTO_MPI_ENV();
 
     {
+        MPI.Printf0(stderr, "\n\n-------- IN 1D --------\n\n");
         const layout<coord1d> full(1,32);
         mpi_ghosts<coord1d>   xch(MPI);
 

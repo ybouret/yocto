@@ -81,6 +81,7 @@ namespace yocto
                 gio.save_from_recv(gp,F);
             }
 
+
             template <typename T>
             inline void perform( const ghosts_of<COORD> &Ghosts, field<T,COORD> &F )
             {
@@ -92,13 +93,143 @@ namespace yocto
                 //
                 // first pass: local exchange
                 //______________________________________________________________
-                MPI.Printf0(stderr,"--\t#LocalCopy=%u\n", unsigned(Ghosts.num_lcopy));
+                MPI.Printf0(stderr,"--\t#lcopy=%u\n", unsigned(Ghosts.num_lcopy));
                 for(size_t i=0;i<Ghosts.num_lcopy;++i)
                 {
                     const ghosts *g = Ghosts.lcopy[i];
                     ghosts_pair::exchange(F,*(g->prev),*(g->next));
                 }
 
+                for(coord1d pass=0;pass<2;++pass)
+                {
+                    MPI.Printf0(stderr,"\n--\tPass #%d\n",int(pass));
+
+                    for(size_t dim=0;dim<DIMENSION;++dim)
+                    {
+
+                        // topology information
+                        const int     color  = __coord(F.color,dim);
+                        const bool    is_odd = 0 != ( __coord(F.full.sizes,dim) & 0x01 );
+                        const int     l_rank = __coord(F.self.ranks,dim);
+                        const int     l_rmax = __coord(F.full.rmax,dim);
+                        const bool    special_head = is_odd && (l_rank<=0);
+                        const bool    special_tail = is_odd && (l_rank>=l_rmax);
+                        const int     sz     = F.full.size;
+
+                        const ghosts &g      = Ghosts[dim];
+                        const string  gk     = g.kind_text() + vformat("@%s",coord_info::axis_name(dim));
+                        const char   *kind   = gk.c_str();
+
+                        if(g.kind!=ghosts::async)
+                        {
+                            MPI.Printf(stderr,"%s\n",kind);
+                            continue;
+                        }
+                        else
+                        {
+                            ghosts_io    &IO    = GhostsIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
+                            if(color==pass)
+                            {
+                                //______________________________________________
+                                //
+                                // send mode, plus special receives
+                                //______________________________________________
+                                switch(g.flag)
+                                {
+                                        //______________________________________
+                                        //
+                                        // prev only => not cyclic
+                                        //______________________________________
+                                    case ghosts::has_prev: {
+                                        MPI.Printf(stderr, "color=%d: send->prev=%d.%d\n",color,sz,int(g.prev->rank));
+                                        send(*g.prev, IO, F);
+                                    } break;
+
+                                        //______________________________________
+                                        //
+                                        // next only => not cyclic
+                                        //______________________________________
+                                    case ghosts::has_next: {
+                                        MPI.Printf(stderr, "color=%d: send->next=%d.%d\n",color,sz,int(g.next->rank));
+                                        send(*g.next,IO,F);
+                                    } break;
+
+                                        //______________________________________
+                                        //
+                                        // both: special receives
+                                        //______________________________________
+                                    case ghosts::has_both: {
+                                        MPI.Printf(stderr, "color=%d: send->prev=%d.%d and send->next=%d.%d\n",color,sz,int(g.prev->rank),sz,int(g.next->rank));
+
+                                        if(special_tail)
+                                        {
+                                            recv(*g.next,IO,F);
+                                        }
+                                        send(*g.prev,IO,F);
+
+                                        if(special_head)
+                                        {
+                                            recv(*g.prev,IO,F);
+                                        }
+                                        send(*g.next,IO,F);
+
+                                    } break;
+                                    default:
+                                        throw exception("mpi_exchange: invalid ghosts flag=%d", g.flag);
+                                }
+                            }
+                            else
+                            {
+
+                                //______________________________________________
+                                //
+                                // recv mode, plus special sends
+                                //______________________________________________
+                                switch(g.flag)
+                                {
+                                        //______________________________________
+                                        //
+                                        // prev only => not cyclic
+                                        //______________________________________
+                                    case ghosts::has_prev: {
+                                        MPI.Printf(stderr, "color=%d: recv<-prev=%d.%d\n",color,sz,int(g.prev->rank));
+                                        recv(*g.prev,IO,F);
+                                    } break;
+
+                                        //______________________________________
+                                        //
+                                        // next only => not cyclic
+                                        //______________________________________
+                                    case ghosts::has_next: {
+                                        MPI.Printf(stderr, "color=%d: recv<-next=%d.%d\n",color,sz,int(g.next->rank));
+                                        recv(*g.next,IO,F);
+                                    } break;
+
+                                        //______________________________________
+                                        //
+                                        // both: special sends
+                                        //______________________________________
+                                    case ghosts::has_both: {
+                                        MPI.Printf(stderr, "color=%d: recv<-prev=%d.%d and recv<-next=%d.%d\n",color,sz,int(g.prev->rank),sz,int(g.next->rank));
+
+                                        recv(*g.prev,IO,F);
+                                        recv(*g.next,IO,F);
+                                    } break;
+                                    default:
+                                        throw exception("mpi_exchange: invalid ghosts flag=%d", g.flag);
+                                }
+
+                            }
+
+                        }
+
+
+
+                    }
+                }
+
+
+#if 0
                 for(coord1d pass=0;pass<2;++pass)
                 {
                     MPI.Printf0(stderr,"--\tPass #%d\n",int(pass));
@@ -162,12 +293,12 @@ namespace yocto
                                 default:
                                     throw exception("mpi_exchange: invalid ghosts flag=%d", g.flag);
                             }
-
+                            
                         }
                     }
-
+                    
                 }
-                
+#endif
                 
             }
             
