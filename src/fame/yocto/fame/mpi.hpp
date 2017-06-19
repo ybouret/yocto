@@ -213,7 +213,17 @@ namespace yocto
                                         MPI.Printf(stderr, "color=%d: recv<-prev=%d.%d and recv<-next=%d.%d\n",color,sz,int(g.prev->rank),sz,int(g.next->rank));
 
                                         recv(*g.prev,IO,F);
+                                        if(special_tail)
+                                        {
+                                            //send(*g.next,IO,F);
+                                        }
+
+
                                         recv(*g.next,IO,F);
+                                        if(special_head)
+                                        {
+                                            //send(*g.prev,IO,F);
+                                        }
                                     } break;
                                     default:
                                         throw exception("mpi_exchange: invalid ghosts flag=%d", g.flag);
