@@ -132,7 +132,7 @@ YOCTO_PROGRAM_START()
         }
 
 
-        if(false)
+        if(true)
         {
             MPI.Printf0(stderr,"\nNOT  periodic\n");
             const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,0);
@@ -172,13 +172,14 @@ YOCTO_PROGRAM_START()
     }
 
 
-    if(false)
+    if(true)
     {
         MPI.Printf0(stderr, "\n\n-------- IN 2D --------\n\n");
         {
             mpi_ghosts<coord2d>   xch(MPI);
 
             const layout<coord2d> full( coord2d(1,1), coord2d(32,32) );
+            if(true)
             {
                 MPI.Printf0(stderr,"IS  periodic XY\n");
                 const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(1,1));
@@ -201,6 +202,7 @@ YOCTO_PROGRAM_START()
 
             }
 
+            if(true)
             {
                 MPI.Printf0(stderr,"IS  periodic X\n");
                 const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(1,0));
@@ -222,6 +224,7 @@ YOCTO_PROGRAM_START()
                 VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
             }
 
+            if(true)
             {
                 MPI.Printf0(stderr,"IS  periodic Y\n");
                 const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(0,1));
@@ -243,6 +246,7 @@ YOCTO_PROGRAM_START()
                 VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
             }
 
+            if(true)
             {
                 MPI.Printf0(stderr,"IS  NOT periodic\n");
                 const domain<coord2d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord2d(0,0));
