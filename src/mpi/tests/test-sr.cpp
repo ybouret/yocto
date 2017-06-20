@@ -19,12 +19,17 @@ YOCTO_UNIT_TEST_IMPL(sr)
     const int rank = MPI.CommWorldRank;
 
 
-    //MPI.CloseStdIO();
-    if(MPI.CommWorldSize>0)
+    MPI.CloseStdIO();
+    if(MPI.CommWorldSize>1)
     {
-        MPI.Printf(stderr, "Starting Send/Recv...\n");
+        MPI.Printf0(stderr, "Starting Send/Recv...\n");
         vector<word_t> sndbuf(n);
         vector<word_t> rcvbuf(n);
+
+        word_t       *sptr = &sndbuf[1];
+        word_t       *rptr = &rcvbuf[1];
+        const size_t  xnum = n*sizeof(word_t);
+
         for(size_t i=1;i<=n;++i)
         {
             sndbuf[i] = _rand.full<word_t>();
@@ -34,8 +39,24 @@ YOCTO_UNIT_TEST_IMPL(sr)
             std::cerr << "sndbuf=" << sndbuf << std::endl;
         }
 
-        const hash_t SH = H.key<hash_t>( &sndbuf[1], n*sizeof(word_t) );
-        MPI.Printf(stderr,"SH%d=%08x\n",rank,SH);
+        const hash_t SH0 = H.key<hash_t>(sndbuf);
+        const hash_t RH0 = H.key<hash_t>(rcvbuf);
+        MPI.Printf(stderr,"SH0=%08X | RH0=%08X\n",SH0,RH0);
+
+        const int next = MPI.CommWorldNext();
+        const int prev = MPI.CommWorldPrev();
+        MPI.Printf(stderr," %d->%d->%d\n", prev, rank, next);
+
+        MPI_Status status;
+        MPI.Sendrecv(sptr, xnum, MPI_BYTE, next, 0,
+                     rptr, xnum, MPI_BYTE, prev, 0,
+                     MPI_COMM_WORLD,
+                     status);
+
+        const hash_t SH1 = H.key<hash_t>(sndbuf);
+        const hash_t RH1 = H.key<hash_t>(rptr,xnum);
+        MPI.Printf(stderr,"SH1=%08X | RH1=%08X\n",SH1,RH1);
+
 
     }
     else
