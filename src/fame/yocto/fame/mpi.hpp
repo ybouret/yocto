@@ -100,12 +100,113 @@ namespace yocto
                     ghosts_pair::exchange(F,*(g->prev),*(g->next));
                 }
 
+
+
+                //______________________________________________________________
+                //
+                // asynchronous
+                //______________________________________________________________
+                MPI.Printf0(stderr,"--\t#async=%u\n", unsigned(Ghosts.num_async));
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+
+                    const ghosts &g    = Ghosts[dim];
+                    const char   *kind = g.kind_text();
+                    const char   *axID = coord_info::axis_name(dim);
+
+                    if(g.kind!=ghosts::async)
+                    {
+                        MPI.Printf(stderr,"-%s.%s\n",kind,axID);
+                        continue;
+                    }
+
+                    ghosts_io    &IO    = GhostsIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
+                    MPI.Printf(stderr,"+%s.%s\n",kind,axID);
+
+                    switch(g.flag)
+                    {
+                        case ghosts::has_both:
+                            MPI.Printf(stderr,"+%s.%s: not implemented\n",kind,axID);
+                            break;
+
+                        default:
+                            MPI.Printf(stderr,"+%s.%s: not implemented\n",kind,axID);
+                    }
+
+
+                }
+
+#if 0
+                for(coord1d pass=0;pass<2;++pass)
+                {
+                    MPI.Printf0(stderr,"--\tPass #%d\n",int(pass));
+
+                    for(size_t dim=0;dim<DIMENSION;++dim)
+                    {
+
+                        const ghosts &g    = Ghosts[dim];
+                        const string  gk   = g.kind_text() + vformat("@%s",coord_info::axis_name(dim));
+                        const char   *kind = gk.c_str();
+
+                        if(g.kind!=ghosts::async)
+                        {
+                            MPI.Printf(stderr,"%s\n",kind);
+                            continue;
+                        }
+
+                        const int     color = __coord(F.color,dim);
+                        ghosts_io    &IO    = GhostsIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
+                        const int     sz    = F.full.size;
+                        if(color==pass)
+                        {
+                            // send
+                            switch(g.flag)
+                            {
+                                case ghosts::has_prev: {
+                                    MPI.Printf(stderr, "color=%d: send->prev=%d.%d\n",color,sz,int(g.prev->rank));
+                                    send(*g.prev, IO, F);
+                                } break;
+                                case ghosts::has_next: {
+                                    MPI.Printf(stderr, "color=%d: send->next=%d.%d\n",color,sz,int(g.next->rank));
+                                    send(*g.next,IO,F);
+                                } break;
+                                case ghosts::has_both: {
+                                    MPI.Printf(stderr, "color=%d: send->prev=%d.%d and send->next=%d.%d\n",color,sz,int(g.prev->rank),sz,int(g.next->rank));
+                                    send(*g.prev,IO,F);
+                                    send(*g.next,IO,F);
+                                } break;
+                                default:
+                                    throw exception("mpi_exchange: invalid ghosts flag=%d", g.flag);
+                            }
+                        }
+                        else
+                        {
+                            // recv mode
+                            switch(g.flag)
+                            {
+                                case ghosts::has_prev: {
+                                    MPI.Printf(stderr, "color=%d: recv<-prev=%d.%d\n",color,sz,int(g.prev->rank));
+                                    recv(*g.prev,IO,F);
+                                } break;
+                                case ghosts::has_next: {
+                                    MPI.Printf(stderr, "color=%d: recv<-next=%d.%d\n",color,sz,int(g.next->rank));
+                                    recv(*g.next,IO,F);
+                                } break;
+                                case ghosts::has_both: {
+                                    MPI.Printf(stderr, "color=%d: recv<-prev=%d.%d and recv<-next=%d.%d\n",color,sz,int(g.prev->rank),sz,int(g.next->rank));
+                                    recv(*g.prev,IO,F);
+                                    recv(*g.next,IO,F);
+                                } break;
+                                default:
+                                    throw exception("mpi_exchange: invalid ghosts flag=%d", g.flag);
+                            }
+                            
+                        }
+                    }
+                    
+                }
+#endif
                 
-
-
-
-
-
             }
             
             
