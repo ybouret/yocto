@@ -100,13 +100,12 @@ YOCTO_PROGRAM_START()
             ghosts_of<coord1d>    G(W);
 
 
-            MPI.Printf(stderr,"is %2ld.%2ld: layout: inner=[%5ld:%5ld], outer=[%5ld:%5ld], color=%d\n",
+            MPI.Printf(stderr,"is %2ld.%2ld: layout: inner=[%5ld:%5ld], outer=[%5ld:%5ld]\n",
                        long(D.full.size),long(D.self.rank),
                        long(W.inner.lower),
                        long(W.inner.upper),
                        long(W.outer.lower),
-                       long(W.outer.upper),
-                       int(W.color)
+                       long(W.outer.upper)
                        );
 
             //display_ghosts(G);
@@ -142,13 +141,12 @@ YOCTO_PROGRAM_START()
 
 
 
-            MPI.Printf(stderr,"is %2ld.%2ld: layout: inner=[%5ld:%5ld], outer=[%5ld:%5ld], color=%d\n",
+            MPI.Printf(stderr,"is %2ld.%2ld: layout: inner=[%5ld:%5ld], outer=[%5ld:%5ld]\n",
                        long(D.full.size),long(D.self.rank),
                        long(W.inner.lower),
                        long(W.inner.upper),
                        long(W.outer.lower),
-                       long(W.outer.upper),
-                       int(W.color)
+                       long(W.outer.upper)
                        );
 
             //display_ghosts(G);

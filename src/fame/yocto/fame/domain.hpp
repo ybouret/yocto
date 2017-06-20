@@ -85,7 +85,6 @@ namespace yocto
 
             split_type           full;  //!< used to split
             const peer           self;  //!< this information
-            const_coord          color; //!< this colors
             layout_type          inner; //!< for simulation
             slots_of<const link> links; //!< for topology
             const_coord          pbc;   //!< to keep track
@@ -109,7 +108,6 @@ namespace yocto
                                    param_coord        user_pbc) :
             full(user_full,user_size,user_cpus),
             self(user_rank,full.local_ranks(user_rank),true),
-            color( compute_colors(self.ranks) ),
             inner( full(self.rank) ),
             links(DIMENSION),
             pbc(user_pbc)
@@ -215,7 +213,6 @@ namespace yocto
             inline domain(const domain &other) :
             full(other.full),
             self(other.self),
-            color(other.color),
             inner(other.inner),
             links(DIMENSION),
             pbc(other.pbc)
@@ -309,15 +306,6 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_ASSIGN(domain);
-            static coord compute_colors(param_coord ranks) throw()
-            {
-                coord c = coord_data<COORD>::zero;
-                for(size_t dim=0;dim<DIMENSION;++dim)
-                {
-                    __coord(c,dim) = __coord(ranks,dim) & 1;
-                }
-                return c;
-            }
         };
 
         struct domain_ops
