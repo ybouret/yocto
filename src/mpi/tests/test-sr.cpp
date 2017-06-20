@@ -3,6 +3,7 @@
 #include "yocto/sequence/vector.hpp"
 #include "yocto/code/rand.hpp"
 #include "yocto/hashing/sha1.hpp"
+#include "yocto/string/conv.hpp"
 
 using namespace yocto;
 
@@ -12,6 +13,10 @@ YOCTO_UNIT_TEST_IMPL(sr)
     YOCTO_MPI_ENV();
 
     size_t n = 10;
+    if(argc>1)
+    {
+        n = strconv::to<size_t>(argv[1],"n");
+    }
     hashing::sha1 H;
 
     typedef uint16_t word_t;
@@ -22,7 +27,7 @@ YOCTO_UNIT_TEST_IMPL(sr)
     MPI.CloseStdIO();
     if(MPI.CommWorldSize>1)
     {
-        MPI.Printf0(stderr, "Starting Send/Recv...\n");
+        MPI.Printf0(stderr, "Starting Send/Recv: n=%u\n",unsigned(n));
         vector<word_t> sndbuf(n);
         vector<word_t> rcvbuf(n);
 
