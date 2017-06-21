@@ -29,6 +29,7 @@ namespace yocto
                 }
             }
 
+            //! allocate IO per coordinate
             inline void prepare_for(const ghosts_of<COORD> &G,
                                     const size_t            max_item_size )
             {
@@ -56,11 +57,17 @@ namespace yocto
                 }
             }
 
+            //! use field item sizes
             inline void prepare_for(const ghosts_of<COORD> &G, const field_data &fd )
             {
                 this->prepare_for(G,fd.item_size);
             }
 
+            //! should be the maximum sizeof field item
+            inline void prepare_default(const ghosts_of<COORD> &G)
+            {
+                this->prepare_for(G,sizeof(point3d<double>));
+            }
 
 
             //! exchange ghosts for one field
