@@ -28,7 +28,9 @@ namespace yocto
 
             
             inline virtual ~rectilinear_mesh() throw() {}
-            
+
+
+            //! create a mesh, every coords to zero
             inline explicit rectilinear_mesh(const string      &tag,
                                              const domain_type &dom,
                                              const coord1d      num_ghosts) :
@@ -40,6 +42,7 @@ namespace yocto
                 build_axis(num_ghosts);
             }
 
+            //! create a mesh with mapping
             template <typename U>
             inline explicit rectilinear_mesh(const string       &tag,
                                              const domain_type  &dom,
@@ -56,7 +59,7 @@ namespace yocto
 
             //! regular mapping
             template <typename U>
-            inline void map_to( const box<U,COORD> &B) throw()
+            inline void map_to(const box<U,COORD> &B) throw()
             {
                 const layout_type &f = this->full;
                 for(size_t dim=0;dim<DIMENSION;++dim)
@@ -65,9 +68,9 @@ namespace yocto
                     const coord1d ilo = __coord(f.lower,dim);
                     const coord1d iup = __coord(f.upper,dim);
                     const coord1d del = iup-ilo;
-                    const_type    l = type(B.__lower()[dim]);
-                    const_type    w = type(B.__width()[dim]);
-                    const_type    u = type(B.__upper()[dim]);
+                    const_type    l   = type(B.__lower()[dim]);
+                    const_type    w   = type(B.__width()[dim]);
+                    const_type    u   = type(B.__upper()[dim]);
                     if(del<=0)
                     {
                         a[ilo] = (u+l)/2;

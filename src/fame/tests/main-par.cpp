@@ -84,13 +84,20 @@ void fill3d( field3d<T> &F, const layout<coord3d> &full )
     }
 }
 
+#include "yocto/string/conv.hpp"
+
 YOCTO_PROGRAM_START()
 {
     YOCTO_MPI_ENV();
 
+    int nmax = 32;
+    if(argc>1)
+    {
+        nmax = strconv::to_int(argv[1],"nmax");
+    }
     {
         MPI.Printf0(stderr, "\n\n-------- IN 1D --------\n\n");
-        const layout<coord1d> full(1,32);
+        const layout<coord1d> full(1,nmax);
         mpi_ghosts<coord1d>   xch(MPI);
 
         {
@@ -178,7 +185,7 @@ YOCTO_PROGRAM_START()
         {
             mpi_ghosts<coord2d>   xch(MPI);
 
-            const layout<coord2d> full( coord2d(1,1), coord2d(32,32) );
+            const layout<coord2d> full( coord2d(1,1), coord2d(nmax,nmax) );
             if(true)
             {
                 MPI.Printf0(stderr,"IS  periodic XY\n");
@@ -281,7 +288,7 @@ YOCTO_PROGRAM_START()
         {
             mpi_ghosts<coord3d>   xch(MPI);
 
-            const layout<coord3d> full( coord3d(1,1,1), coord3d(32,32,32) );
+            const layout<coord3d> full( coord3d(1,1,1), coord3d(nmax,nmax,nmax) );
             {
                 MPI.Printf0(stderr,"IS  periodic XY\n");
                 const domain<coord3d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,coord3d(1,1,1));

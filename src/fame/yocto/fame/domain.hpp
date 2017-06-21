@@ -312,7 +312,8 @@ namespace yocto
         {
             template <typename COORD>
             static inline
-            domain<coord1d> extract1( const domain<COORD> &D, const size_t dim)
+            domain<coord1d> extract1( const domain<COORD> &D,
+                                     const size_t dim)
             {
                 const coord1d         lower = __coord(D.full.lower,dim);
                 const coord1d         upper = __coord(D.full.upper,dim);

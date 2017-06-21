@@ -29,7 +29,8 @@ namespace yocto
                 }
             }
 
-            inline void prepare_for(const ghosts_of<COORD> &G, const size_t max_item_size )
+            inline void prepare_for(const ghosts_of<COORD> &G,
+                                    const size_t            max_item_size )
             {
                 assert(max_item_size>0);
                 for(size_t dim=0;dim<DIMENSION;++dim)
@@ -41,15 +42,15 @@ namespace yocto
                             const size_t num_indices = g.size();
                             const size_t num_bytes   = num_indices * max_item_size;
                             (*this)[dim].ensure(num_bytes);
-                            MPI.Printf(stderr, "mpi_ghosts@dim#%u: ASYNC: #bytes=%u/#indices=%u\n", unsigned(dim), unsigned(num_bytes), unsigned(num_indices));
+                            //MPI.Printf(stderr, "mpi_ghosts@dim#%u: ASYNC: #bytes=%u/#indices=%u\n", unsigned(dim), unsigned(num_bytes), unsigned(num_indices));
                         } break;
 
                         case ghosts::empty:
-                            MPI.Printf(stderr,"mpi_ghosts@dim#%u: EMPTY\n", unsigned(dim));
+                            //MPI.Printf(stderr,"mpi_ghosts@dim#%u: EMPTY\n", unsigned(dim));
                             break;
 
                         case ghosts::lcopy:
-                            MPI.Printf(stderr,"mpi_ghosts@dim#%u: LCOPY\n", unsigned(dim));
+                            //MPI.Printf(stderr,"mpi_ghosts@dim#%u: LCOPY\n", unsigned(dim));
                             break;
                     }
                 }
@@ -62,20 +63,21 @@ namespace yocto
 
 
 
+            //! exchange ghosts for one field
             template <typename T>
             inline void perform( const ghosts_of<COORD> &Ghosts, field<T,COORD> &F )
             {
 
-                //MPI.Printf0(stderr, "-- Perform Exchange\n");
-                slots_of<ghosts_io> &GhostsIO = *this;
+                slots_of<ghosts_io> &gIO = *this;
 
                 //______________________________________________________________
                 //
                 //
+                //
                 // first pass: local exchange
                 //
+                //
                 //______________________________________________________________
-                //MPI.Printf0(stderr,"--\t#lcopy=%u\n", unsigned(Ghosts.num_lcopy));
                 for(size_t i=0;i<Ghosts.num_lcopy;++i)
                 {
                     const ghosts *g = Ghosts.lcopy[i];
@@ -87,35 +89,35 @@ namespace yocto
                 //______________________________________________________________
                 //
                 //
+                //
                 // asynchronous
                 //
+                //
                 //______________________________________________________________
-                //MPI.Printf0(stderr,"--\t#async=%u\n", unsigned(Ghosts.num_async));
+
                 MPI_Status status;
                 //______________________________________________________________
                 //
-                // pass0: send to prev, recv from next
-                // pass1: send to next, recv from prev
+                // pass=0: send to prev, recv from next
+                // pass=1: send to next, recv from prev
                 //______________________________________________________________
                 for(int pass=0;pass<2;++pass)
                 {
-                    //MPI.Printf0(stderr, "\t PASS #%d\n", pass+1);
                     for(size_t dim=0;dim<DIMENSION;++dim)
                     {
 
+                        // take the ghost
                         const ghosts &g    = Ghosts[dim];
-                        //const char   *kind = g.kind_text();
-                        //const char   *axID = coord_info::axis_name(dim);
 
                         if(g.kind!=ghosts::async)
                         {
-                            //MPI.Printf(stderr,"-%s.%s\n",kind,axID);
                             continue;
                         }
 
-                        ghosts_io    &IO    = GhostsIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
-                        //MPI.Printf(stderr,"+%s.%s\n",kind,axID);
+                        // take the memory
+                        ghosts_io    &IO    = gIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
 
+                        // analyze
                         switch(g.flag)
                         {
                                 //______________________________________________
@@ -136,8 +138,10 @@ namespace yocto
                                         sendID = g.next;
                                         recvID = g.prev;
                                         break;
+
+                                    default:
+                                        throw exception("corrupted code, invalid pass=%d",pass);
                                 }
-                                //MPI.Printf(stderr,"+%s.%s: send->%ld,recv<-%ld\n",kind,axID,sendID->rank,recvID->rank);
                                 const size_t nxch = IO.load_into_send(*sendID,F);
                                 MPI.Sendrecv(IO.send_addr(), nxch, MPI_BYTE, sendID->rank, 0,
                                              IO.recv_addr(), nxch, MPI_BYTE, recvID->rank, 0,
