@@ -91,15 +91,15 @@ namespace yocto
 
             inline void build_axis(const coord1d num_ghosts)
             {
-                holder_type &self = *this;
+                holder_type &hld = *this;
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     const axis_domain ax_dom = domain_ops::extract1(*this,dim);
                     const string      ax_tag = this->name + "_" + coord_info::axis_name(dim);
-                    self.template append<string,const axis_domain &,coord1d>(ax_tag,ax_dom,num_ghosts);
-                    assert(dim+1==self.size);
-                    imin[dim] = self[dim].imin[0];
-                    imax[dim] = self[dim].imax[0];
+                    hld.template append<const string &,const axis_domain &,coord1d>(ax_tag,ax_dom,num_ghosts);
+                    assert(dim+1==hld.size);
+                    imin[dim] = hld[dim].imin[0];
+                    imax[dim] = hld[dim].imax[0];
                 }
             }
         };

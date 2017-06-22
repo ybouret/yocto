@@ -36,14 +36,48 @@ namespace yocto
             }
 
 
+            //! regular mapping
+            template <typename U>
+            inline void map_to(const box<U,COORD> &B) throw()
+            {
+                const layout_type &f = this->full;
+#if 0
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    coords_type   &a   = (*this)[dim];
+                    const coord1d ilo = __coord(f.lower,dim);
+                    const coord1d iup = __coord(f.upper,dim);
+                    const coord1d del = iup-ilo;
+                    const_type    l   = type(B.__lower()[dim]);
+                    const_type    w   = type(B.__width()[dim]);
+                    const_type    u   = type(B.__upper()[dim]);
+                    if(del<=0)
+                    {
+                        a[ilo] = (u+l)/2;
+                    }
+                    else
+                    {
+                        for(coord1d i = a.outer.lower; i <= a.outer.upper; ++i)
+                        {
+                            a[i] = l + ( (i-ilo)*w )/del;
+                        }
+                    }
+                }
+#endif
+            }
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(curvilinear_mesh);
-            inline void build_coords(const size_t num_ghosts)
+            inline void build_coords(const coord1d num_ghosts)
             {
-                holder_type &self = *this;
+                holder_type &hld = *this;
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     const string coords_tag = this->name + "_" + coord_info::axis_name(dim);
+                    hld. template append<const string&,const domain_type&,coord1d>(coords_tag,*this,num_ghosts);
+                    assert(1+dim==hld.size);
+                    
                 }
             }
 
