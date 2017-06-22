@@ -22,19 +22,21 @@ YOCTO_UNIT_TEST_IMPL(cmesh)
 {
 
     {
-        const layout<coord1d> full(1,32);
-
+        const layout<coord1d>     full(1,32);
+        const box<double,coord1d> B(0,1);
         {
             std::cerr << "Full Periodic..." << std::endl;
             const domain<coord1d> dom0(0,1,NULL,full,1);
             {
                 std::cerr << "no ghost" << std::endl;
                 curvilinear_mesh<float,coord1d> cmesh("mesh1_full_per_no_ghost",dom0,0);
+                cmesh.map_to(B);
                 display_cmesh(cmesh);
             }
             {
                 std::cerr << "with ghost" << std::endl;
                 curvilinear_mesh<float,coord1d> cmesh("mesh1_full_not_w_ghosts",dom0,2);
+                cmesh.map_to(B);
                 display_cmesh(cmesh);
             }
 
@@ -47,11 +49,13 @@ YOCTO_UNIT_TEST_IMPL(cmesh)
             {
                 std::cerr << "no ghost" << std::endl;
                 curvilinear_mesh<float,coord1d> cmesh("mesh1",dom0,0);
+                cmesh.map_to(B);
                 display_cmesh(cmesh);
             }
             {
                 std::cerr << "with ghost" << std::endl;
                 curvilinear_mesh<float,coord1d> cmesh("mesh1",dom0,2);
+                cmesh.map_to(B);
                 display_cmesh(cmesh);
             }
 
@@ -67,12 +71,14 @@ YOCTO_UNIT_TEST_IMPL(cmesh)
                     std::cerr << "\t\tPERIODIC" << std::endl;
                     const domain<coord1d> dom0(rank,size,NULL,full,1);
                     curvilinear_mesh<float,coord1d> cmesh("mesh1",dom0,1);
+                    cmesh.map_to(B);
                     display_cmesh(cmesh);
                 }
                 {
                     std::cerr << "\t\tNOT PERIODIC" << std::endl;
                     const domain<coord1d> dom0(rank,size,NULL,full,0);
                     curvilinear_mesh<float,coord1d> cmesh("mesh1",dom0,1);
+                    cmesh.map_to(B);
                     display_cmesh(cmesh);
                 }
             }
