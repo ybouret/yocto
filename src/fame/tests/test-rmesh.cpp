@@ -17,7 +17,7 @@ static inline void display_rmesh( const rectilinear_mesh<T,COORD> &mesh )
 
 }
 
-YOCTO_UNIT_TEST_IMPL(mesh)
+YOCTO_UNIT_TEST_IMPL(rmesh)
 {
 
     {

@@ -9,7 +9,10 @@ namespace yocto
     namespace fame
     {
 
+        //______________________________________________________________________
+        //
         //! memory and functions for MPI I/O
+        //______________________________________________________________________
         template <typename COORD>
         class mpi_ghosts : public slots_of<ghosts_io>
         {
@@ -31,9 +34,9 @@ namespace yocto
 
             //! allocate IO per coordinate
             inline void prepare_for(const ghosts_of<COORD> &G,
-                                    const size_t            max_item_size )
+                                    const size_t            block_size )
             {
-                assert(max_item_size>0);
+                assert(block_size>0);
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     const ghosts &g = G[dim];
@@ -41,33 +44,25 @@ namespace yocto
                     {
                         case ghosts::async: {
                             const size_t num_indices = g.size();
-                            const size_t num_bytes   = num_indices * max_item_size;
+                            const size_t num_bytes   = num_indices * block_size;
                             (*this)[dim].ensure(num_bytes);
-                            //MPI.Printf(stderr, "mpi_ghosts@dim#%u: ASYNC: #bytes=%u/#indices=%u\n", unsigned(dim), unsigned(num_bytes), unsigned(num_indices));
                         } break;
 
                         case ghosts::empty:
-                            //MPI.Printf(stderr,"mpi_ghosts@dim#%u: EMPTY\n", unsigned(dim));
                             break;
 
                         case ghosts::lcopy:
-                            //MPI.Printf(stderr,"mpi_ghosts@dim#%u: LCOPY\n", unsigned(dim));
                             break;
                     }
                 }
             }
 
             //! use field item sizes
-            inline void prepare_for(const ghosts_of<COORD> &G, const field_data &fd )
+            inline void prepare_for(const ghosts_of<COORD> &G, const field_data &fd)
             {
                 this->prepare_for(G,fd.item_size);
             }
 
-            //! should be the maximum sizeof field item
-            inline void prepare_default(const ghosts_of<COORD> &G)
-            {
-                this->prepare_for(G,sizeof(point3d<double>));
-            }
 
 
             //! exchange ghosts for one field
