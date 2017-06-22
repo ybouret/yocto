@@ -23,12 +23,24 @@ namespace yocto
                                 const size_t  n_outer,
                                 const size_t  n_inner);
             field_data(const field_data &other);
-            
+
+            inline const void *address_of( const coord1d offset_value ) const throw()
+            {
+                return __get(offset_value);
+            }
+
+            inline void *address_of(const coord1d offset_value ) throw()
+            {
+                return (void *) __get(offset_value);
+            }
+
+
         protected:
             void set_allocated(const size_t bytes) throw();
 
         private:
             YOCTO_DISABLE_ASSIGN(field_data);
+            virtual const void * __get(const coord1d offset_value) const throw() = 0;
         };
 
         template <typename T,
@@ -84,6 +96,12 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_ASSIGN(field);
+            inline virtual const void * __get(const coord1d offset_value) const throw()
+            {
+                assert(offset_value>=0);
+                assert(offset_value<num_outer);
+                return entry + offset_value;
+            }
         };
 
         template <typename T,typename COORD>

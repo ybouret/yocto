@@ -40,6 +40,7 @@ namespace yocto
             template <typename U>
             inline void map_to(const box<U,COORD> &B) throw()
             {
+#if 0
                 const layout_type &f = this->full;
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
@@ -52,7 +53,7 @@ namespace yocto
                     const_type    u   = type(B.__upper()[dim]);
                     if(del<=0)
                     {
-                        const_type v = type( (u+l)/2 );
+                        //const_type v = type( (u+l)/2 );
                         //a[ilo] = (u+l)/2;
                     }
                     else
@@ -61,14 +62,15 @@ namespace yocto
                         const coord1d end = __coord(a.outer.upper,dim);
                         for(coord1d i = ini; i <= end; ++i)
                         {
-                            const_type v = type(l + ( (i-ilo)*w )/del);
+                            //const_type v = type(l + ( (i-ilo)*w )/del);
                             for(size_t djm=0;djm<DIMENSION;++djm)
                             {
-                                (void)v;
+                                //(void)v;
                             }
                         }
                     }
                 }
+#endif
             }
 
 

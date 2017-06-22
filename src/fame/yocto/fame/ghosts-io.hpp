@@ -22,7 +22,7 @@ namespace yocto
 
             const size_t capacity; //!< in bytes
 
-            //! load data into send_addr
+            //! load data into send_addr, for ONE field
             template <typename FIELD>
             inline size_t load_into_send( const ghosts_pair &gp, const FIELD &F ) const throw()
             {
@@ -33,7 +33,7 @@ namespace yocto
                 return static_cast<size_t>(p-s);
             }
 
-            //! save data from recv_addr
+            //! save data from recv_addr, for ONE FIELD
             template <typename FIELD>
             inline void save_from_recv( const ghosts_pair &gp, FIELD &F ) const throw()
             {

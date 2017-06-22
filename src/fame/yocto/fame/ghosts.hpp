@@ -12,6 +12,7 @@ namespace yocto
     {
 
         template <typename COORD> class layouts; //!< forward declaration
+        class field_data;
 
         typedef array<coord1d>                        ghost_type;    //!< an array of indices
         typedef some_arrays<2,coord1d,memory::global> ghosts_type;   //!< 2 arrays of indices
@@ -30,6 +31,12 @@ namespace yocto
             const coord1d rank;  //!< would be MPI rank
             ghost_type   &outer; //!< to be received
             ghost_type   &inner; //!< to be sent
+
+            //__________________________________________________________________
+            //
+            // FIELD base API
+            //__________________________________________________________________
+
 
             //! load inner content in to memory, to be sent
             template <typename FIELD>
@@ -68,6 +75,13 @@ namespace yocto
                     F.entry[ rhs.outer[i] ] = F.entry[ lhs.inner[i] ];
                 }
             }
+
+            //! load inner content into memory, to be sent
+            void stream_load( const field_data &F, uint8_t * &p ) const throw();
+
+            //! save (received) memory into outer content
+            void stream_save( field_data &F, const uint8_t * &p ) const throw();
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_pair);
