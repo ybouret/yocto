@@ -15,12 +15,13 @@ namespace yocto
             explicit ghosts_io() throw();
             virtual ~ghosts_io() throw();
 
+            //! allocate enough memory for n bytes in, n bytes out.
             void ensure(const size_t n);
 
             uint8_t * recv_addr() const throw();
             uint8_t * send_addr() const throw();
 
-            const size_t capacity; //!< in bytes
+            const size_t capacity; //!< in bytes for in AND out
 
             //! load data into send_addr, for ONE field
             template <typename FIELD>
@@ -42,7 +43,7 @@ namespace yocto
                 gp.save(F,p);
             }
             
-
+            
 
         private:
             cslot  cmem;

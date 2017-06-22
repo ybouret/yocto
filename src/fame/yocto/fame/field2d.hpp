@@ -14,6 +14,7 @@ namespace yocto
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
+            typedef arc_ptr<field2d>                 pointer;
             typedef field<T,coord2d>                 field_type;
             typedef domain<coord2d>                  domain_type;
             typedef typename field_type::param_coord param_coord;

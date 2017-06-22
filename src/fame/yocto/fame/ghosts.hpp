@@ -76,6 +76,11 @@ namespace yocto
                 }
             }
 
+            //__________________________________________________________________
+            //
+            // field_data base API
+            //__________________________________________________________________
+
             //! load inner content into memory, to be sent
             void stream_load( const field_data &F, uint8_t * &p ) const throw();
 

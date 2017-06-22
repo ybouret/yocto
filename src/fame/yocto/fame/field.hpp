@@ -3,14 +3,17 @@
 
 #include "yocto/fame/layouts.hpp"
 #include "yocto/string.hpp"
+#include "yocto/ptr/arc.hpp"
 
 namespace yocto
 {
     namespace fame
     {
-        class field_data
+        class field_data : public counted_object
         {
         public:
+            typedef arc_ptr<field_data> pointer;
+
             const string name;
             const size_t item_size;       //!< bytes per item
             const size_t num_outer;       //!< total number of items, on outer layout
