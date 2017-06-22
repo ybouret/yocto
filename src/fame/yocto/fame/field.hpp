@@ -85,6 +85,10 @@ namespace yocto
         private:
             YOCTO_DISABLE_ASSIGN(field);
         };
+
+        template <typename T,typename COORD>
+        struct field_for;
+
     }
 }
 

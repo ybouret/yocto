@@ -141,6 +141,12 @@ namespace yocto
 
         };
 
+
+        template <typename T>
+        struct field_for<T,coord3d>
+        {
+            typedef field3d<T> type;
+        };
     }
 }
 
