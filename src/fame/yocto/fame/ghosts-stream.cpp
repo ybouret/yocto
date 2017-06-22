@@ -30,6 +30,21 @@ namespace yocto
             }
 
         }
+
+        void ghosts_pair:: stream_swap( field_data &F,const ghosts_pair &lhs, const ghosts_pair &rhs) throw()
+        {
+            assert(lhs.size==rhs.size);
+            const size_t item_size = F.item_size;
+            for(size_t i=lhs.size;i>0;--i)
+            {
+                //F.entry[ lhs.outer[i] ] = F.entry[ rhs.inner[i] ];
+                //F.entry[ rhs.outer[i] ] = F.entry[ lhs.inner[i] ];
+                memcpy(F.address_of( lhs.outer[i] ),F.address_of(rhs.inner[i]), item_size );
+                memcpy(F.address_of( rhs.outer[i] ),F.address_of(lhs.inner[i]), item_size );
+            }
+
+        }
+
     }
 
 }

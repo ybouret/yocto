@@ -66,7 +66,7 @@ namespace yocto
 
             //! local exchange
             template <typename FIELD> static inline
-            void exchange( FIELD &F, const ghosts_pair &lhs, const ghosts_pair &rhs)
+            void exchange( FIELD &F, const ghosts_pair &lhs, const ghosts_pair &rhs) throw()
             {
                 assert(lhs.size==rhs.size);
                 for(size_t i=lhs.size;i>0;--i)
@@ -82,6 +82,8 @@ namespace yocto
             //! save (received) memory into outer content
             void stream_save( field_data &F, const uint8_t * &p ) const throw();
 
+            static
+            void stream_swap( field_data &F,const ghosts_pair &lhs, const ghosts_pair &rhs) throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts_pair);
