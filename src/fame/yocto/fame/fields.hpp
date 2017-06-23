@@ -9,39 +9,30 @@ namespace yocto
     namespace fame
     {
         
-#if 0
-        typedef vector<field_data::pointer,memory::global::allocator> io_fields;
-        
-        class fields : public io_fields
-        {
-        public:
-            explicit fields() throw();
-            virtual ~fields() throw();
-            explicit fields(const size_t n);
-            
-            size_t block_size() const throw();
-            
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(fields);
-        };
-#endif
-        
         class fields
         {
         public:
+            typedef list<field_data::pointer> fd_list;
+            typedef fd_list::iterator         iterator;
+            typedef fd_list::const_iterator   const_iterator;
+            
             explicit fields() throw();
             virtual ~fields() throw();
             explicit fields(const size_t n);
             
             const size_t block_size;
             
-            size_t size() const throw();
+            void   add( const field_data::pointer &p);
             
-            void add( const field_data::pointer &p);
+            inline size_t         size()  const throw() { return fd.size(); }
+            inline iterator       begin() throw() { return fd.begin(); }
+            inline iterator       end()   throw() { return fd.end();   }
+            inline const_iterator begin() const throw() { return fd.begin(); }
+            inline const_iterator end()   const throw() { return fd.end();   }
             
             
         private:
-            list<field_data::pointer> fd;
+            fd_list fd;
             YOCTO_DISABLE_COPY_AND_ASSIGN(fields);
         };
         

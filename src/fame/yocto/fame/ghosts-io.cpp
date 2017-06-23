@@ -49,7 +49,12 @@ namespace yocto
                                          const fields      &fd) const throw()
         {
             assert(capacity>=gp.size*fd.block_size);
-            
+            uint8_t *              p = send_addr();
+            fields::const_iterator i = fd.begin();
+            for(size_t n=fd.size();n>0;--n,++i)
+            {
+                gp.stream_load(**i,p);
+            }
         }
 
         

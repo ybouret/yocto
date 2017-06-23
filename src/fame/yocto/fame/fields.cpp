@@ -16,11 +16,6 @@ namespace yocto
         {
         }
         
-        size_t fields:: size() const throw()
-        {
-            return fd.size();
-        }
-        
         void fields:: add( const field_data::pointer &p)
         {
             fd.push_back(p);
