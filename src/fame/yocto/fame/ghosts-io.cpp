@@ -45,6 +45,14 @@ namespace yocto
             return ((uint8_t *)(cmem.data)+capacity);
         }
 
+        void ghosts_io:: store_into_send(const ghosts_pair &gp,
+                                         const fields      &fd) const throw()
+        {
+            assert(capacity>=gp.size*fd.block_size);
+            
+        }
+
+        
     }
 }
 

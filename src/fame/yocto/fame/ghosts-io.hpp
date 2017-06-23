@@ -1,7 +1,7 @@
 #ifndef YOCTO_FAME_GHOSTS_IO_INCLUDED
 #define YOCTO_FAME_GHOSTS_IO_INCLUDED 1
 
-#include "yocto/fame/field3d.hpp"
+#include "yocto/fame/fields.hpp"
 #include "yocto/container/cslot.hpp"
 
 namespace yocto
@@ -17,7 +17,9 @@ namespace yocto
 
             //! allocate enough memory for n bytes in, n bytes out.
             void ensure(const size_t n);
-
+            
+            
+            
             uint8_t * recv_addr() const throw();
             uint8_t * send_addr() const throw();
 
@@ -42,6 +44,8 @@ namespace yocto
                 const uint8_t *p = recv_addr();
                 gp.save(F,p);
             }
+            
+            void store_into_send( const ghosts_pair &gp, const fields &fd) const throw();
             
             
 
