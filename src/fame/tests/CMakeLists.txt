@@ -8,10 +8,11 @@ IF(MPI_FOUND)
     INCLUDE_DIRECTORIES(${MPI_INCLUDE_PATH})
 	ADD_EXECUTABLE(test-fame-par main-par.cpp)
 	TARGET_LINK_YOCTO( test-fame-par mk gfx fame png z mpi)
-    	TARGET_LINK_LIBRARIES( test-fame-par ${MPI_LIBRARIES})
+    TARGET_LINK_LIBRARIES( test-fame-par ${MPI_LIBRARIES})
 	
 	ADD_EXECUTABLE(test-fame-multi main-multi.cpp)
-	TARGET_LINK_YOCTO(test-fame-multi mk mpi)
+	TARGET_LINK_YOCTO(test-fame-multi mk fame mpi)
+    TARGET_LINK_LIBRARIES( test-fame-multi ${MPI_LIBRARIES})
 ENDIF()
 
 ENABLE_TESTING()
