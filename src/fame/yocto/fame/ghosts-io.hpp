@@ -45,8 +45,11 @@ namespace yocto
                 gp.save(F,p);
             }
             
+            //! store data into send_addr, for all fields
             void store_into_send( const ghosts_pair &gp, const fields &fd) const throw();
             
+            //! query data from recv_addr, for all fields
+            void query_from_recv( const ghosts_pair &gp, fields       &fd) const throw();
             
 
         private:

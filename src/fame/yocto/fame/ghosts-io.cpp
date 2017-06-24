@@ -57,6 +57,18 @@ namespace yocto
             }
         }
 
+        void ghosts_io::query_from_recv(const ghosts_pair &gp,
+                                        fields            &fd) const throw()
+        {
+            assert(capacity>=gp.size*fd.block_size);
+            const uint8_t   *p = recv_addr();
+            fields::iterator i = fd.begin();
+            for(size_t n=fd.size();n>0;--n,++i)
+            {
+                gp.stream_save(**i,p);
+            }
+        }
+
         
     }
 }
