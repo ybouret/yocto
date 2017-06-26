@@ -3,6 +3,7 @@
 
 #include "yocto/mpi/mpi.hpp"
 #include "yocto/fame/ghosts-io.hpp"
+#include "yocto/fame/domains.hpp"
 
 namespace yocto
 {
@@ -232,7 +233,9 @@ namespace yocto
 
             //__________________________________________________________________
             //
+            //
             //! exchange ghosts for multiple fields at once
+            //
             //__________________________________________________________________
             inline void perform(const ghosts_of<COORD> &Ghosts,
                                 fields                 &Fields )
@@ -365,19 +368,76 @@ namespace yocto
                                         break;
                                 }
                             } break;
-                                
+
                             default:
                                 throw exception("invalid ghosts flags!");
                         }
-                        
+
                     }
                 }
 
 
             }
-            
+
+
+            //__________________________________________________________________
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_ghosts);
+        };
+
+
+
+        struct mpi_ops
+        {
+        public:
+
+
+            template <typename T> static inline
+            void collect(const mpi              &MPI,
+                         field1d<T>             *target,
+                         const field1d<T>       &source,
+                         const domains<coord1d> &doms)
+            {
+                assert(doms.size==source.full.size);
+                assert(doms.size==MPI.CommWorldSize);
+                static const int tag = 1;
+                if(target)
+                {
+                    // local copy source
+                    assert(0==source.self.rank);
+                    assert(0==target->self.rank);
+                    assert(1==target->full.size);
+                    assert(target->inner.contains(source.inner));
+                    assert(target->inner == doms.full );
+                    assert(source.inner  == doms[0].inner);
+                    for(coord1d i=source.inner.upper;i>=source.inner.lower;--i)
+                    {
+                        (*target)[i] = source[i];
+                    }
+                    
+                    // and receive
+                    MPI_Status status;
+                    const int size= int(doms.size);
+                    for(int rank=1;rank<size;++rank)
+                    {
+                        const domain<coord1d> &dom = doms[rank];
+                        assert(target->inner.contains(dom.inner));
+                        void *tgt = &target[dom.inner.lower];
+                        MPI.Printf0(stderr, "recv #items=%u from %d\n", unsigned(dom.inner.items), rank);
+                        //MPI.Recv(tgt, dom.inner.items * sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD, status);
+                    }
+                }
+                else
+                {
+                    // sending
+                    assert(source.self.rank==MPI.CommWorldRank);
+                    assert(source.inner    ==doms[source.self.rank].inner);
+                    const void *src = &source[source.inner.lower];
+                    //MPI.Send(src,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);
+                }
+            }
+            
         };
         
     }

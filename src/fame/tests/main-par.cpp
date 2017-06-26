@@ -102,10 +102,21 @@ YOCTO_PROGRAM_START()
 
         {
             MPI.Printf0(stderr,"IS  periodic\n");
-            const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,1);
+            const domains<coord1d> doms(MPI.CommWorldSize,NULL,full,1);
+            //const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,1);
+            const domain<coord1d>  &D = doms[MPI.CommWorldRank];
             layouts<coord1d>      W(D,ng);
             ghosts_of<coord1d>    G(W);
 
+            for(size_t rank=0;rank<doms.size;++rank)
+            {
+                const domain<coord1d> &d = doms[rank];
+                MPI.Printf0(stderr,"doms[%u]: %ld->%ld, items=%u\n",
+                            unsigned(rank),
+                            long( d.inner.lower),
+                            long(d.inner.upper),
+                            unsigned(d.inner.items) );
+            }
 
             MPI.Printf(stderr,"is %2ld.%2ld: layout: inner=[%5ld:%5ld], outer=[%5ld:%5ld]\n",
                        long(D.full.size),long(D.self.rank),
@@ -129,13 +140,36 @@ YOCTO_PROGRAM_START()
 
             xch.prepare_for(G,F);
 
-            const string  output = vformat("1d_%d.%d.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
-            ios::wcstream fp(output);
-            VTK::Header(fp, "field1d, periodic");
-            VTK::StructuredPoints(fp,F.outer);
-            VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
-            xch.perform(G,F);
-            VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
+            {
+                const string  output = MPI.VTK_FileName("1d_pbc_");
+                ios::wcstream fp(output);
+                VTK::Header(fp, "field1d, periodic");
+                VTK::StructuredPoints(fp,F.outer);
+                VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
+                xch.perform(G,F);
+                VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
+            }
+
+
+            MPI.Printf0(stderr, "\n\ncollect\n");
+            if(MPI.IsFirst)
+            {
+                const domain<coord1d> dom0(0,1,NULL,full,1);
+                field1d<float>        all("all",dom0,0);
+                mpi_ops::collect(MPI,&all,F, doms);
+                {
+                    const string  output   = "full1d_pbc.vtk";
+                    ios::wcstream fp(output);
+                    VTK::Header(fp, "full1d, pbc");
+                    VTK::StructuredPoints(fp,all.inner);
+                    VTK::SaveScalars(fp,F.name,all,all.inner);
+                }
+            }
+            else
+            {
+                mpi_ops::collect<float>(MPI,NULL,F,doms);
+            }
+            return 0;
         }
 
 
@@ -166,7 +200,8 @@ YOCTO_PROGRAM_START()
                 F[i] = double(i) / double(full.upper);
             }
 
-            const string  output = vformat("1d_%d.%d_np.vtk",MPI.CommWorldSize,MPI.CommWorldRank);
+            const string  output = MPI.VTK_FileName("1d_no_pbc_");
+
             ios::wcstream fp(output);
             VTK::Header(fp, "field1d, not periodic");
             VTK::StructuredPoints(fp,F.outer);

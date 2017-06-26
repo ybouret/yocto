@@ -13,14 +13,17 @@ namespace yocto
         public:
             YOCTO_FAME_DECL_COORD;
             typedef layout<COORD> layout_type;
-            
+
+            const layout_type full;
+
             inline virtual ~domains() throw() {}
             
             inline explicit domains(const coord1d      user_size,
                                     const_coord       *user_cpus,
                                     const layout_type &user_full,
                                     param_coord        user_pbc) :
-            slots_of< domain<COORD> >(user_size)
+            slots_of< domain<COORD> >(user_size),
+            full(user_full)
             {
                 for(coord1d user_rank=0;user_rank<user_size;++user_rank)
                 {

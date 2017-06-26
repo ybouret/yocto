@@ -82,7 +82,8 @@ namespace yocto
 
             inline bool equals( const layout &other ) const throw()
             {
-                return are_same_coord(lower,other.lower) && are_same_coord(upper,other.upper);
+                return are_same_coord<COORD>(lower,other.lower)
+                &&     are_same_coord<COORD>(upper,other.upper);
             }
             
             friend inline
