@@ -100,7 +100,6 @@ namespace yocto
                                 field<T,COORD>         &F )
             {
 
-                slots_of<ghosts_io> &gIO = *this;
 
                 //______________________________________________________________
                 //
@@ -126,7 +125,7 @@ namespace yocto
                 //
                 //
                 //______________________________________________________________
-
+                slots_of<ghosts_io> &gIO = *this;
                 MPI_Status status;
                 //______________________________________________________________
                 //
@@ -254,7 +253,121 @@ namespace yocto
                     }
                 }
 
-                
+                //______________________________________________________________
+                //
+                //
+                //
+                // asynchronous
+                //
+                //
+                //______________________________________________________________
+                slots_of<ghosts_io> &gIO = *this;
+                MPI_Status status;
+
+                //______________________________________________________________
+                //
+                // pass=0: send to prev, recv from next
+                // pass=1: send to next, recv from prev
+                //______________________________________________________________
+                for(int pass=0;pass<2;++pass)
+                {
+                    for(size_t dim=0;dim<DIMENSION;++dim)
+                    {
+
+                        // take the ghost
+                        const ghosts &g    = Ghosts[dim];
+
+                        if(g.kind!=ghosts::async)
+                        {
+                            continue;
+                        }
+
+                        // take the memory
+                        ghosts_io    &IO    = gIO[dim]; assert(IO.capacity>=g.size()*Fields.block_size);
+
+                        // analyze
+                        switch(g.flag)
+                        {
+                                //______________________________________________
+                                //
+                                // symetric case
+                                //______________________________________________
+                            case ghosts::has_both: {
+                                const ghosts_pair *sendID = 0;
+                                const ghosts_pair *recvID = 0;
+                                switch(pass)
+                                {
+                                    case 0:
+                                        sendID = g.prev;
+                                        recvID = g.next;
+                                        break;
+
+                                    case 1:
+                                        sendID = g.next;
+                                        recvID = g.prev;
+                                        break;
+
+                                    default:
+                                        throw exception("corrupted code, invalid pass=%d",pass);
+                                }
+#if 0
+                                const size_t nxch = IO.load_into_send(*sendID,F);
+                                MPI.Sendrecv(IO.send_addr(), nxch, MPI_BYTE, sendID->rank, 0,
+                                             IO.recv_addr(), nxch, MPI_BYTE, recvID->rank, 0,
+                                             MPI_COMM_WORLD, status);
+                                IO.save_from_recv(*recvID,F);
+#endif
+                            } break;
+
+                                //______________________________________________
+                                //
+                                // prev only
+                                //______________________________________________
+                            case ghosts::has_prev:
+                            {
+                                switch(pass)
+                                {
+                                    case 0:
+                                        //MPI.Send(IO.send_addr(), IO.load_into_send(*g.prev,F), MPI_BYTE, g.prev->rank, 0, MPI_COMM_WORLD);
+                                        break;
+                                    case 1: {
+#if 0
+                                        const size_t nxch = g.prev->size * sizeof(T);
+                                        MPI.Recv(IO.recv_addr(),nxch,MPI_BYTE,g.prev->rank,0,MPI_COMM_WORLD,status);
+                                        IO.save_from_recv(*g.prev,F);
+#endif
+                                    } break;
+                                }
+                            } break;
+
+                                //______________________________________________
+                                //
+                                // next only
+                                //______________________________________________
+                            case ghosts::has_next:
+                            {
+                                switch(pass)
+                                {
+                                    case 1:
+                                        //MPI.Send(IO.send_addr(), IO.load_into_send(*g.next,F), MPI_BYTE, g.next->rank, 0, MPI_COMM_WORLD);
+                                        break;
+                                    case 0: {
+#if 0
+                                        const size_t nxch = g.next->size * sizeof(T);
+                                        MPI.Recv(IO.recv_addr(),nxch,MPI_BYTE,g.next->rank,0,MPI_COMM_WORLD,status);
+                                        IO.save_from_recv(*g.next,F);
+#endif
+                                    } break;
+                                }
+                            } break;
+                                
+                            default:
+                                throw exception("invalid ghosts flags!");
+                        }
+                        
+                    }
+                }
+
 
             }
             
