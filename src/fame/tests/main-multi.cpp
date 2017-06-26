@@ -32,13 +32,16 @@ YOCTO_PROGRAM_START()
             MPI.Printf(stderr, "\tblock_size=%u\n", unsigned(iof.block_size) );
             xch.prepare_for(G,iof);
 
-            const string  filename = MPI.VTK_FileName("1d_");
+            const string  filename = MPI.VTK_FileName("1d_pbc_");
             ios::wcstream fp(filename);
             VTK::Header(fp, "field1d, periodic");
             VTK::StructuredPoints(fp,F1.outer);
             VTK::SaveScalars(fp, F1.name + "_ini", F1, F1.outer);
+            VTK::SaveScalars(fp, F2.name + "_ini", F2, F1.outer);
+
             xch.perform(G,iof);
             VTK::SaveScalars(fp, F1.name + "_end", F1, F1.outer);
+            VTK::SaveScalars(fp, F2.name + "_end", F2, F1.outer);
         }
 
         
@@ -66,8 +69,18 @@ YOCTO_PROGRAM_START()
 
             MPI.Printf(stderr, "\tblock_size=%u\n", unsigned(iof.block_size) );
             xch.prepare_for(G,iof);
-            
+
+            const string  filename = MPI.VTK_FileName("2d_xy_");
+            ios::wcstream fp(filename);
+            VTK::Header(fp, "field2d, periodic");
+            VTK::StructuredPoints(fp,F1.outer);
+            VTK::SaveScalars(fp, F1.name + "_ini", F1, F1.outer);
+            VTK::SaveScalars(fp, F2.name + "_ini", F2, F1.outer);
+
             xch.perform(G,iof);
+            VTK::SaveScalars(fp, F1.name + "_end", F1, F1.outer);
+            VTK::SaveScalars(fp, F2.name + "_end", F2, F1.outer);
+
 
         }
     }
