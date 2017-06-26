@@ -6,6 +6,7 @@ YOCTO_UNIT_TEST_INIT(16)
     YOCTO_UNIT_TEST_DECL(layout);
     YOCTO_UNIT_TEST_DECL(split);
     YOCTO_UNIT_TEST_DECL(domain);
+    YOCTO_UNIT_TEST_DECL(domains);
     YOCTO_UNIT_TEST_DECL(layouts);
     YOCTO_UNIT_TEST_DECL(field);
     YOCTO_UNIT_TEST_DECL(rmesh);
