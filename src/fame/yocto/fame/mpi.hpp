@@ -319,17 +319,7 @@ namespace yocto
                                         sendID = g.next;
                                         recvID = g.prev;
                                         break;
-
-                                    default:
-                                        throw exception("corrupted code, invalid pass=%d",pass);
                                 }
-#if 0
-                                const size_t nxch = IO.load_into_send(*sendID,F);
-                                MPI.Sendrecv(IO.send_addr(), nxch, MPI_BYTE, sendID->rank, 0,
-                                             IO.recv_addr(), nxch, MPI_BYTE, recvID->rank, 0,
-                                             MPI_COMM_WORLD, status);
-                                IO.save_from_recv(*recvID,F);
-#endif
                                 IO.store_into_send(*sendID,Fields);
                                 MPI.Sendrecv(IO.send_addr(), nxch, MPI_BYTE, sendID->rank, 0,
                                              IO.recv_addr(), nxch, MPI_BYTE, recvID->rank, 0,
@@ -346,15 +336,14 @@ namespace yocto
                                 switch(pass)
                                 {
                                     case 0:
-                                        //MPI.Send(IO.send_addr(), IO.load_into_send(*g.prev,F), MPI_BYTE, g.prev->rank, 0, MPI_COMM_WORLD);
+                                        IO.store_into_send(*g.prev,Fields);
+                                        MPI.Send(IO.send_addr(), nxch, MPI_BYTE, g.prev->rank, 0, MPI_COMM_WORLD);
                                         break;
-                                    case 1: {
-#if 0
-                                        const size_t nxch = g.prev->size * sizeof(T);
+
+                                    case 1:
                                         MPI.Recv(IO.recv_addr(),nxch,MPI_BYTE,g.prev->rank,0,MPI_COMM_WORLD,status);
-                                        IO.save_from_recv(*g.prev,F);
-#endif
-                                    } break;
+                                        IO.query_from_recv(*g.prev,Fields);
+                                        break;
                                 }
                             } break;
 
@@ -367,15 +356,13 @@ namespace yocto
                                 switch(pass)
                                 {
                                     case 1:
-                                        //MPI.Send(IO.send_addr(), IO.load_into_send(*g.next,F), MPI_BYTE, g.next->rank, 0, MPI_COMM_WORLD);
+                                        IO.store_into_send(*g.next,Fields);
+                                        MPI.Send(IO.send_addr(), nxch, MPI_BYTE,g.next->rank,0,MPI_COMM_WORLD);
                                         break;
-                                    case 0: {
-#if 0
-                                        const size_t nxch = g.next->size * sizeof(T);
+                                    case 0:
                                         MPI.Recv(IO.recv_addr(),nxch,MPI_BYTE,g.next->rank,0,MPI_COMM_WORLD,status);
-                                        IO.save_from_recv(*g.next,F);
-#endif
-                                    } break;
+                                        IO.query_from_recv(*g.next, Fields);
+                                        break;
                                 }
                             } break;
                                 
