@@ -102,11 +102,10 @@ YOCTO_PROGRAM_START()
 
         {
             MPI.Printf0(stderr,"IS  periodic\n");
-            const domains<coord1d> doms(MPI.CommWorldSize,NULL,full,1);
-            //const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,1);
-            const domain<coord1d>  &D = doms[MPI.CommWorldRank];
-            layouts<coord1d>      W(D,ng);
-            ghosts_of<coord1d>    G(W);
+            const mpi_domains<coord1d> doms(MPI,NULL,full,1);
+            const domain<coord1d> &D = doms[MPI.CommWorldRank];
+            layouts<coord1d>       W(D,ng);
+            ghosts_of<coord1d>     G(W);
 
             for(size_t rank=0;rank<doms.size;++rank)
             {
@@ -125,9 +124,7 @@ YOCTO_PROGRAM_START()
                        long(W.outer.lower),
                        long(W.outer.upper)
                        );
-
-            //display_ghosts(G);
-
+            
 
 
 
@@ -155,8 +152,8 @@ YOCTO_PROGRAM_START()
             if(MPI.IsFirst)
             {
                 const full_domain<coord1d> dom0(full,1);
-                field1d<float>        all("all",dom0,0);
-                mpi_ops::collect(MPI,&all,F, doms);
+                field1d<float>             all("all",dom0);
+                doms.collect<float>(&all,F);
                 {
                     const string  output   = "full1d_pbc.vtk";
                     ios::wcstream fp(output);
@@ -167,7 +164,7 @@ YOCTO_PROGRAM_START()
             }
             else
             {
-                mpi_ops::collect<float>(MPI,NULL,F,doms);
+                doms.collect<float>(NULL,F);
             }
             return 0;
         }

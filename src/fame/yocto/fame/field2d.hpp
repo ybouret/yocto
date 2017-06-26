@@ -21,7 +21,7 @@ namespace yocto
             
             explicit field2d(const string      &fid,
                              const domain_type &dom,
-                             const coord1d      num_ghosts,
+                             const coord1d      num_ghosts=0,
                              void              *rows_entry=0,
                              void              *user_entry=0) :
             field_type(fid,dom,num_ghosts),

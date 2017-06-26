@@ -465,7 +465,7 @@ namespace yocto
             }
             
             template <typename T>
-            void collect(typename field_for<T,COORD>::type       *target,
+            void collect(typename       field_for<T,COORD>::type *target,
                          const typename field_for<T,COORD>::type &source) const;
             
             
@@ -485,7 +485,7 @@ namespace yocto
                 //
                 // locally copy source into target
                 //______________________________________________________________
-                const field1d<T> & _target = *target;
+                field1d<T> & _target = *target;
                 for(coord1d i=source.inner.upper;i>=source.inner.lower;--i)
                 {
                     _target[i] = source[i];
@@ -501,7 +501,7 @@ namespace yocto
                 {
                     const domain<coord1d> &dom = doms[rank];
                     assert(target->inner.contains(dom.inner));
-                    void *tgt = &_target[dom.inner.lower];
+                    void *tgt = & _target[dom.inner.lower];
                     MPI.Recv(tgt, dom.inner.items * sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD, status);
                 }
             }

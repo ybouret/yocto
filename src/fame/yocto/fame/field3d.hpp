@@ -28,7 +28,7 @@ namespace yocto
 
             inline explicit field3d(const string      &fid,
                                     const domain_type &dom,
-                                    const coord1d      num_ghosts) :
+                                    const coord1d      num_ghosts=0) :
             field_type(fid,dom,num_ghosts),
             slices(0),
             ns(0)
