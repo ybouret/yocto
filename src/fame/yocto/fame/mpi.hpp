@@ -11,7 +11,9 @@ namespace yocto
 
         //______________________________________________________________________
         //
+        //
         //! memory and functions for MPI I/O
+        //
         //______________________________________________________________________
         template <typename COORD>
         class mpi_ghosts : public slots_of<ghosts_io>
@@ -32,7 +34,12 @@ namespace yocto
                 }
             }
 
+            //__________________________________________________________________
+            //
+            //
             //! allocate IO per coordinate
+            //
+            //__________________________________________________________________
             inline void prepare_for(const ghosts_of<COORD> &G,
                                     const size_t            block_size )
             {
@@ -57,17 +64,40 @@ namespace yocto
                 }
             }
 
+            //__________________________________________________________________
+            //
+            //
             //! use field item sizes
-            inline void prepare_for(const ghosts_of<COORD> &G, const field_data &fd)
+            //
+            //__________________________________________________________________
+            inline void prepare_for(const ghosts_of<COORD> &G,
+                                    const field_data       &fd)
             {
                 this->prepare_for(G,fd.item_size);
             }
 
 
+            //__________________________________________________________________
+            //
+            //
+            //! use fields block_size
+            //
+            //__________________________________________________________________
+            inline void prepare_for(const ghosts_of<COORD> &G, const fields &iof)
+            {
+                this->prepare_for(G,iof.block_size);
+            }
 
+
+            //__________________________________________________________________
+            //
+            //
             //! exchange ghosts for one field
+            //
+            //__________________________________________________________________
             template <typename T>
-            inline void perform( const ghosts_of<COORD> &Ghosts, field<T,COORD> &F )
+            inline void perform(const ghosts_of<COORD> &Ghosts,
+                                field<T,COORD>         &F )
             {
 
                 slots_of<ghosts_io> &gIO = *this;
@@ -194,7 +224,39 @@ namespace yocto
 
 
             }
-            
+
+            //__________________________________________________________________
+            //
+            //! exchange ghosts for multiple fields at once
+            //__________________________________________________________________
+            inline void perform(const ghosts_of<COORD> &Ghosts,
+                                fields                 &Fields )
+            {
+                //______________________________________________________________
+                //
+                //
+                //
+                // first pass: local exchange
+                //
+                //
+                //______________________________________________________________
+                const fields::iterator begin      = Fields.begin();
+                const size_t           num_fields = Fields.size();
+
+                MPI.Printf(stderr,"stream.#lcopy=%u\n", unsigned(Ghosts.num_lcopy));
+                for(size_t i=0;i<Ghosts.num_lcopy;++i)
+                {
+                    const ghosts *g     = Ghosts.lcopy[i];
+                    size_t        count = num_fields;
+                    for( fields::iterator it=begin;count>0;--count,++it)
+                    {
+                        ghosts_pair::stream_swap(**it, *(g->prev), *(g->next) );
+                    }
+                }
+
+                
+
+            }
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_ghosts);

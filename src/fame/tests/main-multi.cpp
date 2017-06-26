@@ -24,9 +24,9 @@ YOCTO_PROGRAM_START()
 
         mpi_ghosts<coord1d> xch(MPI);
         MPI.Printf(stderr, "block_size=%u\n", unsigned(iof.block_size) );
-        xch.prepare_for(G,iof.block_size);
+        xch.prepare_for(G,iof);
 
-        
+        xch.perform(G,iof);
 
     }
     
