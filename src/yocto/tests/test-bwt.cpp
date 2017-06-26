@@ -76,7 +76,7 @@ namespace
             if( input2[i] != input[i] )
                 throw exception("encode/decode error for size=%u", unsigned(input.size()));
         }
-        std::cerr << "." << std::endl;
+        std::cerr << ".";
     }
     
 }
@@ -88,7 +88,7 @@ YOCTO_UNIT_TEST_IMPL(bwt16)
     vector<uint8_t> output(65536,as_capacity);
     vector<uint8_t> input2(65536,as_capacity);
 
-    for(size_t n=0;n<=65536;n+=16)
+    for(size_t n=1;n<=65536;n*=2)
     {
         if(n<=0)
             continue;
@@ -96,10 +96,9 @@ YOCTO_UNIT_TEST_IMPL(bwt16)
         input.make(n, 0);
         output.make(n,0);
         input2.make(n,0);
-        
+        std::cerr << "n=" << n;
         testBWT(input, output, input2, BWT);
         
-        std::cerr << "n=" << n << std::endl;
         std::cerr.flush();
         
     }
