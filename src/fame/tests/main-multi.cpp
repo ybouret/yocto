@@ -12,11 +12,10 @@ YOCTO_PROGRAM_START()
     {
         const layout<coord1d> full(1,32);
         const domain<coord1d> D(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full,1);
-        //layouts<coord1d>      W(D,ng);
         
         field1d<double>::pointer F1( new field1d<double>("F1",D,ng) );
         ghosts_of<coord1d>       G(*F1);
-
+        field1d<int>::pointer    F2( new field1d<int>("F2",D,ng));
     }
     
 }
