@@ -137,7 +137,10 @@ namespace yocto
                     for(size_t dim=0;dim<DIMENSION;++dim)
                     {
 
+                        //______________________________________________________
+                        //
                         // take the ghost
+                        //______________________________________________________
                         const ghosts &g    = Ghosts[dim];
 
                         if(g.kind!=ghosts::async)
@@ -145,7 +148,10 @@ namespace yocto
                             continue;
                         }
 
+                        //______________________________________________________
+                        //
                         // take the memory
+                        //______________________________________________________
                         ghosts_io    &IO    = gIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
 
                         // analyze
@@ -262,7 +268,7 @@ namespace yocto
                 //
                 //______________________________________________________________
                 slots_of<ghosts_io> &gIO = *this;
-                MPI_Status status;
+                MPI_Status           status;
 
                 //______________________________________________________________
                 //
@@ -274,7 +280,10 @@ namespace yocto
                     for(size_t dim=0;dim<DIMENSION;++dim)
                     {
 
+                        //______________________________________________________
+                        //
                         // take the ghost
+                        //______________________________________________________
                         const ghosts &g    = Ghosts[dim];
 
                         if(g.kind!=ghosts::async)
@@ -284,8 +293,12 @@ namespace yocto
 
                         // take the memory
                         ghosts_io    &IO    = gIO[dim]; assert(IO.capacity>=g.size()*Fields.block_size);
+                        const size_t  nxch  = g.size() * Fields.block_size;
 
+                        //______________________________________________________
+                        //
                         // analyze
+                        //______________________________________________________
                         switch(g.flag)
                         {
                                 //______________________________________________
@@ -317,6 +330,11 @@ namespace yocto
                                              MPI_COMM_WORLD, status);
                                 IO.save_from_recv(*recvID,F);
 #endif
+                                IO.store_into_send(*sendID,Fields);
+                                MPI.Sendrecv(IO.send_addr(), nxch, MPI_BYTE, sendID->rank, 0,
+                                             IO.recv_addr(), nxch, MPI_BYTE, recvID->rank, 0,
+                                             MPI_COMM_WORLD, status);
+                                IO.query_from_recv(*recvID,Fields);
                             } break;
 
                                 //______________________________________________
