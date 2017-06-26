@@ -34,7 +34,15 @@ namespace yocto
             (size_t &)allocated_bytes = bytes;
         }
 
+        bool field_data:: are_compatible(const field_data &lhs, const field_data &rhs) throw()
+        {
+            return (lhs.num_inner==rhs.num_inner) && (rhs.num_outer==lhs.num_outer);
+        }
 
+        const string & field_data:: key() const throw()
+        {
+            return name;
+        }
 
     }
 }

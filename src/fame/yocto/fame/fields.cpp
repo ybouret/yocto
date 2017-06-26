@@ -1,4 +1,5 @@
 #include "yocto/fame/fields.hpp"
+#include "yocto/exceptions.hpp"
 
 namespace yocto
 {
@@ -15,13 +16,26 @@ namespace yocto
         fields:: fields(const size_t n) : block_size(0), fd(n,as_capacity)
         {
         }
+
         
-        void fields:: add( const field_data::pointer &p)
+        void fields:: __record(const field_data::pointer &p)
         {
-            fd.push_back(p);
+            static const char fn[] = "fields.record";
+
+            for(iterator i=fd.begin();i!=fd.end();++i)
+            {
+                const field_data::pointer &q =*i;
+                if( !field_data::are_compatible(*p,*q) )
+                {
+                    throw exception("%s: field_data are not compatible",fn);
+                }
+            }
+            if(!fd.insert(p))
+            {
+                throw exception("%s: multiple fields '%s'", fn, p->key().c_str());
+            }
             ( (size_t &) block_size ) += p->item_size;
         }
-
         
     }
 }

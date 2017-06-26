@@ -3,7 +3,7 @@
 
 #include "yocto/fame/layouts.hpp"
 #include "yocto/string.hpp"
-#include "yocto/ptr/arc.hpp"
+#include "yocto/ptr/intr.hpp"
 
 namespace yocto
 {
@@ -12,7 +12,7 @@ namespace yocto
         class field_data : public counted_object
         {
         public:
-            typedef arc_ptr<field_data> pointer;
+            typedef intr_ptr<string,field_data> pointer;
 
             const string name;
             const size_t item_size;       //!< bytes per item
@@ -26,6 +26,7 @@ namespace yocto
                                 const size_t  n_outer,
                                 const size_t  n_inner);
             field_data(const field_data &other);
+            const string & key() const throw();
 
             inline const void *address_of( const coord1d offset_value ) const throw()
             {
@@ -37,6 +38,7 @@ namespace yocto
                 return (void *) __get(offset_value);
             }
 
+            static bool are_compatible(const field_data &lhs, const field_data &rhs) throw();
 
         protected:
             void set_allocated(const size_t bytes) throw();
