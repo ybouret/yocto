@@ -308,6 +308,26 @@ namespace yocto
             YOCTO_DISABLE_ASSIGN(domain);
         };
 
+        template <typename COORD>
+        class full_domain : public domain<COORD>
+        {
+        public:
+            YOCTO_FAME_DECL_COORD;
+            
+            inline explicit full_domain(const layout<COORD> &user_full,
+                                         param_coord          user_pbc) :
+            domain<COORD>(0,1,NULL,user_full,user_pbc)
+            {
+            }
+            
+            inline virtual ~full_domain() throw() {}
+            
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(full_domain);
+        };
+    
+        
         struct domain_ops
         {
             template <typename COORD>

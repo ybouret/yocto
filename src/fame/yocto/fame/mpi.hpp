@@ -442,6 +442,78 @@ namespace yocto
             
         };
         
+        template <typename COORD>
+        class mpi_domains : public domains<COORD>
+        {
+        public:
+            YOCTO_FAME_DECL_COORD;
+            typedef layout<COORD> layout_type;
+            
+            const mpi &MPI;
+            
+            inline virtual ~mpi_domains() throw() {}
+            inline explicit mpi_domains(const mpi         &user_mpi,
+                                        const_coord       *user_cpus,
+                                        const layout_type &user_full,
+                                        param_coord        user_pbc) :
+            domains<COORD>(user_mpi.CommWorldSize,
+                           user_cpus,
+                           user_full,
+                           user_pbc),
+            MPI(user_mpi)
+            {
+            }
+            
+            template <typename T>
+            void collect(typename field_for<T,COORD>::type       *target,
+                         const typename field_for<T,COORD>::type &source) const;
+            
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_domains);
+        };
+        
+        template <> template <typename T> inline
+        void mpi_domains<coord1d>::  collect(typename field_for<T,coord1d>::type       *target,
+                                             const typename field_for<T,coord1d>::type &source) const
+        {
+            static const int tag = 1;
+            const domains<coord1d> &doms = *this;
+            if(target)
+            {
+                //______________________________________________________________
+                //
+                // locally copy source into target
+                //______________________________________________________________
+                const field1d<T> & _target = *target;
+                for(coord1d i=source.inner.upper;i>=source.inner.lower;--i)
+                {
+                    _target[i] = source[i];
+                }
+                
+                //______________________________________________________________
+                //
+                // then receive from other
+                //______________________________________________________________
+                MPI_Status status;
+                const int size= MPI.CommWorldSize;
+                for(int rank=1;rank<size;++rank)
+                {
+                    const domain<coord1d> &dom = doms[rank];
+                    assert(target->inner.contains(dom.inner));
+                    void *tgt = &_target[dom.inner.lower];
+                    MPI.Recv(tgt, dom.inner.items * sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD, status);
+                }
+            }
+            else
+            {
+                // sending
+                const void *src = &source[source.inner.lower];
+                MPI.Send(src,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);
+            }
+            
+        }
+        
     }
 }
 

@@ -154,7 +154,7 @@ YOCTO_PROGRAM_START()
             MPI.Printf0(stderr, "\n\ncollect\n");
             if(MPI.IsFirst)
             {
-                const domain<coord1d> dom0(0,1,NULL,full,1);
+                const full_domain<coord1d> dom0(full,1);
                 field1d<float>        all("all",dom0,0);
                 mpi_ops::collect(MPI,&all,F, doms);
                 {
