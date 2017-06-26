@@ -419,22 +419,24 @@ namespace yocto
                     // and receive
                     MPI_Status status;
                     const int size= int(doms.size);
+                    MPI.Printf(stderr, "receiving...\n");
                     for(int rank=1;rank<size;++rank)
                     {
                         const domain<coord1d> &dom = doms[rank];
                         assert(target->inner.contains(dom.inner));
-                        void *tgt = &target[dom.inner.lower];
-                        MPI.Printf0(stderr, "recv #items=%u from %d\n", unsigned(dom.inner.items), rank);
-                        //MPI.Recv(tgt, dom.inner.items * sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD, status);
+                        void *tgt = &((*target)[dom.inner.lower]);
+                        MPI.Printf0(stderr, "recv #items=%u from %d@%ld\n", unsigned(dom.inner.items), rank, long(dom.inner.lower) );
+                        MPI.Recv(tgt, dom.inner.items * sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD, status);
                     }
                 }
                 else
                 {
                     // sending
-                    assert(source.self.rank==MPI.CommWorldRank);
-                    assert(source.inner    ==doms[source.self.rank].inner);
+                    assert(source.self.rank == MPI.CommWorldRank);
+                    assert(source.inner     == doms[source.self.rank].inner);
                     const void *src = &source[source.inner.lower];
-                    //MPI.Send(src,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);
+                    MPI.Printf(stderr,"sending #items=%u from %d(%d)\n", unsigned(source.inner.items), int(source.self.rank), MPI.CommWorldRank);
+                    MPI.Send(src,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);
                 }
             }
             

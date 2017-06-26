@@ -90,7 +90,7 @@ namespace yocto
 	}
     
     
-	
+
 	void mpi:: Printf0( FILE *fp, const char *fmt, ... ) const
 	{
 		if( IsFirst )

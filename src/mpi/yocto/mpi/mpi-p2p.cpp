@@ -28,7 +28,7 @@ Y_MPI_CTIME;                                        \
 	
     
 	
-	void       mpi::Recv( void       *buffer, size_t count, MPI_Datatype datatype, int source,int tag, MPI_Comm comm, MPI_Status &status) const
+	void       mpi::Recv( void       *buffer, size_t count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Status &status) const
 	{
 		assert( !(NULL==buffer && count > 0 ) );
         Y_MPI_STAMP(Recv);

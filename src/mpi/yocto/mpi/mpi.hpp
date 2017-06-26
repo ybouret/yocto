@@ -184,8 +184,9 @@ namespace yocto
         
         //! close standard I/O on rank>0
         void CloseStdIO() const;
+
         
-        
+
         //======================================================================
         //
         // Requests helpers
