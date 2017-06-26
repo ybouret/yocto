@@ -1,5 +1,7 @@
 #include "yocto/fame/mpi.hpp"
 #include "yocto/program.hpp"
+#include "yocto/ios/ocstream.hpp"
+#include "yocto/fame/format/vtk.hpp"
 
 using namespace yocto;
 using namespace fame;
@@ -30,9 +32,16 @@ YOCTO_PROGRAM_START()
             MPI.Printf(stderr, "\tblock_size=%u\n", unsigned(iof.block_size) );
             xch.prepare_for(G,iof);
 
+            const string  filename = MPI.VTK_FileName("1d_");
+            ios::wcstream fp(filename);
+            VTK::Header(fp, "field1d, periodic");
+            VTK::StructuredPoints(fp,F1.outer);
+            VTK::SaveScalars(fp, F1.name + "_ini", F1, F1.outer);
             xch.perform(G,iof);
+            VTK::SaveScalars(fp, F1.name + "_end", F1, F1.outer);
         }
 
+        
         {
 
         }

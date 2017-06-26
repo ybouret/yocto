@@ -354,8 +354,23 @@ namespace yocto
         {
             return Allreduce1<T>(input, MPI_MAX, comm);
         }
-        
-        
+
+        //======================================================================
+        //
+        // I/O helpers
+        //
+        //======================================================================
+        inline string VTK_FileName(const string &prefix) const
+        {
+            return prefix + vformat("%d.%d.vtk",CommWorldSize,CommWorldRank);
+        }
+
+        inline string VTK_FileName(const char *prefix) const
+        {
+            const string pfx(prefix);
+            return VTK_FileName(pfx);
+        }
+
         //======================================================================
         //
         // I/O: TODO propagate exceptions...
