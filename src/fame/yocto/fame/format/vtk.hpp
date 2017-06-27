@@ -144,8 +144,6 @@ namespace yocto
                 OutputScalars<T,COORD>::Write(fp,F,L);
             }
 
-            
-
 
         };
 

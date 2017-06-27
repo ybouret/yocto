@@ -416,21 +416,26 @@ namespace yocto
                          const typename field_for<T,COORD>::type &source) const;
             
             
+            template <typename T>
+            void dispatch(const typename       field_for<T,COORD>::type *target,
+                          typename field_for<T,COORD>::type             &source) const;
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_domains);
         };
         
-#define YOCTO_FRAME_MPI_DOMS_CHECK0()         \
-assert(MPI.IsFirst);                          \
-assert(_target.self.rank==0);                 \
-assert( source.self.rank==0);                 \
-assert(_target.inner.contains(source.inner)); \
-assert( source.inner == doms[0].inner );      \
+#define YOCTO_FRAME_MPI_DOMS_CHECK0()             \
+assert(MPI.IsFirst);                              \
+assert(_target.self.rank==0);                     \
+assert( source.self.rank==0);                     \
+assert(_target.inner.contains(source.inner));     \
+assert( source.inner == doms[0].inner );          \
 assert(_target.inner == whole.inner )
         
-#define YOCTO_FRAME_MPI_DOMS_CHECKN()         \
-assert(!MPI.IsFirst);                         \
-assert(source.self.rank==MPI.CommWorldRank)
+#define YOCTO_FRAME_MPI_DOMS_CHECKN()             \
+assert(!MPI.IsFirst);                             \
+assert(source.self.rank==MPI.CommWorldRank);      \
+assert(source.inner==doms[source.self.rank].inner)
         
         template <> template <typename T> inline
         void mpi_domains<coord1d>::  collect(typename field_for<T,coord1d>::type       *target,
@@ -479,12 +484,34 @@ assert(source.self.rank==MPI.CommWorldRank)
                 //______________________________________________________________
                 YOCTO_FRAME_MPI_DOMS_CHECKN();
                 
+                //______________________________________________________________
+                //
                 // sending
+                //______________________________________________________________
                 const void *src = &source[source.inner.lower];
                 MPI.Send(src,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);
             }
             
         }
+        
+        template <> template <typename T>
+        void mpi_domains<coord1d>:: dispatch(const typename       field_for<T,coord1d>::type *target,
+                                             typename field_for<T,coord1d>::type             &source) const
+        {
+            
+        }
+        
+        
+        struct mpi_ops
+        {
+            template <typename T> static inline
+            void collect(const mpi_domains<coord1d> &doms,
+                         field1d<T>                 *target,
+                         const field1d<T>           &source )
+            {
+                doms.collect<T>(target,source);
+            }
+        };
         
     }
 }
