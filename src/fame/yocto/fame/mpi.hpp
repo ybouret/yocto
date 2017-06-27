@@ -388,59 +388,6 @@ namespace yocto
 
 
 
-        struct mpi_ops
-        {
-        public:
-
-
-            template <typename T> static inline
-            void collect(const mpi              &MPI,
-                         field1d<T>             *target,
-                         const field1d<T>       &source,
-                         const domains<coord1d> &doms)
-            {
-                assert(doms.size==source.full.size);
-                assert(doms.size==MPI.CommWorldSize);
-                static const int tag = 1;
-                if(target)
-                {
-                    // local copy source
-                    assert(0==source.self.rank);
-                    assert(0==target->self.rank);
-                    assert(1==target->full.size);
-                    assert(target->inner.contains(source.inner));
-                    assert(target->inner == doms.full );
-                    assert(source.inner  == doms[0].inner);
-                    for(coord1d i=source.inner.upper;i>=source.inner.lower;--i)
-                    {
-                        (*target)[i] = source[i];
-                    }
-                    
-                    // and receive
-                    MPI_Status status;
-                    const int size= int(doms.size);
-                    MPI.Printf(stderr, "receiving...\n");
-                    for(int rank=1;rank<size;++rank)
-                    {
-                        const domain<coord1d> &dom = doms[rank];
-                        assert(target->inner.contains(dom.inner));
-                        void *tgt = &((*target)[dom.inner.lower]);
-                        MPI.Printf0(stderr, "recv #items=%u from %d@%ld\n", unsigned(dom.inner.items), rank, long(dom.inner.lower) );
-                        MPI.Recv(tgt, dom.inner.items * sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD, status);
-                    }
-                }
-                else
-                {
-                    // sending
-                    assert(source.self.rank == MPI.CommWorldRank);
-                    assert(source.inner     == doms[source.self.rank].inner);
-                    const void *src = &source[source.inner.lower];
-                    MPI.Printf(stderr,"sending #items=%u from %d(%d)\n", unsigned(source.inner.items), int(source.self.rank), MPI.CommWorldRank);
-                    MPI.Send(src,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);
-                }
-            }
-            
-        };
         
         template <typename COORD>
         class mpi_domains : public domains<COORD>
@@ -473,19 +420,38 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_domains);
         };
         
+#define YOCTO_FRAME_MPI_DOMS_CHECK0()         \
+assert(MPI.IsFirst);                          \
+assert(_target.self.rank==0);                 \
+assert( source.self.rank==0);                 \
+assert(_target.inner.contains(source.inner)); \
+assert( source.inner == doms[0].inner );      \
+assert(_target.inner == whole.inner )
+        
+#define YOCTO_FRAME_MPI_DOMS_CHECKN()         \
+assert(!MPI.IsFirst);                         \
+assert(source.self.rank==MPI.CommWorldRank)
+        
         template <> template <typename T> inline
         void mpi_domains<coord1d>::  collect(typename field_for<T,coord1d>::type       *target,
                                              const typename field_for<T,coord1d>::type &source) const
         {
-            static const int tag = 1;
+            static const int        tag = 1;
             const domains<coord1d> &doms = *this;
             if(target)
             {
+               
+                field1d<T> & _target = *target;
+                //______________________________________________________________
+                //
+                // sanity check
+                //______________________________________________________________
+                YOCTO_FRAME_MPI_DOMS_CHECK0();
+                
                 //______________________________________________________________
                 //
                 // locally copy source into target
                 //______________________________________________________________
-                field1d<T> & _target = *target;
                 for(coord1d i=source.inner.upper;i>=source.inner.lower;--i)
                 {
                     _target[i] = source[i];
@@ -496,7 +462,7 @@ namespace yocto
                 // then receive from other
                 //______________________________________________________________
                 MPI_Status status;
-                const int size= MPI.CommWorldSize;
+                const int size = MPI.CommWorldSize;
                 for(int rank=1;rank<size;++rank)
                 {
                     const domain<coord1d> &dom = doms[rank];
@@ -507,6 +473,12 @@ namespace yocto
             }
             else
             {
+                //______________________________________________________________
+                //
+                // sanity check
+                //______________________________________________________________
+                YOCTO_FRAME_MPI_DOMS_CHECKN();
+                
                 // sending
                 const void *src = &source[source.inner.lower];
                 MPI.Send(src,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);

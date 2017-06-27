@@ -9,7 +9,7 @@ namespace yocto
 {
     namespace fame
     {
-
+        
         //______________________________________________________________________
         //
         //! a domain, used to build topology
@@ -19,7 +19,7 @@ namespace yocto
         {
         public:
             YOCTO_FAME_DECL_COORD;
-
+            
             //__________________________________________________________________
             //
             //! peer information about this and neigbors
@@ -35,11 +35,11 @@ namespace yocto
                 h.run_type(local);
             }
             YOCTO_TUPLE_END();
-
-            //______________________________________________________________________
+            
+            //__________________________________________________________________
             //
             //! holds a pair or peers
-            //______________________________________________________________________
+            //__________________________________________________________________
             class link
             {
             public:
@@ -49,7 +49,7 @@ namespace yocto
                 inline ~link() throw() { clear(); }
                 inline void set_next(const peer &p) { assert(0==next); next = new peer(p); }
                 inline void set_prev(const peer &p) { assert(0==prev); prev = new peer(p); }
-
+                
                 inline link(const link &other) : next(0), prev(0)
                 {
                     try
@@ -63,13 +63,13 @@ namespace yocto
                         throw;
                     }
                 }
-
+                
                 inline void run_hash( hashing::function &H ) const throw()
                 {
                     if(next) { next->run_hash(H); }
                     if(prev) { prev->run_hash(H); }
                 }
-
+                
             private:
                 YOCTO_DISABLE_ASSIGN(link);
                 inline void clear() throw()
@@ -77,18 +77,18 @@ namespace yocto
                     if(prev) { delete prev; prev=0; }
                     if(next) { delete next; next=0; }
                 }
-
+                
             };
-
+            
             typedef layout<COORD> layout_type;
             typedef split<COORD>  split_type;
-
+            
             split_type           full;  //!< used to split
             const peer           self;  //!< this information
             layout_type          inner; //!< for simulation
             slots_of<const link> links; //!< for topology
             const_coord          pbc;   //!< to keep track
-
+            
             //! to debug
             inline void run_hash( hashing::function &h ) const throw()
             {
@@ -100,7 +100,7 @@ namespace yocto
                     links[dim].run_hash(h);
                 }
             }
-
+            
             inline explicit domain(const coord1d      user_rank,
                                    const coord1d      user_size,
                                    const_coord       *user_cpus,
@@ -116,7 +116,7 @@ namespace yocto
                 {
                     links.push_back();
                 }
-
+                
                 //______________________________________________________________
                 //
                 //
@@ -151,10 +151,13 @@ namespace yocto
                             }
                             else
                             {
-                                //std::cerr << "next(" << self << ")=none" << std::endl;
+                                //______________________________________________
+                                //
+                                // do nothing
+                                //______________________________________________
                             }
                         }
-
+                        
                         {
                             //__________________________________________________
                             //
@@ -172,7 +175,10 @@ namespace yocto
                             }
                             else
                             {
-                                //std::cerr << "prev(" << self << ")=none" << std::endl;
+                                //______________________________________________
+                                //
+                                // do nothing
+                                //______________________________________________
                             }
                         }
                     }
@@ -193,7 +199,7 @@ namespace yocto
                             //std::cerr << "prev(" << self << ")=" << p << std::endl;
                             ((link &)links[dim]).set_next(p);
                             ((link &)links[dim]).set_prev(p);
-
+                            
                         }
                         else
                         {
@@ -201,15 +207,13 @@ namespace yocto
                             //
                             // do nothing
                             //__________________________________________________
-                            //std::cerr << "next(" << self << ")=" << "none" << std::endl;
-                            //std::cerr << "prev(" << self << ")=" << "none" << std::endl;
                         }
-
+                        
                     }
-
+                    
                 }
             }
-
+            
             inline domain(const domain &other) :
             full(other.full),
             self(other.self),
@@ -222,12 +226,12 @@ namespace yocto
                     links.push_back(other.links[dim]);
                 }
             }
-
-
+            
+            
             inline virtual ~domain() throw()
             {
             }
-
+            
             inline void compute_real_indices_for(const size_t        dim,
                                                  const layout_type & outer,
                                                  const int           num_ghosts,
@@ -237,14 +241,14 @@ namespace yocto
                 assert(num_ghosts>=0);
                 idxMin = 0;
                 idxMax = __coord(outer.width,dim)-1;
-
+                
                 if(num_ghosts>0)
                 {
                     const coord1d dim_rank = __coord(this->self.ranks,dim);
                     const coord1d dim_rmax = __coord(this->full.rmax,dim);
                     const link   &dim_link = links[dim];
                     const size_t  lo_shift = num_ghosts-1;
-
+                    
                     if(dim_rank<=0)
                     {
                         //__________________________________________________________
@@ -256,7 +260,7 @@ namespace yocto
                             idxMin += num_ghosts;
                         }
                     }
-
+                    
                     if(dim_rank>=dim_rmax)
                     {
                         //______________________________________________________
@@ -268,7 +272,7 @@ namespace yocto
                             idxMax -= num_ghosts;
                         }
                     }
-
+                    
                     if(dim_rank<dim_rmax)
                     {
                         // 'in the middle': remove upper ghost
@@ -277,7 +281,7 @@ namespace yocto
                             idxMax -= num_ghosts;
                         }
                     }
-
+                    
                     if(dim_rank>0)
                     {
                         // 'in the middle': keep only one ghost
@@ -286,10 +290,10 @@ namespace yocto
                             idxMin += lo_shift;
                         }
                     }
-
+                    
                 }
             }
-
+            
             inline void compute_real_indices(const layout_type &  outer,
                                              const int           num_ghosts,
                                              int *               idxMin,
@@ -301,13 +305,13 @@ namespace yocto
                 {
                     compute_real_indices_for(dim,outer,num_ghosts,idxMin[dim],idxMax[dim]);
                 }
-
+                
             }
-
+            
         private:
             YOCTO_DISABLE_ASSIGN(domain);
         };
-
+        
         template <typename COORD>
         class full_domain : public domain<COORD>
         {
@@ -315,7 +319,7 @@ namespace yocto
             YOCTO_FAME_DECL_COORD;
             
             inline explicit full_domain(const layout<COORD> &user_full,
-                                         param_coord          user_pbc) :
+                                        param_coord          user_pbc) :
             domain<COORD>(0,1,NULL,user_full,user_pbc)
             {
             }
@@ -326,7 +330,7 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(full_domain);
         };
-    
+        
         
         struct domain_ops
         {
@@ -343,7 +347,7 @@ namespace yocto
                 const coord1d         pbc  = __coord(D.pbc,dim);
                 return domain<coord1d>(rank,size,&size,full,pbc);
             }
-
+            
         };
         
     }

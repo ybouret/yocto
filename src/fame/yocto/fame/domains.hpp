@@ -7,6 +7,11 @@ namespace yocto
 {
     namespace fame
     {
+        //______________________________________________________________________
+        //
+        //! compute all possible domains
+        // TODO: optimize from rank 0 computation !
+        //______________________________________________________________________
         template <typename COORD>
         class domains : public slots_of< domain<COORD> >
         {
@@ -14,7 +19,7 @@ namespace yocto
             YOCTO_FAME_DECL_COORD;
             typedef layout<COORD> layout_type;
 
-            const layout_type full;
+            const full_domain<COORD> whole;
 
             inline virtual ~domains() throw() {}
             
@@ -23,7 +28,7 @@ namespace yocto
                                     const layout_type &user_full,
                                     param_coord        user_pbc) :
             slots_of< domain<COORD> >(user_size),
-            full(user_full)
+            whole(user_full,user_pbc)
             {
                 for(coord1d user_rank=0;user_rank<user_size;++user_rank)
                 {
