@@ -228,6 +228,7 @@ namespace yocto
             }
             
             
+            
             inline virtual ~domain() throw()
             {
             }

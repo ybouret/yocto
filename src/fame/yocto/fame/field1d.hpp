@@ -2,6 +2,7 @@
 #define YOCTO_FAME_FIELD1D_INCLUDED 1
 
 #include "yocto/fame/field.hpp"
+#include "yocto/code/bmove.hpp"
 
 namespace yocto
 {
@@ -89,6 +90,26 @@ namespace yocto
                     this->set_allocated(this->count*sizeof(T));
                 }
                 shift = this->entry - this->outer.lower;
+            }
+            
+            virtual void save(const layout<coord1d> &sub, uint8_t * &p ) const throw()
+            {
+                assert(this->outer.contains(sub));
+                for(coord1d i=sub.lower;i<=sub.upper;++i)
+                {
+                    core::bmove<sizeof(T)>(p,&(*this)[i]);
+                    p += sizeof(T);
+                }
+            }
+            
+            virtual void load(const layout<coord1d> &sub, const uint8_t * &p ) throw()
+            {
+                for(coord1d i=sub.lower;i<=sub.upper;++i)
+                {
+                    core::bmove<sizeof(T)>(&(*this)[i],p);
+                    p += sizeof(T);
+                }
+
             }
 
         };

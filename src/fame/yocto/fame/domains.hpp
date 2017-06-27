@@ -19,21 +19,28 @@ namespace yocto
             YOCTO_FAME_DECL_COORD;
             typedef layout<COORD> layout_type;
 
-            const full_domain<COORD> whole;
-
-            inline virtual ~domains() throw() {}
             
+            const full_domain<COORD> whole;      //!< the full domain
+            const size_t             max_items;  //!< max inner items
+            
+            inline virtual ~domains() throw()
+            {
+            }
+    
             inline explicit domains(const coord1d      user_size,
                                     const_coord       *user_cpus,
                                     const layout_type &user_full,
                                     param_coord        user_pbc) :
             slots_of< domain<COORD> >(user_size),
-            whole(user_full,user_pbc)
+            whole(user_full,user_pbc),
+            max_items(0)
             {
+                size_t &n = (size_t &)max_items;
                 for(coord1d user_rank=0;user_rank<user_size;++user_rank)
                 {
                     const domain<COORD> sub(user_rank,user_size,user_cpus,user_full,user_pbc);
                     this->push_back(sub);
+                    if(sub.inner.items>n) n=sub.inner.items;
                 }
             }
             

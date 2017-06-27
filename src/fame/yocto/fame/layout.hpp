@@ -20,7 +20,7 @@ namespace yocto
             const_coord  pitch;  //!< (1,nx,nx*ny)
             const_coord  width;  //!< upper-lower+1
             const size_t items;  //!< linear items in layout
-
+            
             inline virtual ~layout() throw() {}
             inline explicit layout(param_coord L,param_coord U) throw() :
             lower(L),
@@ -79,7 +79,7 @@ namespace yocto
                 lay_os << "{ " << p.lower << " -> " << p.upper << " : width=" << p.width << " => #" << p.items << " pitch=" << p.pitch << " }";
                 return lay_os;
             }
-
+            
             inline bool equals( const layout &other ) const throw()
             {
                 return are_same_coord<COORD>(lower,other.lower)
@@ -100,7 +100,7 @@ namespace yocto
             {
                 return has(sub.lower) && has(sub.upper);
             }
-
+            
             inline void run_hash( hashing::function &h ) const throw()
             {
                 h.run_type(lower);
@@ -110,17 +110,62 @@ namespace yocto
                 h.run_type(items);
             }
             
+            void offsets_of( const layout &sub, sequence<coord1d> &idx ) const;
+            
         private:
             YOCTO_DISABLE_ASSIGN(layout);
         };
-
+        
+        template <>
+        inline void layout<coord1d>:: offsets_of(const layout      &sub,
+                                                 sequence<coord1d> &idx ) const
+        {
+            for(coord1d i=sub.lower;i<=sub.upper;++i)
+            {
+                idx.push_back( offset_of(i) );
+            }
+        }
+        
+        template <>
+        inline void layout<coord2d>:: offsets_of(const layout      &sub,
+                                                 sequence<coord1d> &idx) const
+        {
+            for(coord1d j=sub.lower.y;j<=sub.upper.y;++j)
+            {
+                for(coord1d i=sub.lower.x;i<=sub.upper.x;++i)
+                {
+                    const coord2d p(i,j);
+                    idx.push_back( offset_of(p) );
+                }
+            }
+        }
+        
+        template <>
+        inline void layout<coord3d>:: offsets_of(const layout      &sub,
+                                                 sequence<coord1d> &idx) const
+        {
+            for(coord1d k=sub.lower.z;k<=sub.upper.z;++k)
+            {
+                for(coord1d j=sub.lower.y;j<=sub.upper.y;++j)
+                {
+                    for(coord1d i=sub.lower.x;i<=sub.upper.x;++i)
+                    {
+                        const coord3d p(i,j,k);
+                        idx.push_back( offset_of(p) );
+                    }
+                }
+            }
+        }
+        
+        
+        
         struct layout_ops
         {
             static inline layout<coord1d> project( const layout<coord2d> &L ) throw()
             {
                 return layout<coord1d>(L.lower.x,L.upper.x);
             }
-
+            
             static inline layout<coord2d> project( const layout<coord3d> &L ) throw()
             {
                 const coord2d lo(L.lower.x,L.lower.y);
@@ -128,7 +173,7 @@ namespace yocto
                 return layout<coord2d>(lo,up);
             }
         };
-
+        
     }
 }
 

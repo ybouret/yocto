@@ -152,9 +152,7 @@ YOCTO_PROGRAM_START()
             if(MPI.IsFirst)
             {
                 field1d<float>             all("all",doms.whole);
-                //doms.collect<float>(&all,F);
-                //doms.collect_recv(all,F);
-                //mpi_ops::collect(doms, &all, F);
+                doms.collect_recv(all,F);
                 {
                     const string  output   = "full1d_pbc.vtk";
                     ios::wcstream fp(output);
@@ -165,7 +163,7 @@ YOCTO_PROGRAM_START()
             }
             else
             {
-                //mpi_ops::collect<float>(doms, 0, F);
+                
             }
             return 0;
         }

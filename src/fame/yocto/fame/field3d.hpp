@@ -5,10 +5,10 @@
 
 namespace yocto
 {
-
+    
     namespace fame
     {
-
+        
         template <typename T>
         class field3d : public field<T,coord3d>
         {
@@ -19,13 +19,13 @@ namespace yocto
             typedef typename field_type::param_coord param_coord;
             typedef field2d<T>                       slice;
             typedef field1d<T>                       row;
-
-
+            
+            
             inline virtual ~field3d() throw()
             {
                 clear();
             }
-
+            
             inline explicit field3d(const string      &fid,
                                     const domain_type &dom,
                                     const coord1d      num_ghosts=0) :
@@ -35,62 +35,62 @@ namespace yocto
             {
                 build();
             }
-
+            
             inline slice & operator[](const coord1d z) throw()
             {
                 assert(z>=this->outer.lower.z); assert(z<=this->outer.upper.z);
                 return slices[z];
             }
-
+            
             inline const slice & operator[](const coord1d z) const throw()
             {
                 assert(z>=this->outer.lower.z); assert(z<=this->outer.upper.z);
                 return slices[z];
             }
-
+            
             inline virtual type & at(param_coord C) throw()
             {
                 assert(this->outer.has(C));
                 return slices[C.z][C.y][C.x];
             }
-
+            
             inline virtual const_type & at(param_coord C) const throw()
             {
                 assert(this->outer.has(C));
                 return slices[C.z][C.y][C.x];
             }
-
+            
             inline const slice & first() const throw()
             {
                 return slices[this->outer.lower.z];
             }
-
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field3d);
             slice *slices;
             size_t ns;
-
+            
             inline void build()
             {
                 const size_t num_slices     = this->outer.width.z;
                 const size_t slices_offset  = 0;
                 const size_t slices_length  = num_slices * sizeof(slice);
-
+                
                 const size_t rows_per_slice = this->outer.width.y;
                 const size_t num_rows       = num_slices * rows_per_slice;
                 const size_t rows_offset    = memory::align(slices_offset+slices_length);
                 const size_t rows_length    = num_rows * sizeof(row);
-
+                
                 const size_t num_data       = this->outer.items;
                 const size_t data_offset    = memory::align(rows_offset+rows_length);
                 const size_t data_length    = num_data * sizeof(T);
-
+                
                 this->count = memory::align(data_offset + data_length);
                 uint8_t *p  = (uint8_t *)memory::kind<memory::global>::acquire(this->count);
                 slices      = (slice *) &p[slices_offset];
                 row  *r     = (row   *) &p[rows_offset  ];
                 this->entry = (type  *) &p[data_offset  ];
-
+                
                 slices -= this->outer.lower.z;
                 type *t = this->entry;
                 const size_t data_per_slice = this->outer.width.x * this->outer.width.y;
@@ -106,7 +106,7 @@ namespace yocto
                     const coord2d          pbc_xy(this->pbc.x,this->pbc.y);
                     const coord1d          ng  = this->depth;
                     const domain<coord2d>  dom_xy(rank_xy,size_xy,&sizes_xy,full_xy,pbc_xy);
-
+                    
                     for(coord1d z=this->outer.lower.z;z<=this->outer.upper.z;++z,r+=rows_per_slice,t+=data_per_slice)
                     {
                         const string slice_id = this->name + ".slice#" + vformat("%ld",long(z));
@@ -120,9 +120,9 @@ namespace yocto
                     clear();
                     throw;
                 }
-
+                
             }
-
+            
             inline void clear() throw()
             {
                 assert(slices!=NULL);
@@ -138,10 +138,47 @@ namespace yocto
                     memory::kind<memory::global>::release(p,this->count);
                 }
             }
+            
+            virtual void save(const layout<coord3d> &sub, uint8_t * &p ) const throw()
+            {
+                assert(this->outer.contains(sub));
+                for(coord1d k=sub.lower.z;k<=sub.upper.z;++k)
+                {
+                    const slice &slice_k = (*this)[k];
+                    for(coord1d j=sub.lower.y;j<=sub.upper.y;++j)
+                    {
+                        const row &row_j = slice_k[j];
+                        for(coord1d i=sub.lower.x;i<=sub.upper.x;++i)
+                        {
+                            core::bmove<sizeof(T)>(p, &row_j[i] );
+                            p += sizeof(T);
+                        }
+                    }
+                }
+            }
+            
+            virtual void load(const layout<coord3d> &sub, const uint8_t * &p ) throw()
+            {
+                assert(this->outer.contains(sub));
+                for(coord1d k=sub.lower.z;k<=sub.upper.z;++k)
+                {
+                    slice &slice_k = (*this)[k];
+                    for(coord1d j=sub.lower.y;j<=sub.upper.y;++j)
+                    {
+                        row &row_j = slice_k[j];
+                        for(coord1d i=sub.lower.x;i<=sub.upper.x;++i)
+                        {
+                            core::bmove<sizeof(T)>(&row_j[i],p);
+                            p += sizeof(T);
+                        }
+                    }
+                }
+            }
 
+            
         };
-
-
+        
+        
         template <typename T>
         struct field_for<T,coord3d>
         {

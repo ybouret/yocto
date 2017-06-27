@@ -380,12 +380,9 @@ namespace yocto
             }
             
             
-            //__________________________________________________________________
-            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_ghosts);
         };
-        
         
         
         
@@ -409,16 +406,31 @@ namespace yocto
                            user_cpus,
                            user_full,
                            user_pbc),
-            MPI(user_mpi)
+            MPI(user_mpi),
+            cmem(this->max_items*4*sizeof(double))
             {
+                MPI.Printf(stderr,"mpi_domains: memory=%u bytes\n", unsigned(cmem.size));
             }
             
             template <typename T>
-            inline void collect(field<T,COORD>       &target,
-                                const field<T,COORD> &source)
+            inline void collect_recv(field<T,COORD>            &target,
+                                     const field<T,COORD>      &source) const
             {
+                assert(cmem.size>=sizeof(T)*source.inner.items);
+                {
+                    uint8_t *p = static_cast<uint8_t *>(cmem.data);
+                    source.save(source.inner,p);
+                }
+                
+                {
+                    const uint8_t *p = static_cast<const uint8_t *>(cmem.data);
+                    target.load(source.inner,p);
+                }
                 
             }
+            
+        protected:
+            cslot cmem;
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_domains);

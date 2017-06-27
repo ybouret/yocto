@@ -70,6 +70,10 @@ namespace yocto
                     entry[i] = args;
                 }
             }
+            
+            virtual void save(const layout_type &sub, uint8_t       * &p ) const throw() = 0;
+            virtual void load(const layout_type &sub, const uint8_t * &p )       throw() = 0;
+
 
 
         protected:

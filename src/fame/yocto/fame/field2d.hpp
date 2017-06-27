@@ -167,6 +167,35 @@ namespace yocto
                 }
             }
             
+            virtual void save(const layout<coord2d> &sub, uint8_t * &p ) const throw()
+            {
+                assert(this->outer.contains(sub));
+                for(coord1d j=sub.lower.y;j<=sub.upper.y;++j)
+                {
+                    const row &row_j = (*this)[j];
+                    for(coord1d i=sub.lower.x;i<=sub.upper.x;++i)
+                    {
+                        core::bmove<sizeof(T)>(p, &row_j[i] );
+                        p += sizeof(T);
+                    }
+                }
+            }
+            
+            virtual void load(const layout<coord2d> &sub, const uint8_t * &p )  throw()
+            {
+                assert(this->outer.contains(sub));
+                for(coord1d j=sub.lower.y;j<=sub.upper.y;++j)
+                {
+                    row &row_j = (*this)[j];
+                    for(coord1d i=sub.lower.x;i<=sub.upper.x;++i)
+                    {
+                        core::bmove<sizeof(T)>(&row_j[i],p);
+                        p += sizeof(T);
+                    }
+                }
+            }
+
+            
         };
 
         template <typename T>
