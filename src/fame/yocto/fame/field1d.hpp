@@ -92,9 +92,10 @@ namespace yocto
                 shift = this->entry - this->outer.lower;
             }
             
-            virtual void save(const layout<coord1d> &sub, uint8_t * &p ) const throw()
+            virtual void save(const layout<coord1d> &sub, void *buf ) const throw()
             {
                 assert(this->outer.contains(sub));
+                uint8_t *p = (uint8_t *)buf;
                 for(coord1d i=sub.lower;i<=sub.upper;++i)
                 {
                     core::bmove<sizeof(T)>(p,&(*this)[i]);
@@ -102,8 +103,9 @@ namespace yocto
                 }
             }
             
-            virtual void load(const layout<coord1d> &sub, const uint8_t * &p ) throw()
+            virtual void load(const layout<coord1d> &sub, const void *buf ) throw()
             {
+                const uint8_t *p = (const uint8_t *)buf;
                 for(coord1d i=sub.lower;i<=sub.upper;++i)
                 {
                     core::bmove<sizeof(T)>(&(*this)[i],p);

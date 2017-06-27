@@ -139,9 +139,10 @@ namespace yocto
                 }
             }
             
-            virtual void save(const layout<coord3d> &sub, uint8_t * &p ) const throw()
+            virtual void save(const layout<coord3d> &sub, void *buf ) const throw()
             {
                 assert(this->outer.contains(sub));
+                uint8_t *p = (uint8_t *)buf;
                 for(coord1d k=sub.lower.z;k<=sub.upper.z;++k)
                 {
                     const slice &slice_k = (*this)[k];
@@ -157,9 +158,10 @@ namespace yocto
                 }
             }
             
-            virtual void load(const layout<coord3d> &sub, const uint8_t * &p ) throw()
+            virtual void load(const layout<coord3d> &sub, const void *buf ) throw()
             {
                 assert(this->outer.contains(sub));
+                const uint8_t *p = (const uint8_t *)buf;
                 for(coord1d k=sub.lower.z;k<=sub.upper.z;++k)
                 {
                     slice &slice_k = (*this)[k];

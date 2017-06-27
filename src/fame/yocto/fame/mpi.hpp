@@ -417,17 +417,30 @@ namespace yocto
                                      const field<T,COORD>      &source) const
             {
                 assert(cmem.size>=sizeof(T)*source.inner.items);
-                {
-                    uint8_t *p = static_cast<uint8_t *>(cmem.data);
-                    source.save(source.inner,p);
-                }
+                const domains<COORD> &doms = *this;
+                void                 *addr = cmem.data;
+                source.save(source.inner,addr);
+                target.load(source.inner,addr);
                 
-                {
-                    const uint8_t *p = static_cast<const uint8_t *>(cmem.data);
-                    target.load(source.inner,p);
-                }
                 
+                MPI_Status status;
+                for(size_t rank=1;rank<this->size;++rank)
+                {
+                    const layout<COORD> &inner = doms[rank].inner;
+                    MPI.Recv(addr,inner.items*sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD, status);
+                    target.load(inner,addr);
+                }
             }
+            
+            template <typename T>
+            inline void collect_send(const field<T,COORD>      &source) const
+            {
+                assert(cmem.size>=sizeof(T)*source.inner.items);
+                void                 *addr = cmem.data;
+                source.save(source.inner,addr);
+                MPI.Send(addr,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);
+            }
+            
             
         protected:
             cslot cmem;

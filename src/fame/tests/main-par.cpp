@@ -148,7 +148,7 @@ YOCTO_PROGRAM_START()
             }
 
 
-            MPI.Printf0(stderr, "\n\ncollect\n");
+            MPI.Printf0(stderr, "\n\ncollect 1D\n");
             if(MPI.IsFirst)
             {
                 field1d<float>             all("all",doms.whole);
@@ -163,7 +163,7 @@ YOCTO_PROGRAM_START()
             }
             else
             {
-                
+                doms.collect_send(F);
             }
             return 0;
         }
@@ -237,6 +237,9 @@ YOCTO_PROGRAM_START()
                 VTK::SaveScalars(fp, F.name + "_ini", F, F.outer);
                 xch.perform(G,F);
                 VTK::SaveScalars(fp, F.name + "_end", F, F.outer);
+                
+                
+                
 
             }
 
