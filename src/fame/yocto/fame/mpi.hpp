@@ -9,7 +9,7 @@ namespace yocto
 {
     namespace fame
     {
-
+        
         //______________________________________________________________________
         //
         //
@@ -22,9 +22,9 @@ namespace yocto
         public:
             YOCTO_FAME_DECL_COORD;
             const mpi &MPI;
-
+            
             inline virtual ~mpi_ghosts() throw() {}
-
+            
             inline explicit mpi_ghosts(const mpi &usr_mpi) :
             slots_of<ghosts_io>(DIMENSION),
             MPI(usr_mpi)
@@ -34,7 +34,7 @@ namespace yocto
                     this->push_back();
                 }
             }
-
+            
             //__________________________________________________________________
             //
             //
@@ -55,16 +55,16 @@ namespace yocto
                             const size_t num_bytes   = num_indices * block_size;
                             (*this)[dim].ensure(num_bytes);
                         } break;
-
+                            
                         case ghosts::empty:
                             break;
-
+                            
                         case ghosts::lcopy:
                             break;
                     }
                 }
             }
-
+            
             //__________________________________________________________________
             //
             //
@@ -76,8 +76,8 @@ namespace yocto
             {
                 this->prepare_for(G,fd.item_size);
             }
-
-
+            
+            
             //__________________________________________________________________
             //
             //
@@ -88,8 +88,8 @@ namespace yocto
             {
                 this->prepare_for(G,iof.block_size);
             }
-
-
+            
+            
             //__________________________________________________________________
             //
             //
@@ -100,8 +100,8 @@ namespace yocto
             inline void perform(const ghosts_of<COORD> &Ghosts,
                                 field<T,COORD>         &F )
             {
-
-
+                
+                
                 //______________________________________________________________
                 //
                 //
@@ -115,9 +115,9 @@ namespace yocto
                     const ghosts *g = Ghosts.lcopy[i];
                     ghosts_pair::exchange(F,*(g->prev),*(g->next));
                 }
-
-
-
+                
+                
+                
                 //______________________________________________________________
                 //
                 //
@@ -137,24 +137,24 @@ namespace yocto
                 {
                     for(size_t dim=0;dim<DIMENSION;++dim)
                     {
-
+                        
                         //______________________________________________________
                         //
                         // take the ghost
                         //______________________________________________________
                         const ghosts &g    = Ghosts[dim];
-
+                        
                         if(g.kind!=ghosts::async)
                         {
                             continue;
                         }
-
+                        
                         //______________________________________________________
                         //
                         // take the memory
                         //______________________________________________________
                         ghosts_io    &IO    = gIO[dim]; assert(IO.capacity>=g.size()*sizeof(T));
-
+                        
                         // analyze
                         switch(g.flag)
                         {
@@ -171,12 +171,12 @@ namespace yocto
                                         sendID = g.prev;
                                         recvID = g.next;
                                         break;
-
+                                        
                                     case 1:
                                         sendID = g.next;
                                         recvID = g.prev;
                                         break;
-
+                                        
                                     default:
                                         throw exception("corrupted code, invalid pass=%d",pass);
                                 }
@@ -186,7 +186,7 @@ namespace yocto
                                              MPI_COMM_WORLD, status);
                                 IO.save_from_recv(*recvID,F);
                             } break;
-
+                                
                                 //______________________________________________
                                 //
                                 // prev only
@@ -203,7 +203,7 @@ namespace yocto
                                     } break;
                                 }
                             } break;
-
+                                
                                 //______________________________________________
                                 //
                                 // next only
@@ -220,17 +220,17 @@ namespace yocto
                                     } break;
                                 }
                             } break;
-
+                                
                             default:
                                 throw exception("invalid ghosts flags!");
                         }
-
+                        
                     }
                 }
-
-
+                
+                
             }
-
+            
             //__________________________________________________________________
             //
             //
@@ -250,7 +250,7 @@ namespace yocto
                 //______________________________________________________________
                 const fields::iterator begin      = Fields.begin();
                 const size_t           num_fields = Fields.size();
-
+                
                 MPI.Printf(stderr,"stream.#lcopy=%u\n", unsigned(Ghosts.num_lcopy));
                 for(size_t i=0;i<Ghosts.num_lcopy;++i)
                 {
@@ -261,7 +261,7 @@ namespace yocto
                         ghosts_pair::stream_swap(**it, *(g->prev), *(g->next) );
                     }
                 }
-
+                
                 //______________________________________________________________
                 //
                 //
@@ -272,7 +272,7 @@ namespace yocto
                 //______________________________________________________________
                 slots_of<ghosts_io> &gIO = *this;
                 MPI_Status           status;
-
+                
                 //______________________________________________________________
                 //
                 // pass=0: send to prev, recv from next
@@ -282,22 +282,22 @@ namespace yocto
                 {
                     for(size_t dim=0;dim<DIMENSION;++dim)
                     {
-
+                        
                         //______________________________________________________
                         //
                         // take the ghost
                         //______________________________________________________
                         const ghosts &g    = Ghosts[dim];
-
+                        
                         if(g.kind!=ghosts::async)
                         {
                             continue;
                         }
-
+                        
                         // take the memory
                         ghosts_io    &IO    = gIO[dim]; assert(IO.capacity>=g.size()*Fields.block_size);
                         const size_t  nxch  = g.size() * Fields.block_size;
-
+                        
                         //______________________________________________________
                         //
                         // analyze
@@ -317,7 +317,7 @@ namespace yocto
                                         sendID = g.prev;
                                         recvID = g.next;
                                         break;
-
+                                        
                                     case 1:
                                         sendID = g.next;
                                         recvID = g.prev;
@@ -329,7 +329,7 @@ namespace yocto
                                              MPI_COMM_WORLD, status);
                                 IO.query_from_recv(*recvID,Fields);
                             } break;
-
+                                
                                 //______________________________________________
                                 //
                                 // prev only
@@ -342,14 +342,14 @@ namespace yocto
                                         IO.store_into_send(*g.prev,Fields);
                                         MPI.Send(IO.send_addr(), nxch, MPI_BYTE, g.prev->rank, 0, MPI_COMM_WORLD);
                                         break;
-
+                                        
                                     case 1:
                                         MPI.Recv(IO.recv_addr(),nxch,MPI_BYTE,g.prev->rank,0,MPI_COMM_WORLD,status);
                                         IO.query_from_recv(*g.prev,Fields);
                                         break;
                                 }
                             } break;
-
+                                
                                 //______________________________________________
                                 //
                                 // next only
@@ -368,32 +368,34 @@ namespace yocto
                                         break;
                                 }
                             } break;
-
+                                
                             default:
                                 throw exception("invalid ghosts flags!");
                         }
-
+                        
                     }
                 }
-
-
+                
+                
             }
-
-
+            
+            
             //__________________________________________________________________
-
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_ghosts);
         };
-
-
-
+        
+        
+        
         
         template <typename COORD>
         class mpi_domains : public domains<COORD>
         {
         public:
             YOCTO_FAME_DECL_COORD;
+            static const int tag = 1;
+            
             typedef layout<COORD> layout_type;
             
             const mpi &MPI;
@@ -412,106 +414,16 @@ namespace yocto
             }
             
             template <typename T>
-            void collect(typename       field_for<T,COORD>::type *target,
-                         const typename field_for<T,COORD>::type &source) const;
-            
-            
-            template <typename T>
-            void dispatch(const typename       field_for<T,COORD>::type *target,
-                          typename field_for<T,COORD>::type             &source) const;
+            inline void collect(field<T,COORD>       &target,
+                                const field<T,COORD> &source)
+            {
+                
+            }
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_domains);
         };
         
-#define YOCTO_FRAME_MPI_DOMS_CHECK0()             \
-assert(MPI.IsFirst);                              \
-assert(_target.self.rank==0);                     \
-assert( source.self.rank==0);                     \
-assert(_target.inner.contains(source.inner));     \
-assert( source.inner == doms[0].inner );          \
-assert(_target.inner == whole.inner )
-        
-#define YOCTO_FRAME_MPI_DOMS_CHECKN()             \
-assert(!MPI.IsFirst);                             \
-assert(source.self.rank==MPI.CommWorldRank);      \
-assert(source.inner==doms[source.self.rank].inner)
-        
-        template <> template <typename T> inline
-        void mpi_domains<coord1d>::  collect(typename field_for<T,coord1d>::type       *target,
-                                             const typename field_for<T,coord1d>::type &source) const
-        {
-            static const int        tag = 1;
-            const domains<coord1d> &doms = *this;
-            if(target)
-            {
-               
-                field1d<T> & _target = *target;
-                //______________________________________________________________
-                //
-                // sanity check
-                //______________________________________________________________
-                YOCTO_FRAME_MPI_DOMS_CHECK0();
-                
-                //______________________________________________________________
-                //
-                // locally copy source into target
-                //______________________________________________________________
-                for(coord1d i=source.inner.upper;i>=source.inner.lower;--i)
-                {
-                    _target[i] = source[i];
-                }
-                
-                //______________________________________________________________
-                //
-                // then receive from other
-                //______________________________________________________________
-                MPI_Status status;
-                const int size = MPI.CommWorldSize;
-                for(int rank=1;rank<size;++rank)
-                {
-                    const domain<coord1d> &dom = doms[rank];
-                    assert(target->inner.contains(dom.inner));
-                    void *tgt = & _target[dom.inner.lower];
-                    MPI.Recv(tgt, dom.inner.items * sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD, status);
-                }
-            }
-            else
-            {
-                //______________________________________________________________
-                //
-                // sanity check
-                //______________________________________________________________
-                YOCTO_FRAME_MPI_DOMS_CHECKN();
-                
-                //______________________________________________________________
-                //
-                // sending
-                //______________________________________________________________
-                const void *src = &source[source.inner.lower];
-                MPI.Send(src,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);
-            }
-            
-        }
-        
-        template <> template <typename T>
-        void mpi_domains<coord1d>:: dispatch(const typename       field_for<T,coord1d>::type *target,
-                                             typename field_for<T,coord1d>::type             &source) const
-        {
-            
-        }
-        
-        
-        struct mpi_ops
-        {
-            template <typename T> static inline
-            void collect(const mpi_domains<coord1d> &doms,
-                         field1d<T>                 *target,
-                         const field1d<T>           &source )
-            {
-                doms.collect<T>(target,source);
-            }
-        };
         
     }
 }
