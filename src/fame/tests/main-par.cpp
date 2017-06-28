@@ -162,7 +162,9 @@ YOCTO_PROGRAM_START()
                     VTK::SaveScalars(fp,F.name,all,all.inner);
                 }
             }
-            
+
+            doms.dispatch(all,F);
+
             return 0;
         }
 

@@ -457,6 +457,36 @@ namespace yocto
                 }
             }
 
+            template <typename T>
+            inline void dispatch(const field<T,COORD> &target,
+                                 field<T,COORD>       &source) const
+            {
+                assert(cmem.size>=sizeof(T)*source.inner.items);
+                void                 *addr = cmem.data;
+                if(MPI.IsFirst)
+                {
+                    // rank 0 exchange
+                    target.save(source.inner,addr);
+                    source.load(source.inner,addr);
+
+                    // send
+                    const domains<COORD> &doms = *this;
+                    for(size_t rank=1;rank<this->size;++rank)
+                    {
+                        const layout<COORD> &inner = doms[rank].inner;
+                        target.save(inner,addr);
+                        MPI.Send(addr,inner.items*sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD);
+                    }
+                }
+                else
+                {
+                    // recv
+                    MPI_Status status;
+                    MPI.Recv(addr,source.inner.items*sizeof(T),MPI_BYTE,0,tag,MPI_COMM_WORLD,status);
+                    source.load(source.inner,addr);
+                }
+            }
+
             
             
         protected:
