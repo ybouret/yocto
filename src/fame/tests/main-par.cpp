@@ -95,6 +95,62 @@ YOCTO_PROGRAM_START()
     {
         nmax = strconv::to_int(argv[1],"nmax");
     }
+
+
+    bool in1D = true;
+
+
+    if(in1D)
+    {
+        MPI.Printf0(stderr, "\n\n-------- IN 1D --------\n\n");
+        const layout<coord1d> full(1,nmax);
+        mpi_ghosts<coord1d>   mpi_xch(MPI);
+
+        if(true)
+        {
+            MPI.Printf0(stderr,"periodic\n");
+            const coord1d pbc = 1;
+            const mpi_domains<coord1d> doms(MPI,NULL,full,pbc);
+            const domain<coord1d>     &D = doms[MPI.CommWorldRank];
+            fields iof;
+            field1d<float>     &F1 = iof.record( new field1d<float>("F1",D,ng)  );
+            field1d<double>    &F2 = iof.record( new field1d<double>("F2",D,ng) );
+            field1d<short>     &F3 = iof.record( new field1d<short >("F3",D,ng)  );
+            ghosts_of<coord1d>        G(F1);
+            F1.ld(-(MPI.CommWorldRank+1));
+            F2.ld(+(MPI.CommWorldRank+1));
+            F3.ld(MPI.CommWorldRank+1);
+
+            mpi_xch.prepare_for(G,iof);
+            field1d<float> all1( "all1", doms.io_domain() );
+
+            {
+                const string  output = MPI.VTK_FileName("1d_x");
+                ios::wcstream fp(output);
+                VTK::InitSaveScalars(fp, "field1d", F1.name + "_ini", F1, F1.outer);
+                mpi_xch.perform(G,iof);
+                mpi_xch.perform(G,F2);
+                mpi_xch.perform(G,F3);
+                VTK::SaveScalars(fp, F1.name + "_end",F1,F1.outer);
+            }
+
+            doms.collect(all1,F1);
+            if(MPI.IsFirst)
+            {
+                const string output = vformat("1d_x_full.vtk");
+                ios::wcstream fp(output);
+                VTK::InitSaveScalars(fp,"field1d-all",all1.name,all1,all1.inner);
+            }
+
+
+
+        }
+
+    }
+
+
+    return 0;
+
     {
         MPI.Printf0(stderr, "\n\n-------- IN 1D --------\n\n");
         const layout<coord1d> full(1,nmax);

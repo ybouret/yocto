@@ -144,6 +144,17 @@ namespace yocto
                 OutputScalars<T,COORD>::Write(fp,F,L);
             }
 
+            template <typename T,typename COORD> static inline
+            void InitSaveScalars(ios::ostream &fp,
+                                 const string &title,
+                                 const string &label,
+                                 const field<T,COORD> &F,
+                                 const layout<COORD>  &L )
+            {
+                Header(fp,title);
+                StructuredPoints(fp,L);
+                SaveScalars(fp,label,F,L);
+            }
 
         };
 
