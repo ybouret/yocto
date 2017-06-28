@@ -385,7 +385,7 @@ namespace yocto
         };
         
         
-        
+        //! used to collect/dispatch fields
         template <typename COORD>
         class mpi_domains : public domains<COORD>
         {
@@ -395,8 +395,8 @@ namespace yocto
             
             typedef layout<COORD> layout_type;
             
-            const mpi &MPI;
-            
+            const mpi                &MPI;
+
             inline virtual ~mpi_domains() throw() {}
             inline explicit mpi_domains(const mpi         &user_mpi,
                                         const_coord       *user_cpus,
@@ -407,44 +407,62 @@ namespace yocto
                            user_full,
                            user_pbc),
             MPI(user_mpi),
-            cmem(this->max_items*4*sizeof(double))
+            cmem(this->max_items*4*sizeof(double)),
+            empty()
             {
                 MPI.Printf(stderr,"mpi_domains: memory=%u bytes\n", unsigned(cmem.size));
             }
-            
-            template <typename T>
-            inline void collect_recv(field<T,COORD>            &target,
-                                     const field<T,COORD>      &source) const
+
+            //! get the domain for I/O
+            inline const domain<COORD> & io_domain() const throw()
             {
-                assert(cmem.size>=sizeof(T)*source.inner.items);
-                const domains<COORD> &doms = *this;
-                void                 *addr = cmem.data;
-                source.save(source.inner,addr);
-                target.load(source.inner,addr);
-                
-                
-                MPI_Status status;
-                for(size_t rank=1;rank<this->size;++rank)
+                if(MPI.IsFirst)
                 {
-                    const layout<COORD> &inner = doms[rank].inner;
-                    MPI.Recv(addr,inner.items*sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD, status);
-                    target.load(inner,addr);
+                    return this->whole;
+                }
+                else
+                {
+                    return this->empty;
                 }
             }
-            
+
             template <typename T>
-            inline void collect_send(const field<T,COORD>      &source) const
+            inline void collect(field<T,COORD>            &target,
+                                const field<T,COORD>      &source) const
             {
                 assert(cmem.size>=sizeof(T)*source.inner.items);
                 void                 *addr = cmem.data;
-                source.save(source.inner,addr);
-                MPI.Send(addr,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);
+                if(MPI.IsFirst)
+                {
+                    // rank 0 exchange
+                    source.save(source.inner,addr);
+                    target.load(source.inner,addr);
+
+
+                    // receive
+                    MPI_Status            status;
+                    const domains<COORD> &doms = *this;
+                    for(size_t rank=1;rank<this->size;++rank)
+                    {
+                        const layout<COORD> &inner = doms[rank].inner;
+                        MPI.Recv(addr,inner.items*sizeof(T), MPI_BYTE, rank, tag, MPI_COMM_WORLD, status);
+                        target.load(inner,addr);
+                    }
+
+                }
+                else
+                {
+                    source.save(source.inner,addr);
+                    MPI.Send(addr,source.inner.items*sizeof(T), MPI_BYTE, 0, tag, MPI_COMM_WORLD);
+                }
             }
+
             
             
         protected:
-            cslot cmem;
-            
+            cslot                     cmem;
+            const empty_domain<COORD> empty;
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_domains);
         };

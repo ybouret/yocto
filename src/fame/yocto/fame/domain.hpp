@@ -312,26 +312,46 @@ namespace yocto
         private:
             YOCTO_DISABLE_ASSIGN(domain);
         };
-        
+
+
         template <typename COORD>
-        class full_domain : public domain<COORD>
+        class whole_domain : public domain<COORD>
         {
         public:
             YOCTO_FAME_DECL_COORD;
             
-            inline explicit full_domain(const layout<COORD> &user_full,
+            inline explicit whole_domain(const layout<COORD> &user_full,
                                         param_coord          user_pbc) :
             domain<COORD>(0,1,NULL,user_full,user_pbc)
             {
             }
             
-            inline virtual ~full_domain() throw() {}
+            inline virtual ~whole_domain() throw() {}
             
             
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(full_domain);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(whole_domain);
         };
-        
+
+        template <typename COORD>
+        class empty_domain : public domain<COORD>
+        {
+        public:
+            YOCTO_FAME_DECL_COORD;
+
+            inline explicit empty_domain() :
+            domain<COORD>(0,1,NULL,
+                          layout<COORD>(coord_data<COORD>::zero,coord_data<COORD>::zero),
+                          coord_data<COORD>::zero)
+            {
+            }
+
+            inline virtual ~empty_domain() throw() {}
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(empty_domain);
+        };
+
         
         struct domain_ops
         {

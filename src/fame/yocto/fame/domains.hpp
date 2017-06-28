@@ -20,8 +20,8 @@ namespace yocto
             typedef layout<COORD> layout_type;
 
             
-            const full_domain<COORD> whole;      //!< the full domain
-            const size_t             max_items;  //!< max inner items
+            const whole_domain<COORD> whole;      //!< the full domain
+            const size_t              max_items;  //!< max inner items
             
             inline virtual ~domains() throw()
             {

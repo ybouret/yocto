@@ -149,10 +149,11 @@ YOCTO_PROGRAM_START()
 
 
             MPI.Printf0(stderr, "\n\ncollect 1D\n");
+            field1d<float> all("all",doms.io_domain());
+            MPI.Printf(stderr,"all.items=%u\n", unsigned(all.inner.items));
+            doms.collect(all,F);
             if(MPI.IsFirst)
             {
-                field1d<float>             all("all",doms.whole);
-                doms.collect_recv(all,F);
                 {
                     const string  output   = "full1d_pbc.vtk";
                     ios::wcstream fp(output);
@@ -161,10 +162,7 @@ YOCTO_PROGRAM_START()
                     VTK::SaveScalars(fp,F.name,all,all.inner);
                 }
             }
-            else
-            {
-                doms.collect_send(F);
-            }
+            
             return 0;
         }
 
