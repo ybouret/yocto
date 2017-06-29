@@ -42,6 +42,22 @@ namespace yocto
         return (a<0) ? -a : a;
     }
 
+    template <typename U,typename T>
+    inline T on_sign_of( U value,  T if_neg, T if_zero, T if_pos )
+    {
+        if(value<0)
+        {
+            return if_neg;
+        }
+        else
+        {
+            if(0<value)
+                return if_pos;
+            else
+                return if_zero;
+        }
+    }
+
     //! integer hash
     uint32_t ihash32( uint32_t ) throw();
 
