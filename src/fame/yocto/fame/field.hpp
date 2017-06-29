@@ -108,7 +108,7 @@ namespace yocto
             inline virtual const void * __get(const coord1d offset_value) const throw()
             {
                 assert(offset_value>=0);
-                assert(offset_value<num_outer);
+                assert(offset_value<coord1d(num_outer));
                 return entry + offset_value;
             }
         };
