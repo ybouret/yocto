@@ -9,6 +9,8 @@ namespace yocto
 {
     namespace fame
     {
+
+        //! base class for any field
         class field_data : public counted_object
         {
         public:

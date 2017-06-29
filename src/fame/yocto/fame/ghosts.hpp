@@ -34,7 +34,7 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // FIELD base API
+            // FIELD based API
             //__________________________________________________________________
 
 
@@ -66,7 +66,7 @@ namespace yocto
 
             //! local exchange
             template <typename FIELD> static inline
-            void exchange( FIELD &F, const ghosts_pair &lhs, const ghosts_pair &rhs) throw()
+            void swap( FIELD &F, const ghosts_pair &lhs, const ghosts_pair &rhs) throw()
             {
                 assert(lhs.size==rhs.size);
                 for(size_t i=lhs.size;i>0;--i)
@@ -78,7 +78,7 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // field_data base API
+            // field_data based API
             //__________________________________________________________________
 
             //! load inner content into memory, to be sent
@@ -87,6 +87,7 @@ namespace yocto
             //! save (received) memory into outer content
             void stream_save( field_data &F, const uint8_t * &p ) const throw();
 
+            //! local exchange
             static
             void stream_swap( field_data &F,const ghosts_pair &lhs, const ghosts_pair &rhs) throw();
 

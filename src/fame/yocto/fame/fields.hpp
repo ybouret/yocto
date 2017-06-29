@@ -8,7 +8,8 @@ namespace yocto
 {
     namespace fame
     {
-        
+
+        //! database of fields, for multiple I/O
         class fields
         {
         public:

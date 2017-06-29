@@ -113,7 +113,7 @@ namespace yocto
                 for(size_t i=0;i<Ghosts.num_lcopy;++i)
                 {
                     const ghosts *g = Ghosts.lcopy[i];
-                    ghosts_pair::exchange(F,*(g->prev),*(g->next));
+                    ghosts_pair::swap(F,*(g->prev),*(g->next));
                 }
                 
                 

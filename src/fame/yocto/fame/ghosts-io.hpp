@@ -9,6 +9,7 @@ namespace yocto
     namespace fame
     {
 
+        //! memory and routines to transfer fields' ghosts
         class ghosts_io
         {
         public:
