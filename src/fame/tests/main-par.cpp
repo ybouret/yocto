@@ -134,8 +134,10 @@ void demo1d(const mpi             &MPI,
         const string output = prefix + "full.vtk";
         ios::wcstream fp(output);
         VTK::InitSaveScalars(fp,"field1d-all",all1.name,all1,all1.inner);
+        all1.ld(1);
     }
 
+    doms.dispatch(all1,F1);
 }
 
 static inline
@@ -189,8 +191,76 @@ void demo2d(const mpi             &MPI,
     {
         const string output = prefix + "full.vtk";
         ios::wcstream fp(output);
-        VTK::InitSaveScalars(fp,"field1d-all",all1.name,all1,all1.inner);
+        VTK::InitSaveScalars(fp,"field3d-all",all1.name,all1,all1.inner);
+        all1.ld(1);
     }
+    doms.dispatch(all1,F1);
+
+    
+}
+
+
+static inline
+void demo3d(const mpi             &MPI,
+            const layout<coord3d> &full,
+            const coord3d          pbc)
+{
+    mpi_ghosts<coord3d>   mpi_xch(MPI);
+    MPI.Printf0(stderr,"pbc=%d.%d.%d\n",int(pbc.x),int(pbc.y),int(pbc.z));
+    string prefix = "3d_";
+    if(pbc.x)
+    {
+        prefix << "x";
+    }
+
+    if(pbc.y)
+    {
+        prefix << "y";
+    }
+
+    if(pbc.z)
+    {
+        prefix << "z";
+    }
+
+    prefix << "_";
+
+    const mpi_domains<coord3d> doms(MPI,NULL,full,pbc);
+    const domain<coord3d>     &D = doms[MPI.CommWorldRank];
+    fields iof;
+    field3d<float>     &F1 = iof.record( new field3d<float >("F1",D,ng)  );
+    field3d<double>    &F2 = iof.record( new field3d<double>("F2",D,ng)  );
+    field3d<short>     &F3 = iof.record( new field3d<short >("F3",D,ng)  );
+    ghosts_of<coord3d>        G(F1);
+    F1.ld((MPI.CommWorldRank+1));
+    F2.ld((MPI.CommWorldRank+1));
+    F3.ld(MPI.CommWorldRank+1);
+    fill3d(F1,full);
+    fill3d(F2,full);
+
+    mpi_xch.prepare_for(G,iof);
+    field3d<float> all1( "all1", doms.io_domain() );
+
+    {
+        const string  output = MPI.VTK_FileName(prefix);
+        ios::wcstream fp(output);
+        VTK::InitSaveScalars(fp, "field3d", F1.name + "_ini", F1, F1.outer);
+        mpi_xch.perform(G,iof);
+        mpi_xch.perform(G,F2);
+        mpi_xch.perform(G,F3);
+        VTK::SaveScalars(fp, F1.name + "_end",F1,F1.outer);
+    }
+
+    doms.collect(all1,F1);
+    if(MPI.IsFirst)
+    {
+        const string output = prefix + "full.vtk";
+        ios::wcstream fp(output);
+        VTK::InitSaveScalars(fp,"field3d-all",all1.name,all1,all1.inner);
+        all1.ld(1);
+    }
+    doms.dispatch(all1,F1);
+    
     
 }
 
@@ -250,6 +320,18 @@ YOCTO_PROGRAM_START()
 
     }
     
+    if(true)
+    {
+        MPI.Printf0(stderr, "\n\n-------- IN 3D --------\n\n");
+        const layout<coord3d> full(coord3d(1,1,1),coord3d(nmax,nmax,nmax));
+
+        if(true)
+        {
+            demo3d(MPI, full,coord3d(1,1,1));
+        }
+
+
+    }
 
 
 

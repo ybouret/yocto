@@ -9,10 +9,6 @@ IF(MPI_FOUND)
 	ADD_EXECUTABLE(test-fame-par main-par.cpp)
 	TARGET_LINK_YOCTO( test-fame-par mk gfx fame png z mpi)
     TARGET_LINK_LIBRARIES( test-fame-par ${MPI_LIBRARIES})
-	
-	ADD_EXECUTABLE(test-fame-multi main-multi.cpp)
-	TARGET_LINK_YOCTO(test-fame-multi mk fame mpi)
-    TARGET_LINK_LIBRARIES( test-fame-multi ${MPI_LIBRARIES})
 ENDIF()
 
 ENABLE_TESTING()
@@ -22,4 +18,6 @@ ADD_TEST(Split    test-fame split)
 ADD_TEST(Domain   test-fame domain)
 ADD_TEST(Layouts  test-fame layouts)
 ADD_TEST(Field    test-fame field)
-ADD_TEST(Mesh     test-fame rmesh)
+ADD_TEST(RMesh    test-fame rmesh)
+ADD_TEST(CMesh    test-fame cmesh)
+ 
