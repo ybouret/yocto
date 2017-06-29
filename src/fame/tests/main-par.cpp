@@ -170,7 +170,7 @@ void demo2d(const mpi             &MPI,
     F3.ld(MPI.CommWorldRank+1);
     fill2d(F1,full);
     fill2d(F2,full);
-    
+
     mpi_xch.prepare_for(G,iof);
     field2d<float> all1( "all1", doms.io_domain() );
 
