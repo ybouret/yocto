@@ -202,7 +202,15 @@ namespace yocto
 
     void VisIt::Simulation:: on_step(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO)
     {
-        step(); // TODO: check args
+        // TODO: check args
+        if(args.size()>0)
+        {
+            step();
+        }
+        else
+        {
+            step();
+        }
         runMode = VISIT_SIMMODE_STOPPED;
     }
 
