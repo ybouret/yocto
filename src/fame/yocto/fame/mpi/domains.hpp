@@ -9,6 +9,32 @@ namespace yocto
     namespace fame
     {
 
+        template <typename COORD>
+        class mpi_domain : public domain<COORD>
+        {
+        public:
+            YOCTO_FAME_DECL_COORD;
+            inline explicit mpi_domain(const mpi           &MPI,
+                                       const_coord         *user_cpus,
+                                       const layout<COORD> &user_full,
+                                       param_coord          user_pbc) :
+            domain<COORD>(MPI.CommWorldRank,
+                          MPI.CommWorldSize,
+                          user_cpus,
+                          user_full,
+                          user_pbc)
+            {
+
+            }
+
+
+            inline virtual ~mpi_domain() throw() {}
+            
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_domain);
+        };
+
         //! used to collect/dispatch fields
         template <typename COORD>
         class mpi_domains : public domains<COORD>
@@ -130,9 +156,9 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_domains);
         };
         
-
+        
     }
-
+    
 }
 
 #endif

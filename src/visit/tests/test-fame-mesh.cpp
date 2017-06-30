@@ -225,7 +225,7 @@ private:
 
 #include "yocto/string/conv.hpp"
 
-YOCTO_UNIT_TEST_IMPL(fame_mesh)
+YOCTO_UNIT_TEST_IMPL(mesh)
 {
     const string sim_name = "fame_mesh";
     const string sim_comm = "testing mesh";
