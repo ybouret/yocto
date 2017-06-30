@@ -13,6 +13,11 @@ namespace yocto
         struct __visit
         {
 
+            //__________________________________________________________________
+            //
+            // Meshes API
+            //__________________________________________________________________
+
             template <typename QUAD_MESH> static inline
             void QuadMeshMetaData(visit_handle    &m,
                                   const QUAD_MESH &mesh)
@@ -29,6 +34,7 @@ namespace yocto
                 visit_handle m = VisIt::MeshMetaData_alloc();
                 QuadMeshMetaData(m,rmesh);
                 VisIt_MeshMetaData_setMeshType(m,VISIT_MESHTYPE_RECTILINEAR);
+                VisIt_MeshMetaData_setNumDomains(m,rmesh.full.size);
                 return m;
             }
 
@@ -82,6 +88,10 @@ namespace yocto
                 
             }
 
+            //__________________________________________________________________
+            //
+            // Variables API
+            //__________________________________________________________________
             template <typename T,typename COORD,typename MESH> static inline
             visit_handle VariableMetaData( const field<T,COORD> &F, const MESH &mesh )
             {
@@ -108,7 +118,40 @@ namespace yocto
                 return VisIt::VariableData_Set<T>(F.entry,F.num_outer);
             }
 
+            //__________________________________________________________________
+            //
+            // Curves API
+            //__________________________________________________________________
+            template <typename T> static inline
+            visit_handle CurveMetaData( const field1d<T> &curve )
+            {
+                visit_handle cmd = VisIt::CurveMetaData_alloc();
+                VisIt_CurveMetaData_setName(cmd, curve.name.c_str() );
+                return cmd;
+            }
+
+            template <typename T> static inline
+            visit_handle CurveData(const field1d<T> &axis,
+                                   const field1d<T> &curve )
+            {
+                assert(axis.outer.items==curve.outer.items);
+                visit_handle curv = VisIt::CurveData_alloc();
+                try
+                {
+                    visit_handle hx = VisIt::VariableData_Set(axis.entry,  axis.outer.items);
+                    visit_handle hy = VisIt::VariableData_Set(curve.entry,curve.outer.items);
+                    VisIt_CurveData_setCoordsXY(curv, hx, hy);
+                }
+                catch(...)
+                {
+                    VisIt::CurveData_free(curv);
+                    throw;
+                }
+                return curv;
+            }
+
             
+
         };
 
     }

@@ -195,6 +195,45 @@ namespace yocto
 
 namespace yocto
 {
+    visit_handle VisIt:: CurveMetaData_alloc()
+    {
+        visit_handle h = VISIT_INVALID_HANDLE;
+        if( VISIT_OKAY != VisIt_CurveMetaData_alloc(&h) )
+        {
+            throw exception("VisIt_CurveMetaData_alloc");
+        }
+        return h;
+    }
+
+    void VisIt:: CurveMetaData_free(visit_handle &h) throw()
+    {
+        VisIt_CurveMetaData_free(h);
+        h = VISIT_INVALID_HANDLE;
+    }
+}
+
+namespace yocto
+{
+    visit_handle VisIt:: CurveData_alloc()
+    {
+        visit_handle h = VISIT_INVALID_HANDLE;
+        if( VISIT_OKAY != VisIt_CurveData_alloc(&h) )
+        {
+            throw exception("VisIt_CurveData_alloc");
+        }
+        return h;
+    }
+
+    void VisIt:: CurveData_free(visit_handle &h) throw()
+    {
+        VisIt_CurveData_free(h);
+        h = VISIT_INVALID_HANDLE;
+    }
+}
+
+
+namespace yocto
+{
     visit_handle VisIt:: VariableMetaData_alloc()
     {
         visit_handle h = VISIT_INVALID_HANDLE;

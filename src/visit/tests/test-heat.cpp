@@ -2,9 +2,10 @@
 #include "yocto/fame/mesh/rectilinear.hpp"
 #include "yocto/fame/mpi/ghosts.hpp"
 #include "yocto/string/conv.hpp"
-#include "yocto/visit/interface.hpp"
 #include "yocto/fame/mpi/domains.hpp"
 #include "yocto/fame/fields.hpp"
+#include "yocto/fame/visit.hpp"
+#include "yocto/code/rand32.hpp"
 
 using namespace yocto;
 using namespace fame;
@@ -22,6 +23,8 @@ public:
     field1d<double>                 &A1;
     field1d<double>                 &B1;
     field1d<double>                  L1;
+    ghosts_of<coord1d>               G1;
+    mpi_ghosts<coord1d>              xch1;
 
     explicit Heat(VisIt &visit, const size_t Nx,const size_t Ny,const size_t Nz) :
     VisIt::Simulation(visit),
@@ -32,10 +35,68 @@ public:
     iof1(2),
     A1( iof1.record( new field1d<double>("A1",dom1,ng) ) ),
     B1( iof1.record( new field1d<double>("B1",dom1,ng) ) ),
-    L1("L1",dom1,0)
+    L1("L1",dom1,0),
+    G1(A1),
+    xch1(MPI)
     {
+        {
+            const box<double,coord1d> box1(0,1);
+            mesh1.map_to(box1);
+            xch1.prepare_for(G1,iof1);
+            reset1();
+        }
+
 
     }
+
+    virtual void setMetaData(visit_handle &md)
+    {
+        {
+            visit_handle curv1 = __visit::CurveMetaData(A1);
+            VisIt_SimulationMetaData_addCurve(md,curv1);
+        }
+
+        
+    }
+
+
+    virtual visit_handle getVariable(const int dom, const string &id)
+    {
+
+        
+
+        return VISIT_INVALID_HANDLE;
+    }
+
+    virtual visit_handle getCurve(const string &id)
+    {
+
+        if(id == A1.name )
+        {
+            return __visit::CurveData(mesh1[0],A1);
+        }
+
+        return VISIT_INVALID_HANDLE;
+    }
+
+
+    inline void reset1() 
+    {
+        const field1d<double> &X = mesh1[0];
+        for(coord1d i=dom1.inner.lower;i<=dom1.inner.upper;++i)
+        {
+            A1[i] = X[i]       + 0.2 * _rand.sym1<double>();
+            B1[i] = (1.0-X[i]) + 0.2 * _rand.sym1<double>();
+        }
+        xch1.perform(G1,iof1);
+    }
+
+    inline virtual void one_step()
+    {
+        MPI.Printf0(stderr,"heat one step\n");
+        reset1();
+    }
+
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Heat);
@@ -74,6 +135,7 @@ YOCTO_UNIT_TEST_IMPL(heat)
 
     Heat heat(visit,Nx,Ny,Nz);
 
+    heat.loop();
 
 }
 YOCTO_UNIT_TEST_DONE()

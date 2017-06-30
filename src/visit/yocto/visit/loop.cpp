@@ -148,6 +148,20 @@ namespace yocto
         return static_cast<VisIt::Simulation *>(addr)->getVariable(domain,variable_name);
     }
 
+    //__________________________________________________________________________
+    //
+    //
+    // Preparing Curves I/Io
+    //
+    //__________________________________________________________________________
+    static inline
+    visit_handle SimGetCurve(const char *name,void *addr)
+    {
+        assert(addr);
+        const string id = name;
+        return static_cast<VisIt::Simulation *>(addr)->getCurve(id);
+    }
+
 
     //__________________________________________________________________________
     //
@@ -416,6 +430,7 @@ namespace yocto
                         VisItSetGetMesh(SimGetMesh,this);
                         VisItSetGetVariable(SimGetVariable,this);
                         //VisItSetGetDomainBoundaries(SimGetDomainBoundaries,this);
+                        VisItSetGetCurve(SimGetCurve,this);
                     }
                     else
                     {

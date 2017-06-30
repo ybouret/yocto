@@ -106,4 +106,9 @@ namespace yocto
         return VISIT_INVALID_HANDLE;
     }
 
+    visit_handle VisIt:: Simulation:: getCurve(const string &id)
+    {
+        return VISIT_INVALID_HANDLE;
+    }
+
 }

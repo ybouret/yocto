@@ -130,6 +130,7 @@ namespace yocto
             virtual void         setMetaData(visit_handle &md);
             virtual visit_handle getMesh(const int domain, const string &mesh_name);
             virtual visit_handle getVariable(const int domain, const string &variable_name);
+            virtual visit_handle getCurve(const string &id);
 
         private:
 
@@ -170,6 +171,13 @@ namespace yocto
 
         template <typename T> static int getVariableType()          throw();
         template <typename T> static int getVariableNumComponents() throw();
+
+        static visit_handle CurveMetaData_alloc();
+        static void         CurveMetaData_free(visit_handle &) throw();
+
+        static visit_handle CurveData_alloc();
+        static void         CurveData_free(visit_handle &) throw();
+        
 
     };
 }

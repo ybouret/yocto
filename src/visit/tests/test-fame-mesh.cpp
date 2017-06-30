@@ -127,25 +127,25 @@ public:
     {
         {
             visit_handle m = __visit::MeshMetaData(mesh2p);
-            VisIt_MeshMetaData_setNumDomains(m,D2periodic.full.size);
+            //VisIt_MeshMetaData_setNumDomains(m,D2periodic.full.size);
             VisIt_SimulationMetaData_addMesh(md,m);
         }
         
         {
             visit_handle m = __visit::MeshMetaData(mesh2s);
-            VisIt_MeshMetaData_setNumDomains(m,D2straight.full.size);
+            //VisIt_MeshMetaData_setNumDomains(m,D2straight.full.size);
             VisIt_SimulationMetaData_addMesh(md,m);
         }
 
         {
             visit_handle m = __visit::MeshMetaData(mesh3p);
-            VisIt_MeshMetaData_setNumDomains(m,D3periodic.full.size);
+            //VisIt_MeshMetaData_setNumDomains(m,D3periodic.full.size);
             VisIt_SimulationMetaData_addMesh(md,m);
         }
 
         {
             visit_handle m = __visit::MeshMetaData(mesh3s);
-            VisIt_MeshMetaData_setNumDomains(m,D3straight.full.size);
+            //VisIt_MeshMetaData_setNumDomains(m,D3straight.full.size);
             VisIt_SimulationMetaData_addMesh(md,m);
         }
 
