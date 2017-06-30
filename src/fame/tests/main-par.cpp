@@ -1,6 +1,7 @@
 #include "yocto/fame/format/vtk.hpp"
 #include "yocto/program.hpp"
-#include "yocto/fame/mpi.hpp"
+#include "yocto/fame/mpi/ghosts.hpp"
+#include "yocto/fame/mpi/domains.hpp"
 
 using namespace yocto;
 using namespace fame;

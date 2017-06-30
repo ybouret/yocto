@@ -20,6 +20,12 @@ SET( format_srcs ${format_decl} ${format_impl} )
 SOURCE_GROUP( fame/format FILES ${format_srcs} )
 INSTALL( FILES ${format_decl} DESTINATION include/yocto/fame/format )
 
+FILE( GLOB mpi_decl yocto/fame/mpi/*.hpp )
+FILE( GLOB mpi_impl yocto/fame/mpi/*.cpp ) #empty
+SET( mpi_srcs ${mpi_decl} ${mpi_impl} )
+SOURCE_GROUP( fame/mpi FILES ${mpi_srcs} )
+INSTALL( FILES ${mpi_decl} DESTINATION include/yocto/fame/mpi )
+
 
 
 INCLUDE_DIRECTORIES( . ../yocto ../mk ../gfx ../mpi)
@@ -28,6 +34,7 @@ ADD_LIBRARY(y-fame STATIC
 ${srcs}
 ${mesh_srcs}
 ${format_srcs}
+${mpi_srcs}
 )
 
 INSTALL( TARGETS y-fame ARCHIVE DESTINATION lib )
