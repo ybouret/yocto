@@ -43,6 +43,7 @@ public:
 
     const mpi_domain<coord1d>        pdom;
     point_mesh<float,coord2d>        pmesh2s;
+    point_mesh<float,coord3d>        pmesh3s;
 
 
     virtual ~Sim() throw()
@@ -72,7 +73,8 @@ public:
     cmesh("cmesh",cdom,0),
     cmesh2p("cmesh2p",D2periodic,0),
     pdom(MPI,NULL,layout<coord1d>(full2d.lower.x,full2d.upper.x),0),
-    pmesh2s("pmesh2s",pdom,0)
+    pmesh2s("pmesh2s",pdom,0),
+    pmesh3s("pmesh3s",pdom,0)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -171,6 +173,10 @@ public:
             const float theta = float(i) * (10.0f*3.14f/180.f);
             pmesh2s[0][i] = theta * cos(theta);
             pmesh2s[1][i] = theta * sin(theta);
+
+            pmesh3s[0][i] = pmesh2s[0][i];
+            pmesh3s[1][i] = pmesh2s[1][i];
+            pmesh3s[2][i] = theta;
         }
 
     }
@@ -216,6 +222,10 @@ public:
             VisIt_SimulationMetaData_addMesh(md,m);
         }
 
+        {
+            visit_handle m = __visit::MeshMetaData(pmesh3s);
+            VisIt_SimulationMetaData_addMesh(md,m);
+        }
 
         {
             visit_handle vmd = __visit::VariableMetaData(f2p,mesh2p);
@@ -274,6 +284,11 @@ public:
         if( mesh_name == "pmesh2s" )
         {
             return __visit::MeshData(pmesh2s);
+        }
+
+        if( mesh_name == "pmesh3s" )
+        {
+            return __visit::MeshData(pmesh3s);
         }
 
         return VISIT_INVALID_HANDLE;
