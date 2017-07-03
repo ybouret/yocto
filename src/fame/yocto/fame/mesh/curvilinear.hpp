@@ -84,7 +84,6 @@ namespace yocto
                     const string coords_tag = this->name + "_" + coord_info::axis_name(dim);
                     hld. template append<const string&,const domain_type&,coord1d>(coords_tag,*this,num_ghosts);
                     assert(1+dim==hld.size);
-                    
                 }
             }
 

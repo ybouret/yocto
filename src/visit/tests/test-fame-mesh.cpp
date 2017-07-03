@@ -35,6 +35,9 @@ public:
 
 
 
+    curvilinear_mesh<float,coord3d> cmesh;
+
+
     virtual ~Sim() throw()
     {
     }
@@ -56,16 +59,17 @@ public:
     mesh3s("mesh3str",D3straight,1,B3),
     f2p("f2p",D2periodic,1),
     c2s("c2s",D2straight,ng_straight),
-    f3p("f3p",D3periodic,1)
+    f3p("f3p",D3periodic,1),
+    cmesh("cmesh",D3straight,0)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
                    int(mesh2p[1].outer.lower), int(mesh2p[1].outer.upper));
-        
+
         MPI.Printf(stderr,"mesh2s: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2s[0].outer.lower), int(mesh2s[0].outer.upper),
                    int(mesh2s[1].outer.lower), int(mesh2s[1].outer.upper));
-        
+
         mesh2p.map_to(B2p);
         MPI.Printf(stderr,"mesh2s: indices_x=%d->%d, indices_y=%d->%d\n",mesh2s.imin[0],mesh2s.imax[0],mesh2s.imin[1],mesh2s.imax[1]);
 
@@ -120,6 +124,21 @@ public:
 
         }
 
+#if 0
+        static float cmesh_x[2][3][4] = {
+            {{0.,1.,2.,3.},{0.,1.,2.,3.}, {0.,1.,2.,3.}},
+            {{0.,1.,2.,3.},{0.,1.,2.,3.}, {0.,1.,2.,3.}}
+        };
+        static  float cmesh_y[2][3][4] = {
+            {{0.5,0.,0.,0.5},{1.,1.,1.,1.}, {1.5,2.,2.,1.5}},
+            {{0.5,0.,0.,0.5},{1.,1.,1.,1.}, {1.5,2.,2.,1.5}}
+        };
+        static float cmesh_z[2][3][4] = {
+            {{0.,0.,0.,0.},{0.,0.,0.,0.},{0.,0.,0.,0.}},
+            {{1.,1.,1.,1.},{1.,1.,1.,1.},{1.,1.,1.,1.}}
+        };
+#endif
+
 
     }
 
@@ -127,25 +146,26 @@ public:
     {
         {
             visit_handle m = __visit::MeshMetaData(mesh2p);
-            //VisIt_MeshMetaData_setNumDomains(m,D2periodic.full.size);
             VisIt_SimulationMetaData_addMesh(md,m);
         }
-        
+
         {
             visit_handle m = __visit::MeshMetaData(mesh2s);
-            //VisIt_MeshMetaData_setNumDomains(m,D2straight.full.size);
             VisIt_SimulationMetaData_addMesh(md,m);
         }
 
         {
             visit_handle m = __visit::MeshMetaData(mesh3p);
-            //VisIt_MeshMetaData_setNumDomains(m,D3periodic.full.size);
             VisIt_SimulationMetaData_addMesh(md,m);
         }
 
         {
             visit_handle m = __visit::MeshMetaData(mesh3s);
-            //VisIt_MeshMetaData_setNumDomains(m,D3straight.full.size);
+            VisIt_SimulationMetaData_addMesh(md,m);
+        }
+
+        {
+            visit_handle m = __visit::MeshMetaData(cmesh);
             VisIt_SimulationMetaData_addMesh(md,m);
         }
 
@@ -165,16 +185,16 @@ public:
         }
 
     }
-    
+
     virtual visit_handle getMesh(const int     domain,
                                  const string &mesh_name)
     {
-        
+
         if( mesh_name == "mesh2periodic" )
         {
             return __visit::MeshData(mesh2p);
         }
-        
+
         if( mesh_name == "mesh2straight" )
         {
             return __visit::MeshData(mesh2s);
@@ -190,7 +210,11 @@ public:
             return __visit::MeshData(mesh3s);
         }
 
-        
+        if( mesh_name == "cmesh" )
+        {
+            return __visit::MeshData(cmesh);
+        }
+
         return VISIT_INVALID_HANDLE;
     }
 

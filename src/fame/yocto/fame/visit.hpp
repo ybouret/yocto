@@ -3,6 +3,7 @@
 
 #include "yocto/visit/interface.hpp"
 #include "yocto/fame/mesh/rectilinear.hpp"
+#include "yocto/fame/mesh/curvilinear.hpp"
 
 namespace yocto
 {
@@ -15,7 +16,9 @@ namespace yocto
 
             //__________________________________________________________________
             //
+            //
             // Meshes API
+            //
             //__________________________________________________________________
 
             template <typename QUAD_MESH> static inline
@@ -37,6 +40,18 @@ namespace yocto
                 VisIt_MeshMetaData_setNumDomains(m,rmesh.full.size);
                 return m;
             }
+
+            template <typename T,typename COORD>
+            static inline
+            visit_handle MeshMetaData( const curvilinear_mesh<T,COORD> &cmesh )
+            {
+                visit_handle m = VisIt::MeshMetaData_alloc();
+                QuadMeshMetaData(m,cmesh);
+                VisIt_MeshMetaData_setMeshType(m,VISIT_MESHTYPE_CURVILINEAR);
+                VisIt_MeshMetaData_setNumDomains(m,cmesh.full.size);
+                return m;
+            }
+
 
             template <typename T,typename COORD>
             static inline
@@ -62,11 +77,11 @@ namespace yocto
                         } break;
                             
                         case 3: {
-                            const field1d<T> &X = rmesh[0];
+                            const field1d<T> &X  = rmesh[0];
                             visit_handle      hx = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
-                            const field1d<T> &Y = rmesh[1];
+                            const field1d<T> &Y  = rmesh[1];
                             visit_handle      hy = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
-                            const field1d<T> &Z = rmesh[2];
+                            const field1d<T> &Z  = rmesh[2];
                             visit_handle      hz = VisIt::VariableData_Set<T>(Z.entry,Z.num_outer);
                             VisIt_RectilinearMesh_setCoordsXYZ(mesh,hx,hy,hz);
                             //VisIt_RectilinearMesh_setRealIndices(mesh,rmesh.imin,rmesh.imax);
@@ -85,7 +100,59 @@ namespace yocto
                 
                 assert(mesh!=VISIT_INVALID_HANDLE);
                 return mesh;
-                
+            }
+
+
+            template <typename T,typename COORD>
+            static inline
+            visit_handle MeshData( const curvilinear_mesh<T,COORD> &cmesh )
+            {
+                visit_handle mesh = VISIT_INVALID_HANDLE;
+                if(VISIT_OKAY!=VisIt_CurvilinearMesh_alloc(&mesh))
+                {
+                    throw exception("VisIt_RectilinearMesh_alloc");
+                }
+
+                try
+                {
+                    const layout<COORD> &outer = cmesh[0].outer;
+                    switch(cmesh.DIMENSION)
+                    {
+                        case 2 : {
+                            const field<T,COORD> &X       = cmesh[0];
+                            const field<T,COORD> &Y       = cmesh[1];
+                            visit_handle          hx      = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
+                            visit_handle          hy      = VisIt::VariableData_Set<T>(Y.entry,X.num_outer);
+                            int                   dims[4] = { outer.width.x, outer.width.y, 0, 0};
+                            assert(dims[0]*dims[1]==X.num_outer);
+                            VisIt_CurvilinearMesh_setCoordsXY(mesh, dims, hx, hy);
+                        } break;
+
+                        case 3: {
+                            const field<T,COORD> &X       = cmesh[0];
+                            const field<T,COORD> &Y       = cmesh[1];
+                            const field<T,COORD> &Z       = cmesh[2];
+                            visit_handle          hx      = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
+                            visit_handle          hy      = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
+                            visit_handle          hz      = VisIt::VariableData_Set<T>(Z.entry,Z.num_outer);
+                            int                   dims[4] = { outer.width.x, outer.width.y, outer.width.z,0 };
+                            assert(dims[0]*dims[1]*dims[2]==X.num_outer);
+                            VisIt_CurvilinearMesh_setCoordsXYZ(mesh, dims, hx, hy, hz);
+                        } break;
+
+                        default:
+                            throw exception("MeshData: invalid CurvilinearMesh::DIMENSION=%u", unsigned(cmesh.DIMENSION) );
+                    }
+                }
+                catch(...)
+                {
+                    VisIt_CurvilinearMesh_free(mesh);
+                    throw;
+                }
+
+                assert(mesh!=VISIT_INVALID_HANDLE);
+                return mesh;
+
             }
 
             //__________________________________________________________________
