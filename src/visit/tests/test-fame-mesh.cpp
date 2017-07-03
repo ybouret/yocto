@@ -1,4 +1,5 @@
 #include "yocto/fame/visit.hpp"
+#include "yocto/fame/mpi/domains.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
@@ -40,6 +41,7 @@ public:
 
     curvilinear_mesh<double,coord2d> cmesh2p;
 
+    const mpi_domain<coord1d>        pdom;
     point_mesh<float,coord2d>        pmesh2s;
 
 
@@ -69,7 +71,8 @@ public:
     cdom( clay, coord3d(0,0,0) ),
     cmesh("cmesh",cdom,0),
     cmesh2p("cmesh2p",D2periodic,0),
-    pmesh2s("pmesh2s",D2straight,0)
+    pdom(MPI,NULL,layout<coord1d>(full2d.lower.x,full2d.upper.x),0),
+    pmesh2s("pmesh2s",pdom,0)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
