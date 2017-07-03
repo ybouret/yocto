@@ -64,7 +64,26 @@ namespace yocto
             {
                 return slices[this->outer.lower.z];
             }
-            
+
+            virtual void for_each(const layout<coord3d> &sub, void (*proc)(type &,param_coord,void*), void *args)
+            {
+                assert(this->outer.contains(sub));
+                assert(proc);
+                for(coord1d k=sub.lower.z;k<=sub.upper.z;++k)
+                {
+                    slice &slice_k = (*this)[k];
+                    for(coord1d j=sub.lower.y;j<=sub.upper.y;++j)
+                    {
+                        row &row_j = slice_k[j];
+                        for(coord1d i=sub.lower.x;i<=sub.upper.x;++i)
+                        {
+                            proc(row_j[i],coord3d(i,j,k),args);
+                        }
+                    }
+                }
+            }
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field3d);
             slice *slices;
@@ -177,8 +196,7 @@ namespace yocto
                 }
             }
 
-            
-        };
+                  };
         
         
         template <typename T>

@@ -76,7 +76,7 @@ namespace yocto
             virtual void save(const layout_type &sub, void       *buf ) const throw() = 0;
             virtual void load(const layout_type &sub, const void *buf )       throw() = 0;
 
-
+            virtual void for_each(const layout_type &sub, void (*proc)(type &,param_coord,void*), void *args) = 0;
 
         protected:
             inline explicit field(const string      &fid,

@@ -80,6 +80,21 @@ namespace yocto
                 
             }
 
+            virtual void for_each(const layout<coord2d> &sub, void (*proc)(type &,param_coord,void*), void *args)
+            {
+                assert(this->outer.contains(sub));
+                assert(proc);
+                for(coord1d j=sub.lower.y;j<=sub.upper.y;++j)
+                {
+                    row &row_j = (*this)[j];
+                    for(coord1d i=sub.lower.x;i<=sub.upper.x;++i)
+                    {
+                        proc(row_j[i],coord2d(i,j),args);
+                    }
+                }
+            }
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field2d);
             row   *rows; //!< the rows
@@ -197,7 +212,7 @@ namespace yocto
                 }
             }
 
-            
+
         };
 
         template <typename T>

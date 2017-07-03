@@ -38,6 +38,8 @@ public:
     const whole_domain<coord3d>     cdom;
     curvilinear_mesh<float,coord3d> cmesh;
 
+    curvilinear_mesh<double,coord2d> cmesh2p;
+
 
     virtual ~Sim() throw()
     {
@@ -63,7 +65,8 @@ public:
     f3p("f3p",D3periodic,1),
     clay( coord3d(0,0,0), coord3d(4,3,2)-coord3d(1,1,1)),
     cdom( clay, coord3d(0,0,0) ),
-    cmesh("cmesh",cdom,0)
+    cmesh("cmesh",cdom,0),
+    cmesh2p("cmesh2p",D2periodic,0)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -80,6 +83,8 @@ public:
         MPI.Printf(stderr,"mesh3s: indices_x=%d->%d, indices_y=%d->%d, indices_z=%d->%d\n",mesh3s.imin[0],mesh3s.imax[0],mesh3s.imin[1],mesh3s.imax[1],mesh3s.imin[2],mesh3s.imax[2]);
 
 
+        cmesh2p.map_to(B2p);
+
         {
             const layout<coord2d> &outer = f2p.outer;
             for(coord1d j=outer.lower.y;j<=outer.upper.y;++j)
@@ -88,7 +93,7 @@ public:
                 for(coord1d i=outer.lower.x;i<=outer.upper.x;++i)
                 {
                     const float x = mesh2p[0][i];
-                    f2p[j][i]   = cos(6*((x-0.5)*(y-0.5)));
+                    f2p[j][i]   = cos(7*((x-0.5)*(y-0.5)));
 
                 }
             }
@@ -189,6 +194,13 @@ public:
         }
 
         {
+            visit_handle m = __visit::MeshMetaData(cmesh2p);
+            VisIt_SimulationMetaData_addMesh(md,m);
+        }
+
+
+
+        {
             visit_handle vmd = __visit::VariableMetaData(f2p,mesh2p);
             VisIt_SimulationMetaData_addVariable(md,vmd);
         }
@@ -235,6 +247,11 @@ public:
             {
                 return __visit::MeshData(cmesh);
             }
+        }
+
+        if( mesh_name == "cmesh2p" )
+        {
+            return __visit::MeshData(cmesh2p);
         }
 
         return VISIT_INVALID_HANDLE;

@@ -73,6 +73,15 @@ namespace yocto
                 return shift[C];
             }
 
+            virtual void for_each(const layout<coord1d> &sub, void (*proc)(type &,param_coord,void*), void *args)
+            {
+                assert(this->outer.contains(sub));
+                assert(proc);
+                for(coord1d i=sub.lower;i<=sub.upper;++i)
+                {
+                    proc(shift[i],i,args);
+                }
+            }
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field1d);
@@ -105,6 +114,7 @@ namespace yocto
             
             virtual void load(const layout<coord1d> &sub, const void *buf ) throw()
             {
+                assert(this->outer.contains(sub));
                 const uint8_t *p = (const uint8_t *)buf;
                 for(coord1d i=sub.lower;i<=sub.upper;++i)
                 {
@@ -113,6 +123,7 @@ namespace yocto
                 }
 
             }
+
 
         };
 

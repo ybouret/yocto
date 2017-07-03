@@ -2,7 +2,6 @@
 #define YOCTO_FAME_VISIT_INCLUDED 1
 
 #include "yocto/visit/interface.hpp"
-#include "yocto/fame/mesh/rectilinear.hpp"
 #include "yocto/fame/mesh/curvilinear.hpp"
 
 namespace yocto
@@ -115,7 +114,7 @@ namespace yocto
 
                 try
                 {
-                    const layout<COORD> &outer = cmesh[0].outer;
+                    const COORD width = cmesh[0].outer.width;
                     switch(cmesh.DIMENSION)
                     {
                         case 2 : {
@@ -123,7 +122,7 @@ namespace yocto
                             const field<T,COORD> &Y       = cmesh[1];
                             visit_handle          hx      = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
                             visit_handle          hy      = VisIt::VariableData_Set<T>(Y.entry,X.num_outer);
-                            int                   dims[4] = { outer.width.x, outer.width.y, 0, 0};
+                            int                   dims[4] = { __coord(width,0), __coord(width,1), 0, 0};
                             assert(dims[0]*dims[1]==X.num_outer);
                             VisIt_CurvilinearMesh_setCoordsXY(mesh, dims, hx, hy);
                         } break;
@@ -135,7 +134,7 @@ namespace yocto
                             visit_handle          hx      = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
                             visit_handle          hy      = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
                             visit_handle          hz      = VisIt::VariableData_Set<T>(Z.entry,Z.num_outer);
-                            int                   dims[4] = { outer.width.x, outer.width.y, outer.width.z,0 };
+                            int                   dims[4] = { __coord(width,0), __coord(width,1), __coord(width,2), 0};
                             assert(dims[0]*dims[1]*dims[2]==X.num_outer);
                             VisIt_CurvilinearMesh_setCoordsXYZ(mesh, dims, hx, hy, hz);
                         } break;

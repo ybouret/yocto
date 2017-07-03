@@ -1,7 +1,7 @@
 #ifndef YOCTO_FAME_MESH_CURVILINEAR_INCLUDED
 #define YOCTO_FAME_MESH_CURVILINEAR_INCLUDED 1
 
-#include "yocto/fame/mesh.hpp"
+#include "yocto/fame/mesh/rectilinear.hpp"
 #include "yocto/fame/layouts.hpp"
 
 namespace yocto
@@ -36,41 +36,23 @@ namespace yocto
             }
 
 
+            struct __map_info
+            {
+                const field1d<T> *axis;
+                size_t            dim;
+            };
+
             //! regular mapping
             template <typename U>
             inline void map_to(const box<U,COORD> &B) throw()
             {
-#if 0
-                const layout_type &f = this->full;
+                curvilinear_mesh<T,COORD>      &cmesh = *this;
+                const rectilinear_mesh<T,COORD> rmesh("rmesh",cmesh,cmesh[0].depth,B);
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
-                    coords_type   &a   = (*this)[dim];
-                    const coord1d ilo = __coord(f.lower,dim);
-                    const coord1d iup = __coord(f.upper,dim);
-                    const coord1d del = iup-ilo;
-                    const_type    l   = type(B.__lower()[dim]);
-                    const_type    w   = type(B.__width()[dim]);
-                    const_type    u   = type(B.__upper()[dim]);
-                    if(del<=0)
-                    {
-                        //const_type v = type( (u+l)/2 );
-                        //a[ilo] = (u+l)/2;
-                    }
-                    else
-                    {
-                        const coord1d ini = __coord(a.outer.lower,dim);
-                        const coord1d end = __coord(a.outer.upper,dim);
-                        for(coord1d i = ini; i <= end; ++i)
-                        {
-                            //const_type v = type(l + ( (i-ilo)*w )/del);
-                            for(size_t djm=0;djm<DIMENSION;++djm)
-                            {
-                                //(void)v;
-                            }
-                        }
-                    }
+                    __map_info params = { &rmesh[dim], dim };
+                    cmesh[dim].for_each(cmesh[dim].outer,transfer,&params);
                 }
-#endif
             }
 
 
@@ -85,6 +67,13 @@ namespace yocto
                     hld. template append<const string&,const domain_type&,coord1d>(coords_tag,*this,num_ghosts);
                     assert(1+dim==hld.size);
                 }
+            }
+
+            static inline void transfer(type &V, param_coord C, void *args)
+            {
+                __map_info       *params = static_cast<__map_info*>(args);
+                const field1d<T> &axis   = * (params->axis);
+                V = axis[ __coord(C,params->dim) ];
             }
 
         };
