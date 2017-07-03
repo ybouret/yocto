@@ -102,6 +102,7 @@ namespace yocto
             }
 
 
+            //! TODO, take care of ghosts...
             template <typename T,typename COORD>
             static inline
             visit_handle MeshData( const curvilinear_mesh<T,COORD> &cmesh )
