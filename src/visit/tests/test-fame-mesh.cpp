@@ -34,7 +34,8 @@ public:
     typedef box<double,coord3d>::vtx  v3d;
 
 
-
+    const layout<coord3d>           clay;
+    const whole_domain<coord3d>     cdom;
     curvilinear_mesh<float,coord3d> cmesh;
 
 
@@ -60,7 +61,9 @@ public:
     f2p("f2p",D2periodic,1),
     c2s("c2s",D2straight,ng_straight),
     f3p("f3p",D3periodic,1),
-    cmesh("cmesh",D3straight,0)
+    clay( coord3d(0,0,0), coord3d(4,3,2)-coord3d(1,1,1)),
+    cdom( clay, coord3d(0,0,0) ),
+    cmesh("cmesh",cdom,0)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -124,7 +127,7 @@ public:
 
         }
 
-#if 0
+#if 1
         static float cmesh_x[2][3][4] = {
             {{0.,1.,2.,3.},{0.,1.,2.,3.}, {0.,1.,2.,3.}},
             {{0.,1.,2.,3.},{0.,1.,2.,3.}, {0.,1.,2.,3.}}
@@ -137,6 +140,19 @@ public:
             {{0.,0.,0.,0.},{0.,0.,0.,0.},{0.,0.,0.,0.}},
             {{1.,1.,1.,1.},{1.,1.,1.,1.},{1.,1.,1.,1.}}
         };
+        for(int k=0;k<2;++k)
+        {
+            for(int j=0;j<3;++j)
+            {
+                for(int i=0;i<4;++i)
+                {
+                    cmesh[0][k][j][i] = cmesh_x[k][j][i];
+                    cmesh[1][k][j][i] = cmesh_y[k][j][i];
+                    cmesh[2][k][j][i] = cmesh_z[k][j][i];
+
+                }
+            }
+        }
 #endif
 
 
@@ -165,8 +181,11 @@ public:
         }
 
         {
-            visit_handle m = __visit::MeshMetaData(cmesh);
-            VisIt_SimulationMetaData_addMesh(md,m);
+            if(!MPI.IsParallel)
+            {
+                visit_handle m = __visit::MeshMetaData(cmesh);
+                VisIt_SimulationMetaData_addMesh(md,m);
+            }
         }
 
         {
@@ -210,9 +229,12 @@ public:
             return __visit::MeshData(mesh3s);
         }
 
-        if( mesh_name == "cmesh" )
+        if(!MPI.IsParallel)
         {
-            return __visit::MeshData(cmesh);
+            if( mesh_name == "cmesh" )
+            {
+                return __visit::MeshData(cmesh);
+            }
         }
 
         return VISIT_INVALID_HANDLE;
