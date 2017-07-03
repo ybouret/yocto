@@ -3,7 +3,7 @@
 
 #include "yocto/visit/interface.hpp"
 #include "yocto/fame/mesh/curvilinear.hpp"
-#include "yocto/fame/mesh/point.hpp"
+#include "yocto/fame/mesh/unstructured.hpp"
 
 namespace yocto
 {
@@ -11,6 +11,35 @@ namespace yocto
     namespace fame
     {
 
+        template <typename T,typename COORD, template <typename,typename> class MESH_TYPE>
+        struct __visit_mesh;
+        
+        template <typename T,typename COORD>
+        struct __visit_mesh<T,COORD,rectilinear_mesh>
+        {
+            static const int type = VISIT_MESHTYPE_RECTILINEAR;
+        };
+        
+        template <typename T,typename COORD>
+        struct __visit_mesh<T,COORD,curvilinear_mesh>
+        {
+            static const int type = VISIT_MESHTYPE_CURVILINEAR;
+        };
+
+        template <typename T,typename COORD>
+        struct __visit_mesh<T,COORD,point_mesh>
+        {
+            static const int type = VISIT_MESHTYPE_POINT;
+        };
+        
+        template <typename T,typename COORD>
+        struct __visit_mesh<T,COORD,unstructured_mesh>
+        {
+            static const int type = VISIT_MESHTYPE_UNSTRUCTURED;
+        };
+        
+
+        
         struct __visit
         {
 
@@ -21,50 +50,29 @@ namespace yocto
             //
             //__________________________________________________________________
 
-            template <typename QUAD_MESH> static inline
-            void QuadMeshMetaData(visit_handle    &m,
-                                  const QUAD_MESH &mesh)
+            template <typename T,typename COORD, template <typename,typename> class MESH_TYPE>
+            static inline
+            visit_handle MeshMetaData( const MESH_TYPE<T,COORD> &mesh )
             {
-                VisIt_MeshMetaData_setName(m, mesh.name.c_str() );
-                VisIt_MeshMetaData_setTopologicalDimension(m, QUAD_MESH::DIMENSION);
-                VisIt_MeshMetaData_setSpatialDimension(m,     QUAD_MESH::DIMENSION);
+                visit_handle m = VisIt::MeshMetaData_alloc();
+                try
+                {
+                    VisIt_MeshMetaData_setName(m, mesh.name.c_str() );
+                    VisIt_MeshMetaData_setTopologicalDimension(m, MESH_TYPE<T,COORD>::DIMENSION);
+                    VisIt_MeshMetaData_setSpatialDimension(m,     MESH_TYPE<T,COORD>::DIMENSION);
+                    VisIt_MeshMetaData_setMeshType(m,__visit_mesh<T,COORD,MESH_TYPE>::type );
+                    VisIt_MeshMetaData_setNumDomains(m,mesh.full.size);
+
+                }
+                catch(...)
+                {
+                    VisIt::MeshMetaData_free(m);
+                    throw;
+                }
+                return m;
             }
             
-            template <typename T,typename COORD>
-            static inline
-            visit_handle MeshMetaData( const rectilinear_mesh<T,COORD> &rmesh )
-            {
-                visit_handle m = VisIt::MeshMetaData_alloc();
-                QuadMeshMetaData(m,rmesh);
-                VisIt_MeshMetaData_setMeshType(m,VISIT_MESHTYPE_RECTILINEAR);
-                VisIt_MeshMetaData_setNumDomains(m,rmesh.full.size);
-                return m;
-            }
-
-            template <typename T,typename COORD>
-            static inline
-            visit_handle MeshMetaData( const curvilinear_mesh<T,COORD> &cmesh )
-            {
-                visit_handle m = VisIt::MeshMetaData_alloc();
-                QuadMeshMetaData(m,cmesh);
-                VisIt_MeshMetaData_setMeshType(m,VISIT_MESHTYPE_CURVILINEAR);
-                VisIt_MeshMetaData_setNumDomains(m,cmesh.full.size);
-                return m;
-            }
-
-            template <typename T,typename COORD>
-            static inline
-            visit_handle MeshMetaData( const point_mesh<T,COORD> &pmesh )
-            {
-                visit_handle m = VisIt::MeshMetaData_alloc();
-                QuadMeshMetaData(m,pmesh);
-                VisIt_MeshMetaData_setMeshType(m,VISIT_MESHTYPE_POINT);
-                VisIt_MeshMetaData_setNumDomains(m,pmesh.full.size);
-                return m;
-            }
-
-
-
+            
             template <typename T,typename COORD>
             static inline
             visit_handle MeshData( const rectilinear_mesh<T,COORD> &rmesh )
