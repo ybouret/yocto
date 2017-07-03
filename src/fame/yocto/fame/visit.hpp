@@ -3,6 +3,7 @@
 
 #include "yocto/visit/interface.hpp"
 #include "yocto/fame/mesh/curvilinear.hpp"
+#include "yocto/fame/mesh/point.hpp"
 
 namespace yocto
 {
@@ -50,6 +51,18 @@ namespace yocto
                 VisIt_MeshMetaData_setNumDomains(m,cmesh.full.size);
                 return m;
             }
+
+            template <typename T,typename COORD>
+            static inline
+            visit_handle MeshMetaData( const point_mesh<T,COORD> &pmesh )
+            {
+                visit_handle m = VisIt::MeshMetaData_alloc();
+                QuadMeshMetaData(m,pmesh);
+                VisIt_MeshMetaData_setMeshType(m,VISIT_MESHTYPE_POINT);
+                VisIt_MeshMetaData_setNumDomains(m,pmesh.full.size);
+                return m;
+            }
+
 
 
             template <typename T,typename COORD>
@@ -110,7 +123,7 @@ namespace yocto
                 visit_handle mesh = VISIT_INVALID_HANDLE;
                 if(VISIT_OKAY!=VisIt_CurvilinearMesh_alloc(&mesh))
                 {
-                    throw exception("VisIt_RectilinearMesh_alloc");
+                    throw exception("VisIt_CurvilinearMesh_alloc");
                 }
 
                 try
@@ -154,6 +167,55 @@ namespace yocto
                 return mesh;
 
             }
+
+            template <typename T,typename COORD>
+            static inline
+            visit_handle MeshData( const point_mesh<T,COORD> &rmesh )
+            {
+                visit_handle mesh = VISIT_INVALID_HANDLE;
+                if(VISIT_OKAY!=VisIt_PointMesh_alloc(&mesh))
+                {
+                    throw exception("VisIt_PointMesh_alloc");
+                }
+
+                try
+                {
+                    switch(rmesh.DIMENSION)
+                    {
+                        case 2: {
+                            const field1d<T> &X  = rmesh[0];
+                            visit_handle      hx = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
+                            const field1d<T> &Y  = rmesh[1];
+                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
+                            VisIt_PointMesh_setCoordsXY(mesh,hx,hy);
+                        } break;
+
+                        case 3: {
+                            const field1d<T> &X  = rmesh[0];
+                            visit_handle      hx = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
+                            const field1d<T> &Y  = rmesh[1];
+                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
+                            const field1d<T> &Z  = rmesh[2];
+                            visit_handle      hz = VisIt::VariableData_Set<T>(Z.entry,Z.num_outer);
+                            VisIt_PointMesh_setCoordsXYZ(mesh,hx,hy,hz);
+                            //VisIt_RectilinearMesh_setRealIndices(mesh,rmesh.imin,rmesh.imax);
+                        } break;
+
+                        default:
+                            throw exception("MeshData: invalid RectilinearMesh::DIMENSION=%u", unsigned(rmesh.DIMENSION) );
+                    }
+                }
+                catch(...)
+                {
+                    VisIt_PointMesh_free(mesh);
+                    throw;
+                }
+
+
+                assert(mesh!=VISIT_INVALID_HANDLE);
+                return mesh;
+            }
+
 
             //__________________________________________________________________
             //

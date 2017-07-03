@@ -40,6 +40,8 @@ public:
 
     curvilinear_mesh<double,coord2d> cmesh2p;
 
+    point_mesh<float,coord2d>        pmesh2s;
+
 
     virtual ~Sim() throw()
     {
@@ -66,7 +68,8 @@ public:
     clay( coord3d(0,0,0), coord3d(4,3,2)-coord3d(1,1,1)),
     cdom( clay, coord3d(0,0,0) ),
     cmesh("cmesh",cdom,0),
-    cmesh2p("cmesh2p",D2periodic,0)
+    cmesh2p("cmesh2p",D2periodic,0),
+    pmesh2s("pmesh2s",D2straight,0)
     {
         MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
                    int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
@@ -160,6 +163,12 @@ public:
         }
 #endif
 
+        for(coord1d i=pmesh2s[0].outer.lower;i<=pmesh2s[0].outer.upper;++i)
+        {
+            const float theta = float(i) * (10.0f*3.14f/180.f);
+            pmesh2s[0][i] = theta * cos(theta);
+            pmesh2s[1][i] = theta * sin(theta);
+        }
 
     }
 
@@ -198,6 +207,11 @@ public:
             VisIt_SimulationMetaData_addMesh(md,m);
         }
 
+
+        {
+            visit_handle m = __visit::MeshMetaData(pmesh2s);
+            VisIt_SimulationMetaData_addMesh(md,m);
+        }
 
 
         {
@@ -252,6 +266,11 @@ public:
         if( mesh_name == "cmesh2p" )
         {
             return __visit::MeshData(cmesh2p);
+        }
+
+        if( mesh_name == "pmesh2s" )
+        {
+            return __visit::MeshData(pmesh2s);
         }
 
         return VISIT_INVALID_HANDLE;
