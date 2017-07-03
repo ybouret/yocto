@@ -1,9 +1,11 @@
 #include "yocto/fame/visit.hpp"
 #include "yocto/fame/mpi/domains.hpp"
 #include "yocto/utest/run.hpp"
+//#include "yocto/math/types.hpp"
 
 using namespace yocto;
 using namespace fame;
+using namespace math;
 
 static const int ng_straight = 1;
 
@@ -171,8 +173,8 @@ public:
         for(coord1d i=pmesh2s[0].outer.lower;i<=pmesh2s[0].outer.upper;++i)
         {
             const float theta = float(i) * (10.0f*3.14f/180.f);
-            pmesh2s[0][i] = theta * cos(theta);
-            pmesh2s[1][i] = theta * sin(theta);
+            pmesh2s[0][i] = Log(1.0f+Fabs(theta) ) * cos(theta);
+            pmesh2s[1][i] = Log(1.0f+Fabs(theta) ) * sin(theta);
 
             pmesh3s[0][i] = pmesh2s[0][i];
             pmesh3s[1][i] = pmesh2s[1][i];
