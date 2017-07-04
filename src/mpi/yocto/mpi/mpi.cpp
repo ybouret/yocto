@@ -100,6 +100,7 @@ namespace yocto
     IsFirst(true),
     IsFinal(true),
     IsParallel(false),
+    IsSerial(true),
     CommTime(0),
 	ProcessorNameLength(0),
 	ProcessorName(),
@@ -135,6 +136,7 @@ namespace yocto
 			
 			(int  &) CommWorldLast = CommWorldSize - 1;
 			(bool &) IsParallel    = CommWorldSize > 1;
+            (bool &) IsSerial      = !IsParallel;
             
 			err = MPI_Comm_rank( MPI_COMM_WORLD, (int *) & CommWorldRank );
 			if( err != MPI_SUCCESS )

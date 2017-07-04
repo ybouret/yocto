@@ -11,7 +11,7 @@ namespace yocto
     //! thread unsafe
     inline void alea_init() throw() { _rand.wseed(); }
     
-	//! thread unsafe: float, double, uint32_t
+	//! thread unsafe: float, double, uint32_t, int
 	template <typename T> inline T    alea(void)    throw() { return _rand.get<T>(); }	
 
 	//! thread unsafe: integer type

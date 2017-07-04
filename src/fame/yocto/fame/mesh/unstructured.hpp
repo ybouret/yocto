@@ -20,7 +20,7 @@ namespace yocto
 #define FAME_CELL_POINT                  7
 #define FAME_CELL_POLYHEDRON             8
 
-        
+
         template <typename T,typename COORD>
         class unstructured_mesh : public point_mesh<T,COORD>
         {
@@ -31,8 +31,7 @@ namespace yocto
             typedef layout<COORD>          layout_type;
             typedef domain<coord1d>        domain_type;
             typedef field1d<T>             coords_type;
-            vector<int>                    connectivity;
-            
+
             inline virtual ~unstructured_mesh() throw() {}
             
             inline explicit unstructured_mesh(const string      &tag,
@@ -41,11 +40,21 @@ namespace yocto
             point_mesh<T,COORD>(tag,dom,num_ghosts)
             {
             }
+
+            inline int indx2conn(const coord1d indx) const throw()
+            {
+                assert( (*this)[0].outer.has(indx) );
+
+                return 0;
+            }
+
+        protected:
+            vector<int>                    connectivity;
             
 
-            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(unstructured_mesh);
+
         };
     }
 }

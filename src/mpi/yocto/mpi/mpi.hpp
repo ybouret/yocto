@@ -99,6 +99,7 @@ namespace yocto
         const bool       IsFirst;          //!< 0 == CommWorldRank
         const bool       IsFinal;          //!< CommWorldLast == CommWorldRank
         const bool       IsParallel;       //!< CommWorldSize > 1
+        const bool       IsSerial;         //!< !IsParallel
         mutable uint64_t CommTime;         //!< cumulative communication time in microseconds
         const int        ProcessorNameLength;
         const char       ProcessorName[MPI_MAX_PROCESSOR_NAME]; //!< from MPI_Get_Processor_name(...)

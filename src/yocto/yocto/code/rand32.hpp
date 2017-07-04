@@ -78,7 +78,7 @@ namespace yocto
 
 
         template <typename T>
-        T get() throw(); //!< valid for uin32_t, float, double
+        T get() throw(); //!< valid for uin32_t, float, double, int
 
         //! generate a pair of gaussian number
         void gaussian(double &u, double &v ) throw();

@@ -244,6 +244,7 @@ namespace yocto
         {
             MPI.Printf0(stderr, "calling <%s>\n", cmd.c_str());
             hook->cb(cmd,args);
+            sim.update();
         }
         else
         {

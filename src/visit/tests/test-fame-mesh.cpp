@@ -1,51 +1,140 @@
 #include "yocto/fame/visit.hpp"
 #include "yocto/fame/mpi/domains.hpp"
+#include "yocto/fame/mpi/ghosts.hpp"
+
 #include "yocto/utest/run.hpp"
-//#include "yocto/math/types.hpp"
+#include "yocto/code/rand.hpp"
 
 using namespace yocto;
 using namespace fame;
 using namespace math;
 
-static const int ng_straight = 1;
+static const int ng = 1;
 
 class Sim : public VisIt::Simulation
 {
 public:
-    const domain<coord2d> D2periodic;
-    const domain<coord2d> D2straight;
 
-    box<float,coord2d>                     B2p;
-    rectilinear_mesh<float,coord2d>        mesh2p;
+    //__________________________________________________________________________
+    //
+    //
+    // domains
+    //
+    //__________________________________________________________________________
+    const mpi_domain<coord1d> D1p;  //!< periodic
+    const mpi_domain<coord1d> D1s;  //!< straight
 
-    box<float,coord2d>                     B2s;
-    const rectilinear_mesh<double,coord2d> mesh2s;
+    const mpi_domain<coord2d> D2xy; //!< xy  periodic
+    const mpi_domain<coord2d> D2_x; //!< x   periodic
+    const mpi_domain<coord2d> D2_y; //!< y   periodic
+    const mpi_domain<coord2d> D2np; //!< not periodic
 
-    const domain<coord3d>                  D3periodic;
-    box<double,coord3d>                    B3;
-    const rectilinear_mesh<double,coord3d> mesh3p;
-
-    const domain<coord3d>                  D3straight;
-    const rectilinear_mesh<double,coord3d> mesh3s;
-
-    field2d<float>             f2p;
-    field2d< point2d<double> > c2s;
-
-    field3d<double>            f3p;
-
-    typedef box<float,coord2d>::vtx   v2f;
-    typedef box<double,coord3d>::vtx  v3d;
+    const mpi_domain<coord3d> D3xyz; //!< xyz  periodic
 
 
-    const layout<coord3d>           clay;
-    const whole_domain<coord3d>     cdom;
+    const mpi_domain<coord3d> D3_xy; //!< xy   periodic
+    const mpi_domain<coord3d> D3_xz; //!< xz   periodic
+    const mpi_domain<coord3d> D3_yz; //!< yz   periodic
+
+    const mpi_domain<coord3d> D3_x;  //!< x    periodic
+    const mpi_domain<coord3d> D3_y;  //!< y    periodic
+    const mpi_domain<coord3d> D3_z;  //!< z    periodic
+
+    const mpi_domain<coord3d> D3np;  //!< not  periodic
+
+    //__________________________________________________________________________
+    //
+    //
+    // meshes
+    //
+    //__________________________________________________________________________
+
+    // support boxes
+    const box<double,coord2d> box2;
+    const box<double,coord3d> box3;
+
+    //__________________________________________________________________________
+    //
+    // rectilinear 2d
+    //__________________________________________________________________________
+    rectilinear_mesh<float,coord2d> rmesh2xy;
+    rectilinear_mesh<float,coord2d> rmesh2_x;
+    rectilinear_mesh<float,coord2d> rmesh2_y;
+    rectilinear_mesh<float,coord2d> rmesh2np;
+
+    //__________________________________________________________________________
+    //
+    // curvilinear 2d
+    //__________________________________________________________________________
+    curvilinear_mesh<float,coord2d> cmesh2xy;
+    curvilinear_mesh<float,coord2d> cmesh2np;
+    const layout<coord3d>           sample_layout;
+    const domain<coord3d>           sample_domain;
     curvilinear_mesh<float,coord3d> cmesh;
 
-    curvilinear_mesh<double,coord2d> cmesh2p;
+    //__________________________________________________________________________
+    //
+    // point mesh 2d
+    //__________________________________________________________________________
+    point_mesh<double,coord2d> pmesh2p;
+    point_mesh<double,coord2d> pmesh2s;
 
-    const mpi_domain<coord1d>        pdom;
-    point_mesh<float,coord2d>        pmesh2s;
-    point_mesh<float,coord3d>        pmesh3s;
+
+    //__________________________________________________________________________
+    //
+    //
+    // mpi ops
+    //
+    //__________________________________________________________________________
+    ghosts_of<coord1d>  G1p;
+    ghosts_of<coord1d>  G1s;
+    mpi_ghosts<coord1d> xch1p;
+    mpi_ghosts<coord1d> xch1s;
+
+
+    template <typename T>
+    inline void reset( field2d<T> &F )
+    {
+        F.ld(MPI.CommWorldRank+1);
+        const layout<coord2d> &l = F.inner;
+        for(coord1d j=l.lower.y;j<=l.upper.y;++j)
+        {
+            for(coord1d i=l.lower.x;i<=l.upper.x;++i)
+            {
+                F[j][i] = alea<T>();
+            }
+        }
+    }
+
+    template <typename T>
+    inline void reset( field1d<T> &F )
+    {
+        F.ld(MPI.CommWorldRank+1);
+        const layout<coord1d> &l = F.inner;
+        for(coord1d i=l.lower;i<=l.upper;++i)
+        {
+            F[i] = alea<T>();
+        }
+    }
+
+    template <typename T>
+    inline void reset( field3d<T> &F )
+    {
+        F.ld(MPI.CommWorldRank+1);
+        const layout<coord3d> &l = F.inner;
+        for(coord1d k=l.lower.z;k<=l.upper.z;++k)
+        {
+            for(coord1d j=l.lower.y;j<=l.upper.y;++j)
+            {
+                for(coord1d i=l.lower.x;i<=l.upper.x;++i)
+                {
+                    F[k][j][i] = alea<T>();
+                }
+            }
+        }
+    }
+
+
 
 
     virtual ~Sim() throw()
@@ -53,95 +142,62 @@ public:
     }
 
     explicit Sim( VisIt                &visit,
+                 const layout<coord1d> &full1d,
                  const layout<coord2d> &full2d,
                  const layout<coord3d> &full3d) :
     VisIt::Simulation(visit),
-    D2periodic(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full2d,coord2d(1,1)),
-    D2straight(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full2d,coord2d(0,0)),
-    B2p( v2f(0,0),   v2f(1,1) ),
-    mesh2p("mesh2periodic",D2periodic,1),
-    B2s( v2f(0,0),   v2f(1,1) ),
-    mesh2s("mesh2straight",D2straight,ng_straight,B2s),
-    D3periodic(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full3d,coord3d(1,1,1)),
-    B3( v3d(0,0,0), v3d(1,1,1) ),
-    mesh3p("mesh3per",D3periodic,1,B3),
-    D3straight(MPI.CommWorldRank,MPI.CommWorldSize,NULL,full3d,coord3d(0,0,0)),
-    mesh3s("mesh3str",D3straight,1,B3),
-    f2p("f2p",D2periodic,1),
-    c2s("c2s",D2straight,ng_straight),
-    f3p("f3p",D3periodic,1),
-    clay( coord3d(0,0,0), coord3d(4,3,2)-coord3d(1,1,1)),
-    cdom( clay, coord3d(0,0,0) ),
-    cmesh("cmesh",cdom,0),
-    cmesh2p("cmesh2p",D2periodic,0),
-    pdom(MPI,NULL,layout<coord1d>(full2d.lower.x,full2d.upper.x),0),
-    pmesh2s("pmesh2s",pdom,0),
-    pmesh3s("pmesh3s",pdom,0)
+    D1p(MPI,NULL,full1d,1),
+    D1s(MPI,NULL,full1d,0),
+
+    D2xy(MPI,NULL,full2d,coord2d(1,1)),
+    D2_x(MPI,NULL,full2d,coord2d(1,0)),
+    D2_y(MPI,NULL,full2d,coord2d(0,1)),
+    D2np(MPI,NULL,full2d,coord2d(0,0)),
+
+    D3xyz(MPI,NULL,full3d,coord3d(1,1,1)),
+
+    D3_xy(MPI,NULL,full3d,coord3d(1,1,0)),
+    D3_xz(MPI,NULL,full3d,coord3d(1,0,1)),
+    D3_yz(MPI,NULL,full3d,coord3d(0,1,1)),
+
+    D3_x( MPI,NULL,full3d,coord3d(1,0,0)),
+    D3_y( MPI,NULL,full3d,coord3d(0,1,0)),
+    D3_z( MPI,NULL,full3d,coord3d(0,0,1)),
+
+    D3np( MPI,NULL,full3d,coord3d(0,0,0)),
+
+    box2( point2d<double>(0,0),   point2d<double>(1,1) ),
+    box3( point3d<double>(0,0,0), point3d<double>(1,1,1) ),
+
+    rmesh2xy("rmesh2xy",D2xy,ng,box2),
+    rmesh2_x("rmesh2_x",D2_x,ng,box2),
+    rmesh2_y("rmesh2_y",D2_y,ng,box2),
+    rmesh2np("rmesh2np",D2np,ng,box2),
+
+    cmesh2xy("cmesh2xy",D2xy,ng),
+    cmesh2np("cmesh2np",D2np,ng),
+
+    sample_layout(coord3d(0,0,0),coord3d(4,3,2)-coord3d(1,1,1)),
+    sample_domain(0,1,NULL,sample_layout,coord3d(0,0,0)),
+    cmesh("cmesh",sample_domain,0),
+
+    pmesh2p("pmesh2p",D1p,ng),
+    pmesh2s("pmesh2s",D1s,ng),
+
+    G1p( pmesh2p[0] ),
+    G1s( pmesh2s[0] ),
+
+    xch1p(MPI),
+    xch1s(MPI)
     {
-        MPI.Printf(stderr,"mesh2p: x@[%d:%d], y@[%d:%d]\n",
-                   int(mesh2p[0].outer.lower), int(mesh2p[0].outer.upper),
-                   int(mesh2p[1].outer.lower), int(mesh2p[1].outer.upper));
 
-        MPI.Printf(stderr,"mesh2s: x@[%d:%d], y@[%d:%d]\n",
-                   int(mesh2s[0].outer.lower), int(mesh2s[0].outer.upper),
-                   int(mesh2s[1].outer.lower), int(mesh2s[1].outer.upper));
+        addCommand("reset", this, & Sim::onReset,true);
 
-        mesh2p.map_to(B2p);
-        MPI.Printf(stderr,"mesh2s: indices_x=%d->%d, indices_y=%d->%d\n",mesh2s.imin[0],mesh2s.imax[0],mesh2s.imin[1],mesh2s.imax[1]);
-
-        MPI.Printf(stderr,"mesh3p: indices_x=%d->%d, indices_y=%d->%d, indices_z=%d->%d\n",mesh3p.imin[0],mesh3p.imax[0],mesh3p.imin[1],mesh3p.imax[1],mesh3p.imin[2],mesh3p.imax[2]);
-        MPI.Printf(stderr,"mesh3s: indices_x=%d->%d, indices_y=%d->%d, indices_z=%d->%d\n",mesh3s.imin[0],mesh3s.imax[0],mesh3s.imin[1],mesh3s.imax[1],mesh3s.imin[2],mesh3s.imax[2]);
+        xch1p.prepare_for(G1p,32);
+        xch1s.prepare_for(G1s,32);
 
 
-        cmesh2p.map_to(B2p);
 
-        {
-            const layout<coord2d> &outer = f2p.outer;
-            for(coord1d j=outer.lower.y;j<=outer.upper.y;++j)
-            {
-                const float y = mesh2p[1][j];
-                for(coord1d i=outer.lower.x;i<=outer.upper.x;++i)
-                {
-                    const float x = mesh2p[0][i];
-                    f2p[j][i]   = cos(7*((x-0.5)*(y-0.5)));
-
-                }
-            }
-        }
-
-        
-        if(true)
-        {
-            const layout<coord2d> &outer = c2s.outer;
-            for(coord1d j=outer.lower.y;j<=outer.upper.y;++j)
-            {
-                const float y = mesh2s[1][j];
-                for(coord1d i=outer.lower.x;i<=outer.upper.x;++i)
-                {
-                    const float x = mesh2s[0][i];
-                    c2s[j][i].x = cos(6*x);
-                    c2s[j][i].y = sin(6*y);
-                }
-            }
-        }
-
-        {
-            const layout<coord3d> &outer = f3p.outer;
-            for(coord1d k=outer.lower.z;k<=outer.upper.z;++k)
-            {
-                const float z = mesh3p[2][k];
-                for(coord1d j=outer.lower.y;j<=outer.upper.y;++j)
-                {
-                    const float y = mesh3p[1][j];
-                    for(coord1d i=outer.lower.x;i<=outer.upper.x;++i)
-                    {
-                        const float x = mesh3p[0][i];
-                        f3p[k][j][i] = exp( - 0.1 * (square_of(x-0.5)+square_of(y-0.5)+square_of(z-0.5) ) );
-                    }
-                }
-            }
-
-        }
 
 #if 1
         static float cmesh_x[2][3][4] = {
@@ -171,129 +227,69 @@ public:
         }
 #endif
 
-        for(coord1d i=pmesh2s[0].outer.lower;i<=pmesh2s[0].outer.upper;++i)
-        {
-            const float theta = float(i) * (10.0f*3.14f/180.f);
-            pmesh2s[0][i] = Log(1.0f+Fabs(theta) ) * cos(theta);
-            pmesh2s[1][i] = Log(1.0f+Fabs(theta) ) * sin(theta);
-
-            pmesh3s[0][i] = pmesh2s[0][i];
-            pmesh3s[1][i] = pmesh2s[1][i];
-            pmesh3s[2][i] = theta;
-        }
+        reset_all();
 
     }
+
+    inline void reset_all() throw()
+    {
+        MPI.Printf(stderr, "reset all\n");
+        reset( pmesh2p[0] );
+        reset( pmesh2p[1] );
+        reset( pmesh2s[0] );
+        reset( pmesh2s[1] );
+        exchange_all();
+    }
+
+    inline void exchange_all()
+    {
+        xch1p.perform(G1p,pmesh2p[0]);
+        xch1p.perform(G1p,pmesh2p[1]);
+
+        xch1s.perform(G1s,pmesh2s[0]);
+        xch1s.perform(G1s,pmesh2s[1]);
+
+    }
+
+#define __mesh_decl(NAME) do { VisIt_SimulationMetaData_addMesh(md,__visit::MeshMetaData(NAME)); } while(false)
 
     virtual void setMetaData(visit_handle &md)
     {
-        {
-            visit_handle m = __visit::MeshMetaData(mesh2p);
-            VisIt_SimulationMetaData_addMesh(md,m);
-        }
+        __mesh_decl(rmesh2xy);
+        __mesh_decl(rmesh2_x);
+        __mesh_decl(rmesh2_y);
+        __mesh_decl(rmesh2np);
+        __mesh_decl(cmesh2xy);
+        __mesh_decl(cmesh2np);
+        __mesh_decl(pmesh2p);
+        __mesh_decl(pmesh2s);
 
+        if(MPI.IsSerial)
         {
-            visit_handle m = __visit::MeshMetaData(mesh2s);
-            VisIt_SimulationMetaData_addMesh(md,m);
-        }
-
-        {
-            visit_handle m = __visit::MeshMetaData(mesh3p);
-            VisIt_SimulationMetaData_addMesh(md,m);
-        }
-
-        {
-            visit_handle m = __visit::MeshMetaData(mesh3s);
-            VisIt_SimulationMetaData_addMesh(md,m);
-        }
-
-        {
-            if(!MPI.IsParallel)
-            {
-                visit_handle m = __visit::MeshMetaData(cmesh);
-                VisIt_SimulationMetaData_addMesh(md,m);
-            }
-        }
-
-        {
-            visit_handle m = __visit::MeshMetaData(cmesh2p);
-            VisIt_SimulationMetaData_addMesh(md,m);
-        }
-
-
-        {
-            visit_handle m = __visit::MeshMetaData(pmesh2s);
-            VisIt_SimulationMetaData_addMesh(md,m);
-        }
-
-        {
-            visit_handle m = __visit::MeshMetaData(pmesh3s);
-            VisIt_SimulationMetaData_addMesh(md,m);
-        }
-
-        {
-            visit_handle vmd = __visit::VariableMetaData(f2p,mesh2p);
-            VisIt_SimulationMetaData_addVariable(md,vmd);
-        }
-
-        {
-            visit_handle vmd = __visit::VariableMetaData(c2s,mesh2s);
-            VisIt_SimulationMetaData_addVariable(md,vmd);
-        }
-
-        {
-            visit_handle vmd = __visit::VariableMetaData(f3p,mesh3p);
-            VisIt_SimulationMetaData_addVariable(md,vmd);
+            __mesh_decl(cmesh);
         }
 
     }
 
+#define __mesh_impl(NAME) do { if(#NAME==meshID) { return __visit::MeshData(NAME); } } while(false)
+
     virtual visit_handle getMesh(const int     domain,
-                                 const string &mesh_name)
+                                 const string &meshID)
     {
 
-        if( mesh_name == "mesh2periodic" )
-        {
-            return __visit::MeshData(mesh2p);
-        }
+        __mesh_impl(rmesh2xy);
+        __mesh_impl(rmesh2_x);
+        __mesh_impl(rmesh2_y);
+        __mesh_impl(rmesh2np);
+        __mesh_impl(cmesh2xy);
+        __mesh_impl(cmesh2np);
+        __mesh_impl(pmesh2p);
+        __mesh_impl(pmesh2s);
 
-        if( mesh_name == "mesh2straight" )
+        if(MPI.IsSerial)
         {
-            return __visit::MeshData(mesh2s);
+            __mesh_impl(cmesh);
         }
-
-        if( mesh_name == "mesh3per" )
-        {
-            return __visit::MeshData(mesh3p);
-        }
-
-        if( mesh_name == "mesh3str" )
-        {
-            return __visit::MeshData(mesh3s);
-        }
-
-        if(!MPI.IsParallel)
-        {
-            if( mesh_name == "cmesh" )
-            {
-                return __visit::MeshData(cmesh);
-            }
-        }
-
-        if( mesh_name == "cmesh2p" )
-        {
-            return __visit::MeshData(cmesh2p);
-        }
-
-        if( mesh_name == "pmesh2s" )
-        {
-            return __visit::MeshData(pmesh2s);
-        }
-
-        if( mesh_name == "pmesh3s" )
-        {
-            return __visit::MeshData(pmesh3s);
-        }
-
         return VISIT_INVALID_HANDLE;
     }
 
@@ -301,25 +297,14 @@ public:
     {
 
 
-        if( "f2p" == variable_name )
-        {
-            return __visit::VariableData(f2p);
-        }
-
-        if( "c2s" == variable_name )
-        {
-            return __visit::VariableData(c2s);
-        }
-
-        if( "f3p" == variable_name )
-        {
-            return __visit::VariableData(f3p);
-        }
-
-
-
-
         return VISIT_INVALID_HANDLE;
+    }
+
+
+    void onReset(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO)
+    {
+        //MPI.Printf(stderr,"===> %s\n", cmd.c_str() );
+        reset_all();
     }
 
 private:
@@ -357,14 +342,15 @@ YOCTO_UNIT_TEST_IMPL(mesh)
     {
         Nz = strconv::to_size(argv[3],"Nz");
     }
-
+    
+    const layout<coord1d> full1d(1,Nx);
     const layout<coord2d> full2d( coord2d(1,1),   coord2d(Nx,Ny)    );
     const layout<coord3d> full3d( coord3d(1,1,1), coord3d(Nx,Ny,Nz) );
-
-    Sim sim(visit,full2d,full3d);
-
+    
+    Sim sim(visit,full1d,full2d,full3d);
+    
     sim.loop();
-
-
+    
+    
 }
 YOCTO_UNIT_TEST_DONE()

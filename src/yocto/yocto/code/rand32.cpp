@@ -8,8 +8,8 @@ namespace yocto
 {
     namespace core
     {
-        
-        
+
+
 #define znew   (z=36969*(z&65535)+(z>>16))
 #define wnew   (w=18000*(w&65535)+(w>>16))
 #define MWC    ((znew<<16)+wnew )
@@ -22,7 +22,7 @@ namespace yocto
 #define UNI   (KISS*2.328306e-10)
 #define VNI   ((long) KISS)*4.656613e-10
 #define UC    (uint8_t)  /*a cast operation*/
-        
+
 #if 0
         typedef uint32_t UL;
         /*  Global static variables: */
@@ -37,7 +37,7 @@ namespace yocto
             for(i=0;i<256;i=i+1)  t[i]=KISS;
             c=0;
         }
-        
+
         /* This is a test main program.  It should compile and print 7  0's. */
         void test_rand32(void){
             int i; UL k;
@@ -52,9 +52,9 @@ namespace yocto
             settable(12345,65435,34221,12345,9983651,95746118);
         }
 #else
-        
-        
-        
+
+
+
         void rand32::test(void)
         {
             rand32 r;
@@ -69,9 +69,9 @@ namespace yocto
             for(i=1;i<1000001;i++){k=r.mwc()  ;} printf("%u\n", k- 904977562U);
             for(i=1;i<1000001;i++){k=r.fib()  ;} printf("%u\n", k-3519793928U);
         }
-        
+
 #if defined(_MSC_VER)
-		// init of t
+        // init of t
 #pragma warning ( disable : 4351 )
 #endif
         rand32:: rand32() throw() :
@@ -90,7 +90,7 @@ namespace yocto
             for(size_t i=0;i<256;++i)
                 t[i]=KISS;
         }
-        
+
         void rand32:: settable( uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4, uint32_t i5, uint32_t i6 ) throw()
         {
             z=i1;w=i2,jsr=i3; jcong=i4; a=i5; b=i6;
@@ -98,7 +98,7 @@ namespace yocto
                 t[i]=KISS;
             c=0;
         }
-        
+
         static inline
         uint32_t __ih32( uint32_t a)
         {
@@ -110,7 +110,7 @@ namespace yocto
             a = (a^0xb55a4f09) ^ (a>>16);
             return a;
         }
-        
+
         void rand32:: reset( uint32_t s ) throw()
         {
             uint32_t iv[6];
@@ -119,77 +119,84 @@ namespace yocto
                 iv[i] = __ih32( iv[i-1] );
             settable(iv[0], iv[1], iv[2], iv[3], iv[4], iv[5]);
         }
-        
+
         rand32:: ~rand32() throw()
         {
         }
-        
+
         uint32_t rand32:: mwc() throw()
         {
             return MWC;
         }
-        
+
         uint32_t rand32:: shr3() throw()
         {
             return SHR3;
         }
-        
+
         uint32_t rand32:: cong() throw()
         {
             return CONG;
         }
-        
+
         uint32_t rand32:: fib() throw()
         {
             return FIB;
         }
-        
+
         uint32_t rand32:: kiss() throw()
         {
             return KISS;
         }
-        
+
         uint32_t rand32:: lfib4() throw()
         {
             return LFIB4;
         }
-        
+
         uint32_t rand32:: swb() throw()
         {
             return SWB;
         }
-        
+
 #endif
     }
-    
+
     urand32::  urand32() throw() {}
     urand32:: ~urand32() throw() {}
-    
-    
-    
+
+
+
     template <>
     uint32_t urand32::get<uint32_t>() throw()
     {
         return next();
     }
-    
+
     template <>
     double urand32::get<double>() throw()
     {
         return core::rand32::to_double( next() );
     }
-    
+
     template <>
     float urand32::get<float>() throw()
     {
         return core::rand32::to_float( next() );
     }
-    
+
+    template <>
+    int urand32::get<int>() throw()
+    {
+        return full<int>();
+    }
+
+
     void urand32:: wseed() throw()
     {
         seed( wtime::seed() );
     }
-    
+
     void urand32:: gaussian(double &u, double &v) throw()
     {
         static const double two_pi = math::numeric<double>::two_pi;
@@ -199,7 +206,7 @@ namespace yocto
         const double l     = math::Log( x1 );
         const double theta = two_pi * x2;
         const double rho   = math::Sqrt( -(l+l) );
-        
+
         u = rho * sin( theta );
         v = rho * cos( theta );
     }
@@ -224,7 +231,7 @@ namespace yocto
             arr[i] *= fac;
         }
     }
-    
+
 
 }
 /*-----------------------------------------------------
@@ -301,3 +308,41 @@ namespace yocto
  which it fails badly, as do all lagged Fibonacci
  generators using +,- or xor. I would suggest
  combining SWB */
+
+
+#include "yocto/math/point2d.hpp"
+#include "yocto/math/point3d.hpp"
+
+
+namespace yocto
+{
+
+    template <>
+    point2d<float> urand32:: get< point2d<float> >() throw()
+    {
+        return point2d<float>::on_unit_circle(*this);
+    }
+
+    template <>
+    point2d<double> urand32:: get< point2d<double> >() throw()
+    {
+        return point2d<double>::on_unit_circle(*this);
+    }
+
+    template <>
+    point3d<float> urand32:: get< point3d<float> >() throw()
+    {
+        return point3d<float>::on_unit_sphere(*this);
+    }
+
+    template <>
+    point3d<double> urand32:: get< point3d<double> >() throw()
+    {
+        return point3d<double>::on_unit_sphere(*this);
+    }
+
+
+    
+    
+}
+
