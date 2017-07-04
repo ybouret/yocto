@@ -8,13 +8,29 @@ namespace yocto
 {
     namespace fame
     {
+
+
+#define FAME_CELL_BEAM                   0
+#define FAME_CELL_TRI                    1
+#define FAME_CELL_QUAD                   2
+#define FAME_CELL_TET                    3
+#define FAME_CELL_PYR                    4
+#define FAME_CELL_WEDGE                  5
+#define FAME_CELL_HEX                    6
+#define FAME_CELL_POINT                  7
+#define FAME_CELL_POLYHEDRON             8
+
+        
         template <typename T,typename COORD>
         class unstructured_mesh : public point_mesh<T,COORD>
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
             YOCTO_FAME_DECL_COORD;
-            
+
+
+
+
             typedef layout<COORD>          layout_type;
             typedef domain<coord1d>        domain_type;
             typedef field1d<T>             coords_type;
@@ -29,7 +45,7 @@ namespace yocto
             {
             }
             
-            
+
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(unstructured_mesh);

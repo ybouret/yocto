@@ -2,12 +2,13 @@
 #define YOCTO_FAME_MESH_POINT_INCLUDED 1
 
 #include "yocto/fame/mesh.hpp"
-#include "yocto/fame/layouts.hpp"
 
 namespace yocto
 {
     namespace fame
     {
+
+        //! a point mesh
         template <typename T,typename COORD>
         class point_mesh :
         public mesh_info,
