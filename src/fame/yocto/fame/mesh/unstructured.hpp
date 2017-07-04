@@ -28,9 +28,6 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
             YOCTO_FAME_DECL_COORD;
 
-
-
-
             typedef layout<COORD>          layout_type;
             typedef domain<coord1d>        domain_type;
             typedef field1d<T>             coords_type;
