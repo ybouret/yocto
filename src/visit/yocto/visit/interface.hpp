@@ -149,7 +149,7 @@ namespace yocto
         static visit_handle VariableData_alloc();
         static void         VariableData_free( visit_handle & ) throw();
 
-        //! specific to type: float,double,point2d<float>,point2d<double>?
+        //! specific to type: float,double,point2d<float>,point2d<double>,int
         template <typename T>
         static void VariableData_Set(visit_handle &h,const T *arr,const size_t nTuples);
 

@@ -37,7 +37,9 @@ namespace yocto
             inline explicit unstructured_mesh(const string      &tag,
                                               const domain_type &dom,
                                               const coord1d      num_ghosts) :
-            point_mesh<T,COORD>(tag,dom,num_ghosts)
+            point_mesh<T,COORD>(tag,dom,num_ghosts),
+            nCells(0),
+            connectivity()
             {
             }
 
@@ -45,12 +47,32 @@ namespace yocto
             {
                 assert( (*this)[0].outer.has(indx) );
 
-                return 0;
+                return indx-(*this)[0].outer.lower;
             }
 
+            inline void tri(const coord1d i0, const coord1d i1, const coord1d i2)
+            {
+                connectivity.push_back(FAME_CELL_TRI);
+                connectivity.push_back(indx2conn(i0));
+                connectivity.push_back(indx2conn(i1));
+                connectivity.push_back(indx2conn(i2));
+                ++nCells;
+            }
+
+            inline void point(coord1d i0)
+            {
+                connectivity.push_back(FAME_CELL_POINT);
+                connectivity.push_back(indx2conn(i0));
+                ++nCells;
+            }
+
+            inline int          num_cells()  const throw() { return nCells; }
+            inline const int   *conn_addr()  const throw() { return connectivity();      }
+            inline size_t       conn_size()  const throw() { return connectivity.size(); }
         protected:
-            vector<int>                    connectivity;
-            
+            int         nCells;
+            vector<int> connectivity;
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(unstructured_mesh);

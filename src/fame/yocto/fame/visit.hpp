@@ -178,7 +178,7 @@ namespace yocto
 
             template <typename T,typename COORD>
             static inline
-            visit_handle MeshData( const point_mesh<T,COORD> &rmesh )
+            visit_handle MeshData( const point_mesh<T,COORD> &pmesh )
             {
                 visit_handle mesh = VISIT_INVALID_HANDLE;
                 if(VISIT_OKAY!=VisIt_PointMesh_alloc(&mesh))
@@ -188,29 +188,29 @@ namespace yocto
 
                 try
                 {
-                    switch(rmesh.DIMENSION)
+                    switch(pmesh.DIMENSION)
                     {
                         case 2: {
-                            const field1d<T> &X  = rmesh[0];
+                            const field1d<T> &X  = pmesh[0];
                             visit_handle      hx = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
-                            const field1d<T> &Y  = rmesh[1];
+                            const field1d<T> &Y  = pmesh[1];
                             visit_handle      hy = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
                             VisIt_PointMesh_setCoordsXY(mesh,hx,hy);
                         } break;
 
                         case 3: {
-                            const field1d<T> &X  = rmesh[0];
+                            const field1d<T> &X  = pmesh[0];
                             visit_handle      hx = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
-                            const field1d<T> &Y  = rmesh[1];
+                            const field1d<T> &Y  = pmesh[1];
                             visit_handle      hy = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
-                            const field1d<T> &Z  = rmesh[2];
+                            const field1d<T> &Z  = pmesh[2];
                             visit_handle      hz = VisIt::VariableData_Set<T>(Z.entry,Z.num_outer);
                             VisIt_PointMesh_setCoordsXYZ(mesh,hx,hy,hz);
                             //VisIt_RectilinearMesh_setRealIndices(mesh,rmesh.imin,rmesh.imax);
                         } break;
 
                         default:
-                            throw exception("MeshData: invalid RectilinearMesh::DIMENSION=%u", unsigned(rmesh.DIMENSION) );
+                            throw exception("MeshData: invalid PointMesh::DIMENSION=%u", unsigned(pmesh.DIMENSION) );
                     }
                 }
                 catch(...)
@@ -223,6 +223,60 @@ namespace yocto
                 assert(mesh!=VISIT_INVALID_HANDLE);
                 return mesh;
             }
+
+
+            template <typename T,typename COORD>
+            static inline
+            visit_handle MeshData( const unstructured_mesh<T,COORD> &umesh )
+            {
+                visit_handle mesh = VISIT_INVALID_HANDLE;
+                if(VISIT_OKAY!=VisIt_UnstructuredMesh_alloc(&mesh))
+                {
+                    throw exception("VisIt_UnstructuredMesh_alloc");
+                }
+
+                try
+                {
+                    switch(umesh.DIMENSION)
+                    {
+                        case 2: {
+                            const field1d<T> &X  = umesh[0];
+                            visit_handle      hx = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
+                            const field1d<T> &Y  = umesh[1];
+                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
+                            VisIt_UnstructuredMesh_setCoordsXY(mesh,hx,hy);
+
+                        } break;
+
+                        case 3: {
+                            const field1d<T> &X  = umesh[0];
+                            visit_handle      hx = VisIt::VariableData_Set<T>(X.entry,X.num_outer);
+                            const field1d<T> &Y  = umesh[1];
+                            visit_handle      hy = VisIt::VariableData_Set<T>(Y.entry,Y.num_outer);
+                            const field1d<T> &Z  = umesh[2];
+                            visit_handle      hz = VisIt::VariableData_Set<T>(Z.entry,Z.num_outer);
+                            VisIt_UnstructuredMesh_setCoordsXYZ(mesh,hx,hy,hz);
+                        } break;
+
+                        default:
+                            throw exception("MeshData: invalid UnstructuredMesh::DIMENSION=%u", unsigned(umesh.DIMENSION) );
+                    }
+
+                    visit_handle      hc = VisIt::VariableData_Set<int>(umesh.conn_addr(),umesh.conn_size());
+                    VisIt_UnstructuredMesh_setConnectivity(mesh,umesh.num_cells(),hc);
+                }
+                catch(...)
+                {
+                    VisIt_UnstructuredMesh_free(mesh);
+                    throw;
+                }
+
+
+                assert(mesh!=VISIT_INVALID_HANDLE);
+                return mesh;
+            }
+            
+
 
 
             //__________________________________________________________________

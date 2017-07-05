@@ -114,6 +114,18 @@ namespace yocto
         h = VISIT_INVALID_HANDLE;
     }
 
+
+    template <>
+    void VisIt:: VariableData_Set<int>(visit_handle &h,
+                                       const int *arr,
+                                       const size_t nTuples)
+    {
+        if(VISIT_OKAY!=VisIt_VariableData_setDataI(h,VISIT_OWNER_SIM,1, nTuples, (int *)arr))
+        {
+            throw exception("VisIt_VariableData_setDataI");
+        }
+    }
+
     template <>
     void VisIt:: VariableData_Set<float>(visit_handle &h,
                                          const float *arr,
@@ -149,8 +161,8 @@ namespace yocto
 
     template <>
     void VisIt:: VariableData_Set< point2d<double> >(visit_handle         &h,
-                                                    const point2d<double> *arr,
-                                                    const size_t          nTuples)
+                                                     const point2d<double> *arr,
+                                                     const size_t          nTuples)
     {
         if(VISIT_OKAY!=VisIt_VariableData_setDataD(h,VISIT_OWNER_SIM,2, nTuples, (double *)arr))
         {
@@ -169,7 +181,7 @@ namespace yocto
         }
     }
 
-    
+
 }
 
 namespace yocto
@@ -264,9 +276,9 @@ namespace yocto
     template <>  int VisIt:: getVariableNumComponents< point3d<float> >() throw() { return 3; }
     template <>  int VisIt:: getVariableNumComponents< point2d<double> >() throw() { return 2; }
     template <>  int VisIt:: getVariableNumComponents< point3d<double> >() throw() { return 3; }
-
-
-
+    
+    
+    
 }
 
 
