@@ -66,7 +66,7 @@ namespace yocto
                 ++nCells;
             }
 
-            inline int          num_cells()  const throw() { return nCells; }
+            inline int          num_cells()  const throw() { return nCells;              }
             inline const int   *conn_addr()  const throw() { return connectivity();      }
             inline size_t       conn_size()  const throw() { return connectivity.size(); }
         protected:
