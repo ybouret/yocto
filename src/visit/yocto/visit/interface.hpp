@@ -96,7 +96,7 @@ namespace yocto
             virtual ~Simulation() throw();
             explicit Simulation( const VisIt &visit );
 
-            void loop();
+            void loop();           //!< event loop
             void update() throw(); //!< send visit signal to update
             void step();           //!< one_step and update
 
@@ -117,7 +117,7 @@ namespace yocto
                 addCommand(command_name,cb,ui);
             }
 
-
+            
             //! declare commands for UI
             void addGenericCommands(visit_handle &md) const;
 

@@ -82,21 +82,36 @@ public:
 
     //__________________________________________________________________________
     //
+    // 2D fields
+    //__________________________________________________________________________
+    fields                    f2;
+    field2d<double>          &A2xy;
+    field2d<point2d<float> > &B2xy;
+    field2d<float>            C2np;
+
+    //__________________________________________________________________________
+    //
     //
     // mpi ops
     //
     //__________________________________________________________________________
     ghosts_of<coord1d>  G1p;
     ghosts_of<coord1d>  G1s;
+
+    ghosts_of<coord2d>  G2xy;
+    ghosts_of<coord2d>  G2np;
+
     mpi_ghosts<coord1d> xch1p;
     mpi_ghosts<coord1d> xch1s;
+
+    mpi_ghosts<coord2d> xch2xy;
+    mpi_ghosts<coord2d> xch2np;
 
 
     template <typename T>
     inline void reset( field2d<T> &F )
     {
-        F.ld(MPI.CommWorldRank+1);
-        const layout<coord2d> &l = F.inner;
+        const layout<coord2d> &l = F.outer;
         for(coord1d j=l.lower.y;j<=l.upper.y;++j)
         {
             for(coord1d i=l.lower.x;i<=l.upper.x;++i)
@@ -109,8 +124,7 @@ public:
     template <typename T>
     inline void reset( field1d<T> &F )
     {
-        F.ld(MPI.CommWorldRank+1);
-        const layout<coord1d> &l = F.inner;
+        const layout<coord1d> &l = F.outer;
         for(coord1d i=l.lower;i<=l.upper;++i)
         {
             F[i] = alea<T>();
@@ -120,8 +134,7 @@ public:
     template <typename T>
     inline void reset( field3d<T> &F )
     {
-        F.ld(MPI.CommWorldRank+1);
-        const layout<coord3d> &l = F.inner;
+        const layout<coord3d> &l = F.outer;
         for(coord1d k=l.lower.z;k<=l.upper.z;++k)
         {
             for(coord1d j=l.lower.y;j<=l.upper.y;++j)
@@ -184,18 +197,40 @@ public:
     pmesh2p("pmesh2p",D1p,ng),
     pmesh2s("pmesh2s",D1s,ng),
 
+    f2(),
+    A2xy( f2.record( new field2d<double>("A2xy",D2xy,ng) ) ),
+    B2xy( f2.record( new field2d<point2d<float> >("B2xy",D2xy,ng) ) ),
+    C2np( "C2np",D2np,ng),
     G1p( pmesh2p[0] ),
     G1s( pmesh2s[0] ),
 
+    G2xy( A2xy ),
+    G2np( C2np ),
+
     xch1p(MPI),
-    xch1s(MPI)
+    xch1s(MPI),
+    xch2xy(MPI),
+    xch2np(MPI)
     {
 
         addCommand("reset", this, & Sim::onReset,true);
+        addCommand("xch",this, & Sim::onExchange,true);
 
         xch1p.prepare_for(G1p,32);
         xch1s.prepare_for(G1s,32);
 
+        xch2xy.prepare_for(G2xy,f2);
+        xch2np.prepare_for(G2np,C2np);
+
+        {
+            const layout<coord2d> &l = C2np.inner;
+            MPI.Printf(stderr,"np2d_inner: x:%ld->%ld, y:%ld->%ld\n", l.lower.x, l.upper.x, l.lower.y, l.upper.y);
+        }
+
+        {
+            const layout<coord2d> &l = C2np.outer;
+            MPI.Printf(stderr,"np2d_outer: x:%ld->%ld, y:%ld->%ld\n", l.lower.x, l.upper.x, l.lower.y, l.upper.y);
+        }
 
 
 
@@ -238,7 +273,11 @@ public:
         reset( pmesh2p[1] );
         reset( pmesh2s[0] );
         reset( pmesh2s[1] );
-        exchange_all();
+
+        reset(A2xy);
+        reset(B2xy);
+        reset(C2np);
+        //exchange_all();
     }
 
     inline void exchange_all()
@@ -249,9 +288,15 @@ public:
         xch1s.perform(G1s,pmesh2s[0]);
         xch1s.perform(G1s,pmesh2s[1]);
 
+        xch2xy.perform(G2xy,f2);
+        xch2np.perform(G2np,C2np);
+
     }
 
 #define __mesh_decl(NAME) do { VisIt_SimulationMetaData_addMesh(md,__visit::MeshMetaData(NAME)); } while(false)
+#define __field_decl(NAME,MESH) do {\
+VisIt_SimulationMetaData_addVariable(md,__visit::VariableMetaData(NAME,MESH)); \
+} while(false)
 
     virtual void setMetaData(visit_handle &md)
     {
@@ -269,6 +314,9 @@ public:
             __mesh_decl(cmesh);
         }
 
+        __field_decl(A2xy,rmesh2xy);
+        __field_decl(B2xy,rmesh2xy);
+        __field_decl(C2np,rmesh2np);
     }
 
 #define __mesh_impl(NAME) do { if(#NAME==meshID) { return __visit::MeshData(NAME); } } while(false)
@@ -293,10 +341,14 @@ public:
         return VISIT_INVALID_HANDLE;
     }
 
-    virtual visit_handle getVariable(const int domain, const string &variable_name)
+#define __field_impl(NAME) do { if(#NAME==id) { return __visit::VariableData(NAME); } } while(false)
+
+    virtual visit_handle getVariable(const int domain, const string &id)
     {
 
-
+        __field_impl(A2xy);
+        __field_impl(B2xy);
+        __field_impl(C2np);
         return VISIT_INVALID_HANDLE;
     }
 
@@ -306,6 +358,13 @@ public:
         //MPI.Printf(stderr,"===> %s\n", cmd.c_str() );
         reset_all();
     }
+
+    void onExchange(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO)
+    {
+        //MPI.Printf(stderr,"===> %s\n", cmd.c_str() );
+        exchange_all();
+    }
+
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Sim);
