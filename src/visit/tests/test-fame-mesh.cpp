@@ -71,6 +71,7 @@ public:
     const layout<coord3d>           sample_layout;
     const domain<coord3d>           sample_domain;
     curvilinear_mesh<float,coord3d> cmesh;
+    field3d<double>                 cfield;
 
     //__________________________________________________________________________
     //
@@ -78,6 +79,11 @@ public:
     //__________________________________________________________________________
     point_mesh<double,coord2d> pmesh2p;
     point_mesh<double,coord2d> pmesh2s;
+
+    //__________________________________________________________________________
+    //
+    // point mesh 2d
+    //__________________________________________________________________________
 
     point_mesh<float,coord3d> pmesh3p;
     point_mesh<float,coord3d> pmesh3s;
@@ -97,6 +103,8 @@ public:
     //
     // point mesh fields
     //__________________________________________________________________________
+    field1d< point2d<double> > pf2d;
+
 
     //__________________________________________________________________________
     //
@@ -202,6 +210,7 @@ public:
     sample_layout(coord3d(0,0,0),coord3d(4,3,2)-coord3d(1,1,1)),
     sample_domain(0,1,NULL,sample_layout,coord3d(0,0,0)),
     cmesh("cmesh",sample_domain,0),
+    cfield("cfield",sample_domain,0),
 
     pmesh2p("pmesh2p",D1p,ng),
     pmesh2s("pmesh2s",D1s,ng),
@@ -213,6 +222,9 @@ public:
     A2xy( f2.record( new field2d<double>("A2xy",D2xy,ng) ) ),
     B2xy( f2.record( new field2d<point2d<float> >("B2xy",D2xy,ng) ) ),
     C2np( "C2np",D2np,ng),
+
+    pf2d( "pf2d", D1p, ng ),
+
     G1p( pmesh2p[0] ),
     G1s( pmesh2s[0] ),
 
@@ -225,8 +237,8 @@ public:
     xch2np(MPI)
     {
 
-        addCommand("reset", this, & Sim::onReset,true);
-        addCommand("xch",this, & Sim::onExchange,true);
+        addCommand("reset", this, & Sim::onReset,   true);
+        addCommand("xch",   this, & Sim::onExchange,true);
 
         xch1p.prepare_for(G1p,32);
         xch1s.prepare_for(G1s,32);
@@ -320,9 +332,13 @@ public:
         reset( pmesh3s[1] );
         reset( pmesh3s[2] );
 
+        reset(cfield);
+
         reset(A2xy);
         reset(B2xy);
         reset(C2np);
+
+        reset(pf2d);
         //exchange_all();
     }
 
@@ -341,6 +357,8 @@ public:
         xch1p.perform(G1s,pmesh3s[0]);
         xch1p.perform(G1s,pmesh3s[1]);
         xch1p.perform(G1s,pmesh3s[2]);
+
+        xch1p.perform(G1p,pf2d);
 
         xch2xy.perform(G2xy,f2);
         xch2np.perform(G2np,C2np);
@@ -370,11 +388,14 @@ VisIt_SimulationMetaData_addVariable(md,__visit::VariableMetaData(NAME,MESH)); \
         if(MPI.IsSerial)
         {
             __mesh_decl(cmesh);
+            __field_decl(cfield,cmesh);
         }
 
         __field_decl(A2xy,rmesh2xy);
         __field_decl(B2xy,rmesh2xy);
         __field_decl(C2np,rmesh2np);
+
+        __field_decl(pf2d,pmesh2p);
     }
 
 #define __mesh_impl(NAME) do { if(#NAME==meshID) { return __visit::MeshData(NAME); } } while(false)
@@ -410,19 +431,24 @@ VisIt_SimulationMetaData_addVariable(md,__visit::VariableMetaData(NAME,MESH)); \
         __field_impl(A2xy);
         __field_impl(B2xy);
         __field_impl(C2np);
+        __field_impl(pf2d);
+
+        if(MPI.IsSerial)
+        {
+            __field_impl(cfield);
+        }
+
         return VISIT_INVALID_HANDLE;
     }
 
 
-    void onReset(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO)
+    void onReset(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO) throw()
     {
-        //MPI.Printf(stderr,"===> %s\n", cmd.c_str() );
         reset_all();
     }
 
     void onExchange(YOCTO_VISIT_SIMULATION_CALLBACK_PROTO)
     {
-        //MPI.Printf(stderr,"===> %s\n", cmd.c_str() );
         exchange_all();
     }
 

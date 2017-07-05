@@ -258,7 +258,32 @@ namespace yocto {
 			}
 			assert( i == z.size() );
 		}
-		
+
+        template <typename SEQ_BINS, typename SEQ_HIST> inline
+        typename SEQ_BINS::type histogram_mode( const SEQ_BINS &bins, const SEQ_HIST &hist)
+        {
+            assert(bins.size()>0);
+            assert(hist.size()==bins.size());
+
+            typename       SEQ_BINS::const_iterator b = bins.begin();
+            typename       SEQ_HIST::const_iterator h = hist.begin();
+            const typename SEQ_BINS::const_iterator d = bins.end();
+
+            typename SEQ_BINS::type bmax = *b;
+            typename SEQ_HIST::type hmax = *h;
+
+            for(++b,++h;b!=d;++b,++h)
+            {
+                const typename SEQ_HIST::type htmp = *h;
+                if(htmp>hmax)
+                {
+                    hmax = htmp;
+                    bmax = *b;
+                }
+            }
+
+            return bmax;
+        }
 		
 	}
 	
