@@ -223,13 +223,27 @@ public:
         xch2np.prepare_for(G2np,C2np);
 
         {
+            const layout<coord2d> &l = A2xy.inner;
+            MPI.Printf(stderr,"xy2d_inner: x:%ld->%ld, y:%ld->%ld\n", l.lower.x, l.upper.x, l.lower.y, l.upper.y);
+            MPI.Newline(stderr);
+        }
+
+        {
+            const layout<coord2d> &l = A2xy.outer;
+            MPI.Printf(stderr,"xy2d_outer: x:%ld->%ld, y:%ld->%ld\n", l.lower.x, l.upper.x, l.lower.y, l.upper.y);
+            MPI.Newline(stderr);
+        }
+
+        {
             const layout<coord2d> &l = C2np.inner;
             MPI.Printf(stderr,"np2d_inner: x:%ld->%ld, y:%ld->%ld\n", l.lower.x, l.upper.x, l.lower.y, l.upper.y);
+            MPI.Newline(stderr);
         }
 
         {
             const layout<coord2d> &l = C2np.outer;
             MPI.Printf(stderr,"np2d_outer: x:%ld->%ld, y:%ld->%ld\n", l.lower.x, l.upper.x, l.lower.y, l.upper.y);
+            MPI.Newline(stderr);
         }
 
 
