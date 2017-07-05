@@ -79,6 +79,9 @@ public:
     point_mesh<double,coord2d> pmesh2p;
     point_mesh<double,coord2d> pmesh2s;
 
+    point_mesh<float,coord3d> pmesh3p;
+    point_mesh<float,coord3d> pmesh3s;
+
 
     //__________________________________________________________________________
     //
@@ -88,6 +91,12 @@ public:
     field2d<double>          &A2xy;
     field2d<point2d<float> > &B2xy;
     field2d<float>            C2np;
+
+
+    //__________________________________________________________________________
+    //
+    // point mesh fields
+    //__________________________________________________________________________
 
     //__________________________________________________________________________
     //
@@ -197,6 +206,9 @@ public:
     pmesh2p("pmesh2p",D1p,ng),
     pmesh2s("pmesh2s",D1s,ng),
 
+    pmesh3p("pmesh3p",D1p,ng),
+    pmesh3s("pmesh3s",D1s,ng),
+
     f2(),
     A2xy( f2.record( new field2d<double>("A2xy",D2xy,ng) ) ),
     B2xy( f2.record( new field2d<point2d<float> >("B2xy",D2xy,ng) ) ),
@@ -235,6 +247,12 @@ public:
         }
 
         {
+            real_indices &r = rmesh2xy;
+            MPI.Printf(stderr,"xy2d_real_indices=x:%d->%d, y=%d->%d\n", r.imin[0], r.imax[0], r.imin[1], r.imax[1] );
+            MPI.Newline(stderr);
+        }
+
+        {
             const layout<coord2d> &l = C2np.inner;
             MPI.Printf(stderr,"np2d_inner: x:%ld->%ld, y:%ld->%ld\n", l.lower.x, l.upper.x, l.lower.y, l.upper.y);
             MPI.Newline(stderr);
@@ -244,6 +262,11 @@ public:
             const layout<coord2d> &l = C2np.outer;
             MPI.Printf(stderr,"np2d_outer: x:%ld->%ld, y:%ld->%ld\n", l.lower.x, l.upper.x, l.lower.y, l.upper.y);
             MPI.Newline(stderr);
+        }
+
+        {
+            real_indices &r = rmesh2np;
+            MPI.Printf(stderr,"np2d_real_indices=x:%d->%d, y=%d->%d\n", r.imin[0], r.imax[0], r.imin[1], r.imax[1] );
         }
 
 
@@ -285,8 +308,17 @@ public:
         MPI.Printf(stderr, "reset all\n");
         reset( pmesh2p[0] );
         reset( pmesh2p[1] );
+
         reset( pmesh2s[0] );
         reset( pmesh2s[1] );
+
+        reset( pmesh3p[0] );
+        reset( pmesh3p[1] );
+        reset( pmesh3p[2] );
+
+        reset( pmesh3s[0] );
+        reset( pmesh3s[1] );
+        reset( pmesh3s[2] );
 
         reset(A2xy);
         reset(B2xy);
@@ -301,6 +333,14 @@ public:
 
         xch1s.perform(G1s,pmesh2s[0]);
         xch1s.perform(G1s,pmesh2s[1]);
+
+        xch1p.perform(G1p,pmesh3p[0]);
+        xch1p.perform(G1p,pmesh3p[1]);
+        xch1p.perform(G1p,pmesh3p[2]);
+
+        xch1p.perform(G1s,pmesh3s[0]);
+        xch1p.perform(G1s,pmesh3s[1]);
+        xch1p.perform(G1s,pmesh3s[2]);
 
         xch2xy.perform(G2xy,f2);
         xch2np.perform(G2np,C2np);
@@ -322,6 +362,10 @@ VisIt_SimulationMetaData_addVariable(md,__visit::VariableMetaData(NAME,MESH)); \
         __mesh_decl(cmesh2np);
         __mesh_decl(pmesh2p);
         __mesh_decl(pmesh2s);
+
+        __mesh_decl(pmesh3s);
+        __mesh_decl(pmesh3p);
+
 
         if(MPI.IsSerial)
         {
@@ -347,6 +391,9 @@ VisIt_SimulationMetaData_addVariable(md,__visit::VariableMetaData(NAME,MESH)); \
         __mesh_impl(cmesh2np);
         __mesh_impl(pmesh2p);
         __mesh_impl(pmesh2s);
+
+        __mesh_impl(pmesh3p);
+        __mesh_impl(pmesh3s);
 
         if(MPI.IsSerial)
         {
