@@ -66,6 +66,75 @@ namespace yocto
                 ++nCells;
             }
 
+            inline void hex(coord1d i0,
+                            coord1d i1,
+                            coord1d i2,
+                            coord1d i3,
+                            coord1d i4,
+                            coord1d i5,
+                            coord1d i6,
+                            coord1d i7)
+            {
+                connectivity.push_back(FAME_CELL_HEX);
+                connectivity.push_back(indx2conn(i0));
+                connectivity.push_back(indx2conn(i1));
+                connectivity.push_back(indx2conn(i2));
+                connectivity.push_back(indx2conn(i3));
+                connectivity.push_back(indx2conn(i4));
+                connectivity.push_back(indx2conn(i5));
+                connectivity.push_back(indx2conn(i6));
+                connectivity.push_back(indx2conn(i7));
+                ++nCells;
+            }
+
+            inline void wedge(coord1d i0,
+                              coord1d i1,
+                              coord1d i2,
+                              coord1d i3,
+                              coord1d i4,
+                              coord1d i5)
+            {
+                connectivity.push_back(FAME_CELL_WEDGE);
+                connectivity.push_back(indx2conn(i0));
+                connectivity.push_back(indx2conn(i1));
+                connectivity.push_back(indx2conn(i2));
+                connectivity.push_back(indx2conn(i3));
+                connectivity.push_back(indx2conn(i4));
+                connectivity.push_back(indx2conn(i5));
+                ++nCells;
+            }
+
+            inline void pyr(coord1d i0,
+                            coord1d i1,
+                            coord1d i2,
+                            coord1d i3,
+                            coord1d i4)
+            {
+                connectivity.push_back(FAME_CELL_PYR);
+                connectivity.push_back(indx2conn(i0));
+                connectivity.push_back(indx2conn(i1));
+                connectivity.push_back(indx2conn(i2));
+                connectivity.push_back(indx2conn(i3));
+                connectivity.push_back(indx2conn(i4));
+                ++nCells;
+            }
+
+            inline void tet(coord1d i0,
+                            coord1d i1,
+                            coord1d i2,
+                            coord1d i3)
+            {
+                connectivity.push_back(FAME_CELL_TET);
+                connectivity.push_back(indx2conn(i0));
+                connectivity.push_back(indx2conn(i1));
+                connectivity.push_back(indx2conn(i2));
+                connectivity.push_back(indx2conn(i3));
+                ++nCells;
+            }
+
+
+
+
             inline int          num_cells()  const throw() { return nCells;              }
             inline const int   *conn_addr()  const throw() { return connectivity();      }
             inline size_t       conn_size()  const throw() { return connectivity.size(); }

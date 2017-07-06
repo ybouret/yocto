@@ -91,10 +91,19 @@ public:
 
     //__________________________________________________________________________
     //
-    // unstructured mesh 2d
+    // unstructured mesh 2d/3d
     //__________________________________________________________________________
     unstructured_mesh<double,coord2d> umesh2ds;
     unstructured_mesh<double,coord3d> umesh3dp;
+
+    //__________________________________________________________________________
+    //
+    //
+    //__________________________________________________________________________
+
+    const domain<coord1d>                  udom;
+    unstructured_mesh<float,coord3d>       umesh;
+
 
     //__________________________________________________________________________
     //
@@ -228,6 +237,9 @@ public:
     umesh2ds("umesh2ds",D1s,ng),
     umesh3dp("umesh3dp",D1p,ng),
 
+    udom(0,1,NULL,layout<coord1d>(0,16-1),0),
+    umesh("umesh",udom,0),
+
     f2(),
     A2xy( f2.record( new field2d<double>("A2xy",D2xy,ng) ) ),
     B2xy( f2.record( new field2d<point2d<float> >("B2xy",D2xy,ng) ) ),
@@ -342,6 +354,41 @@ public:
                 }
             }
         }
+#endif
+
+#if 1
+        static const int umnodes = 16;
+        const float umx[umnodes] = {0.,2.,2.,0.,0.,2.,2.,0.,0.,2.,2.,0.,1.,2.,4.,4.};
+        const float umy[umnodes] = {0.,0.,0.,0.,2.,2.,2.,2.,4.,4.,4.,4.,6.,0.,0.,0.};
+        const float umz[umnodes] = {2.,2.,0.,0.,2.,2.,0.,0.,2.,2.,0.,0.,1.,4.,2.,0.};
+
+
+#if 0
+        /* Connectivity */
+        int connectivity[] = {
+            VISIT_CELL_HEX,   0,1,2,3,4,5,6,7,   /* hex, zone 1 */
+            VISIT_CELL_HEX,   4,5,6,7,8,9,10,11, /* hex, zone 2 */
+            VISIT_CELL_PYR,   8,9,10,11,12,    /* pyramid, zone 3 */
+            VISIT_CELL_WEDGE, 1,14,5,2,15,6,   /* wedge,   zone 4 */
+            VISIT_CELL_TET,   1,14,13,5        /* tet,     zone 5 */
+        };
+#endif
+        
+        umesh.hex(0,1,2,3,4,5,6,7);    /* hex,     zone 1 */
+        umesh.hex(4,5,6,7,8,9,10,11);  /* hex,     zone 2 */
+        umesh.pyr(8,9,10,11,12);       /* pyramid, zone 3 */
+        umesh.wedge(1,14,5,2,15,6);    /* wedge,   zone 4 */
+        umesh.tet(1,14,13,5);          /* tet,     zone 5 */
+
+        for(int i=0;i<umnodes;++i)
+        {
+            umesh[0][i] = umx[i];
+            umesh[1][i] = umy[i];
+            umesh[2][i] = umz[i];
+        }
+
+
+
 #endif
 
         reset_all();
