@@ -262,27 +262,38 @@ public:
         addCommand("reset", this, & Sim::onReset,   true);
         addCommand("xch",   this, & Sim::onExchange,true);
 
-        for(coord1d i=umesh2ds[0].outer.lower;i<=umesh2ds[0].outer.upper;++i)
-        {
-            umesh2ds.point(i);
-            umesh2ds[0][i] = i;
-            umesh2ds[1][i] = i;
 
-            /*
-             umesh3dp.point(i);
-             umesh3dp[0][i] = i;
-             umesh3dp[1][i] = i;
-             umesh3dp[2][i] = i;
-             */
+        {
+            field1d<double> &X = umesh2ds[0];
+            field1d<double> &Y = umesh2ds[1];
+            const size_t     n  = X.inner.items;
+            const coord1d    i0 = X.inner.lower;
+            const coord1d    i1 = i0+1;
+            const coord1d    iN = X.inner.upper;
+
+            X[i0] = Y[i0] = 0;
+            for(coord1d i=i1;i<=iN;++i)
+            {
+                const double theta = (i * 6.3)/n;
+                X[i] = cos(theta);
+                Y[i] = sin(theta);
+            }
+
+#if 0
+            for(coord1d i=i1;i<iN;++i)
+            {
+                umesh2ds.tri(i0, i, i+1);
+            }
+            umesh2ds.tri(i0,iN,i1);
+#endif
+
+            for(coord1d i=i1;i<iN;++i)
+            {
+                umesh2ds.beam(i,i+1);
+            }
+
         }
 
-        for(coord1d i=umesh3dp[0].outer.lower;i<=umesh3dp[0].outer.upper;++i)
-        {
-            umesh3dp.point(i);
-            umesh3dp[0][i] = i;
-            umesh3dp[1][i] = i;
-            umesh3dp[2][i] = i;
-        }
 
 
         xch1p.prepare_for(G1p,32);
@@ -362,17 +373,6 @@ public:
         const float umy[umnodes] = {0.,0.,0.,0.,2.,2.,2.,2.,4.,4.,4.,4.,6.,0.,0.,0.};
         const float umz[umnodes] = {2.,2.,0.,0.,2.,2.,0.,0.,2.,2.,0.,0.,1.,4.,2.,0.};
 
-
-#if 0
-        /* Connectivity */
-        int connectivity[] = {
-            VISIT_CELL_HEX,   0,1,2,3,4,5,6,7,   /* hex, zone 1 */
-            VISIT_CELL_HEX,   4,5,6,7,8,9,10,11, /* hex, zone 2 */
-            VISIT_CELL_PYR,   8,9,10,11,12,    /* pyramid, zone 3 */
-            VISIT_CELL_WEDGE, 1,14,5,2,15,6,   /* wedge,   zone 4 */
-            VISIT_CELL_TET,   1,14,13,5        /* tet,     zone 5 */
-        };
-#endif
         
         umesh.hex(0,1,2,3,4,5,6,7);    /* hex,     zone 1 */
         umesh.hex(4,5,6,7,8,9,10,11);  /* hex,     zone 2 */
@@ -480,6 +480,7 @@ VisIt_SimulationMetaData_addVariable(md,__visit::VariableMetaData(NAME,MESH)); \
         {
             __mesh_decl(cmesh);
             __field_decl(cfield,cmesh);
+            __mesh_decl(umesh);
         }
 
         __field_decl(A2xy,rmesh2xy);
@@ -513,6 +514,7 @@ VisIt_SimulationMetaData_addVariable(md,__visit::VariableMetaData(NAME,MESH)); \
         if(MPI.IsSerial)
         {
             __mesh_impl(cmesh);
+            __mesh_impl(umesh);
         }
         return VISIT_INVALID_HANDLE;
     }

@@ -66,6 +66,14 @@ namespace yocto
                 ++nCells;
             }
 
+            inline void beam(coord1d i0, coord1d i1)
+            {
+                connectivity.push_back(FAME_CELL_BEAM);
+                connectivity.push_back(indx2conn(i0));
+                connectivity.push_back(indx2conn(i1));
+                ++nCells;
+            }
+
             inline void hex(coord1d i0,
                             coord1d i1,
                             coord1d i2,
