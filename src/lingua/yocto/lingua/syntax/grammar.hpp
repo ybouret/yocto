@@ -61,8 +61,8 @@ namespace yocto
                 r_list   rules;
                 unsigned nopt; //!< generate optional rule labels
                 unsigned nalt; //!< generate alternate rule labels
-                unsigned nzom; //!< generate altermnate zero_or_more rule labels
-                unsigned noom; //!< generate altermnate one_or_more rule labels
+                unsigned nzom; //!< generate alternate zero_or_more rule labels
+                unsigned noom; //!< generate alternate one_or_more rule labels
                 static void check_rule( const rule *r, void *args, const char *id);
                 friend class xgen;
             };

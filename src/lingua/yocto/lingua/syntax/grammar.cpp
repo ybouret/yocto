@@ -355,7 +355,7 @@ namespace yocto
             }
 
             size_t grammar::collect(vector<string> &Terms,
-                                  vector<string> &Rules) const
+                                    vector<string> &Rules) const
             {
                 Terms.free();
                 Rules.free();
@@ -416,10 +416,10 @@ namespace yocto
                 }
                 std::cerr << "|- --------" << std::endl;
                 std::cerr << std::endl;
-                
+
             }
-            
-            
+
+
             const rule * grammar:: query( const string &label ) const
             {
                 for(const rule *r=rules.head;r;r=r->next)
@@ -473,7 +473,7 @@ namespace yocto
                     }
                     return p.yield();
                 }
-
+                
             }
         }
     }
