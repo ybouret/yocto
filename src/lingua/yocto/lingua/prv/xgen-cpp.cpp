@@ -9,7 +9,7 @@ namespace yocto
 
         xgen_cpp:: xgen_cpp() : lexer("lingua.prepocessor","root")
         {
-            
+
         }
 
         void xgen_cpp:: process( const string &filename, token &content )
@@ -33,8 +33,6 @@ namespace yocto
                     continue;
                 }
                 delete content.pop_front();
-                
-
             }
 
             stk.swap_with(content);
