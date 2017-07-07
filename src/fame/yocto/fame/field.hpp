@@ -10,7 +10,12 @@ namespace yocto
     namespace fame
     {
 
-        //! base class for any field
+        //______________________________________________________________________
+        //
+        //
+        //! base class for any field, common parameters
+        //
+        //______________________________________________________________________
         class field_data : public counted_object
         {
         public:
@@ -50,8 +55,14 @@ namespace yocto
             virtual const void * __get(const coord1d offset_value) const throw() = 0;
         };
 
-        template <typename T,
-        typename COORD>
+
+        //______________________________________________________________________
+        //
+        //
+        //! field base class
+        //
+        //______________________________________________________________________
+        template <typename T,typename COORD>
         class field : public layouts<COORD>, public field_data
         {
         public:

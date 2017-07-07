@@ -12,7 +12,9 @@ namespace yocto
         
         //______________________________________________________________________
         //
+        //
         //! a domain, used to build topology
+        //
         //______________________________________________________________________
         template <typename COORD>
         class domain
@@ -79,17 +81,26 @@ namespace yocto
                 }
                 
             };
-            
+
+            //__________________________________________________________________
+            //
+            // data types
+            //__________________________________________________________________
+
             typedef layout<COORD> layout_type;
             typedef split<COORD>  split_type;
-            
+
+            //__________________________________________________________________
+            //
+            // data
+            //__________________________________________________________________
             split_type           full;  //!< used to split
             const peer           self;  //!< this information
             layout_type          inner; //!< for simulation
             slots_of<const link> links; //!< for topology
             const_coord          pbc;   //!< to keep track
             
-            //! to debug
+            //! hashing to debug
             inline void run_hash( hashing::function &h ) const throw()
             {
                 full.run_hash(h);
@@ -99,8 +110,13 @@ namespace yocto
                 {
                     links[dim].run_hash(h);
                 }
+                h.run(&pbc,sizeof(pbc));
             }
-            
+
+            //__________________________________________________________________
+            //
+            // construction
+            //__________________________________________________________________
             inline explicit domain(const coord1d      user_rank,
                                    const coord1d      user_size,
                                    const_coord       *user_cpus,
@@ -213,7 +229,8 @@ namespace yocto
                     
                 }
             }
-            
+
+            //! default copy
             inline domain(const domain &other) :
             full(other.full),
             self(other.self),
@@ -229,10 +246,8 @@ namespace yocto
             
             
             
-            inline virtual ~domain() throw()
-            {
-            }
-            
+            inline virtual ~domain() throw() {}
+
             inline void compute_real_indices_for(const size_t        dim,
                                                  const layout_type & outer,
                                                  const int           num_ghosts,
@@ -314,6 +329,10 @@ namespace yocto
         };
 
 
+        //__________________________________________________________________
+        //
+        //! whole domain for reduction if necessary
+        //__________________________________________________________________
         template <typename COORD>
         class whole_domain : public domain<COORD>
         {
@@ -333,6 +352,10 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(whole_domain);
         };
 
+        //__________________________________________________________________
+        //
+        //! empty domain for dummy fields
+        //__________________________________________________________________
         template <typename COORD>
         class empty_domain : public domain<COORD>
         {

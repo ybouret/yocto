@@ -10,6 +10,12 @@ namespace yocto
     namespace fame
     {
 
+        //______________________________________________________________________
+        //
+        //
+        //! 1D field, self standing or a row
+        //
+        //______________________________________________________________________
         template <typename T>
         class field1d : public field<T,coord1d>
         {
