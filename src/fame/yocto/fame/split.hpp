@@ -9,8 +9,10 @@ namespace yocto
     namespace fame
     {
         
-        
+        //______________________________________________________________________
+        //
         //! routines to split a layout
+        //______________________________________________________________________
         template <typename COORD>
         class split : public layout<COORD>
         {

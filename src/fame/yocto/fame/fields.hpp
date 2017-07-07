@@ -9,7 +9,12 @@ namespace yocto
     namespace fame
     {
 
-        //! database of fields, for multiple I/O
+        //______________________________________________________________________
+        //
+        //
+        //! database of fields, for multiple I/O of same topologies
+        //
+        //______________________________________________________________________
         class fields
         {
         public:
