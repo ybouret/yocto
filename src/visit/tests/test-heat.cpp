@@ -10,63 +10,30 @@
 using namespace yocto;
 using namespace fame;
 
-static const size_t ng = 1;
+//static const size_t ng = 1;
 
 class Heat : public VisIt::Simulation
 {
 public:
-    const layout<coord1d>            full1;
-    const coord1d                    pbc1;
-    const mpi_domains<coord1d>       doms1;
-    const domain<coord1d>           &dom1;
-    rectilinear_mesh<double,coord1d> mesh1;
-    fields                           iof1;
-    field1d<double>                 &A1;
-    field1d<double>                 &B1;
-    rectilinear_mesh<double,coord1d> msh1;
-    field1d<double>                  all1;
-    field1d<double>                  L1;
-    ghosts_of<coord1d>               G1;
-    mpi_ghosts<coord1d>              xch1;
+    const layout<coord1d>             full1;
+    const mpi_domain<coord1d>         dom1;
 
-    explicit Heat(VisIt       &visit,
-                  const size_t Nx,
-                  const size_t Ny,
-                  const size_t Nz) :
+    inline virtual ~Heat() throw()
+    {
+    }
+
+
+    inline Heat( const VisIt &visit, const size_t Nx ) :
     VisIt::Simulation(visit),
     full1(1,Nx),
-    pbc1(0),
-    doms1(MPI,NULL,full1,pbc1),
-    dom1( doms1[MPI.CommWorldRank] ),
-    mesh1("mesh1",dom1,ng),
-    iof1(2),
-    A1( iof1.record( new field1d<double>("A1",dom1,ng) ) ),
-    B1( iof1.record( new field1d<double>("B1",dom1,ng) ) ),
-    msh1("msh1",doms1.io_domain(),0),
-    all1("all1",doms1.io_domain()),
-    L1("L1",dom1,0),
-    G1(A1),
-    xch1(MPI)
+    dom1(MPI,NULL,full1,0)
     {
-        {
-            const box<double,coord1d> box1(0,1);
-            mesh1.map_to(box1);
-            msh1.map_to(box1);
-            xch1.prepare_for(G1,iof1);
-            reset1();
-        }
-
 
     }
 
     virtual void setMetaData(visit_handle &md)
     {
-        {
-            visit_handle curv1 = __visit::CurveMetaData(A1);
-            VisIt_SimulationMetaData_addCurve(md,curv1);
-        }
 
-        
     }
 
 
@@ -78,30 +45,17 @@ public:
         return VISIT_INVALID_HANDLE;
     }
 
-    virtual visit_handle getCurve(const string &id)
+    virtual visit_handle getMesh(const int     domain,
+                                 const string &meshID)
     {
-
-        if(id == A1.name )
-        {
-            //MPI.Printf(stderr,"Collecting\n");
-            //doms1.collect(all1,A1);
-            printf("IN CURVE, rank=%d\n", MPI.CommWorldRank);
-            return __visit::CurveData(msh1[0],all1);
-        }
 
         return VISIT_INVALID_HANDLE;
     }
 
 
-    inline void reset1() 
+    inline void reset1()
     {
-        const field1d<double> &X = mesh1[0];
-        for(coord1d i=dom1.inner.lower;i<=dom1.inner.upper;++i)
-        {
-            A1[i] = X[i]       + 0.2 * _rand.sym1<double>();
-            B1[i] = (1.0-X[i]) + 0.2 * _rand.sym1<double>();
-        }
-        xch1.perform(G1,iof1);
+
     }
 
     inline virtual void one_step()
@@ -145,10 +99,8 @@ YOCTO_UNIT_TEST_IMPL(heat)
         Nz = strconv::to_size(argv[3],"Nz");
     }
 
+    Heat heat(visit,Nx);
 
-    Heat heat(visit,Nx,Ny,Nz);
-
-    heat.loop();
 
 }
 YOCTO_UNIT_TEST_DONE()
