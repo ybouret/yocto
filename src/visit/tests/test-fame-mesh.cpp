@@ -293,8 +293,7 @@ public:
             }
 
         }
-
-
+        
 
         xch1p.prepare_for(G1p,32);
         xch1s.prepare_for(G1s,32);
