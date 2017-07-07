@@ -7,9 +7,9 @@ namespace yocto
     {
         xgen_cpp:: ~xgen_cpp() throw() {}
 
-        xgen_cpp:: xgen_cpp() 
+        xgen_cpp:: xgen_cpp() : lexer("lingua.prepocessor","root")
         {
-
+            
         }
 
         void xgen_cpp:: process( const string &filename, token &content )
