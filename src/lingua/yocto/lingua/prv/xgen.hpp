@@ -62,7 +62,7 @@ namespace yocto
                 void        load_plugin(const string &id, xnode *node);
                 void        ld_cstring(const string &id, const xlist &args);
                 void        ld_rstring(const string &id, const xlist &args);
-                bool        is_alias(const xnode *node); //!< detect is a rule is an alias
+                bool        is_alias(const xnode *node); //!< detect if a rule is an alias
 
                 rule       &fetch_agg(const string &label); //!< return existing rule or new rule as aggregate
                 rule       &fetch_rxp(const string &label); //!< return existing or new regexp terminal

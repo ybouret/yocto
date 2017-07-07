@@ -164,7 +164,7 @@ namespace yocto
                 
                 //______________________________________________________________
                 //
-                // changind some semantics
+                // changing some semantics
                 //______________________________________________________________
                 {
                     const size_t nn = no_single.size();

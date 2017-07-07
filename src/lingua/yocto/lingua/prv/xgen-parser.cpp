@@ -87,7 +87,6 @@ namespace yocto
                     Agg &SUB = agg("SUB",property::noSingle);
                     Agg &ALT = agg("ALT",property::noSingle);
                     ALT  << SUB  << zero_or_more( agg("EXTRA_ALT",property::jettison) << ALTERN << SUB );
-                    //SUB  << ITEM << zero_or_more( agg("EXTRA_SUB",property::jettison) << ITEM);
                     SUB << one_or_more(ITEM);
                     ATOM << ( agg("GRP",property::jettison) << LPAREN << ALT << RPAREN );
                     
