@@ -13,4 +13,5 @@ id      : "[:alpha:][:word:]*\t?";
 @comment: "#";
 @comment: "/\\*" "\\*/";
 
+#include "calc.g"
 
