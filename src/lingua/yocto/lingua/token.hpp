@@ -31,7 +31,7 @@ namespace yocto
         };
 
         //! a list of chars
-        class token : public t_char::list_type
+        class token : public object, public t_char::list_type
         {
         public:
             token() throw();

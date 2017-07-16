@@ -612,6 +612,7 @@ namespace yocto
                 YRX_POSIX(endl);
                 YRX_POSIX(dot);
                 YRX_POSIX(cstring);
+                YRX_POSIX(punct2);
 
                 throw exception("%s: unknowm POSIX name '%s'", fn, id.c_str());
 

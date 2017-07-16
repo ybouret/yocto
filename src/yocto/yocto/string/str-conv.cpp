@@ -30,7 +30,7 @@ namespace yocto
                 case '\r': ans += "\\n"; break;
                 case '\t': ans += "\\t"; break;
                 default:
-                    ans += "\\";
+                    ans += "\\x";
                     ans += hexa_text[C];
             }
         }

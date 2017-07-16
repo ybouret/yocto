@@ -66,6 +66,12 @@ namespace yocto
         {
             return logical::among("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~");
         }
+        
+        pattern *posix::punct2()
+        {
+            return logical::among("!#$%&()*+,-./:;<=>?@[\\]^_`{|}~");
+        }
+
 
         pattern *posix:: word()
         {
