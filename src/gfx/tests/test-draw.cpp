@@ -4,8 +4,8 @@
 #include "yocto/gfx/image/tiff.hpp"
 
 #include "yocto/gfx/ops/geometry.hpp"
-#include "yocto/gfx/draw/line.hpp"
-#include "yocto/gfx/draw/circle.hpp"
+#include "yocto/gfx/draw/stencil.hpp"
+
 
 #include "yocto/utest/run.hpp"
 #include "yocto/math/trigconv.hpp"
