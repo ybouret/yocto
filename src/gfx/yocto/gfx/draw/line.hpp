@@ -40,6 +40,34 @@ namespace yocto
             }
         }
 
+        inline void collect_line( sequence<vertex> &seq,
+                                 unit_t        x0,
+                                 unit_t        y0,
+                                 unit_t        x1,
+                                 unit_t        y1)
+        {
+            unit_t dx =  abs_of(x1-x0), sx = (x0<x1) ? 1 : -1;
+            unit_t dy = -abs_of(y1-y0), sy = (y0<y1) ? 1 : -1;
+            unit_t err = dx+dy, e2;                                   /* error value e_xy */
+            
+            for (;;){                                                          /* loop */
+                //setPixel(x0,y0);
+                const vertex p(x0,y0);
+                seq.push_back(p);
+                e2 = 2*err;
+                if (e2 >= dy) {                                         /* e_xy+e_x > 0 */
+                    if (x0 == x1) break;
+                    err += dy; x0 += sx;
+                }
+                if (e2 <= dx) {                                         /* e_xy+e_y < 0 */
+                    if (y0 == y1) break;
+                    err += dx; y0 += sy;
+                }
+            }
+
+        }
+        
+        
         template <typename T>
         inline void draw_line(pixmap<T>    &img,
                               vertex        v0,

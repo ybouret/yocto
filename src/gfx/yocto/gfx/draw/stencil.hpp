@@ -19,14 +19,35 @@ namespace yocto
         {
             unique(sten,compare_vertices);
         }
+        
+        inline void extrude_stencil(vector<vertex> &sten, const vertex shift)
+        {
+            for(size_t i=sten.size();i>0;--i)
+            {
+                const vertex p = sten[i];
+                const vertex q = p + shift;
+                collect_line(sten, p.x, p.y, q.x, q.y);
+            }
+            clean_stencil(sten);
+        }
 
         template <typename T>
         inline void draw_stencil(const vector<vertex> &sten,
                                  const pixmap<T>      &img,
+                                 const vertex          vec,
                                  const T               C,
                                  const uint8_t         alpha=0xff)
         {
-            
+            for(size_t i=sten.size();i>0;--i)
+            {
+                //const vertex ini = sten[i];
+                const vertex p = sten[i] + vec;
+                if(img.has(p))
+                {
+                    img[p] = pixel<T>::blend(img[p],C,alpha);
+                }
+                
+            }
         }
         
     }
