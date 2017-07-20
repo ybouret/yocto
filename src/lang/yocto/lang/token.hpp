@@ -1,0 +1,6 @@
+#ifndef YOCTO_LANG_TOKEN_INCLUDED
+#define YOCTO_LANG_TOKEN_INCLUDED 1
+
+
+#endif
+
