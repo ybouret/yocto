@@ -8,6 +8,7 @@ namespace yocto
 {
     namespace gfx
     {
+        //! draw a circle on an image
         template <typename T>
         inline void draw_circle(pixmap<T>    &img,
                                 const unit_t  xm,

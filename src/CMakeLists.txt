@@ -42,6 +42,7 @@ INSTALL( FILES
 ########################################################################
 
 YOCTO_BUILD(kr)
+YOCTO_BUILD(lang)
 YOCTO_BUILD(lingua)
 YOCTO_BUILD(json)
 YOCTO_BUILD(seem)

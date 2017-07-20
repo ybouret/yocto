@@ -1,5 +1,5 @@
-#ifndef YOCTO_GFX_DRAW_STENCIL
-#define YOCTO_GFX_DRAW_STENCIL 1
+#ifndef YOCTO_GFX_DRAW_STENCIL_INCLUDED
+#define YOCTO_GFX_DRAW_STENCIL_INCLUDED 1
 
 #include "yocto/gfx/draw/line.hpp"
 #include "yocto/gfx/draw/circle.hpp"
@@ -12,7 +12,7 @@ namespace yocto
     {
         inline int  compare_vertices(const vertex &lhs, const vertex &rhs) throw()
         {
-            return memcmp(&lhs, &rhs, sizeof(vertex) );
+            return memcmp(&lhs,&rhs,sizeof(vertex));
         }
         
         inline void clean_stencil(vector<vertex> &sten)

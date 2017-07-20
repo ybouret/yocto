@@ -8,6 +8,7 @@ namespace yocto
 {
     namespace gfx
     {
+        //! draw a line on an image
         template <typename T>
         inline void draw_line(pixmap<T>    &img,
                               unit_t        x0,
@@ -40,11 +41,12 @@ namespace yocto
             }
         }
 
-        inline void collect_line( sequence<vertex> &seq,
-                                 unit_t        x0,
-                                 unit_t        y0,
-                                 unit_t        x1,
-                                 unit_t        y1)
+        //! collect all the single points of a line into a stencil
+        inline void collect_line(sequence<vertex> &stencil,
+                                 unit_t            x0,
+                                 unit_t            y0,
+                                 unit_t            x1,
+                                 unit_t            y1)
         {
             unit_t dx =  abs_of(x1-x0), sx = (x0<x1) ? 1 : -1;
             unit_t dy = -abs_of(y1-y0), sy = (y0<y1) ? 1 : -1;
@@ -53,7 +55,7 @@ namespace yocto
             for (;;){                                                          /* loop */
                 //setPixel(x0,y0);
                 const vertex p(x0,y0);
-                seq.push_back(p);
+                stencil.push_back(p);
                 e2 = 2*err;
                 if (e2 >= dy) {                                         /* e_xy+e_x > 0 */
                     if (x0 == x1) break;
@@ -67,7 +69,8 @@ namespace yocto
 
         }
         
-        
+
+        //! draw a line, wrapper
         template <typename T>
         inline void draw_line(pixmap<T>    &img,
                               vertex        v0,
