@@ -60,6 +60,34 @@ YOCTO_UNIT_TEST_IMPL(draw)
         draw_disk(img, x0, y0,r,  named_color::fetch(alea_leq(named_color::count)),128+alea_leq(127));
     }
 
+    for(size_t k=0;k<4;++k)
+    {
+        unit_t x0 =  unit_t( alea_leq(w) );
+        unit_t y0 =  unit_t( alea_leq(h) );
+        vector<vertex> sten(1000,as_capacity);
+        collect_disk(sten, x0, y0, 10 + alea_leq(100) );
+        clean_stencil(sten);
+        for(size_t num=4+alea_leq(4);num>0;--num)
+        {
+            const size_t m = 4 + alea_leq(8);
+            draw_stencil(sten, img, vertex(num*m,num*m),  named_color::fetch(alea_leq(named_color::count)),128+alea_leq(127) );
+        }
+    }
+
+
+    for(size_t k=0;k<4;++k)
+    {
+        unit_t x0 =  unit_t( alea_leq(w) );
+        unit_t y0 =  unit_t( alea_leq(h) );
+        vector<vertex> sten(1000,as_capacity);
+        collect_disk(sten, x0, y0, 4 + alea_leq(4) );
+        clean_stencil(sten);
+        const vertex shift( -100 + unit_t( alea_leq(200) ), -100 + unit_t(alea_leq(200)));
+        extrude_stencil(sten,shift);
+        std::cerr << "sten.capacity=" << sten.capacity() << std::endl;
+        draw_stencil(sten,img,shift,named_color::fetch(alea_leq(named_color::count)),128+alea_leq(127));
+    }
+
 
     IMG.save("draw.png",img,0);
 

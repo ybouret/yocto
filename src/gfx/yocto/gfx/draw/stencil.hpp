@@ -33,7 +33,7 @@ namespace yocto
 
         template <typename T>
         inline void draw_stencil(const vector<vertex> &sten,
-                                 const pixmap<T>      &img,
+                                 pixmap<T>            &img,
                                  const vertex          vec,
                                  const T               C,
                                  const uint8_t         alpha=0xff)
