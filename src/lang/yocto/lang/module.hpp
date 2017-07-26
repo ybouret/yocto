@@ -3,6 +3,7 @@
 
 #include "yocto/ios/istream.hpp"
 #include "yocto/ptr/arc.hpp"
+#include "yocto/counted-object.hpp"
 
 namespace yocto
 {
@@ -10,7 +11,8 @@ namespace yocto
     namespace lang
     {
 
-        
+
+        //! character position
         class t_position
         {
         public:
@@ -29,7 +31,9 @@ namespace yocto
 
 
         //! a wrapper around an input to tag name/column/line
-        class module : public t_position
+        class module :
+        public counted_object,
+        public t_position
         {
         public:
             typedef  arc_ptr<ios::istream> handle;
