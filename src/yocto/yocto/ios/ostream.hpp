@@ -5,6 +5,7 @@
 #include "yocto/ios/ochannel.hpp"
 #include "yocto/code/endian.hpp"
 #include "yocto/code/printf-check.hpp"
+#include "yocto/counted.hpp"
 
 namespace yocto
 {
@@ -15,7 +16,10 @@ namespace yocto
 	
 	namespace ios 
 	{
-		class ostream : public stream, public ochannel
+		class ostream :
+        public stream,
+        public ochannel,
+        public counted
 		{
 		public:
 			virtual ~ostream() throw();

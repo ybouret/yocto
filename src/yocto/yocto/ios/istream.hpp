@@ -5,13 +5,17 @@
 #include "yocto/ios/ichannel.hpp"
 #include "yocto/string.hpp"
 #include "yocto/code/endian.hpp"
+#include "yocto/counted.hpp"
 
 namespace yocto
 {
 	
 	namespace ios
 	{
-		class istream : public stream, public ichannel
+		class istream :
+        public stream,
+        public ichannel,
+        public counted
 		{
 		public:
 			virtual ~istream() throw();
