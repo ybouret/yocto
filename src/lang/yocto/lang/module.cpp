@@ -1,43 +1,6 @@
 #include "yocto/lang/module.hpp"
 #include "yocto/ios/icstream.hpp"
 
-namespace yocto
-{
-
-    namespace Lang
-    {
-        CharPosition:: CharPosition() throw() :
-        column(1),
-        line(1)
-        {
-        }
-
-        CharPosition:: ~CharPosition() throw()
-        {
-        }
-
-        CharPosition:: CharPosition( const CharPosition &other ) throw() :
-        column(other.column),
-        line(other.line)
-        {
-
-        }
-
-        void CharPosition:: newchar() throw()
-        {
-            ++((int &)column);
-        }
-
-        void CharPosition:: newline() throw()
-        {
-            ++( (int&) line );
-            (int &) column = 1;
-        }
-
-    }
-
-}
-
 
 
 namespace yocto
@@ -53,18 +16,23 @@ namespace yocto
 
         Module:: Module(const string  &id,
                         const Input   &in ) :
-        stamp( new string(id) ),
+        CharInfo( new string(id) ),
         input(in)
         {
         }
         
-#if 0
-        module:: module( const string &filename ) :
-        name(filename),
-        input( new ios::icstream(filename) )
+        Module:: Module(const string &id) :
+        CharInfo( new string(id) ),
+        input( new ios::icstream( *stamp) )
         {
         }
-#endif
+        
+        Module:: Module() :
+        CharInfo( new string("STDIN") ),
+        input( new ios::icstream( ios::cstdin) )
+        {
+        }
+        
 
     }
 

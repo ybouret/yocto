@@ -10,12 +10,16 @@ namespace yocto
     {
         
 
-        class t_char : public CharPosition
+        class  t_char :
+        public CharInfo,
+        public object
         {
         public:
             t_char *prev;
             t_char *next;
             uint8_t code;
+            
+            
             
 
         private:
