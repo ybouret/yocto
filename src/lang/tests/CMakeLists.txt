@@ -7,4 +7,4 @@ TARGET_LINK_YOCTO(test-lang lang)
 
 ENABLE_TESTING()
 
-ADD_TEST(token test-lang token)
+#ADD_TEST(token test-lang token)
