@@ -3,6 +3,7 @@
 
 #include "yocto/memory/buffer.hpp"
 #include "yocto/chars.hpp"
+#include "yocto/counted.hpp"
 #include <iosfwd>
 
 namespace yocto
@@ -12,7 +13,9 @@ namespace yocto
 	{
 		
 		template <typename T>
-		class string : public memory::rw_buffer
+		class string :
+        public memory::rw_buffer,
+        public counted
 		{
 		public:
 			//------------------------------------------------------------------

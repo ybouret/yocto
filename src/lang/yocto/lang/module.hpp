@@ -8,51 +8,63 @@
 namespace yocto
 {
 
-    namespace lang
+    namespace Lang
     {
 
+        typedef counted_object  Object;
+        typedef arc_ptr<string> Stamp;
+
+        class CharInfo
+        {
+        public:
+            CharInfo(const Stamp &st) throw();
+            ~CharInfo() throw();
+            CharInfo(const CharInfo &) throw();
+
+            const int column;
+            const int line;
+
+        private:
+            YOCTO_DISABLE_ASSIGN(CharInfo);
+        };
 
         //! character position
-        class t_position
+        class CharPosition
         {
         public:
             const int column;
             const int line;
-            t_position() throw();
-            virtual ~t_position() throw();
-            t_position(const t_position &other) throw();
+            CharPosition() throw();
+            virtual ~CharPosition() throw();
+            CharPosition(const CharPosition &other) throw();
 
             void newchar() throw();
             void newline() throw();
             
         private:
-            YOCTO_DISABLE_ASSIGN(t_position);
+            YOCTO_DISABLE_ASSIGN(CharPosition);
         };
 
 
         //! a wrapper around an input to tag name/column/line
-        class module :
-        public counted_object,
-        public t_position
+        class  Module :
+        public Object,
+        public CharPosition
         {
         public:
-            typedef  arc_ptr<ios::istream> handle;
+            typedef  arc_ptr<ios::istream> Input;
 
             //! default constructor
-            explicit module(const string &id,
-                            const handle &in);
+            explicit Module(const string  &id,
+                            const Input   &in);
 
-            virtual ~module() throw();
+            virtual ~Module() throw();
 
-            explicit module(const string &filename);
-            
-
-
-            const string name;
-            handle       input;
+            const Stamp stamp;
+            const Input input;
 
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(module);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Module);
         };
     }
 }

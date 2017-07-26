@@ -4,31 +4,31 @@
 namespace yocto
 {
 
-    namespace lang
+    namespace Lang
     {
-        t_position:: t_position() throw() :
+        CharPosition:: CharPosition() throw() :
         column(1),
         line(1)
         {
         }
 
-        t_position:: ~t_position() throw()
+        CharPosition:: ~CharPosition() throw()
         {
         }
 
-        t_position:: t_position( const t_position &other ) throw() :
+        CharPosition:: CharPosition( const CharPosition &other ) throw() :
         column(other.column),
         line(other.line)
         {
 
         }
 
-        void t_position:: newchar() throw()
+        void CharPosition:: newchar() throw()
         {
             ++((int &)column);
         }
 
-        void t_position:: newline() throw()
+        void CharPosition:: newline() throw()
         {
             ++( (int&) line );
             (int &) column = 1;
@@ -43,26 +43,28 @@ namespace yocto
 namespace yocto
 {
 
-    namespace lang
+    namespace Lang
     {
 
-        module:: ~module() throw()
+        Module:: ~Module() throw()
         {
         }
 
 
-        module:: module( const string &id, const handle &in ) :
-        name(id),
+        Module:: Module(const string  &id,
+                        const Input   &in ) :
+        stamp( new string(id) ),
         input(in)
         {
         }
         
-
+#if 0
         module:: module( const string &filename ) :
         name(filename),
         input( new ios::icstream(filename) )
         {
         }
+#endif
 
     }
 
