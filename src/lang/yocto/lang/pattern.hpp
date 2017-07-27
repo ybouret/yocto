@@ -22,6 +22,7 @@ virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const    \
         class Pattern : public counted_object
         {
         public:
+            typedef arc_ptr<Pattern> Handle;
             const uint32_t uuid; //!< 4 bytes ID
             Pattern       *next; //!< for list
             Pattern       *prev; //!< for list
