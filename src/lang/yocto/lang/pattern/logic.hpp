@@ -35,9 +35,10 @@ namespace yocto
 
         private:
             AND(const AND &);
-        
         };
     }
 }
+
+
 
 #endif
