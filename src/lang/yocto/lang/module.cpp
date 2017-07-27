@@ -39,7 +39,9 @@ namespace yocto
             ios::istream &in = (ios::istream &)(*input);
             if( in.query(C) )
             {
-                return new Char(*this,C);
+                Char *ch = new Char(*this,C);
+                newchar();
+                return ch;
             }
             else
             {
