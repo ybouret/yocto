@@ -27,6 +27,12 @@ namespace yocto
             }
             return os;
         }
+
+        string Token::toString() const
+        {
+        }
+        
+
     }
 }
 

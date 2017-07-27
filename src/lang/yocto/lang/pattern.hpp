@@ -11,10 +11,13 @@ namespace yocto
 
 #define YOCTO_LANG_PATTERN_MATCH_ARGS Source &source, Token &result
 
-#define YOCTO_LANG_PATTERN_DECL(TYPE,A,B,C,D)                       \
-static  const   uint32_t UUID = YOCTO_FOURCC(A,B,C,D);              \
-inline  virtual Pattern *clone() const { return new TYPE(*this); }  \
-virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
+#define YOCTO_LANG_PATTERN_DECL(TYPE,A,B,C,D)                          \
+private: YOCTO_DISABLE_ASSIGN(TYPE);                                   \
+public:                                                                \
+static  const   uint32_t UUID = YOCTO_FOURCC(A,B,C,D);                 \
+inline  virtual         ~TYPE()  throw() {}                            \
+inline  virtual Pattern *clone() const   { return new TYPE(*this); }   \
+virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const    \
 
         class Pattern : public counted_object
         {

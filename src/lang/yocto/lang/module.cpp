@@ -40,7 +40,7 @@ namespace yocto
             if( in.query(C) )
             {
                 Char *ch = new Char(*this,C);
-                newchar();
+                newChar();
                 return ch;
             }
             else

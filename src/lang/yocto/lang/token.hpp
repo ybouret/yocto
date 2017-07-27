@@ -19,6 +19,7 @@ namespace yocto
             Token(const Token &other);
 
             friend std::ostream & operator<<( std::ostream&, const Token &);
+            string toString() const;
 
         private:
             YOCTO_DISABLE_ASSIGN(Token);

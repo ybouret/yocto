@@ -24,12 +24,12 @@ namespace yocto
         {
         }
         
-        void CharInfo:: newchar() throw()
+        void CharInfo:: newChar() throw()
         {
             ++((int &)column);
         }
         
-        void CharInfo:: newline() throw()
+        void CharInfo:: newLine() throw()
         {
             ++( (int&) line );
             (int &) column = 1;

@@ -24,8 +24,8 @@ namespace yocto
             const int   line;
             const Stamp stamp;
             
-            void newchar() throw();
-            void newline() throw();
+            void newChar() throw();
+            void newLine() throw();
             
         private:
             YOCTO_DISABLE_ASSIGN(CharInfo);
