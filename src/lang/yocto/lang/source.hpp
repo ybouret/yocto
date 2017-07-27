@@ -16,9 +16,11 @@ namespace yocto
             explicit Source(const Module::Handle &hModule );
             virtual ~Source() throw();
 
-            Char       *query();                 //!< from cache or read from top module
-            void        store(Char *ch) throw(); //!< push_front of cache
-            const Char *peek();                  //!< from cache or try to read
+            Char       *query();                     //!< from cache or read from top module
+            void        store(Char  *ch) throw();    //!< push_front of cache
+            void        store(Token &tk) throw();    //!< store a token
+            void        store_copy(const Token &tk); //!< store a copy
+            const Char *peek();                      //!< from cache or try to read
 
             void        prefetch(const size_t nmax=0); //!< if 0==nmax, read all we can
 

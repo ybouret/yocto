@@ -58,6 +58,22 @@ namespace yocto
             cache.push_front(ch);
         }
 
+        void Source:: store(Token &tk) throw()
+        {
+            while(tk.size>0)
+            {
+                cache.push_front(tk.pop_back());
+            }
+        }
+
+        void Source:: store_copy(const Token &tk)
+        {
+            for(const Char *ch = tk.tail;ch;ch=ch->prev)
+            {
+                cache.push_front( new Char( *ch ) );
+            }
+        }
+
         const Char * Source:: peek()
         {
             if(cache.size>0)
