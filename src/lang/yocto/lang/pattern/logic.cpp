@@ -19,7 +19,14 @@ namespace yocto
         operands(other.operands)
         {
         }
-        
+
+        Logical & Logical:: operator<<( Pattern *p )
+        {
+            assert(p);
+            operands.push_back(p);
+            return *this;
+        }
+
     }
 
 }
@@ -40,8 +47,10 @@ namespace yocto
         bool AND:: match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
         {
             assert(0==result.size);
+            // loop over all operands
             for(const Pattern *op = operands.head;op;op=op->next)
             {
+                // local result
                 Token res;
                 if(op->match(source,res))
                 {
@@ -59,3 +68,37 @@ namespace yocto
 
     }
 }
+
+
+namespace yocto
+{
+    namespace Lang
+    {
+        OR:: OR() throw() : Logical(UUID)
+        {
+        }
+
+        OR::OR(const OR &other) :
+        Logical(other)
+        {
+        }
+
+        bool OR:: match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
+        {
+            assert(0==result.size);
+            // loop over all operands
+            for(const Pattern *op = operands.head;op;op=op->next)
+            {
+                assert(0==result.size);
+                if(op->match(source,result))
+                {
+                    return true;
+                }
+                assert(0==result.size);
+            }
+            return false;
+        }
+        
+    }
+}
+

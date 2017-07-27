@@ -13,6 +13,8 @@ namespace yocto
             virtual ~Logical() throw();
             Patterns operands;
 
+            Logical & operator<<( Pattern *);
+
         protected:
             explicit Logical(const uint32_t t) throw();
             Logical(const Logical &other);
@@ -39,6 +41,21 @@ namespace yocto
     }
 }
 
+namespace yocto
+{
+    namespace Lang
+    {
+        class OR : public Logical
+        {
+        public:
+            YOCTO_LANG_PATTERN_DECL(OR, ' ', '|', '|', ' ');
+            explicit OR() throw();
+
+        private:
+            OR(const OR &);
+        };
+    }
+}
 
 
 #endif

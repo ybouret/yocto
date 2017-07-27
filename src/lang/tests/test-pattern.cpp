@@ -1,4 +1,5 @@
 #include "yocto/lang/pattern/basic.hpp"
+#include "yocto/lang/pattern/logic.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
@@ -16,7 +17,8 @@ YOCTO_UNIT_TEST_IMPL(pattern)
         Patterns patterns;
         patterns.push_back( new Any1()      );
         patterns.push_back( new Single('A') );
-
+        patterns.push_back( new AND() );
+        
         Patterns patterns2(patterns);
 
     }
