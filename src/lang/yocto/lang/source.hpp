@@ -23,7 +23,10 @@ namespace yocto
             const Char *peek();                      //!< from cache or try to read
 
             void        prefetch(const size_t nmax=0); //!< if 0==nmax, read all we can
-
+            void        forward(const size_t n) throw();       //!< cache.size>=n
+            size_t      in_cache() const throw();
+            bool        is_active();
+            inline const Token & operator*() const throw() { return cache; }
         private:
 
             //! for multiple sources

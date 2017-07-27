@@ -18,6 +18,8 @@ namespace yocto
 
 }
 
+#include <iostream>
+
 namespace yocto
 {
     namespace Lang
@@ -84,20 +86,24 @@ namespace yocto
             {
                 if(0!=modules.top)
                 {
+                    // got a module: do we have something ?
                     Char *ch = modules.top->hModule->get();
                     if(0!=ch)
                     {
+                        // yes
                         cache.push_back(ch);
                         assert(1==cache.size);
                         return cache.head;
                     }
                     else
                     {
+                        //no
                         return 0;
                     }
                 }
                 else
                 {
+                    // no module
                     return 0;
                 }
 
@@ -128,7 +134,25 @@ namespace yocto
             }
         }
 
+        void Source:: forward(const size_t n) throw()
+        {
+            assert(cache.size>=n);
+            for(size_t i=n;i>0;--i)
+            {
+                delete cache.pop_front();
+            }
+        }
 
+        size_t Source:: in_cache() const throw()
+        {
+            return cache.size;
+        }
+
+
+        bool Source:: is_active()
+        {
+            return 0 != peek();
+        }
 
     }
 }

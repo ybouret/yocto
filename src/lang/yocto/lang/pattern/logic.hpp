@@ -15,6 +15,11 @@ namespace yocto
 
             Logical & operator<<( Pattern *);
 
+            static Logical *Among(const string &chars);
+            static Logical *Among(const char   *chars);
+            static Logical *Equal(const string &chars);
+            static Logical *Equal(const char   *chars);
+
         protected:
             explicit Logical(const uint32_t t) throw();
             Logical(const Logical &other);

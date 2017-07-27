@@ -1,5 +1,5 @@
 #include "yocto/lang/pattern/logic.hpp"
-
+#include "yocto/ptr/auto.hpp"
 namespace yocto
 {
     namespace Lang
@@ -27,9 +27,14 @@ namespace yocto
             return *this;
         }
 
+
+
+
     }
 
 }
+
+#include <iostream>
 
 namespace yocto
 {
@@ -101,4 +106,51 @@ namespace yocto
         
     }
 }
+
+
+#include "yocto/lang/pattern/basic.hpp"
+
+namespace yocto
+{
+    namespace Lang
+    {
+        Logical *Logical:: Among(const string &chars)
+        {
+            auto_ptr<Logical> ans( new OR() );
+            const size_t n = chars.size();
+            for(size_t i=0;i<n;++i)
+            {
+                ans->operands.push_back( new Single(chars[i]) );
+            }
+            return ans.yield();
+        }
+
+        Logical * Logical::Among(const char   *chars)
+        {
+            const string ch(chars);
+            return Among(ch);
+        }
+
+        Logical *Logical:: Equal(const string &chars)
+        {
+            auto_ptr<Logical> ans( new AND() );
+            const size_t n = chars.size();
+            for(size_t i=0;i<n;++i)
+            {
+                ans->operands.push_back( new Single(chars[i]) );
+            }
+            return ans.yield();
+
+        }
+
+        Logical *Logical:: Equal(const char *chars)
+        {
+            const string ch(chars);
+            return Equal(ch);
+        }
+
+    }
+
+}
+
 

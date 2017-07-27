@@ -66,6 +66,7 @@ namespace yocto
                 }
                 else
                 {
+                    source.store(ch);
                     return false;
                 }
             }
@@ -112,6 +113,7 @@ namespace yocto
                 }
                 else
                 {
+                    source.store(ch);
                     return false;
                 }
             }
