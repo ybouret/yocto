@@ -22,7 +22,8 @@ namespace yocto
             virtual ~Char() throw();
             explicit Char(const CharInfo &info,
                           const uint8_t   data) throw();
-
+            
+            Char(const Char &other) throw();
 
         private:
             YOCTO_DISABLE_ASSIGN(Char);

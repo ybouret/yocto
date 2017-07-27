@@ -17,7 +17,14 @@ namespace yocto
         Char:: ~Char() throw()
         {
         }
-        
+
+        Char:: Char(const Char &other) throw() :
+        yocto::Lang::CharInfo(other),
+        prev(0),
+        next(0),
+        code(other.code)
+        {
+        }
 
 
     }
