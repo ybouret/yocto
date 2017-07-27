@@ -10,7 +10,7 @@ namespace yocto
     {
         
 
-        class  t_char :
+        class  Char :
         public CharInfo,
         public object
         {

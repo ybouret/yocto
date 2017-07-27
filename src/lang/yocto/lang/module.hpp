@@ -11,17 +11,17 @@ namespace yocto
     namespace Lang
     {
 
-        typedef counted_object        Object;
         typedef arc_ptr<ios::istream> Input;
 
 
-        //! a wrapper around an input to tag name/column/line
+        //! a wrapper around an input to tag stamp/column/line
         class  Module :
-        public Object,
+        public counted_object,
         public CharInfo
         {
         public:
-
+            typedef arc_ptr<Module> Pointer;
+            
             //! default constructor
             explicit Module(const string  &id,
                             const Input   &in);
