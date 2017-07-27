@@ -1,4 +1,4 @@
-#include "yocto/lang/pattern/simple.hpp"
+#include "yocto/lang/pattern/basic.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
