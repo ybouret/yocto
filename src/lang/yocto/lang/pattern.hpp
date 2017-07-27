@@ -2,6 +2,7 @@
 #define YOCTO_LANG_PATTERN_INCLUDED 1
 
 #include "yocto/lang/source.hpp"
+#include "yocto/code/fourcc.hpp"
 
 namespace yocto
 {
@@ -10,15 +11,18 @@ namespace yocto
 
 #define YOCTO_LANG_PATTERN_MATCH_ARGS Source &source, Token &result
 
-#define YOCTO_LANG_PATTERN_INTERFACE() \
-virtual Pattern *clone() const;\
-virtual bool     match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
+#define YOCTO_LANG_PATTERN_DECL(TYPE,A,B,C,D)                       \
+static  const   uint32_t UUID = YOCTO_FOURCC(A,B,C,D);              \
+inline  virtual Pattern *clone() const { return new TYPE(*this); }  \
+virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
 
         class Pattern : public counted_object
         {
         public:
             const uint32_t uuid; //!< 4 bytes ID
-
+            Pattern       *next; //!< for list
+            Pattern       *prev; //!< for list
+            
             virtual ~Pattern() throw();
 
             //! the cloneable interface
@@ -34,6 +38,9 @@ virtual bool     match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
         private:
             YOCTO_DISABLE_ASSIGN(Pattern);
         };
+
+
+        typedef core::list_of_cloneable<Pattern> Patterns;
     }
 }
 
