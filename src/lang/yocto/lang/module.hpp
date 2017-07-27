@@ -1,9 +1,9 @@
 #ifndef YOCTO_LANG_MODULE_INCLUDED
 #define YOCTO_LANG_MODULE_INCLUDED 1
 
-#include "yocto/lang/char-info.hpp"
-#include "yocto/ios/istream.hpp"
+#include "yocto/lang/char.hpp"
 #include "yocto/counted-object.hpp"
+#include "yocto/ios/istream.hpp"
 
 namespace yocto
 {
@@ -20,7 +20,7 @@ namespace yocto
         public CharInfo
         {
         public:
-            typedef arc_ptr<Module> Pointer;
+            typedef arc_ptr<Module> Handle;
             
             //! default constructor
             explicit Module(const string  &id,
@@ -35,7 +35,8 @@ namespace yocto
             virtual ~Module() throw();
             
             const Input    input;
-            
+
+            Char *get();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Module);

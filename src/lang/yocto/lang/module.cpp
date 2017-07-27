@@ -32,7 +32,20 @@ namespace yocto
         input( new ios::icstream( ios::cstdin) )
         {
         }
-        
+
+        Char * Module:: get()
+        {
+            char C = 0;
+            ios::istream &in = (ios::istream &)(*input);
+            if( in.query(C) )
+            {
+                return new Char(*this,C);
+            }
+            else
+            {
+                return NULL;
+            }
+        }
 
     }
 

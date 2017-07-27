@@ -1,7 +1,7 @@
 #ifndef YOCTO_LANG_CHAR_INCLUDED
 #define YOCTO_LANG_CHAR_INCLUDED 1
 
-#include "yocto/lang/module.hpp"
+#include "yocto/lang/char-info.hpp"
 
 namespace yocto
 {
