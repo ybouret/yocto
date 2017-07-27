@@ -32,7 +32,7 @@ namespace yocto
         public:
             YOCTO_LANG_PATTERN_DECL(AND, ' ', '&', '&', ' ');
             explicit AND() throw();
-            
+
         private:
             AND(const AND &);
         
