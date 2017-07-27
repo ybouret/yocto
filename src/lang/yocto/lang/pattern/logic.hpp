@@ -62,5 +62,22 @@ namespace yocto
     }
 }
 
+namespace yocto
+{
+    namespace Lang
+    {
+        class NONE : public Logical
+        {
+        public:
+            YOCTO_LANG_PATTERN_DECL(NONE, ' ', '!', '=', ' ');
+            explicit NONE() throw();
+
+        private:
+            NONE(const NONE &);
+        };
+    }
+}
+
+
 
 #endif

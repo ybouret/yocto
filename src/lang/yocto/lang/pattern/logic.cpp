@@ -108,6 +108,41 @@ namespace yocto
 }
 
 
+namespace yocto
+{
+    namespace Lang
+    {
+        NONE:: NONE() throw() : Logical(UUID)
+        {
+        }
+
+        NONE::NONE(const NONE &other) :
+        Logical(other)
+        {
+        }
+
+        bool NONE:: match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
+        {
+            assert(0==result.size);
+            // loop over all operands
+            for(const Pattern *op = operands.head;op;op=op->next)
+            {
+                assert(0==result.size);
+                if(op->match(source,result))
+                {
+                    source.store(result);
+                    return false;
+                }
+                assert(0==result.size);
+            }
+            return true;
+        }
+
+    }
+}
+
+
+
 #include "yocto/lang/pattern/basic.hpp"
 
 namespace yocto
