@@ -13,9 +13,10 @@ namespace yocto
             virtual ~Joker() throw();
 
         protected:
-            const Handle motif;
-            Joker(const uint32_t t,const Handle &p) throw();
-            Joker(const Joker &) throw();
+            const Pattern *motif;
+            Joker(const uint32_t  t,
+                  const Pattern  *p) throw();
+            Joker(const Joker &);
 
         private:
             YOCTO_DISABLE_ASSIGN(Joker);
@@ -31,12 +32,38 @@ namespace yocto
         {
         public:
             YOCTO_LANG_PATTERN_DECL(Optional, ' ', '|', '|', ' ');
-            explicit Optional(const Handle &p) throw();
+
+            static Pattern *Create(Pattern *p);
 
         private:
-            Optional(const Optional &) throw();
+            Optional(const Optional &) ;
+            Optional(const Pattern  *) throw();
         };
     }
 }
+
+namespace yocto
+{
+    namespace Lang
+    {
+        class AtLeast : public Joker
+        {
+        public:
+            YOCTO_LANG_PATTERN_DECL(AtLeast,' ','>','=',' ');
+            const size_t count;
+
+            static Pattern * Create( Pattern *p, const size_t n);
+
+        private:
+            AtLeast(const Pattern *,const size_t ) throw();
+            AtLeast(const AtLeast &);
+        };
+
+        inline Pattern *ZeroOrMore( Pattern *p ) { return AtLeast::Create(p,0); }
+        inline Pattern *OneOrMore(  Pattern *p ) { return AtLeast::Create(p,1); }
+        
+    }
+}
+
 
 #endif

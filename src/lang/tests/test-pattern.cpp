@@ -1,5 +1,6 @@
 #include "yocto/lang/pattern/basic.hpp"
 #include "yocto/lang/pattern/logic.hpp"
+#include "yocto/lang/pattern/joker.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/ptr/auto.hpp"
 
@@ -20,7 +21,11 @@ YOCTO_UNIT_TEST_IMPL(pattern)
             patterns.push_back( new Single('A') );
             patterns.push_back( new AND() );
             patterns.push_back( new OR() );
-
+            patterns.push_back( new Range('a','z') );
+            patterns.push_back( Optional::Create( new Single('c') ) );
+            patterns.push_back( ZeroOrMore( new AND() ) );
+            patterns.push_back( OneOrMore( new Any1() ) );
+            patterns.push_back( new NONE() );
             Patterns patterns2(patterns);
         }
 

@@ -3,6 +3,7 @@
 
 #include "yocto/lang/source.hpp"
 #include "yocto/code/fourcc.hpp"
+#include "yocto/ptr/linked.hpp"
 
 namespace yocto
 {
@@ -19,10 +20,10 @@ inline  virtual         ~TYPE()  throw() {}                            \
 inline  virtual Pattern *clone() const   { return new TYPE(*this); }   \
 virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const    \
 
-        class Pattern : public counted_object
+        class Pattern : public object
         {
         public:
-            typedef arc_ptr<Pattern> Handle;
+            
             const uint32_t uuid; //!< 4 bytes ID
             Pattern       *next; //!< for list
             Pattern       *prev; //!< for list
