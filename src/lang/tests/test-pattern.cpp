@@ -3,6 +3,7 @@
 #include "yocto/lang/pattern/joker.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/ptr/auto.hpp"
+#include "yocto/ios/graphviz.hpp"
 
 using namespace yocto;
 
@@ -30,7 +31,12 @@ YOCTO_UNIT_TEST_IMPL(pattern)
         }
 
         auto_ptr<Pattern> motif( Logical::Equal("hello") );
-        
+
+        {
+            motif->graphviz("pat.dot");
+            ios::graphviz_render("pat.dot");
+        }
+
         while( source.is_active() )
         {
             assert(source.in_cache()>=1);

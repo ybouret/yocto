@@ -4,6 +4,7 @@
 #include "yocto/lang/source.hpp"
 #include "yocto/code/fourcc.hpp"
 #include "yocto/ptr/linked.hpp"
+#include "yocto/ios/ostream.hpp"
 
 namespace yocto
 {
@@ -18,7 +19,8 @@ public:                                                                \
 static  const   uint32_t UUID = YOCTO_FOURCC(A,B,C,D);                 \
 inline  virtual         ~TYPE()  throw() {}                            \
 inline  virtual Pattern *clone() const   { return new TYPE(*this); }   \
-virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const    \
+virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const;   \
+virtual void             __viz( ios::ostream &fp ) const
 
         class Pattern : public object
         {
@@ -35,6 +37,15 @@ virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const    \
 
             //! the match interface
             virtual bool match( YOCTO_LANG_PATTERN_MATCH_ARGS ) const = 0;
+
+            //! to check
+            virtual void __viz( ios::ostream &fp ) const = 0;
+
+            //! to mark ID
+            void __mark( ios::ostream &fp) const;
+
+            void graphviz(const string &filename) const;
+
 
         protected:
             explicit Pattern(const uint32_t t) throw();

@@ -27,6 +27,14 @@ namespace yocto
             return *this;
         }
 
+        void Logical:: __viz_ops( ios::ostream &fp ) const
+        {
+            for( const Pattern *op = operands.head; op; op=op->next )
+            {
+                op->__viz(fp);
+                __mark(fp); fp << "->"; op->__mark(fp); fp << ";\n";
+            }
+        }
 
 
 
@@ -71,6 +79,13 @@ namespace yocto
             return true;
         }
 
+        void AND:: __viz(ios::ostream &fp) const
+        {
+            __mark(fp);
+            fp << "[label=\"&&\",shape=house];\n";
+            __viz_ops(fp);
+        }
+
     }
 }
 
@@ -103,7 +118,13 @@ namespace yocto
             }
             return false;
         }
-        
+
+        void OR:: __viz( ios::ostream &fp ) const
+        {
+            __mark(fp);
+            fp << "[label=\"||\",shape=diamond];\n";
+            __viz_ops(fp);
+        }
     }
 }
 
@@ -138,6 +159,12 @@ namespace yocto
             return true;
         }
 
+        void NONE:: __viz( ios::ostream &fp ) const
+        {
+            __mark(fp);
+            fp << "[label=\"!!\",shape=triangle];\n";
+            __viz_ops(fp);
+        }
     }
 }
 

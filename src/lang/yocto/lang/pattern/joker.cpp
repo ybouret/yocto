@@ -67,6 +67,14 @@ namespace yocto
                 return true;
             }
         }
+
+        void Optional:: __viz(ios::ostream &fp) const
+        {
+            __mark(fp);
+            fp << "[label=\"?\",shape=egg];\n";
+            motif->__viz(fp);
+            __mark(fp); fp << "->"; motif->__mark(fp); fp << ";\n";
+        }
     }
 
 }
@@ -127,6 +135,14 @@ namespace yocto
             }
         }
 
+
+        void AtLeast:: __viz(ios::ostream &fp) const
+        {
+            __mark(fp);
+            fp("[label=\">=%u\",shape=egg];\n",unsigned(count));
+            motif->__viz(fp);
+            __mark(fp); fp << "->"; motif->__mark(fp); fp << ";\n";
+        }
     }
 
 }
@@ -179,6 +195,14 @@ namespace yocto
                 source.store(result);
                 return false;
             }
+        }
+
+        void Counting:: __viz(ios::ostream &fp) const
+        {
+            __mark(fp);
+            fp("[label=\"[%u:%u]\",shape=egg];\n",unsigned(min_count),unsigned(max_count));
+            motif->__viz(fp);
+            __mark(fp); fp << "->"; motif->__mark(fp); fp << ";\n";
         }
 
     }
