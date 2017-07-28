@@ -5,6 +5,8 @@ namespace yocto
 {
     namespace Lang
     {
+        static const char fn[] = "PattenDict: ";
+
         PatternDict:: PatternDict() throw() {}
 
         PatternDict:: ~PatternDict() throw() {}
@@ -14,7 +16,7 @@ namespace yocto
             const PatternPtr q(p);
             if(!insert(id,p))
             {
-                throw exception("PatternDict: muliple '%s'", id.c_str());
+                throw exception("%smuliple '%s'", fn,id.c_str());
             }
         }
 
@@ -24,8 +26,25 @@ namespace yocto
             const string     id(id_);
             if(!insert(id,p))
             {
-                throw exception("PatternDict: muliple '%s'", id.c_str());
+                throw exception("%smuliple '%s'",fn,id.c_str());
             }
         }
+
+        Pattern * PatternDict:: operator[](const string &id) const
+        {
+            const PatternPtr *ppPattern = search(id);
+            if(!ppPattern)
+            {
+                throw exception("%sno '%s'",fn,id.c_str());
+            }
+            return (*ppPattern)->clone();
+        }
+
+        Pattern * PatternDict:: operator[](const char *id) const
+        {
+            const string ID(id);
+            return (*this)[ID];
+        }
+
     }
 }

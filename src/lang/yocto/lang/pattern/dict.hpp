@@ -21,6 +21,9 @@ namespace yocto
             void define( const string &id, Pattern *p );
             void define( const char   *id, Pattern *p );
 
+            Pattern * operator[](const string &) const;
+            Pattern * operator[](const char   *) const;
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(PatternDict);
         };
