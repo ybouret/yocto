@@ -131,3 +131,56 @@ namespace yocto
 
 }
 
+#include "yocto/code/utils.hpp"
+
+namespace yocto
+{
+    namespace Lang
+    {
+        Counting:: Counting(const Pattern *p, const size_t nmin, const size_t nmax) throw():
+        Joker(UUID,p),
+        min_count( min_of(nmin,nmax) ),
+        max_count( max_of(nmin,nmax) )
+        {
+        }
+
+        Counting::Counting(const Counting &other) :
+        Joker(other),
+        min_count(other.min_count),
+        max_count(other.max_count)
+        {
+
+        }
+
+        bool Counting::match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
+        {
+            assert(0==result.size);
+            size_t num = 0;
+            while(true)
+            {
+                Token res;
+                if(motif->match(source,res))
+                {
+                    ++num;
+                    result.merge_back(res);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if(num<min_count||num>max_count)
+            {
+                return true;
+            }
+            else
+            {
+                source.store(result);
+                return false;
+            }
+        }
+
+    }
+}
+

@@ -65,5 +65,27 @@ namespace yocto
     }
 }
 
+namespace yocto
+{
+    namespace Lang
+    {
+        class Counting : public Joker
+        {
+        public:
+            YOCTO_LANG_PATTERN_DECL(Counting,'<','=','=','>');
+            const size_t min_count;
+            const size_t max_count;
+
+            static Pattern * Create( Pattern *p, const size_t n);
+
+        private:
+            Counting(const Pattern *,const size_t,const size_t) throw();
+            Counting(const Counting &);
+        };
+
+    }
+}
+
+
 
 #endif
