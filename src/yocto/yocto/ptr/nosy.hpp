@@ -7,7 +7,7 @@
 namespace yocto
 {
 	
-	//! intrusive pointer
+	//! intrusive pointer with double key
 	/**
 	 T must have:
 	 - void   withhold() throw()

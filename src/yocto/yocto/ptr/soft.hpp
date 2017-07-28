@@ -8,6 +8,7 @@
 namespace yocto
 {
 
+    //! shared with possibly null pointee
     template <typename T>
     class soft_ptr
     {

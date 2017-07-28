@@ -8,6 +8,7 @@
 namespace yocto
 {
 
+    //! shared pointer, with one associated ref
 	template <typename T>
 	class shared_ptr
 	{

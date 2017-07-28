@@ -2,6 +2,8 @@
 #include "yocto/ptr/shared.hpp"
 #include "yocto/string.hpp"
 #include "yocto/ptr/arc.hpp"
+#include "yocto/ptr/linked.hpp"
+#include "yocto/ptr/auto.hpp"
 
 using namespace yocto;
 
@@ -88,7 +90,48 @@ YOCTO_UNIT_TEST_IMPL(soft_ptr)
     p3 = new double(7);
     p1 = new double(9);
     std::cerr << *p3 << "," << *p4 << "," << *p1 << std::endl;
-}
-YOCTO_UNIT_TEST_DONE()
+    }
+    YOCTO_UNIT_TEST_DONE()
+
+#include "yocto/core/list.hpp"
+    YOCTO_UNIT_TEST_IMPL(linked_ptr)
+    {
+        {
+            typedef linked_ptr<dummy,shared_ptr> dsh_p;
+            core::list_of_cpp<dsh_p> dummys;
+            for(size_t k=10;k>0;--k)
+            {
+                const shared_ptr<dummy> tmp( new dummy(k) );
+                dummys.push_back( new dsh_p(tmp) );
+            }
+            for(dsh_p *node = dummys.head; node; node=node->next)
+            {
+                std::cerr << (**node).value << std::endl;
+            }
+            for(const dsh_p *node = dummys.head; node; node=node->next)
+            {
+                std::cerr << (**node).value << std::endl;
+            }
+        }
+
+        {
+            typedef linked_ptr<dummy,arc_ptr> dsh_p;
+            core::list_of_cpp<dsh_p> dummys;
+            for(size_t k=10;k>0;--k)
+            {
+                const arc_ptr<dummy> tmp( new dummy(k) );
+                dummys.push_back( new dsh_p(tmp) );
+            }
+            for(dsh_p *node = dummys.head; node; node=node->next)
+            {
+                std::cerr << (**node).value << std::endl;
+            }
+            for(const dsh_p *node = dummys.head; node; node=node->next)
+            {
+                std::cerr << (**node).value << std::endl;
+            }
+        }
 
 
+    }
+    YOCTO_UNIT_TEST_DONE()

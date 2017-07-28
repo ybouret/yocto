@@ -4,7 +4,8 @@
 #include "yocto/type/args.hpp"
 namespace yocto
 {
-	
+
+    //! automatic pointer, only one pointee
 	template <typename T>
 	class auto_ptr
 	{

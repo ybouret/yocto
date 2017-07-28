@@ -44,6 +44,7 @@ YOCTO_UNIT_TEST_INIT(150)
     YOCTO_UNIT_TEST_DECL(shared_ptr);
     YOCTO_UNIT_TEST_DECL(alias_ptr);
     YOCTO_UNIT_TEST_DECL(soft_ptr);
+    YOCTO_UNIT_TEST_DECL(linked_ptr);
     YOCTO_UNIT_TEST_DECL(stock);
     YOCTO_UNIT_TEST_DECL(frag_layout);
     YOCTO_UNIT_TEST_DECL(frag_block);
