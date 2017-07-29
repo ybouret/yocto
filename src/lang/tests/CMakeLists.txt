@@ -7,6 +7,8 @@ TARGET_LINK_YOCTO(test-lang lang)
 
 ENABLE_TESTING()
 
-ADD_TEST(Module test-lang module)
-ADD_TEST(Source test-lang source)
+ADD_TEST(Module  test-lang module)
+ADD_TEST(Source  test-lang source)
+ADD_TEST(Pattern test-lang pattern)
+ADD_TEST(POSIX   test-lang posix)
 

@@ -6,7 +6,6 @@
 #include "yocto/ios/graphviz.hpp"
 
 using namespace yocto;
-
 using namespace Lang;
 
 YOCTO_UNIT_TEST_IMPL(pattern)
@@ -30,12 +29,15 @@ YOCTO_UNIT_TEST_IMPL(pattern)
             Patterns patterns2(patterns);
         }
 
+
         auto_ptr<Pattern> motif( Logical::Equal("hello") );
 
         {
             motif->graphviz("pat.dot");
             ios::graphviz_render("pat.dot");
         }
+
+
 
         while( source.is_active() )
         {
