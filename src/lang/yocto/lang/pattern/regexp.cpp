@@ -47,6 +47,7 @@ namespace yocto
             //==================================================================
 #define Y_LPAREN '('
 #define Y_RPAREN ')'
+#define Y_ALTERN '|'
 
             inline Pattern *subExpr()
             {
@@ -74,6 +75,22 @@ namespace yocto
                             ++curr; // skip right parenthesis
                             goto END_SXP;
 
+                            //__________________________________________________
+                            //
+                            // alternating
+                            //__________________________________________________
+                        case Y_ALTERN: {
+                            ++curr; // skip alternation sign
+                            auto_ptr<Logical> alt( new OR() );
+                            *alt << sub.yield(); //!< LHS
+                            *alt << subExpr();   //!< RHS
+                            return alt.yield(); }
+
+
+                            //__________________________________________________
+                            //
+                            // default
+                            //__________________________________________________
                         default:
                             sxp << new Single(C);
                     }
