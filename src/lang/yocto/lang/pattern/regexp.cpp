@@ -3,6 +3,7 @@
 #include "yocto/lang/pattern/joker.hpp"
 #include "yocto/lang/pattern/logic.hpp"
 #include "yocto/ptr/auto.hpp"
+#include "yocto/exception.hpp"
 
 namespace yocto
 {
@@ -13,18 +14,21 @@ namespace yocto
         // internal regular expression compiler
         //
         ////////////////////////////////////////////////////////////////////////
+        static const char fn[] = "RegExp: ";
 
         class RegExpCompiler
         {
         public:
             const char        *curr;
             const char        *last;
+            int                depth;
             const PatternDict *dict;
 
             inline RegExpCompiler(const string      &usr_expr,
                                   const PatternDict *usr_dict) :
             curr( usr_expr.c_str()       ),
             last( curr + usr_expr.size() ),
+            depth(0),
             dict( usr_dict               )
             {
             }
@@ -41,6 +45,9 @@ namespace yocto
             //
             //
             //==================================================================
+#define Y_LPAREN '('
+#define Y_RPAREN ')'
+
             inline Pattern *subExpr()
             {
                 auto_ptr<AND> sub( new AND() );
@@ -52,10 +59,40 @@ namespace yocto
                     switch(C)
                     {
 
+                            //__________________________________________________
+                            //
+                            // grouping
+                            //__________________________________________________
+                        case Y_LPAREN:
+                            ++curr; // skip left parenthesis
+                            ++depth;
+                            sxp << subExpr();
+                            break;
+
+                        case Y_RPAREN:
+                            if(--depth<0) throw exception("%sunexpected '%c'",fn,Y_RPAREN);
+                            ++curr; // skip right parenthesis
+                            goto END_SXP;
+
                         default:
                             sxp << new Single(C);
                     }
                     ++curr;
+                }
+
+            END_SXP:
+                //______________________________________________________________
+                //
+                // sanity checks
+                //______________________________________________________________
+                if(depth>0)
+                {
+                    throw exception("%sunfinished sub expression",fn);
+                }
+
+                if( sxp.operands.size <= 0 )
+                {
+                    throw exception("%sempty sub expression",fn);
                 }
 
                 return sub.yield();
