@@ -5,7 +5,7 @@
 #include "yocto/lang/pattern/posix.hpp"
 #include "yocto/ptr/auto.hpp"
 #include "yocto/exception.hpp"
-
+#include "yocto/code/utils.hpp"
 
 #include <iostream>
 
@@ -160,7 +160,7 @@ namespace yocto
                 assert('\\'==*curr);
                 if(++curr>=last) throw exception("%sunfinished escape sequence",fn);
                 const char E = curr[0];
-                ++curr;
+                ++curr; // skip escape char
                 
                 switch(E)
                 {
@@ -187,12 +187,31 @@ namespace yocto
                     case 'f': ops.push_back( new Single('\f') ); return;
                     case 'v': ops.push_back( new Single('\v') ); return;
                         
+                    case 'x':
+                        ops.push_back( hexEscapeSequence() );
+                        return;
+                        
                     default:
                         break;
                 }
                 
                 throw exception("%sunexpected escape char '%c'",fn,E);
                 
+            }
+            
+            Pattern *hexEscapeSequence()
+            {
+                //assert('x'==*curr);
+                if(curr>=last) throw exception("%smissing first hexa code",fn);
+                const int hi = hex2dec(*curr);
+                if(hi<0) throw exception("%sinvalid first hexa char '%c'",fn,*curr);
+                
+                if(++curr>=last) throw exception("%smissing second hexa code",fn);
+                const int lo = hex2dec(*curr);
+                if(lo<0) throw exception("%sinvalid second hexa char '%c'",fn,*curr);
+                ++curr;
+                const int ch = hi*16 + lo;
+                return new Single(ch);
             }
             
         private:
