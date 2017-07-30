@@ -11,7 +11,8 @@ namespace yocto
         {
         public:
             virtual ~Joker() throw();
-
+            void optimize() throw();
+            
         protected:
             const Pattern *motif;
             Joker(const uint32_t  t,
@@ -31,7 +32,7 @@ namespace yocto
         class Optional : public Joker
         {
         public:
-            YOCTO_LANG_PATTERN_DECL(Optional, ' ', '|', '|', ' ');
+            YOCTO_LANG_PATTERN_DECL(Optional, ' ', ' ', ' ', '?');
 
             static Pattern *Create(Pattern *p);
 

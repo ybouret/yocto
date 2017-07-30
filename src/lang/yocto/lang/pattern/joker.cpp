@@ -25,6 +25,13 @@ namespace yocto
         {
             addr = static_cast<Joker *>(this);
         }
+        
+        void Joker:: optimize() throw()
+        {
+            motif = Optimize( (Pattern *)motif );
+        }
+
+        
     }
 
 }
