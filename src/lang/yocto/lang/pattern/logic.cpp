@@ -12,12 +12,14 @@ namespace yocto
         Pattern(t),
         operands()
         {
+            addr = static_cast<Logical *>(this);
         }
 
         Logical:: Logical( const Logical &other ) :
         Pattern(other),
         operands(other.operands)
         {
+            addr = static_cast<Logical *>(this);
         }
 
         Logical & Logical:: operator<<( Pattern *p )

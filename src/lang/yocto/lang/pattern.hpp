@@ -29,6 +29,7 @@ virtual void             __viz( ios::ostream &fp ) const
             const uint32_t uuid; //!< 4 bytes ID
             Pattern       *next; //!< for list
             Pattern       *prev; //!< for list
+            void          *addr; //!< for optimizing and stuff
             
             virtual ~Pattern() throw();
 
@@ -46,6 +47,7 @@ virtual void             __viz( ios::ostream &fp ) const
 
             void graphviz(const string &filename) const;
 
+            static Pattern * Optimize( Pattern *p ) throw();
 
         protected:
             explicit Pattern(const uint32_t t) throw();

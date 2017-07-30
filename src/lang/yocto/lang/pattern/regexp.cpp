@@ -5,6 +5,9 @@
 #include "yocto/ptr/auto.hpp"
 #include "yocto/exception.hpp"
 
+
+#include <iostream>
+
 namespace yocto
 {
     namespace Lang
@@ -82,9 +85,9 @@ namespace yocto
                         case Y_ALTERN: {
                             ++curr; // skip alternation sign
                             auto_ptr<Logical> alt( new OR() );
-                            *alt << sub.yield(); //!< LHS
+                            *alt << Pattern::Optimize(sub.yield()); //!< LHS
                             *alt << subExpr();   //!< RHS
-                            return alt.yield(); }
+                            return Pattern::Optimize(alt.yield()); }
 
 
                             //__________________________________________________
@@ -93,8 +96,8 @@ namespace yocto
                             //__________________________________________________
                         default:
                             sxp << new Single(C);
+                            ++curr;
                     }
-                    ++curr;
                 }
 
             END_SXP:
@@ -102,17 +105,12 @@ namespace yocto
                 //
                 // sanity checks
                 //______________________________________________________________
-                if(depth>0)
-                {
-                    throw exception("%sunfinished sub expression",fn);
-                }
-
                 if( sxp.operands.size <= 0 )
                 {
                     throw exception("%sempty sub expression",fn);
                 }
 
-                return sub.yield();
+                return Pattern::Optimize(sub.yield());
             }
 
 
@@ -131,7 +129,10 @@ namespace yocto
         Pattern *RegExp( const string &expr, const PatternDict *dict )
         {
             RegExpCompiler compiler(expr,dict);
-
+            if(compiler.depth>0)
+            {
+                throw exception("%sunifinished sub expression",fn);
+            }
             return compiler.subExpr();
         }
         

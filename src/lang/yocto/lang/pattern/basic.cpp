@@ -10,11 +10,13 @@ namespace yocto
 
         Any1::Any1() throw() : yocto::Lang::Pattern(UUID)
         {
+            addr = static_cast<Any1 *>(this);
         }
 
         Any1:: Any1(const Any1 &other) throw() :
         Pattern(other)
         {
+            addr = static_cast<Any1 *>(this);
         }
 
         bool Any1:: match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
@@ -52,12 +54,14 @@ namespace yocto
         yocto::Lang::Pattern(UUID),
         code(C)
         {
+            addr = static_cast<Single *>(this);
         }
 
         Single:: Single(const Single &other) throw() :
         Pattern(other),
         code(other.code)
         {
+            addr = static_cast<Single *>(this);
         }
 
         bool Single:: match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
@@ -106,6 +110,7 @@ namespace yocto
         lower( min_of(lo,up) ),
         upper( max_of(lo,up) )
         {
+            addr = static_cast<Range *>(this);
         }
 
         Range:: Range(const Range &other) throw() :
@@ -113,6 +118,7 @@ namespace yocto
         lower(other.lower),
         upper(other.upper)
         {
+            addr = static_cast<Range *>(this);
         }
 
         bool Range:: match(YOCTO_LANG_PATTERN_MATCH_ARGS) const

@@ -16,13 +16,14 @@ namespace yocto
         motif(p)
         {
             assert(motif);
+            addr = static_cast<Joker *>(this);
         }
 
         Joker:: Joker(const Joker &other) :
         Pattern(other),
         motif(other.motif->clone())
         {
-
+            addr = static_cast<Joker *>(this);
         }
     }
 
