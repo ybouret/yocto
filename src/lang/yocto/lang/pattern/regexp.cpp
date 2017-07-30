@@ -89,7 +89,18 @@ namespace yocto
                             *alt << subExpr();   //!< RHS
                             return Pattern::Optimize(alt.yield()); }
 
-
+                            //__________________________________________________
+                            //
+                            // jokers
+                            //__________________________________________________
+                        case '?':
+                        case '*':
+                        case '+':
+                            if(sxp.operands.size<=0) throw exception("%sunexpected joker '%c'",fn,C);
+                            createSimpleJoker(sxp.operands,C);
+                            ++curr; // skip joker sign
+                            break;
+                            
                             //__________________________________________________
                             //
                             // default
@@ -113,6 +124,18 @@ namespace yocto
                 return Pattern::Optimize(sub.yield());
             }
 
+            inline void createSimpleJoker(Patterns &ops, const char C)
+            {
+                assert(ops.size>0);
+                switch(C)
+                {
+                    case '+': ops.push_back( OneOrMore(ops.pop_back()));        return;
+                    case '?': ops.push_back( Optional::Create(ops.pop_back())); return;
+                    case '*': ops.push_back( ZeroOrMore(ops.pop_back()));       return;
+                    default : break;
+                }
+                throw exception("%scorrupted code in createSimpleJoker!",fn);
+            }
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(RegExpCompiler);
