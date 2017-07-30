@@ -2,6 +2,7 @@
 #include "yocto/lang/pattern/basic.hpp"
 #include "yocto/lang/pattern/joker.hpp"
 #include "yocto/lang/pattern/logic.hpp"
+#include "yocto/lang/pattern/posix.hpp"
 #include "yocto/ptr/auto.hpp"
 #include "yocto/exception.hpp"
 
@@ -91,7 +92,7 @@ namespace yocto
 
                             //__________________________________________________
                             //
-                            // jokers
+                            // simple jokers
                             //__________________________________________________
                         case '?':
                         case '*':
@@ -99,6 +100,23 @@ namespace yocto
                             if(sxp.operands.size<=0) throw exception("%sunexpected joker '%c'",fn,C);
                             createSimpleJoker(sxp.operands,C);
                             ++curr; // skip joker sign
+                            break;
+                            
+                            //__________________________________________________
+                            //
+                            // dot
+                            //__________________________________________________
+                            case '.':
+                            sxp << posix::dot();
+                            ++curr;
+                            break;
+                            
+                            //__________________________________________________
+                            //
+                            // escape sequence
+                            //__________________________________________________
+                            case '\\':
+                            mainEscapeSequence(sxp.operands);
                             break;
                             
                             //__________________________________________________
@@ -137,6 +155,46 @@ namespace yocto
                 throw exception("%scorrupted code in createSimpleJoker!",fn);
             }
 
+            inline void mainEscapeSequence(Patterns &ops)
+            {
+                assert('\\'==*curr);
+                if(++curr>=last) throw exception("%sunfinished escape sequence",fn);
+                const char E = curr[0];
+                ++curr;
+                
+                switch(E)
+                {
+                    case '.':
+                    case '\\':
+                    case '/':
+                    case '{':
+                    case '}':
+                    case '(':
+                    case ')':
+                    case '[':
+                    case ']':
+                    case '"':
+                    case '\'':
+                    case '+':
+                    case '*':
+                    case '?':
+                        ops.push_back( new Single(E) );
+                        return;
+                        
+                    case 'n': ops.push_back( new Single('\n') ); return;
+                    case 'r': ops.push_back( new Single('\r') ); return;
+                    case 't': ops.push_back( new Single('\t') ); return;
+                    case 'f': ops.push_back( new Single('\f') ); return;
+                    case 'v': ops.push_back( new Single('\v') ); return;
+                        
+                    default:
+                        break;
+                }
+                
+                throw exception("%sunexpected escape char '%c'",fn,E);
+                
+            }
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(RegExpCompiler);
         };
