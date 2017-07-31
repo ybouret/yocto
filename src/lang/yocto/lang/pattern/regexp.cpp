@@ -298,12 +298,15 @@ namespace yocto
                 if(++curr>last) throw exception("%sunfinished group",fn);
 
 
+
                 const char C = curr[0];
-                switch(C)
+                if(':'==C)
                 {
-                    case ':': ops.push_back(findPosixExpression()); return;
-                    default:
-                        throw exception("group not handled");
+                    ops.push_back(findPosixExpression());
+                }
+                else
+                {
+                    throw exception("group not handled");
                 }
             }
 
@@ -354,6 +357,8 @@ namespace yocto
 
                 throw exception("%sunknown posix :%s:",fn,id.c_str());
             }
+
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(RegExpCompiler);
