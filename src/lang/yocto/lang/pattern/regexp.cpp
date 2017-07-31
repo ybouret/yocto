@@ -52,6 +52,8 @@ namespace yocto
 #define Y_LPAREN '('
 #define Y_RPAREN ')'
 #define Y_ALTERN '|'
+#define Y_LBRACE '{'
+#define Y_RBRACE '}'
 
             inline Pattern *subExpr()
             {
@@ -118,7 +120,15 @@ namespace yocto
                             case '\\':
                             mainEscapeSequence(sxp.operands);
                             break;
-                            
+
+                            //__________________________________________________
+                            //
+                            // curly braced jokers
+                            //__________________________________________________
+                        case Y_LBRACE:
+                            createBracedJoker(sxp.operands);
+                            break;
+
                             //__________________________________________________
                             //
                             // default
@@ -201,7 +211,6 @@ namespace yocto
             
             Pattern *hexEscapeSequence()
             {
-                //assert('x'==*curr);
                 if(curr>=last) throw exception("%smissing first hexa code",fn);
                 const int hi = hex2dec(*curr);
                 if(hi<0) throw exception("%sinvalid first hexa char '%c'",fn,*curr);
@@ -210,10 +219,41 @@ namespace yocto
                 const int lo = hex2dec(*curr);
                 if(lo<0) throw exception("%sinvalid second hexa char '%c'",fn,*curr);
                 ++curr;
+
                 const int ch = hi*16 + lo;
                 return new Single(ch);
             }
-            
+
+
+            inline void createBracedJoker( Patterns &ops )
+            {
+                assert(Y_LBRACE== *curr);
+                const char *ini = ++curr;
+                while(*(curr++)!=Y_RBRACE)
+                {
+                    if(curr>=last) throw exception("%smissing '%c'",fn,Y_RBRACE);
+                }
+                const char *end = curr;
+                assert(end>ini);
+                const size_t n = static_cast<size_t>(end-ini)-1;
+                if(n<=0) throw exception("%sempty braces",fn);
+                const string info(ini,n);
+                std::cerr << "using '" << info << "'" << std::endl;
+
+                const char C = info[0];
+                if( (C>='a' && C<='z') || (C>='A'&&C<='Z') || (C == '_') )
+                {
+                    // assuming reference
+                    if(!dict) throw exception("%smissing dictionary for '%s'", fn, info.c_str() );
+                    ops.push_back( (*dict)[info] );
+                }
+                else
+                {
+                    // assuming counting joker
+                }
+
+            }
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(RegExpCompiler);
         };

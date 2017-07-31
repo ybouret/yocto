@@ -1,20 +1,27 @@
 #include "yocto/lang/pattern/dict.hpp"
 #include "yocto/exception.hpp"
 
+
+#include <iostream>
+
 namespace yocto
 {
     namespace Lang
     {
         static const char fn[] = "PattenDict: ";
 
-        PatternDict:: PatternDict() throw() {}
+        PatternDict:: PatternDict() throw()
+        {
+        }
 
-        PatternDict:: ~PatternDict() throw() {}
+        PatternDict:: ~PatternDict() throw()
+        {
+        }
 
         void PatternDict:: define(const string &id, Pattern *p)
         {
             const PatternPtr q(p);
-            if(!insert(id,p))
+            if(!insert(id,q))
             {
                 throw exception("%smuliple '%s'", fn,id.c_str());
             }
@@ -24,7 +31,7 @@ namespace yocto
         {
             const PatternPtr q(p);
             const string     id(id_);
-            if(!insert(id,p))
+            if(!insert(id,q))
             {
                 throw exception("%smuliple '%s'",fn,id.c_str());
             }
