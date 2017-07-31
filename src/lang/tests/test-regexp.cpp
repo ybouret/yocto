@@ -17,7 +17,6 @@ YOCTO_UNIT_TEST_IMPL(regexp)
     for(int i=1;i<argc;++i)
     {
         std::cerr << "Compiling '" << argv[i] << "'" << std::endl;
-        //rx.push_back( RegExp(argv[i],NULL) );
         rx.push_back( RegExp(argv[i],&dict) );
         const string filename = vformat("rx%d.dot",i);
         rx.tail->graphviz(filename);

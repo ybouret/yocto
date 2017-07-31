@@ -152,6 +152,11 @@ namespace yocto
                 return Pattern::Optimize(sub.yield());
             }
 
+            //==================================================================
+            //
+            // create a simple Joker
+            //
+            //==================================================================
             inline void createSimpleJoker(Patterns &ops, const char C)
             {
                 assert(ops.size>0);
@@ -165,6 +170,12 @@ namespace yocto
                 throw exception("%scorrupted code in createSimpleJoker!",fn);
             }
 
+
+            //==================================================================
+            //
+            // parse an escape sequence from sub-expression
+            //
+            //==================================================================
             inline void mainEscapeSequence(Patterns &ops)
             {
                 assert('\\'==*curr);
@@ -208,7 +219,12 @@ namespace yocto
                 throw exception("%sunexpected escape char '%c'",fn,E);
                 
             }
-            
+
+            //==================================================================
+            //
+            // convert a two-chars hexadecimal to a single code
+            //
+            //==================================================================
             Pattern *hexEscapeSequence()
             {
                 if(curr>=last) throw exception("%smissing first hexa code",fn);
@@ -224,7 +240,11 @@ namespace yocto
                 return new Single(ch);
             }
 
-
+            //==================================================================
+            //
+            // extract joker from braced expression: reference or counting
+            //
+            //==================================================================
             inline void createBracedJoker( Patterns &ops )
             {
                 assert(Y_LBRACE== *curr);
@@ -237,7 +257,7 @@ namespace yocto
                 assert(end>ini);
                 const size_t n = static_cast<size_t>(end-ini)-1;
                 if(n<=0) throw exception("%sempty braces",fn);
-                const string info(ini,n);
+                string info(ini,n);
                 std::cerr << "using '" << info << "'" << std::endl;
 
                 const char C = info[0];
