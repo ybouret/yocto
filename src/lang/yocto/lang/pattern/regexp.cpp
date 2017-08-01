@@ -317,33 +317,42 @@ namespace yocto
                     return;
                 }
 
-                // local group
-                Patterns grp;
+                auto_ptr<Logical> grp;
+                switch(C)
+                {
+                    default:
+                        grp.reset( new OR() );
+                }
+
                 while(true)
                 {
+                    if(curr>=last)
+                    {
+                        throw exception("%sunfinished group",fn);
+                    }
+
+                    C = *curr;
                     switch(C)
                     {
+
+                        case Y_LBRACK:
+                            createGroup(grp->operands);
+                            break;
 
                         case Y_RBRACK:
                             ++curr;
                             goto END_GRP;
 
                         default:
-                            grp.push_back( new Single(C) );
-                            break;
+                            grp->operands.push_back( new Single(C) );
+                            ++curr;
                     }
-                    if(++curr>=last) throw exception("%sunfinished group",fn);
-                    C = *curr;
+
+
                 }
 
-                // analyze local group
             END_GRP:
-                {
-                    Logical *g = new OR();
-                    g->operands.swap_with(grp);
-                    ops.push_back(g);
-                }
-                ;
+                ops.push_back( grp.yield() );
 
             }
 

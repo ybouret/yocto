@@ -31,7 +31,7 @@ namespace yocto
                 Patterns stk;
                 while(q->operands.size>0)
                 {
-                    Pattern *sub = q->operands.pop_front();
+                    Pattern *sub = Pattern::Optimize(q->operands.pop_front());
                     if(AND::UUID==sub->uuid)
                     {
                         stk.merge_back( static_cast<Logical *>(sub->addr)->operands );
@@ -72,7 +72,7 @@ namespace yocto
                 Patterns stk;
                 while(q->operands.size>0)
                 {
-                    Pattern *sub = q->operands.pop_front();
+                    Pattern *sub = Pattern::Optimize(q->operands.pop_front());
                     if(OR::UUID==sub->uuid)
                     {
                         stk.merge_back( static_cast<Logical *>(sub->addr)->operands );
