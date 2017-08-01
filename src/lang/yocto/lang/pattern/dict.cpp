@@ -21,6 +21,8 @@ namespace yocto
         void PatternDict:: define(const string &id, Pattern *p)
         {
             const PatternPtr q(p);
+            if( id.size() <= 0 )            throw exception("%sempty identifier",fn);
+            if( ! IsValidFirstChar(id[0]) ) throw exception("%sinvalid identifier '%s'",fn,id.c_str());
             if(!insert(id,q))
             {
                 throw exception("%smuliple '%s'", fn,id.c_str());
@@ -51,6 +53,18 @@ namespace yocto
         {
             const string ID(id);
             return (*this)[ID];
+        }
+
+        bool PatternDict:: IsValidFirstChar(const char C) throw()
+        {
+            if( (C>='a' && C<='z') || (C>='A'&&C<='Z') || (C == '_') )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
     }

@@ -162,9 +162,13 @@ namespace yocto
                 return Pattern::Optimize(sub.yield());
             }
 
+
+
             //==================================================================
             //
+            //
             // create a simple Joker
+            //
             //
             //==================================================================
             inline void createSimpleJoker(Patterns &ops, const char C)
@@ -183,7 +187,9 @@ namespace yocto
 
             //==================================================================
             //
+            //
             // parse an escape sequence from sub-expression
+            //
             //
             //==================================================================
             inline void mainEscapeSequence(Patterns &ops)
@@ -252,7 +258,9 @@ namespace yocto
 
             //==================================================================
             //
+            //
             // extract joker from braced expression: reference or counting
+            //
             //
             //==================================================================
             inline void createBracedJoker( Patterns &ops )
@@ -271,7 +279,7 @@ namespace yocto
                 std::cerr << "using '" << info << "'" << std::endl;
 
                 const char C = info[0];
-                if( (C>='a' && C<='z') || (C>='A'&&C<='Z') || (C == '_') )
+                if( PatternDict::IsValidFirstChar(C) )
                 {
                     // assuming reference
                     if(!dict) throw exception("%smissing dictionary for '%s'", fn, info.c_str() );
@@ -297,22 +305,53 @@ namespace yocto
                 assert(Y_LBRACK==*curr);
                 if(++curr>last) throw exception("%sunfinished group",fn);
 
+                
+                // here is the first char of the group
+                char C = *curr;
 
-
-                const char C = curr[0];
+                // detect a posix reference
                 if(':'==C)
                 {
+                    std::cerr << "POSIX" << std::endl;
                     ops.push_back(findPosixExpression());
+                    return;
                 }
-                else
+
+                // local group
+                Patterns grp;
+                while(true)
                 {
-                    throw exception("group not handled");
+                    switch(C)
+                    {
+
+                        case Y_RBRACK:
+                            ++curr;
+                            goto END_GRP;
+
+                        default:
+                            grp.push_back( new Single(C) );
+                            break;
+                    }
+                    if(++curr>=last) throw exception("%sunfinished group",fn);
+                    C = *curr;
                 }
+
+                // analyze local group
+            END_GRP:
+                {
+                    Logical *g = new OR();
+                    g->operands.swap_with(grp);
+                    ops.push_back(g);
+                }
+                ;
+
             }
 
             //==================================================================
             //
+            //
             // extract a posix sub-expression
+            //
             //
             //==================================================================
             Pattern * findPosixExpression()

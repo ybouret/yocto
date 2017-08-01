@@ -24,6 +24,8 @@ namespace yocto
             Pattern * operator[](const string &) const;
             Pattern * operator[](const char   *) const;
 
+            static bool IsValidFirstChar(const char C) throw();
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(PatternDict);
         };
