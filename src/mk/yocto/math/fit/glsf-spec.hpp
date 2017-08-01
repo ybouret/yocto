@@ -99,6 +99,34 @@ namespace yocto
                     }
                 }
 
+                template <typename FUNC>
+                static inline
+                T EvalFUNC(const T X, const array<T> &aorg, const array<T> &aerr, FUNC &fn ) throw()
+                {
+                    const size_t n = aorg.size();
+                    T ans(0);
+                    for(size_t i=1;i<=n;++i)
+                    {
+                        const T Xi = ipower(X,i-1);
+                        ans += fn( Xi * ( aorg[i]+aerr[i] ), Xi * (aorg[i]-aerr[i]) );
+                    }
+                    return ans;
+                }
+
+                static inline
+                T EvalMin(const T X, const array<T> &aorg, const array<T> &aerr) throw()
+                {
+                    return EvalFUNC(X,aorg,aerr,min_of<T>);
+                }
+
+                static inline
+                T EvalMax(const T X, const array<T> &aorg, const array<T> &aerr) throw()
+                {
+                    return EvalFUNC(X,aorg,aerr,max_of<T>);
+                }
+                
+
+
                 static inline
                 void ComputeDrvs( array<double> &drvs, const array<double> &aorg) throw()
                 {
