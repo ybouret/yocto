@@ -5,9 +5,38 @@
 //
 //
 //==================================================================
+static inline int cmpChars( const int lhs, const int rhs ) throw()
+{
+    return lhs-rhs;
+}
+
 inline Pattern *nextGroupSingle()
 {
-    return 0;
+    static const char plain[] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~";
+
+    if(curr>=last) throw exception("%sunfinished range",fn);
+    const char C = *curr;
+    size_t     i = 0;
+    if( core::locate(&C, plain, sizeof(plain)/sizeof(plain[0])-1, i, cmpChars) )
+    {
+        ++curr;
+        return new Single(C);
+    }
+    else
+    {
+        if( C == '\\' )
+        {
+            Patterns tmp;
+            ++curr; // skipping escape
+            grpEscapeSequence(tmp);
+            return tmp.pop_back();
+        }
+        else
+        {
+            throw exception("%sexpecting a Single for range",fn);
+            return 0;
+        }
+    }
 }
 
 inline void createGroup( Patterns &ops )
@@ -106,9 +135,14 @@ inline void createGroup( Patterns &ops )
                 // get next pattern: skip '-'
                 ++curr;
 
-                exit(1);
-            }
-                break;
+                auto_ptr<Pattern> rhs( nextGroupSingle()        );
+                auto_ptr<Pattern> lhs( grp->operands.pop_back() );
+
+                assert(rhs->uuid==Single::UUID);
+                assert(lhs->uuid==Single::UUID);
+                *grp << new Range(static_cast<Single *>(lhs->addr)->code,static_cast<Single *>(rhs->addr)->code);
+
+            } break;
 
             default:
                 grp->operands.push_back( new Single(C) );

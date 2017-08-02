@@ -6,6 +6,7 @@
 #include "yocto/ptr/auto.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/code/utils.hpp"
+#include "yocto/core/locate.hpp"
 
 #include <iostream>
 

@@ -26,7 +26,7 @@ namespace yocto
 		 */
 		
 		template <typename U, typename T, typename CMP>
-		inline bool locate( U *target, T *base, const size_t size, size_t &indx, CMP compare )
+		inline bool locate( const U *target, T *base, const size_t size, size_t &indx, CMP compare )
 		{
 			assert(!(NULL==base&&size>0) );
 			if( size > 0 )
