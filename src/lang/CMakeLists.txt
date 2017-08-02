@@ -8,7 +8,8 @@ INSTALL(FILES ${decl} DESTINATION include/yocto/lang)
 
 FILE(GLOB pattern_decl yocto/lang/pattern/*.hpp)
 FILE(GLOB pattern_impl yocto/lang/pattern/*.cpp)
-SET(pattern_srcs ${pattern_decl} ${pattern_impl})
+FILE(GLOB pattern_priv yocto/lang/pattern/*.hxx)
+SET(pattern_srcs ${pattern_decl} ${pattern_impl} ${pattern_priv})
 SOURCE_GROUP(lang/pattern FILES ${pattern_srcs})
 INSTALL(FILES ${pattern/decl} DESTINATION include/yocto/lang/pattern)
 
