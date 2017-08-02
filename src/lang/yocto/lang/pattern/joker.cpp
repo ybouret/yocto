@@ -31,6 +31,10 @@ namespace yocto
             motif = Optimize( (Pattern *)motif );
         }
 
+        void Joker:: __savCommon(ios::ostream &fp) const
+        {
+            motif->save(fp);
+        }
         
     }
 
@@ -83,6 +87,12 @@ namespace yocto
             motif->__viz(fp);
             __mark(fp); fp << "->"; motif->__mark(fp); fp << ";\n";
         }
+
+        void Optional:: __sav(ios::ostream &fp) const
+        {
+            __savCommon(fp);
+        }
+
     }
 
 }
@@ -151,6 +161,12 @@ namespace yocto
             motif->__viz(fp);
             __mark(fp); fp << "->"; motif->__mark(fp); fp << ";\n";
         }
+
+        void AtLeast:: __sav(ios::ostream &fp) const
+        {
+            fp.emit<uint32_t>(count);
+            __savCommon(fp);
+        }
     }
 
 }
@@ -211,6 +227,13 @@ namespace yocto
             fp("[label=\"[%u:%u]\",shape=egg];\n",unsigned(min_count),unsigned(max_count));
             motif->__viz(fp);
             __mark(fp); fp << "->"; motif->__mark(fp); fp << ";\n";
+        }
+
+        void Counting:: __sav(ios::ostream &fp) const
+        {
+            fp.emit<uint32_t>(min_count);
+            fp.emit<uint32_t>(max_count);
+            __savCommon(fp);
         }
 
     }

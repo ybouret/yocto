@@ -19,6 +19,8 @@ namespace yocto
                   const Pattern  *p) throw();
             Joker(const Joker &);
 
+            void __savCommon( ios::ostream &fp ) const;
+            
         private:
             YOCTO_DISABLE_ASSIGN(Joker);
         };

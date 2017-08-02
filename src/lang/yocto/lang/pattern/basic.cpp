@@ -39,6 +39,8 @@ namespace yocto
             __mark(fp);
             fp << "[label=\"ANY1\",shape=circle];\n";
         }
+
+        void Any1:: __sav(ios::ostream &) const { }
     }
 }
 
@@ -95,6 +97,12 @@ namespace yocto
             ios::graphviz_encode(char(code),fp);
             fp << "\",shape=square];\n";
         }
+
+        void Single:: __sav(ios::ostream &fp) const
+        {
+            fp.emit(code);
+        }
+
     }
 }
 
@@ -153,6 +161,12 @@ namespace yocto
             fp << '-';
             ios::graphviz_encode(char(upper),fp);
             fp << "\",shape=note];\n";
+        }
+
+        void Range:: __sav(ios::ostream &fp) const
+        {
+            fp.emit(lower);
+            fp.emit(upper);
         }
     }
 

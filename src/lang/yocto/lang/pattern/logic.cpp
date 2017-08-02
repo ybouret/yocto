@@ -38,6 +38,14 @@ namespace yocto
             }
         }
 
+        void Logical:: __sav_ops( ios::ostream &fp ) const
+        {
+            fp.emit<uint32_t>(operands.size);
+            for( const Pattern *op = operands.head; op; op=op->next )
+            {
+                op->save(fp);
+            }
+        }
 
 
     }
@@ -88,6 +96,10 @@ namespace yocto
             __viz_ops(fp);
         }
 
+        void AND:: __sav(ios::ostream &fp) const
+        {
+            __sav_ops(fp);
+        }
     }
 }
 
@@ -126,6 +138,11 @@ namespace yocto
             __mark(fp);
             fp << "[label=\"||\",shape=diamond];\n";
             __viz_ops(fp);
+        }
+
+        void OR:: __sav(ios::ostream &fp) const
+        {
+            __sav_ops(fp);
         }
     }
 }
@@ -166,6 +183,11 @@ namespace yocto
             __mark(fp);
             fp << "[label=\"!!\",shape=triangle];\n";
             __viz_ops(fp);
+        }
+
+        void NONE:: __sav(ios::ostream &fp) const
+        {
+            __sav_ops(fp);
         }
     }
 }

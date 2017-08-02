@@ -5,6 +5,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/ptr/auto.hpp"
 #include "yocto/ios/graphviz.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 using namespace yocto;
 using namespace Lang;
@@ -22,6 +23,21 @@ YOCTO_UNIT_TEST_IMPL(regexp)
         rx.tail->graphviz(filename);
         std::cerr << "\trendering..." << std::endl;
         ios::graphviz_render(filename);
+
+        {
+            const string  cname = vformat("rx%d.bin",i);
+            {
+                ios::wcstream fp(cname);
+                rx.tail->save(fp);
+            }
+
+        }
+
+        {
+            const string pCode = rx.tail->toString();
+            std::cerr << "pCode=" << pCode << std::endl;
+        }
+
     }
 
 }

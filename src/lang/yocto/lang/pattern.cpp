@@ -1,6 +1,9 @@
 #include "yocto/lang/pattern.hpp"
 #include "yocto/ios/ocstream.hpp"
 
+#include "yocto/ios/osstream.hpp"
+#include "yocto/string/base64.hpp"
+
 namespace yocto
 {
     namespace Lang
@@ -38,6 +41,24 @@ namespace yocto
             fp << "}\n";
         }
 
+        void Pattern:: save( ios::ostream &fp ) const
+        {
+            fp.emit(uuid);
+            __sav(fp);
+        }
+
+        string Pattern:: toString() const
+        {
+            static base64 &Base64 = base64::instance();
+
+            string bin;
+            {
+                ios::osstream fp(bin);
+                save(fp);
+            }
+            string bin64 = Base64.Encode(bin);
+            return bin64;
+        }
 
     }
 }

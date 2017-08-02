@@ -20,7 +20,8 @@ static  const   uint32_t UUID = YOCTO_FOURCC(A,B,C,D);                 \
 inline  virtual         ~TYPE()  throw() {}                            \
 inline  virtual Pattern *clone() const   { return new TYPE(*this); }   \
 virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const;   \
-virtual void             __viz( ios::ostream &fp ) const
+virtual void             __viz( ios::ostream &fp ) const;              \
+virtual void             __sav( ios::ostream &fp ) const
 
         class Pattern : public object
         {
@@ -41,6 +42,13 @@ virtual void             __viz( ios::ostream &fp ) const
 
             //! to check
             virtual void __viz( ios::ostream &fp ) const = 0;
+
+            //! what to write after the UUID
+            virtual void __sav( ios::ostream &fp ) const = 0;
+
+            void save( ios::ostream &fp ) const;
+
+            string toString() const;
 
             //! to mark ID
             void __mark( ios::ostream &fp) const;

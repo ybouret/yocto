@@ -25,6 +25,7 @@ namespace yocto
             Logical(const Logical &other);
 
             void __viz_ops( ios::ostream &fp ) const;
+            void __sav_ops( ios::ostream &fp ) const;
 
         private:
             YOCTO_DISABLE_ASSIGN(Logical);
