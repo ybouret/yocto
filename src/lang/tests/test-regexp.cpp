@@ -6,6 +6,7 @@
 #include "yocto/ptr/auto.hpp"
 #include "yocto/ios/graphviz.hpp"
 #include "yocto/ios/ocstream.hpp"
+#include "yocto/ios/icstream.hpp"
 
 using namespace yocto;
 using namespace Lang;
@@ -27,8 +28,15 @@ YOCTO_UNIT_TEST_IMPL(regexp)
         {
             const string  cname = vformat("rx%d.bin",i);
             {
+                std::cerr << "\tsaving..." << std::endl;
                 ios::wcstream fp(cname);
                 rx.tail->save(fp);
+            }
+
+            {
+                std::cerr << "\treloading" << std::endl;
+                ios::icstream     fp(cname);
+                auto_ptr<Pattern> q( Pattern::Load(fp) );
             }
 
         }

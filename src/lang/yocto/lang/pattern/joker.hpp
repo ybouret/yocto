@@ -79,7 +79,7 @@ namespace yocto
             const size_t min_count;
             const size_t max_count;
 
-            static Pattern * Create( Pattern *p, const size_t n);
+            static Pattern * Create( Pattern *p, const size_t nmin, const size_t nmax);
 
         private:
             Counting(const Pattern *,const size_t,const size_t) throw();

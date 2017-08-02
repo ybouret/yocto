@@ -192,6 +192,17 @@ namespace yocto
 
         }
 
+        Pattern * Counting:: Create( Pattern *p, const size_t nmin, const size_t nmax)
+        {
+            assert(p);
+            auto_ptr<Pattern> guard(p);
+            Pattern *q = new Counting(p,nmin,nmax);
+            guard.forget();
+            return q;
+        }
+
+
+
         bool Counting::match(YOCTO_LANG_PATTERN_MATCH_ARGS) const
         {
             assert(0==result.size);
