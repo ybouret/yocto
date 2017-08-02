@@ -1,10 +1,12 @@
-//==================================================================
+//==============================================================================
 //
 //
 // create a group and add it to operands
 //
 //
-//==================================================================
+//==============================================================================
+
+
 static inline int cmpChars( const int lhs, const int rhs ) throw()
 {
     return lhs-rhs;
@@ -49,8 +51,6 @@ inline void createGroup( Patterns &ops )
     //
     // here is the first char of the group
     //__________________________________________________________________________
-
-
     char C = *curr;
 
     //__________________________________________________________________________
@@ -153,7 +153,7 @@ inline void createGroup( Patterns &ops )
     }
 
 END_GRP:
-    ops.push_back( Pattern::Optimize(grp.yield()) );
+    ops.push_back( grp.yield() );
 
 }
 

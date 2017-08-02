@@ -121,7 +121,7 @@ namespace yocto
             {
                 throw exception("%sunifinished sub expression",fn);
             }
-            return compiler.subExpr();
+            return Pattern::Optimize(compiler.subExpr());
         }
         
     }

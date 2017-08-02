@@ -1,3 +1,8 @@
+//==============================================================================
+//
+// compiling an escape sequence for a group
+//
+//==============================================================================
 inline void grpEscapeSequence(Patterns &ops)
 {
     if(curr>=last) throw exception("%sunfinished Escape Sequence in group",fn);
