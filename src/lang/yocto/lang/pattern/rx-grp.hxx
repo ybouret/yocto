@@ -98,7 +98,16 @@ inline void createGroup( Patterns &ops )
                 //      //
             case '-':  // make a range
                 //____//_________________________________________________________
+            {
+                // check previous pattern
+                if(grp->operands.size<=0)                  throw exception("%sno previous pattern for range",fn);
+                if(grp->operands.tail->uuid!=Single::UUID) throw exception("%sprevious pattern for range is not a Single",fn);
 
+                // get next pattern: skip '-'
+                ++curr;
+
+                exit(1);
+            }
                 break;
 
             default:
