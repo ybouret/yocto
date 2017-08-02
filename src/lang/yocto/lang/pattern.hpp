@@ -56,6 +56,7 @@ virtual void             __sav( ios::ostream &fp ) const
             void graphviz(const string &filename) const;
 
             static Pattern * Optimize( Pattern *p ) throw();
+            static Pattern * Load(ios::istream &fp);
 
         protected:
             explicit Pattern(const uint32_t t) throw();
