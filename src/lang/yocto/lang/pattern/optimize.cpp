@@ -89,8 +89,35 @@ namespace yocto
             return p;
         }
 
-        
-        
+        //______________________________________________________________________
+        //
+        // optimizing NONE
+        //______________________________________________________________________
+        static inline
+        Pattern * __OptimizeNONE( Pattern *p ) throw()
+        {
+            assert(NONE::UUID==p->uuid);
+            assert(NULL!=p->addr);
+            Logical *q = static_cast<Logical *>(p->addr);
+            // Merge ANDs
+            Patterns stk;
+            while(q->operands.size>0)
+            {
+                Pattern *sub = Pattern::Optimize(q->operands.pop_front());
+                if(NONE::UUID==sub->uuid)
+                {
+                    stk.merge_back( static_cast<Logical *>(sub->addr)->operands );
+                    delete sub;
+                }
+                else
+                {
+                    stk.push_back(sub);
+                }
+            }
+            q->operands.swap_with(stk);
+            return p;
+        }
+
         Pattern * Pattern:: Optimize( Pattern *p ) throw()
         {
             assert(p);
@@ -101,15 +128,16 @@ namespace yocto
 
                 case OR::UUID:
                     return __OptimizeOR(p);
-                    
+
+                case NONE::UUID:
+                    return __OptimizeNONE(p);
+
                 case Optional:: UUID:
                 case AtLeast::  UUID:
                 case Counting:: UUID:
                     static_cast<Joker *>(p->addr)->optimize();
                     return p;
-                    
-                    
-                    
+
                 default:
                     break;
             }

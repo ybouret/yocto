@@ -56,13 +56,22 @@ namespace yocto
 #define Y_RBRACE '}'
 #define Y_LBRACK '['
 #define Y_RBRACK ']'
+
+#define Y_ESC_CTRL()                                 \
+case 'n': ops.push_back( new Single('\n') ); return; \
+case 'r': ops.push_back( new Single('\r') ); return; \
+case 't': ops.push_back( new Single('\t') ); return; \
+case 'f': ops.push_back( new Single('\f') ); return; \
+case 'v': ops.push_back( new Single('\v') ); return
+
+
 #include "rx-sub-expr.hxx"
 #include "rx-sub-jk.hxx"
 #include "rx-sub-esc.hxx"
 
 
 
-           
+
             //==================================================================
             //
             // convert a two-chars hexadecimal to a single code
@@ -73,7 +82,7 @@ namespace yocto
                 if(curr>=last) throw exception("%smissing first hexa code",fn);
                 const int hi = hex2dec(*curr);
                 if(hi<0) throw exception("%sinvalid first hexa char '%c'",fn,*curr);
-                
+
                 if(++curr>=last) throw exception("%smissing second hexa code",fn);
                 const int lo = hex2dec(*curr);
                 if(lo<0) throw exception("%sinvalid second hexa char '%c'",fn,*curr);
@@ -83,12 +92,13 @@ namespace yocto
                 return new Single(ch);
             }
 
-            
+
 
 #include "rx-grp.hxx"
 #include "rx-grp-posix.hxx"
+#include "rx-grp-esc.hxx"
 
-            
+
 
 
         private:

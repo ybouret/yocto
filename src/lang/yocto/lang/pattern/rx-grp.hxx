@@ -5,21 +5,29 @@
 //
 //
 //==================================================================
-Pattern *nextGroupPattern()
+inline Pattern *nextGroupSingle()
 {
     return 0;
 }
 
-void createGroup( Patterns &ops )
+inline void createGroup( Patterns &ops )
 {
     assert(Y_LBRACK==*curr);
     if(++curr>last) throw exception("%sunfinished group",fn);
 
 
+    //__________________________________________________________________________
+    //
     // here is the first char of the group
+    //__________________________________________________________________________
+
+
     char C = *curr;
 
+    //__________________________________________________________________________
+    //
     // detect a posix reference
+    //__________________________________________________________________________
     if(':'==C)
     {
         std::cerr << "POSIX" << std::endl;
@@ -27,13 +35,32 @@ void createGroup( Patterns &ops )
         return;
     }
 
+    //__________________________________________________________________________
+    //
+    // create a group
+    //__________________________________________________________________________
     auto_ptr<Logical> grp;
     switch(C)
     {
+        case '^':
+            grp.reset( new NONE() );
+            ++curr;
+            break;
+
+        case '-':
+            grp.reset( new OR() );
+            *grp << new Single('-');
+            ++curr;
+            break;
+
         default:
             grp.reset( new OR() );
     }
 
+    //__________________________________________________________________________
+    //
+    // the parse the following
+    //__________________________________________________________________________
     while(true)
     {
         if(curr>=last)
@@ -45,13 +72,34 @@ void createGroup( Patterns &ops )
         switch(C)
         {
 
-            case Y_LBRACK:
+                //______________________________________________________________
+                //           //
+            case Y_LBRACK:  // recursive call
+                //_________//___________________________________________________
                 createGroup(grp->operands);
                 break;
 
-            case Y_RBRACK:
+                //______________________________________________________________
+                //           //
+            case Y_RBRACK:  // end it
+                //_________//___________________________________________________
                 ++curr;
                 goto END_GRP;
+
+                //______________________________________________________________
+                //        //
+            case '\\':   // escape sequence
+                //______//______________________________________________________
+                ++curr;// skip backspace
+                grpEscapeSequence(grp->operands);
+                break;
+
+                //______________________________________________________________
+                //      //
+            case '-':  // make a range
+                //____//_________________________________________________________
+
+                break;
 
             default:
                 grp->operands.push_back( new Single(C) );
@@ -62,6 +110,8 @@ void createGroup( Patterns &ops )
     }
 
 END_GRP:
-    ops.push_back( grp.yield() );
+    ops.push_back( Pattern::Optimize(grp.yield()) );
 
 }
+
+

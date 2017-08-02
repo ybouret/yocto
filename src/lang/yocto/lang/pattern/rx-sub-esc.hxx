@@ -31,11 +31,7 @@ inline void subEscapeSequence(Patterns &ops)
             ops.push_back( new Single(E) );
             return;
 
-        case 'n': ops.push_back( new Single('\n') ); return;
-        case 'r': ops.push_back( new Single('\r') ); return;
-        case 't': ops.push_back( new Single('\t') ); return;
-        case 'f': ops.push_back( new Single('\f') ); return;
-        case 'v': ops.push_back( new Single('\v') ); return;
+            Y_ESC_CTRL();
 
         case 'x':
             ops.push_back( hexEscapeSequence() );
