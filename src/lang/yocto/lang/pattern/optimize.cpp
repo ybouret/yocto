@@ -1,12 +1,69 @@
 #include "yocto/lang/pattern/joker.hpp"
 #include "yocto/lang/pattern/logic.hpp"
 #include "yocto/lang/pattern/basic.hpp"
+#include "yocto/sort/merge.hpp"
 
-
+#include <iostream>
 namespace yocto
 {
     namespace Lang
     {
+
+        static inline
+        int compareSingles(const Pattern *lhs, const Pattern *rhs, void *) throw()
+        {
+            assert(lhs->addr);
+            assert(rhs->addr);
+            const int L( static_cast<const Single *>(lhs)->code );
+            const int R( static_cast<const Single *>(rhs)->code );
+            return L-R;
+        }
+
+        static inline
+        void __NoMultipleSinglesIn( Patterns &ops ) throw()
+        {
+            Patterns singles;
+            Patterns others;
+            while(ops.size)
+            {
+                Pattern *p = ops.pop_front();
+                if(Single::UUID == p->uuid )
+                {
+                    singles.push_back(p);
+                }
+                else
+                {
+                    others.push_back(p);
+                }
+            }
+            core::merging<Pattern>::sort(singles, compareSingles, NULL);
+            {
+                Patterns tmp;
+                while(singles.size>0)
+                {
+                    Pattern *p = singles.pop_front();
+                    if(tmp.tail)
+                    {
+                        const int cmp =compareSingles(tmp.tail,p,NULL);
+                        if(cmp<0)
+                        {
+                            tmp.push_back(p);
+                        }
+                        else
+                        {
+                            delete p;
+                        }
+                    }
+                    else
+                    {
+                        tmp.push_back(p);
+                    }
+                }
+                singles.swap_with(tmp);
+            }
+            ops.merge_back(singles);
+            ops.merge_back(others);
+        }
 
         //______________________________________________________________________
         //
@@ -83,6 +140,7 @@ namespace yocto
                         stk.push_back(sub);
                     }
                 }
+                __NoMultipleSinglesIn(stk);
                 q->operands.swap_with(stk);
             }
             
@@ -99,7 +157,7 @@ namespace yocto
             assert(NONE::UUID==p->uuid);
             assert(NULL!=p->addr);
             Logical *q = static_cast<Logical *>(p->addr);
-            // Merge ANDs
+            // Merge NONEs
             Patterns stk;
             while(q->operands.size>0)
             {
@@ -114,6 +172,7 @@ namespace yocto
                     stk.push_back(sub);
                 }
             }
+            __NoMultipleSinglesIn(stk);
             q->operands.swap_with(stk);
             return p;
         }
