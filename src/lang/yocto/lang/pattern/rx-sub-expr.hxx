@@ -11,7 +11,7 @@ inline Pattern *subExpr()
 
                 //______________________________________________________________
                 //
-                // grouping
+                // grouping by recursion
                 //______________________________________________________________
             case Y_LPAREN:
                 ++curr; // skip left parenthesis
@@ -19,6 +19,10 @@ inline Pattern *subExpr()
                 sxp << subExpr();
                 break;
 
+                //______________________________________________________________
+                //
+                // end grouping
+                //______________________________________________________________
             case Y_RPAREN:
                 if(--depth<0) throw exception("%sunexpected '%c'",fn,Y_RPAREN);
                 ++curr; // skip right parenthesis

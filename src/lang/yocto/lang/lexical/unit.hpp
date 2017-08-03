@@ -12,9 +12,13 @@ namespace yocto
         {
         public:
             virtual ~Unit() throw();
+            explicit Unit(const Stamp &usrStamp) throw();
+            Unit(const Unit &other);
             
-            const Stamp label;
+            const Stamp   stamp;
+            const string &label;
             
+
         private:
             YOCTO_DISABLE_ASSIGN(Unit);
         };
