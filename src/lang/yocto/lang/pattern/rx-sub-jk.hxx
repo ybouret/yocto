@@ -1,10 +1,10 @@
-//==================================================================
+//==============================================================================
 //
 //
 // create a simple Joker
 //
 //
-//==================================================================
+//==============================================================================
 inline void createSimpleJoker(Patterns &ops, const char C)
 {
     assert(ops.size>0);
@@ -18,16 +18,25 @@ inline void createSimpleJoker(Patterns &ops, const char C)
     throw exception("%scorrupted code in createSimpleJoker!",fn);
 }
 
-//==================================================================
+//==============================================================================
 //
 //
 // extract joker from braced expression: reference or counting
 //
 //
-//==================================================================
+//==============================================================================
+static inline bool __is_bad( char C ) throw()
+{
+    return (' '==C) || ('\t'==C);
+}
+
 inline void createBracedJoker( Patterns &ops )
 {
     assert(Y_LBRACE== *curr);
+    //__________________________________________________________________________
+    //
+    // extract content
+    //__________________________________________________________________________
     const char *ini = ++curr;
     while(*(curr++)!=Y_RBRACE)
     {
@@ -36,9 +45,12 @@ inline void createBracedJoker( Patterns &ops )
     const char *end = curr;
     assert(end>ini);
 
-    const size_t n = static_cast<size_t>(end-ini)-1;
-    if(n<=0) throw exception("%sempty braces",fn);
-    string info(ini,n);
+
+    string info(ini,static_cast<size_t>(end-ini)-1);
+    info.remove(__is_bad);
+    if(info.size()<=0) throw exception("%sempty braces",fn);
+    std::cerr << "processing {" << info << "}" << std::endl;
+    
     const char C = info[0];
     if( PatternDict::IsValidFirstChar(C) )
     {
@@ -48,8 +60,9 @@ inline void createBracedJoker( Patterns &ops )
     }
     else
     {
-        // assuming counting joker
+        
         throw exception("%snot implemented yet",fn);
+
     }
 
 }

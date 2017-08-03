@@ -342,6 +342,25 @@ assert( (S)->char_[(S)->size_] == 0 )
             trim(bad);
             skip(bad);
         }
+
+        template <>
+        void string<YCHAR>:: remove( bool (*bad)(YCHAR) ) throw()
+        {
+            assert(bad!=NULL);
+            size_t i=0;
+            while(i<size_)
+            {
+                if( bad(char_[i]) )
+                {
+                    memmove( &char_[i],&char_[i+1], (--size_-i) * sizeof(YCHAR) );
+                }
+                else
+                {
+                    ++i;
+                }
+            }
+            memset(  char_+size_, 0, (full_-size_) * sizeof(YCHAR) );
+        }
         
         template <>
 		void string<YCHAR>:: to_lower() throw()

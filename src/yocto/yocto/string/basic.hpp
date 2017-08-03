@@ -161,6 +161,7 @@ friend inline bool operator OP ( const T       _lhs, const string &_rhs ) throw(
             void trim( bool (*bad)(T) ) throw();
             void skip( bool (*bad)(T) ) throw();
             void clean( bool (*bad)(T) ) throw();
+            void remove( bool (*bad)(T) ) throw();
 			void to_upper() throw();
             void to_lower() throw();
 
