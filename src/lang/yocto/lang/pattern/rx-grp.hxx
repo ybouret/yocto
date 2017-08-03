@@ -59,7 +59,6 @@ inline void createGroup( Patterns &ops )
     //__________________________________________________________________________
     if(':'==C)
     {
-        std::cerr << "POSIX" << std::endl;
         ops.push_back(findPosixExpression());
         return;
     }

@@ -7,8 +7,8 @@
 #include "yocto/exception.hpp"
 #include "yocto/code/utils.hpp"
 #include "yocto/core/locate.hpp"
+#include "yocto/string/conv.hpp"
 
-#include <iostream>
 
 namespace yocto
 {
