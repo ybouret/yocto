@@ -125,7 +125,7 @@ inline void createGroup( Patterns &ops )
                 //______________________________________________________________
                 //      //
             case '-':  // make a range
-                //____//_________________________________________________________
+                //____//________________________________________________________
             {
                 // check previous pattern
                 if(grp->operands.size<=0)                  throw exception("%sno previous pattern for range",fn);
@@ -142,18 +142,18 @@ inline void createGroup( Patterns &ops )
                 *grp << new Range(static_cast<Single *>(lhs->addr)->code,static_cast<Single *>(rhs->addr)->code);
 
             } break;
-
+                
             default:
                 grp->operands.push_back( new Single(C) );
                 ++curr;
         }
-
-
+        
+        
     }
-
+    
 END_GRP:
     ops.push_back( grp.yield() );
-
+    
 }
 
 

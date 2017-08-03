@@ -8,21 +8,23 @@ namespace yocto
     namespace Lang
     {
 
-        class Unit : public Token
+        namespace Lexical
         {
-        public:
-            virtual ~Unit() throw();
-            explicit Unit(const Stamp &usrStamp) throw();
-            Unit(const Unit &other);
-            
-            const Stamp   stamp;
-            const string &label;
-            
+            class Unit : public Token
+            {
+            public:
+                virtual ~Unit() throw();
+                explicit Unit(const Stamp &usrStamp) throw();
+                Unit(const Unit &other);
 
-        private:
-            YOCTO_DISABLE_ASSIGN(Unit);
-        };
+                const Stamp   stamp;
+                const string &label;
 
+
+            private:
+                YOCTO_DISABLE_ASSIGN(Unit);
+            };
+        }
     }
 }
 
