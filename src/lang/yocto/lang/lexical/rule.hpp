@@ -26,11 +26,12 @@ namespace yocto
                 Rule          *prev;
                 const Pattern *motif;
                 Action         action;
-
+                
                 virtual ~Rule() throw();
 
                 static Rule * Create(const Pattern *p, const Action &a);
 
+#if 0
                 template <typename OBJECT_POINTER, typename METHOD_POINTER>
                 static inline
                 Rule *Create(const Pattern *p, OBJECT_POINTER host, METHOD_POINTER method)
@@ -41,13 +42,14 @@ namespace yocto
                     guard.forget();
                     return r;
                 }
+#endif
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Rule);
                 Rule(const Pattern *,const Action &);
-                
-
             };
+
+            typedef core::list_of_cpp<Rule> Rules;
         }
     }
 }

@@ -17,6 +17,8 @@ namespace yocto
                 explicit Unit(const Stamp &usrStamp) throw();
                 Unit(const Unit &other);
 
+                Unit         *next;
+                Unit         *prev;
                 const Stamp   stamp;
                 const string &label;
 
