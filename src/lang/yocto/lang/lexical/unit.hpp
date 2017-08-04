@@ -14,12 +14,11 @@ namespace yocto
             {
             public:
                 virtual ~Unit() throw();
-                explicit Unit(const Stamp &usrStamp) throw();
+                explicit Unit(const string &labelRef) throw();
                 Unit(const Unit &other);
 
                 Unit         *next;
                 Unit         *prev;
-                const Stamp   stamp;
                 const string &label;
 
 
