@@ -13,6 +13,7 @@ namespace yocto
 
         namespace Lexical
         {
+
             //! define an action
             typedef functor<bool,const Token &> Action;
 
