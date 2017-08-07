@@ -11,11 +11,12 @@ namespace yocto
             }
 
 
-            Unit:: Unit(const string &labelRef) throw() :
+            Unit:: Unit(const Stamp &usrStamp) throw() :
             Token(),
             next(0),
             prev(0),
-            label(labelRef)
+            stamp(usrStamp),
+            label(*stamp)
             {
             }
 
@@ -23,7 +24,8 @@ namespace yocto
             Token(other),
             next(0),
             prev(0),
-            label(other.label)
+            stamp(other.stamp),
+            label(*stamp)
             {
             }
             

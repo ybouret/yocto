@@ -23,10 +23,12 @@ virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const;   \
 virtual void             __viz( ios::ostream &fp ) const;              \
 virtual void             __sav( ios::ostream &fp ) const
 
-        class Pattern : public object
+        class Pattern : public counted_object
         {
         public:
-            
+            typedef arc_ptr<const Pattern> Handle;
+
+
             const uint32_t uuid; //!< 4 bytes ID
             Pattern       *next; //!< for list
             Pattern       *prev; //!< for list

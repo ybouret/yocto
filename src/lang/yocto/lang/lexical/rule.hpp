@@ -19,22 +19,22 @@ namespace yocto
             class Rule : public object
             {
             public:
-                Rule          *next;
-                Rule          *prev;
-                const string   label;
-                const Pattern *motif;
-                Action         action;
+                Rule                 *next;
+                Rule                 *prev;
+                const Stamp           stamp;
+                const string         &label;
+                const Pattern::Handle motif;
+                Action                action;
 
                 virtual ~Rule() throw();
 
-                static Rule * Create(const string  &l,
-                                     const Pattern *p,
-                                     const Action  &a);
-
+                Rule(const string          &,
+                     const Pattern::Handle &,
+                     const Action          &);
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Rule);
-                Rule(const string &,const Pattern *,const Action &);
+
             };
 
             typedef core::list_of_cpp<Rule> Rules;

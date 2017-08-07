@@ -32,11 +32,10 @@ namespace yocto
                             OBJECT_POINTER host,
                             METHOD_POINTER meth)
                 {
-                    auto_ptr<const Pattern> guard(motif);
+                    const Pattern::Handle handle(motif);
                     checkRuleName(label);
-                    guard.forget();
                     const Action action(host,meth);
-                    rules.push_back( Rule::Create(label,motif,action) );
+                    rules.push_back( new Rule(label,handle,action) );
                 }
 
                 template <
@@ -48,12 +47,11 @@ namespace yocto
                             OBJECT_POINTER host,
                             METHOD_POINTER meth)
                 {
-                    auto_ptr<const Pattern> guard(motif);
-                    const string            label(label__);
+                    const Pattern::Handle handle(motif);
+                    const string          label(label__);
                     checkRuleName(label);
-                    guard.forget();
                     const Action action(host,meth);
-                    rules.push_back( Rule::Create(label,motif,action) );
+                    rules.push_back( new Rule(label,handle,action) );
                 }
 
 
