@@ -23,7 +23,7 @@ namespace yocto
         {
             for(const Char *ch = tkn.head;ch;ch=ch->next)
             {
-                os << char(ch->code);
+                os << ch->text();
             }
             return os;
         }

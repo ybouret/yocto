@@ -29,6 +29,7 @@ namespace yocto
             inline const Token & operator*() const throw() { return cache; }
 
             const char *moduleID() const throw();
+            Module     *getCurrentModule() throw();
 
         private:
 

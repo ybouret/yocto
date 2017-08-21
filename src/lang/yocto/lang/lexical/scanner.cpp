@@ -1,5 +1,6 @@
 #include "yocto/lang/lexical/scanner.hpp"
 #include "yocto/exception.hpp"
+#include "yocto/code/utils.hpp"
 
 namespace yocto
 {
@@ -11,15 +12,19 @@ namespace yocto
             {
             }
 
+#define Y_SCANNER_CTOR() \
+name(id),\
+rules(),\
+module(0),\
+max_label_length(0)
+
             Scanner:: Scanner(const string &id) :
-            name(id),
-            rules()
+            Y_SCANNER_CTOR()
             {
             }
 
             Scanner:: Scanner(const char *id) :
-            name(id),
-            rules()
+            Y_SCANNER_CTOR()
             {
             }
 
@@ -35,8 +40,11 @@ namespace yocto
                 {
                     if(label==r->label) throw exception("%s: multiple rule '%s'", name.c_str(), label.c_str() );
                 }
+                (size_t &)max_label_length = max_of(max_label_length,label.length());
             }
 
+
+            
         }
     }
 }
@@ -50,11 +58,15 @@ namespace yocto
         namespace Lexical
         {
 
-            ActionType Scanner:: probe( Source &source, Unit * &lexeme )
+            Unit *  Scanner:: probe( Source &source, bool &isRegular )
             {
-                assert(NULL==lexeme);
 
-
+                //______________________________________________________________
+                //
+                // initialize
+                //______________________________________________________________
+                isRegular = true;
+                module    = source.getCurrentModule();
                 Rule   *bestRule = NULL;
                 Token   bestTokn;
 
@@ -87,7 +99,7 @@ namespace yocto
                     }
                     else
                     {
-                        return ActionRegular;
+                        return NULL; // EOF
                     }
                 }
 
@@ -121,10 +133,22 @@ namespace yocto
                 assert( source.in_cache() >= bestTokn.size );
                 source.forward(bestTokn.size);
 
-                lexeme = new Unit(bestRule->stamp);
-                lexeme->swap_with(bestTokn);
-
-                return ActionRegular;
+                //______________________________________________________________
+                //
+                // take action
+                //______________________________________________________________
+                if( (isRegular=bestRule->action(bestTokn) ) )
+                {
+                    // a regular unit
+                    Unit *u = new Unit(bestRule->stamp);
+                    u->swap_with(bestTokn);
+                    return u;
+                }
+                else
+                {
+                    // unit was used to trigger something...
+                    return NULL;
+                }
             }
 
         }

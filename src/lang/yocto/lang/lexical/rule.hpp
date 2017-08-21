@@ -14,13 +14,9 @@ namespace yocto
         namespace Lexical
         {
 
-            enum ActionType
-            {
-                ActionRegular,
-                ActionControl
-            };
+
             //! define an action
-            typedef functor<ActionType,const Token &> Action;
+            typedef functor<bool,TL1(const Token &)> Action;
 
             class Rule : public object
             {

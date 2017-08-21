@@ -56,13 +56,22 @@ namespace yocto
                     rules.push_back( new Rule(label,handle,action) );
                 }
 
-                ActionType probe( Source &source, Unit * &lexeme );
-                
+                Unit *probe(Source &source, bool &isRegular);
 
+
+
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Scanner);
                 Rules rules;
                 void checkRuleName(const string &label) const;
+
+            protected:
+                Module *module;
+
+            public:
+                const size_t max_label_length;
+                
             };
         }
     }

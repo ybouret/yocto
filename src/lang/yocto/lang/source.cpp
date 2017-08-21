@@ -25,6 +25,11 @@ namespace yocto
     namespace Lang
     {
 
+        Module * Source:: getCurrentModule() throw()
+        {
+            return (0!=modules.top) ? modules.top->hModule.__get() : NULL;
+        }
+
         const char * Source:: moduleID() const throw()
         {
             if(modules.top)
@@ -36,6 +41,8 @@ namespace yocto
                 return "no input";
             }
         }
+
+        
 
         Source:: ~Source() throw()
         {

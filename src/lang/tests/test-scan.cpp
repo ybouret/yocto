@@ -15,7 +15,7 @@ public:
         define("ENDL",   RegExp("[:endl:]",NULL),   this, & myScanner::onENDL );
         define("WORD",   RegExp("[:word:]+",NULL),  this, & myScanner::onWORD );
         define("BLANKS", RegExp("[:blank:]+",NULL), this, & myScanner::onBLANKS);
-
+        define("PUNCT",  RegExp("[:punct:]+",NULL), this, & myScanner::onPUNCT);
 
     }
 
@@ -23,20 +23,25 @@ public:
     {
     }
 
-    inline Lexical::ActionType onENDL(const Token &) throw()
+    inline bool onENDL(const Token &) throw()
     {
-
-        return Lexical::ActionRegular;
+        if(module) module->newLine();
+        return true;
     }
 
-    inline Lexical::Action onWORD(const Token &t)
+    inline bool onWORD(const Token &t)
     {
-        return Lexical::ActionRegular;
+        return true;
     }
 
-    inline Lexical::Action onBLANKS(const Token &t)
+    inline bool onBLANKS(const Token &t)
     {
-        return Lexical::ActionRegular;
+        return true;
+    }
+
+    inline bool onPUNCT(const Token &t)
+    {
+        return true;
     }
 
 
@@ -52,15 +57,14 @@ YOCTO_UNIT_TEST_IMPL(scan)
     Source         source( hModule );       // register it in source
 
     myScanner scanner;
-
+    std::cerr << "\tmax_label_length=" << scanner.max_label_length << std::endl;
 
     Lexical::Units lexemes;
 
     do
     {
-        Lexical::Unit             *lex  = 0;
-        const Lexical::ActionType  kind = scanner.probe(source, lex);
-        (void)kind;
+        bool           reg  = true;
+        Lexical::Unit *lex  = scanner.probe(source,reg);
         if(!lex) break;
         lexemes.push_back(lex);
     }
@@ -69,6 +73,11 @@ YOCTO_UNIT_TEST_IMPL(scan)
     for(const Lexical::Unit *u = lexemes.head; u; u=u->next )
     {
         std::cerr << u->label;
+        for(size_t i=u->label.length();i<=scanner.max_label_length;++i)
+        {
+            std::cerr << ' ';
+        }
+        std::cerr << "'" << *u  << "'";
         std::cerr << std::endl;
     }
 }
