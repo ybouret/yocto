@@ -17,6 +17,13 @@ namespace yocto
             {
             }
 
+            Scanner:: Scanner(const char *id) :
+            name(id),
+            rules()
+            {
+            }
+
+
             const string & Scanner:: key() const throw()
             {
                 return name;
@@ -54,7 +61,6 @@ namespace yocto
                 //
                 // try to find a first matching rule
                 //______________________________________________________________
-
                 for(Rule *r = rules.head; r; r=r->next)
                 {
                     Token tokn;
@@ -79,6 +85,16 @@ namespace yocto
                         throw exception("%s: unexpected End Of '%s'", name.c_str(), source.moduleID() );
                     }
                 }
+
+                //______________________________________________________________
+                //
+                // scanning other rules for a longer match
+                //______________________________________________________________
+                for(Rule *r = bestRule->next; r; r=r->next )
+                {
+                    
+                }
+
 
                 return ActionRegular;
             }

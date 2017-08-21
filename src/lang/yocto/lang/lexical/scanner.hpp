@@ -19,6 +19,8 @@ namespace yocto
                 const string name;
 
                 explicit Scanner(const string &id);
+                explicit Scanner(const char   *id);
+                
                 virtual ~Scanner() throw();
 
                 const string & key() const throw();

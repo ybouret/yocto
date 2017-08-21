@@ -27,7 +27,7 @@ namespace yocto
                 YOCTO_DISABLE_ASSIGN(Unit);
             };
 
-            
+            typedef core::list_of_cpp<Unit> Units;
         }
     }
 }
