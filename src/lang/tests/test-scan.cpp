@@ -66,5 +66,10 @@ YOCTO_UNIT_TEST_IMPL(scan)
     }
     while(true);
 
+    for(const Lexical::Unit *u = lexemes.head; u; u=u->next )
+    {
+        std::cerr << u->label;
+        std::cerr << std::endl;
+    }
 }
 YOCTO_UNIT_TEST_DONE()

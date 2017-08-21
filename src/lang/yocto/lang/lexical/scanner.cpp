@@ -121,6 +121,8 @@ namespace yocto
                 assert( source.in_cache() >= bestTokn.size );
                 source.forward(bestTokn.size);
 
+                lexeme = new Unit(bestRule->stamp);
+                lexeme->swap_with(bestTokn);
 
                 return ActionRegular;
             }
