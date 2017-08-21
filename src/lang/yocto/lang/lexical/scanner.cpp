@@ -45,7 +45,40 @@ namespace yocto
             {
                 assert(NULL==lexeme);
 
-                
+
+
+                Rule   *bestRule = NULL;
+                Token   bestTokn;
+
+                //______________________________________________________________
+                //
+                // try to find a first matching rule
+                //______________________________________________________________
+
+                for(Rule *r = rules.head; r; r=r->next)
+                {
+                    Token tokn;
+                    if(r->motif->match(source,tokn))
+                    {
+                        bestRule = r;
+                        bestTokn.swap_with(tokn);
+                        break;
+                    }
+                }
+
+                if(!bestRule)
+                {
+                    // Ooops, nothing matched
+                    const Char *ch = source.peek();
+                    if(ch)
+                    {
+                        throw exception("%s: unexpected char '%s'", name.c_str(), ch->text() );
+                    }
+                    else
+                    {
+                        throw exception("%s: unexpected End Of '%s'", name.c_str(), source.moduleID() );
+                    }
+                }
 
                 return ActionRegular;
             }

@@ -27,6 +27,9 @@ namespace yocto
             size_t      in_cache() const throw();
             bool        is_active();
             inline const Token & operator*() const throw() { return cache; }
+
+            const char *moduleID() const throw();
+
         private:
 
             //! for multiple sources

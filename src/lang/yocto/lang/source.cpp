@@ -24,6 +24,19 @@ namespace yocto
 {
     namespace Lang
     {
+
+        const char * Source:: moduleID() const throw()
+        {
+            if(modules.top)
+            {
+                return modules.top->hModule->stamp->c_str();
+            }
+            else
+            {
+                return "no input";
+            }
+        }
+
         Source:: ~Source() throw()
         {
         }
