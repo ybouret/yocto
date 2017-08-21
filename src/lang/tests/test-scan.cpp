@@ -51,7 +51,7 @@ YOCTO_UNIT_TEST_IMPL(scan)
     Source         source( hModule );       // register it in source
 
     myScanner scanner;
-    std::cerr << "\tmax_label_length=" << scanner.max_label_length << std::endl;
+    //std::cerr << "\tmax_label_length=" << scanner.max_label_length << std::endl;
 
     Lexical::Units lexemes;
 
