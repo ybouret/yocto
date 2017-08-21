@@ -41,6 +41,8 @@ namespace yocto
     }
 }
 
+#include <iostream>
+
 namespace yocto
 {
     namespace Lang
@@ -51,7 +53,6 @@ namespace yocto
             ActionType Scanner:: probe( Source &source, Unit * &lexeme )
             {
                 assert(NULL==lexeme);
-
 
 
                 Rule   *bestRule = NULL;
@@ -66,15 +67,19 @@ namespace yocto
                     Token tokn;
                     if(r->motif->match(source,tokn))
                     {
-                        bestRule = r;
-                        bestTokn.swap_with(tokn);
+                        source.store_copy(tokn);     // restore tokn for other rules
+                        bestRule = r;                // keep the rule
+                        bestTokn.swap_with(tokn);    // and take the token
                         break;
                     }
                 }
 
                 if(!bestRule)
                 {
+                    //__________________________________________________________
+                    //
                     // Ooops, nothing matched
+                    //__________________________________________________________
                     const Char *ch = source.peek();
                     if(ch)
                     {
@@ -82,7 +87,7 @@ namespace yocto
                     }
                     else
                     {
-                        throw exception("%s: unexpected End Of '%s'", name.c_str(), source.moduleID() );
+                        return ActionRegular;
                     }
                 }
 
@@ -92,8 +97,29 @@ namespace yocto
                 //______________________________________________________________
                 for(Rule *r = bestRule->next; r; r=r->next )
                 {
-                    
+                    Token tokn;
+                    if(r->motif->match(source,tokn))
+                    {
+                        //______________________________________________________
+                        //
+                        // we got another candidate !
+                        //______________________________________________________
+                        source.store_copy(tokn); // restore tokn for other rules
+                        if(tokn.size>bestTokn.size)
+                        {
+                            // new winner !
+                            bestRule = r;
+                            bestTokn.swap_with(tokn);
+                        }
+                    }
                 }
+
+                //______________________________________________________________
+                //
+                // update source
+                //______________________________________________________________
+                assert( source.in_cache() >= bestTokn.size );
+                source.forward(bestTokn.size);
 
 
                 return ActionRegular;

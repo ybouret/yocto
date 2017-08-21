@@ -12,9 +12,9 @@ public:
 
     explicit myScanner() : Lexical::Scanner("myScanner")
     {
-        define("ENDL", RegExp("[:endl:]",NULL),  this, & myScanner::onENDL );
-        define("WORD", RegExp("[:word:]+",NULL), this, & myScanner::onWORD );
-        define("BLANKS", RegExp("[:blanks:]",NULL), this, & myScanner::onBLANKS);
+        define("ENDL",   RegExp("[:endl:]",NULL),   this, & myScanner::onENDL );
+        define("WORD",   RegExp("[:word:]+",NULL),  this, & myScanner::onWORD );
+        define("BLANKS", RegExp("[:blank:]+",NULL), this, & myScanner::onBLANKS);
 
 
     }
@@ -51,7 +51,7 @@ YOCTO_UNIT_TEST_IMPL(scan)
     Module::Handle hModule( new Module() ); // open stdio
     Source         source( hModule );       // register it in source
 
-    Lexical::Scanner scanner("main.scanner");
+    myScanner scanner;
 
 
     Lexical::Units lexemes;
