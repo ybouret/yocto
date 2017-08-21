@@ -28,7 +28,26 @@ namespace yocto
             label(*stamp)
             {
             }
-            
+
+
+            void Unit::RemoveFrom( Units &units, const string &id) throw()
+            {
+                Units tmp;
+                while(units.size)
+                {
+                    Unit *u = units.pop_front();
+                    if(id==u->label)
+                    {
+                        delete u;
+                    }
+                    else
+                    {
+                        tmp.push_back(u);
+                    }
+                }
+                units.swap_with(tmp);
+            }
+
         }
     }
 }

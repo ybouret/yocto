@@ -15,6 +15,7 @@ namespace yocto
         {
 
 
+
             //! define an action
             typedef functor<bool,TL1(const Token &)> Action;
 
@@ -33,6 +34,8 @@ namespace yocto
                 Rule(const string          &,
                      const Pattern::Handle &,
                      const Action          &);
+
+
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Rule);

@@ -44,7 +44,7 @@ max_label_length(0)
             }
 
 
-            
+
         }
     }
 }
@@ -66,7 +66,6 @@ namespace yocto
                 // initialize
                 //______________________________________________________________
                 isRegular = true;
-                module    = source.getCurrentModule();
                 Rule   *bestRule = NULL;
                 Token   bestTokn;
 
@@ -137,7 +136,13 @@ namespace yocto
                 //
                 // take action
                 //______________________________________________________________
-                if( (isRegular=bestRule->action(bestTokn) ) )
+
+
+                YOCTO_FAILSAFE(module    = source.getCurrentModule();
+                               isRegular = bestRule->action(bestTokn)
+                               ,module=0);
+
+                if( isRegular )
                 {
                     // a regular unit
                     Unit *u = new Unit(bestRule->stamp);
@@ -150,9 +155,9 @@ namespace yocto
                     return NULL;
                 }
             }
-
+            
         }
-
+        
     }
-
+    
 }

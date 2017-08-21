@@ -10,6 +10,10 @@ namespace yocto
 
         namespace Lexical
         {
+
+            class Unit; //!< forward declaration for Units
+            typedef core::list_of_cpp<Unit> Units;
+
             class Unit : public Token
             {
             public:
@@ -22,12 +26,15 @@ namespace yocto
                 const Stamp   stamp;
                 const string &label;
 
+                static void RemoveFrom( Units &units, const string &id) throw();
 
             private:
                 YOCTO_DISABLE_ASSIGN(Unit);
             };
 
-            typedef core::list_of_cpp<Unit> Units;
+
+
+
         }
     }
 }

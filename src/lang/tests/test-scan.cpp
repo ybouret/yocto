@@ -12,15 +12,23 @@ public:
 
     explicit myScanner() : Lexical::Scanner("myScanner")
     {
-        define("ENDL",   RegExp("[:endl:]",NULL),   this, & myScanner::onENDL );
-        define("WORD",   RegExp("[:word:]+",NULL),  this, & myScanner::onWORD );
-        define("BLANKS", RegExp("[:blank:]+",NULL), this, & myScanner::onBLANKS);
-        define("PUNCT",  RegExp("[:punct:]+",NULL), this, & myScanner::onPUNCT);
+        define("ENDL",   RegExp("[:endl:]",NULL),         this, & myScanner::onENDL );
+        define("INT",    RegExp("[0-9]+",NULL),           this, & myScanner::emit);
+        define("DOUBLE", RegExp("[0-9]+\\.[0-9]*",NULL),  this, & myScanner::emit);
+        define("FLOAT",  RegExp("[0-9]+\\.[0-9]*f",NULL), this, & myScanner::emit);
+        define("WORD",   RegExp("[:word:]+",NULL),        this, & myScanner::emit );
+        define("BLANKS", RegExp("[:blank:]+",NULL),       this, & myScanner::emit);
+        define("PUNCT",  RegExp("[,?!]+",NULL),       this, & myScanner::emit);
 
     }
 
     virtual ~myScanner() throw()
     {
+    }
+
+    inline bool emit(const Token&) throw()
+    {
+        return true;
     }
 
     inline bool onENDL(const Token &) throw()
@@ -29,20 +37,6 @@ public:
         return true;
     }
 
-    inline bool onWORD(const Token &t)
-    {
-        return true;
-    }
-
-    inline bool onBLANKS(const Token &t)
-    {
-        return true;
-    }
-
-    inline bool onPUNCT(const Token &t)
-    {
-        return true;
-    }
 
 
 private:
@@ -70,6 +64,10 @@ YOCTO_UNIT_TEST_IMPL(scan)
     }
     while(true);
 
+    Lexical::Unit::RemoveFrom(lexemes,"BLANKS");
+    Lexical::Unit::RemoveFrom(lexemes,"ENDL");
+
+
     for(const Lexical::Unit *u = lexemes.head; u; u=u->next )
     {
         std::cerr << u->label;
@@ -77,6 +75,7 @@ YOCTO_UNIT_TEST_IMPL(scan)
         {
             std::cerr << ' ';
         }
+        std::cerr << ": ";
         std::cerr << "'" << *u  << "'";
         std::cerr << std::endl;
     }
