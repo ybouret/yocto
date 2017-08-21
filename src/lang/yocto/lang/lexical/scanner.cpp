@@ -33,3 +33,25 @@ namespace yocto
         }
     }
 }
+
+namespace yocto
+{
+    namespace Lang
+    {
+        namespace Lexical
+        {
+
+            ActionType Scanner:: probe( Source &source, Unit * &lexeme )
+            {
+                assert(NULL==lexeme);
+
+                
+
+                return ActionRegular;
+            }
+
+        }
+
+    }
+
+}

@@ -2,7 +2,7 @@
 #define YOCTO_LANG_LEXICAL_SCANNER_INCLUDED 1
 
 #include "yocto/lang/lexical/rule.hpp"
-#include "yocto/lang/source.hpp"
+#include "yocto/lang/lexical/unit.hpp"
 #include "yocto/ptr/intr.hpp"
 
 namespace yocto
@@ -54,6 +54,7 @@ namespace yocto
                     rules.push_back( new Rule(label,handle,action) );
                 }
 
+                ActionType probe( Source &source, Unit * &lexeme );
                 
 
             private:
