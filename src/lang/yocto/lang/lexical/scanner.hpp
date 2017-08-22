@@ -31,14 +31,27 @@ namespace yocto
                 typename METHOD_POINTER>
                 inline
                 void make(const string  &label,
+                          const Pattern *motif,
+                          OBJECT_POINTER host,
+                          METHOD_POINTER meth)
+                {
+                    const Pattern::Handle handle(motif);
+                    checkRuleName(label);
+                    const Action action(host,meth);
+                    rules.push_back( new Rule(label,handle,action) );
+                }
+
+
+                template <
+                typename OBJECT_POINTER,
+                typename METHOD_POINTER>
+                inline
+                void make(const string  &label,
                           const string  &expr,
                           OBJECT_POINTER host,
                           METHOD_POINTER meth)
                 {
-                    const Pattern::Handle handle( RegExp(expr,sharedDict) );
-                    checkRuleName(label);
-                    const Action action(host,meth);
-                    rules.push_back( new Rule(label,handle,action) );
+                    make(label,RegExp(expr,sharedDict),host,meth);
                 }
 
                 template <
@@ -46,20 +59,18 @@ namespace yocto
                 typename METHOD_POINTER>
                 inline
                 void make(const char    *label__,
-                          const char    *expr,
+                          const char    *expr__,
                           OBJECT_POINTER host,
                           METHOD_POINTER meth)
                 {
-                    const Pattern::Handle handle( RegExp(expr,sharedDict) );
-                    const string          label(label__);
-                    checkRuleName(label);
-                    const Action action(host,meth);
-                    rules.push_back( new Rule(label,handle,action) );
+                    const string label(label__);
+                    const string expr(expr__);
+                    make(label,expr,host,meth);
                 }
                 
                 Unit *probe(Source &source, bool &isRegular);
 
-
+                
 
 
             private:
