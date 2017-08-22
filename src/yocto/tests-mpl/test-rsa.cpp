@@ -52,8 +52,8 @@ YOCTO_UNIT_TEST_IMPL(rsa)
     
     const double tmx_rsa = chrono(_rsa);
     const double tmx_crt = chrono(_crt);
-    std::cerr << "rsa: " << tmx_rsa << std::endl;
-    std::cerr << "crt: " << tmx_crt << std::endl;
+    std::cerr << "rsa: " << tmx_rsa << " seconds" << std::endl;
+    std::cerr << "crt: " << tmx_crt << " seconds" << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()
 
