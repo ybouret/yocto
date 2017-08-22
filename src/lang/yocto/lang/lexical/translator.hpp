@@ -25,14 +25,19 @@ namespace yocto
 
                 const string name;
 
-                
-
+                Scanner &define(const string &scanrID);
+                Scanner &define(const char   *scanrID);
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Translator);
-                Scanner   *scanner;  //!< current scanner
+                Scanner::Handle __root;
+
+            public:
+                Scanner        &root;
+
+            private:
+                Scanner   *current;  //!< current scanner
                 ScannerDB  scanners; //!< the scanners
-                void       initialize(const string &scanrID);
             };
         }
     }

@@ -12,13 +12,13 @@ public:
 
     explicit myScanner() : Lexical::Scanner("myScanner")
     {
-        on("ENDL",   RegExp("[:endl:]",NULL),         this, & myScanner::onENDL );
-        on("INT",    RegExp("[0-9]+",NULL),           this, & myScanner::emit);
-        on("DOUBLE", RegExp("[0-9]+\\.[0-9]*",NULL),  this, & myScanner::emit);
-        on("FLOAT",  RegExp("[0-9]+\\.[0-9]*f",NULL), this, & myScanner::emit);
-        on("WORD",   RegExp("[:word:]+",NULL),        this, & myScanner::emit );
-        on("BLANKS", RegExp("[:blank:]+",NULL),       this, & myScanner::emit);
-        on("PUNCT",  RegExp("[,?!]+",NULL),           this, & myScanner::emit);
+        make("ENDL",   RegExp("[:endl:]",NULL),         this, & myScanner::onENDL );
+        make("INT",    RegExp("[0-9]+",NULL),           this, & myScanner::emit);
+        make("DOUBLE", RegExp("[0-9]+\\.[0-9]*",NULL),  this, & myScanner::emit);
+        make("FLOAT",  RegExp("[0-9]+\\.[0-9]*f",NULL), this, & myScanner::emit);
+        make("WORD",   RegExp("[:word:]+",NULL),        this, & myScanner::emit );
+        make("BLANKS", RegExp("[:blank:]+",NULL),       this, & myScanner::emit);
+        make("PUNCT",  RegExp("[,?!]+",NULL),           this, & myScanner::emit);
     }
 
     virtual ~myScanner() throw()

@@ -29,10 +29,10 @@ namespace yocto
                 typename OBJECT_POINTER,
                 typename METHOD_POINTER>
                 inline
-                void on(const string  &label,
-                        const Pattern *motif,
-                        OBJECT_POINTER host,
-                        METHOD_POINTER meth)
+                void make(const string  &label,
+                          const Pattern *motif,
+                          OBJECT_POINTER host,
+                          METHOD_POINTER meth)
                 {
                     const Pattern::Handle handle(motif);
                     checkRuleName(label);
@@ -44,10 +44,10 @@ namespace yocto
                 typename OBJECT_POINTER,
                 typename METHOD_POINTER>
                 inline
-                void on(const char    *label__,
-                        const Pattern *motif,
-                        OBJECT_POINTER host,
-                        METHOD_POINTER meth)
+                void make(const char    *label__,
+                          const Pattern *motif,
+                          OBJECT_POINTER host,
+                          METHOD_POINTER meth)
                 {
                     const Pattern::Handle handle(motif);
                     const string          label(label__);
@@ -55,7 +55,7 @@ namespace yocto
                     const Action action(host,meth);
                     rules.push_back( new Rule(label,handle,action) );
                 }
-
+                
                 Unit *probe(Source &source, bool &isRegular);
 
 
