@@ -20,7 +20,7 @@ namespace yocto
 
                 explicit Scanner(const string &id);
                 explicit Scanner(const char   *id);
-                
+
                 virtual ~Scanner() throw();
 
                 const string & key() const throw();
@@ -29,10 +29,10 @@ namespace yocto
                 typename OBJECT_POINTER,
                 typename METHOD_POINTER>
                 inline
-                void define(const string  &label,
-                            const Pattern *motif,
-                            OBJECT_POINTER host,
-                            METHOD_POINTER meth)
+                void on(const string  &label,
+                        const Pattern *motif,
+                        OBJECT_POINTER host,
+                        METHOD_POINTER meth)
                 {
                     const Pattern::Handle handle(motif);
                     checkRuleName(label);
@@ -44,10 +44,10 @@ namespace yocto
                 typename OBJECT_POINTER,
                 typename METHOD_POINTER>
                 inline
-                void define(const char    *label__,
-                            const Pattern *motif,
-                            OBJECT_POINTER host,
-                            METHOD_POINTER meth)
+                void on(const char    *label__,
+                        const Pattern *motif,
+                        OBJECT_POINTER host,
+                        METHOD_POINTER meth)
                 {
                     const Pattern::Handle handle(motif);
                     const string          label(label__);
@@ -60,7 +60,7 @@ namespace yocto
 
 
 
-                
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Scanner);
                 Rules rules;
@@ -68,7 +68,7 @@ namespace yocto
 
             protected:
                 Module *module;
-
+                
             public:
                 const size_t max_label_length;
                 

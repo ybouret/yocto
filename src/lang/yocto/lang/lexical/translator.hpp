@@ -24,7 +24,9 @@ namespace yocto
                 virtual ~Translator() throw();
 
                 const string name;
+
                 
+
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Translator);
