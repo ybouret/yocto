@@ -16,7 +16,8 @@ namespace yocto
 name(id),\
 rules(),\
 module(0),\
-max_label_length(0)
+max_label_length(0),\
+sharedDict(0)
 
             Scanner:: Scanner(const string &id) :
             Y_SCANNER_CTOR()

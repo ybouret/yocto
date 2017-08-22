@@ -24,6 +24,7 @@ scanners(1,as_capacity)
             {
                 if( ! scanners.insert( __root ) )
                     throw exception("[%s]: unable to initialize scanner <%s>", name.c_str(), root.name.c_str() );
+                __root->sharedDict = &dict;
             }
 
             Translator:: Translator(const string &transID,
@@ -40,20 +41,21 @@ scanners(1,as_capacity)
                 onInit();
             }
 
-            Scanner & Translator:: define(const string &scanrID)
+            Scanner & Translator:: declare(const string &scanrID)
             {
                 Scanner::Handle s( new Scanner(scanrID) );
                 if(!scanners.insert(s))
                 {
                     throw exception("[%s]: multiple scanner <%s>", name.c_str(),scanrID.c_str());
                 }
+                s->sharedDict = &dict;
                 return *s;
             }
 
-            Scanner & Translator:: define(const char *scanrID)
+            Scanner & Translator:: declare(const char *scanrID)
             {
                 const string sid(scanrID);
-                return define(sid);
+                return declare(sid);
             }
 
         }

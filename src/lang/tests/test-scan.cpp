@@ -12,13 +12,13 @@ public:
 
     explicit myScanner() : Lexical::Scanner("myScanner")
     {
-        make("ENDL",   RegExp("[:endl:]",NULL),         this, & myScanner::onENDL );
-        make("INT",    RegExp("[0-9]+",NULL),           this, & myScanner::emit);
-        make("DOUBLE", RegExp("[0-9]+\\.[0-9]*",NULL),  this, & myScanner::emit);
-        make("FLOAT",  RegExp("[0-9]+\\.[0-9]*f",NULL), this, & myScanner::emit);
-        make("WORD",   RegExp("[:word:]+",NULL),        this, & myScanner::emit );
-        make("BLANKS", RegExp("[:blank:]+",NULL),       this, & myScanner::emit);
-        make("PUNCT",  RegExp("[,?!]+",NULL),           this, & myScanner::emit);
+        make("ENDL",   "[:endl:]",          this, & myScanner::onENDL );
+        make("INT",    "[0-9]+",            this, & myScanner::emit);
+        make("DOUBLE", "[0-9]+\\.[0-9]*",   this, & myScanner::emit);
+        make("FLOAT",  "[0-9]+\\.[0-9]*f",  this, & myScanner::emit);
+        make("WORD",   "[:word:]+",         this, & myScanner::emit );
+        make("BLANKS", "[:blank:]+",        this, & myScanner::emit);
+        make("PUNCT",  "[,?!]+",            this, & myScanner::emit);
     }
 
     virtual ~myScanner() throw()

@@ -25,8 +25,8 @@ namespace yocto
 
                 const string name;
 
-                Scanner &define(const string &scanrID);
-                Scanner &define(const char   *scanrID);
+                Scanner &declare(const string &scanrID);
+                Scanner &declare(const char   *scanrID);
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Translator);
@@ -41,6 +41,8 @@ namespace yocto
                 ScannerDB       scanners; //!< the scanners
                 void            onInit();
 
+            public:
+                PatternDict     dict;
             };
         }
     }

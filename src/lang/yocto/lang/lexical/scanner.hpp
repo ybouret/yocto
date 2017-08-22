@@ -3,6 +3,7 @@
 
 #include "yocto/lang/lexical/rule.hpp"
 #include "yocto/lang/lexical/unit.hpp"
+#include "yocto/lang/pattern/regexp.hpp"
 #include "yocto/ptr/intr.hpp"
 
 namespace yocto
@@ -30,11 +31,11 @@ namespace yocto
                 typename METHOD_POINTER>
                 inline
                 void make(const string  &label,
-                          const Pattern *motif,
+                          const string  &expr,
                           OBJECT_POINTER host,
                           METHOD_POINTER meth)
                 {
-                    const Pattern::Handle handle(motif);
+                    const Pattern::Handle handle( RegExp(expr,sharedDict) );
                     checkRuleName(label);
                     const Action action(host,meth);
                     rules.push_back( new Rule(label,handle,action) );
@@ -45,11 +46,11 @@ namespace yocto
                 typename METHOD_POINTER>
                 inline
                 void make(const char    *label__,
-                          const Pattern *motif,
+                          const char    *expr,
                           OBJECT_POINTER host,
                           METHOD_POINTER meth)
                 {
-                    const Pattern::Handle handle(motif);
+                    const Pattern::Handle handle( RegExp(expr,sharedDict) );
                     const string          label(label__);
                     checkRuleName(label);
                     const Action action(host,meth);
@@ -70,8 +71,8 @@ namespace yocto
                 Module *module;
                 
             public:
-                const size_t max_label_length;
-                
+                const size_t       max_label_length;
+                const PatternDict *sharedDict;
             };
         }
     }
