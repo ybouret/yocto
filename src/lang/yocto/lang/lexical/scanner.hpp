@@ -12,6 +12,9 @@ namespace yocto
     {
         namespace Lexical
         {
+            class   Translator;
+            typedef functor<void,TL1(const Token &)> Callback;
+
             class Scanner : public counted_object
             {
             public:
@@ -26,6 +29,17 @@ namespace yocto
 
                 const string & key() const throw();
 
+                //______________________________________________________________
+                //
+                //
+                // make
+                //
+                //______________________________________________________________
+
+                //______________________________________________________________
+                //
+                // take action upon motif with label
+                //______________________________________________________________
                 template <
                 typename OBJECT_POINTER,
                 typename METHOD_POINTER>
@@ -42,6 +56,10 @@ namespace yocto
                 }
 
 
+                //______________________________________________________________
+                //
+                // take action upon expression with label
+                //______________________________________________________________
                 template <
                 typename OBJECT_POINTER,
                 typename METHOD_POINTER>
@@ -54,6 +72,10 @@ namespace yocto
                     make(label,RegExp(expr,sharedDict),host,meth);
                 }
 
+                //______________________________________________________________
+                //
+                // take action upon expression with label, wrappers
+                //______________________________________________________________
                 template <
                 typename OBJECT_POINTER,
                 typename METHOD_POINTER>
@@ -67,10 +89,22 @@ namespace yocto
                     const string expr(expr__);
                     make(label,expr,host,meth);
                 }
-                
+
+                //______________________________________________________________
+                //
+                //
+                // jump
+                //
+                //______________________________________________________________
+                void jump(const string   &scanr,
+                          Pattern        *motif,
+                          const Callback &onjmp);
+
+
+
                 Unit *probe(Source &source, bool &isRegular);
 
-                
+
 
 
             private:
@@ -84,6 +118,10 @@ namespace yocto
             public:
                 const size_t       max_label_length;
                 const PatternDict *sharedDict;
+
+            private:
+                friend class Translator;
+                Translator        *translator;
             };
         }
     }

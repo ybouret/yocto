@@ -13,11 +13,12 @@ namespace yocto
             }
 
 #define Y_SCANNER_CTOR() \
-name(id),\
-rules(),\
-module(0),\
-max_label_length(0),\
-sharedDict(0)
+name(id),                 \
+rules(),                   \
+module(0),                  \
+max_label_length(0),         \
+sharedDict(0),                \
+translator(0)
 
             Scanner:: Scanner(const string &id) :
             Y_SCANNER_CTOR()

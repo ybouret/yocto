@@ -3,6 +3,7 @@
 
 #include "yocto/lang/lexical/scanner.hpp"
 #include "yocto/associative/set.hpp"
+#include "yocto/core/pool.hpp"
 
 namespace yocto
 {
@@ -28,6 +29,9 @@ namespace yocto
                 Scanner &declare(const string &scanrID);
                 Scanner &declare(const char   *scanrID);
 
+                void jump(const string &id);
+                void call(const string &id);
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Translator);
                 Scanner::Handle __root;
@@ -37,10 +41,29 @@ namespace yocto
                 Scanner        &root;
 
             private:
+                friend class Scanner;
+
+                class sNode : public object
+                {
+                public:
+                    sNode   *next;
+                    Scanner *addr;
+                    explicit sNode(Scanner *) throw();
+                    virtual ~sNode() throw();
+
+                private:
+                    YOCTO_DISABLE_COPY_AND_ASSIGN(sNode);
+                };
+
+                typedef core::pool_of_cpp<sNode> History;
+                
                 Scanner        *current;  //!< current scanner
                 ScannerDB       scanners; //!< the scanners
-                void            onInit();
+                History         history;
 
+                void            onInit();
+                void            linkTo( Scanner & ) throw();
+                
             public:
                 PatternDict     dict;
             };
