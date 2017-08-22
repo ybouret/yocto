@@ -16,6 +16,7 @@ namespace yocto
             {
             public:
                 typedef set<string,Scanner::Handle> ScannerDB;
+                
                 explicit Translator(const string &transID,
                                     const string &scanrID);
                 
@@ -42,8 +43,9 @@ namespace yocto
                 Scanner        &root;
 
             private:
-                friend class Scanner;
+                Units cache;
 
+                friend class Scanner;
                 class sNode : public object
                 {
                 public:
@@ -64,7 +66,7 @@ namespace yocto
 
                 void            onInit();
                 void            linkTo( Scanner & ) throw();
-                
+
             public:
                 PatternDict     dict;
             };

@@ -111,7 +111,20 @@ namespace yocto
                           const Callback &onCall);
                 
 
-
+                //______________________________________________________________
+                //
+                //
+                // back
+                //
+                //______________________________________________________________
+                void back(Pattern        *motif,
+                          const Callback &onBack);
+                //______________________________________________________________
+                //
+                //
+                // probing function
+                //
+                //______________________________________________________________
                 Unit *probe(Source &source, bool &isRegular);
 
 
@@ -121,11 +134,9 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Scanner);
                 Rules rules;
                 void checkRuleName(const string &label) const;
-
-            protected:
-                Module *module;
                 
             public:
+                Module *module;
                 const size_t       max_label_length;
                 const PatternDict *sharedDict;
 

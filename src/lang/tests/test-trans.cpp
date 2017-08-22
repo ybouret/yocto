@@ -12,10 +12,25 @@ public:
 
     explicit myTrans() : Lexical::Translator("lexer","main")
     {
+        root.make("int",   "[0-9]+",     this, &myTrans::emit);
+        root.make("ID",    "[:word:]+",  this, &myTrans::emit);
+        root.make("blanks","[:blank:]+", this, &myTrans::emit);
+        root.make("endl",  "[:endl:]+",  this, &myTrans::endl);
     }
 
     virtual ~myTrans() throw()
     {
+    }
+
+    bool emit(const Token &) throw()
+    {
+        return true;
+    }
+
+    bool endl(const Token &) throw()
+    {
+        root.module->newLine();
+        return true;
     }
 
 
@@ -27,6 +42,32 @@ private:
 YOCTO_UNIT_TEST_IMPL(trans)
 {
     myTrans trans;
+    Module::Handle hModule( new Module() ); // open stdio
+    Source         source( hModule );       // register it in source
+
+
+    Lexical::Units lexemes;
+
+    for(;;)
+    {
+        bool           reg  = true;
+        Lexical::Unit *lex  = trans.root.probe(source,reg);
+        if(!lex) break;
+        lexemes.push_back(lex);
+    }
+
+    for(const Lexical::Unit *u = lexemes.head; u; u=u->next )
+    {
+        std::cerr << u->label;
+        for(size_t i=u->label.length();i<=trans.root.max_label_length;++i)
+        {
+            std::cerr << ' ';
+        }
+        std::cerr << ": ";
+        std::cerr << "'" << *u  << "'";
+        std::cerr << std::endl;
+    }
+
 
 }
 YOCTO_UNIT_TEST_DONE()

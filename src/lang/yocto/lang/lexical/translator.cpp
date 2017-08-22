@@ -16,9 +16,10 @@ name(transID),                 \
 __root( new Scanner(scanrID) ), \
 units(),                         \
 root( *__root ),                  \
-current( &root ),                  \
-scanners(1,as_capacity),            \
-history(),                           \
+cache(),                           \
+current( &root ),                   \
+scanners(1,as_capacity),             \
+history(),                            \
 dict()
 
 
@@ -104,12 +105,18 @@ namespace yocto
         namespace Lexical
         {
 
+
+            ////////////////////////////////////////////////////////////////////
+            //
+            // jump of call wrappers
+            //
+            ////////////////////////////////////////////////////////////////////
             namespace
             {
 
                 typedef void (Translator::*Cntrl)(const string &);
 
-                class Exec
+                class Exec : public object
                 {
                 public:
                     inline Exec(Translator     &usrTrans,
@@ -133,7 +140,7 @@ namespace yocto
                     }
 
 
-                    inline ~Exec() throw()
+                    inline virtual ~Exec() throw()
                     {
                     }
 
@@ -155,7 +162,11 @@ namespace yocto
             }
 
 
-
+            ////////////////////////////////////////////////////////////////////
+            //
+            // jump
+            //
+            ////////////////////////////////////////////////////////////////////
             void Scanner:: jump(const string   &scanr,
                                 Pattern        *motif,
                                 const Callback &onJump)
@@ -176,6 +187,19 @@ namespace yocto
                 rules.push_back( new Rule(label,handle,action) );
             }
 
+            void Translator:: jump(const string &id)
+            {
+                assert(current);
+                Scanner::Handle *ppTarget = scanners.search(id);
+                if(!ppTarget) throw exception("[%s]: no <%s> to jump to from <%s>", name.c_str(), id.c_str(), current->name.c_str());
+                current = & (**ppTarget);
+            }
+
+            ////////////////////////////////////////////////////////////////////
+            //
+            // call
+            //
+            ////////////////////////////////////////////////////////////////////
             void Scanner:: call(const string   &scanr,
                                 Pattern        *motif,
                                 const Callback &onCall)
@@ -195,16 +219,7 @@ namespace yocto
                 checkRuleName(label);
                 rules.push_back( new Rule(label,handle,action) );
             }
-            
-            
-            
-            void Translator:: jump(const string &id)
-            {
-                assert(current);
-                Scanner::Handle *ppTarget = scanners.search(id);
-                if(!ppTarget) throw exception("[%s]: no <%s> to jump to from <%s>", name.c_str(), id.c_str(), current->name.c_str());
-                current = & (**ppTarget);
-            }
+
 
             void Translator:: call(const string &id)
             {
@@ -215,10 +230,56 @@ namespace yocto
                 current = & (**ppTarget);
             }
 
+
+            ////////////////////////////////////////////////////////////////////
+            //
+            // back
+            //
+            ////////////////////////////////////////////////////////////////////
+            namespace
+            {
+                class Back : public object
+                {
+                public:
+                    Translator   &trans;
+                    Callback      onExe;
+
+                    inline Back(Translator     &usrTrans,
+                                const Callback &usrOnExe) :
+                    trans(usrTrans),
+                    onExe(usrOnExe)
+                    {
+                    }
+
+                    inline Back(const Back &other) :
+                    trans(other.trans),
+                    onExe(other.onExe)
+                    {
+                    }
+
+
+                    inline virtual ~Back() throw()
+                    {
+
+                    }
+
+                    inline bool operator()(const Token &tokn)
+                    {
+                        trans.back();
+                        onExe(tokn);
+                        return false; // control
+                    }
+                    
+                private:
+                    YOCTO_DISABLE_ASSIGN(Back);
+                };
+                
+            }
+            
             void Translator:: back()
             {
                 assert(current);
-                if(!history.top) throw exception("[%s]: no possible back from <%s>", name.c_str(),current->name.c_str());
+                if(!history.top) throw exception("[%s]: no possible back from <%s>",name.c_str(),current->name.c_str());
                 current = history.top->addr;
                 delete history.query();
             }
