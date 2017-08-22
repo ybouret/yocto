@@ -170,7 +170,7 @@ namespace yocto
 
                 const Exec   __jump(*translator,scanr,onJump, &Translator::jump);
                 const Action action(__jump);
-                const string motifID = motif->toString();
+                const string motifID = motif->signature();
                 const string label   = "jump@" + scanr + '@' + motifID;
                 checkRuleName(label);
                 rules.push_back( new Rule(label,handle,action) );
@@ -190,7 +190,7 @@ namespace yocto
 
                 const Exec   __call(*translator,scanr,onCall, &Translator::call);
                 const Action action(__call);
-                const string motifID = motif->toString();
+                const string motifID = motif->signature();
                 const string label   = "call@" + scanr + '@' + motifID;
                 checkRuleName(label);
                 rules.push_back( new Rule(label,handle,action) );
@@ -211,9 +211,17 @@ namespace yocto
                 assert(current);
                 Scanner::Handle *ppTarget = scanners.search(id);
                 if(!ppTarget) throw exception("[%s]: no <%s> to call from <%s>", name.c_str(), id.c_str(), current->name.c_str());
+                history.store( new sNode(current) );
                 current = & (**ppTarget);
             }
 
+            void Translator:: back()
+            {
+                assert(current);
+                if(!history.top) throw exception("[%s]: no possible back from <%s>", name.c_str(),current->name.c_str());
+                current = history.top->addr;
+                delete history.query();
+            }
             
         }
         

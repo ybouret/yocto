@@ -1,4 +1,4 @@
-#include "yocto/utest/run.hpp"
+ #include "yocto/utest/run.hpp"
 
 #include "yocto/hashing/adler32.hpp"
 #include "yocto/hashing/bjh32.hpp"

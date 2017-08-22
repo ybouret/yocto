@@ -31,7 +31,8 @@ namespace yocto
 
                 void jump(const string &id);
                 void call(const string &id);
-                
+                void back();
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Translator);
                 Scanner::Handle __root;

@@ -51,6 +51,7 @@ virtual void             __sav( ios::ostream &fp ) const
             void save( ios::ostream &fp ) const;
 
             string toString() const;
+            string signature() const;
 
             //! to mark ID
             void __mark( ios::ostream &fp) const;

@@ -59,6 +59,43 @@ namespace yocto
             string bin64 = Base64.Encode(bin);
             return bin64;
         }
+    }
+
+}
+
+#include "yocto/hashing/sha1.hpp"
+#include "yocto/code/utils.hpp"
+
+namespace yocto
+{
+    namespace Lang
+    {
+        string Pattern:: signature() const
+        {
+            string bin;
+            {
+                ios::osstream fp(bin);
+                save(fp);
+            }
+            uint8_t out[4];
+            
+            {
+                hashing::sha1 H;
+                H.set();
+                H(bin);
+                H.get(out,sizeof(out));
+            }
+
+            string ans;
+
+            for(size_t i=0;i<sizeof(out);++i)
+            {
+                ans.append(hexa_text_lower[out[i]]);
+            }
+
+            return ans;
+        }
+
 
     }
 }
