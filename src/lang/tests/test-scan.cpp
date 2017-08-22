@@ -32,7 +32,8 @@ public:
 
     inline bool onENDL(const Token &) throw()
     {
-        if(module) module->newLine();
+        assert(module);
+        module->newLine();
         return true;
     }
 

@@ -3,12 +3,15 @@
 
 #include "yocto/lang/module.hpp"
 #include "yocto/lang/token.hpp"
-#include "yocto/core/pool.hpp"
 
 namespace yocto
 {
     namespace Lang
     {
+        namespace Lexical
+        {
+            class Scanner; //!< to access module
+        }
 
         class Source
         {
@@ -28,29 +31,11 @@ namespace yocto
             bool        is_active();
             inline const Token & operator*() const throw() { return cache; }
 
-            const char *moduleID() const throw();
-            Module     *getCurrentModule() throw();
-
+            
         private:
-
-            //! for multiple sources
-            class hmNode : public object
-            {
-            public:
-                hmNode         *next;
-                Module::Handle  hModule;
-                hmNode(const Module::Handle &hm) throw();
-                ~hmNode() throw();
-
-            private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(hmNode);
-            };
-
-            //! a pool of modules
-            typedef core::pool_of_cpp<hmNode> hmList;
-
-            Token  cache;
-            hmList modules;
+            friend class Lexical::Scanner;
+            Module::Handle module;
+            Token          cache;
 
             YOCTO_DISABLE_COPY_AND_ASSIGN(Source);
         };

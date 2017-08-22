@@ -4,57 +4,17 @@ namespace yocto
 {
     namespace Lang
     {
-        Source:: hmNode:: hmNode( const Module::Handle &h) throw() :
-        next(0),
-        hModule(h)
-        {
-        }
-
-        Source:: hmNode:: ~hmNode() throw()
-        {
-        }
         
-    }
-
-}
-
-#include <iostream>
-
-namespace yocto
-{
-    namespace Lang
-    {
-
-        Module * Source:: getCurrentModule() throw()
-        {
-            return (0!=modules.top) ? modules.top->hModule.__get() : NULL;
-        }
-
-        const char * Source:: moduleID() const throw()
-        {
-            if(modules.top)
-            {
-                return modules.top->hModule->stamp->c_str();
-            }
-            else
-            {
-                return "no input";
-            }
-        }
-
-        
-
         Source:: ~Source() throw()
         {
         }
 
         Source:: Source( const Module::Handle &hModule ) :
-        cache(),
-        modules()
+        module(hModule),
+        cache()
         {
-            modules.store( new hmNode(hModule) );
         }
-        
+
         Char * Source:: query()
         {
             if(cache.size>0)
@@ -63,14 +23,7 @@ namespace yocto
             }
             else
             {
-                if(0!=modules.top)
-                {
-                    return modules.top->hModule->get();
-                }
-                else
-                {
-                    return 0;
-                }
+                return module->get();
             }
         }
 
@@ -104,26 +57,18 @@ namespace yocto
             }
             else
             {
-                if(0!=modules.top)
+                // got a module: do we have something ?
+                Char *ch = module->get();
+                if(0!=ch)
                 {
-                    // got a module: do we have something ?
-                    Char *ch = modules.top->hModule->get();
-                    if(0!=ch)
-                    {
-                        // yes
-                        cache.push_back(ch);
-                        assert(1==cache.size);
-                        return cache.head;
-                    }
-                    else
-                    {
-                        //no
-                        return 0;
-                    }
+                    // yes
+                    cache.push_back(ch);
+                    assert(1==cache.size);
+                    return cache.head;
                 }
                 else
                 {
-                    // no module
+                    //no
                     return 0;
                 }
 
@@ -132,24 +77,22 @@ namespace yocto
 
         void Source:: prefetch(const size_t nmax)
         {
-            if(modules.top)
+
+            Char *ch = 0;
+            if(nmax>0)
             {
-                Char *ch = 0;
-                if(nmax>0)
+                for(size_t i=0;i<nmax;++i)
                 {
-                    for(size_t i=0;i<nmax;++i)
-                    {
-                        ch = modules.top->hModule->get();
-                        if(!ch) break;
-                        cache.push_back(ch);
-                    }
+                    ch = module->get();
+                    if(!ch) break;
+                    cache.push_back(ch);
                 }
-                else
+            }
+            else
+            {
+                while( 0 != (ch=module->get()) )
                 {
-                    while( 0 != (ch=modules.top->hModule->get()) )
-                    {
-                        cache.push_back(ch);
-                    }
+                    cache.push_back(ch);
                 }
             }
         }
@@ -173,6 +116,6 @@ namespace yocto
         {
             return 0 != peek();
         }
-
+        
     }
 }

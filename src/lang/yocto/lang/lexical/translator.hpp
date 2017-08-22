@@ -31,13 +31,16 @@ namespace yocto
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Translator);
                 Scanner::Handle __root;
-
+                Units            units;
+                
             public:
                 Scanner        &root;
 
             private:
-                Scanner   *current;  //!< current scanner
-                ScannerDB  scanners; //!< the scanners
+                Scanner        *current;  //!< current scanner
+                ScannerDB       scanners; //!< the scanners
+                void            onInit();
+
             };
         }
     }

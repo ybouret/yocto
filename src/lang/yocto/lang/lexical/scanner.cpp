@@ -138,7 +138,7 @@ namespace yocto
                 //______________________________________________________________
 
 
-                YOCTO_FAILSAFE(module    = source.getCurrentModule();
+                YOCTO_FAILSAFE(module    = source.module.__get();
                                isRegular = bestRule->action(bestTokn)
                                ,module=0);
 

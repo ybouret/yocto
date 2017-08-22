@@ -15,7 +15,7 @@ YOCTO_UNIT_TEST_IMPL(source)
         Char *ch = 0;
         while( 0 != (ch=source.query()) )
         {
-            std::cerr << ch->line << "." << ch->column << ": '" << char(ch->code) << "'" << std::endl;
+            std::cerr << ch->line << "." << ch->column << ": '" << ch->text() << "'" << std::endl;
             delete ch;
         }
     }
