@@ -13,9 +13,9 @@ namespace yocto
 
 #define Y_TRANS_CTOR()        \
 name(transID),                 \
-__root( new Scanner(scanrID) ), \
+_root( new Scanner(scanrID) ),  \
 units(),                         \
-root( *__root ),                  \
+root( *_root ),                   \
 cache(),                           \
 current( &root ),                   \
 scanners(1,as_capacity),             \
@@ -32,9 +32,9 @@ dict()
 
             void Translator:: onInit()
             {
-                if( ! scanners.insert( __root ) )
+                if( ! scanners.insert( _root ) )
                     throw exception("[%s]: unable to initialize scanner <%s>", name.c_str(), root.name.c_str() );
-                linkTo( * __root );
+                linkTo( * _root );
             }
 
             Translator:: Translator(const string &transID,
@@ -179,7 +179,7 @@ namespace yocto
                     throw exception("<%s>.jump: not linked to a Translator", name.c_str());
                 }
 
-                const Exec   __jump(*translator,scanr,onJump, &Translator::jump);
+                const Exec   __jump(*translator,scanr,onJump, &Translator::__jump);
                 const Action action(__jump);
                 const string motifID = motif->signature();
                 const string label   = "jump@" + scanr + '@' + motifID;
@@ -187,7 +187,7 @@ namespace yocto
                 rules.push_back( new Rule(label,handle,action) );
             }
 
-            void Translator:: jump(const string &id)
+            void Translator:: __jump(const string &id)
             {
                 assert(current);
                 Scanner::Handle *ppTarget = scanners.search(id);
@@ -212,7 +212,7 @@ namespace yocto
                     throw exception("<%s>.call: not linked to a Translator", name.c_str());
                 }
 
-                const Exec   __call(*translator,scanr,onCall, &Translator::call);
+                const Exec   __call(*translator,scanr,onCall, &Translator::__call);
                 const Action action(__call);
                 const string motifID = motif->signature();
                 const string label   = "call@" + scanr + '@' + motifID;
@@ -221,7 +221,7 @@ namespace yocto
             }
 
 
-            void Translator:: call(const string &id)
+            void Translator:: __call(const string &id)
             {
                 assert(current);
                 Scanner::Handle *ppTarget = scanners.search(id);
@@ -265,7 +265,7 @@ namespace yocto
 
                     inline bool operator()(const Token &tokn)
                     {
-                        trans.back();
+                        trans.__back();
                         onExe(tokn);
                         return false; // control
                     }
@@ -276,7 +276,7 @@ namespace yocto
                 
             }
             
-            void Translator:: back()
+            void Translator:: __back()
             {
                 assert(current);
                 if(!history.top) throw exception("[%s]: no possible back from <%s>",name.c_str(),current->name.c_str());

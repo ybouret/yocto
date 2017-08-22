@@ -25,25 +25,24 @@ namespace yocto
 
                 virtual ~Translator() throw();
 
-                const string name;
 
                 Scanner &declare(const string &scanrID);
                 Scanner &declare(const char   *scanrID);
 
-                void jump(const string &id);
-                void call(const string &id);
-                void back();
+                void __jump(const string &id);
+                void __call(const string &id);
+                void __back();
+
+
+                const string name;
 
             private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(Translator);
-                Scanner::Handle __root;
+                Scanner::Handle  _root;
                 Units            units;
-                
             public:
-                Scanner        &root;
-
+                Scanner         &root;
             private:
-                Units cache;
+                Units            cache;
 
                 friend class Scanner;
                 class sNode : public object
@@ -69,6 +68,9 @@ namespace yocto
 
             public:
                 PatternDict     dict;
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Translator);
             };
         }
     }
