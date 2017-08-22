@@ -98,8 +98,18 @@ namespace yocto
                 //______________________________________________________________
                 void jump(const string   &scanr,
                           Pattern        *motif,
-                          const Callback &onjmp);
+                          const Callback &onJump);
 
+                //______________________________________________________________
+                //
+                //
+                // call
+                //
+                //______________________________________________________________
+                void call(const string   &scanr,
+                          Pattern        *motif,
+                          const Callback &onCall);
+                
 
 
                 Unit *probe(Source &source, bool &isRegular);

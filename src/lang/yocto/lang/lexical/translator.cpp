@@ -158,7 +158,7 @@ namespace yocto
 
             void Scanner:: jump(const string   &scanr,
                                 Pattern        *motif,
-                                const Callback &onjmp)
+                                const Callback &onJump)
             {
                 assert(motif!=NULL);
                 const Pattern::Handle handle(motif);
@@ -168,28 +168,56 @@ namespace yocto
                     throw exception("<%s>.jump: not linked to a Translator", name.c_str());
                 }
 
-                const Exec   jmp(*translator,scanr,onjmp, &Translator::jump);
-                const Action action(jmp);
+                const Exec   __jump(*translator,scanr,onJump, &Translator::jump);
+                const Action action(__jump);
                 const string motifID = motif->toString();
                 const string label   = "jump@" + scanr + '@' + motifID;
                 checkRuleName(label);
                 rules.push_back( new Rule(label,handle,action) );
             }
 
+            void Scanner:: call(const string   &scanr,
+                                Pattern        *motif,
+                                const Callback &onCall)
+            {
+                assert(motif!=NULL);
+                const Pattern::Handle handle(motif);
+
+                if(!translator)
+                {
+                    throw exception("<%s>.call: not linked to a Translator", name.c_str());
+                }
+
+                const Exec   __call(*translator,scanr,onCall, &Translator::call);
+                const Action action(__call);
+                const string motifID = motif->toString();
+                const string label   = "call@" + scanr + '@' + motifID;
+                checkRuleName(label);
+                rules.push_back( new Rule(label,handle,action) );
+            }
             
-
-
+            
+            
             void Translator:: jump(const string &id)
             {
                 assert(current);
                 Scanner::Handle *ppTarget = scanners.search(id);
-                if(!ppTarget) throw exception("[%s]: not <%s> to jump to from <%s>", name.c_str(), id.c_str(), current->name.c_str());
+                if(!ppTarget) throw exception("[%s]: no <%s> to jump to from <%s>", name.c_str(), id.c_str(), current->name.c_str());
                 current = & (**ppTarget);
             }
 
+            void Translator:: call(const string &id)
+            {
+                assert(current);
+                Scanner::Handle *ppTarget = scanners.search(id);
+                if(!ppTarget) throw exception("[%s]: no <%s> to call from <%s>", name.c_str(), id.c_str(), current->name.c_str());
+                current = & (**ppTarget);
+            }
+
+            
         }
-
+        
     }
-
+    
 }
 
