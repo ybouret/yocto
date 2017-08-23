@@ -5,6 +5,7 @@
 #include "yocto/code/ipower.hpp"
 #include "yocto/math/core/lu.hpp"
 
+
 namespace yocto
 {
     namespace math
@@ -176,6 +177,20 @@ namespace yocto
                         }
                     }
                     return true;
+                }
+
+                static inline
+                std::ostream  &GnuPlot( std::ostream &os, const array<T> &aorg )
+                {
+                    for(size_t i=1;i<=aorg.size();++i)
+                    {
+                        if(i>1) os << '+';
+                        os << '(' << aorg[i] << ')';
+                        if(i>1) os << "*(x";
+                        if(i>2) os << "**" << (i-1);
+                        if(i>1) os << ")";
+                    }
+                    return os;
                 }
 
             private:
