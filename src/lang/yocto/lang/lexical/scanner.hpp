@@ -20,9 +20,9 @@ namespace yocto
             public:
                 typedef intr_ptr<string,Scanner> Handle;
 
-                const string label;
-                const Stamp  stamp;
-                
+                const Stamp   stamp;
+                const string &label;
+
                 explicit Scanner(const string &id);
                 explicit Scanner(const char   *id);
 

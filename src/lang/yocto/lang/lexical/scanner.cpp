@@ -13,8 +13,8 @@ namespace yocto
             }
 
 #define Y_SCANNER_CTOR()  \
-label(id),                 \
-stamp( new string(label) ), \
+stamp( new string(id) ),   \
+label( *stamp),             \
 rules(),                     \
 module(0),                    \
 max_label_length(0),           \
