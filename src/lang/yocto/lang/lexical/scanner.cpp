@@ -12,12 +12,13 @@ namespace yocto
             {
             }
 
-#define Y_SCANNER_CTOR() \
-name(id),                 \
-rules(),                   \
-module(0),                  \
-max_label_length(0),         \
-sharedDict(0),                \
+#define Y_SCANNER_CTOR()  \
+label(id),                 \
+stamp( new string(label) ), \
+rules(),                     \
+module(0),                    \
+max_label_length(0),           \
+sharedDict(0),                  \
 translator(0)
 
             Scanner:: Scanner(const string &id) :
@@ -33,16 +34,16 @@ translator(0)
 
             const string & Scanner:: key() const throw()
             {
-                return name;
+                return label;
             }
 
-            void Scanner:: checkRuleName(const string &label) const
+            void Scanner:: checkRuleName(const string &rule_label) const
             {
                 for(const Rule *r = rules.head;r;r=r->next)
                 {
-                    if(label==r->label) throw exception("%s: multiple rule '%s'", name.c_str(), label.c_str() );
+                    if(rule_label==r->label) throw exception("<%s>: multiple rule '%s'", label.c_str(), rule_label.c_str() );
                 }
-                (size_t &)max_label_length = max_of(max_label_length,label.length());
+                (size_t &)max_label_length = max_of(max_label_length,rule_label.length());
             }
 
 
@@ -96,7 +97,7 @@ namespace yocto
                     const Char *ch = source.peek();
                     if(ch)
                     {
-                        throw exception("%s: unexpected char '%s'", name.c_str(), ch->text() );
+                        throw exception("%s: unexpected char '%s'", label.c_str(), ch->text() );
                     }
                     else
                     {

@@ -20,8 +20,9 @@ namespace yocto
             public:
                 typedef intr_ptr<string,Scanner> Handle;
 
-                const string name;
-
+                const string label;
+                const Stamp  stamp;
+                
                 explicit Scanner(const string &id);
                 explicit Scanner(const char   *id);
 
@@ -133,7 +134,7 @@ namespace yocto
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Scanner);
                 Rules rules;
-                void checkRuleName(const string &label) const;
+                void checkRuleName(const string &) const;
                 
             public:
                 Module *module;

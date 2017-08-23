@@ -33,7 +33,7 @@ dict()
             void Translator:: onInit()
             {
                 if( ! scanners.insert( _root ) )
-                    throw exception("[%s]: unable to initialize scanner <%s>", name.c_str(), root.name.c_str() );
+                    throw exception("[%s]: unable to initialize scanner <%s>", name.c_str(), root.label.c_str() );
                 linkTo( * _root );
             }
 
@@ -176,7 +176,7 @@ namespace yocto
 
                 if(!translator)
                 {
-                    throw exception("<%s>.jump: not linked to a Translator", name.c_str());
+                    throw exception("<%s>.jump: not linked to a Translator", label.c_str());
                 }
 
                 const Exec   __jump(*translator,scanr,onJump, &Translator::__jump);
@@ -191,7 +191,7 @@ namespace yocto
             {
                 assert(current);
                 Scanner::Handle *ppTarget = scanners.search(id);
-                if(!ppTarget) throw exception("[%s]: no <%s> to jump to from <%s>", name.c_str(), id.c_str(), current->name.c_str());
+                if(!ppTarget) throw exception("[%s]: no <%s> to jump to from <%s>", name.c_str(), id.c_str(), current->label.c_str());
                 current = & (**ppTarget);
             }
 
@@ -209,7 +209,7 @@ namespace yocto
 
                 if(!translator)
                 {
-                    throw exception("<%s>.call: not linked to a Translator", name.c_str());
+                    throw exception("<%s>.call: not linked to a Translator", label.c_str());
                 }
 
                 const Exec   __call(*translator,scanr,onCall, &Translator::__call);
@@ -225,7 +225,7 @@ namespace yocto
             {
                 assert(current);
                 Scanner::Handle *ppTarget = scanners.search(id);
-                if(!ppTarget) throw exception("[%s]: no <%s> to call from <%s>", name.c_str(), id.c_str(), current->name.c_str());
+                if(!ppTarget) throw exception("[%s]: no <%s> to call from <%s>", name.c_str(), id.c_str(), current->label.c_str());
                 history.store( new sNode(current) );
                 current = & (**ppTarget);
             }
@@ -279,7 +279,7 @@ namespace yocto
             void Translator:: __back()
             {
                 assert(current);
-                if(!history.top) throw exception("[%s]: no possible back from <%s>",name.c_str(),current->name.c_str());
+                if(!history.top) throw exception("[%s]: no possible back from <%s>",name.c_str(),current->label.c_str());
                 current = history.top->addr;
                 delete history.query();
             }
