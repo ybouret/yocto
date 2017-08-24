@@ -326,11 +326,29 @@ namespace yocto
                 else
                 {
 
-                    Result res = Forward;
-                    Unit  *lex = current->probe(source,res);
-                    
+                    while(true)
+                    {
+                        Result res = Forward;
+                        Unit  *lex = current->probe(source,res);
 
-                    return NULL;
+                        switch(res)
+                        {
+                            case Forward:
+                                if(!lex) throw exception("[%s].<%s>: no unit on Forward result", name.c_str(),current->label.c_str());
+                                return lex;
+
+                            case Discard:
+                                if(lex) delete lex;
+                                throw exception("[%s].<%s>: unexpected Discard result", name.c_str(), current->label.c_str());
+
+                            case Control:
+                                if(lex) delete lex;
+                                throw exception("[%s].<%s>: Control pattern shouldn't return unit", name.c_str(),current->label.c_str());
+                                break; // for new cycle, current may have changed!
+                        }
+
+                        return NULL;
+                    }
                 }
             }
 
