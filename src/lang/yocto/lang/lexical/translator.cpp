@@ -149,11 +149,11 @@ namespace yocto
                     Callback      onExe;
                     Cntrl         cntrl;
 
-                    inline bool operator()( const Token &tokn )
+                    inline Lexical::Result operator()( const Token &tokn )
                     {
                         (trans.*cntrl)(scanr);
                         onExe(tokn);
-                        return false; //! a control token
+                        return Lexical::Control; //! a control token
                     }
 
                 private:
@@ -263,11 +263,11 @@ namespace yocto
 
                     }
 
-                    inline bool operator()(const Token &tokn)
+                    inline Lexical::Result operator()(const Token &tokn)
                     {
                         trans.__back();
                         onExe(tokn);
-                        return false; // control
+                        return Lexical::Control; // control
                     }
                     
                 private:
@@ -283,7 +283,26 @@ namespace yocto
                 current = history.top->addr;
                 delete history.query();
             }
-            
+
+            void Scanner:: back(Pattern        *motif,
+                                const Callback &onBack)
+            {
+                assert(motif!=NULL);
+                const Pattern::Handle handle(motif);
+
+                if(!translator)
+                {
+                    throw exception("<%s>.back: not linked to a Translator", label.c_str());
+                }
+
+                const Back   __back(*translator,onBack);
+                const Action action(__back);
+                const string motifID = motif->signature();
+                const string label   = "back@" + motifID;
+                checkRuleName(label);
+                rules.push_back( new Rule(label,handle,action) );
+            }
+
         }
         
     }

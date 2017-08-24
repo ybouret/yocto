@@ -46,6 +46,10 @@ translator(0)
                 (size_t &)max_label_length = max_of(max_label_length,rule_label.length());
             }
 
+            Unit * Scanner:: newUnit() const
+            {
+                return new Unit(stamp);
+            }
 
 
         }
@@ -61,101 +65,109 @@ namespace yocto
         namespace Lexical
         {
 
-            Unit *  Scanner:: probe( Source &source, bool &isRegular )
+            Unit *  Scanner:: probe( Source &source, Result &kind )
             {
 
-                //______________________________________________________________
-                //
-                // initialize
-                //______________________________________________________________
-                isRegular = true;
-                Rule   *bestRule = NULL;
-                Token   bestTokn;
-
-                //______________________________________________________________
-                //
-                // try to find a first matching rule
-                //______________________________________________________________
-                for(Rule *r = rules.head; r; r=r->next)
-                {
-                    Token tokn;
-                    if(r->motif->match(source,tokn))
-                    {
-                        source.store_copy(tokn);     // restore tokn for other rules
-                        bestRule = r;                // keep the rule
-                        bestTokn.swap_with(tokn);    // and take the token
-                        break;
-                    }
-                }
-
-                if(!bestRule)
+                while(true)
                 {
                     //__________________________________________________________
                     //
-                    // Ooops, nothing matched
+                    // initialize
                     //__________________________________________________________
-                    const Char *ch = source.peek();
-                    if(ch)
-                    {
-                        throw exception("%s: unexpected char '%s'", label.c_str(), ch->text() );
-                    }
-                    else
-                    {
-                        return NULL; // EOF
-                    }
-                }
+                    kind             = Forward;
+                    Rule   *bestRule = NULL;
+                    Token   bestTokn;
 
-                //______________________________________________________________
-                //
-                // scanning other rules for a longer match
-                //______________________________________________________________
-                for(Rule *r = bestRule->next; r; r=r->next )
-                {
-                    Token tokn;
-                    if(r->motif->match(source,tokn))
+                    //__________________________________________________________
+                    //
+                    // try to find a first matching rule
+                    //__________________________________________________________
+                    for(Rule *r = rules.head; r; r=r->next)
+                    {
+                        Token tokn;
+                        if(r->motif->match(source,tokn))
+                        {
+                            source.store_copy(tokn);     // restore tokn for other rules
+                            bestRule = r;                // keep the rule
+                            bestTokn.swap_with(tokn);    // and take the token
+                            break;
+                        }
+                    }
+
+                    if(!bestRule)
                     {
                         //______________________________________________________
                         //
-                        // we got another candidate !
+                        // Ooops, nothing matched
                         //______________________________________________________
-                        source.store_copy(tokn); // restore tokn for other rules
-                        if(tokn.size>bestTokn.size)
+                        const Char *ch = source.peek();
+                        if(ch)
                         {
-                            // new winner !
-                            bestRule = r;
-                            bestTokn.swap_with(tokn);
+                            throw exception("%s: unexpected char '%s'", label.c_str(), ch->text() );
+                        }
+                        else
+                        {
+                            return NULL; // EOF
                         }
                     }
-                }
 
-                //______________________________________________________________
-                //
-                // update source
-                //______________________________________________________________
-                assert( source.in_cache() >= bestTokn.size );
-                source.forward(bestTokn.size);
+                    //__________________________________________________________
+                    //
+                    // scanning other rules for a longer match
+                    //__________________________________________________________
+                    for(Rule *r = bestRule->next; r; r=r->next )
+                    {
+                        Token tokn;
+                        if(r->motif->match(source,tokn))
+                        {
+                            //__________________________________________________
+                            //
+                            // we got another candidate !
+                            //__________________________________________________
+                            source.store_copy(tokn); // restore tokn for other rules
+                            if(tokn.size>bestTokn.size)
+                            {
+                                // new winner !
+                                bestRule = r;
+                                bestTokn.swap_with(tokn);
+                            }
+                        }
+                    }
 
-                //______________________________________________________________
-                //
-                // take action
-                //______________________________________________________________
+                    //__________________________________________________________
+                    //
+                    // update source
+                    //__________________________________________________________
+                    assert( source.in_cache() >= bestTokn.size );
+                    source.forward(bestTokn.size);
+
+                    //__________________________________________________________
+                    //
+                    // take action
+                    //__________________________________________________________
 
 
-                YOCTO_FAILSAFE(module    = source.module.__get();
-                               isRegular = bestRule->action(bestTokn)
-                               ,module=0);
+                    YOCTO_FAILSAFE(module    = source.module.__get();
+                                   kind      = bestRule->action(bestTokn)
+                                   ,module=0);
+                    
+                    switch(kind)
+                    {
+                        case Forward: {
+                            Unit *u = new Unit(bestRule->stamp);
+                            u->swap_with(bestTokn);
+                            return u; }
+                            
+                        case Discard:
+                            // do nothing...but try to get next unit...
+                            break;
 
-                if( isRegular )
-                {
-                    // a regular unit
-                    Unit *u = new Unit(bestRule->stamp);
-                    u->swap_with(bestTokn);
-                    return u;
-                }
-                else
-                {
-                    // unit was used to trigger something...
-                    return NULL;
+                        case Control:
+                            // would signal to translator...
+                            return NULL;
+                    }
+
+
                 }
             }
             

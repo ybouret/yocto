@@ -25,16 +25,21 @@ public:
     {
     }
 
-    inline bool emit(const Token&) throw()
+    inline Lexical::Result emit(const Token&) throw()
     {
-        return true;
+        return Lexical::Forward;
     }
 
-    inline bool onENDL(const Token &) throw()
+    inline Lexical::Result drop(const Token &) throw()
+    {
+        return Lexical::Discard;
+    }
+
+    inline Lexical::Result onENDL(const Token &) throw()
     {
         assert(module);
         module->newLine();
-        return true;
+        return Lexical::Discard;
     }
 
 
@@ -55,15 +60,15 @@ YOCTO_UNIT_TEST_IMPL(scan)
 
     do
     {
-        bool           reg  = true;
-        Lexical::Unit *lex  = scanner.probe(source,reg);
+        Lexical::Result res = Lexical::Forward;
+        Lexical::Unit  *lex  = scanner.probe(source,res);
         if(!lex) break;
         lexemes.push_back(lex);
     }
     while(true);
 
-    Lexical::Unit::RemoveFrom(lexemes,"BLANKS");
-    Lexical::Unit::RemoveFrom(lexemes,"ENDL");
+    //Lexical::Unit::RemoveFrom(lexemes,"BLANKS");
+    //Lexical::Unit::RemoveFrom(lexemes,"ENDL");
 
 
     for(const Lexical::Unit *u = lexemes.head; u; u=u->next )

@@ -126,9 +126,10 @@ namespace yocto
                 // probing function
                 //
                 //______________________________________________________________
-                Unit *probe(Source &source, bool &isRegular);
+                Unit *probe(Source &source, Result &kind);
 
-
+                //! create a new empty unit
+                Unit *newUnit() const;
 
 
             private:

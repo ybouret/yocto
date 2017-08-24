@@ -14,10 +14,15 @@ namespace yocto
         namespace Lexical
         {
 
-
+            enum Result
+            {
+                Forward, //!< will produce an unit
+                Discard, //!< will discard the unit
+                Control  //!< a control unit for translator
+            };
 
             //! define an action
-            typedef functor<bool,TL1(const Token &)> Action;
+            typedef functor<Result,TL1(const Token &)> Action;
 
             class Rule : public object
             {

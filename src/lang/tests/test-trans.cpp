@@ -22,15 +22,15 @@ public:
     {
     }
 
-    bool emit(const Token &) throw()
+    Lexical::Result emit(const Token &) throw()
     {
-        return true;
+        return Lexical::Forward;
     }
 
-    bool endl(const Token &) throw()
+    Lexical::Result endl(const Token &) throw()
     {
         root.module->newLine();
-        return true;
+        return Lexical::Forward;
     }
 
 
@@ -50,8 +50,8 @@ YOCTO_UNIT_TEST_IMPL(trans)
 
     for(;;)
     {
-        bool           reg  = true;
-        Lexical::Unit *lex  = trans.root.probe(source,reg);
+        Lexical::Result res  = Lexical::Forward;
+        Lexical::Unit  *lex  = trans.root.probe(source,res);
         if(!lex) break;
         lexemes.push_back(lex);
     }
