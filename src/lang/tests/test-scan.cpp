@@ -17,7 +17,7 @@ public:
         make("DOUBLE", "[0-9]+\\.[0-9]*",   this, & myScanner::emit);
         make("FLOAT",  "[0-9]+\\.[0-9]*f",  this, & myScanner::emit);
         make("WORD",   "[:word:]+",         this, & myScanner::emit );
-        make("BLANKS", "[:blank:]+",        this, & myScanner::emit);
+        make("BLANKS", "[:blank:]+",        this, & myScanner::drop);
         make("PUNCT",  "[,?!]+",            this, & myScanner::emit);
     }
 
@@ -61,7 +61,7 @@ YOCTO_UNIT_TEST_IMPL(scan)
     do
     {
         Lexical::Result res = Lexical::Forward;
-        Lexical::Unit  *lex  = scanner.probe(source,res);
+        Lexical::Unit  *lex = scanner.probe(source,res);
         if(!lex) break;
         lexemes.push_back(lex);
     }

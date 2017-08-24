@@ -309,3 +309,28 @@ namespace yocto
     
 }
 
+namespace yocto
+{
+    namespace Lang
+    {
+        namespace Lexical
+        {
+
+            Unit * Translator:: probe( Source &source )
+            {
+                if(cache.size)
+                {
+                    return cache.pop_front();
+                }
+                else
+                {
+                    return NULL;
+                }
+            }
+
+        }
+
+    }
+
+}
+
