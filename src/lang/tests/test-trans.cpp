@@ -16,6 +16,8 @@ public:
         root.make("ID",    "[:word:]+",  this, &myTrans::emit);
         root.make("blanks","[:blank:]+", this, &myTrans::emit);
         root.make("endl",  "[:endl:]+",  this, &myTrans::endl);
+
+        Lexical::Scanner &com1 = declare("com1");
     }
 
     virtual ~myTrans() throw()
