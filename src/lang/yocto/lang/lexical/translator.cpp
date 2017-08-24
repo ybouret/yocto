@@ -320,10 +320,16 @@ namespace yocto
             {
                 if(cache.size)
                 {
+                    // done...
                     return cache.pop_front();
                 }
                 else
                 {
+
+                    Result res = Forward;
+                    Unit  *lex = current->probe(source,res);
+                    
+
                     return NULL;
                 }
             }
