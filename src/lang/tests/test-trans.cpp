@@ -33,7 +33,8 @@ public:
         root.call("com2","/\\*",this, &myTrans::enterCom2);
 
         com2.back("\\*/",this,&myTrans::leaveCom2);
-
+        com2.make("endl","[:endl:]", this, &myTrans::com2ENDL);
+        com2.make("any1", ".",       this, &myTrans::com2ANY1);
     }
 
     virtual ~myTrans() throw()
@@ -57,7 +58,7 @@ public:
 
     Lexical::Result endl(const Token &) throw()
     {
-        root.module->newLine();
+        newLine();
         return Lexical::Discard;
     }
 
@@ -67,7 +68,7 @@ public:
 
     void leaveCom1(const Token &)
     {
-        com1.module->newLine();
+        newLine();
     }
 
     void enterCom2(const Token &)
@@ -77,7 +78,20 @@ public:
 
     void leaveCom2(const Token&)
     {
+        std::cerr << "COM2: " << data << std::endl;
+    }
 
+    Lexical::Result com2ENDL(const Token &tkn)
+    {
+        newLine();
+        data.add(tkn);
+        return Lexical::Discard;
+    }
+
+    Lexical::Result com2ANY1(const Token &tkn)
+    {
+        data.add(tkn);
+        return Lexical::Discard;
     }
 
 private:

@@ -37,6 +37,7 @@ namespace yocto
                 const string name;
 
                 Unit *run( Source &source );
+                void newLine() throw(); //! dispatch to current module
 
             private:
                 Scanner::Handle  _root;

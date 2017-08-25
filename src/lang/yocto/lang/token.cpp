@@ -38,7 +38,13 @@ namespace yocto
             return ans;
         }
         
-
+        void Token:: add( const Token &other )
+        {
+            for(const Char *ch = other.head;ch;ch=ch->next)
+            {
+                push_back( new Char(*ch) );
+            }
+        }
     }
 }
 

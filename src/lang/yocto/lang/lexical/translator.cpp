@@ -68,7 +68,15 @@ dict()
                 return declare(sid);
             }
 
+
+            void Translator:: newLine() throw()
+            {
+                assert(current);
+                assert(current->module);
+                current->module->newLine();
+            }
         }
+
     }
 }
 
@@ -190,9 +198,12 @@ namespace yocto
             void Translator:: __jump(const string &id)
             {
                 assert(current);
+                assert(current->module);
+                Module *module = current->module;
                 Scanner::Handle *ppTarget = scanners.search(id);
                 if(!ppTarget) throw exception("[%s]: no <%s> to jump to from <%s>", name.c_str(), id.c_str(), current->label.c_str());
                 current = & (**ppTarget);
+                current->module = module;
             }
 
             ////////////////////////////////////////////////////////////////////
@@ -224,10 +235,13 @@ namespace yocto
             void Translator:: __call(const string &id)
             {
                 assert(current);
+                assert(current->module);
+                Module *module = current->module;
                 Scanner::Handle *ppTarget = scanners.search(id);
                 if(!ppTarget) throw exception("[%s]: no <%s> to call from <%s>", name.c_str(), id.c_str(), current->label.c_str());
                 history.store( new sNode(current) );
                 current = & (**ppTarget);
+                current->module = module;
             }
 
 
@@ -279,9 +293,12 @@ namespace yocto
             void Translator:: __back()
             {
                 assert(current);
+                assert(current->module);
+                Module *module = current->module;
                 if(!history.top) throw exception("[%s]: no possible back from <%s>",name.c_str(),current->label.c_str());
                 current = history.top->addr;
                 delete history.query();
+                current->module = module;
             }
 
             void Scanner:: back(Pattern        *motif,
