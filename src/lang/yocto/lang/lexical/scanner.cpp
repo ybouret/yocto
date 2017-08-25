@@ -51,6 +51,12 @@ translator(0)
                 return new Unit(stamp);
             }
 
+            Unit * Scanner:: newUnit( Token &content ) const
+            {
+                Unit *u = new Unit(stamp);
+                u->swap_with(content);
+                return u;
+            }
 
         }
     }

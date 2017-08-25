@@ -75,8 +75,16 @@ dict()
                 assert(current->module);
                 current->module->newLine();
             }
-        }
 
+
+            void  Translator:: unget( Unit *u ) throw()
+            {
+                assert(u);
+                cache.push_front(u);
+            }
+
+
+        }
     }
 }
 
@@ -333,17 +341,20 @@ namespace yocto
         namespace Lexical
         {
 
-            Unit * Translator:: run( Source &source )
+            Unit * Translator:: get( Source &source )
             {
-                if(cache.size)
+                while(true)
                 {
-                    // done...
-                    return cache.pop_front();
-                }
-                else
-                {
-
-                    while(true)
+                    //__________________________________________________________
+                    //
+                    // get cycle
+                    //__________________________________________________________
+                    if(cache.size)
+                    {
+                        // done...
+                        return cache.pop_front();
+                    }
+                    else
                     {
                         Result res = Forward;
                         Unit  *lex = current->probe(source,res);
@@ -351,7 +362,6 @@ namespace yocto
                         switch(res)
                         {
                             case Forward:
-                                //if(!lex) throw exception("[%s].<%s>: no unit on Forward result", name.c_str(),current->label.c_str());
                                 return lex;
 
                             case Discard:
@@ -366,10 +376,16 @@ namespace yocto
                                 }
                                 break; // for new cycle, current may have changed!
                         }
-                        
+
                     }
+                    //__________________________________________________________
+                    //
+                    // end cycle
+                    //__________________________________________________________
                 }
             }
+
+
 
         }
 

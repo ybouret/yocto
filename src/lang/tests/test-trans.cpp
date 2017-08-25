@@ -79,6 +79,7 @@ public:
     void leaveCom2(const Token&)
     {
         std::cerr << "COM2: " << data << std::endl;
+        unget( com2.newUnit(data) );
     }
 
     Lexical::Result com2ENDL(const Token &tkn)
@@ -110,7 +111,7 @@ YOCTO_UNIT_TEST_IMPL(trans)
 
     for(;;)
     {
-        Lexical::Unit *u = trans.run(source);
+        Lexical::Unit *u = trans.get(source);
         if(u) lexemes.push_back(u); else break;
     }
 

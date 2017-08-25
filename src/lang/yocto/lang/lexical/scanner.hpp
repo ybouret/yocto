@@ -214,6 +214,8 @@ namespace yocto
                 //! create a new empty unit with this->stamp
                 Unit *newUnit() const;
 
+                //! create a unit with this->stamp and steal content
+                Unit *newUnit( Token &content ) const;
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Scanner);
