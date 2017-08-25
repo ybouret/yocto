@@ -26,8 +26,8 @@ namespace yocto
                 const Rule          &origin;    //!< created by this rule
                 const bool           terminal;  //!< whick kind of node
                 const bool           internal;  //!< which kind of node
-
                 
+
 
                 virtual ~Node() throw();
 
