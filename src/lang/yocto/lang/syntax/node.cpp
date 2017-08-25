@@ -1,4 +1,4 @@
-#include "yocto/lang/syntax/snode.hpp"
+#include "yocto/lang/syntax/node.hpp"
 
 namespace yocto
 {
@@ -6,13 +6,16 @@ namespace yocto
     {
         namespace Syntax
         {
-            SNode:: ~SNode() throw()
+            Node:: ~Node() throw()
             {
             }
 
-            SNode:: SNode() throw() :
+            Node:: Node(const Rule &r) :
             next(0),
-            prev(0)
+            prev(0),
+            parent(0),
+            origin(&r),
+            terminal(false)
             {
             }
             
