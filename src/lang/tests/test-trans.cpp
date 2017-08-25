@@ -62,7 +62,6 @@ public:
         void leaveCom1(const Token &)
         {
             std::cerr << "</COM1>" << std::endl;
-            exit(1);
         }
 
 

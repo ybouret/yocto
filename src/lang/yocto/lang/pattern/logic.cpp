@@ -175,7 +175,16 @@ namespace yocto
                 }
                 assert(0==result.size);
             }
-            return true;
+            // do we have something ?
+            Char *ch = source.query();
+            if(!ch)
+            {
+                return false;
+            }
+            {
+                result.push_back(ch);
+                return true;
+            }
         }
 
         void NONE:: __viz( ios::ostream &fp ) const
