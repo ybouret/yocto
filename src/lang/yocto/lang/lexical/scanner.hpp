@@ -101,6 +101,35 @@ namespace yocto
                           Pattern        *motif,
                           const Callback &onJump);
 
+                template <
+                typename OBJECT_POINTER,
+                typename METHOD_POINTER>
+                inline
+                void jump(const string &label,
+                          const string &expr,
+                          OBJECT_POINTER host,
+                          METHOD_POINTER meth)
+                {
+                    const Callback cb(host,meth);
+                    jump(label,RegExp(expr,sharedDict),cb);
+                }
+
+                template <
+                typename OBJECT_POINTER,
+                typename METHOD_POINTER>
+                inline
+                void jump(const char    *label__,
+                          const char    *expr__,
+                          OBJECT_POINTER host,
+                          METHOD_POINTER meth)
+                {
+                    const string label(label__);
+                    const string expr(expr__);
+                    jump(label,expr,host,meth);
+                }
+
+
+
                 //______________________________________________________________
                 //
                 //
@@ -110,7 +139,34 @@ namespace yocto
                 void call(const string   &scanr,
                           Pattern        *motif,
                           const Callback &onCall);
-                
+
+                template <
+                typename OBJECT_POINTER,
+                typename METHOD_POINTER>
+                inline
+                void call(const string &label,
+                          const string &expr,
+                          OBJECT_POINTER host,
+                          METHOD_POINTER meth)
+                {
+                    const Callback cb(host,meth);
+                    call(label,RegExp(expr,sharedDict),cb);
+                }
+
+                template <
+                typename OBJECT_POINTER,
+                typename METHOD_POINTER>
+                inline
+                void call(const char    *label__,
+                          const char    *expr__,
+                          OBJECT_POINTER host,
+                          METHOD_POINTER meth)
+                {
+                    const string label(label__);
+                    const string expr(expr__);
+                    call(label,expr,host,meth);
+                }
+
 
                 //______________________________________________________________
                 //
@@ -120,6 +176,33 @@ namespace yocto
                 //______________________________________________________________
                 void back(Pattern        *motif,
                           const Callback &onBack);
+
+                
+                template <
+                typename OBJECT_POINTER,
+                typename METHOD_POINTER>
+                inline
+                void back(const string   &expr,
+                          OBJECT_POINTER host,
+                          METHOD_POINTER meth)
+                {
+                    const Callback cb(host,meth);
+                    back(RegExp(expr,sharedDict),cb);
+                }
+
+                template <
+                typename OBJECT_POINTER,
+                typename METHOD_POINTER>
+                inline
+                void back(const char    *expr__,
+                          OBJECT_POINTER host,
+                          METHOD_POINTER meth)
+                {
+                    const string   expr(expr__);
+                    back(expr,host,meth);
+                }
+
+
                 //______________________________________________________________
                 //
                 //
@@ -128,7 +211,7 @@ namespace yocto
                 //______________________________________________________________
                 Unit *probe(Source &source, Result &kind);
 
-                //! create a new empty unit
+                //! create a new empty unit with this->stamp
                 Unit *newUnit() const;
 
 
@@ -141,7 +224,7 @@ namespace yocto
                 Module *module;
                 const size_t       max_label_length;
                 const PatternDict *sharedDict;
-
+                
             private:
                 friend class Translator;
                 Translator        *translator;

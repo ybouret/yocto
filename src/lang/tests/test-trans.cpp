@@ -12,28 +12,52 @@ public:
 
     explicit myTrans() : Lexical::Translator("lexer","main")
     {
+
         root.make("int",   "[0-9]+",     this, &myTrans::emit);
         root.make("ID",    "[:word:]+",  this, &myTrans::emit);
-        root.make("blanks","[:blank:]+", this, &myTrans::emit);
-        root.make("endl",  "[:endl:]+",  this, &myTrans::endl);
+        root.call("com1","//",this, &myTrans::enterCom1);
+        root.make("blanks","[:blank:]+", this, &myTrans::drop);
+        root.make("endl",  "[:endl:]",   this, &myTrans::endl);
 
         Lexical::Scanner &com1 = declare("com1");
+        com1.back("[:endl:]", this, &myTrans::leaveCom1);
+        com1.make("other",".",this, &myTrans::drop);
+
     }
 
     virtual ~myTrans() throw()
     {
     }
 
-    Lexical::Result emit(const Token &) throw()
+    Lexical::Result emit(const Token &tkn) throw()
     {
+        std::cerr << "EMIT '" << tkn << "'" << std::endl;
         return Lexical::Forward;
+    }
+
+    Lexical::Result drop(const Token &tkn) throw()
+    {
+        std::cerr << "DROP '" << tkn << "'" << std::endl;
+        return Lexical::Discard;
     }
 
     Lexical::Result endl(const Token &) throw()
     {
+        std::cerr << "NEWLINE" << std::endl;
         root.module->newLine();
-        return Lexical::Forward;
+        return Lexical::Discard;
     }
+
+    void enterCom1(const Token &)
+    {
+        std::cerr << "<COM1>" << std::endl;
+    }
+
+    void leaveCom1(const Token &)
+    {
+        std::cerr << "</COM1>" << std::endl;
+    }
+
 
 
 private:
@@ -69,7 +93,7 @@ YOCTO_UNIT_TEST_IMPL(trans)
         std::cerr << "'" << *u  << "'";
         std::cerr << std::endl;
     }
-
-
+    
+    
 }
 YOCTO_UNIT_TEST_DONE()
