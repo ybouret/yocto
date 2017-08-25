@@ -1,7 +1,7 @@
 #ifndef YOCTO_LANG_SYNTAX_NODE_INCLUDED
 #define YOCTO_LANG_SYNTAX_NODE_INCLUDED 1
 
-#include "yocto/lang/lexical/rule.hpp"
+#include "yocto/lang/lexical/unit.hpp"
 
 namespace yocto
 {
@@ -11,9 +11,10 @@ namespace yocto
         namespace Syntax
         {
 
+            typedef Lexical::Unit Lexeme;
             class Rule; //!< forward declaration
 
-            //! Syntax Node
+            //! a node to build an AST, terminal or not
             class Node : public object
             {
             public:
@@ -21,16 +22,29 @@ namespace yocto
 
                 Node                *next;
                 Node                *prev;
-                Node                *parent;
-                const Rule          *origin; //!< created by this rule
-                const bool           terminal;
-                void                *impl;
+                Node                *parent;    //!< for tree operation
+                const Rule          &origin;    //!< created by this rule
+                const bool           terminal;  //!< whick kind of node
+                const bool           internal;  //!< which kind of node
+
                 
+
                 virtual ~Node() throw();
-                explicit Node(const Rule &r);
+
+                //! create an internal node
+                static Node *Create(const Rule &r);
+
+                //! create a terminal node, lexeme is taken care of
+                static Node *Create(const Rule &r, Lexeme *l);
 
             private:
+                void                *impl;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Node);
+                //! make a non terminal node
+                explicit Node(const Rule &r);
+
+                //! a terminal node
+                explicit Node(const Rule &r, Lexeme *l) throw();
             };
 
 
