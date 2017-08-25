@@ -76,10 +76,8 @@ YOCTO_UNIT_TEST_IMPL(trans)
 
     for(;;)
     {
-        Lexical::Result res  = Lexical::Forward;
-        Lexical::Unit  *lex  = trans.root.probe(source,res);
-        if(!lex) break;
-        lexemes.push_back(lex);
+        Lexical::Unit *u = trans.run(source);
+        if(u) lexemes.push_back(u); else break;
     }
 
     for(const Lexical::Unit *u = lexemes.head; u; u=u->next )

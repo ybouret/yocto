@@ -36,7 +36,7 @@ namespace yocto
 
                 const string name;
 
-                Unit *probe( Source &source );
+                Unit *run( Source &source );
 
             private:
                 Scanner::Handle  _root;

@@ -316,7 +316,7 @@ namespace yocto
         namespace Lexical
         {
 
-            Unit * Translator:: probe( Source &source )
+            Unit * Translator:: run( Source &source )
             {
                 if(cache.size)
                 {
