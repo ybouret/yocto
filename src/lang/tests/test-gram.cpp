@@ -3,6 +3,7 @@
 
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/graphviz.hpp"
+#include "yocto/fs/local-fs.hpp"
 
 using namespace yocto;
 using namespace Lang;
@@ -40,8 +41,8 @@ public:
         Syntax::Alternate &ALT1 = add( new Syntax::Alternate("ALT#1") );
         ALT1 << INT << WORD;
 
-        setTopLevel( ZeroOrMore(ALT1) );
 
+        setTopLevel( ZeroOrMore(ALT1) );
         std::cerr << "saving grammar..." << std::endl;
         graphviz("gram.dot");
         ios::graphviz_render("gram.dot");
@@ -57,6 +58,13 @@ private:
 
 YOCTO_UNIT_TEST_IMPL(gram)
 {
+    vfs           &fs = local_fs::instance();
+
+    fs.try_remove_file("tree.dot");
+    fs.try_remove_file("tree.png");
+    fs.try_remove_file("gram.dot");
+    fs.try_remove_file("gram.png");
+
     Module::Handle hm( new Module() );
     Source         source( hm );
     myLexer        lexer;
@@ -64,6 +72,14 @@ YOCTO_UNIT_TEST_IMPL(gram)
 
     std::cerr << "Ready..." << std::endl;
     auto_ptr<Syntax::Node> tree( G.accept(lexer,source) );
-
+    if(tree.is_valid())
+    {
+        tree->graphviz("tree.dot");
+        ios::graphviz_render("tree.dot");
+    }
+    else
+    {
+        std::cerr << "Empty Tree!" << std::endl;
+    }
 }
 YOCTO_UNIT_TEST_DONE()

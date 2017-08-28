@@ -33,7 +33,10 @@ namespace yocto
                 Node *node = 0;
                 if(rule.admit(node, lexer, source))
                 {
-                    Node::Grow(tree,node);
+                    if(node)
+                    {
+                        Node::Grow(tree,node);
+                    }
                 }
                 return true;
             }

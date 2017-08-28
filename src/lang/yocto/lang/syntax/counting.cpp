@@ -41,12 +41,12 @@ namespace yocto
                 }
                 if(count>=minCount)
                 {
-                    Node::Grow(tree,subTree);
+                    Node::Grow(tree,guard.yield());
                     return true;
                 }
                 else
                 {
-                    Restore(lexer,subTree);
+                    Restore(lexer,guard.yield());
                     return false;
                 }
             }

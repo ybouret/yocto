@@ -19,18 +19,20 @@ namespace yocto
 
             bool Terminal::admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
             {
-                std::cerr << "|_admit Terminal '" << label << "'" << std::endl;
+                //std::cerr << "|_?Terminal '" << label << "'" << std::endl;
                 Lexeme *lex = lexer.get(source);
                 if(lex)
                 {
-                    std::cerr << " |_got '" << *lex << "'" << std::endl;
+                    //std::cerr << " |_got '" << *lex << "'" << std::endl;
                     if(lex->label==label)
                     {
+                        //std::cerr << "  |_yes" << std::endl;
                         Node::Grow(tree, Node::Create(*this,lex));
                         return true;
                     }
                     else
                     {
+                        //std::cerr << "  |_no" << std::endl;
                         lexer.unget(lex);
                         return false;
                     }
@@ -38,6 +40,7 @@ namespace yocto
                 else
                 {
                     //EOF
+                    //std::cerr << " |_EOF" << std::endl;
                     return false;
                 }
             }
