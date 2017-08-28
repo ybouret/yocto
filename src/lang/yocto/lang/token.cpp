@@ -45,6 +45,23 @@ namespace yocto
                 push_back( new Char(*ch) );
             }
         }
+
+        int Token:: line()   const throw()
+        {
+            return (size>0) ? head->line : 0;
+        }
+
+        int Token:: column()   const throw()
+        {
+            return (size>0) ? head->column : 0;
+        }
+
+        const char *Token:: moduleName() const throw()
+        {
+            return (size>0) ? head->stamp->c_str() : "";
+        }
+
+
     }
 }
 

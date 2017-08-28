@@ -23,6 +23,9 @@ namespace yocto
 
             void add(const Token &);
 
+            int         line()   const throw();
+            int         column() const throw();
+            const char *moduleName() const throw();
 
         private:
             YOCTO_DISABLE_ASSIGN(Token);
