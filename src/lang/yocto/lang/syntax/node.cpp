@@ -62,6 +62,53 @@ namespace yocto
 
             }
 
+            void Node:: append(Node *child) throw()
+            {
+                assert(child);
+                assert(internal);
+
+                static_cast<List *>(impl)->push_back(child);
+                child->parent = this;
+            }
+
+            Node  * Node:: remove() throw()
+            {
+                assert(internal);
+                List *tree = static_cast<List *>(impl);
+                assert(tree->size>0);
+                tree->tail->parent = 0;
+                return tree->pop_back();
+            }
+
+
+            size_t Node:: size() const throw()
+            {
+                if(internal)
+                {
+                    return static_cast<List *>(impl)->size;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+            void Grow( Node * &tree, Node *child ) throw()
+            {
+                assert(child);
+                if(tree)
+                {
+                    assert(tree->internal);
+                    tree->append(child);
+                }
+                else
+                {
+                    tree = child;
+                }
+            }
+
+
+
         }
     }
 }

@@ -2,6 +2,7 @@
 #define YOCTO_SYNTAX_RULE_INCLUDED 1
 
 #include "yocto/lang/lexical/translator.hpp"
+#include "yocto/lang/syntax/node.hpp"
 
 namespace yocto
 {
@@ -12,7 +13,9 @@ namespace yocto
 
             typedef Lexical::Translator Lexer;
 
-#define YOCTO_LANG_SYNYAX_RULE_ADMIT_ARGS Lexer &lexer
+#define YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS Lexer &lexer
+#define YOCTO_LANG_SYNTAX_RULE_DECL() \
+virtual bool admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const
 
             class Rule : public object
             {
@@ -29,7 +32,7 @@ namespace yocto
                 // virtual interface
                 //______________________________________________________________
 
-                virtual bool admit(YOCTO_LANG_SYNYAX_RULE_ADMIT_ARGS) const = 0;
+                virtual bool admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const = 0;
 
 
                 //______________________________________________________________
@@ -38,6 +41,7 @@ namespace yocto
                 //______________________________________________________________
                 const string &key() const throw();
 
+                
             protected:
                 explicit Rule(const string  &id,
                               const uint32_t u);

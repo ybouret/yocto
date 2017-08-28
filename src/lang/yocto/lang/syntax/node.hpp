@@ -27,7 +27,9 @@ namespace yocto
                 const bool           terminal;  //!< whick kind of node
                 const bool           internal;  //!< which kind of node
                 
-
+                void   append(Node *child) throw();
+                Node  *remove() throw(); //!< size>0
+                size_t size() const throw();
 
                 virtual ~Node() throw();
 
@@ -36,6 +38,9 @@ namespace yocto
 
                 //! create a terminal node, lexeme is taken care of
                 static Node *Create(const Rule &r, Lexeme *l);
+
+                //! update tree
+                static void Grow( Node * &tree, Node *child ) throw();
 
             private:
                 void                *impl;
