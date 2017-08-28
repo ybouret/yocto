@@ -4,6 +4,8 @@
 #include "yocto/lang/syntax/terminal.hpp"
 #include "yocto/lang/syntax/aggregate.hpp"
 #include "yocto/lang/syntax/alternate.hpp"
+#include "yocto/lang/syntax/optional.hpp"
+#include "yocto/lang/syntax/counting.hpp"
 
 
 #endif

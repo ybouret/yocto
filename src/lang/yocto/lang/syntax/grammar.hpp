@@ -33,9 +33,24 @@ namespace yocto
 
                 void graphviz(const string &filename) const;
 
+                Rule & Choice( Rule &a, Rule &b );
+                Rule & Choice( Rule &a, Rule &b, Rule &c);
+                Rule & Option( Rule &a );
+                Rule & OneOrMore( Rule &a );
+                Rule & ZeroOrMore( Rule &a);
+                
+                const string & newAltLabel();
+                const string & newOptLabel();
+                const string & newZomLabel();
+                const string & newOomLabel();
+
             private:
                 Rule::List rules;
-
+                int        altCount;
+                int        optCount;
+                int        zomCount;
+                int        oomCount;
+                string     tmpLabel;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Grammar);
             };
         }

@@ -15,7 +15,12 @@ namespace yocto
 
             Grammar:: Grammar(const string &id) :
             name(id),
-            rules()
+            rules(),
+            altCount(0),
+            optCount(0),
+            zomCount(0),
+            oomCount(0),
+            tmpLabel()
             {
             }
 

@@ -40,7 +40,7 @@ public:
         Syntax::Alternate &ALT1 = add( new Syntax::Alternate("ALT#1") );
         ALT1 << INT << WORD;
 
-        setTopLevel(ALT1);
+        setTopLevel( ZeroOrMore(ALT1) );
 
         std::cerr << "saving grammar..." << std::endl;
         graphviz("gram.dot");
@@ -62,6 +62,7 @@ YOCTO_UNIT_TEST_IMPL(gram)
     myLexer        lexer;
     myGram         G;
 
+    std::cerr << "Ready..." << std::endl;
     auto_ptr<Syntax::Node> tree( G.accept(lexer,source) );
 
 }

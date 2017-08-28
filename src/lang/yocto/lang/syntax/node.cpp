@@ -126,4 +126,49 @@ namespace yocto
     }
 }
 
+#include "yocto/lang/syntax/rule.hpp"
+#include "yocto/ios/ocstream.hpp"
 
+namespace yocto
+{
+    namespace Lang
+    {
+        namespace Syntax
+        {
+            void Node:: viz( ios::ostream &fp ) const
+            {
+                assert(impl);
+                fp.viz(this);
+                fp("[shape=%s,label=\"%s",origin.__shp(),origin.label.c_str());
+                if(terminal)
+                {
+                    fp << '=' << '\'';
+                    const Lexeme *lex = (const Lexeme *)impl;
+                    for(const Char *ch = lex->head;ch;ch=ch->next)
+                    {
+                        fp << ch->text();
+                    }
+                    fp << '\'';
+                }
+                fp("\"];\n");
+                if(internal)
+                {
+                    const List *children = (const List *)impl;
+                    for(const Node *sub = children->head;sub;sub=sub->next)
+                    {
+                        sub->viz(fp);
+                        fp.viz(this);fp << "->";fp.viz(sub);fp << ";\n";
+                    }
+                }
+            }
+
+            void Node:: graphviz(const string &filename) const
+            {
+                ios::wcstream fp(filename);
+                fp << "digraph G {\n";
+                viz(fp);
+                fp << "}\n";
+            }
+        }
+    }
+}

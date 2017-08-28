@@ -40,10 +40,15 @@ namespace yocto
                 }
             }
 
+            const char * Terminal:: __shp() const throw()
+            {
+                return "box";
+            }
+
             void Terminal:: __viz(ios::ostream &fp) const
             {
                 fp.viz(this);
-                fp("[shape=box,label=\"%s'\"];\n",label.c_str());
+                fp("[shape=%s,label=\"%s'\"];\n",__shp(),label.c_str());
             }
 
         }

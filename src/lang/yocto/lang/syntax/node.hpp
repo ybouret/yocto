@@ -2,6 +2,7 @@
 #define YOCTO_LANG_SYNTAX_NODE_INCLUDED 1
 
 #include "yocto/lang/lexical/unit.hpp"
+#include "yocto/ios/ostream.hpp"
 
 namespace yocto
 {
@@ -43,6 +44,9 @@ namespace yocto
                 static void Grow( Node * &tree, Node *child ) throw();
 
                 Lexeme *yield() throw();
+
+                void viz( ios::ostream &fp ) const;
+                void graphviz(const string &filename) const;
 
             private:
                 void                *impl;

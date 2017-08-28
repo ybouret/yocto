@@ -16,10 +16,15 @@ namespace yocto
             {
             }
 
+            const char *Alternate:: __shp() const throw()
+            {
+                return "egg";
+            }
+
             void Alternate:: __viz(ios::ostream &fp) const
             {
                 __mark(fp);
-                fp("[shape=egg,label=\"%s\"];\n",label.c_str());
+                fp("[shape=%s,label=\"%s\"];\n",__shp(),label.c_str());
                 vizLink(fp);
             }
 

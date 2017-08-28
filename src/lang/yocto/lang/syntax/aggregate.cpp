@@ -16,10 +16,15 @@ namespace yocto
             {
             }
 
+            const char * Aggregate:: __shp() const throw()
+            {
+                return "house";
+            }
+
             void Aggregate:: __viz(ios::ostream &fp) const
             {
                 __mark(fp);
-                fp("[shape=house,label=\"%s\"];\n",label.c_str());
+                fp("[shape=%s,label=\"%s\"];\n",__shp(),label.c_str());
                 vizLink(fp);
             }
         }
