@@ -19,7 +19,7 @@ namespace yocto
 
             bool Terminal::admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
             {
-                std::cerr << "|_admit Terminal '" << label << "'" << std::cerr;
+                std::cerr << "|_admit Terminal '" << label << "'" << std::endl;
                 Lexeme *lex = lexer.get(source);
                 if(lex)
                 {
