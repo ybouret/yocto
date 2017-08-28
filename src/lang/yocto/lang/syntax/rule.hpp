@@ -13,9 +13,15 @@ namespace yocto
 
             typedef Lexical::Translator Lexer;
 
-#define YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS Lexer &lexer
-#define YOCTO_LANG_SYNTAX_RULE_DECL() \
-virtual bool admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const
+#define YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS Source &source, Lexer &lexer, Node * &tree
+#define YOCTO_LANG_SYNTAX_RULE_DECL()                        \
+virtual bool admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const; \
+virtual void __viz(ios::ostream &fp) const
+
+#define YOCTO_LANG_SYNTAX_RULE_IMPL(CLASS)                   \
+bool CLASS:: admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const {
+
+#define YOCTO_LANG_SYNTAX_RULE_DONE() }
 
             class Rule : public object
             {
@@ -33,6 +39,7 @@ virtual bool admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const
                 //______________________________________________________________
 
                 virtual bool admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const = 0;
+                virtual void __viz( ios::ostream &) const = 0;
 
 
                 //______________________________________________________________
