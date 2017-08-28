@@ -89,6 +89,21 @@ dict()
                 current = &root;
             }
 
+            Result Translator:: forward(const Token &) throw()
+            {
+                return Forward;
+            }
+
+            Result Translator:: discard(const Token &) throw()
+            {
+                return Discard;
+            }
+
+            Result Translator:: newline(const Token &) throw()
+            {
+                newLine();
+                return Discard;
+            }
 
         }
     }

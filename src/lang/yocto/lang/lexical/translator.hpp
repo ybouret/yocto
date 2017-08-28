@@ -48,6 +48,10 @@ namespace yocto
                 //! cleanup
                 void  reset() throw();
 
+                Result forward(const Token &) throw();
+                Result discard(const Token &) throw();
+                Result newline(const Token &) throw();
+
 
             private:
                 Scanner::Handle  _root;
@@ -86,6 +90,9 @@ namespace yocto
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Translator);
             };
+
+#define YOCTO_LANG_LEXICAL(METHOD) this, & yocto::Lang::Lexical::Translator::METHOD
+            
         }
     }
 }
