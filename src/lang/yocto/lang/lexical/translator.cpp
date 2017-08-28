@@ -9,17 +9,25 @@ namespace yocto
     {
         namespace Lexical
         {
-            Translator:: ~Translator() throw() {}
+            Translator:: ~Translator() throw()
+            {
+                scanners.release();
+                //std::cerr << "~Translator@" << (void*)this << std::endl;
+                //std::cerr << "refcount=" << this->refcount() << std::endl;
+                assert(1==refcount());
+                (void)this->liberate();
+            }
 
-#define Y_TRANS_CTOR()        \
+#define Y_TRANS_CTOR()         \
+Scanner("toto"),               \
 name(transID),                 \
-_root( new Scanner(scanrID) ),  \
-units(),                         \
-root( *_root ),                   \
-cache(),                           \
-current( &root ),                   \
-scanners(1,as_capacity),             \
-history(),                            \
+_root( new Scanner(scanrID) ), \
+units(),                       \
+root( *_root ),                \
+cache(),                       \
+current( &root ),              \
+scanners(1,as_capacity),       \
+history(),                     \
 dict()
 
 
@@ -32,6 +40,19 @@ dict()
 
             void Translator:: onInit()
             {
+                this->withhold(); std::cerr << "init   refcount=" << this->refcount() << std::endl;
+
+                const Scanner::Handle tmp( this );
+                std::cerr << "handle refcount=" << this->refcount() << std::endl;
+#if 1
+                if( ! scanners.insert(tmp) )
+                {
+                    throw exception("blabla");
+
+                }
+                std::cerr << "handle refcount=" << this->refcount() << std::endl;
+#endif
+
                 if( ! scanners.insert( _root ) )
                     throw exception("[%s]: unable to initialize scanner <%s>", name.c_str(), root.label.c_str() );
                 linkTo( * _root );

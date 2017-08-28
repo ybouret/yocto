@@ -12,7 +12,7 @@ namespace yocto
         namespace Lexical
         {
 
-            class Translator : public object
+            class Translator : public Scanner
             {
             public:
                 typedef set<string,Scanner::Handle> ScannerDB;

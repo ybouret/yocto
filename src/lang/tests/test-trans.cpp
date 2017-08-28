@@ -39,6 +39,7 @@ public:
 
     virtual ~myTrans() throw()
     {
+        //std::cerr << "~myTrans" << std::endl;
     }
 
     Lexical::Result emit(const Token &tkn) throw()
@@ -102,7 +103,7 @@ private:
 
 YOCTO_UNIT_TEST_IMPL(trans)
 {
-    myTrans trans;
+    myTrans        trans;
     Module::Handle hModule( new Module() ); // open stdio
     Source         source( hModule );       // register it in source
 
