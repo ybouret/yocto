@@ -13,19 +13,15 @@ namespace yocto
 
             typedef Lexical::Translator Lexer;
 
-#define YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS Source &source, Lexer &lexer, Node * &tree
+#define YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS Node * &tree, Lexer &lexer, Source &source
 #define YOCTO_LANG_SYNTAX_RULE_DECL()                        \
 virtual bool admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const; \
 virtual void __viz(ios::ostream &fp) const
-
-#define YOCTO_LANG_SYNTAX_RULE_IMPL(CLASS)                   \
-bool CLASS:: admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const {
-
-#define YOCTO_LANG_SYNTAX_RULE_DONE() }
-
+            
             class Rule : public object
             {
             public:
+                typedef core::list_of_cpp<Rule> List;
                 Rule          *next;
                 Rule          *prev;
                 const uint32_t uuid;
@@ -39,7 +35,7 @@ bool CLASS:: admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const {
                 //______________________________________________________________
 
                 virtual bool admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const = 0;
-                virtual void __viz( ios::ostream &) const = 0;
+                virtual void __viz(ios::ostream &) const = 0;
 
 
                 //______________________________________________________________
@@ -47,8 +43,9 @@ bool CLASS:: admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const {
                 // non-virtual interface
                 //______________________________________________________________
                 const string &key() const throw();
+                static void Restore( Lexer &lexer, Node *node ) throw();
+                void __mark( ios::ostream &fp ) const;
 
-                
             protected:
                 explicit Rule(const string  &id,
                               const uint32_t u);

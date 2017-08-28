@@ -83,6 +83,12 @@ dict()
                 cache.push_front(u);
             }
 
+            void  Translator:: reset() throw()
+            {
+                history.clear();
+                current = &root;
+            }
+
 
         }
     }

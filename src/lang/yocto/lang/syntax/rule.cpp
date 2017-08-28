@@ -26,6 +26,30 @@ namespace yocto
             }
 
 
+            void Rule:: Restore( Lexer &lexer, Node *node ) throw()
+            {
+                assert(NULL!=node);
+                if(node->terminal)
+                {
+                    lexer.unget(node->yield());
+                    delete node;
+                }
+                else
+                {
+                    while(node->size()>0)
+                    {
+                        Restore(lexer,node->remove());
+                    }
+                }
+            }
+
+
+            void Rule:: __mark( ios::ostream &fp ) const
+            {
+                fp.viz(this);
+            }
+
+
         }
     }
 }

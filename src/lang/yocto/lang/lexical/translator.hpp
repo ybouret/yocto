@@ -36,10 +36,19 @@ namespace yocto
 
                 const string name;
 
+                //! get next unit from source
                 Unit *get( Source &source );
-                void  newLine() throw(); //! dispatch to current module
+
+                //! dispatch to current module
+                void  newLine() throw();
+
+                //! unget a unit
                 void  unget( Unit *u ) throw();
-                
+
+                //! cleanup
+                void  reset() throw();
+
+
             private:
                 Scanner::Handle  _root;
                 Units            units;

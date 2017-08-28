@@ -42,6 +42,8 @@ namespace yocto
                 //! update tree
                 static void Grow( Node * &tree, Node *child ) throw();
 
+                Lexeme *yield() throw();
+
             private:
                 void                *impl;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Node);

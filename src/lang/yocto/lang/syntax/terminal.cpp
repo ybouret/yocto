@@ -17,7 +17,7 @@ namespace yocto
             {
             }
 
-            YOCTO_LANG_SYNTAX_RULE_IMPL(Terminal)
+            bool Terminal::admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
             {
                 Lexeme *lex = lexer.get(source);
                 if(lex)
@@ -35,15 +35,19 @@ namespace yocto
                 }
                 else
                 {
-                    //EOF;
+                    //EOF
                     return false;
                 }
             }
-            YOCTO_LANG_SYNTAX_RULE_DONE()
 
+            void Terminal:: __viz(ios::ostream &fp) const
+            {
+                fp.viz(this);
+                fp("[shape=box,label='%s'];\n",label.c_str());
+            }
 
         }
-
+        
     }
     
 }

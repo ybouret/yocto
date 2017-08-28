@@ -11,12 +11,23 @@ namespace yocto
                 assert(impl);
                 if(terminal)
                 {
-                    delete (Lexeme *)impl;
+                    if(impl)
+                    {
+                        delete (Lexeme *)impl;
+                    }
                 }
                 else
                 {
                     delete (List  *)impl;
                 }
+            }
+
+            Lexeme * Node::yield() throw()
+            {
+                assert(impl);
+                Lexeme *lex = (Lexeme *)impl;
+                impl = 0;
+                return lex;
             }
 
             Node:: Node(const Rule &r) :
@@ -74,6 +85,8 @@ namespace yocto
             Node  * Node:: remove() throw()
             {
                 assert(internal);
+                assert(impl);
+
                 List *tree = static_cast<List *>(impl);
                 assert(tree->size>0);
                 tree->tail->parent = 0;
@@ -93,7 +106,7 @@ namespace yocto
                 }
             }
 
-            void Grow( Node * &tree, Node *child ) throw()
+            void Node::Grow( Node * &tree, Node *child ) throw()
             {
                 assert(child);
                 if(tree)

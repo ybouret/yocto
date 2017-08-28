@@ -14,8 +14,19 @@ namespace yocto
             {
             public:
                 virtual ~Grammar() throw();
+                explicit Grammar(const string &id);
+
+                const string name;
+
+                Rule &append( Rule *rule );
+                void  setTopLevel( Rule &rule );
+                Rule *getTopLevel() const throw();
+
+                Node *accept(Lexer &lexer, Source &source);
 
             private:
+                Rule::List rules;
+
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Grammar);
             };
         }

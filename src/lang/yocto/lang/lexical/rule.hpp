@@ -41,7 +41,6 @@ namespace yocto
                      const Action          &);
 
 
-
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Rule);
 
