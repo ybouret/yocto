@@ -1,5 +1,6 @@
 #include "yocto/lang/syntax/grammar.hpp"
 #include "yocto/exception.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 namespace yocto
 {
@@ -18,7 +19,7 @@ namespace yocto
             {
             }
 
-            Rule &Grammar:: append( Rule *rule )
+            void Grammar:: append( Rule *rule )
             {
                 assert(rule);
                 for(const Rule *r=rules.head;r;r=r->next)
@@ -26,7 +27,6 @@ namespace yocto
                     if(r->label==rule->label) throw exception("{%s} multiple rule '%s'", name.c_str(), r->label.c_str() );
                 }
                 rules.push_back(rule);
-                return *rule;
             }
 
             void Grammar:: setTopLevel(Rule &rule)
@@ -56,6 +56,16 @@ namespace yocto
                 return tree;
             }
 
+            void Grammar:: graphviz(const string &filename) const
+            {
+                ios::wcstream fp(filename);
+                fp << "digraph G {\n";
+                if(rules.head)
+                {
+                    rules.head->__viz(fp);
+                }
+                fp << "}\n";
+            }
 
         }
     }

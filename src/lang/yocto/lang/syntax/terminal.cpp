@@ -43,7 +43,7 @@ namespace yocto
             void Terminal:: __viz(ios::ostream &fp) const
             {
                 fp.viz(this);
-                fp("[shape=box,label='%s'];\n",label.c_str());
+                fp("[shape=box,label=\"%s'\"];\n",label.c_str());
             }
 
         }

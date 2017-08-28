@@ -18,11 +18,20 @@ namespace yocto
 
                 const string name;
 
-                Rule &append( Rule *rule );
+                void  append( Rule *rule );
                 void  setTopLevel( Rule &rule );
                 Rule *getTopLevel() const throw();
 
                 Node *accept(Lexer &lexer, Source &source);
+
+                template <typename RULE>
+                RULE & add( RULE *rule )
+                {
+                    append(rule);
+                    return *rule;
+                }
+
+                void graphviz(const string &filename) const;
 
             private:
                 Rule::List rules;

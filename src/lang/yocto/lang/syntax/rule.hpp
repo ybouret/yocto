@@ -46,12 +46,14 @@ virtual void __viz(ios::ostream &fp) const
                 static void Restore( Lexer &lexer, Node *node ) throw();
                 void __mark( ios::ostream &fp ) const;
 
+                
             protected:
                 explicit Rule(const string  &id,
                               const uint32_t u);
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Rule);
+
             };
         }
     }
