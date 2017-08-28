@@ -52,12 +52,12 @@ namespace yocto
 
                 Node *tree = 0;
                 Rule &top  = * rules.head;
-
+                std::cerr << "TopLevel '" << top.label << "' for {" << gramID << "}" << std::endl;
                 if(!top.admit(tree,lexer,source))
                 {
                     throw exception("{%s} couldn't accept '%s'", gramID , top.label.c_str());
                 }
-
+                if(tree) std::cerr << "Got Tree, size=" << tree->size() << std::endl;
                 return tree;
             }
 
