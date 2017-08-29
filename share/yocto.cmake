@@ -272,7 +272,7 @@ MACRO(TARGET_LINK_YOCTO tgt)
 	####################################################################
 	# specific library flags
 	####################################################################
-	IF(YOCTO_LINUX OR YOCTO_FREEBSD)
+	IF(YOCTO_LINUX OR YOCTO_FREEBSD OR YOCTO_OPENBSD)
 		LIST( APPEND ylibs pthread )
 	ENDIF()
 	
