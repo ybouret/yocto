@@ -32,23 +32,33 @@ namespace yocto
 
             bool Aggregate:: admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
             {
-
+                //______________________________________________________________
+                //
+                // create a subTree
+                //______________________________________________________________
                 Node          *subTree = Node::Create(*this);
-                auto_ptr<Node> guard(subTree);
+                auto_ptr<Node> pTree(subTree);
 
+                //______________________________________________________________
+                //
                 // all the rules must be admitted
+                //______________________________________________________________
                 for(const MetaNode *m=members.head;m;m=m->next)
                 {
                     Rule &rule = *(m->addr);
                     if( !rule.admit(subTree,lexer,source) )
                     {
-                        Restore(lexer,guard.yield());
+                        Restore(lexer,pTree.yield());
                         return false;
                     }
 
                 }
 
-                Node::Grow(tree,guard.yield());
+                //______________________________________________________________
+                //
+                // admitted !
+                //______________________________________________________________
+                Node::Grow(tree,pTree.yield());
                 return true;
             }
         }
