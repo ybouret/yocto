@@ -39,7 +39,6 @@ namespace yocto
                 if(node->terminal)
                 {
                     lexer.unget(node->yield());
-                    delete node;
                 }
                 else
                 {
@@ -48,6 +47,7 @@ namespace yocto
                         Restore(lexer,node->remove());
                     }
                 }
+                delete node;
             }
 
 

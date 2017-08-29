@@ -36,6 +36,7 @@ namespace yocto
                 Node          *subTree = Node::Create(*this);
                 auto_ptr<Node> guard(subTree);
 
+                // all the rules must be admitted
                 for(const MetaNode *m=members.head;m;m=m->next)
                 {
                     Rule &rule = *(m->addr);
@@ -46,7 +47,7 @@ namespace yocto
                     }
 
                 }
-                
+
                 Node::Grow(tree,guard.yield());
                 return true;
             }

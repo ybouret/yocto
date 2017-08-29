@@ -53,6 +53,10 @@ YOCTO_UNIT_TEST_IMPL(parser)
     myParser       parser;
 
     auto_ptr<Syntax::Node> tree( parser.parse(source) );
-
+    if( tree.is_valid() )
+    {
+        tree->graphviz("tree.dot");
+        ios::graphviz_render("tree.dot");
+    }
 }
 YOCTO_UNIT_TEST_DONE()
