@@ -74,6 +74,13 @@ namespace yocto
                     plug(p);
                 }
 
+                template <typename PLUGIN> inline
+                void hook( const char *id,const char *arg1,const char *arg2)
+                {
+                    Plugin *p = new PLUGIN(id,arg1,arg2,*this);
+                    plug(p);
+                }
+
 
             private:
                 Scanner::Handle  _root;

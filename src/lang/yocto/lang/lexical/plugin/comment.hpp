@@ -26,6 +26,21 @@ namespace yocto
                 void  onLeave(const Token &) throw();
             };
 
+            class InlineComment : public Plugin
+            {
+            public:
+                explicit InlineComment(const char *id,
+                                       const char *exprIni,
+                                       const char *exprEnd,
+                                       Translator &trans);
+                virtual ~InlineComment() throw();
+                YOCTO_LANG_PLUGIN_DECL();
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(InlineComment);
+                const string __ini;
+                void  onLeave(const Token &) throw();
+            };
         }
     }
 }

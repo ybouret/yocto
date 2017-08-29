@@ -40,3 +40,45 @@ namespace yocto
     }
 
 }
+
+namespace yocto
+{
+    namespace Lang
+    {
+        namespace Lexical
+        {
+
+            InlineComment:: ~InlineComment() throw() {}
+
+            InlineComment:: InlineComment(const char *id,
+                                          const char *exprIni,
+                                          const char *exprEnd,
+                                          Translator &trans):
+            Plugin(id,trans),
+            __ini(exprIni)
+            {
+                back(exprEnd, this, & InlineComment::onLeave);
+                
+                make("endl","[:endl:]", translator, &Translator::newline);
+                make("any1",".",        translator, &Translator::discard);
+            }
+
+            const char * InlineComment::trigger() const throw()
+            {
+                return __ini.c_str();
+            }
+
+            void InlineComment:: startUp(const Token &)
+            {
+                // do nothing...
+            }
+            
+            void InlineComment:: onLeave(const Token &) throw()
+            {
+                // do nothing
+            }
+
+        }
+
+    }
+}

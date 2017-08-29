@@ -28,6 +28,12 @@ public:
         hook<Lexical::Comment>("com1","//");
         root.call("com1");
 
+        hook<Lexical::Comment>("com2","#");
+        root.call("com2");
+
+        hook<Lexical::InlineComment>("com3","/\\*","\\*/");
+        root.call("com3");
+
         graphviz("gram.dot");
         ios::graphviz_render("gram.dot");
 
