@@ -28,6 +28,9 @@ virtual const char * __shp() const throw()
                 Rule          *prev;
                 const uint32_t uuid;
                 const string   label;
+                const uint32_t flags;
+
+                void setProperty(const uint32_t flag) throw();
 
                 virtual ~Rule() throw();
 

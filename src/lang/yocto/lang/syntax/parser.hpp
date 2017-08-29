@@ -16,7 +16,7 @@ namespace yocto
                 explicit Parser(const string &id);
                 virtual ~Parser() throw();
 
-                //! emit the terminal and make a rule
+                //! emit the terminal and make a rule out of it
                 Rule & terminal( const string &label, const string &expr );
                 
             private:

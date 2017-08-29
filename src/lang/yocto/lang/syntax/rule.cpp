@@ -16,9 +16,16 @@ namespace yocto
             next(0),
             prev(0),
             uuid(t),
-            label(id)
+            label(id),
+            flags(0)
             {
             }
+
+            void Rule:: setProperty(const uint32_t flag) throw()
+            {
+                (uint32_t &)flags |= flag;
+            }
+
 
             const string & Rule:: key() const throw()
             {
