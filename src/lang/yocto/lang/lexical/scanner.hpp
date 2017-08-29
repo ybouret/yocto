@@ -13,6 +13,7 @@ namespace yocto
         namespace Lexical
         {
             class   Translator;
+            class   Plugin;
             typedef functor<void,TL1(const Token &)> Callback;
 
             class Scanner : public counted_object
@@ -167,6 +168,7 @@ namespace yocto
                     call(label,expr,host,meth);
                 }
 
+                void call(const string &pluginID);
 
                 //______________________________________________________________
                 //

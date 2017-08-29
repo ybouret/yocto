@@ -417,3 +417,30 @@ namespace yocto
 
 }
 
+namespace yocto
+{
+    namespace Lang
+    {
+        namespace Lexical
+        {
+            void Translator:: plug( Plugin *p )
+            {
+                assert(p);
+                const Plugin::Handle  pP(p);
+                const Scanner::Handle pS(p);
+                if(!plugins.insert(pP))
+                {
+                    throw exception("[%s]: multiple plugin '%s'", name.c_str(), p->label.c_str() );
+                }
+                if(!scanners.insert(pS))
+                {
+                    throw exception("[%s]: plugin collides with scanner '%s'",name.c_str(), p->label.c_str() );
+                }
+                linkTo(*p);
+            }
+
+        }
+    }
+}
+
+

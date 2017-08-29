@@ -49,6 +49,22 @@ namespace yocto
                 Result discard(const Token &) throw();
                 Result newline(const Token &) throw();
 
+                void plug( Plugin *p );
+
+                template <typename PLUGIN> inline
+                void hook()
+                {
+                    Plugin *p = new PLUGIN();
+                    plug( p );
+                }
+
+                template <typename PLUGIN,typename ARGS> inline
+                Plugin & hook( typename type_traits<ARGS>::parameter_type args )
+                {
+                    Plugin *p = new PLUGIN(args);
+                    plug(p);
+                }
+
 
             private:
                 Scanner::Handle  _root;
@@ -79,6 +95,7 @@ namespace yocto
                 Scanner        *current;  //!< current scanner
                 ScannerDB       scanners; //!< the scanners
                 History         history;
+                PluginDB        plugins;
 
                 void            onInit();
                 void            linkTo( Scanner & ) throw();

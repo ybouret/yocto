@@ -9,6 +9,11 @@ namespace yocto
     {
         namespace Lexical
         {
+
+#define YOCTO_LANG_PLUGIN_DECL() \
+virtual const char * trigger() const throw(); \
+virtual void         onEnter(const Token & )
+
             class Plugin : public Scanner
             {
             public:
@@ -16,11 +21,17 @@ namespace yocto
                 
                 virtual ~Plugin() throw();
 
+                virtual const char * trigger() const throw()   = 0;
+                virtual void         onEnter(const Token&)     = 0;
+
             protected:
                 explicit Plugin(const string &id);
-
+                explicit Plugin(const char   *id);
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Plugin);
+                virtual void         startUp(const Token &)    = 0;
+
             };
         }
     }
