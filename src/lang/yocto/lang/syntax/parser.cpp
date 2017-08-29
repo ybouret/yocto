@@ -34,7 +34,7 @@ namespace yocto
             {
                 Lexer &lexer = *this;
                 lexer.reset();
-                return accept(lexer,source);
+                return Node::AST(accept(lexer,source));
             }
         }
 

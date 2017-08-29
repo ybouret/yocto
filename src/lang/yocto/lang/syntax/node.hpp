@@ -48,6 +48,9 @@ namespace yocto
                 void viz( ios::ostream &fp ) const;
                 void graphviz(const string &filename) const;
 
+                //! AST
+                static Node * AST( Node *node ) throw();
+
             private:
                 void                *impl;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Node);
