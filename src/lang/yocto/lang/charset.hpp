@@ -13,6 +13,7 @@ namespace yocto
         class CharSet : public _CharSet
         {
         public:
+            
             explicit CharSet() throw();
             virtual ~CharSet() throw();
             CharSet( const CharSet &cs );

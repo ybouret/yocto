@@ -9,10 +9,11 @@ namespace yocto
     
     namespace Lang
     {
-        
-        typedef arc_ptr<const string> Stamp; //!< a shared info
 
-        //! Char information
+        //! shared string
+        typedef arc_ptr<const string> Stamp;
+
+        //! Char information if multiple sources
         class CharInfo
         {
         public:

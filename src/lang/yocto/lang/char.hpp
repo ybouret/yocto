@@ -10,7 +10,7 @@ namespace yocto
     {
         
         
-        //! a dynamic char
+        //! a dynamic char, based on a CharInfo
         class  Char :
         public CharInfo,
         public object

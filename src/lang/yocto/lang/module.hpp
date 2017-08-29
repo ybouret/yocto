@@ -36,7 +36,8 @@ namespace yocto
             
             const Input    input;
 
-            Char *get();
+            //!
+            Char *get(); 
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Module);
