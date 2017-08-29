@@ -1,7 +1,7 @@
 #ifndef YOCTO_LANG_LEXICAL_TRANSLATOR_INCLUDED
 #define YOCTO_LANG_LEXICAL_TRANSLATOR_INCLUDED 1
 
-#include "yocto/lang/lexical/scanner.hpp"
+#include "yocto/lang/lexical/plugin.hpp"
 #include "yocto/associative/set.hpp"
 #include "yocto/core/pool.hpp"
 
@@ -15,8 +15,7 @@ namespace yocto
             class Translator 
             {
             public:
-                typedef set<string,Scanner::Handle> ScannerDB;
-                
+
                 explicit Translator(const string &transID);
                 
                 explicit Translator(const char *transID);
@@ -73,7 +72,9 @@ namespace yocto
                     YOCTO_DISABLE_COPY_AND_ASSIGN(sNode);
                 };
 
-                typedef core::pool_of_cpp<sNode> History;
+                typedef core::pool_of_cpp<sNode>    History;
+                typedef set<string,Scanner::Handle> ScannerDB;
+                typedef set<string,Plugin::Handle>  PluginDB;
                 
                 Scanner        *current;  //!< current scanner
                 ScannerDB       scanners; //!< the scanners
