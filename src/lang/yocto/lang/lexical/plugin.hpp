@@ -12,7 +12,7 @@ namespace yocto
 
 #define YOCTO_LANG_PLUGIN_DECL() \
 virtual const char * trigger() const throw(); \
-virtual void         onEnter(const Token & )
+virtual void         startUp(const Token & )
 
             class Plugin : public Scanner
             {
@@ -22,11 +22,11 @@ virtual void         onEnter(const Token & )
                 virtual ~Plugin() throw();
 
                 virtual const char * trigger() const throw()   = 0;
-                virtual void         onEnter(const Token&)     = 0;
+                void         onEnter(const Token&);
 
             protected:
-                explicit Plugin(const string &id);
-                explicit Plugin(const char   *id);
+                explicit Plugin(const string &id, Translator &trans);
+                explicit Plugin(const char   *id, Translator &trans);
                 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Plugin);

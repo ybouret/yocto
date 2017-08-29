@@ -427,6 +427,11 @@ namespace yocto
             {
                 assert(p);
                 const Plugin::Handle  pP(p);
+                if(p->translator!=this)
+                {
+                    throw exception("[%s]: Plugin '%s' translator mismatch!!!", name.c_str(), p->label.c_str());
+                }
+
                 const Scanner::Handle pS(p);
                 if(!plugins.insert(pP))
                 {
@@ -436,7 +441,7 @@ namespace yocto
                 {
                     throw exception("[%s]: plugin collides with scanner '%s'",name.c_str(), p->label.c_str() );
                 }
-                linkTo(*p);
+                //linkTo(*p);
             }
 
         }

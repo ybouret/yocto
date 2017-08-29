@@ -22,6 +22,13 @@ namespace yocto
                 return add( new Terminal(label) );
             }
 
+
+            Node * Parser:: parse(Source &source)
+            {
+                Lexer &lexer = *this;
+                lexer.reset();
+                return accept(lexer,source);
+            }
         }
 
     }

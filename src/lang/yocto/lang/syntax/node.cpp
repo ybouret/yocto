@@ -1,4 +1,6 @@
 #include "yocto/lang/syntax/node.hpp"
+#include <iostream>
+#include "yocto/lang/syntax/rule.hpp"
 
 namespace yocto
 {
@@ -9,6 +11,7 @@ namespace yocto
             Node:: ~Node() throw()
             {
                 assert(impl);
+                std::cerr << "~Node(" << origin.label << ")" << std::endl;
                 if(terminal)
                 {
                     if(impl)
@@ -39,6 +42,7 @@ namespace yocto
             internal(true),
             impl( new List() )
             {
+                std::cerr << "+Node(" << origin.label << ")/internal" << std::endl;
             }
 
             Node * Node:: Create(const Rule &r)
@@ -56,6 +60,7 @@ namespace yocto
             internal(false),
             impl(l)
             {
+                std::cerr << "+Node(" << origin.label << ")/terminal" << std::endl;
             }
 
             Node * Node::Create(const Rule &r, Lexeme *l)

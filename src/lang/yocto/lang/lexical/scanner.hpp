@@ -229,7 +229,7 @@ namespace yocto
                 const size_t       max_label_length;
                 const PatternDict *sharedDict;
                 
-            private:
+            protected:
                 friend class Translator;
                 Translator        *translator;
             };

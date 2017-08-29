@@ -52,16 +52,25 @@ namespace yocto
                 void plug( Plugin *p );
 
                 template <typename PLUGIN> inline
-                void hook()
+                void hook(const string &id)
                 {
-                    Plugin *p = new PLUGIN();
+                    Plugin *p = new PLUGIN(id,*this);
                     plug( p );
                 }
 
-                template <typename PLUGIN,typename ARGS> inline
-                Plugin & hook( typename type_traits<ARGS>::parameter_type args )
+                
+
+                template <typename PLUGIN> inline
+                void hook( const string &id,const string & args )
                 {
-                    Plugin *p = new PLUGIN(args);
+                    Plugin *p = new PLUGIN(id,args,*this);
+                    plug(p);
+                }
+
+                template <typename PLUGIN> inline
+                void hook( const char *id,const char *args )
+                {
+                    Plugin *p = new PLUGIN(id,args,*this);
                     plug(p);
                 }
 
@@ -76,6 +85,8 @@ namespace yocto
                 Units            cache;
 
                 friend class Scanner;
+                friend class Plugin;
+                
                 class sNode : public object
                 {
                 public:

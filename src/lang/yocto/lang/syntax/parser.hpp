@@ -18,7 +18,9 @@ namespace yocto
 
                 //! emit the terminal and make a rule out of it
                 Rule & terminal( const string &label, const string &expr );
-                
+
+                Node * parse(Source &source);
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);
             };

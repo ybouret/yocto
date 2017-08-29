@@ -13,7 +13,9 @@ namespace yocto
             class Comment : public Plugin
             {
             public:
-                explicit Comment(const char *id, const char *expr);
+                explicit Comment(const char *id,
+                                 const char *expr,
+                                 Translator &trans);
                 virtual ~Comment() throw();
 
                 YOCTO_LANG_PLUGIN_DECL();
@@ -21,6 +23,7 @@ namespace yocto
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Comment);
                 const string data;
+                void  onLeave(const Token &) throw();
             };
 
         }

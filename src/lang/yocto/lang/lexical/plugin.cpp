@@ -11,14 +11,16 @@ namespace yocto
             {
             }
 
-            Plugin:: Plugin(const string &id) :
+            Plugin:: Plugin(const string &id, Translator &trans) :
             Scanner(id)
             {
+                trans.linkTo(*this);
             }
 
-            Plugin:: Plugin(const char  *id) :
+            Plugin:: Plugin(const char  *id, Translator &trans) :
             Scanner(id)
             {
+                trans.linkTo(*this);
             }
 
 
