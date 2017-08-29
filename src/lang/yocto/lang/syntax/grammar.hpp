@@ -41,7 +41,7 @@ namespace yocto
                 
                 Alternate &alt();
                 Aggregate &agg(const string &label);
-
+                Aggregate &agg(const char   *label);
 
             private:
                 Rule::List rules;

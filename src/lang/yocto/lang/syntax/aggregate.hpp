@@ -13,7 +13,7 @@ namespace yocto
             class Aggregate : public Compound
             {
             public:
-                static const uint32_t UUID = YOCTO_FOURCC(' ','&','*',' ');
+                static const uint32_t UUID = YOCTO_FOURCC(' ','&','&',' ');
                 virtual ~Aggregate() throw();
                 explicit Aggregate(const string &);
 

@@ -77,6 +77,17 @@ namespace yocto
                 return add( new Alternate( newAltLabel() ) );
             }
 
+            Aggregate & Grammar:: agg( const string &label )
+            {
+                return add( new Aggregate(label) );
+            }
+
+            Aggregate & Grammar:: agg( const char *label )
+            {
+                const string __label(label);
+                return add( new Aggregate(__label) );
+            }
+
 
         }
     }
