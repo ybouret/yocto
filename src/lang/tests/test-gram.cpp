@@ -12,7 +12,7 @@ using namespace Lang;
 class myLexer : public Lexical::Translator
 {
 public:
-    explicit myLexer() : Lexical::Translator("myLexer","root")
+    explicit myLexer() : Lexical::Translator("myLexer")
     {
 
         root.make("INT",   "[0-9]+",    YOCTO_LANG_LEXICAL(forward));

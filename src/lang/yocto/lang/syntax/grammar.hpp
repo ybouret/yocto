@@ -1,7 +1,7 @@
 #ifndef YOCTO_LANG_SYNTAX_GRAMMAR_INCLUDED
 #define YOCTO_LANG_SYNTAX_GRAMMAR_INCLUDED 1
 
-#include "yocto/lang/syntax/rule.hpp"
+#include "yocto/lang/syntax/rules.hpp"
 
 namespace yocto
 {
@@ -39,10 +39,9 @@ namespace yocto
                 Rule & OneOrMore( Rule &a );
                 Rule & ZeroOrMore( Rule &a);
                 
-                const string & newAltLabel();
-                const string & newOptLabel();
-                const string & newZomLabel();
-                const string & newOomLabel();
+                Alternate &alt();
+                Aggregate &agg(const string &label);
+
 
             private:
                 Rule::List rules;
@@ -52,6 +51,12 @@ namespace yocto
                 int        oomCount;
                 string     tmpLabel;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Grammar);
+
+                const string & newAltLabel();
+                const string & newOptLabel();
+                const string & newZomLabel();
+                const string & newOomLabel();
+
             };
         }
     }

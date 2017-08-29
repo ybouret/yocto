@@ -22,13 +22,13 @@ namespace yocto
 
             const string & Grammar:: newZomLabel()
             {
-                tmpLabel = vformat("[*]#%d",++zomCount);
+                tmpLabel = vformat("*#%d",++zomCount);
                 return tmpLabel;
             }
 
             const string & Grammar:: newOomLabel()
             {
-                tmpLabel = vformat("[+]#%d",++oomCount);
+                tmpLabel = vformat("+#%d",++oomCount);
                 return tmpLabel;
             }
 

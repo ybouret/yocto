@@ -12,16 +12,14 @@ namespace yocto
         namespace Lexical
         {
 
-            class Translator : public Scanner
+            class Translator 
             {
             public:
                 typedef set<string,Scanner::Handle> ScannerDB;
                 
-                explicit Translator(const string &transID,
-                                    const string &scanrID);
+                explicit Translator(const string &transID);
                 
-                explicit Translator(const char *transID,
-                                    const char *scanrID);
+                explicit Translator(const char *transID);
 
                 virtual ~Translator() throw();
 

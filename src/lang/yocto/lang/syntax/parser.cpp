@@ -12,10 +12,16 @@ namespace yocto
 
             Parser:: Parser( const string &id ) :
             Grammar(id+".grammar"),
-            Lexer(id+".lexer","root")
+            Lexer(id+".lexer")
             {
             }
-            
+
+            Rule & Parser:: terminal( const string &label, const string &expr )
+            {
+                root.make(label,expr,YOCTO_LANG_LEXICAL(forward));
+                return add( new Terminal(label) );
+            }
+
         }
 
     }

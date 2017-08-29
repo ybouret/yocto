@@ -15,7 +15,7 @@ public:
     Token             data;
 
     explicit myTrans() :
-    Lexical::Translator("lexer","main"),
+    Lexical::Translator("lexer"),
     com1( declare("com1") ),
     com2( declare("com2") ),
     data()

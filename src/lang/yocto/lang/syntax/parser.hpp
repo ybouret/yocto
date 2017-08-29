@@ -9,13 +9,17 @@ namespace yocto
     {
         namespace Syntax
         {
-
+            
             class Parser : public Grammar, public Lexer
             {
             public:
                 explicit Parser(const string &id);
                 virtual ~Parser() throw();
-                
+
+                //! emit the terminal and make a rule
+                Rule & terminal( const string &label, const string &expr );
+
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);
             };

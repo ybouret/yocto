@@ -72,6 +72,12 @@ namespace yocto
                 fp << "}\n";
             }
 
+            Alternate & Grammar:: alt()
+            {
+                return add( new Alternate( newAltLabel() ) );
+            }
+
+
         }
     }
 }
