@@ -14,9 +14,9 @@ public:
     explicit myParser() : Syntax::Parser("dummy")
     {
         Syntax::Aggregate &ASSIGN = agg("ASSIGN");
-        Syntax::Rule      &END  = terminal("END", ";").impose(Syntax::Rule::IsHollow);
-        Syntax::Rule      &ID   = terminal("ID", "[_[:alpha:]][:word:]*");
-        Syntax::Rule      &INT  = terminal("INT","[:digit:]+");
+        Syntax::Rule      &END    = terminal("END", ";").impose(Syntax::Rule::IsHollow);
+        Syntax::Rule      &ID     = terminal("ID", "[_[:alpha:]][:word:]*");
+        Syntax::Rule      &INT    = terminal("INT","[:digit:]+");
 
         ASSIGN << ID << terminal("EQUAL",'=').impose(Syntax::Rule::IsHollow) << Choice(ID,INT) << END;
         Syntax::Aggregate &DECL = agg("DECL");
@@ -34,11 +34,13 @@ public:
         hook<Lexical::InlineComment>("com3","/\\*","\\*/");
         root.call("com3");
 
-        graphviz("gram.dot");
-        ios::graphviz_render("gram.dot");
 
         root.make("ENDL",  "[:endl:]",   YOCTO_LANG_LEXICAL(newline));
         root.make("BLANKS","[:blank:]+", YOCTO_LANG_LEXICAL(discard));
+
+        graphviz("gram.dot");
+        ios::graphviz_render("gram.dot");
+
 
     }
 
