@@ -17,13 +17,14 @@ namespace yocto
             prev(0),
             uuid(t),
             label(id),
-            flags(0)
+            flags(IsNormal)
             {
             }
 
-            void Rule:: setProperty(const uint32_t flag) throw()
+            Rule & Rule:: impose(const uint32_t flag) throw()
             {
                 (uint32_t &)flags |= flag;
+                return *this;
             }
 
 

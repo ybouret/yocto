@@ -1,4 +1,5 @@
 #include "yocto/lang/syntax/parser.hpp"
+#include "yocto/lang/pattern/basic.hpp"
 
 namespace yocto
 {
@@ -16,9 +17,15 @@ namespace yocto
             {
             }
 
-            Rule & Parser:: terminal( const string &label, const string &expr )
+            Rule & Parser:: terminal( const string &label, const string &expr)
             {
                 root.make(label,expr,YOCTO_LANG_LEXICAL(forward));
+                return add( new Terminal(label));
+            }
+
+            Rule & Parser:: terminal(const string &label, const uint8_t code)
+            {
+                root.make(label,new Single(code),YOCTO_LANG_LEXICAL(forward));
                 return add( new Terminal(label) );
             }
 

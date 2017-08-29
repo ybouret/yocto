@@ -23,6 +23,7 @@ cache(),                       \
 current( &root ),              \
 scanners(1,as_capacity),       \
 history(),                     \
+plugins(),                     \
 dict()
 
 

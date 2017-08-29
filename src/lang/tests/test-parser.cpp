@@ -13,12 +13,17 @@ class myParser : public Syntax::Parser
 public:
     explicit myParser() : Syntax::Parser("dummy")
     {
-        Syntax::Rule      &END  = terminal("END", ";");
-        Syntax::Rule      &ID   = terminal("ID", "[:word:]+");
-        Syntax::Aggregate &DECL = agg("DECL");
-        DECL << ID << END;
+        Syntax::Aggregate &ASSIGN = agg("ASSIGN");
+        Syntax::Rule      &END  = terminal("END", ";").impose(Syntax::Rule::IsHollow);
+        Syntax::Rule      &ID   = terminal("ID", "[_[:alpha:]][:word:]*");
+        Syntax::Rule      &INT  = terminal("INT","[:digit:]+");
 
-        setTopLevel(ZeroOrMore(DECL));
+        ASSIGN << ID << terminal("EQUAL",'=').impose(Syntax::Rule::IsHollow) << Choice(ID,INT) << END;
+        Syntax::Aggregate &DECL = agg("DECL");
+        DECL << Choice(ID,INT) << END;
+
+
+        setTopLevel(ZeroOrMore(Choice(ASSIGN,DECL)));
 
         hook<Lexical::Comment>("com1","//");
         root.call("com1");

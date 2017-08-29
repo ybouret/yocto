@@ -23,6 +23,10 @@ virtual const char * __shp() const throw()
             class Rule : public object
             {
             public:
+                static const uint32_t IsNormal = 0x00; //!< different possible tokens
+                static const uint32_t IsUnique = 0x01; //!< always the same token
+                static const uint32_t IsHollow = 0x02; //!< no semantic meaning
+
                 typedef core::list_of_cpp<Rule> List;
                 Rule          *next;
                 Rule          *prev;
@@ -30,7 +34,7 @@ virtual const char * __shp() const throw()
                 const string   label;
                 const uint32_t flags;
 
-                void setProperty(const uint32_t flag) throw();
+                Rule &impose(const uint32_t flag) throw();
 
                 virtual ~Rule() throw();
 

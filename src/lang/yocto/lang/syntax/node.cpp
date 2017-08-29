@@ -1,6 +1,7 @@
 #include "yocto/lang/syntax/node.hpp"
-#include <iostream>
-#include "yocto/lang/syntax/rule.hpp"
+
+//#include <iostream>
+//#include "yocto/lang/syntax/rule.hpp"
 
 namespace yocto
 {
@@ -10,8 +11,7 @@ namespace yocto
         {
             Node:: ~Node() throw()
             {
-                assert(impl);
-                std::cerr << "~Node(" << origin.label << ")" << std::endl;
+                //std::cerr << "~Node(" << origin.label << ")" << std::endl;
                 if(terminal)
                 {
                     if(impl)
@@ -21,6 +21,7 @@ namespace yocto
                 }
                 else
                 {
+                    assert(impl);
                     delete (List  *)impl;
                 }
             }
@@ -42,7 +43,7 @@ namespace yocto
             internal(true),
             impl( new List() )
             {
-                std::cerr << "+Node(" << origin.label << ")/internal" << std::endl;
+                //std::cerr << "+Node(" << origin.label << ")/internal" << std::endl;
             }
 
             Node * Node:: Create(const Rule &r)
@@ -60,7 +61,7 @@ namespace yocto
             internal(false),
             impl(l)
             {
-                std::cerr << "+Node(" << origin.label << ")/terminal" << std::endl;
+                //std::cerr << "+Node(" << origin.label << ")/terminal" << std::endl;
             }
 
             Node * Node::Create(const Rule &r, Lexeme *l)
@@ -159,10 +160,16 @@ namespace yocto
                 if(internal)
                 {
                     const List *children = (const List *)impl;
-                    for(const Node *sub = children->head;sub;sub=sub->next)
+                    int         iSub     = 1;
+                    for(const Node *sub = children->head;sub;sub=sub->next,++iSub)
                     {
                         sub->viz(fp);
-                        fp.viz(this);fp << "->";fp.viz(sub);fp << ";\n";
+                        fp.viz(this);fp << "->";fp.viz(sub);
+                        if(children->size>1)
+                        {
+                            fp("[label=\"%d\"]",iSub);
+                        }
+                        fp << ";\n";
                     }
                 }
             }
