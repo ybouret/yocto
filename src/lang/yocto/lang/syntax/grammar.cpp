@@ -20,6 +20,7 @@ namespace yocto
             optCount(0),
             zomCount(0),
             oomCount(0),
+            aggCount(0),
             tmpLabel()
             {
             }

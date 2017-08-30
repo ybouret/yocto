@@ -42,6 +42,7 @@ namespace yocto
                 Alternate &alt();
                 Aggregate &agg(const string &label);
                 Aggregate &agg(const char   *label);
+                
 
                 void check_connectivity() const;
 
@@ -51,6 +52,7 @@ namespace yocto
                 int        optCount;
                 int        zomCount;
                 int        oomCount;
+                int        aggCount;
                 string     tmpLabel;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Grammar);
 
@@ -58,6 +60,7 @@ namespace yocto
                 const string & newOptLabel();
                 const string & newZomLabel();
                 const string & newOomLabel();
+                const string & newAggLabel();
 
             };
         }

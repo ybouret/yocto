@@ -40,10 +40,11 @@ namespace yocto
                         while(children.size>0)
                         {
                             Node *child = AST(children.pop_front());
-                            if(child)
-                            {
-                                tmp.push_back(child);
-                            }
+                            if(!child) continue;
+
+                            
+
+                            tmp.push_back(child);
                         }
                         children.swap_with(tmp);
                     }

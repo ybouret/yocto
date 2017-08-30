@@ -51,6 +51,13 @@ namespace yocto
                     return terminal(__label,code);
                 }
 
+                inline Rule & terminal(const uint8_t code)
+                {
+                    const char   C(code);
+                    const string __label(C);
+                    return terminal(__label,code);
+                }
+
                 //______________________________________________________________
                 //
                 // special: plugins

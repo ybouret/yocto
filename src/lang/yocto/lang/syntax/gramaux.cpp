@@ -8,6 +8,12 @@ namespace yocto
         namespace Syntax
         {
 
+            const string & Grammar:: newAggLabel()
+            {
+                tmpLabel = vformat("agg#%d",++aggCount);
+                return tmpLabel;
+            }
+
             const string & Grammar:: newAltLabel()
             {
                 tmpLabel = vformat("alt#%d",++altCount);

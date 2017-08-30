@@ -18,17 +18,25 @@ namespace
     public:
         explicit jParser() : Syntax::Parser("JSON")
         {
-            Syntax::Rule &jTrue   = terminal("true").let(IsUnique);
-            Syntax::Rule &jFalse  = terminal("false").let(IsUnique);
-            Syntax::Rule &jNull   = terminal("null").let(IsUnique);
-            Syntax::Rule &jNumber = terminal("number",rx_num);
-            Syntax::Rule &jString = term<Lexical::cstring>("string");
+            Syntax::Rule     &jTrue   = terminal("true").let(IsUnique);
+            Syntax::Rule     &jFalse  = terminal("false").let(IsUnique);
+            Syntax::Rule     &jNull   = terminal("null").let(IsUnique);
+            Syntax::Rule     &jNumber = terminal("number",rx_num);
+            Syntax::Rule     &jString = term<Lexical::cstring>("string");
+            Syntax::Rule     &jComma  = terminal(',').let(IsHollow);
+            Syntax::Compound &jElements   = agg("elements");
+            Syntax::Compound &jElementsEx = agg("elements#ex");
 
             Syntax::Alternate &jValue = alt();
             jValue << jNumber << jTrue << jFalse << jNull << jString;
 
-            setTopLevel(ZeroOrMore(jValue));
+            jElements << jValue << ZeroOrMore( jElementsEx << jComma << jValue );
 
+
+            setTopLevel(jElements);
+
+
+            // final lexical rules
             root.make("ENDL",  "[:endl:]",   YOCTO_LANG_LEXICAL(newline));
             root.make("BLANKS","[:blank:]+", YOCTO_LANG_LEXICAL(discard));
 
