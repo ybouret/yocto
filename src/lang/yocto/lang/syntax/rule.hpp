@@ -8,6 +8,13 @@ namespace yocto
 {
     namespace Lang
     {
+        enum SyntaxRuleFlag
+        {
+            IsNormal = 0x00, //!< different possible tokens
+            IsUnique = 0x01, //!< always the same token
+            IsHollow = 0x02  //!< no semantic meaning
+        };
+
         namespace Syntax
         {
 
@@ -26,11 +33,8 @@ virtual bool          admitsEmpty() const throw()
             class Rule : public object
             {
             public:
-                static const uint32_t IsNormal = 0x00; //!< different possible tokens
-                static const uint32_t IsUnique = 0x01; //!< always the same token
-                static const uint32_t IsHollow = 0x02; //!< no semantic meaning
-
                 typedef core::list_of_cpp<Rule> List;
+
                 Rule          *next;
                 Rule          *prev;
                 const uint32_t uuid;
@@ -38,7 +42,7 @@ virtual bool          admitsEmpty() const throw()
                 const uint32_t flags;
                 void          *self_;
 
-                Rule &impose(const uint32_t flag) throw();
+                Rule &let(const uint32_t flag) throw();
 
                 virtual ~Rule() throw();
 

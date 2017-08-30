@@ -24,9 +24,9 @@ namespace yocto
                     assert(Terminal::UUID==uuid);
                     switch(flags)
                     {
-                        case Rule::IsNormal: return node;
-                        case Rule::IsHollow: delete node; return NULL;
-                        case Rule::IsUnique: static_cast<Lexeme *>(impl)->clear(); return node;
+                        case IsNormal: return node;
+                        case IsHollow: delete node; return NULL;
+                        case IsUnique: static_cast<Lexeme *>(impl)->clear(); return node;
                         default:
                             break;
                     }

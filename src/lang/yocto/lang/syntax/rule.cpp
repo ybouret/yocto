@@ -22,7 +22,7 @@ namespace yocto
             {
             }
 
-            Rule & Rule:: impose(const uint32_t flag) throw()
+            Rule & Rule:: let(const uint32_t flag) throw()
             {
                 (uint32_t &)flags |= flag;
                 return *this;
