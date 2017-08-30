@@ -21,8 +21,9 @@ inline  virtual         ~TYPE()  throw() {}                            \
 inline  virtual Pattern *clone() const   { return new TYPE(*this); }   \
 virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const;   \
 virtual void             __viz( ios::ostream &fp ) const;              \
-virtual void             __sav( ios::ostream &fp ) const
-
+virtual void             __sav( ios::ostream &fp ) const;              \
+virtual bool             allowsEmpty() const throw()
+        
         class Pattern : public counted_object
         {
         public:
@@ -48,14 +49,18 @@ virtual void             __sav( ios::ostream &fp ) const
             //! what to write after the UUID
             virtual void __sav( ios::ostream &fp ) const = 0;
 
+            //! check if allows empty match
+            virtual bool allowsEmpty() const throw()     = 0;
+
             void save( ios::ostream &fp ) const;
 
-            string toString() const;
-            string signature() const;
+            string toString() const;  //!< a base64 encoded binary code
+            string signature() const; //!< a 8 digits digest
 
             //! to mark ID
             void __mark( ios::ostream &fp) const;
 
+            //! save a GraphViz representation
             void graphviz(const string &filename) const;
 
             static Pattern * Optimize( Pattern *p ) throw();

@@ -100,6 +100,18 @@ namespace yocto
         {
             __sav_ops(fp);
         }
+
+        bool AND:: allowsEmpty() const throw()
+        {
+            for(const Pattern *op = operands.head;op;op=op->next)
+            {
+                if(!op->allowsEmpty())
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }
 
@@ -143,6 +155,18 @@ namespace yocto
         void OR:: __sav(ios::ostream &fp) const
         {
             __sav_ops(fp);
+        }
+
+        bool OR:: allowsEmpty() const throw()
+        {
+            for(const Pattern *op = operands.head;op;op=op->next)
+            {
+                if(op->allowsEmpty())
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
@@ -198,6 +222,12 @@ namespace yocto
         {
             __sav_ops(fp);
         }
+
+        bool NONE:: allowsEmpty() const throw()
+        {
+            return false;
+        }
+
     }
 }
 

@@ -41,6 +41,11 @@ namespace yocto
         }
 
         void Any1:: __sav(ios::ostream &) const { }
+
+        bool Any1:: allowsEmpty() const throw()
+        {
+            return false;
+        }
     }
 }
 
@@ -101,6 +106,11 @@ namespace yocto
         void Single:: __sav(ios::ostream &fp) const
         {
             fp.emit(code);
+        }
+
+        bool Single:: allowsEmpty() const throw()
+        {
+            return false;
         }
 
     }
@@ -167,6 +177,11 @@ namespace yocto
         {
             fp.emit(lower);
             fp.emit(upper);
+        }
+
+        bool Range:: allowsEmpty() const throw()
+        {
+            return false;
         }
     }
 

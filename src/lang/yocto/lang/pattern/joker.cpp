@@ -93,6 +93,11 @@ namespace yocto
             __savCommon(fp);
         }
 
+        bool Optional:: allowsEmpty() const throw()
+        {
+            return true;
+        }
+
     }
 
 }
@@ -166,6 +171,11 @@ namespace yocto
         {
             fp.emit<uint32_t>(count);
             __savCommon(fp);
+        }
+
+        bool AtLeast:: allowsEmpty() const throw()
+        {
+            return (count<=0) || (motif->allowsEmpty());
         }
     }
 
@@ -246,6 +256,12 @@ namespace yocto
             fp.emit<uint32_t>(max_count);
             __savCommon(fp);
         }
+
+        bool Counting::allowsEmpty() const throw()
+        {
+            return (min_count<=0) || (motif->allowsEmpty());
+        }
+
 
     }
 }

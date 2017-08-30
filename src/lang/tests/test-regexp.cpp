@@ -20,6 +20,10 @@ YOCTO_UNIT_TEST_IMPL(regexp)
     {
         std::cerr << "Compiling '" << argv[i] << "'" << std::endl;
         rx.push_back( RegExp(argv[i],&dict) );
+        {
+            std::cerr << "\t|_allowsEmpty = " << (rx.tail->allowsEmpty()? "YES" : "NO" ) << std::endl;
+            std::cerr << "\t|_signature   = " << rx.tail->signature() << std::endl;
+        }
         const string filename = vformat("rx%d.dot",i);
         rx.tail->graphviz(filename);
         std::cerr << "\trendering..." << std::endl;

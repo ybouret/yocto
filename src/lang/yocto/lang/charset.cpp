@@ -7,13 +7,16 @@ namespace yocto
     {
         CharSet:: ~CharSet() throw() {}
 
+
+
+        CharSet:: CharSet() throw() :
+        _CharSet()
+        {}
+
         CharSet:: CharSet(const CharSet &cs ) :
         _CharSet(cs)
         {
         }
-
-        CharSet:: CharSet() throw() : _CharSet() {}
-
 
         CharSet & CharSet:: operator<<( const char C )
         {
