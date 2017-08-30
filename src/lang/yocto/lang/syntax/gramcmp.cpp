@@ -66,7 +66,7 @@ namespace yocto
                 }
             }
 
-            void Grammar:: compile()
+            void Grammar:: check_connectivity() const
             {
                 const char *gram = name.c_str();
                 //______________________________________________________________

@@ -47,7 +47,7 @@ public:
         graphviz("gram.dot");
         ios::graphviz_render("gram.dot");
 
-        compile();
+        check_connectivity();
     }
 
     virtual ~myGram() throw()

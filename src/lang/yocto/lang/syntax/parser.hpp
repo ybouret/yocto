@@ -46,6 +46,8 @@ namespace yocto
                     return terminal(__label,code);
                 }
 
+                void compile() const;
+
                 Node * parse(Source &source);
 
             private:

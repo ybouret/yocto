@@ -43,7 +43,7 @@ namespace yocto
                 Aggregate &agg(const string &label);
                 Aggregate &agg(const char   *label);
 
-                void compile();
+                void check_connectivity() const;
 
             private:
                 Rule::List rules;
