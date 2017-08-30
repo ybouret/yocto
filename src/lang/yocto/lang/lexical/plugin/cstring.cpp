@@ -1,4 +1,5 @@
 #include "yocto/lang/lexical/plugin/cstring.hpp"
+#include "yocto/lang/lexical/translator.hpp"
 
 namespace yocto
 {
@@ -12,7 +13,18 @@ namespace yocto
             }
 
             cstring:: cstring(const char *id, Translator &trans) :
-            yocto::Lang::Lexical::Plugin(id,trans)
+            Plugin(id,trans)
+            {
+                init();
+            }
+
+            cstring:: cstring(const string &id, Translator &trans) :
+            Plugin(id,trans)
+            {
+                init();
+            }
+
+            void cstring:: init()
             {
                 back( trigger(),  this, & cstring::quit  );
                 make("CHAR", ".", this, & cstring::grow  );
@@ -32,6 +44,12 @@ namespace yocto
             {
                 data.add(tkn);
                 return Discard;
+            }
+
+            void cstring:: quit(const Token &)
+            {
+                assert(translator);
+                translator->unget( newUnit(data) );
             }
         }
 

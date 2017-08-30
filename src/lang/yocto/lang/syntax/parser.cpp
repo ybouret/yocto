@@ -30,7 +30,7 @@ namespace yocto
             }
 
 
-            Node * Parser:: parse(Source &source)
+            Node * Parser:: operator()(Source &source)
             {
                 Lexer &lexer = *this;
                 lexer.reset();
@@ -44,6 +44,12 @@ namespace yocto
                 {
                     
                 }
+            }
+
+            Rule & Parser:: plugin(const string &label)
+            {
+                root.call(label);
+                return add( new Terminal(label) );
             }
 
         }

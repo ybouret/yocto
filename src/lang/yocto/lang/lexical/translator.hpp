@@ -76,8 +76,14 @@ namespace yocto
                     plug( p );
                 }
 
+                template <typename PLUGIN> inline
+                void hook(const char *id)
+                {
+                    Plugin *p = new PLUGIN(id,*this);
+                    plug( p );
+                }
                 
-
+                
                 template <typename PLUGIN> inline
                 void hook( const string &id,const string & args )
                 {

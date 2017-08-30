@@ -14,13 +14,15 @@ namespace yocto
             {
             public:
                 virtual ~cstring() throw();
-                explicit cstring(const char *id, Translator &trans);
+                explicit cstring(const char   *id, Translator &trans);
+                explicit cstring(const string &id, Translator &trans);
 
                 YOCTO_LANG_PLUGIN_DECL();
 
             private:
                 Token data;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(cstring);
+                void   init();
                 void   quit(const Token &);
                 Result grow(const Token &) throw();
             };

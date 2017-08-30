@@ -16,6 +16,11 @@ namespace yocto
                 explicit Parser(const string &id);
                 virtual ~Parser() throw();
 
+                //______________________________________________________________
+                //
+                // terminals....
+                //______________________________________________________________
+
                 //! emit the terminal and make a rule out of it
                 Rule & terminal(const string &label,
                                 const string &expr);
@@ -46,12 +51,26 @@ namespace yocto
                     return terminal(__label,code);
                 }
 
+                //______________________________________________________________
+                //
+                // special: plugins
+                //______________________________________________________________
+                template <typename PLUGIN>
+                Rule &term(const string &label)
+                {
+                    hook<PLUGIN>(label);
+                    return plugin(label);
+                }
+
+
+
                 void compile() const;
 
-                Node * parse(Source &source);
+                Node * operator()(Source &source);
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);
+                Rule & plugin(const string &label);
             };
 
             

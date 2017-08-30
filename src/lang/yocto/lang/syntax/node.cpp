@@ -148,13 +148,16 @@ namespace yocto
                 fp("[shape=%s,label=\"%s",origin.__shp(),origin.label.c_str());
                 if(terminal)
                 {
-                    fp << '=' << '\'';
                     const Lexeme *lex = (const Lexeme *)impl;
-                    for(const Char *ch = lex->head;ch;ch=ch->next)
+                    if(lex->size>0)
                     {
-                        fp << ch->text();
+                        fp << '=' << '\'';
+                        for(const Char *ch = lex->head;ch;ch=ch->next)
+                        {
+                            fp << ch->text();
+                        }
+                        fp << '\'';
                     }
-                    fp << '\'';
                 }
                 fp("\"];\n");
                 if(internal)
