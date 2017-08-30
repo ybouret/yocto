@@ -43,7 +43,6 @@ namespace yocto
                             if(!child) continue;
 
                             
-
                             tmp.push_back(child);
                         }
                         children.swap_with(tmp);
