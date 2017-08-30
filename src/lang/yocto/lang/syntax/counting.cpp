@@ -51,6 +51,11 @@ namespace yocto
                 }
             }
 
+            bool Counting:: admitsEmpty() const throw()
+            {
+                return (minCount<=0) || (rule.admitsEmpty());
+            }
+
         }
     }
 }

@@ -41,6 +41,12 @@ namespace yocto
                 return true;
             }
 
+
+            bool Optional:: admitsEmpty() const throw()
+            {
+                return true;
+            }
+
         }
     }
 }

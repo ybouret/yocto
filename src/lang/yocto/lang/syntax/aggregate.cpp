@@ -61,6 +61,17 @@ namespace yocto
                 Node::Grow(tree,pTree.yield());
                 return true;
             }
+
+            bool Aggregate:: admitsEmpty() const throw()
+            {
+                for(const MetaNode *m=members.head;m;m=m->next)
+                {
+                    if( !(m->addr->admitsEmpty() ) ) return false;
+                }
+                return true;
+            }
+
+
         }
     }
 }

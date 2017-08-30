@@ -46,6 +46,15 @@ namespace yocto
                 return false;
             }
 
+            bool Alternate:: admitsEmpty() const throw()
+            {
+                for(const MetaNode *m = members.head; m; m=m->next)
+                {
+                    if(m->addr->admitsEmpty()) return true;
+                }
+                return false;
+            }
+
         }
     }
 }

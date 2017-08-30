@@ -15,10 +15,11 @@ namespace yocto
 
 #define YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS Node * &tree, Lexer &lexer, Source &source
 
-#define YOCTO_LANG_SYNTAX_RULE_DECL()                                 \
-virtual bool          admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const; \
-virtual void         __viz(ios::ostream &fp) const;                   \
-virtual const char * __shp() const throw()
+#define YOCTO_LANG_SYNTAX_RULE_DECL()                                  \
+virtual bool          admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const;  \
+virtual void          __viz(ios::ostream &fp) const;                   \
+virtual const char *  __shp() const throw();                           \
+virtual bool          admitsEmpty() const throw()
 
             class Rule : public object
             {
@@ -46,7 +47,8 @@ virtual const char * __shp() const throw()
                 virtual bool        admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const = 0;
                 virtual void        __viz(ios::ostream &) const                    = 0;
                 virtual const char *__shp()               const throw()            = 0;
-
+                virtual bool          admitsEmpty() const throw()                  = 0;
+                
                 //______________________________________________________________
                 //
                 // non-virtual interface
