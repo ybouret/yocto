@@ -17,7 +17,8 @@ namespace yocto
             prev(0),
             uuid(t),
             label(id),
-            flags(IsNormal)
+            flags(IsNormal),
+            self_(0)
             {
             }
 

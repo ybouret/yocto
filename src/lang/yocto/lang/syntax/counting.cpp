@@ -16,6 +16,7 @@ namespace yocto
             Joker(id,UUID,r),
             minCount(n)
             {
+                YOCTO_LANG_SYNTAX_RULE_SELF();
             }
 
             const char * Counting::__shp() const throw()

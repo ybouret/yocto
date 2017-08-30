@@ -14,6 +14,7 @@ namespace yocto
                                 Rule         &r) :
             Joker(id,UUID,r)
             {
+                YOCTO_LANG_SYNTAX_RULE_SELF();
             }
 
             const char * Optional:: __shp() const throw()

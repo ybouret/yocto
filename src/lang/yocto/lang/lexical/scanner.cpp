@@ -58,6 +58,11 @@ translator(0)
                 return u;
             }
 
+            const Rule * Scanner:: head() const throw()
+            {
+                return rules.head;
+            }
+
         }
     }
 }

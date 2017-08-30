@@ -39,7 +39,6 @@ YOCTO_UNIT_TEST_IMPL(types)
     __SHOW(Char);
     __SHOW(Syntax::Node);
     __SHOW(Syntax::Node::List);
-    __SHOW(Syntax::Node);
     __SHOW(Syntax::Rule);
     __SHOW(Syntax::Terminal);
     __SHOW(Syntax::Alternate);

@@ -41,7 +41,7 @@ public:
         graphviz("gram.dot");
         ios::graphviz_render("gram.dot");
 
-
+        compile();
     }
 
     virtual ~myParser() throw()

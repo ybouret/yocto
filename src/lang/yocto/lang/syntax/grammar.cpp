@@ -29,7 +29,11 @@ namespace yocto
                 assert(rule);
                 for(const Rule *r=rules.head;r;r=r->next)
                 {
-                    if(r->label==rule->label) throw exception("{%s} multiple rule '%s'", name.c_str(), r->label.c_str() );
+                    if(r->label==rule->label)
+                    {
+                        delete rule;
+                        throw exception("{%s} multiple rule '%s'", name.c_str(), r->label.c_str() );
+                    }
                 }
                 rules.push_back(rule);
             }

@@ -15,14 +15,21 @@ namespace yocto
             class Translator 
             {
             public:
+                const string name;
 
+
+                //______________________________________________________________
+                //
+                // intialization
+                //______________________________________________________________
                 explicit Translator(const string &transID);
-                
                 explicit Translator(const char *transID);
-
                 virtual ~Translator() throw();
 
-
+                //______________________________________________________________
+                //
+                // sub-scanners
+                //______________________________________________________________
                 Scanner &declare(const string &scanrID);
                 Scanner &declare(const char   *scanrID);
 
@@ -31,7 +38,10 @@ namespace yocto
                 void __back();
 
 
-                const string name;
+                //______________________________________________________________
+                //
+                // I/O
+                //______________________________________________________________
 
                 //! get next unit from source
                 Unit *get( Source &source );
@@ -45,10 +55,18 @@ namespace yocto
                 //! cleanup
                 void  reset() throw();
 
+                //______________________________________________________________
+                //
+                // methods for simple use with scanners.make
+                //______________________________________________________________
                 Result forward(const Token &) throw();
                 Result discard(const Token &) throw();
                 Result newline(const Token &) throw();
 
+                //______________________________________________________________
+                //
+                // Plugin API
+                //______________________________________________________________
                 void plug( Plugin *p );
 
                 template <typename PLUGIN> inline
@@ -81,7 +99,8 @@ namespace yocto
                     plug(p);
                 }
 
-
+                typedef set<string,Scanner::Handle> ScannerDB;
+                
             private:
                 Scanner::Handle  _root;
                 Units            units;
@@ -107,7 +126,6 @@ namespace yocto
                 };
 
                 typedef core::pool_of_cpp<sNode>    History;
-                typedef set<string,Scanner::Handle> ScannerDB;
                 typedef set<string,Plugin::Handle>  PluginDB;
                 
                 Scanner        *current;  //!< current scanner

@@ -16,6 +16,7 @@ namespace yocto
             Aggregate:: Aggregate(const string &id) :
             Compound(id,UUID)
             {
+                YOCTO_LANG_SYNTAX_RULE_SELF();
             }
 
             const char * Aggregate:: __shp() const throw()

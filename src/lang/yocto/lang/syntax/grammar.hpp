@@ -43,6 +43,8 @@ namespace yocto
                 Aggregate &agg(const string &label);
                 Aggregate &agg(const char   *label);
 
+                void compile();
+
             private:
                 Rule::List rules;
                 int        altCount;

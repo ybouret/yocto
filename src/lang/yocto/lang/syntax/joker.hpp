@@ -15,6 +15,8 @@ namespace yocto
             public:
                 virtual ~Joker() throw();
 
+                const Rule *content() const throw();
+
             protected:
                 explicit Joker(const string &, const uint32_t, Rule &);
                 Rule    &rule;

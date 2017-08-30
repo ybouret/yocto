@@ -18,6 +18,10 @@ namespace yocto
             {
             }
 
+            const Rule * Joker:: content() const throw()
+            {
+                return &rule;
+            }
 
         }
     }

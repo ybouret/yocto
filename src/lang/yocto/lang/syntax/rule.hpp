@@ -21,6 +21,8 @@ virtual void          __viz(ios::ostream &fp) const;                   \
 virtual const char *  __shp() const throw();                           \
 virtual bool          admitsEmpty() const throw()
 
+#define YOCTO_LANG_SYNTAX_RULE_SELF() self_ = this
+
             class Rule : public object
             {
             public:
@@ -34,6 +36,7 @@ virtual bool          admitsEmpty() const throw()
                 const uint32_t uuid;
                 const string   label;
                 const uint32_t flags;
+                void          *self_;
 
                 Rule &impose(const uint32_t flag) throw();
 
@@ -61,6 +64,7 @@ virtual bool          admitsEmpty() const throw()
             protected:
                 explicit Rule(const string  &id,
                               const uint32_t u);
+
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Rule);

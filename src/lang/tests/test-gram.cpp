@@ -40,12 +40,14 @@ public:
         Syntax::Rule      &WORD = add( new Syntax::Terminal("WORD")   );
         Syntax::Alternate &ALT1 = add( new Syntax::Alternate("ALT#1") );
         ALT1 << INT << WORD;
-
-
-        setTopLevel( ZeroOrMore(ALT1) );
+        Syntax::Aggregate &CODE = add( new Syntax::Aggregate("CODE") );
+        CODE << ZeroOrMore(ALT1);
+        setTopLevel( CODE );
         std::cerr << "saving grammar..." << std::endl;
         graphviz("gram.dot");
         ios::graphviz_render("gram.dot");
+
+        compile();
     }
 
     virtual ~myGram() throw()

@@ -15,6 +15,7 @@ namespace yocto
             Terminal:: Terminal(const string &id) :
             Rule(id,UUID)
             {
+                YOCTO_LANG_SYNTAX_RULE_SELF();
             }
 
             bool Terminal::admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
