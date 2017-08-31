@@ -175,7 +175,10 @@ namespace yocto
                         fp << ";\n";
                     }
                 }
+
             }
+
+            
 
             void Node:: graphviz(const string &filename) const
             {
@@ -184,6 +187,7 @@ namespace yocto
                 viz(fp);
                 fp << "}\n";
             }
+
         }
     }
 }

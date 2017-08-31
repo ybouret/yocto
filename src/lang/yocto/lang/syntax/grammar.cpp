@@ -67,6 +67,19 @@ namespace yocto
                 return add( new Alternate( newAltLabel() ) );
             }
 
+            Alternate & Grammar:: alt(const string &label)
+            {
+                return add( new Alternate(label) );
+            }
+
+            Alternate & Grammar:: alt(const char *label)
+            {
+                const string __label(label);
+                return add( new Alternate(__label) );
+            }
+
+
+
             Aggregate & Grammar:: agg( const string &label )
             {
                 return add( new Aggregate(label) );

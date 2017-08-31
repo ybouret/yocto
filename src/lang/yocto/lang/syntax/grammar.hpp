@@ -39,7 +39,9 @@ namespace yocto
                 Rule & OneOrMore( Rule &a );
                 Rule & ZeroOrMore( Rule &a);
                 
-                Alternate &alt();
+                Alternate &alt(); //!< automatic labeling
+                Alternate &alt(const string &label);
+                Alternate &alt(const char   *label);
                 Aggregate &agg(const string &label);
                 Aggregate &agg(const char   *label);
                 
