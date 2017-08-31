@@ -43,7 +43,7 @@ namespace
 
             Syntax::Rule &jArrays = Choice(jArray,jEmptyArray);
 
-            jValue << jArray ;//<< jEmptyArray;
+            jValue << jArray << jEmptyArray;
 
             setTopLevel(jArrays);
 
