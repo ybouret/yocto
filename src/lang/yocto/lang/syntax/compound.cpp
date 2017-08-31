@@ -30,7 +30,6 @@ namespace yocto
                 int iNode = 1;
                 for(const MetaNode *node = members.head; node; node=node->next, ++iNode)
                 {
-                    node->addr->__viz(fp);
                     __mark(fp); fp << " -> "; node->addr->__mark(fp);
                     if(members.size>1)
                     {

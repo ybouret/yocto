@@ -56,8 +56,8 @@ namespace
             compile();
 
             std::cerr << "Rendering..." << std::endl;
-            //graphviz("json.dot");
-            //ios::graphviz_render("json.dot");
+            graphviz("json.dot");
+            ios::graphviz_render("json.dot");
             std::cerr << "...done" << std::endl;
 
         }

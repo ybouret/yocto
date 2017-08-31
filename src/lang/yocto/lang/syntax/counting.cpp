@@ -27,7 +27,10 @@ namespace yocto
             void Counting:: __viz(ios::ostream &fp) const
             {
                 __mark(fp); fp("[shape=%s,label=\"%s\"];\n",__shp(),label.c_str());
-                rule.__viz(fp);
+            }
+
+            void Counting:: __lnk(ios::ostream &fp) const
+            {
                 __mark(fp); fp << "->"; rule.__mark(fp); fp << ";\n";
             }
 

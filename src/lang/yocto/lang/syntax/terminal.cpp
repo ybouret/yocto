@@ -57,6 +57,11 @@ namespace yocto
                 fp("[shape=%s,label=\"%s\"];\n",__shp(),label.c_str());
             }
 
+            void Terminal:: __lnk(ios::ostream &) const
+            {
+                // do nothing
+            }
+
             bool Terminal:: admitsEmpty() const throw()
             {
                 return false;

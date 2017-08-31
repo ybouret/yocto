@@ -55,9 +55,15 @@ namespace yocto
             {
                 ios::wcstream fp(filename);
                 fp << "digraph G {\n";
-                if(rules.head)
+                // write single rules
+                for(const Rule *rule = rules.head; rule; rule=rule->next)
                 {
-                    rules.head->__viz(fp);
+                    rule->__viz(fp);
+                }
+                // link them
+                for(const Rule *rule = rules.head; rule; rule=rule->next)
+                {
+                    rule->__lnk(fp);
                 }
                 fp << "}\n";
             }

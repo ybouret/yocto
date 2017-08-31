@@ -28,6 +28,11 @@ namespace yocto
             {
                 __mark(fp);
                 fp("[shape=%s,label=\"%s\"];\n",__shp(),label.c_str());
+                //vizLink(fp);
+            }
+
+            void Aggregate:: __lnk(ios::ostream &fp) const
+            {
                 vizLink(fp);
             }
 
