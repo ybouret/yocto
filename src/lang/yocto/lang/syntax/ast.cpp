@@ -9,6 +9,12 @@ namespace yocto
         namespace Syntax
         {
 
+            static inline Node *__clr(Node *node) throw()
+            {
+                assert(node);
+                node->parent = NULL;
+                return node;
+            }
 
             Node * Node:: AST( Node *node ) throw()
             {
@@ -39,7 +45,7 @@ namespace yocto
                         List  tmp;
                         while(children.size>0)
                         {
-                            Node *child = AST(children.pop_front());
+                            Node *child = AST( __clr(children.pop_front()) );
                             if(!child) continue;
 
                             

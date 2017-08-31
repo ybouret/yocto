@@ -88,7 +88,7 @@ namespace yocto
                 child->parent = this;
             }
 
-            Node  * Node:: remove() throw()
+            Node  * Node:: remove_tail() throw()
             {
                 assert(internal);
                 assert(impl);
@@ -97,6 +97,17 @@ namespace yocto
                 assert(tree->size>0);
                 tree->tail->parent = 0;
                 return tree->pop_back();
+            }
+
+            Node  * Node:: remove_head() throw()
+            {
+                assert(internal);
+                assert(impl);
+
+                List *tree = static_cast<List *>(impl);
+                assert(tree->size>0);
+                tree->head->parent = 0;
+                return tree->pop_front();
             }
 
 

@@ -29,7 +29,8 @@ namespace yocto
                 const bool           internal;  //!< which kind of node
                 
                 void   append(Node *child) throw();
-                Node  *remove() throw(); //!< size>0
+                Node  *remove_head() throw(); //!< size>0
+                Node  *remove_tail() throw();
                 size_t size() const throw();
 
                 virtual ~Node() throw();

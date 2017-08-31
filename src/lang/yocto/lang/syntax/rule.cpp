@@ -46,7 +46,7 @@ namespace yocto
                 {
                     while(node->size()>0)
                     {
-                        Restore(lexer,node->remove());
+                        Restore(lexer,node->remove_tail());
                     }
                 }
                 delete node;
