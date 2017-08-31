@@ -20,7 +20,8 @@ namespace yocto
             }
 
             cstring:: cstring(const string &id, Translator &trans) :
-            Plugin(id,trans)
+            Plugin(id,trans),
+            data()
             {
                 init();
             }
