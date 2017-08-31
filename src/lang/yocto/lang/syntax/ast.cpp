@@ -61,21 +61,21 @@ namespace yocto
                             //__________________________________________________
                             Node *child = AST( children.pop_front() );
                             if(!child) continue;
-                            std::cerr << "\tchild=" << child->origin.label << std::endl;
+                            //std::cerr << "\tchild=" << child->origin.label << std::endl;
 
                             //__________________________________________________
                             //
-                            // trigger fusion
+                            // check fusion
                             //__________________________________________________
                             const uint32_t uuid = child->origin.uuid;
                             const bool     fuse =
-                            (Optional::UUID==uuid) ||
-                            (Counting::UUID==uuid) ||
-                            (Aggregate::UUID==uuid && NULL!=strchr(child->origin.label.c_str(),'#'));
+                            (  Optional::UUID == uuid) ||
+                            (  Counting::UUID == uuid) ||
+                            ((Aggregate::UUID == uuid) && NULL!=strchr(child->origin.label.c_str(),Rule::FusionMark));
 
                             if(fuse)
                             {
-                                std::cerr << "fusion of " << child->origin.label << " with " << node->origin.label << std::endl;
+                                //std::cerr << "fusion of " << child->origin.label << " with " << node->origin.label << std::endl;
                                 List &sub = *static_cast<List *>(child->impl);
                                 while(sub.size)
                                 {

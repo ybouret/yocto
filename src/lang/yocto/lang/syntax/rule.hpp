@@ -35,7 +35,8 @@ virtual bool          admitsEmpty() const throw()
             {
             public:
                 typedef core::list_of_cpp<Rule> List;
-
+                static const  char              FusionMark = '#';
+                
                 Rule          *next;
                 Rule          *prev;
                 const uint32_t uuid;
