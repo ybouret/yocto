@@ -23,7 +23,6 @@ namespace yocto
 
                 Node                *next;
                 Node                *prev;
-                Node                *parent;    //!< for tree operation
                 const Rule          &origin;    //!< created by this rule
                 const bool           terminal;  //!< whick kind of node
                 const bool           internal;  //!< which kind of node

@@ -37,7 +37,6 @@ namespace yocto
             Node:: Node(const Rule &r) :
             next(0),
             prev(0),
-            parent(0),
             origin(r),
             terminal(false),
             internal(true),
@@ -55,7 +54,6 @@ namespace yocto
             Node:: Node(const Rule &r, Lexeme *l) throw() :
             next(0),
             prev(0),
-            parent(0),
             origin(r),
             terminal(true),
             internal(false),
@@ -85,7 +83,6 @@ namespace yocto
                 assert(internal);
 
                 static_cast<List *>(impl)->push_back(child);
-                child->parent = this;
             }
 
             Node  * Node:: remove_tail() throw()
@@ -95,7 +92,6 @@ namespace yocto
 
                 List *tree = static_cast<List *>(impl);
                 assert(tree->size>0);
-                tree->tail->parent = 0;
                 return tree->pop_back();
             }
 
@@ -106,7 +102,6 @@ namespace yocto
 
                 List *tree = static_cast<List *>(impl);
                 assert(tree->size>0);
-                tree->head->parent = 0;
                 return tree->pop_front();
             }
 
