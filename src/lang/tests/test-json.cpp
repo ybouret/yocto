@@ -24,6 +24,9 @@ namespace
             Syntax::Rule     &jNumber = terminal("number",rx_num);
             Syntax::Rule     &jString = term<Lexical::cstring>("string");
             Syntax::Rule     &jComma  = terminal(',').let(IsHollow);
+            Syntax::Rule     &jLBRACK = terminal('[').let(IsHollow);
+            Syntax::Rule     &jRBRACK = terminal(']').let(IsHollow);
+
             Syntax::Compound &jElements   = agg("elements");
             Syntax::Compound &jElementsEx = agg("elements#ex");
 
@@ -32,18 +35,30 @@ namespace
 
             jElements << jValue << ZeroOrMore( jElementsEx << jComma << jValue );
 
+            Syntax::Aggregate &jArray = agg("array");
+            jArray << jLBRACK << jElements << jRBRACK;
 
-            setTopLevel(jElements);
+            Syntax::Aggregate &jEmptyArray = agg("empty_array");
+            jEmptyArray << jLBRACK << jRBRACK;
+
+            Syntax::Rule &jArrays = Choice(jArray,jEmptyArray);
+
+            jValue << jArray ;//<< jEmptyArray;
+
+            setTopLevel(jArrays);
 
 
             // final lexical rules
             root.make("ENDL",  "[:endl:]",   YOCTO_LANG_LEXICAL(newline));
             root.make("BLANKS","[:blank:]+", YOCTO_LANG_LEXICAL(discard));
 
+            std::cerr << "Compiling..." << std::endl;
             compile();
 
-            graphviz("json.dot");
-            ios::graphviz_render("json.dot");
+            std::cerr << "Rendering..." << std::endl;
+            //graphviz("json.dot");
+            //ios::graphviz_render("json.dot");
+            std::cerr << "...done" << std::endl;
 
         }
 
@@ -69,6 +84,7 @@ YOCTO_UNIT_TEST_IMPL(json)
     {
         Module::Handle hm( new Module() );
         Source         source( hm );
+        std::cerr << std::endl << "Ready..." << std::endl;
         auto_ptr<Syntax::Node> tree( J(source) );
         if(tree.is_valid())
         {
