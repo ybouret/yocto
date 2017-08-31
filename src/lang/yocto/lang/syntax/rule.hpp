@@ -64,7 +64,8 @@ virtual bool          admitsEmpty() const throw()
                 static void Restore( Lexer &lexer, Node *node ) throw();
                 void __mark( ios::ostream &fp ) const;
 
-                
+                inline const char   *id() const throw() { return label.c_str(); }
+
             protected:
                 explicit Rule(const string  &id,
                               const uint32_t u);

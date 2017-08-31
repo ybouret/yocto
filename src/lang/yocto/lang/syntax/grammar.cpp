@@ -50,22 +50,7 @@ namespace yocto
             }
 
 
-            Node * Grammar:: accept(Lexer &lexer, Source &source)
-            {
-                const char *gramID = name.c_str();
-                if(rules.size<=0) throw exception("{%s} no top level rule", gramID);
-
-                Node *tree = 0;
-                Rule &top  = * rules.head;
-                std::cerr << "TopLevel '" << top.label << "' for {" << gramID << "}" << std::endl;
-                if(!top.admit(tree,lexer,source))
-                {
-                    throw exception("{%s} couldn't accept '%s'", gramID , top.label.c_str());
-                }
-                if(tree) std::cerr << "Got Tree, size=" << tree->size() << std::endl;
-                return tree;
-            }
-
+          
             void Grammar:: graphviz(const string &filename) const
             {
                 ios::wcstream fp(filename);

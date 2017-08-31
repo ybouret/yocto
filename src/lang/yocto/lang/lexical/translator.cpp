@@ -410,6 +410,20 @@ namespace yocto
                 }
             }
 
+            const Unit * Translator:: peek( Source &source )
+            {
+                Unit *u = get(source);
+                if(u)
+                {
+                    cache.push_front(u);
+                    return u;
+                }
+                else
+                {
+                    return NULL;
+                }
+            }
+
 
 
         }

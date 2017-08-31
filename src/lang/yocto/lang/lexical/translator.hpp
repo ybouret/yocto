@@ -46,6 +46,9 @@ namespace yocto
                 //! get next unit from source
                 Unit *get( Source &source );
 
+                //! lookahead
+                const Unit *peek( Source &source );
+
                 //! dispatch to current module
                 void  newLine() throw();
 

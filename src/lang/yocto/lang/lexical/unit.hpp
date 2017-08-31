@@ -25,6 +25,7 @@ namespace yocto
                 Unit         *prev;
                 const Stamp   stamp;
                 const string &label;
+                inline const char   *id() const throw() { return label.c_str(); }
 
                 static void RemoveFrom( Units &units, const string &id) throw();
 
