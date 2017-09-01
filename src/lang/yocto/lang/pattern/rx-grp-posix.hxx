@@ -44,6 +44,7 @@ Pattern * findPosixExpression()
     Y_LANG_POSIX(word);
     Y_LANG_POSIX(endl);
     Y_LANG_POSIX(dot);
-
+    Y_LANG_POSIX(any1);
+    
     throw exception("%sunknown posix :%s:",fn,id.c_str());
 }

@@ -27,6 +27,7 @@ namespace yocto
             Char(const Char &other) throw();
 
             const char *text() const throw();
+            Char       *subst(const uint8_t data) const;
 
         private:
             YOCTO_DISABLE_ASSIGN(Char);

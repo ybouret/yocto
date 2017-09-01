@@ -38,7 +38,17 @@ namespace yocto
             Y_CHAR_INIT();
             if(code>=32&&code<127)
             {
-                _txt[0] = code;
+                switch(code)
+                {
+                    case '\'':
+                    case '\"':
+                    case '\\':
+                        _txt[0] = '\\'; _txt[1] = code;
+                        break;
+
+                    default:
+                        _txt[0] = code;
+                }
             }
             else
             {
@@ -48,6 +58,12 @@ namespace yocto
             return _txt;
         }
 
+        Char       * Char:: subst(const uint8_t data) const
+        {
+            Char *ch = new Char(*this);
+            ch->code = data;
+            return ch;
+        }
 
     }
 

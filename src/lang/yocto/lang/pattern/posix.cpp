@@ -101,7 +101,12 @@ namespace yocto
             *p << new Single('\r');
             return p.yield();
         }
+
         
+        Pattern *posix::any1()
+        {
+            return new Any1();
+        }
     }
 }
 

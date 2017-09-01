@@ -31,6 +31,7 @@ namespace yocto
             static Pattern *word();    //!< [A-Za-z0-9_]
             static Pattern *endl();    //!< \n|\r|\r\n
             static Pattern *dot();     //!< [^\n\r]
+            static Pattern *any1();    //!< ...
         };
         
     }

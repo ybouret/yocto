@@ -22,7 +22,7 @@ namespace yocto
                     assert(rule);
                     assert(gram);
                     assert(rule->self_);
-                    std::cerr << "...update " << rule->label << std::endl;
+                    //std::cerr << "...update " << rule->label << std::endl;
                     int *pCount = db.search(rule->label);
                     if(!pCount)
                     {
@@ -80,7 +80,7 @@ namespace yocto
                     RuleDB db(rules.size,as_capacity);
                     for(const Rule *rule = rules.head;rule;rule=rule->next)
                     {
-                        std::cerr << "...registering " << rule->label << std::endl;
+                        //std::cerr << "...registering " << rule->label << std::endl;
                         if( ! db.insert(rule->label,0) )
                         {
                             throw exception("{%s}: unexpected failure to register '%s'", gram, rule->label.c_str());

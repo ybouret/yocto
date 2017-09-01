@@ -25,6 +25,11 @@ namespace yocto
                 void   init();
                 void   quit(const Token &);
                 Result grow(const Token &) throw();
+                Result escCtrl(const Token &);
+                Result escCopy(const Token &);
+                Result escHexa(const Token &);
+                Result escFailure(const Token &);
+
             };
 
         }
