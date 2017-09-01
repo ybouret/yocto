@@ -438,7 +438,7 @@ namespace yocto
     {
         namespace Lexical
         {
-            void Translator:: plug( Plugin *p )
+            const string  & Translator:: plug( Plugin *p )
             {
                 assert(p);
                 const Plugin::Handle  pP(p);
@@ -456,7 +456,7 @@ namespace yocto
                 {
                     throw exception("[%s]: plugin collides with scanner '%s'",name.c_str(), p->label.c_str() );
                 }
-                //linkTo(*p);
+                return p->label;
             }
 
         }

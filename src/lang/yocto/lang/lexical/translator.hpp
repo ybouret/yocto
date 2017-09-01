@@ -70,42 +70,42 @@ namespace yocto
                 //
                 // Plugin API
                 //______________________________________________________________
-                void plug( Plugin *p );
+                const string &plug( Plugin *p );
 
                 template <typename PLUGIN> inline
-                void hook(const string &id)
+                const string &hook(const string &id)
                 {
                     Plugin *p = new PLUGIN(id,*this);
-                    plug( p );
+                    return plug( p );
                 }
 
                 template <typename PLUGIN> inline
-                void hook(const char *id)
+                const string & hook(const char *id)
                 {
                     Plugin *p = new PLUGIN(id,*this);
-                    plug( p );
+                    return plug( p );
                 }
                 
                 
                 template <typename PLUGIN> inline
-                void hook( const string &id,const string & args )
+                const string & hook( const string &id,const string & args )
                 {
                     Plugin *p = new PLUGIN(id,args,*this);
-                    plug(p);
+                    return plug(p);
                 }
 
                 template <typename PLUGIN> inline
-                void hook( const char *id,const char *args )
+                const string & hook( const char *id,const char *args )
                 {
                     Plugin *p = new PLUGIN(id,args,*this);
-                    plug(p);
+                    return plug(p);
                 }
 
                 template <typename PLUGIN> inline
-                void hook( const char *id,const char *arg1,const char *arg2)
+                const string & hook( const char *id,const char *arg1,const char *arg2)
                 {
                     Plugin *p = new PLUGIN(id,arg1,arg2,*this);
-                    plug(p);
+                    return plug(p);
                 }
 
                 typedef set<string,Scanner::Handle> ScannerDB;

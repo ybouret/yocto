@@ -15,7 +15,8 @@ namespace yocto
             public:
                 virtual ~gParser() throw();
                 explicit gParser();
-
+                
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(gParser);
 

@@ -31,8 +31,8 @@ public:
         hook<Lexical::Comment>("com2","#");
         root.call("com2");
 
-        hook<Lexical::InlineComment>("com3","/\\*","\\*/");
-        root.call("com3");
+        root.call(hook<Lexical::InlineComment>("com3","/\\*","\\*/"));
+        //root.call("com3");
 
 
         root.make("ENDL",  "[:endl:]",   YOCTO_LANG_LEXICAL(newline));
