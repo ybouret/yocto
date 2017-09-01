@@ -183,7 +183,13 @@ friend inline bool operator OP ( const T       _lhs, const string &_rhs ) throw(
                 append(C);
                 return *this;
             }
-            
+
+            //! first occurence or NULL
+            const T *search(const T C) const throw();
+
+            //! if has the character, wherever
+            bool has(const T C) const throw();
+
 		private:
 			size_t size_; //!< #chars
 			size_t full_; //!< memory units

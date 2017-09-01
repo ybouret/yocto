@@ -386,6 +386,27 @@ assert( (S)->char_[(S)->size_] == 0 )
             }
         }
 
+        template<>
+        const YCHAR * string<YCHAR>::search(const YCHAR C) const throw()
+        {
+            const YCHAR *p = char_;
+            for(size_t i=size_;i>0;--i)
+            {
+                if( C == *p ) return p;
+                ++p;
+            }
+            return NULL;
+        }
+
+        template <>
+        bool string<YCHAR>::has(const YCHAR C) const throw()
+        {
+            const YCHAR *ch = char_;
+#define check_has(I) if(C==ch[I]) return true
+            YOCTO_LOOP_FUNC(size_,check_has,0);
+            return false;
+        }
+
 	}
 	
 }

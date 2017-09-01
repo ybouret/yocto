@@ -61,7 +61,6 @@ namespace yocto
                             //__________________________________________________
                             Node *child = AST( children.pop_front() );
                             if(!child) continue;
-                            //std::cerr << "\tchild=" << child->origin.label << std::endl;
 
                             //__________________________________________________
                             //
@@ -71,7 +70,7 @@ namespace yocto
                             const bool     fuse =
                             (  Optional::UUID == uuid) ||
                             (  Counting::UUID == uuid) ||
-                            ((Aggregate::UUID == uuid) && NULL!=strchr(child->origin.label.c_str(),Rule::FusionMark));
+                            ((Aggregate::UUID == uuid) && child->origin.label.has(Rule::FusionMark));
 
                             if(fuse)
                             {
