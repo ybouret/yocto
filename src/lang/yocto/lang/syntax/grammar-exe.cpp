@@ -45,9 +45,10 @@ namespace yocto
                 {
                     auto_ptr<Node> guard(tree);
                     const Lexeme *lex = lexer.peek(source);
+                    const string  info = lex->toString();
                     if(lex)
                     {
-                        throw exception("{%s} extraneous \"%s\" after \"%s\"", gramID, lex->id(), top.id());
+                        throw exception("{%s} extraneous \"%s\"='%s' after \"%s\"", gramID, lex->id(), info.c_str(), top.id());
                     }
 
                     return guard.yield();

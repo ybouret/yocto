@@ -37,8 +37,8 @@ namespace yocto
                 Rule &COLUMN  = terminal(':');
                 //Rule &LBRACE  = terminal('(');
                 //Rule &RBRACE  = terminal(')');
-                //Rule &CSTRING  = term<Lexical::cstring>("cSTRING");
-
+                Rule &REGEXP  = term<Lexical::cstring>("REGEXP");
+                Rule &RAWSTR  = term<Lexical::rstring>("RAWSTR");
                 //Rule &ALT     = terminal('|');
 
                 //______________________________________________________________
@@ -84,6 +84,25 @@ namespace yocto
                     }
 #endif
 
+#if 1
+                    {
+                        Alternate &ATOM = alt("ATOM");
+                        ATOM << ID << REGEXP << RAWSTR;
+
+                        Aggregate &ITEM = agg("ITEM");
+                        ITEM << ATOM << Choice( terminal('+'), terminal('*'), terminal('?'));
+                        Aggregate &SUB = agg("SUB");
+                        Aggregate &ALT = agg("ALT");
+                        ALT << SUB << ZeroOrMore( agg("ALT#EX") << terminal('|') << SUB );
+                        SUB << OneOrMore(ITEM);
+                        ATOM << ( agg("GRP") << terminal('(') << ALT << terminal(')') );
+
+                        //RULE << ALT;
+                        RULE << ZeroOrMore(ID);
+                    }
+#endif
+                    
+                    RULE << END;
                 }
 
                 GRAMMAR << ZeroOrMore(RULE);
@@ -98,7 +117,7 @@ namespace yocto
                 root.make("BLANKS", "[:blank:]+", YOCTO_LANG_LEXICAL(discard));
 
 
-                compile();
+                //compile();
             }
 
             
