@@ -74,13 +74,7 @@ namespace yocto
 
                             if(fuse)
                             {
-                                //std::cerr << "fusion of " << child->origin.label << " with " << node->origin.label << std::endl;
-                                List &sub = *static_cast<List *>(child->impl);
-                                while(sub.size)
-                                {
-                                    Node *ch = sub.pop_front();
-                                    tmp.push_back(ch);
-                                }
+                                tmp.merge_back( *static_cast<List *>(child->impl) );
                                 delete child;
                                 child = NULL;
                             }
