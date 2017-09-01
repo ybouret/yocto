@@ -23,9 +23,9 @@ namespace
             Syntax::Rule     &jNull   = terminal("null").let(IsUnique);
             Syntax::Rule     &jNumber = terminal("number",rx_num);
             Syntax::Rule     &jString = term<Lexical::cstring>("string");
-            Syntax::Rule     &jComma  = terminal(',').let(IsHollow);
-            Syntax::Rule     &jLBRACK = terminal('[').let(IsHollow);
-            Syntax::Rule     &jRBRACK = terminal(']').let(IsHollow);
+            Syntax::Rule     &jComma  = terminal(',');
+            Syntax::Rule     &jLBRACK = terminal('[');
+            Syntax::Rule     &jRBRACK = terminal(']');
 
             Syntax::Compound &jElements   = agg("elements");
             Syntax::Compound &jElementsEx = agg("elements#ex");
@@ -46,6 +46,8 @@ namespace
             jValue << jArray << jEmptyArray;
 
             setTopLevel(jArrays);
+
+            
 
 
             // final lexical rules
