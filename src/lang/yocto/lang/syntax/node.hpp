@@ -15,7 +15,7 @@ namespace yocto
             typedef Lexical::Unit Lexeme;
             class Rule; //!< forward declaration
 
-            //! a node to build an AST, terminal or not
+            //! a node to build an AST
             class Node : public object
             {
             public:

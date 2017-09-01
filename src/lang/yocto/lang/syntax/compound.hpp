@@ -15,6 +15,7 @@ namespace yocto
             typedef addr_node<Rule> MetaNode;
             typedef addr_list<Rule> MetaList;
 
+            //! a container for aggregate/alternate
             class Compound : public Rule
             {
             public:

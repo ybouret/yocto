@@ -10,6 +10,7 @@ namespace yocto
         namespace Syntax
         {
 
+            //! create an internal alternate rule
             class Alternate : public Compound
             {
             public:

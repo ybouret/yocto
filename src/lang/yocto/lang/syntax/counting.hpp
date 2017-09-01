@@ -10,6 +10,7 @@ namespace yocto
         namespace Syntax
         {
 
+            //! create a counting rule
             class Counting : public Joker
             {
             public:

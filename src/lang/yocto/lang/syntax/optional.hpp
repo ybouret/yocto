@@ -10,6 +10,7 @@ namespace yocto
         namespace Syntax
         {
 
+            //! create an optional rule
             class Optional : public Joker
             {
             public:

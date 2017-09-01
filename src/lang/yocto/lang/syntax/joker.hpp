@@ -10,6 +10,7 @@ namespace yocto
         namespace Syntax
         {
 
+            //! base class for a joker rule
             class Joker : public Rule
             {
             public:

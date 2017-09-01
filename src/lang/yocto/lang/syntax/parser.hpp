@@ -68,9 +68,7 @@ namespace yocto
                     hook<PLUGIN>(label);
                     return plugin(label);
                 }
-
-
-
+                
                 void compile() const;
 
                 Node * operator()(Source &source);

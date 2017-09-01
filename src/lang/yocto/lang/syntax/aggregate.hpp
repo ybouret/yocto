@@ -10,6 +10,7 @@ namespace yocto
         namespace Syntax
         {
 
+            //! create an internal aggregate rule
             class Aggregate : public Compound
             {
             public:

@@ -10,6 +10,7 @@ namespace yocto
         namespace Lexical
         {
 
+            //! a plugin to return a C-string as 'this->label'
             class cstring : public Plugin
             {
             public:
@@ -24,7 +25,7 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(cstring);
                 void   init();
                 void   quit(const Token &);
-                Result grow(const Token &) throw();
+                Result grow(const Token &);
                 Result escCtrl(const Token &);
                 Result escCopy(const Token &);
                 Result escHexa(const Token &);

@@ -10,6 +10,7 @@ namespace yocto
         namespace Syntax
         {
 
+            //! a grammar is a set of rules
             class Grammar
             {
             public:

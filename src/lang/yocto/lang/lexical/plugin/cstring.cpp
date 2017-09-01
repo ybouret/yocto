@@ -80,7 +80,7 @@ namespace yocto
                 data.clear();
             }
 
-            Result cstring:: grow(const Token &tkn) throw()
+            Result cstring:: grow(const Token &tkn)
             {
                 data.add(tkn);
                 return Discard;
