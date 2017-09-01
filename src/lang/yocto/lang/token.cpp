@@ -31,7 +31,7 @@ namespace yocto
         string Token::toString() const
         {
             string ans(size,as_capacity);
-            for(const Char *ch = head;ch;ch=ch->next)
+            for(const Char *ch=head;ch;ch=ch->next)
             {
                 ans.append(ch->code);
             }

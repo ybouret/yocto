@@ -1,3 +1,3 @@
 .simple;
 
-a : b ;
+a : c  ;

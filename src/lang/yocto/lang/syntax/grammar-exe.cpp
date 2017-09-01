@@ -44,10 +44,10 @@ namespace yocto
                 else
                 {
                     auto_ptr<Node> guard(tree);
-                    const Lexeme *lex = lexer.peek(source);
-                    const string  info = lex->toString();
+                    const Lexeme *lex  = lexer.peek(source);
                     if(lex)
                     {
+                        const string  info = lex->toString();
                         throw exception("{%s} extraneous \"%s\"='%s' after \"%s\"", gramID, lex->id(), info.c_str(), top.id());
                     }
 
