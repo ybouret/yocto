@@ -91,7 +91,7 @@ namespace yocto
                     {
                         const int *pCount = db.search(rule->label);
                         if(!pCount) throw exception("{%s}: unexpected removed '%s'", gram, rule->label.c_str());
-                        std::cerr << rule->label << " -> " << *pCount << std::endl;
+                        //std::cerr << rule->label << " -> " << *pCount << std::endl;
                         if(1 != *pCount)
                             throw exception("{%s}: disconnected rule '%s'",gram, rule->label.c_str());
                     }
