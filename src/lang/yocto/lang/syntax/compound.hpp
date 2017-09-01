@@ -24,7 +24,7 @@ namespace yocto
                 MetaList members;
 
                 Compound & operator<<( Rule & );
-
+                
             protected:
                 explicit Compound(const string &, const uint32_t);
                 void     vizLink( ios::ostream &fp ) const;

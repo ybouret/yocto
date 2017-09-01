@@ -51,11 +51,12 @@ namespace yocto
                     return terminal(__label,code);
                 }
 
+                //! is hollow by default !
                 inline Rule & terminal(const uint8_t code)
                 {
                     const char   C(code);
                     const string __label(C);
-                    return terminal(__label,code);
+                    return terminal(__label,code).let(IsHollow);
                 }
 
                 //______________________________________________________________

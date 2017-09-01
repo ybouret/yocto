@@ -26,24 +26,67 @@ namespace yocto
                 //______________________________________________________________
                 Aggregate &GRAMMAR = agg("GRAMMAR");
 
-                //Rule &ID      = terminal("ID",EXPR_ID);
-                //Rule &COLUMN  = terminal(':').let(IsHollow);
+
 
                 //______________________________________________________________
                 //
                 // Common Terminals
                 //______________________________________________________________
-                Rule &END     = terminal(';').let(IsHollow);
+                Rule &END     = terminal(';');
+                Rule &ID      = terminal("ID",EXPR_ID);
+                Rule &COLUMN  = terminal(':');
+                //Rule &LBRACE  = terminal('(');
+                //Rule &RBRACE  = terminal(')');
+                //Rule &CSTRING  = term<Lexical::cstring>("cSTRING");
 
+                //Rule &ALT     = terminal('|');
 
-
-
+                //______________________________________________________________
+                //
+                // Parser name
+                //______________________________________________________________
                 {
                     Aggregate &NAME_DECL = agg("NAME#DECL");
                     NAME_DECL << terminal("NAME",EXPR_NAME) << END;
                     GRAMMAR << NAME_DECL;
                 }
 
+                //______________________________________________________________
+                //
+                // A syntax rule
+                //______________________________________________________________
+                Aggregate &RULE = agg("RULE");
+                {
+                    RULE << ID << COLUMN;
+#if 0
+                    {
+
+
+
+                        Alt &ATOM = alt();
+                        ATOM << ID << RXP << RAW;
+
+                        Agg &ITEM = agg("ITEM",property::noSingle);
+                        ITEM << ATOM;
+                        {
+                            Alt &MODIFIER = alt();
+                            MODIFIER <<univocal('+') << univocal('*') << univocal('?');
+                            ITEM << opt(MODIFIER);
+                        }
+
+                        Agg &SUB = agg("SUB",property::noSingle);
+                        Agg &ALT = agg("ALT",property::noSingle);
+                        ALT  << SUB  << zero_or_more( agg("EXTRA_ALT",property::jettison) << ALTERN << SUB );
+                        SUB << one_or_more(ITEM);
+                        ATOM << ( agg("GRP",property::jettison) << LPAREN << ALT << RPAREN );
+                        
+                        RULE << ALT;
+                    }
+#endif
+
+                }
+
+                GRAMMAR << ZeroOrMore(RULE);
 
                 //______________________________________________________________
                 //

@@ -16,25 +16,27 @@ namespace yocto
         namespace Lexical
         {
 
-            cstring:: ~cstring() throw()
+            _String:: ~_String() throw()
             {
             }
 
-            cstring:: cstring(const char *id, Translator &trans) :
+            _String:: _String(const char *id, Translator &trans, const char *ch) :
             Plugin(id,trans),
-            data()
+            data(),
+            __ch(ch)
             {
                 init();
             }
 
-            cstring:: cstring(const string &id, Translator &trans) :
+            _String:: _String(const string &id, Translator &trans,const char *ch) :
             Plugin(id,trans),
-            data()
+            data(),
+            __ch(ch)
             {
                 init();
             }
 
-            void cstring:: init()
+            void _String:: init()
             {
                 const string charExpr = "[\\x20-\\x21\\x23-\\x5b\\x5d-\\x7e]";
 
@@ -49,50 +51,50 @@ namespace yocto
                 const string charMake = label + ".char";
 
 
-                back( trigger(),  this, & cstring::quit  );
-                make(charMake, charExpr, this,  & cstring::grow  );
+                back( trigger(),  this, & _String::quit  );
+                make(charMake, charExpr, this,  & _String::grow  );
 
                 const string escCtrlExpr   = "\\x5c[nrbtfav]";
                 const string escCtrlMake   = label + ".esc.ctrl";
-                make(escCtrlMake,escCtrlExpr,this, & cstring::escCtrl );
+                make(escCtrlMake,escCtrlExpr,this, & _String::escCtrl );
 
                 const string escCopyExpr = "\\x5c[\\x22\\x27\\x5c]";
                 const string escCopyMake = label + ".esc.copy";
-                make(escCopyMake,escCopyExpr,this, & cstring::escCopy);
+                make(escCopyMake,escCopyExpr,this, & _String::escCopy);
 
                 const string escHexaExpr = "\\x5cx[:xdigit:][:xdigit:]";
                 const string escHexaMake = label + ".esc.hexa";
-                make(escHexaMake,escHexaExpr,this, &cstring::escHexa);
+                make(escHexaMake,escHexaExpr,this, &_String::escHexa);
 
                 const string escFailureExpr = "\\x5c[:any1:]";
                 const string escFailureMake = label + "esc.failure";
-                make(escFailureMake,escFailureExpr,this, & cstring::escFailure);
+                make(escFailureMake,escFailureExpr,this, & _String::escFailure);
 
             }
 
-            const char * cstring::trigger() const throw()
+            const char * _String::trigger() const throw()
             {
-                return "\"";
+                return __ch.c_str();//"\"";
             }
 
-            void cstring:: startUp(const Token &)
+            void _String:: startUp(const Token &)
             {
                 data.clear();
             }
 
-            Result cstring:: grow(const Token &tkn)
+            Result _String:: grow(const Token &tkn)
             {
                 data.add(tkn);
                 return Discard;
             }
 
-            void cstring:: quit(const Token &)
+            void _String:: quit(const Token &)
             {
                 assert(translator);
                 translator->unget( newUnit(data) );
             }
 
-            Result cstring:: escCtrl(const Token &tkn)
+            Result _String:: escCtrl(const Token &tkn)
             {
                 assert(2==tkn.size);
                 switch(tkn.tail->code)
@@ -112,14 +114,14 @@ namespace yocto
                 return Discard;
             }
 
-            Result cstring:: escCopy(const Token &tkn)
+            Result _String:: escCopy(const Token &tkn)
             {
                 assert(2==tkn.size);
                 data.push_back( new Char( *tkn.tail) );
                 return Discard;
             }
 
-            Result cstring:: escHexa(const Token &tkn)
+            Result _String:: escHexa(const Token &tkn)
             {
                 assert(4==tkn.size);
                 const int lo = hex2dec(tkn.tail->code);
@@ -129,11 +131,50 @@ namespace yocto
                 return Discard;
             }
 
-            Result cstring:: escFailure(const Token &tkn)
+            Result _String:: escFailure(const Token &tkn)
             {
                 throw exception("%s.%s: invalid escape sequence", translator->name.c_str(), label.c_str());
                 return Discard;
             }
+
+            ////////////////////////////////////////////////////////////////////
+
+            const char cstring::Expr[] = "\"";
+
+            cstring:: cstring(const char *id,
+                              Translator &trans) :
+            _String(id,trans,Expr)
+            {
+            }
+
+            cstring:: cstring(const string &id,
+                              Translator   &trans) :
+            _String(id,trans,Expr)
+            {
+            }
+
+            cstring:: ~cstring() throw() {}
+
+
+            ////////////////////////////////////////////////////////////////////
+
+            const char rstring::Expr[] = "\"";
+
+            rstring:: rstring(const char *id,
+                              Translator &trans) :
+            _String(id,trans,Expr)
+            {
+            }
+
+            rstring:: rstring(const string &id,
+                              Translator   &trans) :
+            _String(id,trans,Expr)
+            {
+            }
+
+            rstring:: ~rstring() throw() {}
+
+
 
 
         }
