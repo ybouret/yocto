@@ -36,8 +36,7 @@ namespace yocto
 
             void cstring:: init()
             {
-                static const char charExpr[] =
-                "[\\x20-\\x21\\x23-\\x5b\\x5d-\\x7e]";
+                const string charExpr = "[\\x20-\\x21\\x23-\\x5b\\x5d-\\x7e]";
 
 #if 1 == Y_LANG_CSTRING_OUT
                 {
