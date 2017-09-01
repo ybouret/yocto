@@ -1,6 +1,7 @@
 #include "yocto/lang/lexical/plugin/cstring.hpp"
 #include "yocto/lang/lexical/translator.hpp"
 #include "yocto/exception.hpp"
+#include "yocto/code/utils.hpp"
 
 #define Y_LANG_CSTRING_OUT 0
 
@@ -122,7 +123,10 @@ namespace yocto
             Result cstring:: escHexa(const Token &tkn)
             {
                 assert(4==tkn.size);
-                //data.push_back( new Char( *tkn.tail) );
+                const int lo = hex2dec(tkn.tail->code);
+                const int hi = hex2dec(tkn.tail->prev->code);
+                const int ch = (hi<<4) | lo;
+                data.push_back( tkn.head->subst(ch) );
                 return Discard;
             }
 
