@@ -1,8 +1,19 @@
 #ifndef YOCTO_SYNTAX_RULE_INCLUDED
 #define YOCTO_SYNTAX_RULE_INCLUDED 1
 
+
+
 #include "yocto/lang/lexical/translator.hpp"
 #include "yocto/lang/syntax/node.hpp"
+
+#define YOCTO_LANG_SYNTAX_VERBOSE 1
+
+#if (1==YOCTO_LANG_SYNTAX_VERBOSE)
+#include <iostream>
+#define YOCTO_LANG_SYNTAX(CODE) do { CODE; } while(false)
+#else
+#define YOCTO_LANG_SYNTAX(CODE) do {} while(false)
+#endif
 
 namespace yocto
 {
