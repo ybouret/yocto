@@ -23,7 +23,8 @@ namespace yocto
                 //
                 // try to admit top level rule
                 //______________________________________________________________
-                if(!top.admit(tree,lexer,source))
+                int depth=0;
+                if(!top.admit(tree,lexer,source,depth))
                 {
                     //__________________________________________________________
                     //

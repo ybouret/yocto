@@ -40,7 +40,7 @@ namespace yocto
                 {
                     const Rule &rule = * (m->addr);
                     Node       *node = NULL;
-                    if(rule.admit(node,lexer,source))
+                    if(rule.admit(node,lexer,source,depth))
                     {
                         YOCTO_LANG_SYNTAX(std::cerr << "|_yes" << std::endl;);
                         if(node)

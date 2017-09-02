@@ -36,7 +36,7 @@ namespace yocto
             {
                 YOCTO_LANG_SYNTAX(std::cerr << "?OPTIONAL '" << rule.label << "'" <<std::endl);
                 Node *node = 0;
-                if(rule.admit(node, lexer, source))
+                if(rule.admit(node,lexer,source,depth))
                 {
                     YOCTO_LANG_SYNTAX(std::cerr << "|_yes" << std::endl);
                     if(node)

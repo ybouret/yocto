@@ -50,12 +50,14 @@ namespace yocto
                 //
                 // all the rules must be admitted
                 //______________________________________________________________
+                ++depth;
                 for(const MetaNode *m=members.head;m;m=m->next)
                 {
                     Rule &rule = *(m->addr);
-                    if( !rule.admit(subTree,lexer,source) )
+                    if( !rule.admit(subTree,lexer,source,depth) )
                     {
-                        YOCTO_LANG_SYNTAX(std::cerr << "|_no" << std::endl);
+                        --depth;
+                        YOCTO_LANG_SYNTAX(std::cerr << "|_no '" << label << "'" << std::endl);
                         Restore(lexer,pTree.yield());
                         return false;
                     }
@@ -66,7 +68,8 @@ namespace yocto
                 //
                 // admitted !
                 //______________________________________________________________
-                YOCTO_LANG_SYNTAX(std::cerr << "|_yes" << std::endl);
+                --depth;
+                YOCTO_LANG_SYNTAX(std::cerr << "|_ok '" << label << "'" << std::endl);
                 Node::Grow(tree,pTree.yield());
                 return true;
             }

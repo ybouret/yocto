@@ -26,13 +26,13 @@ namespace yocto
                 {
                     if(lex->label==label)
                     {
-                        YOCTO_LANG_SYNTAX(std::cerr << "|_yes" << std::endl);
+                        YOCTO_LANG_SYNTAX(std::cerr << "|_ok '" << label << "'" << std::endl);
                         Node::Grow(tree, Node::Create(*this,lex));
                         return true;
                     }
                     else
                     {
-                        YOCTO_LANG_SYNTAX(std::cerr << "|_no" << std::endl);
+                        YOCTO_LANG_SYNTAX(std::cerr << "|_no '" << label << "'" << std::endl);
                         lexer.unget(lex);
                         return false;
                     }

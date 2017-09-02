@@ -10,9 +10,9 @@
 
 #if (1==YOCTO_LANG_SYNTAX_VERBOSE)
 #include <iostream>
-#define YOCTO_LANG_SYNTAX(CODE) do { CODE; } while(false)
+#define YOCTO_LANG_SYNTAX(CODE) do { for(int __ii=0;__ii<depth;++__ii) { std::cerr << "  "; } CODE; } while(false)
 #else
-#define YOCTO_LANG_SYNTAX(CODE) do {} while(false)
+#define YOCTO_LANG_SYNTAX(CODE)
 #endif
 
 namespace yocto
@@ -31,7 +31,7 @@ namespace yocto
 
             typedef Lexical::Translator Lexer;
 
-#define YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS Node * &tree, Lexer &lexer, Source &source
+#define YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS Node * &tree, Lexer &lexer, Source &source, int &depth
 
 #define YOCTO_LANG_SYNTAX_RULE_DECL()                                  \
 virtual bool          admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const;  \
