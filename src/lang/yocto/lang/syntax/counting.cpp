@@ -48,13 +48,13 @@ namespace yocto
                 --depth;
                 if(count>=minCount)
                 {
-                    YOCTO_LANG_SYNTAX(std::cerr << "|_yes" << std::endl);
+                    YOCTO_LANG_SYNTAX(std::cerr << "|_ok '" << label << "', count=" << count << std::endl);
                     Node::Grow(tree,guard.yield());
                     return true;
                 }
                 else
                 {
-                    YOCTO_LANG_SYNTAX(std::cerr << "|_no" << std::endl);
+                    YOCTO_LANG_SYNTAX(std::cerr << "|_no '" << label << "', count=" << count << std::endl);
                     Restore(lexer,guard.yield());
                     return false;
                 }
