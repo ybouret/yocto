@@ -38,7 +38,7 @@ namespace yocto
                 Node *node = 0;
                 if(rule.admit(node,lexer,source,depth))
                 {
-                    YOCTO_LANG_SYNTAX(std::cerr << "|_yes" << std::endl);
+                    YOCTO_LANG_SYNTAX(std::cerr << "|_ok '" << rule.label << "'" << std::endl);
                     if(node)
                     {
                         Node::Grow(tree,node);
@@ -47,7 +47,7 @@ namespace yocto
                 }
                 else
                 {
-                    YOCTO_LANG_SYNTAX(std::cerr << "|_no (but returns true)" << std::endl);
+                    YOCTO_LANG_SYNTAX(std::cerr << "|_no '" << rule.label << "' (but returns true)" << std::endl);
                     return true;
                 }
             }
