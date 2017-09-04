@@ -24,7 +24,7 @@ namespace yocto
 
             Rule & Rule:: let(const uint32_t flag) throw()
             {
-                (uint32_t &)flags |= flag;
+                (uint32_t &)flags = flag;
                 return *this;
             }
 

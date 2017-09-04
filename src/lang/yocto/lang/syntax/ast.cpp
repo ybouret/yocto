@@ -1,6 +1,6 @@
 //#include "yocto/lang/syntax/node.hpp"
 #include "yocto/lang/syntax/rules.hpp"
-#include "yocto/exception.hpp"
+#include "yocto/error.hpp"
 
 namespace yocto
 {
@@ -23,6 +23,7 @@ namespace yocto
                 {
                     std::cerr << "node=" << node->origin.label << std::endl;
                 }
+
                 if(node->terminal)
                 {
                     //__________________________________________________________
@@ -38,7 +39,9 @@ namespace yocto
                         default:
                             break;
                     }
-                    throw exception("Syntax.Node.AST: invalid terminal flags=%08x",unsigned(node->origin.flags));
+
+                    libc::critical_error(EINVAL,"Syntax.Node.AST: invalid terminal flags");
+                    //throw exception("Syntax.Node.AST: invalid terminal flags=%08x",unsigned(node->origin.flags));
                 }
                 else
                 {
