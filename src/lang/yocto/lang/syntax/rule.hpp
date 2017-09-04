@@ -22,8 +22,9 @@ namespace yocto
         enum SyntaxRuleFlag
         {
             IsNormal = 0x00, //!< different possible tokens
-            IsUnique = 0x01, //!< always the same token
-            IsHollow = 0x02  //!< no semantic meaning
+            IsUnique = 0x01, //!< always the same token, clear content (aka raw string...)
+            IsHollow = 0x02, //!< no semantic meaning (aka separators...)
+            NoSingle = 0x04  //!< simplify is only one child
         };
 
         namespace Syntax
@@ -89,7 +90,9 @@ virtual bool          admitsEmpty() const throw()
                 explicit Rule(const string  &id,
                               const uint32_t u);
 
-
+                explicit Rule(const char    *id,
+                              const uint32_t u);
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Rule);
 

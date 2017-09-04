@@ -19,6 +19,19 @@ namespace yocto
                 YOCTO_LANG_SYNTAX_RULE_SELF();
             }
 
+            Aggregate:: Aggregate(const char *id) :
+            Compound(id,UUID)
+            {
+                YOCTO_LANG_SYNTAX_RULE_SELF();
+            }
+
+            Aggregate & Aggregate:: noSingle() throw()
+            {
+                (void)let(NoSingle);
+                return *this;
+            }
+
+
             const char * Aggregate:: __shp() const throw()
             {
                 return "house";

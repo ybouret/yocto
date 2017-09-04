@@ -18,6 +18,12 @@ namespace yocto
             {
             }
 
+            Compound :: Compound(const char   *id, const uint32_t t ) :
+            Rule(id,t),
+            members()
+            {
+            }
+
 
             Compound & Compound:: operator<<( Rule &r )
             {

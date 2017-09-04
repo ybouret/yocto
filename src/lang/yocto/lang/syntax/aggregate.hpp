@@ -17,6 +17,10 @@ namespace yocto
                 static const uint32_t UUID = YOCTO_FOURCC(' ','&','&',' ');
                 virtual ~Aggregate() throw();
                 explicit Aggregate(const string &);
+                explicit Aggregate(const char   *);
+
+                Aggregate & noSingle() throw();
+
 
                 YOCTO_LANG_SYNTAX_RULE_DECL();
 

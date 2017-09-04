@@ -17,6 +17,7 @@ namespace yocto
                 static const uint32_t UUID = YOCTO_FOURCC(' ','|','|',' ');
                 virtual ~Alternate() throw();
                 explicit Alternate(const string &);
+                explicit Alternate(const char   *);
 
                 YOCTO_LANG_SYNTAX_RULE_DECL();
                 

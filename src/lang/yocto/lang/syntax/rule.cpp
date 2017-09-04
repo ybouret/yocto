@@ -11,15 +11,27 @@ namespace yocto
             {
             }
 
+#define YOCTO_LANG_SYNTAX_RULE_CTOR() \
+next(0),          \
+prev(0),          \
+uuid(t),          \
+label(id),        \
+flags(IsNormal),  \
+self_(0)
+
             Rule:: Rule(const string  &id,
                         const uint32_t t) :
-            next(0),
-            prev(0),
-            uuid(t),
-            label(id),
-            flags(IsNormal),
-            self_(0)
+            YOCTO_LANG_SYNTAX_RULE_CTOR()
             {
+
+            }
+
+
+            Rule:: Rule(const char    *id,
+                        const uint32_t t) :
+            YOCTO_LANG_SYNTAX_RULE_CTOR()
+            {
+                
             }
 
             Rule & Rule:: let(const uint32_t flag) throw()
@@ -57,8 +69,8 @@ namespace yocto
             {
                 fp.viz(this);
             }
-
-
+            
+            
         }
     }
 }

@@ -91,14 +91,13 @@ namespace yocto
                             ITEM << ATOM;
                         }
 
-                        Aggregate &SUB = agg("SUB");
+                        Aggregate &SUB = agg("SUB").noSingle();
                         Aggregate &ALT = agg("ALT");
-                        ALT  << SUB  << oneOrMore( agg("ALT_EX") << terminal('|') << SUB );
+                        ALT  << SUB  << zeroOrMore( agg("ALT_EX") << terminal('|') << SUB );
                         SUB <<  oneOrMore(ITEM);
                         ATOM << ( agg("GRP") << terminal('(') << ALT << terminal(')') );
 
-                        RULE << choice(ALT,SUB);
-
+                        RULE << ALT;
 
                     }
 

@@ -27,6 +27,8 @@ namespace yocto
                 
             protected:
                 explicit Compound(const string &, const uint32_t);
+                explicit Compound(const char   *, const uint32_t);
+
                 void     vizLink( ios::ostream &fp ) const;
 
 
