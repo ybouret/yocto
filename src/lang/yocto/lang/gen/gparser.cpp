@@ -17,9 +17,11 @@ namespace yocto
 #define EXPR_ID          "[_[:alpha:]][:word:]*"
 #define EXPR_NAME_PREFIX "\\."
 #define EXPR_NAME        EXPR_NAME_PREFIX EXPR_ID
+
 #define LEXICAL_NAME_PREFIX "@"
 #define LEXICAL_NAME     LEXICAL_NAME_PREFIX EXPR_ID
-#define SEMANTIC_NAME_PREFIX "$"
+
+#define SEMANTIC_NAME_PREFIX "%"
 #define SEMANTIC_NAME    SEMANTIC_NAME_PREFIX EXPR_ID
 
             gParser:: gParser() :

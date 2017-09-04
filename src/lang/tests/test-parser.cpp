@@ -1,5 +1,7 @@
 #include "yocto/lang/syntax/parser.hpp"
 #include "yocto/lang/lexical/plugin/comment.hpp"
+#include "yocto/lang/lexical/plugin/cstring.hpp"
+#include "yocto/lang/lexical/plugin/string64.hpp"
 
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/graphviz.hpp"
@@ -32,7 +34,9 @@ public:
         root.call("com2");
 
         root.call(hook<Lexical::InlineComment>("com3","/\\*","\\*/"));
-        //root.call("com3");
+
+        root.call(hook<Lexical::cstring>("string"));
+        root.call(hook<Lexical::String64>("b64"));
 
 
         root.make("ENDL",  "[:endl:]",   YOCTO_LANG_LEXICAL(newline));
