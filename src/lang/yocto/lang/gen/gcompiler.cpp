@@ -14,7 +14,8 @@ namespace yocto
             }
 
             gCompiler:: gCompiler() :
-            getAST()
+            getAST(),
+            verbose(false)
             {
 
             }
@@ -32,7 +33,16 @@ namespace yocto
 
             Parser * gCompiler:: encode(const Node *ast)
             {
-                auto_ptr<Parser> p;
+                assert(ast);
+                assert(ast->internal);
+                assert(ast->toList().size>=1);
+
+                const Node::List &topList    = ast->toList();
+                const Node       *topNode    = topList.head;
+                const string      parserName = topNode->toLex().toString(1);
+                if(verbose) { std::cerr << "Creating parser '" << parserName << "'" << std::endl; }
+                auto_ptr<Parser>  p( new Parser(parserName) );
+
                 return p.yield();
             }
 

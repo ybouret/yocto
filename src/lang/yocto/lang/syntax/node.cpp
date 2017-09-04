@@ -77,6 +77,36 @@ namespace yocto
 
             }
 
+            Node::List & Node:: toList() throw()
+            {
+                assert(internal);
+                assert(impl);
+                return *static_cast<List*>(impl);
+            }
+
+            const Node::List & Node:: toList() const throw()
+            {
+                assert(internal);
+                assert(impl);
+                return *static_cast<const List*>(impl);
+            }
+
+            Lexeme & Node:: toLex() throw()
+            {
+                assert(terminal);
+                assert(impl);
+                return *static_cast<Lexeme*>(impl);
+
+            }
+
+            const Lexeme & Node:: toLex() const throw()
+            {
+                assert(terminal);
+                assert(impl);
+                return *static_cast<const Lexeme*>(impl);
+            }
+
+
             void Node:: append(Node *child) throw()
             {
                 assert(child);

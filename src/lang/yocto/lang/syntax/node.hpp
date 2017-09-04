@@ -51,6 +51,11 @@ namespace yocto
                 //! AST
                 static Node * AST( Node *node ) throw();
 
+                List         & toList() throw();
+                const List   & toList() const throw();
+                Lexeme       & toLex() throw();
+                const Lexeme & toLex() const throw();
+                
             private:
                 void                *impl;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Node);

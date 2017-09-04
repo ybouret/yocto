@@ -19,15 +19,17 @@ YOCTO_UNIT_TEST_IMPL(gen)
     Module::Handle     hm( new Module() );
     Source             source( hm );
     Syntax::gCompiler &gen = Syntax::gCompiler::instance();
-
+    gen.verbose = true;
     gen.getAST.graphviz("gram.dot");
     ios::graphviz_render("gram.dot");
 
     auto_ptr<Syntax::Node> tree( gen.getAST(source) );
-    if( tree.is_valid() )
-    {
-        tree->graphviz("tree.dot");
-        ios::graphviz_render("tree.dot");
-    }
+    
+    assert(tree.is_valid());
+    tree->graphviz("tree.dot");
+    ios::graphviz_render("tree.dot");
+
+    auto_ptr<Syntax::Parser> P( gen.encode(tree.__get()) );
+
 }
 YOCTO_UNIT_TEST_DONE()

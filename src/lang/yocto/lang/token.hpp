@@ -19,7 +19,7 @@ namespace yocto
             Token(const Token &other);
 
             friend std::ostream & operator<<( std::ostream&, const Token &);
-            string toString() const;
+            string toString(const size_t nskip=0) const;
 
             void add(const Token &);
 

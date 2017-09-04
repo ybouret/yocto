@@ -28,14 +28,24 @@ namespace yocto
             return os;
         }
 
-        string Token::toString() const
+        string Token::toString(const size_t nskip) const
         {
-            string ans(size,as_capacity);
-            for(const Char *ch=head;ch;ch=ch->next)
+            if(nskip>=size)
             {
-                ans.append(ch->code);
+                return string();
             }
-            return ans;
+            else
+            {
+                const size_t nch = size - nskip;
+                string ans(nch,as_capacity);
+                const Char *ch = head;
+                for(size_t i=0;i<nskip;++i) ch=ch->next;
+                for(;ch;ch=ch->next)
+                {
+                    ans.append(ch->code);
+                }
+                return ans;
+            }
         }
         
         void Token:: add( const Token &other )

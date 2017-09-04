@@ -16,7 +16,7 @@ namespace yocto
             public:
                 gParser getAST;
                 Parser *encode(const Node *ast);
-
+                bool    verbose;
 
 
             private:
