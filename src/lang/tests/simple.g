@@ -9,4 +9,5 @@ fifth  : ("cow"|"boy")+ 'running';
 sixth  : $ID49IAAAAAE6LT46YXo=$;
 
 @drop : "[:blank:]+";
+@endl : "[:endl:]";
 %noSingle : main;
