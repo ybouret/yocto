@@ -91,9 +91,15 @@ namespace yocto
                             ITEM << ATOM;
                         }
 
+                        Aggregate &SUB = agg("SUB");
+                        Aggregate &ALT = agg("ALT");
+                        ALT  << SUB  << zeroOrMore( agg("ALT_EX") << terminal('|') << SUB );
+                        SUB <<  oneOrMore(ITEM);
+                        ATOM << ( agg("GRP") << terminal('(') << ALT << terminal(')') );
+
+                        RULE << ALT;
 
 
-                        RULE << oneOrMore(ITEM);
                     }
 
                     RULE << END;
