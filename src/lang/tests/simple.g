@@ -6,3 +6,6 @@ second : ((c));
 third  : d | "hello"+ | "cow";
 fourth : (a b)+ | (c d);
 fifth  : ("cow"|"boy")+ 'running';
+
+@drop : "[:blank:]+";
+$noSingle : main;

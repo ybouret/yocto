@@ -74,8 +74,31 @@ namespace yocto
                 // checking connectivity
                 //______________________________________________________________
                 if(rules.size<=0)             throw exception("{%s}: no rules",gram);
-                //if(rules.head->admitsEmpty()) throw exception("%s: top level rule '%s' admits empty!", gram, rules.head->label.c_str());
 
+
+                //______________________________________________________________
+                //
+                // checking consistency
+                //______________________________________________________________
+                for(const Rule *rule = rules.head;rule;rule=rule->next)
+                {
+
+                    const uint32_t uuid = rule->uuid;
+                    if((Aggregate::UUID==uuid) ||
+                       (Alternate::UUID==uuid) )
+                    {
+                        if(rule->admitsEmpty())
+                        {
+                            throw exception("{%s}: rule '%s' admits empty content!", gram, rule->id() );
+                        }
+                    }
+                }
+
+
+                //______________________________________________________________
+                //
+                // checking connectivity
+                //______________________________________________________________
                 {
                     RuleDB db(rules.size,as_capacity);
                     for(const Rule *rule = rules.head;rule;rule=rule->next)
@@ -83,17 +106,17 @@ namespace yocto
                         //std::cerr << "...registering " << rule->label << std::endl;
                         if( ! db.insert(rule->label,0) )
                         {
-                            throw exception("{%s}: unexpected failure to register '%s'", gram, rule->label.c_str());
+                            throw exception("{%s}: unexpected failure to register '%s'", gram, rule->id());
                         }
                     }
                     updateDB(db,rules.head,gram);
                     for(const Rule *rule = rules.head;rule;rule=rule->next)
                     {
                         const int *pCount = db.search(rule->label);
-                        if(!pCount) throw exception("{%s}: unexpected removed '%s'", gram, rule->label.c_str());
+                        if(!pCount) throw exception("{%s}: unexpected removed '%s'", gram, rule->id());
                         //std::cerr << rule->label << " -> " << *pCount << std::endl;
                         if(1 != *pCount)
-                            throw exception("{%s}: disconnected rule '%s'",gram, rule->label.c_str());
+                            throw exception("{%s}: disconnected rule '%s'",gram, rule->id());
                     }
                 }
             }
