@@ -92,10 +92,10 @@ namespace yocto
                         }
 
                         Aggregate &SUB = agg("SUB").noSingle();
-                        Aggregate &ALT = agg("ALT");
-                        ALT  << SUB  << zeroOrMore( agg("ALT_EX") << terminal('|') << SUB );
+                        Aggregate &ALT = agg("ALT").noSingle();
+                        ALT  << SUB  << zeroOrMore( agg("ALT#EX") << terminal('|') << SUB );
                         SUB <<  oneOrMore(ITEM);
-                        ATOM << ( agg("GRP") << terminal('(') << ALT << terminal(')') );
+                        ATOM << ( agg("GRP").noSingle() << terminal('(') << ALT << terminal(')') );
 
                         RULE << ALT;
 

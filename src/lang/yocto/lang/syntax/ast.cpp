@@ -70,11 +70,13 @@ namespace yocto
                             //
                             // check fusion
                             //__________________________________________________
-                            const uint32_t uuid = child->origin.uuid;
+                            const uint32_t uuid  = child->origin.uuid;
+                            const uint32_t flags = child->origin.flags;
                             const bool     fuse =
                             (  Optional::UUID == uuid) ||
                             (  Counting::UUID == uuid) ||
-                            ((Aggregate::UUID == uuid) && child->origin.label.has(Rule::FusionMark));
+                            ((Aggregate::UUID == uuid) && child->origin.label.has(Rule::FusionMark)) ||
+                            ( (NoSingle==flags) && (1==child->size()) );
 
                             if(fuse)
                             {
