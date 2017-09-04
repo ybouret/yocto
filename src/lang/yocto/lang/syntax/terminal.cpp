@@ -20,19 +20,19 @@ namespace yocto
 
             bool Terminal::admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
             {
-                YOCTO_LANG_SYNTAX(std::cerr << "?TERM '" << label << "'" << std::endl;);
+                YOCTO_LANG_SYNTAX(std::cerr << "<?TERM '" << label << "'>" << std::endl;);
                 Lexeme *lex = lexer.get(source);
                 if(lex)
                 {
                     if(lex->label==label)
                     {
-                        YOCTO_LANG_SYNTAX(std::cerr << "|_got '" << label << "'='" << *lex << "'" << std::endl);
+                        YOCTO_LANG_SYNTAX(std::cerr << "<+TERM '" << label << "'='" << *lex << "'>" << std::endl);
                         Node::Grow(tree, Node::Create(*this,lex));
                         return true;
                     }
                     else
                     {
-                        YOCTO_LANG_SYNTAX(std::cerr << "|_no  '" << label << "'" << std::endl);
+                        YOCTO_LANG_SYNTAX(std::cerr << "<-TERM '" << label << "'>" << std::endl);
                         lexer.unget(lex);
                         return false;
                     }
@@ -40,7 +40,7 @@ namespace yocto
                 else
                 {
                     //EOF
-                    YOCTO_LANG_SYNTAX(std::cerr << "|_EOF" << std::endl);
+                    YOCTO_LANG_SYNTAX(std::cerr << "<EOF>" << std::endl);
                     return false;
                 }
             }

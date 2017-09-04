@@ -74,11 +74,11 @@ namespace yocto
                     }
 #endif
 
-                    RULE << Option(ID);
+                    RULE << optional(ID);
                     RULE << END;
                 }
 
-                GRAMMAR << OneOrMore(RULE);
+                GRAMMAR << oneOrMore(RULE);
 
                 //______________________________________________________________
                 //

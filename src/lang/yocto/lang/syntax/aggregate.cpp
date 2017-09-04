@@ -38,7 +38,7 @@ namespace yocto
 
             bool Aggregate:: admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
             {
-                YOCTO_LANG_SYNTAX(std::cerr << "?AGG '" << label << "'" << std::endl);
+                YOCTO_LANG_SYNTAX(std::cerr << "<?AGG '" << label << "', #members=" << members.size << ">" << std::endl);
                 //______________________________________________________________
                 //
                 // create a subTree
@@ -57,7 +57,7 @@ namespace yocto
                     if( !rule.admit(subTree,lexer,source,depth) )
                     {
                         --depth;
-                        YOCTO_LANG_SYNTAX(std::cerr << "|_no '" << label << "'" << std::endl);
+                        YOCTO_LANG_SYNTAX(std::cerr << "<-AGG '" << label << "'>" << std::endl);
                         Restore(lexer,pTree.yield());
                         return false;
                     }
@@ -69,7 +69,7 @@ namespace yocto
                 // admitted !
                 //______________________________________________________________
                 --depth;
-                YOCTO_LANG_SYNTAX(std::cerr << "|_ok '" << label << "'" << std::endl);
+                YOCTO_LANG_SYNTAX(std::cerr << "<+AGG '" << label << "'>" << std::endl);
                 Node::Grow(tree,pTree.yield());
                 return true;
             }

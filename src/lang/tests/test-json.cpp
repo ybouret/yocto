@@ -33,7 +33,7 @@ namespace
             Syntax::Alternate &jValue = alt();
             jValue << jNumber << jTrue << jFalse << jNull << jString;
 
-            jElements << jValue << ZeroOrMore( jElementsEx << jComma << jValue );
+            jElements << jValue << zeroOrMore( jElementsEx << jComma << jValue );
 
             Syntax::Aggregate &jArray = agg("array");
             jArray << jLBRACK << jElements << jRBRACK;
@@ -41,7 +41,7 @@ namespace
             Syntax::Aggregate &jEmptyArray = agg("empty_array");
             jEmptyArray << jLBRACK << jRBRACK;
 
-            Syntax::Rule &jArrays = Choice(jArray,jEmptyArray);
+            Syntax::Rule &jArrays = choice(jArray,jEmptyArray);
 
             jValue << jArray << jEmptyArray;
 

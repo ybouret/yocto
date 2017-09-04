@@ -20,6 +20,8 @@ namespace yocto
 
                 YOCTO_LANG_SYNTAX_RULE_DECL();
 
+                size_t minCount() const throw();
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Aggregate);
             };

@@ -36,7 +36,7 @@ namespace yocto
 
             bool Counting:: admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
             {
-                YOCTO_LANG_SYNTAX(std::cerr << "?Counting '" << label << "' (>=" << minCount << ")" << std::endl);
+                YOCTO_LANG_SYNTAX(std::cerr << "<?COUNT '" << label << "' (>=" << minCount << ")>" << std::endl);
                 Node *subTree = Node::Create(*this);
                 auto_ptr<Node> guard(subTree);
                 size_t count = 0;
@@ -48,13 +48,13 @@ namespace yocto
                 --depth;
                 if(count>=minCount)
                 {
-                    YOCTO_LANG_SYNTAX(std::cerr << "|_ok '" << label << "', count=" << count << std::endl);
+                    YOCTO_LANG_SYNTAX(std::cerr << "<+COUNT '" << label << "', count=" << count << ">" << std::endl);
                     Node::Grow(tree,guard.yield());
                     return true;
                 }
                 else
                 {
-                    YOCTO_LANG_SYNTAX(std::cerr << "|_no '" << label << "', count=" << count << std::endl);
+                    YOCTO_LANG_SYNTAX(std::cerr << "<-COUNT '" << label << "', count=" << count << ">" << std::endl);
                     Restore(lexer,guard.yield());
                     return false;
                 }

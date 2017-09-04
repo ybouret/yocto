@@ -34,11 +34,11 @@ namespace yocto
 
                 void graphviz(const string &filename) const;
 
-                Rule & Choice( Rule &a, Rule &b );
-                Rule & Choice( Rule &a, Rule &b, Rule &c);
-                Rule & Option( Rule &a );
-                Rule & OneOrMore( Rule &a );
-                Rule & ZeroOrMore( Rule &a);
+                Rule & choice( Rule &a, Rule &b );
+                Rule & choice( Rule &a, Rule &b, Rule &c);
+                Rule & optional( Rule &a );
+                Rule & oneOrMore( Rule &a );
+                Rule & zeroOrMore( Rule &a);
                 
                 Alternate &alt(); //!< automatic labeling
                 Alternate &alt(const string &label);

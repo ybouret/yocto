@@ -18,12 +18,12 @@ public:
         Syntax::Rule      &ID     = terminal("ID", "[_[:alpha:]][:word:]*");
         Syntax::Rule      &INT    = terminal("INT","[:digit:]+");
 
-        ASSIGN << ID << terminal("EQUAL",'=').let(IsHollow) << Choice(ID,INT) << END;
+        ASSIGN << ID << terminal("EQUAL",'=').let(IsHollow) << choice(ID,INT) << END;
         Syntax::Aggregate &DECL = agg("DECL");
-        DECL << Choice(ID,INT) << END;
+        DECL << choice(ID,INT) << END;
 
 
-        setTopLevel(ZeroOrMore(Choice(ASSIGN,DECL)));
+        setTopLevel(zeroOrMore(choice(ASSIGN,DECL)));
 
         hook<Lexical::Comment>("com1","//");
         root.call("com1");

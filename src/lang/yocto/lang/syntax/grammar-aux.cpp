@@ -39,29 +39,29 @@ namespace yocto
             }
 
 
-            Rule & Grammar:: Choice(Rule &a, Rule &b)
+            Rule & Grammar:: choice(Rule &a, Rule &b)
             {
                 Alternate    &alt   = add( new Alternate(newAltLabel()) );
                 return (alt<<a<<b);
             }
 
-            Rule & Grammar:: Choice(Rule &a, Rule &b, Rule &c)
+            Rule & Grammar:: choice(Rule &a, Rule &b, Rule &c)
             {
                 Alternate    &alt   = add( new Alternate(newAltLabel()) );
                 return (alt<<a<<b<<c);
             }
 
-            Rule & Grammar:: Option(Rule &a)
+            Rule & Grammar:: optional(Rule &a)
             {
                 return add( new Optional(newOptLabel(),a) );
             }
 
-            Rule & Grammar:: ZeroOrMore(Rule &a)
+            Rule & Grammar:: zeroOrMore(Rule &a)
             {
                 return add( new Counting(newZomLabel(),a,0) );
             }
 
-            Rule & Grammar:: OneOrMore(Rule &a)
+            Rule & Grammar:: oneOrMore(Rule &a)
             {
                 return add( new Counting(newOomLabel(),a,1) );
             }

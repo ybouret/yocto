@@ -27,6 +27,7 @@ ios::graphviz_render(filename);\
     TEST_POSIX(punct);
     TEST_POSIX(dot);
     TEST_POSIX(word);
+    TEST_POSIX(any1);
 
 }
 YOCTO_UNIT_TEST_DONE()

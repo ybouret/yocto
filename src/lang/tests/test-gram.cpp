@@ -41,7 +41,7 @@ public:
         Syntax::Alternate &ALT1 = add( new Syntax::Alternate("ALT#1") );
         ALT1 << INT << WORD;
         Syntax::Aggregate &CODE = add( new Syntax::Aggregate("CODE") );
-        CODE << ZeroOrMore(ALT1);
+        CODE << zeroOrMore(ALT1);
         setTopLevel( CODE );
         std::cerr << "saving grammar..." << std::endl;
         graphviz("gram.dot");
