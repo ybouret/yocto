@@ -158,7 +158,7 @@ namespace yocto
 
             ////////////////////////////////////////////////////////////////////
 
-            const char rstring::Expr[] = "\"";
+            const char rstring::Expr[] = "\'";
 
             rstring:: rstring(const char *id,
                               Translator &trans) :
