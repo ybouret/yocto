@@ -42,12 +42,17 @@ virtual bool          admitsEmpty() const throw()
 
 #define YOCTO_LANG_SYNTAX_RULE_SELF() self_ = this
 
+            //! Rule interface
+            /**
+             - flags are for terminal
+             - if the label contains the FusionMark, then the content will be merged to parent
+             */
             class Rule : public object
             {
             public:
                 typedef core::list_of_cpp<Rule> List;
                 static const  char              FusionMark = '#';
-                
+
                 Rule          *next;
                 Rule          *prev;
                 const uint32_t uuid;

@@ -1,3 +1,3 @@
 .simple;
 
-a : ( b c ) "d";
+main : a "c" 'd' a+ "b"? c*;

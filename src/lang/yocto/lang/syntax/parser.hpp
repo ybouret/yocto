@@ -59,6 +59,14 @@ namespace yocto
                     return terminal(__label,code).let(IsHollow);
                 }
 
+                //! is unique by default
+                inline Rule & modifier(const uint8_t code)
+                {
+                    const char   C(code);
+                    const string __label(C);
+                    return terminal(__label,code).let(IsUnique);
+                }
+
                 //______________________________________________________________
                 //
                 // special: plugins

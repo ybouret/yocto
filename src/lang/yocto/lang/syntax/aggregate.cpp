@@ -38,7 +38,7 @@ namespace yocto
 
             bool Aggregate:: admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
             {
-                YOCTO_LANG_SYNTAX(std::cerr << "<?AGG '" << label << "', #members=" << members.size << ">" << std::endl);
+                YOCTO_LANG_SYNTAX(std::cerr << "<?AGG '" << label << "', #members=" << getMinCount() << ".." << members.size << ">" << std::endl);
                 //______________________________________________________________
                 //
                 // create a subTree
@@ -81,6 +81,19 @@ namespace yocto
                     if( !(m->addr->admitsEmpty() ) ) return false;
                 }
                 return true;
+            }
+
+            size_t Aggregate:: getMinCount() const throw()
+            {
+                size_t ans = 0;
+                for(const MetaNode *m=members.head;m;m=m->next)
+                {
+                    if( !(m->addr->admitsEmpty() ) )
+                    {
+                        ++ans;
+                    }
+                }
+                return ans;
             }
 
 

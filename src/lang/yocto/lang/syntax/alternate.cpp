@@ -35,16 +35,17 @@ namespace yocto
 
             bool Alternate:: admit(YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS) const
             {
-                YOCTO_LANG_SYNTAX(std::cerr << "<?ALT '" << label << "', #members=" << members.size << ">" << std::endl);
+                YOCTO_LANG_SYNTAX(std::cerr << "<?ALT '" << label << "', #possibility=" << members.size << ">" << std::endl);
                 ++depth;
-                for(const MetaNode *m = members.head; m; m=m->next)
+                size_t winner = 1;
+                for(const MetaNode *m = members.head; m; m=m->next,++winner)
                 {
                     const Rule &rule = * (m->addr);
                     Node       *node = NULL;
                     if(rule.admit(node,lexer,source,depth))
                     {
                         --depth;
-                        YOCTO_LANG_SYNTAX(std::cerr << "<+ALT '" << label << "'>" << std::endl;);
+                        YOCTO_LANG_SYNTAX(std::cerr << "<+ALT '" << label << "', choice " << winner << "/" << members.size << " (" << rule.label << ")>" << std::endl;);
                         if(node)
                         {
                             Node::Grow(tree,node);

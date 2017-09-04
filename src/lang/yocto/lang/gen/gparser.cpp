@@ -35,8 +35,8 @@ namespace yocto
                 Rule &END     = terminal(';');
                 Rule &ID      = terminal("ID",EXPR_ID);
                 Rule &COLUMN  = terminal(':');
-                Rule &REGEXP  = term<Lexical::cstring>("REGEXP");
-                Rule &RAWSTR  = term<Lexical::rstring>("RAWSTR");
+                Rule &RX      = term<Lexical::cstring>("RX");
+                Rule &RS      = term<Lexical::rstring>("RS");
 
                 //______________________________________________________________
                 //
@@ -56,6 +56,7 @@ namespace yocto
                 {
                     RULE << ID << COLUMN;
 
+#if 0
                     {
                         Alternate &ATOM = alt();
                         ATOM << ID << REGEXP << RAWSTR;
@@ -77,7 +78,23 @@ namespace yocto
                         RULE << ALT;
 
                     }
+#endif
 
+                    {
+                        Alternate &ATOM = alt("ATOM");
+                        ATOM << ID << RX << RS;
+                        Alternate &ITEM = alt("ITEM");
+                        {
+                            ITEM << ( agg("OOM") << ATOM << terminal('+'));
+                            ITEM << ( agg("ZOM") << ATOM << terminal('*'));
+                            ITEM << ( agg("OPT") << ATOM << terminal('?'));
+                            ITEM << ATOM;
+                        }
+
+
+
+                        RULE << oneOrMore(ITEM);
+                    }
 
                     RULE << END;
                 }
