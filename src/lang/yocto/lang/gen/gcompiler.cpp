@@ -52,7 +52,7 @@ namespace yocto
                 if(verbose) { std::cerr << "Creating parser '" << parserName << "'" << std::endl; }
                 auto_ptr<Parser>  p( new Parser(parserName) );
                 topNode = topNode->next;
-                
+
                 //______________________________________________________________
                 //
                 // now gather information by walking the tree
