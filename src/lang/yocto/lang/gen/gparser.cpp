@@ -55,31 +55,6 @@ namespace yocto
                 Aggregate &RULE = agg("RULE");
                 {
                     RULE << ID << COLUMN;
-#if 0
-                    {
-
-
-
-                        Alt &ATOM = alt();
-                        ATOM << ID << RXP << RAW;
-
-                        Agg &ITEM = agg("ITEM",property::noSingle);
-                        ITEM << ATOM;
-                        {
-                            Alt &MODIFIER = alt();
-                            MODIFIER <<univocal('+') << univocal('*') << univocal('?');
-                            ITEM << opt(MODIFIER);
-                        }
-
-                        Agg &SUB = agg("SUB",property::noSingle);
-                        Agg &ALT = agg("ALT",property::noSingle);
-                        ALT  << SUB  << zero_or_more( agg("EXTRA_ALT",property::jettison) << ALTERN << SUB );
-                        SUB << one_or_more(ITEM);
-                        ATOM << ( agg("GRP",property::jettison) << LPAREN << ALT << RPAREN );
-                        
-                        RULE << ALT;
-                    }
-#endif
 
 #if 0
                     {
@@ -98,7 +73,8 @@ namespace yocto
                         RULE << OneOrMore(ID);
                     }
 #endif
-                    
+
+                    RULE << Option(ID);
                     RULE << END;
                 }
 

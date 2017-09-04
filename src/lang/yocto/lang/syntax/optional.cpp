@@ -34,10 +34,12 @@ namespace yocto
 
             bool Optional:: admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
             {
-                YOCTO_LANG_SYNTAX(std::cerr << "?OPTIONAL '" << rule.label << "'" <<std::endl);
+                YOCTO_LANG_SYNTAX(std::cerr << "?OPT '" << rule.label << "'" <<std::endl);
                 Node *node = 0;
+                ++depth;
                 if(rule.admit(node,lexer,source,depth))
                 {
+                    --depth;
                     YOCTO_LANG_SYNTAX(std::cerr << "|_ok '" << rule.label << "'" << std::endl);
                     if(node)
                     {
@@ -47,6 +49,7 @@ namespace yocto
                 }
                 else
                 {
+                    --depth;
                     YOCTO_LANG_SYNTAX(std::cerr << "|_no '" << rule.label << "' (but returns true)" << std::endl);
                     return true;
                 }
