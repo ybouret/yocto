@@ -1,5 +1,6 @@
 #include "yocto/lang/gen/gparser.hpp"
 #include "yocto/lang/lexical/plugin/cstring.hpp"
+#include "yocto/lang/lexical/plugin/string64.hpp"
 #include "yocto/lang/lexical/plugin/comment.hpp"
 #include "yocto/exception.hpp"
 
@@ -44,6 +45,7 @@ namespace yocto
                 Rule &COLUMN  = terminal(':');
                 Rule &RX      = term<Lexical::cstring>("RX");
                 Rule &RS      = term<Lexical::rstring>("RS");
+                Rule &RB      = term<Lexical::String64>("RB");
 
                 //______________________________________________________________
                 //
@@ -73,7 +75,7 @@ namespace yocto
                         // an ATOM is a basic content
                         //______________________________________________________
                         Alternate &ATOM = alt("ATOM");
-                        ATOM << ID << RX << RS;
+                        ATOM << ID << RX << RS << RB;
 
                         //______________________________________________________
                         //

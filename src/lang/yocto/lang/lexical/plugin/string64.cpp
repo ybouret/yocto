@@ -48,20 +48,17 @@ namespace yocto
 
 
                 back(trigger(),this, & String64::quit );
+                
                 {
                     const string b64ID = label + ".b64";
-                    const string b64RX = "[[A-Z][a-z][0-9]]";
+                    const string b64RX = "[-+/_=[A-Z][a-z][0-9]]";
                     make(b64ID,b64RX,this,& String64::grow);
-                    {
-                        auto_ptr<Pattern> motif( RegExp(b64RX,NULL) );
-                        motif->graphviz("b64.dot");
-                    }
                 }
 
                 {
                     const string blanksID = label + ".blanks";
                     const string blanksRX = "[:blank:]+";
-                    make(blanksID,blanksRX,translator, & Translator::newline );
+                    make(blanksID,blanksRX,translator, & Translator::discard );
                 }
 
                 {
@@ -74,12 +71,13 @@ namespace yocto
                     const string any1ID = label + ".any1";
                     make(any1ID, new Any1(), this, & String64::excp );
                 }
+
             }
 
             Result  String64:: excp(const Token &tkn)
             {
                 assert(tkn.size>=1);
-                throw exception("<%s> invalid base64 char '%s'", label.c_str(), tkn.head->text() );
+                throw exception("<%s> invalid base64 char '%s' line %d", label.c_str(), tkn.head->text(), tkn.line() );
                 return Discard;
             }
 

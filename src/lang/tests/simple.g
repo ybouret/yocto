@@ -6,6 +6,7 @@ second : ((c));
 third  : d | "hello"+ | "cow";
 fourth : (a b)+ | (c d);
 fifth  : ("cow"|"boy")+ 'running';
+sixth  : $ID49IAAAAAE6LT46YXo=$;
 
 @drop : "[:blank:]+";
-$noSingle : main;
+%noSingle : main;

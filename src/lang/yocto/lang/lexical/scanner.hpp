@@ -6,6 +6,7 @@
 #include "yocto/lang/pattern/regexp.hpp"
 #include "yocto/ptr/intr.hpp"
 
+
 namespace yocto
 {
     namespace Lang

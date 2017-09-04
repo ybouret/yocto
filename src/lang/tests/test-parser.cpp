@@ -35,8 +35,8 @@ public:
 
         root.call(hook<Lexical::InlineComment>("com3","/\\*","\\*/"));
 
-        root.call(hook<Lexical::cstring>("string"));
-        root.call(hook<Lexical::String64>("b64"));
+        //root.call(hook<Lexical::cstring>("string"));
+        //root.call(hook<Lexical::String64>("b64"));
 
 
         root.make("ENDL",  "[:endl:]",   YOCTO_LANG_LEXICAL(newline));
