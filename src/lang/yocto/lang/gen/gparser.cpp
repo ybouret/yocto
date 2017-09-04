@@ -77,12 +77,15 @@ namespace yocto
                         Aggregate &ATOM     = agg("ATOM");
                         Alternate &KERNEL   = alt("KERNEL");
                         Alternate &MODIFIER = alt("MODIFIER");
-                        MODIFIER << terminal('+') << terminal('*') << terminal('?');
-                        ATOM << KERNEL << MODIFIER;
+                        MODIFIER
+                        << terminal('+').let(IsUnique)
+                        << terminal('*').let(IsUnique)
+                        << terminal('?').let(IsUnique);
+                        ATOM << KERNEL << optional(MODIFIER);
 
                         KERNEL << ID << REGEXP << RAWSTR;
 
-                        RULE << oneOrMore(KERNEL);
+                        RULE << oneOrMore(ATOM);
                     }
 
 
