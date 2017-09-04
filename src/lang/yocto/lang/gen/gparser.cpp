@@ -73,8 +73,19 @@ namespace yocto
                         RULE << OneOrMore(ID);
                     }
 #endif
+                    {
+                        Aggregate &ATOM     = agg("ATOM");
+                        Alternate &KERNEL   = alt("KERNEL");
+                        Alternate &MODIFIER = alt("MODIFIER");
+                        MODIFIER << terminal('+') << terminal('*') << terminal('?');
+                        ATOM << KERNEL << MODIFIER;
 
-                    RULE << optional(ID);
+                        KERNEL << ID << REGEXP << RAWSTR;
+
+                        RULE << oneOrMore(KERNEL);
+                    }
+
+
                     RULE << END;
                 }
 
