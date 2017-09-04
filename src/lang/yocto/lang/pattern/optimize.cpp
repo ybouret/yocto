@@ -78,7 +78,7 @@ namespace yocto
 
             if(1==q->operands.size)
             {
-                Pattern *ans = q->operands.pop_back();
+                Pattern *ans = Pattern::Optimize(q->operands.pop_back());
                 delete   q;
                 return   ans;
             }
@@ -119,13 +119,13 @@ namespace yocto
             
             if(1==q->operands.size)
             {
-                Pattern *ans = q->operands.pop_back();
+                Pattern *ans = Pattern::Optimize(q->operands.pop_back());
                 delete   q;
                 return   ans;
             }
             else
             {
-                // Merge ANDs
+                // Merge ORs
                 Patterns stk;
                 while(q->operands.size>0)
                 {
