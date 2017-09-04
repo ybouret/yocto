@@ -56,36 +56,26 @@ namespace yocto
                 {
                     RULE << ID << COLUMN;
 
-#if 0
                     {
-                        Alternate &ATOM = alt("ATOM");
+                        Alternate &ATOM = alt();
                         ATOM << ID << REGEXP << RAWSTR;
 
                         Aggregate &ITEM = agg("ITEM");
-                        ITEM << ATOM << Choice( terminal('+'), terminal('*'), terminal('?'));
+                        ITEM << ATOM;
+                        {
+                            Alternate &MODIFIER = alt("MODIFIER");
+                            MODIFIER << terminal('+').let(IsUnique) << terminal('*').let(IsUnique) << terminal('?').let(IsUnique);
+                            ITEM     << optional(MODIFIER);
+                        }
+
                         Aggregate &SUB = agg("SUB");
                         Aggregate &ALT = agg("ALT");
-                        ALT << SUB << ZeroOrMore( agg("ALT#EX") << terminal('|') << SUB );
-                        SUB << OneOrMore(ITEM);
+                        ALT  << SUB  << zeroOrMore( agg("EXTRA_ALT") << terminal('|') << SUB );
+                        SUB <<  oneOrMore(ITEM);
                         ATOM << ( agg("GRP") << terminal('(') << ALT << terminal(')') );
-
+                        
                         RULE << ALT;
-                        RULE << OneOrMore(ID);
-                    }
-#endif
-                    {
-                        Aggregate &ATOM     = agg("ATOM");
-                        Alternate &KERNEL   = alt("KERNEL");
-                        Alternate &MODIFIER = alt("MODIFIER");
-                        MODIFIER
-                        << terminal('+').let(IsUnique)
-                        << terminal('*').let(IsUnique)
-                        << terminal('?').let(IsUnique);
-                        ATOM << KERNEL << optional(MODIFIER);
 
-                        KERNEL << ID << REGEXP << RAWSTR;
-
-                        RULE << oneOrMore(ATOM);
                     }
 
 

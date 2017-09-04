@@ -40,8 +40,9 @@ namespace yocto
                             break;
                     }
 
+                    delete node;
                     libc::critical_error(EINVAL,"Syntax.Node.AST: invalid terminal flags");
-                    //throw exception("Syntax.Node.AST: invalid terminal flags=%08x",unsigned(node->origin.flags));
+                    return NULL;
                 }
                 else
                 {
