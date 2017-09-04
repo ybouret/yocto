@@ -1,6 +1,7 @@
 //#include "yocto/lang/syntax/node.hpp"
 #include "yocto/lang/syntax/rules.hpp"
 #include "yocto/error.hpp"
+#include <cerrno>
 
 namespace yocto
 {
