@@ -10,7 +10,7 @@
 
 #if (1==YOCTO_LANG_SYNTAX_VERBOSE)
 #include <iostream>
-#define YOCTO_LANG_SYNTAX(CODE) do { for(int __ii=0;__ii<depth;++__ii) { std::cerr << "    "; } CODE; } while(false)
+#define YOCTO_LANG_SYNTAX(CODE) do { for(int __ii=0;__ii<depth;++__ii) { std::cerr << "  "; } CODE; } while(false)
 #else
 #define YOCTO_LANG_SYNTAX(CODE)
 #endif

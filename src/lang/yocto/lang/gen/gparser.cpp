@@ -56,33 +56,22 @@ namespace yocto
                 {
                     RULE << ID << COLUMN;
 
-#if 0
+                    //__________________________________________________________
+                    //
+                    // Rule content
+                    //__________________________________________________________
                     {
-                        Alternate &ATOM = alt();
-                        ATOM << ID << REGEXP << RAWSTR;
-
-                        Aggregate &ITEM = agg("ITEM");
-                        ITEM << ATOM;
-                        {
-                            Alternate &MODIFIER = alt("MODIFIER");
-                            MODIFIER << terminal('+').let(IsUnique) << terminal('*').let(IsUnique) << terminal('?').let(IsUnique);
-                            ITEM     << optional(MODIFIER);
-                        }
-
-                        Aggregate &SUB = agg("SUB");
-                        Aggregate &ALT = agg("ALT");
-                        ALT  << SUB  << zeroOrMore( agg("EXTRA_ALT") << terminal('|') << SUB );
-                        SUB <<  oneOrMore(ITEM);
-                        ATOM << ( agg("GRP") << terminal('(') << ALT << terminal(')') );
-                        
-                        RULE << ALT;
-
-                    }
-#endif
-
-                    {
+                        //______________________________________________________
+                        //
+                        // an ATOM is a basic content
+                        //______________________________________________________
                         Alternate &ATOM = alt("ATOM");
                         ATOM << ID << RX << RS;
+
+                        //______________________________________________________
+                        //
+                        // an ITEM is a modified ATOM or an ATOM
+                        //______________________________________________________
                         Alternate &ITEM = alt("ITEM");
                         {
                             ITEM << ( agg("OOM") << ATOM << terminal('+'));
@@ -91,12 +80,31 @@ namespace yocto
                             ITEM << ATOM;
                         }
 
+                        //______________________________________________________
+                        //
+                        // a SUB rule is one or more item
+                        //______________________________________________________
                         Aggregate &SUB = agg("SUB").noSingle();
+                        SUB <<  oneOrMore(ITEM);
+
+                        //______________________________________________________
+                        //
+                        // an ALT rule is the choice of different SUB rule
+                        //______________________________________________________
                         Aggregate &ALT = agg("ALT").noSingle();
                         ALT  << SUB  << zeroOrMore( agg("ALT#EX") << terminal('|') << SUB );
-                        SUB <<  oneOrMore(ITEM);
-                        ATOM << ( agg("GRP").noSingle() << terminal('(') << ALT << terminal(')') );
 
+                        //______________________________________________________
+                        //
+                        // the add the GROUP possibility for an ATOM
+                        // GROUP is temporary only, a wrapper for ALT
+                        //______________________________________________________
+                        ATOM << ( agg("GROUP").noSingle() << terminal('(') << ALT << terminal(')') );
+
+                        //______________________________________________________
+                        //
+                        // done
+                        //______________________________________________________
                         RULE << ALT;
 
                     }
@@ -116,7 +124,7 @@ namespace yocto
                 root.make("BLANKS", "[:blank:]+", YOCTO_LANG_LEXICAL(discard));
 
 
-                //compile();
+                compile();
             }
 
             

@@ -11,6 +11,10 @@ namespace yocto
         {
 
             //! create an internal aggregate rule
+            /**
+             Remember that is the label containt the FusionMark char, 
+             the whole content will be merged with parent's content.
+             */
             class Aggregate : public Compound
             {
             public:
@@ -19,12 +23,12 @@ namespace yocto
                 explicit Aggregate(const string &);
                 explicit Aggregate(const char   *);
 
-                Aggregate & noSingle() throw();
+                Aggregate & noSingle() throw(); //!< for grouping syntax
 
 
                 YOCTO_LANG_SYNTAX_RULE_DECL();
 
-                size_t getMinCount() const throw(); //!< number of non admitting empty members
+                size_t getMinCount() const throw(); //!< number of non-admitting-empty members
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Aggregate);

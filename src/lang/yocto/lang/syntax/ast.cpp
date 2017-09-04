@@ -16,6 +16,7 @@ namespace yocto
             {
                 if(!node) return NULL;
 
+#if 0
                 //______________________________________________________________
                 //
                 // let us take some information
@@ -24,6 +25,7 @@ namespace yocto
                 {
                     std::cerr << "node=" << node->origin.label << std::endl;
                 }
+#endif
 
                 if(node->terminal)
                 {
