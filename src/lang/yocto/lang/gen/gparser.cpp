@@ -93,11 +93,11 @@ namespace yocto
 
                         Aggregate &SUB = agg("SUB");
                         Aggregate &ALT = agg("ALT");
-                        ALT  << SUB  << zeroOrMore( agg("ALT_EX") << terminal('|') << SUB );
+                        ALT  << SUB  << oneOrMore( agg("ALT_EX") << terminal('|') << SUB );
                         SUB <<  oneOrMore(ITEM);
                         ATOM << ( agg("GRP") << terminal('(') << ALT << terminal(')') );
 
-                        RULE << ALT;
+                        RULE << choice(ALT,SUB);
 
 
                     }
