@@ -15,6 +15,7 @@ __ADD_PATTERN(*.png)
 __ADD_PATTERN(*.jpg)
 __ADD_PATTERN(*.stl)
 __ADD_PATTERN(*.vtk)
+__ADD_PATTERN(*.dot)
 
 
 IF(APPLE)
