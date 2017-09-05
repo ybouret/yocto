@@ -31,6 +31,7 @@ namespace yocto
         namespace Syntax
         {
 
+
             Parser * gCompiler:: encode(const Node *ast)
             {
                 assert(ast);
@@ -58,7 +59,34 @@ namespace yocto
                 // now gather information by walking the tree
                 //______________________________________________________________
 
+                //______________________________________________________________
+                //
+                // first pass: top level rules and plugins
+                //______________________________________________________________
+                for(const Node *node = topNode; node; node=node->next )
+                {
+                    if(node->origin.label=="RULE")
+                    {
+                        prepareTopLevel(node);
+                    }
+                }
+
+
                 return p.yield();
+            }
+
+
+            void gCompiler:: prepareTopLevel(const Node *node)
+            {
+                assert(node);
+                assert("RULE"==node->origin.label);
+
+                const Node::List &children = node->toList();  assert(children.size>0);
+                const Node       *child    = children.head;   assert(child->terminal); assert("ID"==child->origin.label);
+                const Lexeme     &lex      = child->toLex();
+                const string      label    = lex.toString();
+                std::cerr << "New TopLevel " << label << std::endl;
+
             }
 
         }

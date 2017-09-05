@@ -26,6 +26,8 @@ namespace yocto
                 static const char                 name[];
                 static const threading::longevity life_time = -10;
                 friend class singleton<gCompiler>;
+
+                void prepareTopLevel(const Node *node);
             };
 
         }
