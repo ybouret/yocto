@@ -19,6 +19,8 @@ YOCTO_UNIT_TEST_IMPL(gen)
     Module::Handle     hm( new Module() );
     Source             source( hm );
     Syntax::gCompiler &gen = Syntax::gCompiler::instance();
+    std::cerr << "gen.instance_size=" << gen.instance_size << "/" << sizeof(Syntax::gCompiler) << std::endl;
+
     gen.verbose = true;
     gen.getAST.graphviz("gram.dot");
     ios::graphviz_render("gram.dot");

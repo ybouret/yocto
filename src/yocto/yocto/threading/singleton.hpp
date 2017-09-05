@@ -15,7 +15,7 @@ namespace yocto
     
     //! global flag for singleton creation
     /**
-     Used at the first call of instance(). Default if 'false'.
+     Used at the first call of instance(). Default is 'false'.
      */
     extern bool singleton_verbosity;
 
@@ -31,7 +31,8 @@ namespace yocto
 	public:
 		static threading::mutex access;
 		static bool             verbose;
-        
+        static size_t           instance_size;
+
 		static T & instance()
 		{
 			static volatile bool     register_ = true;
@@ -55,6 +56,7 @@ namespace yocto
 						clear_( (void *)location_ );
 						threading::at_exit::perform( release_, T::life_time);
 						register_ = false;
+                        (size_t &)instance_size = sizeof(location_);
 					}
 					
 					//----------------------------------------------------------
@@ -139,7 +141,9 @@ namespace yocto
 	
     template <typename T>
     bool singleton<T>::verbose = false;
-    
+
+    template <typename T>
+    size_t singleton<T>::instance_size = 0;
 	
 }
 

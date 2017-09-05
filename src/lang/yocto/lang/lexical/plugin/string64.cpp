@@ -84,6 +84,7 @@ namespace yocto
             void String64::quit(const Token &)
             {
                 assert(translator);
+                //TODO: check that '=' is well placed ?
                 translator->unget( newUnit(b64) );
             }
             
