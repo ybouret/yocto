@@ -1,12 +1,11 @@
 .simple;
 
-//main : a "c" 'd' a+ "b"? c*;
-main   : (a b);
+main   : (a b) h*;
 second : ((c));
 third  : d | "hello"+ | "cow";
 fourth : (a b)+ | (c d);
 fifth  : ("cow"|"boy")+ 'running';
-sixth  : $ID49IAAAAAE6LT46YXo=$;
+sixth  : $ID49IAAAAAE6LT46YXo=$ some?;
 
 @drop : "[:blank:]+";
 @endl : "[:endl:]";
