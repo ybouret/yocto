@@ -31,7 +31,6 @@ namespace yocto
 	public:
 		static threading::mutex access;
 		static bool             verbose;
-        static size_t           instance_size;
 
 		static T & instance()
 		{
@@ -55,8 +54,8 @@ namespace yocto
                         if(verbose) hidden::singleton_out( T::name, "registering", T::life_time);
 						clear_( (void *)location_ );
 						threading::at_exit::perform( release_, T::life_time);
-						register_ = false;
-                        (size_t &)instance_size = sizeof(location_);
+						register_      = false;
+                        instance_size_ = sizeof(location_);
 					}
 					
 					//----------------------------------------------------------
@@ -94,6 +93,11 @@ namespace yocto
 		{
 			return T::name;
 		}
+
+        static inline size_t get_instance_size() throw()
+        {
+            return instance_size_;
+        }
 		
 	protected:
 		inline explicit singleton() throw() {}
@@ -113,7 +117,9 @@ namespace yocto
 		
 	private:
 		static volatile T *instance_;
-		static inline void clear_( void *instance_addr ) throw() 
+        static size_t      instance_size_;
+
+		static inline void clear_( void *instance_addr ) throw()
 		{
 			uint8_t *q = static_cast<uint8_t*>(instance_addr);
 			for( size_t i=0;i<sizeof(T);++i) q[i] = 0;
@@ -143,7 +149,7 @@ namespace yocto
     bool singleton<T>::verbose = false;
 
     template <typename T>
-    size_t singleton<T>::instance_size = 0;
+    size_t singleton<T>::instance_size_ = 0;
 	
 }
 
