@@ -93,3 +93,27 @@ namespace yocto
 
     }
 }
+
+namespace yocto
+{
+    namespace Lang
+    {
+        namespace Syntax
+        {
+            gNode:: ~gNode() throw()
+            {
+            }
+
+            gNode:: gNode(const string  &id,
+                          const uint32_t t) :
+            next(0),
+            prev(0),
+            label(id),
+            uuid(t)
+            {
+            }
+            
+        }
+    }
+}
+
