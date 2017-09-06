@@ -59,6 +59,7 @@ namespace yocto
                 static const threading::longevity life_time = -10;
                 friend class singleton<gCompiler>;
 
+                void collectAggregate(const Node *node);
                 void prepareTopLevel(const Node *node);
             };
 

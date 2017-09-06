@@ -86,7 +86,6 @@ namespace yocto
                 const Lexeme     &lex      = child->toLex();
                 const string      label    = lex.toString();
                 std::cerr << "New TopLevel " << label << std::endl;
-
             }
 
         }
