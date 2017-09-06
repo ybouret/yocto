@@ -1,5 +1,6 @@
 #include "yocto/lang/gen/gcompiler.hpp"
 #include "yocto/exception.hpp"
+#include "yocto/ios/graphviz.hpp"
 
 namespace yocto
 {
@@ -28,10 +29,20 @@ namespace yocto
                 "RB"
             };
 
+            static const char *LexrKeywords[] =
+            {
+                "drop",
+                "endl",
+                "comment"
+            };
+
             gCompiler:: gCompiler() :
             getAST(),
-            RootHash(YOCTO_MPERF_FOR(RootKeywords)),
-            RuleHash(YOCTO_MPERF_FOR(RuleKeywords)),
+            parser(NULL),
+            rootHash(YOCTO_MPERF_FOR(RootKeywords)),
+            ruleHash(YOCTO_MPERF_FOR(RuleKeywords)),
+            lexrHash(YOCTO_MPERF_FOR(LexrKeywords)),
+            ruleDB(),
             verbose(false)
             {
 
@@ -57,6 +68,13 @@ namespace yocto
 
                 //______________________________________________________________
                 //
+                // cleanup
+                //______________________________________________________________
+                ruleDB.free();
+                parser.release();
+
+                //______________________________________________________________
+                //
                 // starting from toplevel
                 //______________________________________________________________
                 const Node::List &topList    = ast->toList();
@@ -68,7 +86,7 @@ namespace yocto
                 //______________________________________________________________
                 const string      parserName = topNode->toLex().toString(1);
                 if(verbose) { std::cerr << "Creating parser '" << parserName << "'" << std::endl; }
-                auto_ptr<Parser>  p( new Parser(parserName) );
+                parser.reset( new Parser(parserName) );
                 topNode = topNode->next;
 
                 //______________________________________________________________
@@ -80,10 +98,11 @@ namespace yocto
                 //
                 // first pass: top level rules and plugins
                 //______________________________________________________________
+#if 0
                 for(const Node *node = topNode; node; node=node->next )
                 {
                     const string &label = node->origin.label;
-                    switch(RootHash(label))
+                    switch(rootHash(label))
                     {
                         case 0: assert( "RULE" == label );
                             break;
@@ -98,9 +117,63 @@ namespace yocto
                             throw exception("Unknowm label '%s'", label.c_str());
                     }
                 }
+#endif
+
+                registerTopLevelRules(topNode);
+                {
+                    parser->graphviz("parser.dot");
+                    ios::graphviz_render("parser.dot");
+                }
+
+                return parser.yield();
+            }
 
 
-                return p.yield();
+            void gCompiler:: registerTopLevelRules(const Node *node)
+            {
+                for(;node;node=node->next)
+                {
+                    const string &label = node->origin.label;
+                    switch(rootHash(label))
+                    {
+                        case 0: assert( "RULE" == label );
+                            registerNewRule(node);
+                            break;
+
+                        case 1: assert( "LXR" == label );
+                            detectPlugin(node);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            void gCompiler::registerNewRule(const Node *node)
+            {
+                assert("RULE"==node->origin.label);
+                assert(parser.is_valid());
+
+                const Node::List &children = node->toList();  assert(children.size>0);
+                const Node       *child    = children.head;   assert(child->terminal); assert("ID"==child->origin.label);
+                const Lexeme     &lex      = child->toLex();
+                const string      label    = lex.toString();
+                std::cerr << "New RULE " << label << std::endl;
+
+                Aggregate &newRule = parser->agg(label);
+                if( !ruleDB.insert(label,&newRule) )
+                {
+                    throw exception("registerNewRule: unexpected failure for '%s'", label.c_str());
+                }
+            }
+
+            void gCompiler::detectPlugin(const Node *lxr)
+            {
+                assert("LXR" == lxr->origin.label);
+                const Node   *node = lxr->toList().head; assert(node!=NULL); assert("LX"==node->origin.label);
+                const string  name = node->toLex().toString(1);
+                std::cerr << "new LXR " << name << std::endl;
             }
 
 #if 0

@@ -10,7 +10,8 @@ namespace yocto
         namespace Syntax
         {
 
-            class gParser : public Parser
+            class  gParser :
+            public Parser
             {
             public:
                 virtual ~gParser() throw();

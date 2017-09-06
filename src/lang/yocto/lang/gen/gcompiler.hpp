@@ -3,6 +3,7 @@
 
 #include "yocto/lang/gen/gparser.hpp"
 #include "yocto/hashing/mph.hpp"
+#include "yocto/associative/map.hpp"
 
 namespace yocto
 {
@@ -41,20 +42,29 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(gNode);
             };
 
-            
+
+            typedef Aggregate          *gRule;
+            typedef map<string,gRule> gRuleDB;
 
             class gCompiler
             {
             public:
-                gParser        getAST;
-                hashing::mperf RootHash;
-                hashing::mperf RuleHash;
+                gParser          getAST;
+                auto_ptr<Parser> parser;
+                hashing::mperf   rootHash; //!< ID, LXR, SEM
+                hashing::mperf   ruleHash; //!< ID, RX, RS, RB, ALT, SUB, OPT, OOM, ZOM
+                hashing::mperf   lexrHash; //!< drop, endl, comment
+                gRuleDB          ruleDB;
+                
                 bool           verbose;
 
                 explicit gCompiler();
                 virtual ~gCompiler() throw();
                 Parser *encode(const Node *ast);
 
+                void    registerTopLevelRules(const Node *node);
+                void    detectPlugin(const Node *lxr);
+                void    registerNewRule(const Node *node);
             private:
 
                 YOCTO_DISABLE_COPY_AND_ASSIGN(gCompiler);

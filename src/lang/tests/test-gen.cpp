@@ -9,6 +9,9 @@ using namespace Lang;
 
 YOCTO_UNIT_TEST_IMPL(gen)
 {
+    std::cerr << "sizeof(Syntax::gParser  )=" << sizeof(Syntax::gParser)   << std::endl;
+    std::cerr << "sizeof(Syntax::gCompiler)=" << sizeof(Syntax::gCompiler) << std::endl;
+    
     vfs           &fs = local_fs::instance();
 
     fs.try_remove_file("tree.dot");

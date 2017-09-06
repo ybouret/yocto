@@ -9,4 +9,5 @@ sixth  : $ID49IAAAAAE6LT46YXo=$ some?;
 
 @drop : "[:blank:]+";
 @endl : "[:endl:]";
+@string : "cstring";
 %noSingle : main;
