@@ -1,5 +1,19 @@
 .simple;
 
+code    : ((assign|id|string) ';') *;
+assign  : id '=' (string) ;
+id      : "[:alpha:][:word:]*\\t?";
+
+@string : "cstring";
+
+@drop   : " " "\t" ;
+@endl   : "[:endl:]";
+
+@comment: "#";
+@comment: "/\\*" "\\*/";
+
+
+/*
 main   : (a b) h*;
 second : ((c));
 third  : d | "hello"+ | "cow";
@@ -12,3 +26,4 @@ sixth  : $ID49IAAAAAE6LT46YXo=$ some?;
 @string : "cstring";
 @litteral : 'rstring';
 %noSingle : main;
+*/

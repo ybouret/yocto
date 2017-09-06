@@ -11,38 +11,7 @@ namespace yocto
     {
         namespace Syntax
         {
-            class gNode;
-            typedef core::list_of_cpp<gNode> gList;
-
-            struct gType
-            {
-                static const uint32_t TERM = YOCTO_FOURCC('T','E','R','M');
-                static const uint32_t RULE = YOCTO_FOURCC('R','U','L','E');
-                static const uint32_t ALT  = YOCTO_FOURCC(' ','|','|',' ');
-                static const uint32_t OPT  = YOCTO_FOURCC(' ',' ',' ','?');
-                static const uint32_t ZOM  = YOCTO_FOURCC(' ',' ',' ','*');
-                static const uint32_t OOM  = YOCTO_FOURCC(' ',' ',' ','+');
-
-            };
-
-            class gNode : public object
-            {
-            public:
-                virtual ~gNode() throw();
-                explicit gNode(const string   &id,
-                               const uint32_t  t);
-
-                gNode         *next;
-                gNode         *prev;
-                const string   label;
-                const uint32_t uuid;
-
-
-            private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(gNode);
-            };
-
-
+            
             typedef Aggregate        *gRule;
             typedef map<string,gRule> gRuleDB;
 
@@ -55,11 +24,12 @@ namespace yocto
                 gParser          getAST;
                 auto_ptr<Parser> parser;
                 hashing::mperf   rootHash; //!< ID, LXR, SEM
-                hashing::mperf   ruleHash; //!< ID, RX, RS, RB, ALT, SUB, OPT, OOM, ZOM
                 hashing::mperf   lexrHash; //!< drop, endl, comment
+                hashing::mperf   termHash; //!< ID, RX, RS, RB
                 gRuleDB          ruleDB;
                 gTermDB          termDB;
-                Rule            &find(const string &id); // in rules/terms
+                Rule            &find(const string &id); //!< in rules/terms
+                bool             has(const string &id) const throw();  //!< in rules/terms
 
                 bool           verbose;
 
@@ -67,18 +37,18 @@ namespace yocto
                 virtual ~gCompiler() throw();
                 Parser *encode(const Node *ast);
 
-                void    registerTopLevelRules(const Node *node);
+                void    registerTopLevelRules(const Node *topNode);
                 void    detectPlugin(const Node *lxr);
                 void    registerNewRule(const Node *node);
+
+                void    registerTermsAndCheckRules(const Node *topNode);
+                void    collect(const Node *node);
+
             private:
 
                 YOCTO_DISABLE_COPY_AND_ASSIGN(gCompiler);
                 
-#if 0
-                void collect(const Node *node);
-                void onRULE(const Node *node);
-                void onLXR(const Node *node);
-#endif
+
             };
 
         }
