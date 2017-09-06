@@ -2,7 +2,7 @@
 #define YOCTO_LANG_GEN_GCOMPILER_INCLUDED 1
 
 #include "yocto/lang/gen/gparser.hpp"
-#include "yocto/threading/singleton.hpp"
+#include "yocto/hashing/mph.hpp"
 
 namespace yocto
 {
@@ -43,24 +43,27 @@ namespace yocto
 
             
 
-            class gCompiler : public singleton<gCompiler>
+            class gCompiler
             {
             public:
-                gParser getAST;
-                Parser *encode(const Node *ast);
-                bool    verbose;
+                gParser        getAST;
+                hashing::mperf RootHash;
+                hashing::mperf RuleHash;
+                bool           verbose;
 
-
-            private:
                 explicit gCompiler();
                 virtual ~gCompiler() throw();
-                YOCTO_DISABLE_COPY_AND_ASSIGN(gCompiler);
-                static const char                 name[];
-                static const threading::longevity life_time = -10;
-                friend class singleton<gCompiler>;
+                Parser *encode(const Node *ast);
 
-                void collectAggregate(const Node *node);
-                void prepareTopLevel(const Node *node);
+            private:
+
+                YOCTO_DISABLE_COPY_AND_ASSIGN(gCompiler);
+                
+#if 0
+                void collect(const Node *node);
+                void onRULE(const Node *node);
+                void onLXR(const Node *node);
+#endif
             };
 
         }
