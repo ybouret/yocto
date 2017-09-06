@@ -105,6 +105,14 @@ namespace yocto
                 //______________________________________________________________
                 registerTermsAndCheckRules(topNode);
 
+
+
+                //______________________________________________________________
+                //
+                // Pass 3: walk the tree and create stuff
+                //______________________________________________________________
+                link(topNode);
+
                 {
                     parser->graphviz("parser.dot");
                     ios::graphviz_render("parser.dot");

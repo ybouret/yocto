@@ -44,6 +44,8 @@ namespace yocto
                 void      registerTermsAndCheckRules(const Node *topNode);
                 void      collect(const Node *node);
                 Terminal &registerNewTerm(const string &expr);
+
+                void link(const Node *topNode);
                 
             private:
 

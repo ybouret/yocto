@@ -60,23 +60,14 @@ namespace yocto
                         case 1: assert("RX"==label);
                             if(!termDB.search(content))
                             {
-                                Terminal &t = parser->terminal(content);
-                                if( !termDB.insert(content,&t))
-                                {
-                                    throw exception("%sunexpected failure for RX '%s'",fn,content.c_str());
-                                }
+                                registerNewTerm(content);
                             }
                             break;
 
                         case 2: assert("RS"==label);
                             if(!termDB.search(content))
                             {
-                                Terminal &t = parser->terminal(content);
-                                if( !termDB.insert(content,&t))
-                                {
-                                    throw exception("%sunexpected failure for RX '%s'",fn,content.c_str());
-                                }
-                                t.let(IsHollow);
+                                registerNewTerm(content).let(IsHollow);
                             }
                             break;
 
