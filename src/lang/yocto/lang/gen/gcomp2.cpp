@@ -37,13 +37,20 @@ namespace yocto
                         std::cerr << "+term '" << label << "'='" << content << "'" << std::endl;
                     }
 
-                    switch(termHash(label))
+                    switch( termHash(label) )
                     {
                         case 0: assert("ID"==label);
-                            if(!has(content)) throw exception("%sundeclared rule '%s'", fn, content.c_str());
+                            if(!ruleDB.search(content)) throw exception("%sundeclared '%s'",fn,content.c_str());
                             break;
 
                         case 1: assert("RX"==label);
+                            if(!termDB.search(content))
+                            {
+                                if( !termDB.insert(content,&parser->terminal(content)))
+                                {
+                                    throw exception("%sunexpected failure for '%s'",fn,content.c_str());
+                                }
+                            }
                             break;
 
                         case 2: assert("RS"==label);
@@ -52,9 +59,13 @@ namespace yocto
                         case 3: assert("RB"==label);
                             break;
 
+
                         default:
-                            throw exception("%sunhandled terminal '%s'", fn, label.c_str());
+                            throw exception("%sunhandled '%s'",fn,label.c_str());
+
                     }
+
+
 
                 }
                 else
@@ -64,6 +75,9 @@ namespace yocto
                         collect(node);
                     }
                 }
+                return;
+
+
 
             }
 
