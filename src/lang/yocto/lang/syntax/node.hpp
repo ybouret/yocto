@@ -51,11 +51,24 @@ namespace yocto
                 //! AST
                 static Node * AST( Node *node ) throw();
 
+                //! wrapper to get list
                 List         & toList() throw();
+
+                //! wrapper to get list
                 const List   & toList() const throw();
+
+                //! wrapper to get lexeme
                 Lexeme       & toLex() throw();
+
+                //! wrapper to get lexeme
                 const Lexeme & toLex() const throw();
-                
+
+                //! wrapper to get first item if internal
+                const Node *head() const throw();
+
+                //! wrapper to get lexeme content if terminal
+                string      toString(const size_t nskip=0) const;
+
             private:
                 void                *impl;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Node);

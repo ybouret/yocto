@@ -107,6 +107,16 @@ namespace yocto
             }
 
 
+            const Node * Node:: head() const throw()
+            {
+                return toList().head;
+            }
+
+            string Node:: toString(const size_t nskip) const
+            {
+                return toLex().toString(nskip);
+            }
+
             void Node:: append(Node *child) throw()
             {
                 assert(child);

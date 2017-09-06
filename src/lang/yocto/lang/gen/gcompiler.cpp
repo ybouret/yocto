@@ -1,6 +1,8 @@
 #include "yocto/lang/gen/gcompiler.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/ios/graphviz.hpp"
+#include "yocto/lang/lexical/plugin/cstring.hpp"
+#include "yocto/lang/lexical/plugin/comment.hpp"
 
 namespace yocto
 {
@@ -43,6 +45,7 @@ namespace yocto
             ruleHash(YOCTO_MPERF_FOR(RuleKeywords)),
             lexrHash(YOCTO_MPERF_FOR(LexrKeywords)),
             ruleDB(),
+            termDB(),
             verbose(false)
             {
 
@@ -70,6 +73,7 @@ namespace yocto
                 //
                 // cleanup
                 //______________________________________________________________
+                termDB.free();
                 ruleDB.free();
                 parser.release();
 
@@ -91,34 +95,8 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // now gather information by walking the tree
+                // Declare the top-level rules and plugins
                 //______________________________________________________________
-
-                //______________________________________________________________
-                //
-                // first pass: top level rules and plugins
-                //______________________________________________________________
-#if 0
-                for(const Node *node = topNode; node; node=node->next )
-                {
-                    const string &label = node->origin.label;
-                    switch(rootHash(label))
-                    {
-                        case 0: assert( "RULE" == label );
-                            break;
-
-                        case 1: assert( "LXR" == label );
-                            break;
-
-                        case 2: assert( "SMR" == label);
-                            break;
-
-                        default:
-                            throw exception("Unknowm label '%s'", label.c_str());
-                    }
-                }
-#endif
-
                 registerTopLevelRules(topNode);
                 {
                     parser->graphviz("parser.dot");
@@ -152,13 +130,9 @@ namespace yocto
 
             void gCompiler::registerNewRule(const Node *node)
             {
-                assert("RULE"==node->origin.label);
-                assert(parser.is_valid());
-
                 const Node::List &children = node->toList();  assert(children.size>0);
                 const Node       *child    = children.head;   assert(child->terminal); assert("ID"==child->origin.label);
-                const Lexeme     &lex      = child->toLex();
-                const string      label    = lex.toString();
+                const string      label    = child->toString();
                 std::cerr << "New RULE " << label << std::endl;
 
                 Aggregate &newRule = parser->agg(label);
@@ -170,78 +144,83 @@ namespace yocto
 
             void gCompiler::detectPlugin(const Node *lxr)
             {
-                assert("LXR" == lxr->origin.label);
-                const Node   *node = lxr->toList().head; assert(node!=NULL); assert("LX"==node->origin.label);
-                const string  name = node->toLex().toString(1);
+                static const char fn[] = "gCompiler.detectPlugin: ";
+
+                //______________________________________________________________
+                //
+                // get the info
+                //______________________________________________________________
+
+                const Node::List   &code = lxr->toList(); assert(code.size>0);
+                const Node         *node = code.head;     assert(node!=NULL); assert("LX"==node->origin.label);
+                const string        name = node->toString(1);
                 std::cerr << "new LXR " << name << std::endl;
-            }
 
-#if 0
-            void gCompiler:: onRULE(const Node *node)
-            {
-                assert(node);
-                assert("RULE"==node->origin.label);
+                //______________________________________________________________
+                //
+                // check for reserved word
+                //______________________________________________________________
+                if( lexrHash(name) >= 0) return; //! a reserved word
 
-                const Node::List &children = node->toList();  assert(children.size>0);
-                const Node       *child    = children.head;   assert(child->terminal); assert("ID"==child->origin.label);
-                const Lexeme     &lex      = child->toLex();
-                const string      label    = lex.toString();
-                std::cerr << "New RULE " << label << std::endl;
-                collect(child->next);
-            }
-
-            void gCompiler:: collect(const Node *node)
-            {
-                if(!node) return;
-                
-                if(node->terminal)
+                //______________________________________________________________
+                //
+                // check syntax
+                //______________________________________________________________
+                std::cerr << "\twill use a plugin for '" << name << "'" << std::endl;
+                if(code.size!=2)
                 {
-                    const string &label   = node->origin.label;
-                    const string  content = node->toLex().toString();
-                    switch( RuleHash(label) )
-                    {
-                        case 0: assert( "ID" == label );
-                            std::cerr << "\tnew AGG " << content << std::endl;
-                            return;
-
-                        case 1: assert( "RX" == label );
-                            std::cerr << "\tnew RX " << content << std::endl;
-                            return;
-
-                        case 2: assert( "RS" == label );
-                            std::cerr << "\tnew RS " << content << std::endl;
-                            return;
-
-                        case 3: assert( "RB" == label);
-                            std::cerr << "\tnew RB " << content << std::endl;
-                            return;
-
-                        default:
-                            throw exception("Unknown label '%s'", label.c_str());
-                    }
-
+                    throw exception("%s@%s must have exactly ONE plugin name",fn,name.c_str());
                 }
-                else
+
+                //______________________________________________________________
+                //
+                // get the plugin name
+                //______________________________________________________________
+                node=node->next;
+                assert("RX"==node->origin.label||"RS"==node->origin.label);
+                const string pluginName = node->toString();
+                std::cerr << "\t\tpluginName=" << pluginName << std::endl;
+
+                //______________________________________________________________
+                //
+                // hardcoded plugins
+                //______________________________________________________________
+                Terminal *t = 0;
+                if( "cstring" == pluginName )
                 {
-                    const Node::List &children = node->toList();
-                    for(const Node *child=children.head;child;child=child->next)
-                    {
-                        collect(child);
-                    }
+                    t = & parser->term<Lexical::cstring>(name);
+                    goto REGISTER_TERM;
+                }
+
+                if( "rstring" == pluginName )
+                {
+                    t = & parser->term<Lexical::rstring>(name);
+                    goto REGISTER_TERM;
+                }
+
+                throw exception("%splugin '%s' is not implemented", fn, pluginName.c_str() );
+            REGISTER_TERM:
+                assert(NULL!=t);
+                if(!termDB.insert(name,t))
+                {
+                    throw exception("%sunexpected failure for '%s'",fn,name.c_str());
                 }
             }
 
-            void gCompiler:: onLXR(const Node *node)
+            Rule & gCompiler:: find(const string &id)
             {
-                assert("LXR"==node->origin.label);
-                assert(node->internal);
-                const Node::List &lxr = node->toList(); assert(lxr.size>0);
-                const Node       *sub = lxr.head;       assert(sub!=NULL); assert( "LX" == sub->origin.label );
+                {
+                    gRule *ppR = ruleDB.search(id);
+                    if(ppR) return **ppR;
+                }
 
+                {
+                    gTerm *ppT = termDB.search(id);
+                    if(ppT) return **ppT;
+                }
 
+                throw exception("No registered '%s'", id.c_str());
             }
-#endif
-
         }
 
     }

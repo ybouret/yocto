@@ -43,8 +43,11 @@ namespace yocto
             };
 
 
-            typedef Aggregate          *gRule;
+            typedef Aggregate        *gRule;
             typedef map<string,gRule> gRuleDB;
+
+            typedef Terminal         *gTerm;
+            typedef map<string,gTerm> gTermDB;
 
             class gCompiler
             {
@@ -55,7 +58,9 @@ namespace yocto
                 hashing::mperf   ruleHash; //!< ID, RX, RS, RB, ALT, SUB, OPT, OOM, ZOM
                 hashing::mperf   lexrHash; //!< drop, endl, comment
                 gRuleDB          ruleDB;
-                
+                gTermDB          termDB;
+                Rule            &find(const string &id); // in rules/terms
+
                 bool           verbose;
 
                 explicit gCompiler();

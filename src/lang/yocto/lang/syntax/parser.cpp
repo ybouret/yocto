@@ -17,13 +17,13 @@ namespace yocto
             {
             }
 
-            Rule & Parser:: terminal( const string &label, const string &expr)
+            Terminal & Parser:: terminal( const string &label, const string &expr)
             {
                 root.make(label,expr,YOCTO_LANG_LEXICAL(forward));
                 return add( new Terminal(label));
             }
 
-            Rule & Parser:: terminal(const string &label, const uint8_t code)
+            Terminal & Parser:: terminal(const string &label, const uint8_t code)
             {
                 root.make(label,new Single(code),YOCTO_LANG_LEXICAL(forward));
                 return add( new Terminal(label) );
@@ -42,18 +42,18 @@ namespace yocto
                 check_connectivity();
                 for(const Lexical::Rule *r = root.head();r;r=r->next)
                 {
-                    
+
                 }
             }
 
-            Rule & Parser:: plugin(const string &label)
+            Terminal & Parser:: plugin(const string &label)
             {
                 root.call(label);
                 return add( new Terminal(label) );
             }
-
+            
         }
-
+        
     }
-
+    
 }

@@ -9,7 +9,7 @@ namespace yocto
     {
         namespace Syntax
         {
-            
+
             class Parser : public Grammar, public Lexer
             {
             public:
@@ -22,12 +22,12 @@ namespace yocto
                 //______________________________________________________________
 
                 //! emit the terminal and make a rule out of it
-                Rule & terminal(const string &label,
-                                const string &expr);
+                Terminal & terminal(const string &label,
+                                    const string &expr);
 
                 //! wrapper
-                inline Rule & terminal(const char   *label,
-                                       const char   *expr)
+                inline Terminal & terminal(const char   *label,
+                                           const char   *expr)
                 {
                     const string __label(label);
                     const string __expr(expr);
@@ -35,36 +35,40 @@ namespace yocto
                 }
 
                 //! expression as a label
-                inline Rule & terminal(const string &expr) { return terminal(expr,expr); }
+                inline Terminal & terminal(const string &expr) { return terminal(expr,expr); }
 
                 //! wrapper
-                inline Rule & terminal(const char   *expr) { const string __expr(expr); return terminal(__expr); }
+                inline Terminal & terminal(const char   *expr) { const string __expr(expr); return terminal(__expr); }
 
                 //! single chars
-                Rule & terminal(const string &label,
-                                const uint8_t code);
+                Terminal & terminal(const string &label,
+                                    const uint8_t code);
 
                 //! wrapper
-                inline Rule & terminal(const char *label, const uint8_t code)
+                inline Terminal & terminal(const char *label, const uint8_t code)
                 {
                     const string __label(label);
                     return terminal(__label,code);
                 }
 
                 //! is hollow by default !
-                inline Rule & terminal(const uint8_t code)
+                inline Terminal & terminal(const uint8_t code)
                 {
                     const char   C(code);
                     const string __label(C);
-                    return terminal(__label,code).let(IsHollow);
+                    Terminal &t = terminal(__label,code);
+                    (void) t.let(IsHollow);
+                    return t;
                 }
 
                 //! is unique by default
-                inline Rule & modifier(const uint8_t code)
+                inline Terminal & modifier(const uint8_t code)
                 {
                     const char   C(code);
                     const string __label(C);
-                    return terminal(__label,code).let(IsUnique);
+                    Terminal &t = terminal(__label,code);
+                    (void) t.let(IsUnique);
+                    return t;
                 }
 
                 //______________________________________________________________
@@ -72,21 +76,21 @@ namespace yocto
                 // special: plugins
                 //______________________________________________________________
                 template <typename PLUGIN>
-                Rule &term(const string &label)
+                Terminal &term(const string &label)
                 {
                     hook<PLUGIN>(label);
                     return plugin(label);
                 }
-                
+
                 void compile() const;
 
                 Node * operator()(Source &source);
-
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);
-                Rule & plugin(const string &label);
+                Terminal & plugin(const string &label);
             };
-
+            
             
         }
     }
