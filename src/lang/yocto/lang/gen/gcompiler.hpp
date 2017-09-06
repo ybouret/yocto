@@ -25,7 +25,7 @@ namespace yocto
                 auto_ptr<Parser> parser;
                 hashing::mperf   rootHash; //!< ID, LXR, SEM
                 hashing::mperf   lexrHash; //!< drop, endl, comment
-                hashing::mperf   termHash; //!< ID, RX, RS, RB
+                hashing::mperf   termHash; //!< ID, RX, RS
                 gRuleDB          ruleDB;
                 gTermDB          termDB;
                 Rule            &find(const string &id); //!< in rules/terms
@@ -41,9 +41,10 @@ namespace yocto
                 void    detectPlugin(const Node *lxr);
                 void    registerNewRule(const Node *node);
 
-                void    registerTermsAndCheckRules(const Node *topNode);
-                void    collect(const Node *node);
-
+                void      registerTermsAndCheckRules(const Node *topNode);
+                void      collect(const Node *node);
+                Terminal &registerNewTerm(const string &expr);
+                
             private:
 
                 YOCTO_DISABLE_COPY_AND_ASSIGN(gCompiler);

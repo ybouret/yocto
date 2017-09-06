@@ -45,7 +45,7 @@ namespace yocto
                 Rule &COLUMN  = terminal(':');
                 Rule &RX      = term<Lexical::cstring>("RX");
                 Rule &RS      = term<Lexical::rstring>("RS");
-                Rule &RB      = term<Lexical::String64>("RB");
+                //Rule &RB      = term<Lexical::String64>("RB");
 
                 //______________________________________________________________
                 //
@@ -75,7 +75,7 @@ namespace yocto
                         // an ATOM is a basic content
                         //______________________________________________________
                         Alternate &ATOM = alt("ATOM");
-                        ATOM << ID << RX << RS << RB;
+                        ATOM << ID << RX << RS;
 
                         //______________________________________________________
                         //

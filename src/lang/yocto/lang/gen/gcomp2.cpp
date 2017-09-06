@@ -8,7 +8,7 @@ namespace yocto
         namespace Syntax
         {
 
-            
+
             void gCompiler:: registerTermsAndCheckRules(const Node *topNode)
             {
                 if(verbose)
@@ -24,9 +24,23 @@ namespace yocto
                 }
             }
 
-            void gCompiler:: collect(const Node *node)
+            namespace
             {
                 static const char fn[] = "gCompiler.collect: ";
+            }
+
+            Terminal & gCompiler::registerNewTerm(const string &expr)
+            {
+                Terminal &t = parser->terminal(expr);
+                if( !termDB.insert(expr,&t))
+                {
+                    throw exception("%sunexpected failure for '%s'",fn,expr.c_str());
+                }
+                return t;
+            }
+
+            void gCompiler:: collect(const Node *node)
+            {
                 assert(node);
                 if(node->terminal)
                 {
@@ -40,23 +54,30 @@ namespace yocto
                     switch( termHash(label) )
                     {
                         case 0: assert("ID"==label);
-                            if(!ruleDB.search(content)) throw exception("%sundeclared '%s'",fn,content.c_str());
+                            if(!has(content)) throw exception("%sundeclared '%s'",fn,content.c_str());
                             break;
 
                         case 1: assert("RX"==label);
                             if(!termDB.search(content))
                             {
-                                if( !termDB.insert(content,&parser->terminal(content)))
+                                Terminal &t = parser->terminal(content);
+                                if( !termDB.insert(content,&t))
                                 {
-                                    throw exception("%sunexpected failure for '%s'",fn,content.c_str());
+                                    throw exception("%sunexpected failure for RX '%s'",fn,content.c_str());
                                 }
                             }
                             break;
 
                         case 2: assert("RS"==label);
-                            break;
-
-                        case 3: assert("RB"==label);
+                            if(!termDB.search(content))
+                            {
+                                Terminal &t = parser->terminal(content);
+                                if( !termDB.insert(content,&t))
+                                {
+                                    throw exception("%sunexpected failure for RX '%s'",fn,content.c_str());
+                                }
+                                t.let(IsHollow);
+                            }
                             break;
 
 
@@ -76,11 +97,8 @@ namespace yocto
                     }
                 }
                 return;
-
-
-
             }
-
+            
         }
     }
 }

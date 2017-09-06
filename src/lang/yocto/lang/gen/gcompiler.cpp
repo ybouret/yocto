@@ -25,8 +25,7 @@ namespace yocto
             {
                 "ID",
                 "RX",
-                "RS",
-                "RB"
+                "RS"
             };
 
 
@@ -98,10 +97,7 @@ namespace yocto
                 // Pass 1: Declare the top-level rules and plugins
                 //______________________________________________________________
                 registerTopLevelRules(topNode);
-                {
-                    parser->graphviz("parser.dot");
-                    ios::graphviz_render("parser.dot");
-                }
+
 
                 //______________________________________________________________
                 //
@@ -109,6 +105,11 @@ namespace yocto
                 //______________________________________________________________
                 registerTermsAndCheckRules(topNode);
 
+                {
+                    parser->graphviz("parser.dot");
+                    ios::graphviz_render("parser.dot");
+                }
+                
                 termDB.free();
                 ruleDB.free();
                 return parser.yield();
