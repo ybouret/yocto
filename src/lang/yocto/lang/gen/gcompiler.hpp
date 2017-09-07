@@ -46,6 +46,8 @@ namespace yocto
                 Terminal &registerNewTerm(const string &expr);
 
                 void link(const Node *topNode);
+                void linkRule(const Node *node);
+                void walkRule(Aggregate &parent, const Node *node);
                 
             private:
 
