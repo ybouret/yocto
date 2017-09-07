@@ -170,7 +170,7 @@ namespace yocto
                     if(ppT) return **ppT;
                 }
 
-                throw exception("No registered '%s'", id.c_str());
+                throw exception("gCompiler: no registered '%s'", id.c_str());
             }
 
             bool gCompiler:: has(const string &id) const throw()
