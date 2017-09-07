@@ -75,10 +75,16 @@ namespace yocto
                         break;
 
                     case 1: assert("RX"==label);
-                        break;
+                    {
+                        const string id = node->toString();
+                        addTermTo(parent,id);
+                    } break;
 
                     case 2: assert("RS"==label);
-                        break;
+                    {
+                        const string id = node->toString();
+                        addTermTo(parent,id);
+                    } break;
 
                     case 3: assert("SUB"==label);
                         break;
@@ -86,17 +92,30 @@ namespace yocto
                     case 4: assert("ALT"==label);
                         break;
 
-                    case 5: assert("OOM"==label);
+                    case 5: assert("OPT"==label);
                         break;
 
-                    case 6: assert("ZOM"==label);
+                    case 6: assert("OOM"==label);
+                        break;
+
+                    case 7: assert("ZOM"==label);
                         break;
 
                     default:
-                        break;
+                        throw exception("%sunknowm '%s'",fn,label.c_str());
                 }
             }
 
+
+            void gCompiler:: addTermTo(Aggregate &parent, const string &name)
+            {
+                gTerm *ppT = termDB.search(name);
+                if(!ppT)
+                {
+                    throw exception("gCompiler.addTermTo('%s'): no '%s'", parent.id(), name.c_str());
+                }
+                parent << **ppT;
+            }
         }
 
     }

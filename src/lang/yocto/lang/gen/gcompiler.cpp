@@ -1,6 +1,7 @@
 #include "yocto/lang/gen/gcompiler.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/ios/graphviz.hpp"
+#include "yocto/fs/local-fs.hpp"
 
 namespace yocto
 {
@@ -40,14 +41,14 @@ namespace yocto
 
             static const char *WalkKeywords[] =
             {
-                "ID",
-                "RX",
-                "RS",
-                "SUB",
-                "ALT",
-                "OPT",
-                "OOM",
-                "ZOM"
+                "ID",  // 0
+                "RX",  // 1
+                "RS",  // 2
+                "SUB", // 3
+                "ALT", // 4
+                "OPT", // 5
+                "OOM", // 6
+                "ZOM"  // 7
             };
 
             gCompiler:: gCompiler() :
@@ -106,6 +107,18 @@ namespace yocto
                 parser.reset( new Parser(parserName) );
                 topNode = topNode->next;
 
+                if(verbose)
+                {
+                    static vfs &fs = local_fs::instance();
+                    const string parserNameAST    = parserName+"_ast.dot";
+                    const string parserNameASTgfx = parserName+"_ast.png";
+                    fs.try_remove_file(parserNameAST);
+                    fs.try_remove_file(parserNameASTgfx);
+
+                    ast->graphviz(parserNameAST);
+                    ios::graphviz_render(parserNameAST);
+                }
+
                 //______________________________________________________________
                 //
                 // Pass 1: Declare the top-level rules and plugins
@@ -127,9 +140,15 @@ namespace yocto
                 //______________________________________________________________
                 link(topNode);
 
+                if(verbose)
                 {
-                    parser->graphviz("parser.dot");
-                    ios::graphviz_render("parser.dot");
+                    static vfs  &fs = local_fs::instance();
+                    const string parserOutDot = parserName + ".dot";
+                    const string parserOutGfx = parserName + ".png";
+                    fs.try_remove_file(parserOutDot);
+                    fs.try_remove_file(parserOutGfx);
+                    parser->graphviz(parserOutDot);
+                    ios::graphviz_render(parserOutDot);
                 }
                 
                 termDB.free();

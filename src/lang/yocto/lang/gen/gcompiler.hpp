@@ -49,6 +49,7 @@ namespace yocto
                 void link(const Node *topNode);
                 void linkRule(const Node *node);
                 void walkRule(Aggregate &parent, const Node *node);
+                void addTermTo(Aggregate &parent, const string &name);
                 
             private:
 
