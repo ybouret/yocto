@@ -165,7 +165,6 @@ namespace yocto
 
             void gCompiler:: linkLexr(const Node *node)
             {
-                //static const char fn[]     = "gCompiler.linkLexr: ";
                 const Node::List &children = node->toList(); assert(children.size>0);
                 node                       = children.head;  assert(children.head);
                 const string      lx       = node->toString(1);
@@ -230,6 +229,7 @@ namespace yocto
                                 }
                                 parser->root.call( parser->hook<Lexical::InlineComment>(com_label,com_enter,com_leave));
                             } break;
+
                             default:
                                 throw exception("@comment: requires 1 or 2 strings");
                         }
