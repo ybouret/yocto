@@ -1,5 +1,6 @@
 #include "yocto/lang/gen/gcompiler.hpp"
 #include "yocto/exception.hpp"
+#include "yocto/lang/pattern/logic.hpp"
 
 namespace yocto
 {
@@ -29,7 +30,7 @@ namespace yocto
                 static const char fn[] = "gCompiler.collect: ";
             }
 
-            Terminal & gCompiler::registerNewTerm(const string &expr)
+            Terminal & gCompiler::registerNewTermRX(const string &expr)
             {
                 Terminal &t = parser->terminal(expr);
                 if( !termDB.insert(expr,&t))
@@ -38,6 +39,18 @@ namespace yocto
                 }
                 return t;
             }
+
+            Terminal & gCompiler::registerNewTermRS(const string &expr)
+            {
+                parser->root.make(expr, Logical::Equal(expr), & *parser, & Lexical::Translator::forward );
+                Terminal &t = parser->add( new Terminal(expr) );
+                if( !termDB.insert(expr,&t))
+                {
+                    throw exception("%sunexpected failure for '%s'",fn,expr.c_str());
+                }
+                return t;
+            }
+
 
             void gCompiler:: collect(const Node *node)
             {
@@ -60,14 +73,14 @@ namespace yocto
                         case 1: assert("RX"==label);
                             if(!termDB.search(content))
                             {
-                                registerNewTerm(content);
+                                registerNewTermRX(content);
                             }
                             break;
 
                         case 2: assert("RS"==label);
                             if(!termDB.search(content))
                             {
-                                registerNewTerm(content).let(IsHollow);
+                                registerNewTermRS(content).let(IsHollow);
                             }
                             break;
 

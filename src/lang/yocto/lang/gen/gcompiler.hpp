@@ -11,7 +11,7 @@ namespace yocto
     {
         namespace Syntax
         {
-            
+
             typedef Aggregate        *gRule;
             typedef map<string,gRule> gRuleDB;
 
@@ -38,29 +38,33 @@ namespace yocto
                 virtual ~gCompiler() throw();
                 Parser *encode(const Node *ast);
 
+                // level 1
                 void    registerTopLevelRules(const Node *topNode);
                 void    detectPlugin(const Node *lxr);
                 void    registerNewRule(const Node *node);
 
+                // level 2
                 void      registerTermsAndCheckRules(const Node *topNode);
                 void      collect(const Node *node);
-                Terminal &registerNewTerm(const string &expr);
+                Terminal &registerNewTermRX(const string &expr);
+                Terminal &registerNewTermRS(const string &expr);
 
+                // level 3
                 void link(const Node *topNode);
                 void linkRule(const Node *node);
                 void walkRule(Aggregate &parent, const Node *node);
                 void addTermTo(Aggregate &parent, const string &name);
-                
+
             private:
 
                 YOCTO_DISABLE_COPY_AND_ASSIGN(gCompiler);
                 
-
+                
             };
-
+            
         }
     }
-
+    
 }
 
 #endif
