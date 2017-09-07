@@ -55,6 +55,7 @@ namespace yocto
                 Rule &walkRule(const Node *node);
                 Rule &getTerm(const string &name);
                 Rule &getRule(const string &name);
+                void  fillCompound(Compound &cmp, const Node *from);
 
             private:
 

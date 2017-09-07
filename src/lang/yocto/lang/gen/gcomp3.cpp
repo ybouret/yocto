@@ -64,7 +64,7 @@ namespace yocto
                 }
             }
 
-            Rule & gCompiler:: walkRule(const Node *node )
+            Rule & gCompiler:: walkRule(const Node *node)
             {
                 static const char fn[] = "gCompiler.walkRule: ";
                 const string label = node->origin.label;
@@ -76,7 +76,7 @@ namespace yocto
                         const  string id = node->toString();
                         return getRule(id);
                     }
-                        
+
                     case 1: assert("RX"==label);
                     {
                         const  string id = node->toString();
@@ -89,14 +89,21 @@ namespace yocto
                         return getTerm(id);
                     }
                     case 3: assert("SUB"==label);
-                        break;
+                    {
+                        Aggregate &sub = parser->agg( parser->newAggLabel() );
+                        fillCompound(sub,node);
+                        return sub;
+                    }
 
                     case 4: assert("ALT"==label);
-                        break;
+                    {
+                        Alternate &alt = parser->alt();
+                        fillCompound(alt,node);
+                        return alt;
+                    }
 
                     case 5: assert("OPT"==label);
                         return parser->optional(walkRule(node->head()));
-                        break;
 
                     case 6: assert("OOM"==label);
                         return parser->oneOrMore(walkRule(node->head()));
@@ -141,13 +148,14 @@ namespace yocto
             }
 
             
-#if 0
-            Rule & gCompiler:: getSubFrom(const string &label, const Node *node)
+            void gCompiler:: fillCompound(Compound   &cmp,
+                                          const Node *from)
             {
-                
+                for(const Node *node = from->head(); node; node=node->next)
+                {
+                    cmp << walkRule(node);
+                }
             }
-#endif
-            
         }
         
     }
