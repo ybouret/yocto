@@ -42,7 +42,8 @@ namespace yocto
             void gCompiler:: linkRule(const Node *node)
             {
                 const Node::List &children = node->toList();
-                const string      label    = children.head->toString();
+                const Node       *child    = children.head; assert(child); assert("ID"==child->origin.label);
+                const string      label    = child->toString();
                 std::cerr << "linking '" << label << "'" << std::endl;
 
                 gRule *ppR = ruleDB.search(label);
@@ -57,15 +58,43 @@ namespace yocto
                 }
 
                 Aggregate &topRule = **ppR;
-                for(node=node->next;node;node=node->next)
+                for(child=child->next;child;child=child->next)
                 {
-                    walkRule(topRule,node);
+                    walkRule(topRule,child);
                 }
             }
 
             void gCompiler:: walkRule(Aggregate &parent, const Node *node )
             {
+                static const char fn[] = "gCompiler.walkRule: ";
+                const string label = node->origin.label;
+                std::cerr << "|+" << label << std::endl;
+                switch(walkHash(label))
+                {
+                    case 0: assert("ID"==label);
+                        break;
 
+                    case 1: assert("RX"==label);
+                        break;
+
+                    case 2: assert("RS"==label);
+                        break;
+
+                    case 3: assert("SUB"==label);
+                        break;
+
+                    case 4: assert("ALT"==label);
+                        break;
+
+                    case 5: assert("OOM"==label);
+                        break;
+
+                    case 6: assert("ZOM"==label);
+                        break;
+
+                    default:
+                        break;
+                }
             }
 
         }

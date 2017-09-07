@@ -26,6 +26,7 @@ namespace yocto
                 hashing::mperf   rootHash; //!< ID, LXR, SEM
                 hashing::mperf   lexrHash; //!< drop, endl, comment
                 hashing::mperf   termHash; //!< ID, RX, RS
+                hashing::mperf   walkHash; //!< ID, RX, RS, ALT, SUB, OPT, OOM, ZOM
                 gRuleDB          ruleDB;
                 gTermDB          termDB;
                 Rule            &find(const string &id); //!< in rules/terms

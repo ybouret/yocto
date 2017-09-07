@@ -37,12 +37,26 @@ namespace yocto
                 "comment"
             };
 
+
+            static const char *WalkKeywords[] =
+            {
+                "ID",
+                "RX",
+                "RS",
+                "SUB",
+                "ALT",
+                "OPT",
+                "OOM",
+                "ZOM"
+            };
+
             gCompiler:: gCompiler() :
             getAST(),
             parser(NULL),
             rootHash(YOCTO_MPERF_FOR(RootKeywords)),
             lexrHash(YOCTO_MPERF_FOR(LexrKeywords)),
             termHash(YOCTO_MPERF_FOR(TermKeywords)),
+            walkHash(YOCTO_MPERF_FOR(WalkKeywords)),
             ruleDB(),
             termDB(),
             verbose(false)
