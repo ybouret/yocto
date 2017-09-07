@@ -116,6 +116,14 @@ namespace yocto
                 }
                 parent << **ppT;
             }
+
+#if 0
+            Rule & gCompiler:: getSubFrom(const string &label, const Node *node)
+            {
+
+            }
+#endif
+            
         }
 
     }

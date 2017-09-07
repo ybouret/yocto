@@ -49,6 +49,13 @@ namespace yocto
 
                 void check_connectivity() const;
 
+
+                const string & newAltLabel();
+                const string & newOptLabel();
+                const string & newZomLabel();
+                const string & newOomLabel();
+                const string & newAggLabel();
+
             private:
                 Rule::List rules;
                 int        altCount;
@@ -59,11 +66,7 @@ namespace yocto
                 string     tmpLabel;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Grammar);
 
-                const string & newAltLabel();
-                const string & newOptLabel();
-                const string & newZomLabel();
-                const string & newOomLabel();
-                const string & newAggLabel();
+
 
             };
         }
