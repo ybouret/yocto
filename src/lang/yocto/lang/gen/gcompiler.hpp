@@ -50,11 +50,11 @@ namespace yocto
                 Terminal &registerNewTermRS(const string &expr);
 
                 // level 3
-                void link(const Node *topNode);
-                void linkRule(const Node *node);
-                void walkRule(Aggregate &parent, const Node *node);
-                void addTermTo(Aggregate &parent, const string &name);
-                Rule &getSubFrom(const string &label, const Node *node);
+                void  link(const Node *topNode);
+                void  linkRule(const Node *node);
+                Rule &walkRule(const Node *node);
+                Rule &getTerm(const string &name);
+                Rule &getRule(const string &name);
 
             private:
 
