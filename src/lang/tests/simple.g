@@ -6,7 +6,7 @@ id      : "[:alpha:][:word:]*\\t?";
 
 @string : "cstring";
 
-@drop   : " " "\t" ;
+@drop   : "[:blank:]" ' ';
 @endl   : "[:endl:]";
 
 @comment: "#";

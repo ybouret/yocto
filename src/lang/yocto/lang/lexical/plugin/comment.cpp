@@ -16,9 +16,24 @@ namespace yocto
             Plugin(id,trans),
             data(expr)
             {
+                init();
+            }
+
+            Comment:: Comment(const string &id,
+                              const string &expr,
+                              Translator   &trans) :
+            Plugin(id,trans),
+            data(expr)
+            {
+                init();
+            }
+
+            void Comment:: init()
+            {
                 back("[:endl:]", this, & Comment::onLeave);
                 make("any1",".", translator, & Translator::discard);
             }
+
 
             const char * Comment:: trigger() const throw()
             {
@@ -55,10 +70,28 @@ namespace yocto
                                           const char *exprEnd,
                                           Translator &trans):
             Plugin(id,trans),
-            __ini(exprIni)
+            __ini(exprIni),
+            __end(exprEnd)
             {
-                back(exprEnd, this, & InlineComment::onLeave);
-                
+                init();
+            }
+
+            InlineComment:: InlineComment(const string &id,
+                                          const string &exprIni,
+                                          const string &exprEnd,
+                                          Translator   &trans):
+            Plugin(id,trans),
+            __ini(exprIni),
+            __end(exprEnd)
+            {
+                init();
+            }
+
+
+            void InlineComment:: init()
+            {
+                back(__end, this, & InlineComment::onLeave);
+
                 make("endl","[:endl:]", translator, &Translator::newline);
                 make("any1",".",        translator, &Translator::discard);
             }

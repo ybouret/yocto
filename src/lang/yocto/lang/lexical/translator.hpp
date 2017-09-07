@@ -108,6 +108,14 @@ namespace yocto
                     return plug(p);
                 }
 
+                template <typename PLUGIN> inline
+                const string & hook(const string &id,const string &arg1,const string &arg2)
+                {
+                    Plugin *p = new PLUGIN(id,arg1,arg2,*this);
+                    return plug(p);
+                }
+
+
                 typedef set<string,Scanner::Handle> ScannerDB;
                 
             private:

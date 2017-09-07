@@ -57,6 +57,9 @@ namespace yocto
                 Rule &getRule(const string &name);
                 void  fillCompound(Compound &cmp, const Node *from);
 
+                void linkLexr(const   Node *node);
+                static string StringToExpr(const Node *node);
+
             private:
 
                 YOCTO_DISABLE_COPY_AND_ASSIGN(gCompiler);
