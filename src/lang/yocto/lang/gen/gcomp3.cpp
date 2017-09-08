@@ -133,7 +133,9 @@ namespace yocto
                     case 4: assert("ALT"==label);
                     {
                         Alternate &alt = parser->alt();
+                        if(verbose) { std::cerr << '('; }
                         fillCompound(alt,node);
+                        if(verbose) { std::cerr << ')'; }
                         return alt;
                     }
 
