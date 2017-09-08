@@ -79,7 +79,8 @@ namespace yocto
                             (   Optional::UUID == uuid) ||
                             (   Counting::UUID == uuid) ||
                             ( (Aggregate::UUID == uuid) && child->origin.label.has(Rule::FusionMark)) ||
-                            ( (Aggregate::UUID == uuid) && (NoSingle==flags) && (1==child->size()) );
+                            ( (Aggregate::UUID == uuid) && (NoSingle==flags) && (1==child->size()) )  ||
+                            ( (Aggregate::UUID == uuid) && (IsFusing==flags) );
 
                             if(fuse)
                             {

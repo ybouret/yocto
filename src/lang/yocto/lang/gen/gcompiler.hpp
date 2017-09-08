@@ -78,6 +78,11 @@ namespace yocto
                 static string StringToExpr(const Node *node);
                 int    StringKind(const Node *node) const throw();
 
+                //______________________________________________________________
+                //
+                // level 4
+                //______________________________________________________________
+                void finalize();
 
             private:
 

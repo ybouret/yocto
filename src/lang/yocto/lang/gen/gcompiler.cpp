@@ -147,6 +147,13 @@ namespace yocto
                 //______________________________________________________________
                 link(topNode);
 
+
+                //______________________________________________________________
+                //
+                // Pass 4: tweak rules
+                //______________________________________________________________
+                finalize();
+
                 if(verbose)
                 {
                     static vfs  &fs = local_fs::instance();
@@ -167,7 +174,6 @@ namespace yocto
                 
                 termDB.free();
                 ruleDB.free();
-                parser->check();
                 return parser.yield();
             }
 

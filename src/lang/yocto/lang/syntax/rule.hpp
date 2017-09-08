@@ -24,7 +24,8 @@ namespace yocto
             IsNormal = 0x00, //!< different possible tokens
             IsUnique = 0x01, //!< always the same token, clear content (aka raw string...)
             IsHollow = 0x02, //!< no semantic meaning (aka separators...)
-            NoSingle = 0x04  //!< simplify is only one child
+            NoSingle = 0x04, //!< simplify is only one child
+            IsFusing = 0x08  //!< will fuse content with parent, like fusion mark
         };
 
         namespace Syntax
