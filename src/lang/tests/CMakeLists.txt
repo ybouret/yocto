@@ -1,6 +1,7 @@
 FILE(GLOB srcs test-*.cpp)
 
 ADD_EXECUTABLE(test-lang main.cpp ${srcs}
+	test.g
 	simple.g
 	lists.g
 	json.g
