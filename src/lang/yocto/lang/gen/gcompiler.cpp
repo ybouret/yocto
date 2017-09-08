@@ -150,6 +150,13 @@ namespace yocto
                     parser->graphviz(parserOutDot);
                     ios::graphviz_render(parserOutDot);
                 }
+
+
+                //______________________________________________________________
+                //
+                // cleanup
+                //______________________________________________________________
+
                 
                 termDB.free();
                 ruleDB.free();

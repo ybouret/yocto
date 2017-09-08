@@ -11,11 +11,17 @@ namespace yocto
         {
 
 
+            //__________________________________________________________________
+            //
+            //
+            // Top Level Linking call
+            //
+            //__________________________________________________________________
             void gCompiler::link(const Node *topNode)
             {
                 if(verbose)
                 {
-                    std::cerr << "== linking ==" << std::endl;
+                    std::cerr << "== linking {" << parser->Grammar::name << "} ==" << std::endl;
                 }
 
                 for(const Node *node = topNode;node;node=node->next)
@@ -28,10 +34,11 @@ namespace yocto
                             break;
 
                         case 1: assert( "LXR" == label );
-                            linkLexr(node);
+                            linkLxr(node);
                             break;
 
                         case 2: assert( "SMR" == label );
+                            linkSmr(node);
                             break;
 
                         default:
@@ -41,12 +48,18 @@ namespace yocto
             }
 
 
+            //__________________________________________________________________
+            //
+            //
+            // linking top level rule
+            //
+            //__________________________________________________________________
             void gCompiler:: linkRule(const Node *node)
             {
                 const Node::List &children = node->toList();
                 const Node       *child    = children.head; assert(child); assert("ID"==child->origin.label);
                 const string      label    = child->toString();
-                std::cerr << "linking '" << label << "'" << std::endl;
+                std::cerr << label << ':';
 
                 gRule *ppR = ruleDB.search(label);
                 if(!ppR)
@@ -56,6 +69,7 @@ namespace yocto
                     {
                         throw exception("gCompiler.linkRule: unregistered '%s'", label.c_str());
                     }
+                    if(verbose) { std::cerr << std::endl; }
                     return;
                 }
 
@@ -64,39 +78,49 @@ namespace yocto
                 {
                     topRule << walkRule(child);
                 }
+                if(verbose) { std::cerr << std::endl; }
             }
 
+            //__________________________________________________________________
+            //
+            //
+            // Recursive call to build parser
+            //
+            //__________________________________________________________________
             Rule & gCompiler:: walkRule(const Node *node)
             {
                 static const char fn[] = "gCompiler.walkRule: ";
                 const string label = node->origin.label;
-                if(verbose)
-                {
-                    std::cerr << "|+" << label << std::endl;
-                }
+
                 switch(walkHash(label))
                 {
                     case 0: assert("ID"==label);
                     {
                         const  string id = node->toString();
+                        if(verbose) { std::cerr << ' ' << id; }
                         return getRule(id);
                     }
 
                     case 1: assert("RX"==label);
                     {
                         const  string id = node->toString();
+                        if(verbose) { std::cerr << " \"" << id << "\""; }
                         return getTerm(id);
                     }
 
                     case 2: assert("RS"==label);
                     {
                         const string id = node->toString();
+                        if(verbose) { std::cerr << " \'" << id << "\'"; }
                         return getTerm(id);
                     }
+                        
                     case 3: assert("SUB"==label);
                     {
                         Aggregate &sub = parser->agg( parser->newAggLabel() );
+                        if(verbose) { std::cerr << '('; }
                         fillCompound(sub,node);
+                        if(verbose) { std::cerr << ')'; }
                         return sub;
                     }
 
@@ -108,13 +132,24 @@ namespace yocto
                     }
 
                     case 5: assert("OPT"==label);
-                        return parser->optional(walkRule(node->head()));
-
+                    {
+                        Rule &r = parser->optional(walkRule(node->head()));
+                        if(verbose) { std::cerr << '?'; }
+                        return r;
+                    }
                     case 6: assert("OOM"==label);
-                        return parser->oneOrMore(walkRule(node->head()));
+                    {
+                        Rule &r = parser->oneOrMore(walkRule(node->head()));
+                        if(verbose) { std::cerr << '+'; }
+                        return r;
+                    }
 
                     case 7: assert("ZOM"==label);
-                        return parser->zeroOrMore(walkRule(node->head()));
+                    {
+                        Rule &r = parser->zeroOrMore(walkRule(node->head()));
+                        if(verbose) { std::cerr << '*'; }
+                        return r;
+                    }
 
                     default:
                         break;
@@ -124,6 +159,12 @@ namespace yocto
             }
 
 
+            //__________________________________________________________________
+            //
+            //
+            // call a terminal
+            //
+            //__________________________________________________________________
             Rule  &gCompiler:: getTerm(const string &name)
             {
                 gTerm *ppT = termDB.search(name);
@@ -134,6 +175,12 @@ namespace yocto
                 return **ppT;
             }
 
+            //__________________________________________________________________
+            //
+            //
+            // call a rule or a terminal
+            //
+            //__________________________________________________________________
             Rule  &gCompiler:: getRule(const string &name)
             {
                 gRule *ppR = ruleDB.search(name);
@@ -152,18 +199,37 @@ namespace yocto
                 }
             }
 
-            
+
+            //__________________________________________________________________
+            //
+            //
+            // fill an innner compound rule
+            //
+            //__________________________________________________________________
             void gCompiler:: fillCompound(Compound   &cmp,
                                           const Node *from)
             {
-                for(const Node *node = from->head(); node; node=node->next)
+                const bool  showAlt = (verbose && (Alternate::UUID == cmp.uuid));
+                const Node *head    = from->head();
+                for(const Node *node = head; node; node=node->next)
                 {
+                    if(showAlt&&(node!=head))
+                    {
+                        std::cerr << '|';
+                    }
                     cmp << walkRule(node);
+
                 }
             }
 
 
-            void gCompiler:: linkLexr(const Node *node)
+            //__________________________________________________________________
+            //
+            //
+            // Lexical Only rule
+            //
+            //__________________________________________________________________
+            void gCompiler:: linkLxr(const Node *node)
             {
                 const Node::List &children = node->toList(); assert(children.size>0);
                 node                       = children.head;  assert(children.head);
@@ -268,6 +334,11 @@ namespace yocto
                 }
 
                 throw exception("gCompiler::StringToExpr: unhandled '%s", node->origin.label.c_str());
+            }
+
+            void gCompiler:: linkSmr(const Node *node)
+            {
+                
             }
 
         }

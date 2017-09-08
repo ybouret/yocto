@@ -38,18 +38,28 @@ namespace yocto
                 virtual ~gCompiler() throw();
                 Parser *encode(const Node *ast);
 
+                //______________________________________________________________
+                //
                 // level 1
+                //______________________________________________________________
+
                 void    registerTopLevelRules(const Node *topNode);
                 void    detectPlugin(const Node *lxr);
                 void    registerNewRule(const Node *node);
 
+                //______________________________________________________________
+                //
                 // level 2
+                //______________________________________________________________
                 void      registerTermsAndCheckRules(const Node *topNode);
                 void      collect(const Node *node);
                 Terminal &registerNewTermRX(const string &expr);
                 Terminal &registerNewTermRS(const string &expr);
 
+                //______________________________________________________________
+                //
                 // level 3
+                //______________________________________________________________
                 void  link(const Node *topNode);
                 void  linkRule(const Node *node);
                 Rule &walkRule(const Node *node);
@@ -57,8 +67,11 @@ namespace yocto
                 Rule &getRule(const string &name);
                 void  fillCompound(Compound &cmp, const Node *from);
 
-                void linkLexr(const   Node *node);
+                void linkLxr(const Node *node);
+                void linkSmr(const Node *node);
+                //! convert the content RX/RS into regexp
                 static string StringToExpr(const Node *node);
+
 
             private:
 
