@@ -245,7 +245,7 @@ namespace yocto
                     std::cerr << "|@" << lx << std::endl;
                 }
 
-                const string lxr_label_base = parser->Translator::name + '.' + lx;
+                const string lxr_label_base = parser->tag + '.' + lx;
                 switch(lexrHash(lx))
                 {
                     case 0: assert("drop"==lx);

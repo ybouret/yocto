@@ -15,7 +15,8 @@ namespace yocto
             public:
                 explicit Parser(const string &id);
                 virtual ~Parser() throw();
-
+                const string tag;
+                
                 //______________________________________________________________
                 //
                 // terminals....
@@ -87,7 +88,7 @@ namespace yocto
                 void check() const;
 
                 //! get the AST
-                Node * operator()(Source &source);
+                Node * parse(Source &source);
 
                 //! generation
                 static Parser *Generate(const string &filename,

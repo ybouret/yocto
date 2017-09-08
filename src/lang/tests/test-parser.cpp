@@ -69,7 +69,7 @@ YOCTO_UNIT_TEST_IMPL(parser)
     Source         source( hm );
     myParser       parser;
 
-    auto_ptr<Syntax::Node> tree( parser(source) );
+    auto_ptr<Syntax::Node> tree( parser.parse(source) );
     if( tree.is_valid() )
     {
         tree->graphviz("tree.dot");

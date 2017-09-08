@@ -189,7 +189,7 @@ namespace yocto
             Parser  * gCompiler:: createFrom(Source &source)
             {
                 getAST.reset();
-                auto_ptr<Node> tree(getAST(source));
+                auto_ptr<Node> tree(getAST.parse(source));
                 if(!tree.is_valid()) throw exception("gCompiler: unexpected empty AST!");
                 return encode( tree.__get() );
             }

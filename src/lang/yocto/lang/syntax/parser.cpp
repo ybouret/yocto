@@ -13,7 +13,8 @@ namespace yocto
 
             Parser:: Parser( const string &id ) :
             Grammar(id+".grammar"),
-            Lexer(id+".lexer")
+            Lexer(id+".lexer"),
+            tag(id)
             {
             }
 
@@ -30,7 +31,7 @@ namespace yocto
             }
 
 
-            Node * Parser:: operator()(Source &source)
+            Node * Parser:: parse(Source &source)
             {
                 Lexer &lexer = *this;
                 lexer.reset();

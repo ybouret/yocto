@@ -87,7 +87,7 @@ YOCTO_UNIT_TEST_IMPL(json)
         Module::Handle hm( new Module() );
         Source         source( hm );
         std::cerr << std::endl << "Ready..." << std::endl;
-        auto_ptr<Syntax::Node> tree( J(source) );
+        auto_ptr<Syntax::Node> tree( J.parse(source) );
         if(tree.is_valid())
         {
             tree->graphviz("tree.dot");
