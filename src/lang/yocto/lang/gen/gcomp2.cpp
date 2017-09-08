@@ -21,7 +21,16 @@ namespace yocto
                 {
                     if("RULE"==node->origin.label)
                     {
-                        collect(node);
+                        const string ID = node->head()->toString();
+                        if(ruleDB.search(ID))
+                        {
+                            if(verbose) { std::cerr << "**  " << ID << std::endl; }
+                            collect(node);
+                        }
+                        else
+                        {
+                            if(verbose) { std::cerr << "*** " << ID << std::endl; }
+                        }
                     }
                 }
 

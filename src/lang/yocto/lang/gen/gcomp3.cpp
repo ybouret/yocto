@@ -64,6 +64,7 @@ namespace yocto
                 const Node::List &children = node->toList();
                 const Node       *child    = children.head; assert(child); assert("ID"==child->origin.label);
                 const string      label    = child->toString();
+
                 if(verbose) { std::cerr << label << ':'; }
 
                 gRule *ppR = ruleDB.search(label);
@@ -74,7 +75,7 @@ namespace yocto
                     {
                         throw exception("gCompiler.linkRule: unregistered '%s'", label.c_str());
                     }
-                    if(verbose) { std::cerr << std::endl; }
+                    if(verbose) { std::cerr << " (alias);" << std::endl; }
                     return;
                 }
 
