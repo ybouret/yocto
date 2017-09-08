@@ -49,8 +49,6 @@ namespace yocto
                 void    registerTopLevelRules(const Node *topNode);
                 void    detectPlugin(const Node *lxr);
                 void    registerNewRule(const Node *node);
-                bool    isAlias(const Node *node) const throw();
-
                 //______________________________________________________________
                 //
                 // level 2
@@ -73,8 +71,10 @@ namespace yocto
 
                 void linkLxr(const Node *node);
                 void linkSmr(const Node *node);
+
                 //! convert the content RX/RS into regexp
                 static string StringToExpr(const Node *node);
+                static bool   IsString(const Node *node) throw();
 
 
             private:

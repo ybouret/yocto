@@ -14,7 +14,7 @@ namespace yocto
             {
                 if(verbose)
                 {
-                    std::cerr << "== register terminals and check rules ==" << std::endl;
+                    std::cerr << "== register terminals (and check rules) ==" << std::endl;
                 }
 
                 for(const Node *node=topNode;node;node=node->next)

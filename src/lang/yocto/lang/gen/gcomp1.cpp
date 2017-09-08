@@ -9,13 +9,6 @@ namespace yocto
         namespace Syntax
         {
 
-            bool    gCompiler:: isAlias(const Node *node) const throw()
-            {
-                assert("RULE" == node->origin.label );
-
-                return false;
-            }
-
 
             void gCompiler:: registerTopLevelRules(const Node *node)
             {
@@ -23,7 +16,7 @@ namespace yocto
                 {
                     std::cerr << "== register top level rules ==" << std::endl;
                 }
-                
+
                 for(;node;node=node->next)
                 {
                     const string &label = node->origin.label;
@@ -49,8 +42,22 @@ namespace yocto
 
             }
 
+            bool gCompiler::IsString(const Node *node) throw()
+            {
+                if(node->terminal)
+                {
+                    const string &label = node->origin.label;
+                    return ("RX"==label) || ("RS"==label);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
             void gCompiler::registerNewRule(const Node *node)
             {
+                static const char fn[] = "gCompiler.registerNewRule: ";
                 //______________________________________________________________
                 //
                 // get the label of the rule
@@ -63,14 +70,34 @@ namespace yocto
                     std::cerr << "+RULE " << label << std::endl;
                 }
 
+                const Node *arg = child->next;
+                if(!arg) throw exception("%sunexpected empty rule '%s' content!",fn, *label);
+
                 //______________________________________________________________
                 //
-                // create and register it
+                // detect is this is an alias
                 //______________________________________________________________
-                Aggregate &newRule = parser->agg(label);
-                if( !ruleDB.insert(label,&newRule) )
+                if( (NULL==arg->next) && IsString(arg) )
                 {
-                    throw exception("registerNewRule: unexpected failure for '%s'", label.c_str());
+                    if(verbose) { std::cerr << "|_ALIAS" << std::endl; }
+                    const string expr    = StringToExpr(arg);
+                    Terminal    &newTerm = parser->terminal(label,expr);
+                    if(!termDB.insert(label,&newTerm))
+                    {
+                        throw exception("%sunexpected failure for terminal '%s'",fn,*label);
+                    }
+                }
+                else
+                {
+                    //__________________________________________________________
+                    //
+                    // create and register a new rule
+                    //__________________________________________________________
+                    Aggregate &newRule = parser->agg(label);
+                    if( !ruleDB.insert(label,&newRule) )
+                    {
+                        throw exception("%sunexpected failure for rule '%s'",fn,*label);
+                    }
                 }
             }
 
@@ -146,7 +173,7 @@ namespace yocto
                 }
 
                 throw exception("%splugin '%s' is not implemented", fn, pluginName.c_str() );
-
+                
             REGISTER_TERM:
                 assert(NULL!=t);
                 if(!termDB.insert(name,t))
@@ -154,7 +181,7 @@ namespace yocto
                     throw exception("%sunexpected failure for '%s'",fn,name.c_str());
                 }
             }
-
+            
         }
     }
 }
