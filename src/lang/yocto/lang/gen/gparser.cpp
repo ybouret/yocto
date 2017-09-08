@@ -45,7 +45,6 @@ namespace yocto
                 Rule &COLUMN  = terminal(':');
                 Rule &RX      = term<Lexical::cstring>("RX");
                 Rule &RS      = term<Lexical::rstring>("RS");
-                //Rule &RB      = term<Lexical::String64>("RB");
 
                 //______________________________________________________________
                 //

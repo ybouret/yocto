@@ -21,11 +21,11 @@ namespace yocto
     {
         enum SyntaxRuleFlag
         {
-            IsNormal = 0x00, //!< different possible tokens
-            IsUnique = 0x01, //!< always the same token, clear content (aka raw string...)
-            IsHollow = 0x02, //!< no semantic meaning (aka separators...)
-            NoSingle = 0x04, //!< simplify is only one child
-            IsFusing = 0x08  //!< will fuse content with parent, like fusion mark
+            IsNormal = 0x0000, //!< different possible tokens
+            IsUnique = 0x0001, //!< always the same token, clear content (aka raw string...)
+            IsHollow = 0x0002, //!< no semantic meaning (aka separators...)
+            NoSingle = 0x0100, //!< merge if only one child
+            IsFusing = 0x0200  //!< will fuse content with parent, like fusion mark
         };
 
         namespace Syntax
