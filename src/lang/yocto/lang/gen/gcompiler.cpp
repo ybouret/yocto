@@ -71,7 +71,7 @@ namespace yocto
             {
 
             }
-            
+
         }
     }
 }
@@ -110,7 +110,7 @@ namespace yocto
                 // getting the name, first thing first !
                 //______________________________________________________________
                 const string      parserName = topNode->toLex().toString(1);
-                if(verbose) { std::cerr << "Creating parser '" << parserName << "'" << std::endl; }
+                if(verbose) { std::cerr << "== Creating parser '" << parserName << "' ==" << std::endl; }
                 parser.reset( new Parser(parserName) );
                 topNode = topNode->next;
 
@@ -138,8 +138,6 @@ namespace yocto
                 // Pass 2: check rules's ID and create terminals
                 //______________________________________________________________
                 registerTermsAndCheckRules(topNode);
-
-
 
                 //______________________________________________________________
                 //
@@ -171,14 +169,14 @@ namespace yocto
                 // cleanup
                 //______________________________________________________________
 
-                
+
                 termDB.free();
                 ruleDB.free();
                 return parser.yield();
             }
 
 
-            
+
             Rule & gCompiler:: find(const string &id)
             {
                 {
@@ -199,6 +197,17 @@ namespace yocto
                 return (NULL!=ruleDB.search(id)) || (NULL!=termDB.search(id));
             }
 
+
+            void gCompiler:: __newTerm(const char *fn, const string &label, Terminal *t )
+            {
+                if(!termDB.insert(label,t))
+                {
+                    throw exception("%sunexpected failure to register terminal '%s'",fn, *label);
+                }
+            }
+
+
+
             Parser  * gCompiler:: createFrom(Source &source)
             {
                 getAST.reset();
@@ -208,29 +217,32 @@ namespace yocto
             }
 
 
+            static Parser * __GenerateParserFrom(Module     *module,
+                                                 const  bool verbose)
+            {
+                const Module::Handle hm(module);
+                Source               src(hm);
+                auto_ptr<gCompiler>  GC( new gCompiler() );
+
+                GC->verbose = verbose;
+                return GC->createFrom(src);
+            }
+
             Parser * Parser:: Generate(const string &filename,
                                        const bool    verbose)
             {
-                gCompiler compiler;
-                compiler.verbose = verbose;
-                const Module::Handle module( new Module(filename) );
-                Source               source(module);
-                return compiler.createFrom(source);
+                return __GenerateParserFrom(new Module(filename),verbose);
             }
-
+            
             Parser *Generate(const void    *buffer,
                              const size_t   buflen,
                              const bool     verbose=false)
             {
-                gCompiler compiler;
-                compiler.verbose = verbose;
-                const Module::Handle module( new Module(buffer,buflen) );
-                Source               source(module);
-                return compiler.createFrom(source);
+                return __GenerateParserFrom(new Module(buffer,buflen),verbose);
             }
-
+            
         }
-
+        
     }
 }
 

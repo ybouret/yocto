@@ -21,28 +21,24 @@ namespace yocto
             {
                 if(verbose)
                 {
-                    std::cerr << "== linking {" << parser->Grammar::name << "} ==" << std::endl;
+                    std::cerr << "== linking {" << parser->tag << "} ==" << std::endl;
                 }
 
+                //______________________________________________________________
+                //
+                // sweeping all top level nodes
+                //______________________________________________________________
                 for(const Node *node = topNode;node;node=node->next)
                 {
                     const string &label = node->origin.label;
                     switch(rootHash(label))
                     {
-                        case 0: assert( "RULE" == label );
-                            linkRule(node);
-                            break;
-
-                        case 1: assert( "LXR" == label );
-                            linkLxr(node);
-                            break;
-
-                        case 2: assert( "SMR" == label );
-                            linkSmr(node);
-                            break;
+                        case 0: assert( "RULE" == label); linkRule(node); break;
+                        case 1: assert( "LXR" == label ); linkLxr(node);  break;
+                        case 2: assert( "SMR" == label ); linkSmr(node);  break;
 
                         default:
-                            throw exception("gCompiler.link: unknowm \"%s\"", label.c_str());
+                            throw exception("gCompiler.link: unknowm \"%s\"", *label);
                     }
                 }
 
@@ -61,15 +57,27 @@ namespace yocto
             //__________________________________________________________________
             void gCompiler:: linkRule(const Node *node)
             {
+                //______________________________________________________________
+                //
+                // prepare the rule node
+                //______________________________________________________________
                 const Node::List &children = node->toList();
                 const Node       *child    = children.head; assert(child); assert("ID"==child->origin.label);
                 const string      label    = child->toString();
 
                 if(verbose) { std::cerr << label << ':'; }
 
+                //______________________________________________________________
+                //
+                // check if ALIAS
+                //______________________________________________________________
                 gRule *ppR = ruleDB.search(label);
                 if(!ppR)
                 {
+                    //__________________________________________________________
+                    //
+                    // yes is it, so it must be registered as a terminal
+                    //__________________________________________________________
                     gTerm *ppT = termDB.search(label);
                     if(!ppT)
                     {
@@ -78,13 +86,19 @@ namespace yocto
                     if(verbose) { std::cerr << " (alias);" << std::endl; }
                     return;
                 }
-
-                Aggregate &topRule = **ppR;
-                for(child=child->next;child;child=child->next)
+                else
                 {
-                    topRule << walkRule(child);
+                    //__________________________________________________________
+                    //
+                    // no, this is a rule, build it!
+                    //__________________________________________________________
+                    Aggregate &topRule = **ppR;
+                    for(child=child->next;child;child=child->next)
+                    {
+                        topRule << walkRule(child);
+                    }
+                    if(verbose) { std::cerr << ';' << std::endl; }
                 }
-                if(verbose) { std::cerr << ';' << std::endl; }
             }
 
             //__________________________________________________________________
@@ -96,8 +110,8 @@ namespace yocto
             Rule & gCompiler:: walkRule(const Node *node)
             {
                 static const char fn[] = "gCompiler.walkRule: ";
-                const string label = node->origin.label;
 
+                const string label = node->origin.label;
                 switch(walkHash(label))
                 {
                     case 0: assert("ID"==label);
@@ -239,6 +253,10 @@ namespace yocto
             //__________________________________________________________________
             void gCompiler:: linkLxr(const Node *node)
             {
+                //______________________________________________________________
+                //
+                // get the name of the lexical rule
+                //______________________________________________________________
                 const Node::List &children = node->toList(); assert(children.size>0);
                 node                       = children.head;  assert(children.head);
                 const string      lx       = node->toString(1);
@@ -248,6 +266,10 @@ namespace yocto
                     std::cerr << "|@" << lx << std::endl;
                 }
 
+                //______________________________________________________________
+                //
+                // prepare prefix
+                //______________________________________________________________
                 const string lxr_label_base = parser->tag + '.' + lx;
                 switch(lexrHash(lx))
                 {
@@ -281,7 +303,7 @@ namespace yocto
                     {
                         switch(children.size)
                         {
-                            case 2: // one string
+                            case 2: // one string => Comment (End Of Line)
                             {
                                 const string com_enter = StringToExpr(node->next);
                                 const string com_label = lxr_label_base + '@' + com_enter;
@@ -373,6 +395,27 @@ namespace yocto
                     }
                     goto SMR_DONE;
                 }
+
+                if("IsHollow" == SM)
+                {
+                    for(node=node->next;node;node=node->next)
+                    {
+                        const string id = node->toString();
+                        if(verbose)
+                        {
+                            std::cerr << ' ' << id;
+                        }
+                        gTerm *ppT = termDB.search(id);
+                        if(!ppT)
+                        {
+                            throw exception("%s: no alias %s", *SM, *id);
+                        }
+                        (**ppT).let(IsHollow);
+                    }
+                    goto SMR_DONE;
+
+                }
+
 
             SMR_DONE:
                 if(verbose)

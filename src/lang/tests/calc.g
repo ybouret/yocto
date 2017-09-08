@@ -28,4 +28,4 @@ END     : ';' ;
 LPAREN  : '(' ;
 RPAREN  : ')' ;
 
-%NoSingle : expr multExpr;
+//%NoSingle : expr multExpr;

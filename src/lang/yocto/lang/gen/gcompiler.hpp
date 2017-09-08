@@ -47,16 +47,17 @@ namespace yocto
                 //
                 // level 1
                 //______________________________________________________________
-
+                
                 void    registerTopLevelRules(const Node *topNode);
-                void    detectPlugin(const Node *lxr);
-                void    registerNewRule(const Node *node);
+                void    __detectPlugin(const Node *lxr);
+                void    __registerNewRule(const Node *node);
+
                 //______________________________________________________________
                 //
                 // level 2
                 //______________________________________________________________
                 void      registerTermsAndCheckRules(const Node *topNode);
-                void      collect(const Node *node);
+                void      __collect(const Node *node);
                 Terminal &registerNewTermRX(const string &expr);
                 Terminal &registerNewTermRS(const string &expr);
 
@@ -85,10 +86,9 @@ namespace yocto
                 void finalize();
 
             private:
-
                 YOCTO_DISABLE_COPY_AND_ASSIGN(gCompiler);
-                
-                
+                void __newTerm(const char *fn, const string &label, Terminal *t );
+
             };
             
         }

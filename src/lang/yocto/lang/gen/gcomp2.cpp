@@ -19,16 +19,23 @@ namespace yocto
 
                 for(const Node *node=topNode;node;node=node->next)
                 {
+
                     if("RULE"==node->origin.label)
                     {
+                        //______________________________________________________
+                        //
+                        // take care only of full rules
+                        //______________________________________________________
                         const string ID = node->head()->toString();
                         if(ruleDB.search(ID))
                         {
+                            // this is a rule
                             if(verbose) { std::cerr << "**  " << ID << std::endl; }
-                            collect(node);
+                            __collect(node);
                         }
                         else
                         {
+                            // this is an alias
                             if(verbose) { std::cerr << "*** " << ID << std::endl; }
                         }
                     }
@@ -48,10 +55,7 @@ namespace yocto
             Terminal & gCompiler::registerNewTermRX(const string &expr)
             {
                 Terminal &t = parser->terminal(expr);
-                if( !termDB.insert(expr,&t))
-                {
-                    throw exception("%sunexpected failure for '%s'",fn,expr.c_str());
-                }
+                __newTerm(fn,expr,&t);
                 return t;
             }
 
@@ -59,19 +63,20 @@ namespace yocto
             {
                 parser->root.make(expr, Logical::Equal(expr), & *parser, & Lexical::Translator::forward );
                 Terminal &t = parser->add( new Terminal(expr) );
-                if( !termDB.insert(expr,&t))
-                {
-                    throw exception("%sunexpected failure for '%s'",fn,expr.c_str());
-                }
+                __newTerm(fn,expr,&t);
                 return t;
             }
 
 
-            void gCompiler:: collect(const Node *node)
+            void gCompiler:: __collect(const Node *node)
             {
                 assert(node);
                 if(node->terminal)
                 {
+                    //__________________________________________________________
+                    //
+                    // check rule existence or register terminal
+                    //__________________________________________________________
                     const string &label   = node->origin.label;
                     const string  content = node->toString();
 
@@ -109,9 +114,13 @@ namespace yocto
                 }
                 else
                 {
+                    //__________________________________________________________
+                    //
+                    // recursive call
+                    //__________________________________________________________
                     for(node = node->head();node;node=node->next)
                     {
-                        collect(node);
+                        __collect(node);
                     }
                 }
                 return;

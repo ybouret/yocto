@@ -24,7 +24,11 @@ namespace yocto
                 unsigned ir = 1;
                 for(Rule *r = (Rule *)(parser->getTopLevel());r;r=r->next,++ir)
                 {
-                    std::cerr << "checking rule #" << ir << "='" << r->label << "'" << std::endl;
+                    if(verbose)
+                    {
+                        std::cerr << "checking rule #" << ir << "='" << r->label << "'" << std::endl;
+                    }
+                    
                     switch(r->uuid)
                     {
 
