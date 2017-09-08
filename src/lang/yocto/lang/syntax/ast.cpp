@@ -1,4 +1,3 @@
-//#include "yocto/lang/syntax/node.hpp"
 #include "yocto/lang/syntax/rules.hpp"
 #include "yocto/error.hpp"
 #include <cerrno>
@@ -15,17 +14,6 @@ namespace yocto
             Node * Node:: AST( Node *node ) throw()
             {
                 if(!node) return NULL;
-
-#if 0
-                //______________________________________________________________
-                //
-                // let us take some information
-                //______________________________________________________________
-                if(!(node->origin.flags&IsHollow))
-                {
-                    std::cerr << "node=" << node->origin.label << std::endl;
-                }
-#endif
 
                 if(node->terminal)
                 {
