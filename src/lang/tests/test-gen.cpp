@@ -9,28 +9,14 @@ using namespace Lang;
 
 YOCTO_UNIT_TEST_IMPL(gen)
 {
-    std::cerr << "sizeof(Syntax::gParser  )=" << sizeof(Syntax::gParser)   << std::endl;
-    std::cerr << "sizeof(Syntax::gCompiler)=" << sizeof(Syntax::gCompiler) << std::endl;
+    //vfs           &fs = local_fs::instance();
 
-    vfs           &fs = local_fs::instance();
+    if(argc>1)
+    {
+        const string             parserFile = argv[1];
+        auto_ptr<Syntax::Parser> P( Syntax::Parser::Generate(parserFile,true) );
 
-    //fs.try_remove_file("tree.dot");
-    //fs.try_remove_file("tree.png");
-    fs.try_remove_file("gram.dot");
-    fs.try_remove_file("gram.png");
-
-    Module::Handle     hm( new Module() );
-    Source             source( hm );
-    Syntax::gCompiler  gen;
-
-    gen.verbose = true;
-    gen.getAST.graphviz("gram.dot");
-    ios::graphviz_render("gram.dot");
-
-    auto_ptr<Syntax::Node> tree( gen.getAST(source) );
-
-
-    auto_ptr<Syntax::Parser> P( gen.encode(tree.__get()) );
+    }
 
 }
 YOCTO_UNIT_TEST_DONE()

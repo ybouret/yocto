@@ -2,8 +2,8 @@
 #define YOCTO_LANG_GEN_GCOMPILER_INCLUDED 1
 
 #include "yocto/lang/gen/gparser.hpp"
-#include "yocto/hashing/mph.hpp"
 #include "yocto/associative/map.hpp"
+#include "yocto/hashing/mph.hpp"
 
 namespace yocto
 {
@@ -36,7 +36,10 @@ namespace yocto
 
                 explicit gCompiler();
                 virtual ~gCompiler() throw();
-                Parser *encode(const Node *ast);
+                Parser  *encode(const Node *ast);
+                Parser  *createFrom(Source &source);
+
+
 
                 //______________________________________________________________
                 //

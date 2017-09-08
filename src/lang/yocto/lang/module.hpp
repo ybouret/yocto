@@ -14,6 +14,7 @@ namespace yocto
         typedef arc_ptr<ios::istream> Input;
 
 
+
         //! a wrapper around an input to tag stamp/column/line
         class  Module :
         public counted_object,
@@ -28,7 +29,10 @@ namespace yocto
 
             //! open a file
             explicit Module(const string &id);
-            
+
+            //! open a data
+            explicit Module(const void *buffer, const size_t buflen);
+
             //! open std input
             explicit Module();
             

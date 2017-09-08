@@ -87,7 +87,7 @@ namespace yocto
                     if((Aggregate::UUID==uuid) ||
                        (Alternate::UUID==uuid) )
                     {
-                        if(rule->admitsEmpty())
+                        if(false&&rule->admitsEmpty())
                         {
                             throw exception("{%s}: rule '%s' admits empty content!", gram, rule->id() );
                         }

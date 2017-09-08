@@ -37,7 +37,7 @@ namespace yocto
                 return Node::AST(accept(lexer,source));
             }
 
-            void Parser:: compile() const
+            void Parser:: check() const
             {
                 check_connectivity();
                 for(const Lexical::Rule *r = root.head();r;r=r->next)

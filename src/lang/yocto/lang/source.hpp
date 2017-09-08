@@ -16,7 +16,7 @@ namespace yocto
         class Source
         {
         public:
-            explicit Source(const Module::Handle &hModule );
+            explicit Source(const Module::Handle &hModule);
             virtual ~Source() throw();
 
             Char       *query();                     //!< from cache or read from top module

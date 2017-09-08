@@ -82,10 +82,22 @@ namespace yocto
                     return plugin(label);
                 }
 
-                void compile() const;
 
+                //! check validity
+                void check() const;
+
+                //! get the AST
                 Node * operator()(Source &source);
-                
+
+                //! generation
+                static Parser *Generate(const string &filename,
+                                        const bool    verbose=false);
+
+                //! generation
+                static Parser *Generate(const void    *buffer,
+                                        const size_t   buflen,
+                                        const bool     verbose=false);
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);
                 Terminal & plugin(const string &label);

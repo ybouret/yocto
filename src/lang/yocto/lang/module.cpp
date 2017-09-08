@@ -1,5 +1,6 @@
 #include "yocto/lang/module.hpp"
 #include "yocto/ios/icstream.hpp"
+#include "yocto/ios/imstream.hpp"
 
 
 
@@ -26,6 +27,13 @@ namespace yocto
         input( new ios::icstream( *stamp) )
         {
         }
+
+        Module:: Module(const void *buffer, const size_t buflen) :
+        CharInfo( new string("data") ),
+        input( new ios::imstream(buffer,buflen) )
+        {
+        }
+
         
         Module:: Module() :
         CharInfo( new string("STDIN") ),

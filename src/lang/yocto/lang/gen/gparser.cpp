@@ -147,10 +147,10 @@ namespace yocto
                 root.make("BLANKS", "[:blank:]+", YOCTO_LANG_LEXICAL(discard));
 
 
-                compile();
+                check();
             }
 
-            
+          
         }
         
     }

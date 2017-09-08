@@ -160,6 +160,7 @@ namespace yocto
                 
                 termDB.free();
                 ruleDB.free();
+                parser->check();
                 return parser.yield();
             }
 
@@ -184,6 +185,37 @@ namespace yocto
             {
                 return (NULL!=ruleDB.search(id)) || (NULL!=termDB.search(id));
             }
+
+            Parser  * gCompiler:: createFrom(Source &source)
+            {
+                getAST.reset();
+                auto_ptr<Node> tree(getAST(source));
+                if(!tree.is_valid()) throw exception("gCompiler: unexpected empty AST!");
+                return encode( tree.__get() );
+            }
+
+
+            Parser * Parser:: Generate(const string &filename,
+                                       const bool    verbose)
+            {
+                gCompiler compiler;
+                compiler.verbose = verbose;
+                const Module::Handle module( new Module(filename) );
+                Source               source(module);
+                return compiler.createFrom(source);
+            }
+
+            Parser *Generate(const void    *buffer,
+                             const size_t   buflen,
+                             const bool     verbose=false)
+            {
+                gCompiler compiler;
+                compiler.verbose = verbose;
+                const Module::Handle module( new Module(buffer,buflen) );
+                Source               source(module);
+                return compiler.createFrom(source);
+            }
+
         }
 
     }

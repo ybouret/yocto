@@ -54,8 +54,8 @@ namespace
             root.make("ENDL",  "[:endl:]",   YOCTO_LANG_LEXICAL(newline));
             root.make("BLANKS","[:blank:]+", YOCTO_LANG_LEXICAL(discard));
 
-            std::cerr << "Compiling..." << std::endl;
-            compile();
+            std::cerr << "Checking..." << std::endl;
+            check();
 
             std::cerr << "Rendering..." << std::endl;
             graphviz("json.dot");
