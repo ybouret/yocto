@@ -16,12 +16,18 @@ namespace yocto
                 {
                     std::cerr << "== register terminals and check rules ==" << std::endl;
                 }
+
                 for(const Node *node=topNode;node;node=node->next)
                 {
                     if("RULE"==node->origin.label)
                     {
                         collect(node);
                     }
+                }
+
+                if(verbose)
+                {
+                    std::cerr << std::endl;
                 }
             }
 
@@ -59,10 +65,7 @@ namespace yocto
                 {
                     const string &label   = node->origin.label;
                     const string  content = node->toString();
-                    if(verbose)
-                    {
-                        std::cerr << "+term '" << label << "'='" << content << "'" << std::endl;
-                    }
+
 
                     switch( termHash(label) )
                     {
@@ -73,6 +76,7 @@ namespace yocto
                         case 1: assert("RX"==label);
                             if(!termDB.search(content))
                             {
+                                if(verbose) { std::cerr << "|_RX=\"" << content << "\"" << std::endl; }
                                 registerNewTermRX(content);
                             }
                             break;
@@ -80,6 +84,7 @@ namespace yocto
                         case 2: assert("RS"==label);
                             if(!termDB.search(content))
                             {
+                                if(verbose) { std::cerr << "|_RS=\'" << content << "\'" << std::endl; }
                                 registerNewTermRS(content).let(IsHollow);
                             }
                             break;

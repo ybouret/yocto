@@ -124,8 +124,9 @@ namespace yocto
 			
 			inline T       & operator[](size_t index) throw()       { assert(index<=size_); return char_[index]; }
 			inline const T & operator[](size_t index) const throw() { assert(index<=size_); return char_[index]; }
-			inline const T *c_str() const throw() { return char_; }
-			
+			inline const T * c_str()     const throw() { return char_; }
+            inline const T * operator*() const throw() { return char_; }
+
 			//------------------------------------------------------------------
 			//
 			// comparison

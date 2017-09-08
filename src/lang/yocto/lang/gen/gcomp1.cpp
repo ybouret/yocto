@@ -32,6 +32,12 @@ namespace yocto
                             break;
                     }
                 }
+
+                if(verbose)
+                {
+                    std::cerr << std::endl;
+                }
+
             }
 
             void gCompiler::registerNewRule(const Node *node)
@@ -73,7 +79,7 @@ namespace yocto
                 const string        name = node->toString(1);
                 if(verbose)
                 {
-                    std::cerr << "+LXR " << name << std::endl;
+                    std::cerr << "+LXR " << name << ':';
                 }
 
                 //______________________________________________________________
@@ -84,7 +90,7 @@ namespace yocto
                 {
                     if(verbose)
                     {
-                        std::cerr << "|_(postpone)" << std::endl;
+                        std::cerr << " (postpone)" << std::endl;
                     }
                     return; //! a reserved word
                 }
@@ -95,7 +101,7 @@ namespace yocto
                 //______________________________________________________________
                 if(verbose)
                 {
-                    std::cerr << "|_plugin for '" << name << "'" << std::endl;
+                    std::cerr << " plugin ";
                 }
                 if(code.size!=2)
                 {
@@ -110,7 +116,7 @@ namespace yocto
                 const string pluginName = node->toString();
                 if(verbose)
                 {
-                    std::cerr << " |_pluginName=" << pluginName << std::endl;
+                    std::cerr << '<' << pluginName << '>' << std::endl;
                 }
 
                 //______________________________________________________________

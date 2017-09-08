@@ -45,6 +45,11 @@ namespace yocto
                             throw exception("gCompiler.link: unknowm \"%s\"", label.c_str());
                     }
                 }
+
+                if(verbose)
+                {
+                    std::cerr << std::endl;
+                }
             }
 
 
