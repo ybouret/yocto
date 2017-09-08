@@ -24,8 +24,11 @@ YOCTO_UNIT_TEST_IMPL(gen)
 
         Module::Handle hm( new Module() );
         Source         source( hm );
+        (std::cerr << "Ready..." << std::endl).flush();
 
         auto_ptr<Syntax::Node> tree( P->parse(source) );
+
+        (std::cerr << "...done" << std::endl).flush();
         if(tree.is_valid())
         {
             tree->graphviz(treeDot);
