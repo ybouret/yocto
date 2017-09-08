@@ -8,6 +8,15 @@ namespace yocto
     {
         namespace Syntax
         {
+
+            bool    gCompiler:: isAlias(const Node *node) const throw()
+            {
+                assert("RULE" == node->origin.label );
+
+                return false;
+            }
+
+
             void gCompiler:: registerTopLevelRules(const Node *node)
             {
                 if(verbose)

@@ -49,6 +49,7 @@ namespace yocto
                 void    registerTopLevelRules(const Node *topNode);
                 void    detectPlugin(const Node *lxr);
                 void    registerNewRule(const Node *node);
+                bool    isAlias(const Node *node) const throw();
 
                 //______________________________________________________________
                 //
