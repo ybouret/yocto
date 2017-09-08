@@ -12,6 +12,7 @@ id      : "[:alpha:][:word:]*\\t?";
 @comment: "#";
 @comment: "/\\*" "\\*/";
 
+%NoSingle : code;
 
 /*
 main   : (a b) h*;

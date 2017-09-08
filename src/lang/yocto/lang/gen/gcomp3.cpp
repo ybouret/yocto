@@ -83,7 +83,7 @@ namespace yocto
                 {
                     topRule << walkRule(child);
                 }
-                if(verbose) { std::cerr << std::endl; }
+                if(verbose) { std::cerr << ';' << std::endl; }
             }
 
             //__________________________________________________________________
@@ -343,7 +343,39 @@ namespace yocto
 
             void gCompiler:: linkSmr(const Node *node)
             {
-                
+                node = node->head();
+                assert(node!=NULL);
+                assert("SM"==node->origin.label);
+                const string SM = node->toString(1);
+                if(verbose)
+                {
+                    std::cerr << "|_" << SM << ':';
+                }
+
+                if( "NoSingle" == SM )
+                {
+                    for(node=node->next;node;node=node->next)
+                    {
+                        const string id = node->toString();
+                        if(verbose)
+                        {
+                            std::cerr << ' ' << id;
+                        }
+                        gRule *ppR = ruleDB.search(id);
+                        if(!ppR)
+                        {
+                            throw exception("%s: no rule %s", *SM, *id);
+                        }
+                        (**ppR).let(NoSingle);
+                    }
+                    goto SMR_DONE;
+                }
+
+            SMR_DONE:
+                if(verbose)
+                {
+                    std::cerr << ';' << std::endl;
+                }
             }
 
         }
