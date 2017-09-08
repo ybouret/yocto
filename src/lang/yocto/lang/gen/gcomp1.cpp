@@ -42,8 +42,10 @@ namespace yocto
 
             }
 
-            bool gCompiler::IsString(const Node *node) throw()
+            int gCompiler::StringKind(const Node *node) const throw()
             {
+                return kindHash(node->origin.label);
+#if 0
                 if(node->terminal)
                 {
                     const string &label = node->origin.label;
@@ -51,8 +53,9 @@ namespace yocto
                 }
                 else
                 {
-                    return false;
+                    return -1;
                 }
+#endif
             }
 
             void gCompiler::registerNewRule(const Node *node)
@@ -77,14 +80,20 @@ namespace yocto
                 //
                 // detect is this is an alias
                 //______________________________________________________________
-                if( (NULL==arg->next) && IsString(arg) )
+                const int stringKind = StringKind(arg);
+                if( stringKind>=0 && (NULL==arg->next) )
                 {
-                    if(verbose) { std::cerr << "|_ALIAS" << std::endl; }
+                    if(verbose) { std::cerr << "|_alias" << std::endl; }
                     const string expr    = StringToExpr(arg);
                     Terminal    &newTerm = parser->terminal(label,expr);
                     if(!termDB.insert(label,&newTerm))
                     {
                         throw exception("%sunexpected failure for terminal '%s'",fn,*label);
+                    }
+                    if(1==stringKind)
+                    {
+                        assert("RS"==arg->origin.label);
+                        newTerm.let(IsHollow);
                     }
                 }
                 else

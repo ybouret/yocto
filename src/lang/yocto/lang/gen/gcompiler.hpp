@@ -27,6 +27,8 @@ namespace yocto
                 hashing::mperf   lexrHash; //!< drop, endl, comment
                 hashing::mperf   termHash; //!< ID, RX, RS
                 hashing::mperf   walkHash; //!< ID, RX, RS, ALT, SUB, OPT, OOM, ZOM
+                hashing::mperf   kindHash; //!< RX,RS
+                
                 gRuleDB          ruleDB;
                 gTermDB          termDB;
                 Rule            &find(const string &id); //!< in rules/terms
@@ -74,7 +76,7 @@ namespace yocto
 
                 //! convert the content RX/RS into regexp
                 static string StringToExpr(const Node *node);
-                static bool   IsString(const Node *node) throw();
+                int    StringKind(const Node *node) const throw();
 
 
             private:

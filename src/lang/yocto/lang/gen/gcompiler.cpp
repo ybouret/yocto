@@ -51,6 +51,12 @@ namespace yocto
                 "ZOM"  // 7
             };
 
+            static const char *KindKeywords[] =
+            {
+                "RX", //0
+                "RS", //1
+            };
+
             gCompiler:: gCompiler() :
             getAST(),
             parser(NULL),
@@ -58,6 +64,7 @@ namespace yocto
             lexrHash(YOCTO_MPERF_FOR(LexrKeywords)),
             termHash(YOCTO_MPERF_FOR(TermKeywords)),
             walkHash(YOCTO_MPERF_FOR(WalkKeywords)),
+            kindHash(YOCTO_MPERF_FOR(KindKeywords)),
             ruleDB(),
             termDB(),
             verbose(false)
