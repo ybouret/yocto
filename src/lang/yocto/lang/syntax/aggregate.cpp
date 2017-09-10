@@ -16,13 +16,13 @@ namespace yocto
             Aggregate:: Aggregate(const string &id) :
             Compound(id,UUID)
             {
-                YOCTO_LANG_SYNTAX_RULE_SELF();
+                YOCTO_LANG_SYNTAX_RULE_SELF(Aggregate);
             }
 
             Aggregate:: Aggregate(const char *id) :
             Compound(id,UUID)
             {
-                YOCTO_LANG_SYNTAX_RULE_SELF();
+                YOCTO_LANG_SYNTAX_RULE_SELF(Aggregate);
             }
 
             Aggregate & Aggregate:: noSingle() throw()

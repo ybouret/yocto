@@ -14,13 +14,13 @@ namespace yocto
             Alternate:: Alternate(const string &id) :
             Compound(id,UUID)
             {
-                YOCTO_LANG_SYNTAX_RULE_SELF();
+                YOCTO_LANG_SYNTAX_RULE_SELF(Alternate);
             }
 
             Alternate:: Alternate(const char *id) :
             Compound(id,UUID)
             {
-                YOCTO_LANG_SYNTAX_RULE_SELF();
+                YOCTO_LANG_SYNTAX_RULE_SELF(Alternate);
             }
 
             const char *Alternate:: __shp() const throw()

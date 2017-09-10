@@ -24,8 +24,8 @@ namespace yocto
             IsNormal = 0x0000, //!< different possible tokens
             IsUnique = 0x0001, //!< always the same token, clear content (aka raw string...)
             IsHollow = 0x0002, //!< no semantic meaning (aka separators...)
-            NoSingle = 0x0100, //!< merge if only one child
-            IsFusing = 0x0200  //!< will fuse content with parent, like fusion mark
+            NoSingle = 0x0101, //!< merge if only one child
+            IsFusing = 0x0202  //!< will fuse content with parent, like fusion mark
         };
 
         namespace Syntax
@@ -42,7 +42,7 @@ virtual void          __lnk(ios::ostream &fp) const;                   \
 virtual const char *  __shp() const throw();                           \
 virtual bool          admitsEmpty() const throw()
 
-#define YOCTO_LANG_SYNTAX_RULE_SELF() self_ = this
+#define YOCTO_LANG_SYNTAX_RULE_SELF(CLASS) self_ = static_cast<CLASS *>(this)
 
             //! Rule interface
             /**
