@@ -12,10 +12,7 @@ namespace yocto
 
             void gCompiler:: registerTermsAndCheckRules(const Node *topNode)
             {
-                if(verbose)
-                {
-                    std::cerr << "== register terminals (and check rules) ==" << std::endl;
-                }
+                if(verbose) { std::cerr << "== register terminals (and check rules) ==" << std::endl; }
 
                 for(const Node *node=topNode;node;node=node->next)
                 {
@@ -29,22 +26,28 @@ namespace yocto
                         const string ID = node->head()->toString();
                         if(ruleDB.search(ID))
                         {
+                            //__________________________________________________
+                            //
                             // this is a rule
                             if(verbose) { std::cerr << "**  " << ID << std::endl; }
+                            // so we recurse
+                            //__________________________________________________
+
                             __collect(node);
                         }
                         else
                         {
+                            //__________________________________________________
+                            //
                             // this is an alias
+                            //__________________________________________________
                             if(verbose) { std::cerr << "*** " << ID << std::endl; }
                         }
                     }
                 }
 
-                if(verbose)
-                {
-                    std::cerr << std::endl;
-                }
+                if(verbose) { std::cerr << std::endl; }
+                
             }
 
             namespace

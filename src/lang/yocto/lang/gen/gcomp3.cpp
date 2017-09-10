@@ -19,10 +19,7 @@ namespace yocto
             //__________________________________________________________________
             void gCompiler::link(const Node *topNode)
             {
-                if(verbose)
-                {
-                    std::cerr << "== linking {" << parser->tag << "} ==" << std::endl;
-                }
+                if(verbose) { std::cerr << "== linking {" << parser->tag << "} ==" << std::endl; }
 
                 //______________________________________________________________
                 //
@@ -33,19 +30,17 @@ namespace yocto
                     const string &label = node->origin.label;
                     switch(rootHash(label))
                     {
-                        case 0: assert( "RULE" == label); linkRule(node); break;
-                        case 1: assert( "LXR" == label ); linkLxr(node);  break;
-                        case 2: assert( "SMR" == label ); linkSmr(node);  break;
+                        case 0: assert( "RULE" == label ); linkRule(node); break;
+                        case 1: assert( "LXR"  == label ); linkLxr(node);  break;
+                        case 2: assert( "SMR"  == label ); linkSmr(node);  break;
 
                         default:
                             throw exception("gCompiler.link: unknowm \"%s\"", *label);
                     }
                 }
 
-                if(verbose)
-                {
-                    std::cerr << std::endl;
-                }
+                if(verbose) { std::cerr << std::endl; }
+                
             }
 
 
@@ -84,7 +79,6 @@ namespace yocto
                         throw exception("gCompiler.linkRule: unregistered '%s'", label.c_str());
                     }
                     if(verbose) { std::cerr << " (alias);" << std::endl; }
-                    return;
                 }
                 else
                 {
