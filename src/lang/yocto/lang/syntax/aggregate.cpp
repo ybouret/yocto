@@ -25,9 +25,10 @@ namespace yocto
                 YOCTO_LANG_SYNTAX_RULE_SELF(Aggregate);
             }
 
-            Aggregate & Aggregate:: noSingle() throw()
+            
+            Aggregate & Aggregate:: decl(const uint32_t f)
             {
-                (void)let(NoSingle);
+                (void) let(f);
                 return *this;
             }
 

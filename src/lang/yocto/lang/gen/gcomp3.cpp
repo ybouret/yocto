@@ -137,7 +137,7 @@ namespace yocto
                         
                     case 3: assert("SUB"==label);
                     {
-                        Aggregate &sub = parser->agg( parser->newAggLabel() );
+                        Aggregate &sub = parser->agg( parser->newAggLabel() ).decl(MergesAlways);
                         if(verbose) { std::cerr << '('; }
                         fillCompound(sub,node);
                         if(verbose) { std::cerr << ')'; }
@@ -377,7 +377,7 @@ namespace yocto
                     std::cerr << "|_" << SM << ':';
                 }
 
-                if( "NoSingle" == SM )
+                if( "MergesSingle" == SM )
                 {
                     for(node=node->next;node;node=node->next)
                     {
@@ -391,7 +391,7 @@ namespace yocto
                         {
                             throw exception("%s: no rule %s", *SM, *id);
                         }
-                        (**ppR).let(NoSingle);
+                        (**ppR).let(MergesSingle);
                     }
                     goto SMR_DONE;
                 }
@@ -413,10 +413,10 @@ namespace yocto
                         (**ppT).let(IsHollow);
                     }
                     goto SMR_DONE;
-
                 }
 
-
+                throw exception("gCompiler: unhandle semantic rule '%s'", *SM);
+                
             SMR_DONE:
                 if(verbose)
                 {

@@ -23,9 +23,8 @@ namespace yocto
                 explicit Aggregate(const string &);
                 explicit Aggregate(const char   *);
 
-                Aggregate & noSingle() throw(); //!< for grouping syntax
-
-
+                Aggregate &decl(const uint32_t f);
+                
                 YOCTO_LANG_SYNTAX_RULE_DECL();
 
                 size_t getMinCount() const throw(); //!< number of non-admitting-empty members

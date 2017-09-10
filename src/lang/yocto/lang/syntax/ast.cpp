@@ -66,9 +66,9 @@ namespace yocto
                             const bool     fuse =
                             (   Optional::UUID == uuid) ||
                             (   Counting::UUID == uuid) ||
-                            ( (Aggregate::UUID == uuid) && child->origin.label.has(Rule::FusionMark)) ||
-                            ( (Aggregate::UUID == uuid) && (NoSingle==flags) && (1==child->size()) )  ||
-                            ( (Aggregate::UUID == uuid) && (IsFusing==flags) );
+                            //( (Aggregate::UUID == uuid) && child->origin.label.has(Rule::FusionMark)) ||
+                            ( (Aggregate::UUID == uuid) && (MergesSingle==flags) && (1==child->size()) )  ||
+                            ( (Aggregate::UUID == uuid) && (MergesAlways==flags) );
 
                             if(fuse)
                             {

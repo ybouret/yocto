@@ -21,11 +21,11 @@ namespace yocto
     {
         enum SyntaxRuleFlag
         {
-            IsNormal = 0x0000, //!< different possible tokens
-            IsUnique = 0x0001, //!< always the same token, clear content (aka raw string...)
-            IsHollow = 0x0002, //!< no semantic meaning (aka separators...)
-            NoSingle = 0x0101, //!< merge if only one child
-            IsFusing = 0x0202  //!< will fuse content with parent, like fusion mark
+            IsNormal = 0x0000,     //!< different possible tokens
+            IsUnique = 0x0001,     //!< always the same token, clear content (aka raw string...)
+            IsHollow = 0x0002,     //!< no semantic meaning (aka separators...)
+            MergesSingle = 0x0100, //!< merges if only one child
+            MergesAlways = 0x0200  //!< merges always, a temporary sub expression
         };
 
         namespace Syntax
@@ -47,13 +47,12 @@ virtual bool          admitsEmpty() const throw()
             //! Rule interface
             /**
              - flags are for terminal
-             - if the label contains the FusionMark, then the content will be merged to parent
              */
             class Rule : public object
             {
             public:
                 typedef core::list_of_cpp<Rule> List;
-                static const  char              FusionMark = '#';
+                static  const char InternalMark = '#';
 
                 Rule          *next;
                 Rule          *prev;

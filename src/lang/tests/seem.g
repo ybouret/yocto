@@ -29,5 +29,5 @@ ID       : "([:alpha:]|_)([:word:]|_)*";
 @drop : "[:blank:]";
 @endl : "[:endl:]";
 
-%NoSingle: AXP MXP PXP;
-%IsHollow: LPAREN RPAREN;
+%MergesSingle: AXP MXP PXP;
+%IsHollow:     LPAREN RPAREN;

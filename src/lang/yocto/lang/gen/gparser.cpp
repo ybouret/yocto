@@ -4,6 +4,8 @@
 #include "yocto/lang/lexical/plugin/comment.hpp"
 #include "yocto/exception.hpp"
 
+#include "yocto/ios/graphviz.hpp"
+
 namespace yocto
 {
     namespace Lang
@@ -51,7 +53,7 @@ namespace yocto
                 // Parser name
                 //______________________________________________________________
                 {
-                    Aggregate &NAME_DECL = agg("NAME#DECL");
+                    Aggregate &NAME_DECL = agg("NAME_DECL").decl(MergesAlways);
                     NAME_DECL << terminal("NAME",EXPR_NAME) << END;
                     GRAMMAR << NAME_DECL;
                 }
@@ -92,22 +94,22 @@ namespace yocto
                         //
                         // a SUB rule is one or more item
                         //______________________________________________________
-                        Aggregate &SUB = agg("SUB").noSingle();
+                        Aggregate &SUB = agg("SUB").decl(MergesSingle);
                         SUB <<  oneOrMore(ITEM);
 
                         //______________________________________________________
                         //
                         // an ALT rule is the choice of different SUB rule
                         //______________________________________________________
-                        Aggregate &ALT = agg("ALT").noSingle();
-                        ALT  << SUB  << zeroOrMore( agg("ALT#EX") << terminal('|') << SUB );
+                        Aggregate &ALT = agg("ALT").decl(MergesSingle);
+                        ALT  << SUB  << zeroOrMore( agg("ALT#EX").decl(MergesAlways) << terminal('|') << SUB );
 
                         //______________________________________________________
                         //
                         // the add the GROUP possibility for an ATOM
                         // GROUP is temporary only, a wrapper for ALT
                         //______________________________________________________
-                        ATOM << ( agg("GROUP").noSingle() << terminal('(') << ALT << terminal(')') );
+                        ATOM << ( agg("GROUP").decl(MergesSingle) << terminal('(') << ALT << terminal(')') );
 
                         //______________________________________________________
                         //
@@ -147,6 +149,12 @@ namespace yocto
 
 
                 check();
+                if(false)
+                {
+                    std::cerr << "Saving gParser" << std::endl;
+                    graphviz("gparser.dot");
+                    ios::graphviz_render("gparser.dot");
+                }
             }
 
           

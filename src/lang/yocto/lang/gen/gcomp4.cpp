@@ -24,10 +24,7 @@ namespace yocto
                 unsigned ir = 1;
                 for(Rule *r = (Rule *)(parser->getTopLevel());r;r=r->next,++ir)
                 {
-                    if(verbose)
-                    {
-                        std::cerr << "checking rule #" << ir << "='" << r->label << "'" << std::endl;
-                    }
+
                     
                     switch(r->uuid)
                     {
@@ -39,9 +36,9 @@ namespace yocto
                             {
                                 if(verbose)
                                 {
-                                    std::cerr << "\t+IsFusing" << std::endl;
+                                    std::cerr << r->label << ".MergesAlways" << std::endl;
                                 }
-                                r->let(IsFusing);
+                                r->let(MergesAlways);
                             }
                         } break;
 
@@ -49,7 +46,6 @@ namespace yocto
                             break;
                     }
                 }
-
 
             }
         }

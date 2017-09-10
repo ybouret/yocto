@@ -10,31 +10,31 @@ namespace yocto
 
             const string & Grammar:: newAggLabel()
             {
-                tmpLabel = vformat("agg%c%d",Rule::FusionMark,++aggCount);
+                tmpLabel = vformat("agg%c%d",Rule::InternalMark,++aggCount);
                 return tmpLabel;
             }
 
             const string & Grammar:: newAltLabel()
             {
-                tmpLabel = vformat("alt%c%d",Rule::FusionMark,++altCount);
+                tmpLabel = vformat("alt%c%d",Rule::InternalMark,++altCount);
                 return tmpLabel;
             }
 
             const string & Grammar:: newOptLabel()
             {
-                tmpLabel = vformat("opt%c%d",Rule::FusionMark,++optCount);
+                tmpLabel = vformat("opt%c%d",Rule::InternalMark,++optCount);
                 return tmpLabel;
             }
 
             const string & Grammar:: newZomLabel()
             {
-                tmpLabel = vformat("*%c%d",Rule::FusionMark,++zomCount);
+                tmpLabel = vformat("*%c%d",Rule::InternalMark,++zomCount);
                 return tmpLabel;
             }
 
             const string & Grammar:: newOomLabel()
             {
-                tmpLabel = vformat("+%c%d",Rule::FusionMark,++oomCount);
+                tmpLabel = vformat("+%c%d",Rule::InternalMark,++oomCount);
                 return tmpLabel;
             }
 
