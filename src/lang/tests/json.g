@@ -18,6 +18,6 @@ heavy_array : '[' value (',' value)* ']';
 array       : empty_array | heavy_array;
 
 // lexical rules
-@string : "cstring";
+@string : cstring;
 @drop   : "[:blank:]";
 @endl   : "[:endl:]";

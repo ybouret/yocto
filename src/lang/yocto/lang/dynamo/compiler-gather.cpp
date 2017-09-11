@@ -115,7 +115,7 @@ namespace yocto
                         }
                         else
                         {
-                            if(verbose) { std::cerr << "\\_removed" << std::endl; }
+                            if(verbose) { std::cerr << "//|_removed" << std::endl; }
                         }
                     }
                     topLevel.swap_with(tmp);
@@ -127,22 +127,52 @@ namespace yocto
             Rule & DynamoCompiler:: walk(const Node *node)
             {
                 static const char fn[] = "DynamoCompiler.walk: ";
-                
+
                 const string &label = node->origin.label;
-                std::cerr << "content='" << label << "'" << std::endl;
+                //std::cerr << "content='" << label << "'" << std::endl;
 
                 switch(lnkHash(label))
                 {
                     case 0: assert("ID"==label); {
                         const string ID = node->toString();
+                        if(verbose) { std::cerr << ' ' << ID; }
                         return find(fn,ID);
                     }
 
-                    case 1: assert("RX"==label);
-                        break;
+                    case 1: assert("RX"==label);{
+                        const string RX = node->toString();
+                        if(verbose) { std::cerr << ' ' << '\"' << RX << '\"'; }
+                        dynTerm *ppT = termDB.search(RX);
+                        if(ppT)
+                        {
+                            return **ppT;
+                        }
+                        else
+                        {
+                            Terminal &t = parser->terminal(RX);
+                            __newTerm(fn,&t);
+                            return t;
+                        }
+                    } break;
 
                     case 2: assert("RS"==label);
-                        break;
+                    {
+                        const string RS  = node->toString();
+                        if(verbose) { std::cerr << ' ' << '\'' << RS << '\''; }
+                        dynTerm     *ppT = termDB.search(RS);
+                        if(ppT)
+                        {
+                            return **ppT;
+                        }
+                        else
+                        {
+                            const string EX = RS2Expr(RS);
+                            Terminal    &t  = parser->terminal(RS,EX);
+                            __newTerm(fn,&t);
+                            t.let(IsHollow); // in rule raw strings are hollow...
+                            return t;
+                        }
+                    }
 
                     case 3: assert("SUB"==label); {
                         const Node::List &children = node->toList();
@@ -193,7 +223,7 @@ namespace yocto
                     }
                 }
 
-                throw exception("No Implemented");
+                throw exception("%sunexpected %s",fn,*label);
             }
         }
     }
