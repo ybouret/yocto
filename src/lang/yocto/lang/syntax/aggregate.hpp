@@ -23,7 +23,6 @@ namespace yocto
                 explicit Aggregate(const string &);
                 explicit Aggregate(const char   *);
 
-                Aggregate &decl(const uint32_t f);
                 
                 YOCTO_LANG_SYNTAX_RULE_DECL();
 

@@ -53,7 +53,7 @@ namespace yocto
                 // Parser name
                 //______________________________________________________________
                 {
-                    Aggregate &NAME_DECL = agg("NAME_DECL").decl(MergesAlways);
+                    Aggregate &NAME_DECL = Decl(agg("NAME_DECL"),MergesAlways);
                     NAME_DECL << terminal("NAME",EXPR_NAME) << END;
                     GRAMMAR << NAME_DECL;
                 }
@@ -94,22 +94,22 @@ namespace yocto
                         //
                         // a SUB rule is one or more item
                         //______________________________________________________
-                        Aggregate &SUB = agg("SUB").decl(MergesSingle);
+                        Aggregate &SUB = Decl(agg("SUB"),MergesSingle);
                         SUB <<  oneOrMore(ITEM);
 
                         //______________________________________________________
                         //
                         // an ALT rule is the choice of different SUB rule
                         //______________________________________________________
-                        Aggregate &ALT = agg("ALT").decl(MergesSingle);
-                        ALT  << SUB  << zeroOrMore( agg("ALT#EX").decl(MergesAlways) << terminal('|') << SUB );
+                        Aggregate &ALT = Decl(agg("ALT"),MergesSingle);
+                        ALT  << SUB  << zeroOrMore( Decl(agg("ALT#EX"),MergesAlways) << terminal('|') << SUB );
 
                         //______________________________________________________
                         //
                         // the add the GROUP possibility for an ATOM
                         // GROUP is temporary only, a wrapper for ALT
                         //______________________________________________________
-                        ATOM << ( agg("GROUP").decl(MergesSingle) << terminal('(') << ALT << terminal(')') );
+                        ATOM << ( Decl(agg("GROUP"),MergesSingle) << terminal('(') << ALT << terminal(')') );
 
                         //______________________________________________________
                         //

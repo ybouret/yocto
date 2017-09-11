@@ -26,11 +26,7 @@ namespace yocto
             }
 
             
-            Aggregate & Aggregate:: decl(const uint32_t f)
-            {
-                (void) let(f);
-                return *this;
-            }
+        
 
 
             const char * Aggregate:: __shp() const throw()
@@ -41,7 +37,7 @@ namespace yocto
             void Aggregate:: __viz(ios::ostream &fp) const
             {
                 __mark(fp);
-                fp("[shape=%s,label=\"%s\"];\n",__shp(),label.c_str());
+                fp("[shape=%s,label=\"%s\",style=\"%s\"];\n",__shp(),*label,__sty());
                 //vizLink(fp);
             }
 

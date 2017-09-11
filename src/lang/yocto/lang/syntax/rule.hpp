@@ -21,9 +21,9 @@ namespace yocto
     {
         enum SyntaxRuleFlag
         {
-            IsNormal = 0x0000,     //!< different possible tokens
-            IsUnique = 0x0001,     //!< always the same token, clear content (aka raw string...)
-            IsHollow = 0x0002,     //!< no semantic meaning (aka separators...)
+            IsNormal     = 0x0000, //!< different possible tokens
+            IsUnique     = 0x0001, //!< always the same token, clear content (aka raw string...)
+            IsHollow     = 0x0002, //!< no semantic meaning (aka separators...)
             MergesSingle = 0x0100, //!< merges if only one child
             MergesAlways = 0x0200  //!< merges always, a temporary sub expression
         };
@@ -75,7 +75,8 @@ virtual bool          admitsEmpty() const throw()
                 virtual void        __lnk(ios::ostream &) const                    = 0;
                 virtual const char *__shp()               const throw()            = 0;
                 virtual bool          admitsEmpty() const throw()                  = 0;
-                
+                const char         *__sty() const throw();
+
                 //______________________________________________________________
                 //
                 // non-virtual interface
@@ -86,7 +87,6 @@ virtual bool          admitsEmpty() const throw()
 
                 inline const char   *id() const throw() { return *label; }
 
-                static const char   *VizStyle(const uint32_t f) throw();
 
             protected:
                 explicit Rule(const string  &id,

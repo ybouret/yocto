@@ -94,14 +94,14 @@ namespace yocto
                         //
                         // a SUB rule is one or more item
                         //______________________________________________________
-                        Aggregate &SUB = agg("SUB").decl(MergesSingle);
+                        Aggregate &SUB = Decl(agg("SUB"),MergesSingle);
                         SUB <<  oneOrMore(ITEM);
 
                         //______________________________________________________
                         //
                         // an ALT rule is the choice of different SUB rule
                         //______________________________________________________
-                        Aggregate &ALT = agg("ALT").decl(MergesSingle);
+                        Aggregate &ALT = Decl(agg("ALT"),MergesSingle);
                         ALT  << SUB  << zeroOrMore( Decl(agg("ALTS"),MergesAlways) << terminal('|') << SUB );
 
                         //______________________________________________________

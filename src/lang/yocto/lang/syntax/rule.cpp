@@ -68,8 +68,22 @@ self_(0)
             {
                 fp.viz(this);
             }
-            
-            
+
+            const char * Rule:: __sty() const throw()
+            {
+                switch(flags)
+                {
+                    case IsUnique:     return "solid";
+                    case IsHollow:     return "dashed";
+                    case MergesSingle: return "rounded";
+                    case MergesAlways: return "dashed";
+                    default:
+                        break;
+                }
+                return "bold";
+            }
+
+
         }
     }
 }

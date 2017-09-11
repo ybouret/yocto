@@ -131,7 +131,7 @@ namespace yocto
                         
                     case 3: assert("SUB"==label);
                     {
-                        Aggregate &sub = parser->agg( parser->newAggLabel() ).decl(MergesAlways);
+                        Aggregate &sub = Grammar::Decl(parser->agg( parser->newAggLabel() ),MergesAlways);
                         if(verbose) { std::cerr << '('; }
                         fillCompound(sub,node);
                         if(verbose) { std::cerr << ')'; }
