@@ -45,6 +45,5 @@ YOCTO_UNIT_TEST_IMPL(types)
     __SHOW(Syntax::Aggregate);
     __SHOW(Syntax::Optional);
     __SHOW(Syntax::Counting);
-
 }
 YOCTO_UNIT_TEST_DONE()

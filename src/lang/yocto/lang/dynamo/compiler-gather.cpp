@@ -44,6 +44,28 @@ namespace yocto
                 return **ppR;
             }
 
+            inline void ScanAgg( Aggregate &agg, const bool verbose)
+            {
+                //std::cerr << " /* Scanning " << agg.label << " */";
+                MetaList &members = agg.members;
+                if(members.size<=1) return;
+
+                for(MetaNode *m = agg.members.head; m; m=m->next)
+                {
+                    Rule *rule = m->addr;
+                    if( Terminal::UUID == rule->uuid )
+                    {
+                        if(rule->flags==IsUnique)
+                        {
+                            rule->let(IsHollow);
+                            if(verbose) { std::cerr << "/*'" << rule->label << "'.hollow*/"; }
+                        }
+                    }
+                }
+
+            }
+
+
 
             void DynamoCompiler:: gatherFrom(Node *master)
             {
@@ -81,6 +103,7 @@ namespace yocto
                                 }
                                 std::cerr << ";" << std::endl;
                                 node.release();
+                                ScanAgg(topRule,verbose);
                             }  break;
 
 
@@ -200,7 +223,7 @@ namespace yocto
                         //
                         //______________________________________________________
                         const Node::List &children = node->toList();
-                        Compound         &r        = Decl(parser->agg( parser->newAggLabel() ),MergesAlways);
+                        Aggregate         &r        = Decl(parser->agg( parser->newAggLabel() ),MergesAlways);
 
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
@@ -208,7 +231,7 @@ namespace yocto
                             r << walk(sub);
                         }
                         if(verbose) { std::cerr << ' ' << ')'; }
-
+                        ScanAgg(r,verbose);
                         return r;
                     }
 
@@ -219,7 +242,7 @@ namespace yocto
                         //
                         //______________________________________________________
                         const Node::List &children = node->toList();
-                        Compound         &r        = parser->alt();
+                        Alternate        &r        = parser->alt();
 
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
@@ -281,7 +304,7 @@ namespace yocto
                 if(verbose) { std::cerr << '@' << lexrKey << ':'; }
                 const Node  *arg  = child->next;
                 const size_t args = children.size-1;
-                
+
                 switch(lxrHash(lexrKey))
                 {
                         //______________________________________________________
@@ -343,17 +366,17 @@ namespace yocto
                             parser->root.call(parser->hook<Lexical::InlineComment>(ruleName,ruleEnter,ruleLeave));
                             if(verbose) { std::cerr << ' ' << ruleName; }
                         } break;
-
+                            
                         default: throw exception("%s: comment requires 1 or 2 arguments",fn);
                     }
                         break;
-
-
+                        
+                        
                     default:
                         throw exception("%sunhandled lexical rule '%s'", fn, *lexrKey);
                 }
-
-
+                
+                
                 if(verbose) { std::cerr << ';' << std::endl; }
             }
         }

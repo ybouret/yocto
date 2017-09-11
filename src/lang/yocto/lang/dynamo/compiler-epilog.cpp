@@ -11,6 +11,8 @@ namespace yocto
 
             void DynamoCompiler:: finalize()
             {
+                
+
                 termDB.release();
                 ruleDB.release();
             }

@@ -59,7 +59,8 @@ namespace yocto
                 // Finalize
                 //______________________________________________________________
                 void finalize();
-
+                void __scan(Rule *r);
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(DynamoCompiler);
                 static string RS2Expr(const string &RS);
