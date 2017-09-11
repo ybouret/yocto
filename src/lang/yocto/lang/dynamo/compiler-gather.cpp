@@ -77,7 +77,7 @@ namespace yocto
                                 Aggregate        &topRule  = findRule(fn,ruleName);
                                 for(sub=sub->next;sub;sub=sub->next)
                                 {
-
+                                    topRule << compile(sub);
                                 }
                                 std::cerr << ";" << std::endl;
                                 node.release();
@@ -122,6 +122,13 @@ namespace yocto
                 }
 
                 if(verbose) { std::cerr << std::endl; }
+            }
+
+            Rule & DynamoCompiler:: compile(const Node *node)
+            {
+                const string &label = node->origin.label;
+                std::cerr << "content='" << label << "'" << std::endl;
+                throw exception("No Implemented");
             }
         }
     }

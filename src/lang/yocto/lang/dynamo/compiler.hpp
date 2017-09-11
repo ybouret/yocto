@@ -50,6 +50,7 @@ namespace yocto
                 Aggregate &findRule(const char *fn, const string &label);
                 Terminal  &findTerm(const char *fn, const string &label);
                 Rule      &find(const char *fn, const string &label);
+                Rule      &compile(const Node *node);
                 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(DynamoCompiler);
