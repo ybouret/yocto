@@ -15,6 +15,11 @@ namespace yocto
 #define NAME_PREFIX "\\."
 #define NAME_EXPR NAME_PREFIX ID_EXPR
 
+#define LX_PREFIX "@"
+#define LX_EXPR   LX_PREFIX ID_EXPR
+
+#define SM_PREFIX "%"
+#define SM_EXPR   SM_PREFIX ID_EXPR
 
             DynamoParser:: ~DynamoParser() throw()
             {
@@ -122,7 +127,23 @@ namespace yocto
                     RULE << END;
                 }
 
+                //______________________________________________________________
+                //
+                // lexical rule
+                //______________________________________________________________
+                Aggregate &LEXR = agg("LEXR");
+                {
+                    LEXR << terminal("LX",LX_EXPR) << COLUMN << zeroOrMore(choice(RX,RS)) << END;
+                }
 
+                //______________________________________________________________
+                //
+                // Semantic modification rule
+                //______________________________________________________________
+                Aggregate &SEMR = agg("SEMR");
+                {
+                    SEMR << terminal("SM",SM_EXPR) << COLUMN << zeroOrMore(ID) << END;
+                }
                 //______________________________________________________________
                 //
                 // choice for grammar
@@ -131,6 +152,8 @@ namespace yocto
                     Alternate &ENTRIES = alt("ENTRIES");
                     GRAMMAR << zeroOrMore(ENTRIES);
                     ENTRIES << ALIAS << RULE;
+                    ENTRIES << LEXR;
+                    ENTRIES << SEMR;
                 }
 
                 //______________________________________________________________

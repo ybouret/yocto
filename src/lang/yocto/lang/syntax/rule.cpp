@@ -73,14 +73,14 @@ self_(0)
             {
                 switch(flags)
                 {
-                    case IsUnique:     return "solid";
+                    case IsUnique:     return "bold";
                     case IsHollow:     return "dashed";
                     case MergesSingle: return "rounded";
                     case MergesAlways: return "dashed";
                     default:
                         break;
                 }
-                return "bold";
+                return "solid";
             }
 
 
