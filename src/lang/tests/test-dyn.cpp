@@ -10,14 +10,13 @@ using namespace Lang;
 YOCTO_UNIT_TEST_IMPL(dyn)
 {
     vfs           &fs = local_fs::instance();
-
-    fs.try_remove_file("tree.dot");
-    fs.try_remove_file("tree.png");
+    
 
     const Module::Handle hModule( new Module() );
     Source               source(hModule);
 
     Syntax::DynamoCompiler P;
+    P.verbose = true;
 
     (std::cerr << "Ready..." << std::endl ).flush();
 
@@ -31,5 +30,7 @@ YOCTO_UNIT_TEST_IMPL(dyn)
         ios::graphviz_render("tree.dot");
     }
 
+    auto_ptr<Syntax::Parser> parser( P.encode( tree.yield() ) );
+    
 }
 YOCTO_UNIT_TEST_DONE()

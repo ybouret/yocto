@@ -1,8 +1,9 @@
 .simple;
 
-code    : ((assign|id|string) ';') *;
+code    : ((assign|id|string|COM) ';') *;
 assign  : id '=' (string) ;
 id      : "[:alpha:][:word:]*\\t?";
+COM     : 'COM';
 
 @string : cstring;
 
