@@ -177,7 +177,7 @@ namespace yocto
                 root.make("ENDL",   "[:endl:]",   YOCTO_LANG_LEXICAL(newline));
                 root.make("BLANKS", "[:blank:]+", YOCTO_LANG_LEXICAL(discard));
 
-                if(true)
+                if(false)
                 {
                     std::cerr << "Saving DynamoParser" << std::endl;
                     graphviz("dparser.dot");
