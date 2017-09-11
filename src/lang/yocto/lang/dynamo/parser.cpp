@@ -15,6 +15,7 @@ namespace yocto
 #define NAME_PREFIX "\\."
 #define NAME_EXPR NAME_PREFIX ID_EXPR
 
+
 #define LX_PREFIX "@"
 #define LX_EXPR   LX_PREFIX ID_EXPR
 
@@ -129,12 +130,23 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // lexical rule
+                // lexical rule : drop, endl, comment
                 //______________________________________________________________
                 Aggregate &LEXR = agg("LEXR");
+                Rule      &LX   = terminal("LX",LX_EXPR);
                 {
-                    LEXR << terminal("LX",LX_EXPR) << COLUMN << zeroOrMore(choice(RX,RS)) << END;
+                    LEXR << LX << COLUMN << zeroOrMore(choice(RX,RS)) << END;
                 }
+
+                //______________________________________________________________
+                //
+                // lexical rule : plugin
+                //______________________________________________________________
+                Aggregate &PLUG = agg("PLUG");
+                {
+                    PLUG << LX << COLUMN << ID << END;
+                }
+
 
                 //______________________________________________________________
                 //
@@ -152,7 +164,7 @@ namespace yocto
                     Alternate &ENTRIES = alt("ENTRIES");
                     GRAMMAR << zeroOrMore(ENTRIES);
                     ENTRIES << ALIAS << RULE;
-                    ENTRIES << LEXR;
+                    ENTRIES << LEXR  << PLUG;
                     ENTRIES << SEMR;
                 }
 
