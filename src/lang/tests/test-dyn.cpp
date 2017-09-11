@@ -1,4 +1,4 @@
-#include "yocto/lang/dynamo/parser.hpp"
+#include "yocto/lang/dynamo/compiler.hpp"
 
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/graphviz.hpp"
@@ -17,7 +17,7 @@ YOCTO_UNIT_TEST_IMPL(dyn)
     const Module::Handle hModule( new Module() );
     Source               source(hModule);
 
-    Syntax::DynamoParser P;
+    Syntax::DynamoCompiler P;
 
     (std::cerr << "Ready..." << std::endl ).flush();
 
