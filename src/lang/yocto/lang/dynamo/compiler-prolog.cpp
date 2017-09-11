@@ -54,13 +54,20 @@ namespace yocto
                     default:
                         break;
                 }
-                throw exception("DynamoCompiler.String2Expr: unexpected '%s'", *label);
+                throw exception("DynamoCompiler.String2Expr: unexpected node '%s'", *label);
             }
 
 
             void DynamoCompiler:: createTopLevelFrom(Node *master)
             {
                 static const char fn[] = "Dynamo.createTopLevel: ";
+
+                //______________________________________________________________
+                //
+                //
+                // get info from master node
+                //
+                //______________________________________________________________
 
                 assert(master);
                 assert(master->internal);
@@ -84,7 +91,12 @@ namespace yocto
                     }
                 }
 
+                //______________________________________________________________
+                //
+                //
                 // create top level rules and alias
+                //
+                //______________________________________________________________
                 {
                     Node::List tmp;
                     while(topLevel.size>0)

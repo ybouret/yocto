@@ -74,7 +74,7 @@ namespace yocto
                 assert(master);
                 assert(master->internal);
                 Node::List &topLevel = master->toList();
-                if(verbose) { std::cerr << "== gathering " << parser->tag << ", remaining#topLevel=" << topLevel.size << " ==" << std::endl; }
+                if(verbose) { std::cerr << "== gathering " << parser->tag << " ==" << std::endl; }
 
                 {
                     Node::List tmp;
@@ -146,7 +146,6 @@ namespace yocto
                 }
 
                 if(verbose) {
-                    std::cerr << "remaining#topLevel=" << topLevel.size << std::endl;
                     std::cerr << std::endl;
                 }
             }

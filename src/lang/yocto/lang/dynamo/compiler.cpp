@@ -77,6 +77,7 @@ namespace yocto
                     const string parserDot = parser->tag + ".dot";
                     parser->graphviz(parserDot);
                     ios::graphviz_render(parserDot);
+                    std::cerr << std::endl;
                 }
 
                 return parser.yield();
