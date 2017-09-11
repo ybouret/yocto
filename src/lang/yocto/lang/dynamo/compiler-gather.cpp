@@ -188,7 +188,7 @@ namespace yocto
                             const string EX = RS2Expr(RS);
                             Terminal    &t  = parser->terminal(RS,EX);
                             __newTerm(fn,&t);
-                            t.let(IsHollow); // in rule raw strings are hollow...
+                            t.let(IsUnique); // check hollow if not alone in sub-expression!
                             return t;
                         }
                     }

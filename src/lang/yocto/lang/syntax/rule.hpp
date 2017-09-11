@@ -6,7 +6,7 @@
 #include "yocto/lang/lexical/translator.hpp"
 #include "yocto/lang/syntax/node.hpp"
 
-#define YOCTO_LANG_SYNTAX_VERBOSE 1
+#define YOCTO_LANG_SYNTAX_VERBOSE 0
 
 #if (1==YOCTO_LANG_SYNTAX_VERBOSE)
 #include <iostream>
