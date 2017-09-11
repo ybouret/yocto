@@ -19,7 +19,11 @@ YOCTO_UNIT_TEST_IMPL(dyn)
 
     Syntax::DynamoParser P;
 
+    (std::cerr << "Ready..." << std::endl ).flush();
+
     auto_ptr<Syntax::Node> tree( P.parse(source) );
+    
+    (std::cerr << "...done" << std::endl ).flush();
 
     if( tree.is_valid() )
     {
