@@ -45,7 +45,7 @@ namespace yocto
                 auto_ptr<Node> guard(master);
                 parser.reset(0);
                 createTopLevelFrom(master);
-
+                gatherFrom(master);
 
                 if(verbose)
                 {

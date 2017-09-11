@@ -46,8 +46,11 @@ namespace yocto
                 //
                 // gather
                 //______________________________________________________________
-                void gatherFrom( Node *master );
-
+                void     gatherFrom( Node *master );
+                Aggregate &findRule(const char *fn, const string &label);
+                Terminal  &findTerm(const char *fn, const string &label);
+                Rule      &find(const char *fn, const string &label);
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(DynamoCompiler);
                 static string RS2Expr(const string &RS);
