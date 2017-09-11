@@ -16,11 +16,11 @@ public:
     explicit myParser() : Syntax::Parser("dummy")
     {
         Syntax::Aggregate &ASSIGN = agg("ASSIGN");
-        Syntax::Rule      &END    = terminal("END", ";").let(IsHollow);
+        Syntax::Rule      &END    = Decl(terminal("END", ";"),IsHollow);
         Syntax::Rule      &ID     = terminal("ID", "[_[:alpha:]][:word:]*");
         Syntax::Rule      &INT    = terminal("INT","[:digit:]+");
 
-        ASSIGN << ID << terminal("EQUAL",'=').let(IsHollow) << choice(ID,INT) << END;
+        ASSIGN << ID << Decl(terminal("EQUAL",'='),IsHollow) << choice(ID,INT) << END;
         Syntax::Aggregate &DECL = agg("DECL");
         DECL << choice(ID,INT) << END;
 

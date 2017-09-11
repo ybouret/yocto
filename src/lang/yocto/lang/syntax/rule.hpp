@@ -61,8 +61,8 @@ virtual bool          admitsEmpty() const throw()
                 const uint32_t flags;
                 void          *self_;
 
-                Rule &let(const uint32_t flag) throw();
-
+                void let(const uint32_t flag) throw();
+                
                 virtual ~Rule() throw();
 
                 //______________________________________________________________

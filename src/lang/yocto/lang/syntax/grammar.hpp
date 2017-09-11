@@ -26,12 +26,19 @@ namespace yocto
                 Node *accept(Lexer &lexer, Source &source);
 
                 template <typename RULE>
-                RULE & add( RULE *rule )
+                inline RULE & add( RULE *rule )
                 {
                     append(rule);
                     return *rule;
                 }
 
+                template <typename RULE> static inline
+                RULE & Decl( RULE &r, const uint32_t flag)
+                {
+                    r.let(flag);
+                    return r;
+                }
+                
                 void graphviz(const string &filename) const;
 
                 Rule & choice( Rule &a, Rule &b );

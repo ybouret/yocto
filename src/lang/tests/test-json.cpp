@@ -18,9 +18,9 @@ namespace
     public:
         explicit jParser() : Syntax::Parser("JSON")
         {
-            Syntax::Rule     &jTrue   = terminal("true").let(IsUnique);
-            Syntax::Rule     &jFalse  = terminal("false").let(IsUnique);
-            Syntax::Rule     &jNull   = terminal("null").let(IsUnique);
+            Syntax::Rule     &jTrue   = Decl(terminal("true"), IsUnique);
+            Syntax::Rule     &jFalse  = Decl(terminal("false"),IsUnique);
+            Syntax::Rule     &jNull   = Decl(terminal("null"), IsUnique);
             Syntax::Rule     &jNumber = terminal("number",rx_num);
             Syntax::Rule     &jString = term<Lexical::cstring>("string");
             Syntax::Rule     &jComma  = terminal(',');
@@ -28,7 +28,7 @@ namespace
             Syntax::Rule     &jRBRACK = terminal(']');
 
             Syntax::Compound &jElements   = agg("elements");
-            Syntax::Compound &jElementsEx = agg("elements#ex");
+            Syntax::Compound &jElementsEx = Decl(agg("elements#ex"),MergesAlways);
 
             Syntax::Alternate &jValue = alt();
             jValue << jNumber << jTrue << jFalse << jNull << jString;

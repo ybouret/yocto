@@ -36,11 +36,15 @@ FILE(GLOB gen_impl yocto/lang/gen/*.cpp)
 FILE(GLOB gen_priv yocto/lang/gen/*.hxx)
 SET(gen_srcs ${gen_decl} ${gen_impl} ${gen_priv})
 SOURCE_GROUP(lang/gen FILES ${gen_srcs})
-#INSTALL(FILES ${gen_decl} DESTINATION include/yocto/lang/gen)
+
+FILE(GLOB dynamo_decl yocto/lang/dynamo/*.hpp)
+FILE(GLOB dynamo_impl yocto/lang/dynamo/*.cpp)
+SET(dynamo_srcs ${dynamo_decl} ${dynamo_impl})
+SOURCE_GROUP(lang/dynamo FILES ${dynamo_srcs})
 
 INCLUDE_DIRECTORIES(. ../yocto)
 
-ADD_LIBRARY(y-lang STATIC ${srcs} ${pattern_srcs} ${lexical_srcs} ${lexical_plugin_srcs} ${syntax_srcs} ${gen_srcs})
+ADD_LIBRARY(y-lang STATIC ${srcs} ${pattern_srcs} ${lexical_srcs} ${lexical_plugin_srcs} ${syntax_srcs} ${gen_srcs} ${dynamo_srcs})
 
 INSTALL( TARGETS y-lang ARCHIVE DESTINATION lib )
 
