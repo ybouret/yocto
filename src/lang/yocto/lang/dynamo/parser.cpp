@@ -54,7 +54,9 @@ namespace yocto
                 //______________________________________________________________
 
                 Aggregate &ALIAS = agg("ALIAS");
-
+                {
+                    ALIAS << ID << COLUMN << choice(RX,RS) << END;
+                }
 
                 //______________________________________________________________
                 //
@@ -100,14 +102,14 @@ namespace yocto
                         // an ALT rule is the choice of different SUB rule
                         //______________________________________________________
                         Aggregate &ALT = agg("ALT").decl(MergesSingle);
-                        ALT  << SUB  << zeroOrMore( agg("ALT#EX").decl(MergesAlways) << terminal('|') << SUB );
+                        ALT  << SUB  << zeroOrMore( Decl(agg("ALTS"),MergesAlways) << terminal('|') << SUB );
 
                         //______________________________________________________
                         //
                         // the add the GROUP possibility for an ATOM
                         // GROUP is temporary only, a wrapper for ALT
                         //______________________________________________________
-                        ATOM << ( agg("GROUP").decl(MergesSingle) << terminal('(') << ALT << terminal(')') );
+                        ATOM << ( Decl(agg("GROUP"),MergesAlways) << terminal('(') << ALT << terminal(')') );
 
                         //______________________________________________________
                         //

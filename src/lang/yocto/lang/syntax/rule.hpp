@@ -6,7 +6,7 @@
 #include "yocto/lang/lexical/translator.hpp"
 #include "yocto/lang/syntax/node.hpp"
 
-#define YOCTO_LANG_SYNTAX_VERBOSE 0
+#define YOCTO_LANG_SYNTAX_VERBOSE 1
 
 #if (1==YOCTO_LANG_SYNTAX_VERBOSE)
 #include <iostream>
@@ -84,7 +84,9 @@ virtual bool          admitsEmpty() const throw()
                 static void Restore( Lexer &lexer, Node *node ) throw();
                 void __mark( ios::ostream &fp ) const;
 
-                inline const char   *id() const throw() { return label.c_str(); }
+                inline const char   *id() const throw() { return *label; }
+
+                static const char   *VizStyle(const uint32_t f) throw();
 
             protected:
                 explicit Rule(const string  &id,
