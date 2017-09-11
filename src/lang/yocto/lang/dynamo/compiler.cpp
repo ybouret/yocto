@@ -26,6 +26,18 @@ namespace yocto
                 "RS"
             };
 
+            static const char *lnkKW[] =
+            {
+                "ID",
+                "RX",
+                "RS",
+                "SUB",
+                "ALT",
+                "ZOM",
+                "OOM",
+                "OPT"
+            };
+
             DynamoCompiler:: DynamoCompiler() :
             DynamoParser(),
             parser(0),
@@ -33,7 +45,8 @@ namespace yocto
             ruleDB(),
             termDB(),
             topHash(YOCTO_MPERF_FOR(topKW)),
-            strHash(YOCTO_MPERF_FOR(strKW))
+            strHash(YOCTO_MPERF_FOR(strKW)),
+            lnkHash(YOCTO_MPERF_FOR(lnkKW))
             {
             }
 

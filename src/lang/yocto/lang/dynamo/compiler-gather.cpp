@@ -77,7 +77,7 @@ namespace yocto
                                 Aggregate        &topRule  = findRule(fn,ruleName);
                                 for(sub=sub->next;sub;sub=sub->next)
                                 {
-                                    topRule << compile(sub);
+                                    topRule << walk(sub);
                                 }
                                 std::cerr << ";" << std::endl;
                                 node.release();
@@ -124,10 +124,75 @@ namespace yocto
                 if(verbose) { std::cerr << std::endl; }
             }
 
-            Rule & DynamoCompiler:: compile(const Node *node)
+            Rule & DynamoCompiler:: walk(const Node *node)
             {
+                static const char fn[] = "DynamoCompiler.walk: ";
+                
                 const string &label = node->origin.label;
                 std::cerr << "content='" << label << "'" << std::endl;
+
+                switch(lnkHash(label))
+                {
+                    case 0: assert("ID"==label); {
+                        const string ID = node->toString();
+                        return find(fn,ID);
+                    }
+
+                    case 1: assert("RX"==label);
+                        break;
+
+                    case 2: assert("RS"==label);
+                        break;
+
+                    case 3: assert("SUB"==label); {
+                        const Node::List &children = node->toList();
+                        Compound         &r        = parser->agg( parser->newAggLabel() );
+
+                        if(verbose) { std::cerr << '('; }
+                        for(const Node *sub = children.head; sub; sub=sub->next)
+                        {
+                            r << walk(sub);
+                        }
+                        if(verbose) { std::cerr << ' ' << ')'; }
+
+                        return r;
+                    }
+
+                    case 4: assert("ALT"==label); {
+                        const Node::List &children = node->toList();
+                        Compound         &r        = parser->alt();
+
+                        if(verbose) { std::cerr << '('; }
+                        for(const Node *sub = children.head; sub; sub=sub->next)
+                        {
+                            if(verbose&&sub!=children.head) { std::cerr << ' ' << '|'; }
+                            r << walk(sub);
+                        }
+                        if(verbose) { std::cerr << ' ' << ')'; }
+
+                        return r;
+
+                    }
+
+                    case 5: assert("ZOM"==label); {
+                        Rule &r = walk(node->head());
+                        if(verbose) { std::cerr << '*'; }
+                        return parser->zeroOrMore(r);
+                    }
+
+                    case 6: assert("OOM"==label); {
+                        Rule &r = walk(node->head());
+                        if(verbose) { std::cerr << '+'; }
+                        return parser->oneOrMore(r);
+                    }
+
+                    case 7: assert("OPT"==label); {
+                        Rule &r = walk(node->head());
+                        if(verbose) { std::cerr << '?'; }
+                        return parser->optional(r);
+                    }
+                }
+
                 throw exception("No Implemented");
             }
         }

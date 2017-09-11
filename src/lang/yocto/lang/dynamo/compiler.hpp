@@ -27,7 +27,7 @@ namespace yocto
                 dynTermDB        termDB;
                 hashing::mperf   topHash; //!< RULE, ALIAS, PLUG, LEXR, SEMR
                 hashing::mperf   strHash; //!< RX, RS
-                
+                hashing::mperf   lnkHash; //!< ID, RX, RS, SUB, ALT, ZOM, OOM, OPT
                 explicit DynamoCompiler();
                 virtual ~DynamoCompiler() throw();
 
@@ -50,7 +50,7 @@ namespace yocto
                 Aggregate &findRule(const char *fn, const string &label);
                 Terminal  &findTerm(const char *fn, const string &label);
                 Rule      &find(const char *fn, const string &label);
-                Rule      &compile(const Node *node);
+                Rule      &walk(const Node *node);
                 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(DynamoCompiler);
