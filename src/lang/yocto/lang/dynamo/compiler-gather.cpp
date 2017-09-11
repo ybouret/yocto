@@ -129,17 +129,27 @@ namespace yocto
                 static const char fn[] = "DynamoCompiler.walk: ";
 
                 const string &label = node->origin.label;
-                //std::cerr << "content='" << label << "'" << std::endl;
 
                 switch(lnkHash(label))
                 {
+                        //______________________________________________________
+                        //
+                        //
                     case 0: assert("ID"==label); {
+                        //
+                        //______________________________________________________
                         const string ID = node->toString();
                         if(verbose) { std::cerr << ' ' << ID; }
                         return find(fn,ID);
                     }
 
+                        //______________________________________________________
+                        //
+                        //
                     case 1: assert("RX"==label);{
+                        //
+                        //______________________________________________________
+
                         const string RX = node->toString();
                         if(verbose) { std::cerr << ' ' << '\"' << RX << '\"'; }
                         dynTerm *ppT = termDB.search(RX);
@@ -155,7 +165,12 @@ namespace yocto
                         }
                     } break;
 
+                        //______________________________________________________
+                        //
+                        //
                     case 2: assert("RS"==label);
+                        //
+                        //______________________________________________________
                     {
                         const string RS  = node->toString();
                         if(verbose) { std::cerr << ' ' << '\'' << RS << '\''; }
@@ -174,9 +189,14 @@ namespace yocto
                         }
                     }
 
+                        //______________________________________________________
+                        //
+                        //
                     case 3: assert("SUB"==label); {
+                        //
+                        //______________________________________________________
                         const Node::List &children = node->toList();
-                        Compound         &r        = parser->agg( parser->newAggLabel() );
+                        Compound         &r        = Decl(parser->agg( parser->newAggLabel() ),MergesSingle);
 
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
@@ -188,7 +208,12 @@ namespace yocto
                         return r;
                     }
 
+                        //______________________________________________________
+                        //
+                        //
                     case 4: assert("ALT"==label); {
+                        //
+                        //______________________________________________________
                         const Node::List &children = node->toList();
                         Compound         &r        = parser->alt();
 
@@ -204,19 +229,34 @@ namespace yocto
 
                     }
 
+                        //______________________________________________________
+                        //
+                        //
                     case 5: assert("ZOM"==label); {
+                        //
+                        //______________________________________________________
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '*'; }
                         return parser->zeroOrMore(r);
                     }
 
+                        //______________________________________________________
+                        //
+                        //
                     case 6: assert("OOM"==label); {
+                        //
+                        //______________________________________________________
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '+'; }
                         return parser->oneOrMore(r);
                     }
 
+                        //______________________________________________________
+                        //
+                        //
                     case 7: assert("OPT"==label); {
+                        //
+                        //______________________________________________________
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '?'; }
                         return parser->optional(r);
