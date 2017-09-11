@@ -112,7 +112,6 @@ namespace yocto
                             case 0: assert("RULE"==label);
                                 //
                                 //______________________________________________
-
                             {
                                 const string ruleLabel = node->head()->toString();
                                 if(verbose) { std::cerr << "+" << ruleLabel << std::endl; }
