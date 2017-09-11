@@ -1,5 +1,6 @@
 #include "yocto/lang/dynamo/compiler.hpp"
 #include "yocto/ios/graphviz.hpp"
+#include "yocto/exception.hpp"
 
 namespace yocto
 {
@@ -63,10 +64,12 @@ namespace yocto
 
             Parser *DynamoCompiler:: encode( Node *master )
             {
+                if(!master) throw exception("DynamoCompiler.encode(NULL)");
                 auto_ptr<Node> guard(master);
-                parser.reset(0);
+                parser.release();
                 createTopLevelFrom(master);
                 gatherFrom(master);
+                finalize();
 
                 if(verbose)
                 {
@@ -78,7 +81,34 @@ namespace yocto
 
                 return parser.yield();
             }
-            
+
+            static inline
+            Parser * __GenerateFrom( Module *module , const bool verbose)
+            {
+                const Module::Handle     hModule(module);
+                Source                   source(hModule);
+                auto_ptr<DynamoCompiler> compiler( new DynamoCompiler() );
+
+                compiler->verbose = verbose;
+
+                Node *master = compiler->parse(source);
+                return compiler->encode(master);
+            }
+
+            Parser * Parser::Generate(const string &filename,
+                                      const bool    verbose)
+            {
+                return __GenerateFrom( new Module(filename), verbose );
+            }
+
+            Parser * Parser::Generate(const void    *buffer,
+                                      const size_t   buflen,
+                                      const bool     verbose)
+            {
+                return __GenerateFrom( new Module(buffer,buflen), verbose );
+            }
+
+
         }
     }
 }

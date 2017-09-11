@@ -71,7 +71,7 @@ namespace yocto
                     assert(nameNode.is_valid());
                     assert(nameNode->terminal);
                     const string   name = nameNode->toString(1);
-                    if(verbose) { std::cerr << "== new parser " << name << ", #topLevel=" << topLevel.size << " ==" << std::endl; }
+                    if(verbose) { std::cerr << "== new parser " << name << " ==" << std::endl; }
                     parser.reset( new Parser(name) );
                     if(verbose)
                     {

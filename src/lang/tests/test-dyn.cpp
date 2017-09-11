@@ -10,27 +10,38 @@ using namespace Lang;
 YOCTO_UNIT_TEST_IMPL(dyn)
 {
     vfs           &fs = local_fs::instance();
-    
 
-    const Module::Handle hModule( new Module() );
-    Source               source(hModule);
-
-    Syntax::DynamoCompiler P;
-    P.verbose = true;
-
-    (std::cerr << "Ready..." << std::endl ).flush();
-
-    auto_ptr<Syntax::Node> tree( P.parse(source) );
-    
-    (std::cerr << "...done" << std::endl ).flush();
-
-    if( tree.is_valid() )
+    if(argc>1)
     {
-        tree->graphviz("tree.dot");
-        ios::graphviz_render("tree.dot");
+        // create it
+        const string             parserFile = argv[1];
+        auto_ptr<Syntax::Parser> parser( Syntax::Parser::Generate(parserFile,true) );
+
+        // clean output
+        const string parserOutDot = parser->tag + "_out.dot";
+        const string parserOutGfx = parser->tag + "_out.png";
+        fs.try_remove_file(parserOutDot);
+        fs.try_remove_file(parserOutGfx);
+
+        // open stdio
+        const Module::Handle hModule( new Module() );
+        Source               source(hModule);
+
+        // parse
+        (std::cerr << "Ready..." << std::endl ).flush();
+
+        auto_ptr<Syntax::Node> tree( parser->parse(source) );
+
+        (std::cerr << "...done" << std::endl ).flush();
+
+        // save tree
+        if( tree.is_valid() )
+        {
+            tree->graphviz(parserOutDot);
+            ios::graphviz_render(parserOutDot);
+        }
+
     }
 
-    auto_ptr<Syntax::Parser> parser( P.encode( tree.yield() ) );
-    
 }
 YOCTO_UNIT_TEST_DONE()

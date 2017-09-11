@@ -31,12 +31,6 @@ SET(syntax_srcs ${syntax_decl} ${syntax_impl})
 SOURCE_GROUP(lang/syntax FILES ${syntax_srcs})
 INSTALL(FILES ${syntax_decl} DESTINATION include/yocto/lang/syntax)
 
-FILE(GLOB gen_decl yocto/lang/gen/*.hpp)
-FILE(GLOB gen_impl yocto/lang/gen/*.cpp)
-FILE(GLOB gen_priv yocto/lang/gen/*.hxx)
-SET(gen_srcs ${gen_decl} ${gen_impl} ${gen_priv})
-SOURCE_GROUP(lang/gen FILES ${gen_srcs})
-
 FILE(GLOB dynamo_decl yocto/lang/dynamo/*.hpp)
 FILE(GLOB dynamo_impl yocto/lang/dynamo/*.cpp)
 SET(dynamo_srcs ${dynamo_decl} ${dynamo_impl})
@@ -44,7 +38,7 @@ SOURCE_GROUP(lang/dynamo FILES ${dynamo_srcs})
 
 INCLUDE_DIRECTORIES(. ../yocto)
 
-ADD_LIBRARY(y-lang STATIC ${srcs} ${pattern_srcs} ${lexical_srcs} ${lexical_plugin_srcs} ${syntax_srcs} ${gen_srcs} ${dynamo_srcs})
+ADD_LIBRARY(y-lang STATIC ${srcs} ${pattern_srcs} ${lexical_srcs} ${lexical_plugin_srcs} ${syntax_srcs} ${dynamo_srcs})
 
 INSTALL( TARGETS y-lang ARCHIVE DESTINATION lib )
 

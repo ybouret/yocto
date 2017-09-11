@@ -53,7 +53,13 @@ namespace yocto
                 Rule      &find(const char *fn, const string &label);
                 Rule      &walk(const Node *node);
                 void       lexr(const Node &node);
-                
+
+                //______________________________________________________________
+                //
+                // Finalize
+                //______________________________________________________________
+                void finalize();
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(DynamoCompiler);
                 static string RS2Expr(const string &RS);
