@@ -8,7 +8,7 @@ INT    : "[0-9]+";
 IDENT  : "[:alpha:]+";
 END    : ';';
 
-@STRING : "cstring";
+@STRING : cstring;
 
 @drop   : "[:blank:]+";
 @endl   : "[:endl:]";

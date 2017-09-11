@@ -28,6 +28,7 @@ namespace yocto
                 hashing::mperf   topHash; //!< RULE, ALIAS, PLUG, LEXR, SEMR
                 hashing::mperf   strHash; //!< RX, RS
                 hashing::mperf   lnkHash; //!< ID, RX, RS, SUB, ALT, ZOM, OOM, OPT
+                hashing::mperf   lxrHash; //!< drop, endl, comment
                 explicit DynamoCompiler();
                 virtual ~DynamoCompiler() throw();
 
@@ -51,11 +52,12 @@ namespace yocto
                 Terminal  &findTerm(const char *fn, const string &label);
                 Rule      &find(const char *fn, const string &label);
                 Rule      &walk(const Node *node);
+                void       lexr(const Node &node);
                 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(DynamoCompiler);
                 static string RS2Expr(const string &RS);
-
+                string String2Expr(const Node *node) const;
 
 
             };

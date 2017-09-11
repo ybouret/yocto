@@ -44,6 +44,20 @@ namespace yocto
                 return rx;
             }
 
+            string DynamoCompiler:: String2Expr(const Node *node) const
+            {
+                const string label = node->origin.label;
+                switch(strHash(label))
+                {
+                    case 0: assert("RX"==label); return node->toString();
+                    case 1: assert("RS"==label); { const string rs = node->toString(); return RS2Expr(rs); }
+                    default:
+                        break;
+                }
+                throw exception("DynamoCompiler.String2Expr: unexpected '%s'", *label);
+            }
+
+
             void DynamoCompiler:: createTopLevelFrom(Node *master)
             {
                 static const char fn[] = "Dynamo.createTopLevel: ";

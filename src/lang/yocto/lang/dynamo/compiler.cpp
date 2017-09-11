@@ -38,6 +38,13 @@ namespace yocto
                 "OPT"
             };
 
+            static const char *lxrKW[] =
+            {
+                "drop",
+                "endl",
+                "comment"
+            };
+
             DynamoCompiler:: DynamoCompiler() :
             DynamoParser(),
             parser(0),
@@ -46,7 +53,8 @@ namespace yocto
             termDB(),
             topHash(YOCTO_MPERF_FOR(topKW)),
             strHash(YOCTO_MPERF_FOR(strKW)),
-            lnkHash(YOCTO_MPERF_FOR(lnkKW))
+            lnkHash(YOCTO_MPERF_FOR(lnkKW)),
+            lxrHash(YOCTO_MPERF_FOR(lxrKW))
             {
             }
 
