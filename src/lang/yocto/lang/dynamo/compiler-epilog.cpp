@@ -25,6 +25,13 @@ namespace yocto
                         return;
                     }
                 }
+
+                if(1==agg.getMinCount())
+                {
+                    if(verbose) { std::cerr << "//" << agg.label << ".MergesSingle" << std::endl; }
+                    agg.let(MergesSingle);
+                    return;
+                }
             }
 
             void DynamoCompiler:: finalize()
