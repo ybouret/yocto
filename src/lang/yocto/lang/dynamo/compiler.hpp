@@ -42,6 +42,12 @@ namespace yocto
                 void  __newRule(const char *fn, dynRule pR );
                 void  __newTerm(const char *fn, dynTerm pT );
 
+                //______________________________________________________________
+                //
+                // gather
+                //______________________________________________________________
+                void gatherFrom( Node *master );
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(DynamoCompiler);
                 static string RS2Expr(const string &RS);
