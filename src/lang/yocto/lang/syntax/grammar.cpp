@@ -98,6 +98,50 @@ namespace yocto
             }
 
 
+
+
         }
     }
 }
+
+
+namespace yocto
+{
+    namespace Lang
+    {
+        namespace Syntax
+        {
+
+            void  Grammar:: collectLabels(sequence<string> &terminals,
+                                          sequence<string> &internals ) const
+            {
+                for(const Rule *rule = rules.head; rule; rule=rule->next)
+                {
+                    switch(rule->uuid)
+                    {
+                        case Terminal::UUID:
+                            if(rule->flags!=IsHollow)
+                            {
+                                terminals.push_back(rule->label);
+                            }
+                            break;
+
+                        case Aggregate::UUID:
+                            if(rule->flags!=MergesAlways)
+                            {
+                                internals.push_back(rule->label);
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                }
+            }
+
+        }
+    }
+}
+
+

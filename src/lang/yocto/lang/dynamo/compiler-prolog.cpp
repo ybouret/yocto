@@ -117,6 +117,7 @@ namespace yocto
                                 if(verbose) { std::cerr << "+" << ruleLabel << std::endl; }
                                 Aggregate   &rule      = parser->agg(ruleLabel);
                                 __newRule(fn,&rule);
+                                top_max_size = max_of(top_max_size,rule.label.size());
                             } break;
 
 

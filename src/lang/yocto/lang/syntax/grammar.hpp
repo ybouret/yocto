@@ -63,6 +63,9 @@ namespace yocto
                 const string & newOomLabel();
                 const string & newAggLabel();
 
+                void  collectLabels(sequence<string> &terminals,
+                                    sequence<string> &internals ) const;
+
             private:
                 Rule::List rules;
                 int        altCount;
@@ -72,7 +75,7 @@ namespace yocto
                 int        aggCount;
                 string     tmpLabel;
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Grammar);
-
+                
 
 
             };

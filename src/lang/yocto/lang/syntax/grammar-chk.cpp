@@ -22,7 +22,6 @@ namespace yocto
                     assert(rule);
                     assert(gram);
                     assert(rule->self_);
-                    //std::cerr << "...update " << rule->label << std::endl;
                     int *pCount = db.search(rule->label);
                     if(!pCount)
                     {

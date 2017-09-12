@@ -1,6 +1,6 @@
 #include "yocto/lang/dynamo/compiler.hpp"
 #include "yocto/exception.hpp"
-
+#include "yocto/sequence/vector.hpp"
 
 namespace yocto
 {
@@ -9,18 +9,21 @@ namespace yocto
         namespace Syntax
         {
 
-            static inline
-            void DetectFusion( Aggregate &agg, const bool verbose )
+            void DynamoCompiler:: __detectPropertiesOf( Aggregate &agg )
             {
                 const MetaList &members = agg.members;
                 const MetaNode *node    = members.head;
-
+                if(verbose)
+                {
+                    std::cerr << "===> " << agg.label;
+                    for(size_t i=agg.label.size();i<=top_max_size;++i) { std::cerr << ' '; }
+                }
                 if(members.size==1)
                 {
                     assert(node);
                     if(Alternate::UUID==node->addr->uuid)
                     {
-                        if(verbose) { std::cerr << "//" << agg.label << ".MergesAlways" << std::endl; }
+                        if(verbose) { std::cerr << ".MergesAlways" << std::endl; }
                         agg.let(MergesAlways);
                         return;
                     }
@@ -28,7 +31,7 @@ namespace yocto
 
                 if(1==agg.getMinCount())
                 {
-                    if(verbose) { std::cerr << "//" << agg.label << ".MergesSingle" << std::endl; }
+                    if(verbose) { std::cerr << ".MergesSingle" << std::endl; }
                     agg.let(MergesSingle);
                     return;
                 }
@@ -48,17 +51,18 @@ namespace yocto
                 for( dynRuleDB::iterator i=ruleDB.begin(); i != ruleDB.end(); ++i,++indx)
                 {
                     Aggregate &agg = **i;
-                    if(verbose)
-                    {
-                        std::cerr << "scanning '" << agg.label << "'" << std::endl;
-                    }
-                    if(indx>1)
-                    {
-                        DetectFusion(agg,verbose);
-                    }
+                    __detectPropertiesOf(agg);
                 }
 
-
+                if(verbose)
+                {
+                    vector<string> terminals;
+                    vector<string> internals;
+                    parser->collectLabels(terminals,internals);
+                    std::cerr << "terminals=" << terminals << std::endl;
+                    std::cerr << "internals=" << internals << std::endl;
+                }
+                
                 termDB.release();
                 ruleDB.release();
                 std::cerr << std::endl;

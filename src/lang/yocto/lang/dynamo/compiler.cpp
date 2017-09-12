@@ -55,7 +55,8 @@ namespace yocto
             topHash(YOCTO_MPERF_FOR(topKW)),
             strHash(YOCTO_MPERF_FOR(strKW)),
             lnkHash(YOCTO_MPERF_FOR(lnkKW)),
-            lxrHash(YOCTO_MPERF_FOR(lxrKW))
+            lxrHash(YOCTO_MPERF_FOR(lxrKW)),
+            top_max_size(0)
             {
             }
 

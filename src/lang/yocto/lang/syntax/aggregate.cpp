@@ -86,6 +86,7 @@ namespace yocto
 
             bool Aggregate:: admitsEmpty() const throw()
             {
+                // false if at least one of the members doesn't admit an empty token
                 for(const MetaNode *m=members.head;m;m=m->next)
                 {
                     if( !(m->addr->admitsEmpty() ) ) return false;

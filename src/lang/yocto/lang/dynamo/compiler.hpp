@@ -60,12 +60,13 @@ namespace yocto
                 //______________________________________________________________
                 void finalize();
                 void __scan(Rule *r);
+                void __detectPropertiesOf( Aggregate &agg );
                 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(DynamoCompiler);
                 static string RS2Expr(const string &RS);
                 string String2Expr(const Node *node) const;
-
+                size_t top_max_size;
 
             };
 
