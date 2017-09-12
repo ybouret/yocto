@@ -1,6 +1,7 @@
 #include "yocto/lang/dynamo/compiler.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/sequence/vector.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 namespace yocto
 {
@@ -61,6 +62,12 @@ namespace yocto
                     parser->collectLabels(terminals,internals);
                     std::cerr << "terminals=" << terminals << std::endl;
                     std::cerr << "internals=" << internals << std::endl;
+
+                    ios::ocstream fp(ios::cstderr);
+                    const string  prefix = parser->tag + '_';
+                    hashing::mperf::emit_defines(fp,terminals,prefix);
+                    hashing::mperf::emit_defines(fp,internals,prefix,0x0100);
+
                 }
                 
                 termDB.release();
