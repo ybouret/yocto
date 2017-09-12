@@ -36,6 +36,9 @@ namespace yocto
                     agg.let(MergesSingle);
                     return;
                 }
+
+                if(verbose) { std::cerr << std::endl; }
+
             }
 
             void DynamoCompiler:: finalize()
