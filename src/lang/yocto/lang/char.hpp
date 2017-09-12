@@ -12,8 +12,8 @@ namespace yocto
         
         //! a dynamic char, based on a CharInfo
         class  Char :
-        public CharInfo,
-        public object
+        public object,
+        public CharInfo
         {
         public:
             Char   *prev;

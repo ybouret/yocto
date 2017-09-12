@@ -21,18 +21,19 @@ namespace yocto
                 Control  //!< a control unit for translator
             };
 
-            //! define an action
+            //! define an action to take on a matching pattern
             typedef functor<Result,TL1(const Token &)> Action;
 
+            //! define what to do if a pattern is matched
             class Rule : public object
             {
             public:
-                Rule                 *next;
-                Rule                 *prev;
-                const Stamp           stamp;
-                const string         &label;
-                const Pattern::Handle motif;
-                Action                action;
+                Rule                 *next;   //!< for Rules
+                Rule                 *prev;   //!< for Rules
+                const Stamp           stamp;  //!< dynamic stamp
+                const string         &label;  //!< *stamp
+                const Pattern::Handle motif;  //!< the pattern
+                Action                action; //!< the action
 
                 virtual ~Rule() throw();
 

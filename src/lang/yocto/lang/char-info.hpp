@@ -10,7 +10,7 @@ namespace yocto
     namespace Lang
     {
 
-        //! shared string
+        //! shared string to put a stamp on dynamic objects
         typedef arc_ptr<const string> Stamp;
 
         //! Char information if multiple sources

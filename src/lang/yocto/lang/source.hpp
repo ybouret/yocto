@@ -13,6 +13,7 @@ namespace yocto
             class Scanner; //!< to access module
         }
 
+        //! a source of dynamic char
         class Source
         {
         public:

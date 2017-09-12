@@ -14,6 +14,7 @@ namespace yocto
 virtual const char * trigger() const throw(); \
 virtual void         startUp(const Token & )
 
+            //! a plugin a a Scanner associated to a translator
             class Plugin : public Scanner
             {
             public:

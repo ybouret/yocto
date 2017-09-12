@@ -43,12 +43,16 @@ namespace yocto
                 //! update tree
                 static void Grow( Node * &tree, Node *child ) throw();
 
+                //! dangerous, must be called just before deletion
                 Lexeme *yield() throw();
 
+                //! append GraphViz representation
                 void viz( ios::ostream &fp ) const;
+
+                //! visualize this as root node
                 void graphviz(const string &filename) const;
 
-                //! AST
+                //! Abstract Syntax Tree cleaning
                 static Node * AST( Node *node ) throw();
 
                 //! wrapper to get list

@@ -46,7 +46,7 @@ virtual bool          admitsEmpty() const throw()
 
             //! Rule interface
             /**
-             - flags are for terminal
+             - flags are for terminal or aggregate
              */
             class Rule : public object
             {
@@ -54,12 +54,12 @@ virtual bool          admitsEmpty() const throw()
                 typedef core::list_of_cpp<Rule> List;
                 static  const char InternalMark = '#';
 
-                Rule          *next;
-                Rule          *prev;
-                const uint32_t uuid;
-                const string   label;
-                const uint32_t flags;
-                void          *self_;
+                Rule          *next;  //!< for rules
+                Rule          *prev;  //!< for rules
+                const uint32_t uuid;  //!< to retrieve type
+                const string   label; //!< to match a terminal or standalone name
+                const uint32_t flags; //!< semantic modifiers
+                void          *self_; //!< on the typed address
 
                 void let(const uint32_t flag) throw();
                 

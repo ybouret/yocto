@@ -16,19 +16,25 @@ namespace yocto
             typedef map<string,dynRule> dynRuleDB;
             typedef map<string,dynTerm> dynTermDB;
 
+            //! create a parser
+            /**
+             - Raw String are Unique or Hollow, automatically detected
+             - Top level rules are automatically sets to the right flag
+             */
             class DynamoCompiler : public DynamoParser
             {
             public:
 
 
-                auto_ptr<Parser> parser;
-                bool             verbose;
-                dynRuleDB        ruleDB;
-                dynTermDB        termDB;
+                auto_ptr<Parser> parser;  //!< the current built parser
+                bool             verbose; //!< to display/save output
+                dynRuleDB        ruleDB;  //!< the top level aggregates
+                dynTermDB        termDB;  //!< the terminals
                 hashing::mperf   topHash; //!< RULE, ALIAS, PLUG, LEXR, SEMR
                 hashing::mperf   strHash; //!< RX, RS
                 hashing::mperf   lnkHash; //!< ID, RX, RS, SUB, ALT, ZOM, OOM, OPT
                 hashing::mperf   lxrHash; //!< drop, endl, comment
+
                 explicit DynamoCompiler();
                 virtual ~DynamoCompiler() throw();
 
@@ -47,7 +53,7 @@ namespace yocto
                 //
                 // gather
                 //______________________________________________________________
-                void     gatherFrom( Node *master );
+                void       gatherFrom( Node *master );
                 Aggregate &findRule(const char *fn, const string &label);
                 Terminal  &findTerm(const char *fn, const string &label);
                 Rule      &find(const char *fn, const string &label);

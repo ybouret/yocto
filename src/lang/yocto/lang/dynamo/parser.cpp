@@ -148,14 +148,7 @@ namespace yocto
                 }
 
 
-                //______________________________________________________________
-                //
-                // Semantic modification rule
-                //______________________________________________________________
-                Aggregate &SEMR = agg("SEMR");
-                {
-                    SEMR << terminal("SM",SM_EXPR) << COLUMN << zeroOrMore(ID) << END;
-                }
+
                 //______________________________________________________________
                 //
                 // choice for grammar
@@ -165,7 +158,17 @@ namespace yocto
                     GRAMMAR << zeroOrMore(ENTRIES);
                     ENTRIES << ALIAS << RULE;
                     ENTRIES << LEXR  << PLUG;
-                    ENTRIES << SEMR;
+#if 0
+                    //__________________________________________________________
+                    //
+                    // Semantic modification rule
+                    //__________________________________________________________
+                    Aggregate &SEMR = agg("SEMR");
+                    {
+                        SEMR << terminal("SM",SM_EXPR) << COLUMN << zeroOrMore(ID) << END;
+                        ENTRIES << SEMR;
+                    }
+#endif
                 }
 
                 //______________________________________________________________
@@ -180,15 +183,14 @@ namespace yocto
                 if(false)
                 {
                     std::cerr << "Saving DynamoParser" << std::endl;
-                    graphviz("dparser.dot");
-                    ios::graphviz_render("dparser.dot");
+                    graphviz("dynamo.dot");
+                    ios::graphviz_render("dynamo.dot");
                 }
 
                 check();
-
-
             }
 
+            
         }
     }
 }

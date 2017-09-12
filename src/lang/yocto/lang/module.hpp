@@ -40,7 +40,7 @@ namespace yocto
             
             const Input    input;
 
-            //!
+            //! get next char
             Char *get(); 
 
         private:

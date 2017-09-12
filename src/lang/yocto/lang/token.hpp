@@ -10,7 +10,7 @@ namespace yocto
     {
         typedef core::list_of_cpp<Char> Chars;
 
-        //! a token
+        //! a token od dynamic chars
         class Token : public object, public Chars
         {
         public:
@@ -23,8 +23,8 @@ namespace yocto
 
             void add(const Token &);
 
-            int         line()   const throw();
-            int         column() const throw();
+            int         line()   const throw(); //!< line of the first char
+            int         column() const throw(); //!< column of the first char
             const char *moduleName() const throw();
 
         private:

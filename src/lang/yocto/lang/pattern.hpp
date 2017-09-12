@@ -23,7 +23,8 @@ virtual bool             match(YOCTO_LANG_PATTERN_MATCH_ARGS) const;   \
 virtual void             __viz( ios::ostream &fp ) const;              \
 virtual void             __sav( ios::ostream &fp ) const;              \
 virtual bool             allowsEmpty() const throw()
-        
+
+        //! base class for pattern matching
         class Pattern : public counted_object
         {
         public:
@@ -52,18 +53,22 @@ virtual bool             allowsEmpty() const throw()
             //! check if allows empty match
             virtual bool allowsEmpty() const throw()     = 0;
 
+            //! save binary code
             void save( ios::ostream &fp ) const;
 
             string toString() const;  //!< a base64 encoded binary code
-            string signature() const; //!< a 8 digits digest
-
-            //! to mark ID
-            void __mark( ios::ostream &fp) const;
+            string signature() const; //!< a 8 digits digest (SHA1-32)
+            
+            //! to mark address
+            void __mark(ios::ostream &fp) const;
 
             //! save a GraphViz representation
             void graphviz(const string &filename) const;
 
+            //! simplification after a compilation
             static Pattern * Optimize( Pattern *p ) throw();
+
+            //! reload a binary format
             static Pattern * Load(ios::istream &fp);
 
         protected:

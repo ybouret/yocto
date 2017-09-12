@@ -13,17 +13,21 @@ namespace yocto
     {
         namespace Lexical
         {
-            class   Translator;
-            class   Plugin;
+            class   Translator; //!< forward declaration
+            class   Plugin;     //!< forward declaration
+
+            //! callback to be taken on a change of scanner
             typedef functor<void,TL1(const Token &)> Callback;
 
+
+            //! simple lexical scanner, think 'flex'
             class Scanner : public counted_object
             {
             public:
                 typedef intr_ptr<string,Scanner> Handle;
 
-                const Stamp   stamp;
-                const string &label;
+                const Stamp   stamp; //!< dynamic stamp
+                const string &label; //!< *stamp
 
                 explicit Scanner(const string &id);
                 explicit Scanner(const char   *id);

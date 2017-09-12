@@ -10,7 +10,7 @@ namespace yocto
         namespace Syntax
         {
 
-
+            //! define the DynamoParser
             class DynamoParser : public Parser
             {
             public:

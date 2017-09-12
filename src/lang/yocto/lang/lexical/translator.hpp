@@ -12,6 +12,7 @@ namespace yocto
         namespace Lexical
         {
 
+            //! Translate a source into Units, with multiple Scanners
             class Translator 
             {
             public:
@@ -147,8 +148,8 @@ namespace yocto
                 
                 Scanner        *current;  //!< current scanner
                 ScannerDB       scanners; //!< the scanners
-                History         history;
-                PluginDB        plugins;
+                History         history;  //!< to be back from a call
+                PluginDB        plugins;  //!< database of plugins
 
                 void            onInit();
                 void            linkTo( Scanner & ) throw();
@@ -160,7 +161,8 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Translator);
             };
 
-#define YOCTO_LANG_LEXICAL(METHOD) this, & yocto::Lang::Lexical::Translator::METHOD
+#define YOCTO_LANG_LEXICAL_(ADDR,METHOD) ADDR, & yocto::Lang::Lexical::Translator::METHOD
+#define YOCTO_LANG_LEXICAL(METHOD)       YOCTO_LANG_LEXICAL_(this,METHOD)
             
         }
     }
