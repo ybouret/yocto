@@ -32,7 +32,8 @@ namespace yocto
 
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Analyzer);
                 void __indent(ios::ostream &fp) const;
-                void __emit(const string &label, ios::ostream &fp) const;
+                void __write(const string &label, ios::ostream &fp) const;
+                void __align(const string &label, ios::ostream &fp) const;
             };
         }
     }

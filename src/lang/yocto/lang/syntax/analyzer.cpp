@@ -44,7 +44,7 @@ namespace yocto
                     for( list<string>::iterator i=rules.begin(); i != rules.end(); ++i, ++h)
                     {
                         ruleHash.insert(*i,h);
-                        max_size = max_of(max_size,(*i).size());
+                        //max_size = max_of(max_size,(*i).size());
                     }
                     const Rule *topLevel = G.getTopLevel();
                     if(topLevel&&ruleHash(topLevel->label)<0)
@@ -86,8 +86,15 @@ namespace yocto
                         ios::ostream &fp = *pfp;
                         __indent(fp);
                         fp("push [%04d] ",termCode);
-                        __emit(label,fp);
-                        fp << '\'' << content << '\'' << '\n';
+                        if(node->origin.flags==IsNormal)
+                        {
+                            __align(label,fp);
+                            fp << ':' << ' ' << '\'' << content << '\'' << '\n';
+                        }
+                        else
+                        {
+                            fp << label << '\n';
+                        }
                     }
                 }
                 else
@@ -105,8 +112,8 @@ namespace yocto
                     {
                         ios::ostream &fp = *pfp;
                         __indent(fp);
-                        fp("call [%04d]",ruleCode);
-                        __emit(label,fp);
+                        fp("call [%04d] ",ruleCode);
+                        fp << label;
                         fp("/%u",unsigned(children.size));
                         fp << '\n';
                     }
@@ -119,9 +126,9 @@ namespace yocto
                 for(int i=0;i<depth;++i) fp << ' ' << ' ';
             }
             
-            void Analyzer:: __emit(const string &label, ios::ostream &fp) const
+            void Analyzer:: __align(const string &label, ios::ostream &fp) const
             {
-                fp << label; for(size_t i=label.size();i<max_size;++i) fp << ' '; fp << ':';
+                fp << label; for(size_t i=label.size();i<max_size;++i) fp << ' ';
             }
             
         }
