@@ -13,5 +13,5 @@ COM     : 'COM';
 @comment: "#";
 @comment: "/\\*" "\\*/";
 
-%MergesSingle : code;
+//%MergesSingle : code;
 

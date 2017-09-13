@@ -60,6 +60,7 @@ namespace yocto
                     __detectPropertiesOf(agg);
                 }
 
+#if 0
                 if(verbose)
                 {
                     vector<string> terminals;
@@ -102,6 +103,7 @@ namespace yocto
 
 
                 }
+#endif
                 
                 termDB.release();
                 ruleDB.release();

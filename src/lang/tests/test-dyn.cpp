@@ -1,8 +1,11 @@
 #include "yocto/lang/dynamo/compiler.hpp"
+#include "yocto/lang/syntax/analyzer.hpp"
 
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/graphviz.hpp"
 #include "yocto/fs/local-fs.hpp"
+#include "yocto/ios/ocstream.hpp"
+
 
 using namespace yocto;
 using namespace Lang;
@@ -35,11 +38,18 @@ YOCTO_UNIT_TEST_IMPL(dyn)
         (std::cerr << "...done" << std::endl ).flush();
 
         // save tree
+        Syntax::Analyzer analyzer( *parser );
+
         if( tree.is_valid() )
         {
             tree->graphviz(parserOutDot);
             ios::graphviz_render(parserOutDot);
+            std::cerr << "Walking..." << std::endl;
+
+            ios::ocstream fp( ios::cstderr );
+            analyzer.walk(tree.__get(),&fp);
         }
+
 
     }
 

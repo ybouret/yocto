@@ -45,5 +45,8 @@ YOCTO_UNIT_TEST_IMPL(types)
     __SHOW(Syntax::Aggregate);
     __SHOW(Syntax::Optional);
     __SHOW(Syntax::Counting);
+
+    const int shift = 0x70000000;
+    std::cerr << "shift=" << shift << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()
