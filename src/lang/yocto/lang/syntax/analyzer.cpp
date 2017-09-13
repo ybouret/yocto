@@ -85,7 +85,7 @@ namespace yocto
                     {
                         ios::ostream &fp = *pfp;
                         __indent(fp);
-                        fp("[%04d] ",termCode);
+                        fp("push [%04d] ",termCode);
                         __emit(label,fp);
                         fp << '\'' << content << '\'' << '\n';
                     }
@@ -93,14 +93,6 @@ namespace yocto
                 else
                 {
                     const int    ruleCode = ruleHash(label);
-                    if(pfp)
-                    {
-                        ios::ostream &fp = *pfp;
-                        __indent(fp);
-                        fp("[%04d] ",ruleCode);
-                        __emit(label,fp);
-                        fp << '\n';
-                    }
 
                     ++depth;
                     const Node::List &children = node->toList();
@@ -109,6 +101,16 @@ namespace yocto
                         __walk(ch,pfp);
                     }
                     --depth;
+                    if(pfp)
+                    {
+                        ios::ostream &fp = *pfp;
+                        __indent(fp);
+                        fp("call [%04d]",ruleCode);
+                        __emit(label,fp);
+                        fp("/%u",unsigned(children.size));
+                        fp << '\n';
+                    }
+
                 }
             }
 
