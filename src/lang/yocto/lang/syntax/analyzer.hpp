@@ -26,7 +26,7 @@ namespace yocto
             private:
                 hashing::mperf termHash; //!< hashing of terminals
                 hashing::mperf ruleHash; //!< hashing of internals
-                
+
                 int            depth;    //!< current depth
                 size_t         max_size;
                 void __walk(const Node *node, ios::ostream *pfp);
