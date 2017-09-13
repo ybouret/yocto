@@ -46,6 +46,11 @@ namespace yocto
                         ruleHash.insert(*i,h);
                         max_size = max_of(max_size,(*i).size());
                     }
+                    const Rule *topLevel = G.getTopLevel();
+                    if(topLevel&&ruleHash(topLevel->label)<0)
+                    {
+                        ruleHash.insert(topLevel->label,++h);
+                    }
                     ruleHash.optimize();
                 }
 
@@ -71,22 +76,32 @@ namespace yocto
             {
                 assert(node);
                 const string &label = node->origin.label;
-                if(pfp)
-                {
-                    __indent(*pfp); __emit(label,*pfp);
-                }
 
                 if(node->terminal)
                 {
-                    const string content = node->toString();
+                    const int    termCode = termHash(label);
+                    const string content  = node->toString();
                     if(pfp)
                     {
-                        (*pfp) << '\'' << content << '\'' << '\n';
+                        ios::ostream &fp = *pfp;
+                        __indent(fp);
+                        fp("[%04d] ",termCode);
+                        __emit(label,fp);
+                        fp << '\'' << content << '\'' << '\n';
                     }
                 }
                 else
                 {
-                    if(pfp) { *pfp << '\n'; }
+                    const int    ruleCode = ruleHash(label);
+                    if(pfp)
+                    {
+                        ios::ostream &fp = *pfp;
+                        __indent(fp);
+                        fp("[%04d] ",ruleCode);
+                        __emit(label,fp);
+                        fp << '\n';
+                    }
+
                     ++depth;
                     const Node::List &children = node->toList();
                     for(const Node *ch = children.head; ch; ch=ch->next)
@@ -101,6 +116,7 @@ namespace yocto
             {
                 for(int i=0;i<depth;++i) fp << ' ' << ' ';
             }
+            
             void Analyzer:: __emit(const string &label, ios::ostream &fp) const
             {
                 fp << label; for(size_t i=label.size();i<max_size;++i) fp << ' '; fp << ':';
