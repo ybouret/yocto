@@ -8,7 +8,7 @@ AXP : (PLUS|MINUS)? MXP ( (PLUS|MINUS) MXP )*;
 MXP : PXP ( (MUL|DIV|MOD) PXP )*;
 
 // power expression
-PXP : ATOM (EXPONENT ATOM)*;
+PXP : ATOM (EXPONENT AXP)*;
 
 ARGS : AXP (',' AXP)*;
 FUNC : ID LPAREN ARGS RPAREN;
@@ -22,6 +22,7 @@ MOD      : '%';
 EXPONENT : '^';
 LPAREN   : '(';
 RPAREN   : ')';
+
 NUMBER   : "[:digit:]+([.][:digit:]+)?([eE][-+][:digit:]+)?";
 ID       : "([:alpha:]|_)([:word:]|_)*";
 

@@ -53,9 +53,16 @@ namespace yocto
                 {
                     std::cerr << "== finalizing " << parser->tag << " ==" << std::endl;
                 }
+
                 //______________________________________________________________
                 //
+                // checking grammar connectivity
+                //______________________________________________________________
+                parser->check();
+
+                //______________________________________________________________
                 //
+                // detect properties
                 //______________________________________________________________
                 unsigned indx=1;
                 for( dynRuleDB::iterator i=ruleDB.begin(); i != ruleDB.end(); ++i,++indx)
@@ -64,51 +71,7 @@ namespace yocto
                     __detectPropertiesOf(agg);
                 }
 
-#if 0
-                if(verbose)
-                {
-                    vector<string> terminals;
-                    vector<string> internals;
-                    parser->collectLabels(terminals,internals);
-                    std::cerr << "terminals=" << terminals << std::endl;
-                    std::cerr << "internals=" << internals << std::endl;
 
-                    std::cerr.flush();
-                    ios::ocstream fp(ios::cstderr);
-                    const string  prefix = parser->tag + '_';
-                    hashing::mperf::emit_defines(fp,terminals,prefix);
-                    fflush(stderr);
-                    std::cerr << std::endl;
-                    hashing::mperf::emit_defines(fp,internals,prefix,0x10000);
-
-                    {
-                        string terminalsKW;
-                        {
-                            ios::osstream fp(terminalsKW);
-                            for(size_t i=1;i<=terminals.size();++i)
-                            {
-                                ios::net_string::write(terminals[i],fp);
-                            }
-                        }
-                        std::cerr << "terminal_keywords='" << terminalsKW << "'" << std::endl;
-                    }
-
-                    {
-                        string internalsKW;
-                        {
-                            ios::osstream fp(internalsKW);
-                            for(size_t i=1;i<=internals.size();++i)
-                            {
-                                ios::net_string::write(internals[i],fp);
-                            }
-                        }
-                        std::cerr << "internal_keywords='" << internalsKW << "'" << std::endl;
-                    }
-
-
-                }
-#endif
-                
                 termDB.release();
                 ruleDB.release();
                 std::cerr << std::endl;
