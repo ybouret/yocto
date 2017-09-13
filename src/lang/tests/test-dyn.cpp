@@ -1,5 +1,6 @@
 #include "yocto/lang/dynamo/compiler.hpp"
 #include "yocto/lang/syntax/analyzer.hpp"
+#include "yocto/lang/syntax/ops.hpp"
 
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/graphviz.hpp"
