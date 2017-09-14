@@ -27,5 +27,3 @@ ASSIGN  : '=' ;
 END     : ';' ;
 LPAREN  : '(' ;
 RPAREN  : ')' ;
-
-//%NoSingle : expr multExpr;
