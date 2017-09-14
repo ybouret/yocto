@@ -38,53 +38,6 @@ namespace yocto
             }
 
 
-#if 0
-            void RPN::apply( Node *node )
-            {
-                assert(node);
-                if(node->internal)
-                {
-                    const string &nodeLabel = node->origin.label;
-                    Node::List   &children  = node->toList();
-                    //__________________________________________________________
-                    //
-                    // recursive call
-                    //__________________________________________________________
-                    for(Node *ch = children.head; ch; ch=ch->next)
-                    {
-                        apply(ch);
-                    }
-                    if(nodeLabel!=label) return;
-                    std::cerr << "RPN " << label << "/" << children.size << std::endl;
-
-                    //__________________________________________________________
-                    //
-                    // operator inversion
-                    //__________________________________________________________
-                    Node::List rpn;
-                    while(children.size)
-                    {
-                        Node *ch = children.pop_front();
-                        if((*this)(ch->origin.label)>=0)
-                        {
-                            if(children.size<=0)
-                            {
-                                delete ch;
-                                throw exception("Node.RPN: no operand after '%s'", ch->origin.label.c_str() );
-                            }
-                            rpn.push_back(children.pop_front());
-                            rpn.push_back(ch);
-                        }
-                        else
-                        {
-                            rpn.push_back(ch);
-                        }
-                    }
-                    children.swap_with(rpn);
-
-                }
-            }
-#endif
 
             RPN_Set:: RPN_Set() throw()
             {
@@ -141,13 +94,12 @@ namespace yocto
                     //__________________________________________________________
                     const RPN::Pointer *ppRPN = self.search(label);
                     if(!ppRPN) return;
-
+                    std::cerr << "RPN for " << label << "/" << children.size << std::endl;
                     //__________________________________________________________
                     //
                     // processing
                     //__________________________________________________________
                     const RPN &H = **ppRPN;
-                    std::cerr << "RPN for " << label << std::endl;
                     Node::List rpn;
                     while(children.size)
                     {

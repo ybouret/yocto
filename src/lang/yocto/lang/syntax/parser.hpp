@@ -16,6 +16,7 @@ namespace yocto
                 explicit Parser(const string &id);
                 virtual ~Parser() throw();
                 const string tag;
+                RPN_Set      rdb;
                 
                 //______________________________________________________________
                 //

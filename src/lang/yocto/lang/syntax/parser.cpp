@@ -14,7 +14,8 @@ namespace yocto
             Parser:: Parser( const string &id ) :
             Grammar(id+".grammar"),
             Lexer(id+".lexer"),
-            tag(id)
+            tag(id),
+            rdb()
             {
             }
 
@@ -35,7 +36,9 @@ namespace yocto
             {
                 Lexer &lexer = *this;
                 lexer.reset();
-                return Node::AST(accept(lexer,source));
+                Node *tree = Node::AST(accept(lexer,source));
+                if(tree) rdb(tree);
+                return tree;
             }
 
             void Parser:: check() const

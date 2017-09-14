@@ -46,6 +46,7 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             ios::graphviz_render(parserOutDot);
             std::cerr << "Walking..." << std::endl;
 
+#if 0
             Lang::Syntax::RPN_Set rpn;
             {
                 Lang::Syntax::RPN &axp = rpn("AXP");
@@ -60,13 +61,10 @@ YOCTO_UNIT_TEST_IMPL(dyn)
                 mxp.op("MOD");
                 mxp.optimize();
             }
-
-
             rpn(tree.__get());
             tree->graphviz("rpn.dot");
             ios::graphviz_render("rpn.dot");
-
-
+#endif
             ios::ocstream fp( ios::cstderr );
             analyzer.walk(tree.__get(),&fp);
         }

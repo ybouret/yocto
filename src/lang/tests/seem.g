@@ -31,3 +31,4 @@ ID       : "([:alpha:]|_)([:word:]|_)*";
 @endl : "[:endl:]";
 
 %RPN : AXP (PLUS MINUS);
+%RPN : MXP (MUL DIV MOD);

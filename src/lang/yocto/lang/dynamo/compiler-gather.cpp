@@ -1,6 +1,7 @@
 #include "yocto/lang/dynamo/compiler.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/lang/lexical/plugin/comment.hpp"
+#include "yocto/ios/graphviz.hpp"
 
 namespace yocto
 {
@@ -407,6 +408,7 @@ namespace yocto
                 {
                     std::cerr << "\t  \\_" << ruleLabel << ':';
                 }
+                RPN &rpn = parser->rdb(ruleLabel);
                 code=code->next;
                 if(code)
                 {
@@ -416,6 +418,13 @@ namespace yocto
                         assert("ID"==node->origin.label);
                         const string argsLabel = node->toString();
                         if(verbose) { std::cerr << ' ' << argsLabel; }
+                        rpn.op(argsLabel);
+                    }
+                    rpn.optimize();
+                    if(false)
+                    {
+                        rpn.graphviz(ruleLabel+"_rpn.dot");
+                        ios::graphviz_render(ruleLabel+"_rpn.dot");
                     }
                 }
                 if(verbose)
