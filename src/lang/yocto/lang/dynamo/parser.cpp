@@ -44,6 +44,9 @@ namespace yocto
                 Rule &COLUMN  = terminal(':');
                 Rule &RX      = term<Lexical::cstring>("RX");
                 Rule &RS      = term<Lexical::rstring>("RS");
+                Rule &LPAREN  = terminal('(');
+                Rule &RPAREN  = terminal(')');
+
                 //______________________________________________________________
                 //
                 // parser name declaration
@@ -115,7 +118,7 @@ namespace yocto
                         // the add the GROUP possibility for an ATOM
                         // GROUP is temporary only, a wrapper for ALT
                         //______________________________________________________
-                        ATOM << ( Decl(agg("GROUP"),MergesAlways) << terminal('(') << ALT << terminal(')') );
+                        ATOM << ( Decl(agg("GROUP"),MergesAlways) << LPAREN << ALT << RPAREN );
 
                         //______________________________________________________
                         //
@@ -158,14 +161,23 @@ namespace yocto
                     GRAMMAR << zeroOrMore(ENTRIES);
                     ENTRIES << ALIAS << RULE;
                     ENTRIES << LEXR  << PLUG;
-#if 0
+#if 1
                     //__________________________________________________________
                     //
                     // Semantic modification rule
                     //__________________________________________________________
                     Aggregate &SEMR = agg("SEMR");
                     {
-                        SEMR << terminal("SM",SM_EXPR) << COLUMN << zeroOrMore(ID) << END;
+                        SEMR << terminal("SM",SM_EXPR) << COLUMN << ID;
+                        {
+                            Aggregate &ARGS = agg("ARGS");
+                            ARGS << LPAREN;
+                            ARGS << zeroOrMore(ID);
+                            ARGS << RPAREN;
+                            SEMR << optional(ARGS);
+
+                        }
+                        SEMR << END;
                         ENTRIES << SEMR;
                     }
 #endif

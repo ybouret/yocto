@@ -58,7 +58,9 @@ namespace yocto
                 Rule      &find(const char *fn, const string &label);
                 Rule      &walk(const Node *node);
                 void       lexr(const Node &node);
-
+                void       semr(const Node &node);
+                void       onRPN(const Node *code);
+                
                 //______________________________________________________________
                 //
                 // Finalize

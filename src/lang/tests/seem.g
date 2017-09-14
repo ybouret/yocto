@@ -30,3 +30,4 @@ ID       : "([:alpha:]|_)([:word:]|_)*";
 @drop : "[:blank:]";
 @endl : "[:endl:]";
 
+%RPN : AXP (PLUS MINUS);

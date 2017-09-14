@@ -67,6 +67,14 @@ namespace yocto
             {
                 if(!master) throw exception("DynamoCompiler.encode(NULL)");
                 auto_ptr<Node> guard(master);
+#if 0
+                if(verbose)
+                {
+                    std::cerr << "== Dynamo Input" << std::endl;
+                    master->graphviz("dyninput.dot");
+                    ios::graphviz_render("dyninput.dot");
+                }
+#endif
                 parser.release();
                 createTopLevelFrom(master);
                 gatherFrom(master);
