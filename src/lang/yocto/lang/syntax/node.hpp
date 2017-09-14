@@ -3,16 +3,19 @@
 
 #include "yocto/lang/lexical/unit.hpp"
 #include "yocto/ios/ostream.hpp"
+#include "yocto/hashing/mph.hpp"
 
 namespace yocto
 {
     namespace Lang
     {
+        typedef hashing::mperf Hasher;
 
         namespace Syntax
         {
 
-            typedef Lexical::Unit Lexeme;
+            typedef Lexical::Unit  Lexeme;
+
             class Rule; //!< forward declaration
 
             //! a node to build an AST
@@ -54,6 +57,8 @@ namespace yocto
 
                 //! Abstract Syntax Tree cleaning
                 static Node * AST( Node *node ) throw();
+
+                static void   RPN( Node *node, const string &id, const Hasher &ops);
 
                 //! wrapper to get list
                 List         & toList() throw();

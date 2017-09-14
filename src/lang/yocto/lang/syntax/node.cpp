@@ -1,7 +1,5 @@
 #include "yocto/lang/syntax/node.hpp"
 
-//#include <iostream>
-//#include "yocto/lang/syntax/rule.hpp"
 
 namespace yocto
 {

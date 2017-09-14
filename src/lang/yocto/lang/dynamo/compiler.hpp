@@ -3,7 +3,6 @@
 
 #include "yocto/lang/dynamo/parser.hpp"
 #include "yocto/associative/map.hpp"
-#include "yocto/hashing/mph.hpp"
 
 namespace yocto
 {
@@ -30,10 +29,10 @@ namespace yocto
                 bool             verbose; //!< to display/save output
                 dynRuleDB        ruleDB;  //!< the top level aggregates
                 dynTermDB        termDB;  //!< the terminals
-                hashing::mperf   topHash; //!< RULE, ALIAS, PLUG, LEXR, SEMR
-                hashing::mperf   strHash; //!< RX, RS
-                hashing::mperf   lnkHash; //!< ID, RX, RS, SUB, ALT, ZOM, OOM, OPT
-                hashing::mperf   lxrHash; //!< drop, endl, comment
+                Hasher           topHash; //!< RULE, ALIAS, PLUG, LEXR, SEMR
+                Hasher           strHash; //!< RX, RS
+                Hasher           lnkHash; //!< ID, RX, RS, SUB, ALT, ZOM, OOM, OPT
+                Hasher           lxrHash; //!< drop, endl, comment
 
                 explicit DynamoCompiler();
                 virtual ~DynamoCompiler() throw();

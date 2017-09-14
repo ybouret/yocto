@@ -1,12 +1,11 @@
 #include "yocto/lang/dynamo/compiler.hpp"
 #include "yocto/lang/syntax/analyzer.hpp"
-#include "yocto/lang/syntax/ops.hpp"
 
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/graphviz.hpp"
 #include "yocto/fs/local-fs.hpp"
 #include "yocto/ios/ocstream.hpp"
-
+#include "yocto/sequence/vector.hpp"
 
 using namespace yocto;
 using namespace Lang;
@@ -46,6 +45,17 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             tree->graphviz(parserOutDot);
             ios::graphviz_render(parserOutDot);
             std::cerr << "Walking..." << std::endl;
+
+            const string   id = "AXP";
+            Lang::Hasher   ops;
+            ops.insert("PLUS",0);
+            ops.insert("MINUS",1);
+            ops.optimize();
+
+            Syntax::Node::RPN(tree.__get(), id, ops);
+            tree->graphviz("rpn.dot");
+            ios::graphviz_render("rpn.dot");
+
 
             ios::ocstream fp( ios::cstderr );
             analyzer.walk(tree.__get(),&fp);
