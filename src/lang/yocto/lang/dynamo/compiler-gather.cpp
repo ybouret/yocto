@@ -66,6 +66,23 @@ namespace yocto
 
             }
 
+            static inline
+            void OptimizeTopRule( Grammar &G, Aggregate &agg, const bool verbose )
+            {
+                MetaList &members = agg.members;
+                if(1==members.size)
+                {
+                    Rule *rule = members.head->addr;
+                    if (Aggregate::UUID==rule->uuid)
+                    {
+                        Aggregate &sub = *static_cast<Aggregate *>(rule->self_);
+                        std::cerr << "Should promote " << rule->label << " (#member=" << sub.members.size << ") to " << agg.label << std::endl;
+                        members.swap_with(sub.members);
+                        G.__suppress(rule);
+                        //exit(1);
+                    }
+                }
+            }
 
 
             void DynamoCompiler:: gatherFrom(Node *master)
@@ -104,6 +121,8 @@ namespace yocto
                                 }
                                 std::cerr << ";" << std::endl;
                                 node.release();
+                                // need to optimize top rule!
+                                OptimizeTopRule(*parser,topRule,verbose);
                                 ScanAgg(topRule,verbose);
                             }  break;
 

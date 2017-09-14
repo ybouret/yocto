@@ -144,4 +144,24 @@ namespace yocto
     }
 }
 
+namespace yocto
+{
+    namespace Lang
+    {
+        namespace Syntax
+        {
+
+            void Grammar:: __suppress( Rule *rule )
+            {
+                assert(rule);
+                if(!rules.owns(rule))
+                    throw exception("%s.__suppress: %s is not registered",*name,*(rule->label));
+                delete rules.unlink(rule);
+            }
+
+        }
+    }
+}
+
+
 

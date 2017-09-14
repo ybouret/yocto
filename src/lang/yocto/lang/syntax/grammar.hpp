@@ -66,6 +66,8 @@ namespace yocto
                 void  collectLabels(sequence<string> &terminals,
                                     sequence<string> &internals ) const;
 
+                void __suppress( Rule *rule );
+
             private:
                 Rule::List rules;
                 int        altCount;
