@@ -30,5 +30,6 @@ ID       : "([:alpha:]|_)([:word:]|_)*";
 @drop : "[:blank:]";
 @endl : "[:endl:]";
 
+//change the AST
 %RPN : AXP (PLUS MINUS);
 %RPN : MXP (MUL DIV MOD);
