@@ -23,7 +23,7 @@ namespace yocto
                 }
 
 
-                if(verbose) { std::cerr << "?MergesAlways"<<std::endl;;}
+                //if(verbose) { std::cerr << "?MergesAlways"<<std::endl;;}
                 if(members.size==1)
                 {
                     assert(node);
@@ -35,7 +35,7 @@ namespace yocto
                     }
                 }
 
-                if(verbose) { std::cerr << "?MergesSingle"<<std::endl;;}
+                //if(verbose) { std::cerr << "?MergesSingle"<<std::endl;;}
                 if(1==agg.getMinCount())
                 {
                     if(verbose) { std::cerr << ".MergesSingle" << std::endl; }
