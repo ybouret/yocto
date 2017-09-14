@@ -3,13 +3,12 @@
 
 #include "yocto/lang/lexical/unit.hpp"
 #include "yocto/ios/ostream.hpp"
-#include "yocto/hashing/mph.hpp"
+#include "yocto/lang/syntax/rpn.hpp"
 
 namespace yocto
 {
     namespace Lang
     {
-        typedef hashing::mperf Hasher;
 
         namespace Syntax
         {
@@ -58,7 +57,7 @@ namespace yocto
                 //! Abstract Syntax Tree cleaning
                 static Node * AST( Node *node ) throw();
 
-                static void   RPN( Node *node, const string &id, const Hasher &ops);
+                //static void   RPN( Node *node, const string &id, const Hasher &ops);
 
                 //! wrapper to get list
                 List         & toList() throw();

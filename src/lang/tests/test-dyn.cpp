@@ -46,13 +46,23 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             ios::graphviz_render(parserOutDot);
             std::cerr << "Walking..." << std::endl;
 
-            const string   id = "AXP";
-            Lang::Hasher   ops;
-            ops.insert("PLUS",0);
-            ops.insert("MINUS",1);
-            ops.optimize();
+            Lang::Syntax::RPN_Set rpn;
+            {
+                Lang::Syntax::RPN &axp = rpn("AXP");
+                axp.insert("PLUS",0);
+                axp.insert("MINUS",1);
+                axp.optimize();
+            }
+            {
+                Lang::Syntax::RPN &mxp = rpn("MXP");
+                mxp.insert("MUL",0);
+                mxp.insert("DIV",1);
+                mxp.insert("MOD",2);
+                mxp.optimize();
+            }
 
-            Syntax::Node::RPN(tree.__get(), id, ops);
+
+            rpn(tree.__get());
             tree->graphviz("rpn.dot");
             ios::graphviz_render("rpn.dot");
 
