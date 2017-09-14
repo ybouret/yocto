@@ -21,20 +21,31 @@ namespace yocto
                 virtual ~Analyzer() throw();
                 explicit Analyzer(const Grammar &G);
 
-                void walk(const Node *tree, ios::ostream *pfp);
+                void walk(const Node *tree);
+
+                virtual void onTerminal(const string &label,
+                                        const int     hCode,
+                                        const string &content);
+
+                virtual void onInternal(const string &label,
+                                        const int     hCode,
+                                        const size_t  nArgs);
 
             private:
-                hashing::mperf termHash; //!< hashing of terminals
-                hashing::mperf ruleHash; //!< hashing of internals
-
-                int            depth;    //!< current depth
-                size_t         max_size;
-                void __walk(const Node *node, ios::ostream *pfp);
+                Hasher  termHash; //!< hashing of terminals
+                Hasher  ruleHash; //!< hashing of internals
+                void  __walk(const Node *node);
 
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Analyzer);
-                void __indent(ios::ostream &fp) const;
-                void __write(const string &label, ios::ostream &fp) const;
-                void __align(const string &label, ios::ostream &fp) const;
+                //void __indent(ios::ostream &fp) const;
+                //void __write(const string &label, ios::ostream &fp) const;
+                //void __align(const string &label, ios::ostream &fp) const;
+
+            public:
+                const int      depth;    //!< current depth
+                const size_t   max_size;
+                std::ostream & __indent() const;
+                std::ostream & __output(const string &label) const;
             };
         }
     }

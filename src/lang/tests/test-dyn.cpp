@@ -66,7 +66,7 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             ios::graphviz_render("rpn.dot");
 #endif
             ios::ocstream fp( ios::cstderr );
-            analyzer.walk(tree.__get(),&fp);
+            analyzer.walk(tree.__get());
         }
 
 
