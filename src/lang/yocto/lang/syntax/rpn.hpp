@@ -25,13 +25,15 @@ namespace yocto
 
                 const string label;     //!< node label to apply
 
-                void apply( Node *node );
-
+                
                 explicit RPN(const string &id);
                 explicit RPN(const char   *id);
                 virtual ~RPN() throw();
 
                 const string & key() const throw();
+
+                void op(const string &opID);
+                void op(const char   *opID);
 
 
             private:

@@ -27,6 +27,18 @@ namespace yocto
                 return label;
             }
 
+            void RPN:: op(const string &opID)
+            {
+                insert(opID,0);
+            }
+
+            void RPN:: op(const char *opID)
+            {
+                insert(opID,0);
+            }
+
+
+#if 0
             void RPN::apply( Node *node )
             {
                 assert(node);
@@ -72,7 +84,7 @@ namespace yocto
 
                 }
             }
-
+#endif
 
             RPN_Set:: RPN_Set() throw()
             {

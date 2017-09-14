@@ -49,15 +49,15 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             Lang::Syntax::RPN_Set rpn;
             {
                 Lang::Syntax::RPN &axp = rpn("AXP");
-                axp.insert("PLUS",0);
-                axp.insert("MINUS",1);
+                axp.op("PLUS");
+                axp.op("MINUS");
                 axp.optimize();
             }
             {
                 Lang::Syntax::RPN &mxp = rpn("MXP");
-                mxp.insert("MUL",0);
-                mxp.insert("DIV",1);
-                mxp.insert("MOD",2);
+                mxp.op("MUL");
+                mxp.op("DIV");
+                mxp.op("MOD");
                 mxp.optimize();
             }
 
