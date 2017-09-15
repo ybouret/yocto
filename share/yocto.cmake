@@ -217,12 +217,12 @@ MACRO(TARGET_LINK_YOCTO tgt)
 			LIST( APPEND ylibs "y-${extra}" )
 			
 			IF( "json" STREQUAL ${extra} )
-				LIST( APPEND ylibs "y-lingua" )
+				LIST( APPEND ylibs "y-lang" )
 			ENDIF()
 			
-			IF( "seem" STREQUAL ${extra} )
-				LIST( APPEND ylibs "y-lingua" )
-			ENDIF()
+			#IF( "seem" STREQUAL ${extra} )
+			#	LIST( APPEND ylibs "y-lingua" )
+			#ENDIF()
 			
 			IF( "png" STREQUAL ${extra} )
 				LIST( APPEND ylbis "y-z" )
