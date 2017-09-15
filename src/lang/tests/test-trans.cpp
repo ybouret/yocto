@@ -116,7 +116,7 @@ YOCTO_UNIT_TEST_IMPL(trans)
         {
             Lexical::Units tmp;
             trans.getAll(tmp,source);
-            trans.unget_copy_of(tmp);
+            trans.ungetCopyOf(tmp);
         }
     }
 

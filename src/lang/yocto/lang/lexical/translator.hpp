@@ -59,7 +59,7 @@ namespace yocto
                 //! unget lexemes
                 void unget( Units &units ) throw();
 
-                void unget_copy_of(const Units &units);
+                void ungetCopyOf(const Units &units);
 
 
                 //! cleanup

@@ -16,7 +16,7 @@ namespace yocto
             public:
                 virtual ~DynamoParser() throw();
                 explicit DynamoParser();
-
+                
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(DynamoParser);

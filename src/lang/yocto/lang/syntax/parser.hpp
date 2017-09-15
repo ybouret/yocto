@@ -100,6 +100,9 @@ namespace yocto
                                         const size_t   buflen,
                                         const bool     verbose=false);
 
+                static void Encode(const string &filename,
+                                   ios::ostream &output);
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);
                 Terminal & plugin(const string &label);

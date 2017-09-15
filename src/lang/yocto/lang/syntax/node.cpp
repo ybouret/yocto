@@ -1,5 +1,5 @@
 #include "yocto/lang/syntax/node.hpp"
-
+#include "yocto/ptr/auto.hpp"
 
 namespace yocto
 {
@@ -60,6 +60,7 @@ namespace yocto
                 //std::cerr << "+Node(" << origin.label << ")/terminal" << std::endl;
             }
 
+
             Node * Node::Create(const Rule &r, Lexeme *l)
             {
                 assert(NULL!=l);
@@ -74,6 +75,36 @@ namespace yocto
                 }
 
             }
+
+            Node:: Node(const Node &other) :
+            next(0),
+            prev(0),
+            origin(other.origin),
+            terminal(other.terminal),
+            internal(other.terminal),
+            impl(NULL)
+            {
+                if(terminal)
+                {
+                    impl = new Lexeme( other.toLex() );
+                }
+                else
+                {
+                    auto_ptr<List> children( new List() );
+                    for(const Node *node = other.head();node;node=node->next)
+                    {
+                        children->push_back( new Node(*node) );
+                    }
+                    impl = children.yield();
+                }
+            }
+
+            Node *Node:: clone() const
+            {
+                return new Node(*this);
+            }
+
+
 
             Node::List & Node:: toList() throw()
             {

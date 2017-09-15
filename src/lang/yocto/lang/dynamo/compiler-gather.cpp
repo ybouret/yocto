@@ -76,10 +76,12 @@ namespace yocto
                     if (Aggregate::UUID==rule->uuid)
                     {
                         Aggregate &sub = *static_cast<Aggregate *>(rule->self_);
-                        std::cerr << "Should promote " << rule->label << " (#member=" << sub.members.size << ") to " << agg.label << std::endl;
+                        if(verbose)
+                        {
+                            std::cerr << "\t//" << rule->label << "-->" << agg.label << std::endl;
+                        }
                         members.swap_with(sub.members);
                         G.__suppress(rule);
-                        //exit(1);
                     }
                 }
             }
@@ -119,7 +121,7 @@ namespace yocto
                                 {
                                     topRule << walk(sub);
                                 }
-                                std::cerr << ";" << std::endl;
+                                if(verbose) { std::cerr << ";" << std::endl; }
                                 node.release();
                                 // need to optimize top rule!
                                 OptimizeTopRule(*parser,topRule,verbose);
@@ -158,10 +160,7 @@ namespace yocto
                         {
                             tmp.push_back( node.yield() );
                         }
-                        else
-                        {
-                            //if(verbose) { std::cerr << "//|_removed" << std::endl; }
-                        }
+
                     }
                     topLevel.swap_with(tmp);
                 }

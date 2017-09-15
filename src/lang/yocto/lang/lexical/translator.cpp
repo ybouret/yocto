@@ -92,7 +92,7 @@ dict()
                 cache.merge_front(units);
             }
 
-            void Translator::unget_copy_of(const Units &units)
+            void Translator::ungetCopyOf(const Units &units)
             {
                 for(const Unit *u=units.tail;u;u=u->prev)
                 {

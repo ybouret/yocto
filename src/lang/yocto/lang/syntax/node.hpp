@@ -77,9 +77,13 @@ namespace yocto
                 //! wrapper to get lexeme content if terminal
                 string      toString(const size_t nskip=0) const;
 
+                Node *clone() const;
+
             private:
                 void                *impl;
-                YOCTO_DISABLE_COPY_AND_ASSIGN(Node);
+                YOCTO_DISABLE_ASSIGN(Node);
+                Node(const Node &other);
+
                 //! make a non terminal node
                 explicit Node(const Rule &r);
 

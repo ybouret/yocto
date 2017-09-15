@@ -25,16 +25,6 @@ YOCTO_UNIT_TEST_IMPL(dyn)
 
 
         Lexical::Units prefetch;
-        if(argc>2)
-        {
-            const string arg = argv[2];
-            if("prefetch"==arg)
-            {
-                std::cerr << "\t\tPREFETCH" << std::endl;
-                parser->getAll(prefetch,source);
-                parser->unget_copy_of(prefetch);
-            }
-        }
 
         // clean output
         const string parserOutDot = parser->tag + "_out.dot";
@@ -63,10 +53,9 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             analyzer.walk(tree.__get());
         }
 
-        std::cerr << "#prefetch=" << prefetch.size << std::endl;
-        for(const Lexical::Unit *u=prefetch.head;u;u=u->next)
         {
-            std::cerr << u->label << " : " << *u << std::endl;
+            ios::wcstream fp("tmp.g");
+            Syntax::Parser::Encode(parserFile,fp);
         }
     }
 
