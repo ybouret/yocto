@@ -56,6 +56,12 @@ namespace yocto
                 //! unget a unit
                 void  unget( Unit *u ) throw();
 
+                //! unget lexemes
+                void unget( Units &units ) throw();
+
+                void unget_copy_of(const Units &units);
+
+
                 //! cleanup
                 void  reset() throw();
 
@@ -118,6 +124,8 @@ namespace yocto
 
 
                 typedef set<string,Scanner::Handle> ScannerDB;
+
+                void getAll( Units &, Source & );
                 
             private:
                 Scanner::Handle  _root;

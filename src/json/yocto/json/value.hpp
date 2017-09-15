@@ -1,5 +1,5 @@
-#ifndef YOCTO_JSON_INCLUDED
-#define YOCTO_JSON_INCLUDED 1
+#ifndef YOCTO_JSON_VALUE_INCLUDED
+#define YOCTO_JSON_VALUE_INCLUDED 1
 
 #include "yocto/string.hpp"
 #include "yocto/sequence/vector.hpp"
@@ -67,7 +67,7 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             virtual ~Array() throw();
             Array(const Array &);
             inline size_t length() const throw() { return size(); }
-
+            
             
         private:
             YOCTO_DISABLE_ASSIGN(Array);

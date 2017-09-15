@@ -87,6 +87,20 @@ dict()
                 cache.push_front(u);
             }
 
+            void Translator:: unget( Units &units ) throw()
+            {
+                cache.merge_front(units);
+            }
+
+            void Translator::unget_copy_of(const Units &units)
+            {
+                for(const Unit *u=units.tail;u;u=u->prev)
+                {
+                    cache.push_front( new Unit(*u) );
+                }
+            }
+
+
             void  Translator:: reset() throw()
             {
                 history.clear();
@@ -365,6 +379,7 @@ namespace yocto
     {
         namespace Lexical
         {
+            
 
             Unit * Translator:: get( Source &source )
             {
@@ -391,13 +406,13 @@ namespace yocto
 
                             case Discard:
                                 if(lex) delete lex;
-                                throw exception("[%s].<%s>: unexpected Discard result", name.c_str(), current->label.c_str());
+                                throw exception("[%s].<%s>: unexpected Discard result", *name, current->label.c_str());
 
                             case Control:
                                 if(lex)
                                 {
                                     delete lex;
-                                    throw exception("[%s].<%s>: Control pattern shouldn't return unit", name.c_str(),current->label.c_str());
+                                    throw exception("[%s].<%s>: Control pattern shouldn't return unit", *name,current->label.c_str());
                                 }
                                 break; // for new cycle, current may have changed!
                         }
@@ -424,6 +439,15 @@ namespace yocto
                 }
             }
 
+            void Translator:: getAll( Units &units, Source &source )
+            {
+                Unit *u = 0;
+
+                while( 0 != (u=get(source) ) )
+                {
+                    units.push_back(u);
+                }
+            }
 
 
         }

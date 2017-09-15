@@ -107,8 +107,18 @@ YOCTO_UNIT_TEST_IMPL(trans)
     Module::Handle hModule( new Module() ); // open stdio
     Source         source( hModule );       // register it in source
 
-
     Lexical::Units lexemes;
+
+    if(argc>1)
+    {
+        const string arg = argv[1];
+        if(arg=="prefetch")
+        {
+            Lexical::Units tmp;
+            trans.getAll(tmp,source);
+            trans.unget_copy_of(tmp);
+        }
+    }
 
     for(;;)
     {
@@ -131,3 +141,5 @@ YOCTO_UNIT_TEST_IMPL(trans)
 
 }
 YOCTO_UNIT_TEST_DONE()
+
+        

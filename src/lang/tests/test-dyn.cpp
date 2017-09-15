@@ -19,6 +19,22 @@ YOCTO_UNIT_TEST_IMPL(dyn)
         // create it
         const string             parserFile = argv[1];
         auto_ptr<Syntax::Parser> parser( Syntax::Parser::Generate(parserFile,true) );
+        // open stdio
+        const Module::Handle hModule( new Module() );
+        Source               source(hModule);
+
+
+        Lexical::Units prefetch;
+        if(argc>2)
+        {
+            const string arg = argv[2];
+            if("prefetch"==arg)
+            {
+                std::cerr << "\t\tPREFETCH" << std::endl;
+                parser->getAll(prefetch,source);
+                parser->unget_copy_of(prefetch);
+            }
+        }
 
         // clean output
         const string parserOutDot = parser->tag + "_out.dot";
@@ -26,9 +42,6 @@ YOCTO_UNIT_TEST_IMPL(dyn)
         fs.try_remove_file(parserOutDot);
         fs.try_remove_file(parserOutGfx);
 
-        // open stdio
-        const Module::Handle hModule( new Module() );
-        Source               source(hModule);
 
         // parse
         (std::cerr << "Ready..." << std::endl ).flush();
@@ -46,30 +59,15 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             ios::graphviz_render(parserOutDot);
             std::cerr << "Walking..." << std::endl;
 
-#if 0
-            Lang::Syntax::RPN_Set rpn;
-            {
-                Lang::Syntax::RPN &axp = rpn("AXP");
-                axp.op("PLUS");
-                axp.op("MINUS");
-                axp.optimize();
-            }
-            {
-                Lang::Syntax::RPN &mxp = rpn("MXP");
-                mxp.op("MUL");
-                mxp.op("DIV");
-                mxp.op("MOD");
-                mxp.optimize();
-            }
-            rpn(tree.__get());
-            tree->graphviz("rpn.dot");
-            ios::graphviz_render("rpn.dot");
-#endif
             ios::ocstream fp( ios::cstderr );
             analyzer.walk(tree.__get());
         }
 
-
+        std::cerr << "#prefetch=" << prefetch.size << std::endl;
+        for(const Lexical::Unit *u=prefetch.head;u;u=u->next)
+        {
+            std::cerr << u->label << " : " << *u << std::endl;
+        }
     }
 
 }
