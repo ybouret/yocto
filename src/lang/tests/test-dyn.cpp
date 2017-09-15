@@ -19,13 +19,17 @@ YOCTO_UNIT_TEST_IMPL(dyn)
         // create it
         const string             parserFile = argv[1];
         auto_ptr<Syntax::Parser> parser( Syntax::Parser::Generate(parserFile,true) );
+        {
+            ios::wcstream fp("tmp.g");
+            Syntax::Parser::Encode(parserFile,fp);
+        }
+
         // open stdio
         const Module::Handle hModule( new Module() );
         Source               source(hModule);
 
 
-        Lexical::Units prefetch;
-
+        
         // clean output
         const string parserOutDot = parser->tag + "_out.dot";
         const string parserOutGfx = parser->tag + "_out.png";
@@ -53,10 +57,6 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             analyzer.walk(tree.__get());
         }
 
-        {
-            ios::wcstream fp("tmp.g");
-            Syntax::Parser::Encode(parserFile,fp);
-        }
     }
 
 }

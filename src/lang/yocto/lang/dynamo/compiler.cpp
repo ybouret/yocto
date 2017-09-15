@@ -119,27 +119,7 @@ namespace yocto
             }
 
 
-            void Parser:: Encode(const string &filename,
-                                 ios::ostream &fp)
-            {
-                Lexical::Units lexemes;
-                {
-                    auto_ptr<DynamoCompiler> compiler( new DynamoCompiler() );
-                    const Module::Handle     hModule( new Module(filename) );
-                    Source                   source(hModule);
-
-                    compiler->getAll(lexemes,source);
-                    compiler->ungetCopyOf(lexemes);
-                    auto_ptr<Parser> parser( compiler->encode(compiler->parse(source)));
-                }
-                std::cerr << "#lexemes=" << lexemes.size << std::endl;
-                for(const Lexical::Unit *u=lexemes.head;u;u=u->next)
-                {
-                    const string s = u->toString();
-                    fp << s << '\n';
-                }
-            }
-
+           
         }
     }
 }
