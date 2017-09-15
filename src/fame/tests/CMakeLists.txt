@@ -20,4 +20,6 @@ ADD_TEST(Layouts  test-fame layouts)
 ADD_TEST(Field    test-fame field)
 ADD_TEST(RMesh    test-fame rmesh)
 ADD_TEST(CMesh    test-fame cmesh)
- 
+ADD_TEST(Tr2D     test-fame tr2d)
+ADD_TEST(stl      test-fame stl)
+

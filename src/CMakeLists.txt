@@ -59,7 +59,7 @@ YOCTO_BUILD(alchemy)
 YOCTO_BUILD(python)
 YOCTO_BUILD(R++)
 YOCTO_BUILD(ocl)
-YOCTO_BUILD(spade)
+#YOCTO_BUILD(spade)
 YOCTO_BUILD(fame)
 YOCTO_BUILD(visit)
 

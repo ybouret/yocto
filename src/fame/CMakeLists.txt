@@ -20,6 +20,12 @@ SET( format_srcs ${format_decl} ${format_impl} )
 SOURCE_GROUP( fame/format FILES ${format_srcs} )
 INSTALL( FILES ${format_decl} DESTINATION include/yocto/fame/format )
 
+FILE( GLOB geometry_decl yocto/fame/geometry/*.hpp )
+FILE( GLOB geometry_impl yocto/fame/geometry/*.cpp )
+SET( geometry_srcs ${geometry_decl} ${geometry_impl} )
+SOURCE_GROUP( fame/geometry FILES ${geometry_srcs} )
+INSTALL( FILES ${geometry_decl} DESTINATION include/yocto/fame/geometry )
+
 FILE( GLOB mpi_decl yocto/fame/mpi/*.hpp )
 FILE( GLOB mpi_impl yocto/fame/mpi/*.cpp ) #empty
 SET( mpi_srcs ${mpi_decl} ${mpi_impl} )
@@ -34,6 +40,7 @@ ADD_LIBRARY(y-fame STATIC
 ${srcs}
 ${mesh_srcs}
 ${format_srcs}
+${geometry_srcs}
 ${mpi_srcs}
 )
 
