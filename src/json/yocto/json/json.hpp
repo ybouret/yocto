@@ -23,7 +23,7 @@ namespace yocto
 inline CLASS       & to##CLASS() throw()       { assert(Is##CLASS==type); return *static_cast<CLASS *>(impl);       }\
 inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return *static_cast<const CLASS *>(impl); }
 
-        class Value : public counted_object
+        class Value
         {
         public:
             enum Type
@@ -39,13 +39,13 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
 
             explicit Value() throw(); // IsNull
             explicit Value(const Type t);
-            virtual ~Value() throw();
+            ~Value() throw();
             Value(const Value &other);
             Value & operator=( const Value &other);
             
             void   swap_with(Value &other) throw();
             size_t length() const throw();
-
+            void   clear() throw();
 
 
             YOCTO_JSON_VALUE_TO(Number)
@@ -58,7 +58,9 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             void      *impl;
         };
 
-        class Array : public vector<Value>
+        typedef vector<Value> ArrayBase;
+
+        class Array : public ArrayBase
         {
         public:
             explicit Array() throw();
@@ -66,6 +68,7 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             Array(const Array &);
             inline size_t length() const throw() { return size(); }
 
+            
         private:
             YOCTO_DISABLE_ASSIGN(Array);
         };
@@ -86,6 +89,7 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             YOCTO_DISABLE_ASSIGN(Pair);
         };
 
+
         typedef set<string,Pair> ObjectBase;
 
         class Object : public ObjectBase
@@ -97,9 +101,11 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
 
             inline size_t length() const throw() { return size(); }
 
-            Value & insert(const string &name, const Value::Type t);
+            Value       & operator[](const string &);
+            const Value & operator[](const string &) const;
 
         private:
+          ;
             YOCTO_DISABLE_ASSIGN(Object);
         };
     }

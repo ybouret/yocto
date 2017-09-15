@@ -48,6 +48,12 @@ namespace yocto
             cswap_const(type,other.type);
         }
 
+        void Value:: clear() throw()
+        {
+            Value tmp;
+            swap_with(tmp);
+        }
+
 
         Value:: Value( const Value &other ) :
         type(other.type),
@@ -103,6 +109,26 @@ namespace yocto
     }
 }
 
+#include "yocto/exception.hpp"
+namespace yocto
+{
+    namespace JSON
+    {
+
+        Array:: ~Array() throw()
+        {
+        }
+
+        Array:: Array() throw()
+        {
+        }
+
+
+        Array:: Array(const Array &other) : ArrayBase(other) {}
+
+        
+    }
+}
 
 namespace yocto
 {
@@ -146,11 +172,41 @@ namespace yocto
         {
         }
 
-        Value & Object:: insert(const string &name, const Value::Type t)
+        Value & Object:: operator[](const string &name)
         {
-            const Pair P(name);
+
+            Pair *p = search(name);
+            if(p)
+            {
+                return p->value;
+            }
+            else
+            {
+                const Pair P(name);
+                if(!insert(P))
+                {
+                    throw exception("JSON.Object['%s']: unexpected failure",*name);
+                }
+                p = search(name);
+                if(!p)
+                {
+                    throw exception("JSON.Object.search('%s'): unexpected failure",*name);
+                }
+                return p->value;
+            }
         }
-        
+
+        const Value & Object:: operator[](const string &name) const
+        {
+            const Pair *p = search(name);
+            if(!p)
+            {
+                throw exception("no JSON.Object['%s']", *name);
+            }
+            return p->value;
+        }
+
+
     }
 }
 

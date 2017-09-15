@@ -10,7 +10,7 @@
 namespace yocto
 {
 	
-	class container : public object
+    class container : public object
 	{
 	public:
 		virtual ~container() throw();
