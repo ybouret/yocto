@@ -10,7 +10,7 @@ IF(VISIT_FOUND)
 	FILE(GLOB impl yocto/visit/*.cpp)
 	
 	SET( srcs ${decl} ${impl} )
-	INSTALL( FILES ${decl} DESTINATION include/yocto/json )
+	INSTALL( FILES ${decl} DESTINATION include/yocto/visit )
 	SOURCE_GROUP( visit FILES ${srcs})
 	
 	ADD_LIBRARY( y-visit STATIC ${srcs})
