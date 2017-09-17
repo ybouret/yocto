@@ -1,6 +1,6 @@
 #include "yocto/lang/syntax/analyzer.hpp"
-#include "yocto/sequence/list.hpp"
 #include "yocto/code/utils.hpp"
+
 
 #if 1 == YOCTO_LANG_SYNTAX_ANALYZER_OUTPUT
 #include "yocto/ios/graphviz.hpp"
@@ -15,44 +15,59 @@ namespace yocto
             Analyzer:: ~Analyzer() throw() {}
 
 
+            void  Analyzer:: __updateMaxSize(const size_t n) const throw()
+            {
+                (size_t &)max_size = max_of(max_size,n);
+            }
+
             Analyzer:: Analyzer(const Grammar &G):
-            termHash(),
-            ruleHash(),
+            terminalHash(),
+            internalHash(),
+            terminals(),
+            internals(),
             depth(0),
             max_size(0)
             {
 
 
-                list<string> terms;
-                list<string> rules;
-                G.collectLabels(terms,rules);
+                G.collectLabels(terminals,internals);
 
                 {
                     int h = 0;
-                    for( list<string>::iterator i=terms.begin(); i != terms.end(); ++i, ++h)
+                    for( list<string>::iterator i=terminals.begin(); i != terminals.end(); ++i, ++h)
                     {
-                        termHash.insert(*i,h);
-                        (size_t &)max_size = max_of(max_size,(*i).size());
+                        const string &kw = *i;
+                        terminalHash.insert(kw,h);
+                        __updateMaxSize(kw.size());
                     }
-                    termHash.optimize();
+                    terminalHash.optimize();
                 }
 
 
 
                 {
                     int h = RulesShift;
-                    for( list<string>::iterator i=rules.begin(); i != rules.end(); ++i, ++h)
+                    for( list<string>::iterator i=internals.begin(); i != internals.end(); ++i, ++h)
                     {
-                        ruleHash.insert(*i,h);
-                        //max_size = max_of(max_size,(*i).size());
+                        const string &kw = *i;
+                        internalHash.insert(kw,h);
+                        __updateMaxSize(kw.size());
                     }
                     const Rule *topLevel = G.getTopLevel();
-                    if(topLevel&&ruleHash(topLevel->label)<0)
+                    if(topLevel&&internalHash(topLevel->label)<0)
                     {
-                        ruleHash.insert(topLevel->label,++h);
+                        internals.push_back(topLevel->label);
+                        internalHash.insert(topLevel->label,++h);
+                        __updateMaxSize(topLevel->label.size());
                     }
-                    ruleHash.optimize();
+                    internalHash.optimize();
                 }
+
+#if 0
+                int (*cmp)(const string &,const string&) = string::compare;
+                terminals.sort( cmp );
+                internals.sort( cmp );
+#endif
 
 #if 1 == YOCTO_LANG_SYNTAX_ANALYZER_OUTPUT
                 std::cerr << "== rendering " << G.name << " terms and rules" << std::endl;
@@ -63,6 +78,9 @@ namespace yocto
 #endif
 
             }
+
+            
+
 
 
             void Analyzer:: walk(const Node *tree)
@@ -117,13 +135,13 @@ namespace yocto
                 const string &label = node->origin.label;
                 if(node->terminal)
                 {
-                    const int    termCode = termHash(label);
+                    const int    termCode = terminalHash(label);
                     const string content  = node->toString();
                     onTerminal(label,termCode,content);
                 }
                 else
                 {
-                    const int    ruleCode = ruleHash(label);
+                    const int    ruleCode = internalHash(label);
                     ++( (int&)depth );
                     const Node::List &children = node->toList();
                     for(const Node *ch = children.head; ch; ch=ch->next)
@@ -135,17 +153,33 @@ namespace yocto
                 }
             }
 
-#if 0
-            void Analyzer:: __indent(ios::ostream &fp) const
+
+            static inline
+            void __Emit(ios::ostream       &fp,
+                        const string       &prefix,
+                        const list<string> &keywords,
+                        const Hasher       &H,
+                        const size_t        max_size)
             {
-                for(int i=0;i<depth;++i) fp << ' ' << ' ';
+                for( list<string>::const_iterator i = keywords.begin(); i != keywords.end(); ++i)
+                {
+                    const string &kw = *i;
+                    fp << "#define " << prefix << kw; for(size_t j=kw.length();j<max_size;++j) fp << ' ';
+                    fp(" %d\n", H(kw));
+                }
+
             }
-            
-            void Analyzer:: __align(const string &label, ios::ostream &fp) const
+
+            void Analyzer:: emitDefinitions( ios::ostream &fp, const string &prefix ) const
             {
-                fp << label; for(size_t i=label.size();i<max_size;++i) fp << ' ';
+                fp << "// TERMINALS\n";
+                __Emit(fp,prefix,terminals,terminalHash,max_size);
+
+                fp << "// INTERNALS\n";
+                __Emit(fp,prefix,internals,internalHash,max_size);
+
             }
-#endif
+
         }
     }
 }

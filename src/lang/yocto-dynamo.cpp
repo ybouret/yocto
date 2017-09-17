@@ -34,16 +34,10 @@ YOCTO_PROGRAM_START()
     }
 
     {
-        const string   prefix = parser->tag + '_';
-        vector<string> terms;
-        vector<string> rules;
-        parser->collectLabels(terms,rules);
-        ios::wcstream fp(defsFile);
-        fp << "/* #Terminals */\n";
-        Hasher::emit_defines(fp,terms,prefix,0);
-        fp << "/* #Internals */\n";
-        Hasher::emit_defines(fp,rules,prefix,Syntax::Analyzer::RulesShift);
-
+        ios::wcstream     fp(defsFile);
+        const string      prefix = parser->tag + '_';
+        Syntax::Analyzer  analyzer(*parser);
+        analyzer.emitDefinitions(fp,prefix);
     }
 
 }

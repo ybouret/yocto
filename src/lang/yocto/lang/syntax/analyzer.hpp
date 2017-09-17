@@ -4,6 +4,7 @@
 #include "yocto/lang/syntax/grammar.hpp"
 #include "yocto/hashing/mph.hpp"
 #include "yocto/ios/ostream.hpp"
+#include "yocto/sequence/list.hpp"
 
 #define YOCTO_LANG_SYNTAX_ANALYZER_OUTPUT 0
 
@@ -31,15 +32,16 @@ namespace yocto
                                         const int     hCode,
                                         const size_t  nArgs);
 
-            private:
-                Hasher  termHash; //!< hashing of terminals
-                Hasher  ruleHash; //!< hashing of internals
-                void  __walk(const Node *node);
+                void emitDefinitions( ios::ostream &fp, const string &prefix ) const;
 
+            private:
+                Hasher       terminalHash; //!< hashing of terminals
+                Hasher       internalHash; //!< hashing of internals
+                list<string> terminals;
+                list<string> internals;
+                void  __walk(const Node *node);
+                void  __updateMaxSize(const size_t n) const throw();
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Analyzer);
-                //void __indent(ios::ostream &fp) const;
-                //void __write(const string &label, ios::ostream &fp) const;
-                //void __align(const string &label, ios::ostream &fp) const;
 
             public:
                 const int      depth;    //!< current depth
