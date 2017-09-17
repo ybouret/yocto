@@ -29,7 +29,8 @@ namespace yocto
             virtual ~Compiler() throw();
             explicit Compiler(Syntax::Parser *p);
 
-            void ld(Source &source);
+            virtual void initialize();
+            void         ld(Source &source);
 
 
         private:

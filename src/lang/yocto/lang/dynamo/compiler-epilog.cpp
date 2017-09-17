@@ -72,7 +72,7 @@ namespace yocto
 
                 termDB.release();
                 ruleDB.release();
-                std::cerr << std::endl;
+                if(verbose) { std::cerr << std::endl; }
             }
         }
     }

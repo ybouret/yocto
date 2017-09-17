@@ -34,8 +34,14 @@ namespace yocto
         {
         }
 
+        void Compiler:: initialize()
+        {
+        }
+        
+
         void Compiler:: ld(Source &source)
         {
+            initialize();
             auto_ptr<Syntax::Node> tree( impl->parse(source) );
             if(!tree.is_valid())
             {

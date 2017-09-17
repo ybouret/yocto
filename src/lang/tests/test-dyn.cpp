@@ -24,13 +24,10 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             Syntax::Parser::Encode(parserFile,fp);
         }
 
-        
 
         // open stdio
         const Module::Handle hModule( new Module() );
         Source               source(hModule);
-
-
         
         // clean output
         const string parserOutDot = parser->tag + "_out.dot";
