@@ -18,7 +18,12 @@ COMMAND yocto-dynamo ${CMAKE_CURRENT_SOURCE_DIR}/json.g ${CMAKE_CURRENT_SOURCE_D
 DEPENDS yocto-dynamo ${CMAKE_CURRENT_SOURCE_DIR}/json.g
 )
 
-ADD_EXECUTABLE(dyn-json dyn-json.cpp ${CMAKE_CURRENT_SOURCE_DIR}/json.inc)
+ADD_EXECUTABLE(dyn-json
+dyn-json.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/json.inc
+json.g
+)
+
 TARGET_LINK_YOCTO(dyn-json lang)
 
 
