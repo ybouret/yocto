@@ -42,6 +42,8 @@ ADD_LIBRARY(y-lang STATIC ${srcs} ${pattern_srcs} ${lexical_srcs} ${lexical_plug
 
 INSTALL( TARGETS y-lang ARCHIVE DESTINATION lib )
 
+ADD_EXECUTABLE(yocto-dynamo yocto-dynamo.cpp)
+TARGET_LINK_YOCTO(yocto-dynamo lang)
 
 IF(YOCTO_BUILD_TESTS)
 	ADD_SUBDIRECTORY(tests)
