@@ -1,4 +1,4 @@
-.JSON;
+.json;
 
 json   : object | array;
 
