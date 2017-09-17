@@ -36,29 +36,62 @@ namespace yocto
                     memset(line,0,sizeof(line));
                 }
 
-                
-                inline void write(uint8_t C)
+
+                static inline bool isSpecial(const int C) throw()
+                {
+                    switch(C)
+                    {
+                        case '\\':
+                        case '\'':
+                        case '\"': return true;
+                        default:
+                            break;
+                    }
+                    return false;
+                }
+
+                inline void write(uint8_t C, const bool isLast )
                 {
                     assert(ic<WRAP);
                     const char c(C);
-                    if( (C>=32&&C<127) && (c!='\\') && (c!='\"') && (c!='\'') )
+                    if( (C>=32&&C<127) && !isSpecial(c) )
                     {
                         line[ic++] = C;
-                        fp("'%c' , ",C);
+                        fp("'%c' ",C); // 4 chars
+
                     }
                     else
                     {
-                        line[ic++] = '.';
-                        fp("0x%02x, ",C);
+                        if(isSpecial(c))
+                        {
+                            line[ic++] = c;
+                        }
+                        else
+                        {
+                            line[ic++] = '.';
+                        }
+                        fp("0x%02x",C); // 4 chars
                     }
+
+                    if(!isLast)
+                    {
+                        fp(", ");
+                    }
+                    else
+                    {
+                        fp("  ");
+                    }
+
                     if(ic>=WRAP) flush();
                 }
 
                 inline void close()
                 {
                     assert(ic<WRAP);
-                    line[ic++] = 0;
-                    fp("0x00");
+                    for(size_t i=ic;i<WRAP;++i)
+                    {
+                        fp("      ");
+                    }
                     flush();
                     fp << '\n';
                 }
@@ -78,6 +111,21 @@ namespace yocto
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Emitter);
             };
+
+
+            static inline
+            void WriteString(Emitter             &em,
+                             const Lexical::Unit *u,
+                             const char           delim,
+                             const bool           lastUnit)
+            {
+                em.write(delim,false);
+                for(const Char *ch = u->head;ch;ch=ch->next)
+                {
+                    em.write(ch->code,false);
+                }
+                em.write(delim,lastUnit);
+            }
 
             void Parser:: Encode(const string &filename,
                                  ios::ostream &fp)
@@ -100,28 +148,38 @@ namespace yocto
                 Emitter em(fp);
                 for(const Lexical::Unit *u=lexemes.head;u;u=u->next)
                 {
-                    const string &label = u->label;
-                    const int     h     = H(label);
+                    const string &label    = u->label;
+                    const int     h        = H(label);
+                    const bool    lastUnit = (NULL==u->next);
+
                     switch(h)
                     {
-                        case 0: assert("RX"==label); em.write('\"'); break;
-                        case 1: assert("RS"==label); em.write('\''); break;
+                        case 0: assert("RX"==label); WriteString(em,u,'\"',lastUnit); break;
+                        case 1: assert("RS"==label); WriteString(em,u,'\'',lastUnit); break;
                         default:
-                            break;
+                            for(const Char *ch = u->head;ch;ch=ch->next)
+                            {
+                                const bool lastChar = (NULL==ch->next);
+                                em.write(ch->code,lastUnit&&lastChar);
+                            }
                     }
-                    for(const Char *ch = u->head;ch;ch=ch->next)
+                    if(!lastUnit)
                     {
-                        em.write(ch->code);
+                        if(h<0)
+                        {
+                            if(label!=":")
+                            {
+                                if(label==";")
+                                {
+                                    em.write('\n',false);
+                                }
+                                else
+                                {
+                                    em.write(' ',false);
+                                }
+                            }
+                        }
                     }
-                    switch(h)
-                    {
-                        case 0: assert("RX"==label); em.write('\"'); break;
-                        case 1: assert("RS"==label); em.write('\''); break;
-                        default:
-                            break;
-                    }
-
-
                 }
                 em.close();
 
