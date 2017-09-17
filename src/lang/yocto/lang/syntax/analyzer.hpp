@@ -20,7 +20,7 @@ namespace yocto
             public:
                 static const int RulesShift = 0x03E8;
                 virtual ~Analyzer() throw();
-                explicit Analyzer(const Grammar &G);
+                explicit Analyzer(const Grammar &);
 
                 void walk(const Node *tree);
 
@@ -33,6 +33,7 @@ namespace yocto
                                         const size_t  nArgs);
 
                 void emitDefinitions( ios::ostream &fp, const string &prefix ) const;
+
 
             private:
                 Hasher       terminalHash; //!< hashing of terminals
