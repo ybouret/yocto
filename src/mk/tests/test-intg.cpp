@@ -4,6 +4,8 @@
 using namespace yocto;
 using namespace math;
 
+#include "yocto/math/types.hxx"
+
 namespace
 {
     struct  functions

@@ -2,6 +2,7 @@
 #define YOCTO_MATH_TRIGCONV_INCLUDED 1
 
 #include "yocto/math/types.hpp"
+#include "yocto/math/types.hxx"
 
 namespace yocto
 {

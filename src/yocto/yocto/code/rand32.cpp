@@ -197,7 +197,6 @@ namespace yocto
         seed( wtime::seed() );
     }
 
-    YOCTO_MATH_DECL_(double,two_pi);
 
     void urand32:: gaussian(double &u, double &v) throw()
     {

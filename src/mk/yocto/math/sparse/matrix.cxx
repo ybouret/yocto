@@ -3,6 +3,7 @@
 #include "yocto/math/types.hpp"
 #include "yocto/exceptions.hpp"
 #include "yocto/sequence/vector.hpp"
+#include "yocto/math/types.hxx"
 
 #include <cerrno>
 
@@ -37,7 +38,8 @@ namespace yocto
             if ( (nr<=0&&nc>0) || (nr>0&&nc<=0) )
                 throw libc::exception(EINVAL,"invalid sparse matrix dimension");
         }
-        
+
+
         template <>
         z_type & sp_matrix<z_type>:: operator()(size_t i,size_t j)
         {

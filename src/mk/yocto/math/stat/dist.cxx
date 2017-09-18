@@ -5,12 +5,15 @@
 #include "yocto/code/utils.hpp"
 
 #include "yocto/exceptions.hpp"
+#include "yocto/math/types.hxx"
+
 #include <cerrno>
 
 namespace yocto {
 	
 	namespace math {
-		
+
+
 		template <>
 		real_t gaussian<real_t>::pdf( real_t x, const real_t mu, const real_t sig )
 		{
@@ -197,7 +200,8 @@ namespace yocto {
 				inline real_t get( real_t t ) const { return student<real_t>::cdf( nu, t ) - p; }
 			};
 		}
-		
+
+        
 		template <>
 		real_t student<real_t>::icdf( real_t nu, real_t p )
 		{

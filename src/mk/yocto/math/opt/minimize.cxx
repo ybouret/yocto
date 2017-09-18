@@ -4,6 +4,8 @@
 #include "yocto/sort/network.hpp"
 #include "yocto/ios/ocstream.hpp"
 
+#include "yocto/math/types.hxx"
+
 namespace yocto {
 
     namespace math {

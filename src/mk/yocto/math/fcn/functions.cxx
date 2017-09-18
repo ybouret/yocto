@@ -9,6 +9,8 @@
 #include <cerrno>
 #include <iostream>
 
+#include "yocto/math/types.hxx"
+
 namespace yocto {
 	
 	namespace math {
@@ -46,7 +48,8 @@ namespace yocto {
                 
 			};
 		}
-		
+
+
 		real_t iqerf( real_t p ) throw()
         {
 			assert(p>-1);
@@ -124,7 +127,7 @@ namespace yocto {
 		
 		
 		
-		
+        
 		real_t gamma_i( real_t a, real_t x )
 		{
 			static const real_t EPS = numeric<real_t>::epsilon;

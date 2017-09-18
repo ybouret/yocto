@@ -26,6 +26,8 @@ namespace yocto
     
 }
 
+#include "yocto/math/types.hxx"
+
 #define real_t float
 #include "types.cxx"
 

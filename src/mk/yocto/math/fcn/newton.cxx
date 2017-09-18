@@ -3,6 +3,7 @@
 #include "yocto/exception.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/lu.hpp"
+#include "yocto/math/types.hxx"
 
 namespace yocto
 {
@@ -62,6 +63,7 @@ namespace yocto
             return (ftry <= forg + alpha * rate);
         }
 
+
         template <>
         bool Newton<real_t>::xconverged() const throw()
         {
@@ -71,7 +73,7 @@ namespace yocto
                 const real_t x0 = X0[i];
                 const real_t x1 = Xtry[i];
                 const real_t dx = Fabs(x1-x0);
-                if(dx>numeric<double>::ftol*( max_of<real_t>(Fabs(x0),Fabs(x1)) ))
+                if(dx>numeric<real_t>::ftol*( max_of<real_t>(Fabs(x0),Fabs(x1)) ))
                 {
                     return false;
                 }

@@ -81,7 +81,7 @@ namespace yocto {
             explicit CubicApproximation() :
             vec_t(),
             dArc(  this, & CubicApproximation:: d_length  ),
-	    drvs(),
+            drvs(),
             coord( this, & CubicApproximation:: get_coord ),
             indx(0)
             {}
@@ -91,7 +91,7 @@ namespace yocto {
             inline   CubicApproximation(const CubicApproximation &other) :
             vec_t(other),
             dArc(  this, & CubicApproximation:: d_length  ),
-	    drvs(),
+            drvs(),
             coord( this, & CubicApproximation:: get_coord ),
             indx(0)
             {}

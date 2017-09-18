@@ -6,6 +6,8 @@
 using namespace yocto;
 using namespace math;
 
+#include "yocto/math/types.hxx"
+
 template <typename T>
 static inline T F( T x )
 {

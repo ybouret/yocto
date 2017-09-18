@@ -4,10 +4,6 @@ namespace yocto {
     namespace math
     {
         
-        YOCTO_MATH_DECL_(real_t,pi);
-        YOCTO_MATH_DECL_(real_t,half_pi);
-        YOCTO_MATH_DECL_(real_t,tiny);
-
         real_t Atan2( real_t x, real_t y ) throw()
         {
             static const real_t full_pi = numeric<real_t>::pi;

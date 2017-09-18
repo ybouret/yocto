@@ -122,7 +122,7 @@ SET( fragment_srcs ${fragment_decl} ${fragment_impl} )
 INSTALL( FILES ${fragment_decl} DESTINATION include/yocto/fragment )
 SOURCE_GROUP( fragment FILES ${fragment_srcs} )
 
-FILE( GLOB math_decl yocto/math/*.hpp)
+FILE( GLOB math_decl yocto/math/*.h??)
 FILE( GLOB math_impl yocto/math/*.cpp)
 SET( math_srcs ${math_decl} ${math_impl} )
 INSTALL( FILES ${math_decl} DESTINATION include/yocto/math )

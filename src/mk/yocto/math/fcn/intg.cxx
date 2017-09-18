@@ -2,6 +2,8 @@
 #include "yocto/math/fcn/intg.hpp"
 #include "yocto/code/utils.hpp"
 
+#include "yocto/math/types.hxx"
+
 namespace yocto
 {
     namespace math
@@ -12,7 +14,7 @@ namespace yocto
         // range
         //
         ////////////////////////////////////////////////////////////////////////
-        
+
         template <>
         integrator<real_t>:: range:: range( real_t A, real_t B, real_t EPS ) throw() :
         a(A),

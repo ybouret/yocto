@@ -13,6 +13,8 @@
 using namespace yocto;
 using namespace math;
 
+#include "yocto/math/types.hxx"
+
 template <typename T>
 void perform_psd( const size_t p, const size_t q, const size_t K)
 {

@@ -8,6 +8,7 @@
 using namespace yocto;
 using namespace math;
 
+#include "yocto/math/types.hxx"
 
 YOCTO_UNIT_TEST_IMPL(trigo)
 {

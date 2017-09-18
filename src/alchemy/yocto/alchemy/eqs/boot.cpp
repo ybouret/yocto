@@ -8,6 +8,7 @@
 #include "yocto/math/opt/minimize.hpp"
 
 
+#include "yocto/math/types.hxx"
 
 
 namespace yocto

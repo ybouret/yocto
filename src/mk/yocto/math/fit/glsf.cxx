@@ -1,12 +1,13 @@
 #include "yocto/math/fit/glsf.hpp"
 #include "yocto/math/ztype.hpp"
+#include "yocto/math/types.hxx"
 
 
 namespace yocto
 {
     namespace math
     {
-
+        
         template <>
         int GLS<real_t>::GET_P10_MAX() throw()
         {

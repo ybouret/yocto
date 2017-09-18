@@ -5,6 +5,8 @@
 #include "yocto/math/round.hpp"
 #include <cerrno>
 
+#include "yocto/math/types.hxx"
+
 namespace yocto
 {
     namespace math
@@ -120,7 +122,7 @@ namespace yocto
             
         }
         
-        
+
         template <>
         derivative<real_t>:: derivative() :
         a(NTAB,NTAB),

@@ -1,10 +1,11 @@
 #include "yocto/math/dat/chebyshev.hpp"
 #include "yocto/math/ztype.hpp"
 
+#include "yocto/math/types.hxx"
+
 namespace yocto {
 
 	namespace math {
-
 
 
 		template<>

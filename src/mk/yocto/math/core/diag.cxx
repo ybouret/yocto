@@ -2,6 +2,7 @@
 #include "yocto/math/ztype.hpp"
 #include "yocto/math/types.hpp"
 
+#include "yocto/math/types.hxx"
 
 namespace yocto
 {
@@ -389,7 +390,7 @@ namespace yocto {
     {
         
         
-        
+
         static inline int __compare_fabs( const real_t lhs, const real_t rhs) throw()
         {
             return __compare<real_t>( Fabs(lhs), Fabs(rhs) );

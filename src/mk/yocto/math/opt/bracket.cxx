@@ -3,6 +3,8 @@
 #include "yocto/code/bswap.hpp"
 #include "yocto/code/utils.hpp"
 
+#include "yocto/math/types.hxx"
+
 namespace yocto {
 
     namespace math {

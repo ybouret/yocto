@@ -9,7 +9,6 @@
 
 namespace yocto
 {
-    YOCTO_MATH_DECL(two_pi);
     
     template <typename T>
     class point2d

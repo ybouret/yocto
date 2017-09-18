@@ -3,6 +3,10 @@
 #include "yocto/math/ztype.hpp"
 #include "yocto/code/utils.hpp"
 #include "yocto/sequence/vector.hpp"
+
+#include "yocto/math/types.hxx"
+
+
 namespace yocto
 {
     
@@ -290,7 +294,8 @@ namespace yocto
             }
             return true;
         }
-        
+
+
         template <>
         size_t svd<real_t>:: truncate( array<real_t> &w ) throw()
         {

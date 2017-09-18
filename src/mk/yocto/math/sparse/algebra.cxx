@@ -1,10 +1,13 @@
 #include "yocto/math/ztype.hpp"
 #include "yocto/math/sparse/algebra.hpp"
 
+#include "yocto/math/types.hxx"
+
 namespace yocto
 {
     namespace math
     {
+
         template <>
         void sp_algebra<z_type>::mul(array<z_type> &v, const sp_matrix<z_type> &M, const array<z_type> &u) throw()
         {

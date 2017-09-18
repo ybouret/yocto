@@ -5,11 +5,12 @@
 #include "yocto/code/unroll.hpp"
 #include "yocto/code/xbitrev.hpp"
 
+#include "yocto/math/types.hxx"
+
 namespace yocto
 {
     namespace math
     {
-
 
         template <>
         void Fourier<real_t>:: Transform(real_t      *data,

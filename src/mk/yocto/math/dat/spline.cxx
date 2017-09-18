@@ -4,6 +4,7 @@
 #include "yocto/exception.hpp"
 #include "yocto/ptr/auto.hpp"
 #include "yocto/math/types.hpp"
+#include "yocto/math/types.hxx"
 
 namespace yocto {
     
@@ -365,7 +366,8 @@ namespace yocto {
             if( n < 2) throw exception("spline1d(not enough data)");
             return n;
         }
-        
+
+
         template <>
         spline1D<real_t>:: spline1D(spline_type          t,
                                     const array<real_t> &X,

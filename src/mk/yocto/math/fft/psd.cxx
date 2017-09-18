@@ -13,33 +13,35 @@
 #include "yocto/math/core/tao.hpp"
 
 #include "yocto/code/ipower.hpp"
+#include "yocto/math/types.hxx"
 
 #include <cerrno>
 
 namespace yocto
 {
-	
+
     namespace math
     {
-		
+
         template <>
         real_t PSD<real_t>:: Square( real_t X ) throw()
         {
             return X>=REAL(0.0) && X<=REAL(1.0) ? REAL(1.0) : REAL(0.0);
         }
-		
+
         template <>
         real_t PSD<real_t>:: Bartlett( real_t X ) throw()
         {
-            return X>REAL(0.0) && X<REAL(1.0) ? REAL(1.0) - Fabs( (X-REAL(0.5) / REAL(0.5) ) ): REAL(0.0);
+            return (X>REAL(0.0) && X<REAL(1.0)) ? REAL(1.0) - Fabs( (X-REAL(0.5) / REAL(0.5) ) ): REAL(0.0);
         }
-		
+
+
         template <>
         real_t PSD<real_t>:: Hann( real_t X ) throw()
         {
-            return X>REAL(0.0) && X<REAL(1.0) ? REAL(0.5) * (REAL(1.0) - Cos( numeric<real_t>::two_pi * X)) : REAL(0.0) ;
+            return (X>REAL(0.0) && X<REAL(1.0)) ? REAL(0.5) * (REAL(1.0) - Cos( numeric<real_t>::two_pi * X)) : REAL(0.0) ;
         }
-		
+
         template <>
         real_t PSD<real_t>:: Welch( real_t X ) throw()
         {
@@ -52,10 +54,10 @@ namespace yocto
             {
                 return 0;
             }
-			
+
         }
-		
-        
+
+
         template<>
         real_t PSD<real_t>:: Blackman( real_t X ) throw()
         {
@@ -69,7 +71,7 @@ namespace yocto
                 return 0;
             }
         }
-        
+
         template <>
         real_t PSD<real_t>:: Nutall( real_t X ) throw()
         {
@@ -83,8 +85,8 @@ namespace yocto
             else
                 return 0;
         }
-		
-        
+
+
         template <>
         void PSD<real_t>:: Compute(Window        &w,
                                    real_t        *p,
@@ -93,29 +95,29 @@ namespace yocto
                                    const size_t  size,
                                    const size_t  K)
         {
-            
+
             assert(p!=NULL);
             assert(m>0);
             assert(is_a_power_of_two(m));
             assert(!(data==NULL&&size>0));
-            
-            
+
+
             //==================================================================
             // initialize data
             //==================================================================
             const size_t M = m << 1;
             if( M > size )
                 throw exception("PSD: %u*2 > data size=%u", unsigned(m), unsigned(size));
-            
-            
+
+
             vector<cplx_t> work(  M, numeric<cplx_t>::zero );
             vector<real_t> work2( M, numeric<real_t>::zero );
             vector<real_t> F(M, numeric<real_t>::zero );
-            
+
             cplx_t        *input  = work(0);
             real_t        *weight = work2(0);
             real_t        *f      = F(0);
-            
+
             //==================================================================
             // initialize the weights
             //==================================================================
@@ -128,13 +130,13 @@ namespace yocto
                     sumw2 += tmp*tmp;
                 }
             }
-            
+
             //==================================================================
             // initialize the spectrum
             //==================================================================
             for(size_t i=0;i<m;++i)
                 p[i] = 0;
-            
+
             //==================================================================
             // initialize the filtering
             //==================================================================
@@ -145,7 +147,7 @@ namespace yocto
                 //std::cerr << "K=" << K << std::endl;
                 sig.make(K,M);
                 a.make(K, numeric<real_t>::zero );
-                
+
                 //--------------------------------------------------------------
                 // Build the matrix of moments
                 //--------------------------------------------------------------
@@ -161,7 +163,7 @@ namespace yocto
                 //std::cerr << "mu=" << mu << std::endl;
                 if( !LU<real_t>::build(mu) )
                     throw exception("PSD(Invalid Momemts");
-                
+
                 //--------------------------------------------------------------
                 // Build sigma matrix, to get coefficients
                 //--------------------------------------------------------------
@@ -177,14 +179,14 @@ namespace yocto
                 LU<real_t>::solve(mu, sig);
                 //std::cerr << "sigm=" << sig << std::endl;
             }
-            
+
             //==================================================================
             // loop over segments
             //==================================================================
             size_t      nsub =0;
             for( size_t start=0; start+M <= size; ++start)
             {
-                
+
                 //--------------------------------------------------------------
                 //-- load the sample
                 //--------------------------------------------------------------
@@ -193,16 +195,16 @@ namespace yocto
                     assert(start+i<size);
                     f[i] = data[start+i];
                 }
-                
+
                 //--------------------------------------------------------------
                 //-- compute the coefficients
                 //--------------------------------------------------------------
                 if(K>0)
                 {
-                   tao::mul(a, sig, F);
+                    tao::mul(a, sig, F);
                 }
                 //std::cerr << "a=" << a <<  std::endl;
-                
+
                 //--------------------------------------------------------------
                 //-- load the sample
                 //--------------------------------------------------------------
@@ -214,16 +216,16 @@ namespace yocto
                     {
                         sum += a[j] * ipower<real_t>(real_t(i),j-1);
                     }
-                    
+
                     //-- compute the effective signal
                     real_t f_i = f[i] - sum;
-                    
+
                     //-- put it as a weighted complex
                     cplx_t &g = input[i];
                     g.re = f_i * weight[i];
                     g.im = 0;
                 }
-                
+
                 //--------------------------------------------------------------
                 //-- take the local FFT
                 //--------------------------------------------------------------
@@ -232,7 +234,7 @@ namespace yocto
                     p[i] += input[i].mod2();
                 ++nsub;
             }
-            
+
             //==================================================================
             // normalize
             //==================================================================
@@ -240,14 +242,14 @@ namespace yocto
             for(size_t i=0;i<m;++i)
                 p[i] *= nfac;
         }
-        
+
         template <>
         void PSD<real_t>:: Compute(Window &w, array<real_t> &psd, const array<real_t> &data, const size_t K)
         {
             PSD<real_t>::Compute( w, psd(0), psd.size(), data(0), data.size(), K);
         }
-        
-        
+
+
     }
-	
+
 }
