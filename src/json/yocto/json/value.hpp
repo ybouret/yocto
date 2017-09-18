@@ -24,6 +24,8 @@ namespace yocto
 inline CLASS       & to##CLASS() throw()       { assert(Is##CLASS==type); return *static_cast<CLASS *>(impl);       }\
 inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return *static_cast<const CLASS *>(impl); }
 
+#define YOCTO_JSON_VALUE_CHECK(TYPE) inline bool is##TYPE() const throw() { return Is##TYPE == type; }
+
         class Value
         {
         public:
@@ -38,8 +40,8 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
                 IsNull
             };
 
-            explicit Value() throw(); // IsNull
-            explicit Value(const Type t);
+            Value() throw(); // IsNull
+            Value(const Type t);
             ~Value() throw();
             Value(const Value &other);
             Value & operator=( const Value &other);
@@ -54,9 +56,23 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             YOCTO_JSON_VALUE_TO(Array)
             YOCTO_JSON_VALUE_TO(Object)
 
+            YOCTO_JSON_VALUE_CHECK(String)
+            YOCTO_JSON_VALUE_CHECK(Number)
+            YOCTO_JSON_VALUE_CHECK(Object)
+            YOCTO_JSON_VALUE_CHECK(Array)
+            YOCTO_JSON_VALUE_CHECK(True)
+            YOCTO_JSON_VALUE_CHECK(False)
+            YOCTO_JSON_VALUE_CHECK(Null)
+
             const Type type;
 
             static Value & LoadFrom( Lang::Source & );
+
+            Value(const String &);
+            Value(const Number  );
+
+
+
 
         private:
             void      *impl;
@@ -71,8 +87,8 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             virtual ~Array() throw();
             Array(const Array &);
             inline size_t length() const throw() { return size(); }
-            
-            
+
+
         private:
             YOCTO_DISABLE_ASSIGN(Array);
         };

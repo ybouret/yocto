@@ -6,10 +6,19 @@ using namespace yocto;
 YOCTO_UNIT_TEST_IMPL(load)
 {
     JSON::Value value;
-    for(int i=1;i<argc;++i)
+    if(argc>1)
     {
-        const string         fileName = argv[1];
-        Lang::Module::Handle hModule( new Lang::Module(fileName) );
+        for(int i=1;i<argc;++i)
+        {
+            const string         fileName = argv[1];
+            Lang::Module::Handle hModule( new Lang::Module(fileName) );
+            Lang::Source         source(hModule);
+            value = JSON::Value::LoadFrom(source);
+        }
+    }
+    else
+    {
+        Lang::Module::Handle hModule( new Lang::Module() );
         Lang::Source         source(hModule);
         value = JSON::Value::LoadFrom(source);
     }

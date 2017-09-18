@@ -42,6 +42,55 @@ namespace yocto
         {
         }
 
+        Value:: Value(const Type t) :
+        type(t),
+        impl(0)
+        {
+            switch(type)
+            {
+                case IsNull:                          break;
+                case IsTrue:  (Type &)type = IsTrue;  break;
+                case IsFalse: (Type &)type = IsFalse; break;
+
+                case IsNumber:
+                    impl        = object::acquire1<Number>();
+                    (Type&)type = IsNumber;
+                    break;
+
+                case IsString:
+                    impl        = new String();
+                    (Type&)type = IsString;
+                    break;
+
+                case IsObject:
+                    impl        = new Object();
+                    (Type&)type = IsObject;
+                    break;
+
+                case IsArray:
+                    impl = new Array();
+                    (Type&)type = IsArray;
+                    break;
+            }
+
+        }
+
+        Value:: Value(const String &s) :
+        type(IsNull),
+        impl( new String(s) )
+        {
+            (Type&)type = IsString;
+        }
+
+        Value:: Value(const Number x) :
+        type(IsNull),
+        impl( object::acquire1<Number>() )
+        {
+            (Type&)type = IsNumber;
+            toNumber()  = x;
+        }
+
+
         void Value:: swap_with(Value &other) throw()
         {
             cswap(impl,other.impl);
