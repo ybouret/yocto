@@ -29,24 +29,20 @@ namespace yocto {
 
         virtual const char *name() const throw() { return hidden::stack_name; }
 
-        type & operator[]( ptrdiff_t n ) throw()
+        inline type & operator[]( ptrdiff_t n ) throw()
         {
             return pipe_type::sequence_[ get_stack_offset(n) ];
         }
 
-        const_type & operator[]( ptrdiff_t n ) const throw()
+        inline const_type & operator[]( ptrdiff_t n ) const throw()
         {
             return pipe_type::sequence_[ get_stack_offset(n) ];
         }
 
-#if 0
-        pipe_type       & as_pipe() throw()       { return *this; }
-        const pipe_type & as_pipe() const throw() { return *this; }
-#endif
-        
+
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(stack);
-        size_t get_stack_offset( ptrdiff_t n ) const throw()
+        inline size_t get_stack_offset( ptrdiff_t n ) const throw()
         {
             assert( static_cast<size_t>( n < 0 ? -n : n ) <= this->size() );
             if( n > 0 )
