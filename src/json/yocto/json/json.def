@@ -1,0 +1,13 @@
+// TERMINALS
+#define JSON_number       0
+#define JSON_string       1
+#define JSON_null         2
+#define JSON_true         3
+#define JSON_false        4
+// INTERNALS
+#define JSON_empty_object 1000
+#define JSON_heavy_object 1001
+#define JSON_pair         1002
+#define JSON_empty_array  1003
+#define JSON_heavy_array  1004
+#define JSON_json         1006
