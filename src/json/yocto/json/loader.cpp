@@ -94,7 +94,7 @@ namespace yocto
                     case JSON_heavy_object:
                     {
                         assert(nArgs>0);
-                        assert(pStack.size()>=nArgs);
+                        assert(pStack.size()>=size_t(nArgs));
                         Value v(Value::IsObject);
                         {
                             Object &obj = v.toObject();
