@@ -158,6 +158,8 @@ namespace yocto
         {
         }
 
+        const string & Pair:: key() const throw() { return name; }
+
 
         Object:: Object() throw()
         {

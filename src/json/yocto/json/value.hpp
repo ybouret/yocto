@@ -5,6 +5,7 @@
 #include "yocto/sequence/vector.hpp"
 #include "yocto/associative/set.hpp"
 #include "yocto/counted-object.hpp"
+#include "yocto/lang/source.hpp"
 
 namespace yocto
 {
@@ -54,6 +55,9 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             YOCTO_JSON_VALUE_TO(Object)
 
             const Type type;
+
+            static Value & LoadFrom( Lang::Source & );
+
         private:
             void      *impl;
         };
