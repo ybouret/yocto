@@ -132,8 +132,10 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             Value       & operator[](const string &);
             const Value & operator[](const string &) const;
 
+            void display( std::ostream &, int depth ) const;
+
+
         private:
-          ;
             YOCTO_DISABLE_ASSIGN(Object);
         };
     }

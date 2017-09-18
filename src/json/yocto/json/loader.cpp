@@ -95,6 +95,21 @@ namespace yocto
                     {
                         assert(nArgs>0);
                         assert(pStack.size()>=nArgs);
+                        Value v(Value::IsObject);
+                        {
+                            Object &obj = v.toObject();
+                            for(int i=-nArgs;i<0;++i)
+                            {
+                                const Pair &p = pStack[i];
+                                if( !obj.insert(p) )
+                                {
+                                    throw exception("%s: multiple pair with name '%s'", name, * p.name );
+                                }
+                            }
+                            pStack.popn(nArgs);
+                        }
+                        vStack.push(nil);
+                        vStack.peek().swap_with(v);
                     } break;
                         
                     case JSON_pair: {

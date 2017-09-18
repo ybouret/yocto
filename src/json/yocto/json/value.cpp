@@ -172,9 +172,9 @@ namespace yocto
                 case IsTrue:   os << "true";      break;
                 case IsNull:   os << "null";      break;
                 case IsNumber: { const string s = vformat("%.15g",toNumber()); os << s; } break;
-                case IsString: { const string s = jstr2cstr(toString());      os << s; } break;
-                case IsArray:  toArray().display(os,depth); break;
-                case IsObject: break;
+                case IsString: { const string s = jstr2cstr(toString());      os << '\"' << s << '\"'; } break;
+                case IsArray:  toArray().display(os,depth);  break;
+                case IsObject: toObject().display(os,depth); break;
             }
         }
 
@@ -207,12 +207,9 @@ namespace yocto
             {
                 for(int j=0;j<depth;++j) os << ' ';
                 (*this)[i].display(os,depth);
-                if(i<size()) os << ',';
-                os << std::endl;
+                if(i<size()) os << ',' << std::endl;
             }
-            --depth;
-            for(int i=0;i<depth;++i) os << ' ';
-            os << ']';
+            os << ' ' << ']';
         }
         
     }
@@ -294,6 +291,26 @@ namespace yocto
                 throw exception("no JSON.Object['%s']", *name);
             }
             return p->value;
+        }
+
+        void Object:: display( std::ostream &os, int depth ) const
+        {
+            os << '{' << std::endl;
+            const Object::const_iterator theEnd = end();
+            ++depth;
+            for( Object::const_iterator i = begin(); i != theEnd; ++i )
+            {
+                for(int j=0;j<depth;++j) os << ' ';
+                const Pair  &p    = *i;
+                const string name = jstr2cstr(p.name);
+                os << '\"' << name << '\"' << ':' << std::endl;
+                ++depth;
+                for(int j=0;j<depth;++j) os << ' ';
+                p.value.display(os,depth);
+                --depth;
+                if(i!=theEnd) os << ',' << std::endl;
+            }
+            os << ' ' << '}';
         }
 
 
