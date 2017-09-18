@@ -51,7 +51,7 @@ public:
 
     virtual void onInternal(const string &label,
                             const int     hCode,
-                            const size_t  nArgs)
+                            const int     nArgs)
     {
         __indent() << "call " << (label) << "/" << nArgs << std::endl;
     }

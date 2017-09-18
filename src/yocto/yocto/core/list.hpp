@@ -318,7 +318,17 @@ namespace yocto
                 while( size ) tmp.push_back( pop_back() );
                 swap_with(tmp);
             }
-            
+
+            inline void reverse_last(size_t n) throw()
+            {
+                assert(n<=size);
+                list_of tmp;
+                while(n-->0)
+                {
+                    tmp.push_back( pop_back() );
+                }
+                merge_back(tmp);
+            }
 					
 		private:
 			YOCTO_DISABLE_COPY_AND_ASSIGN(list_of);

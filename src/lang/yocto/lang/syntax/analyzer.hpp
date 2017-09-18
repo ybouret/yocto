@@ -30,7 +30,7 @@ namespace yocto
 
                 virtual void onInternal(const string &label,
                                         const int     hCode,
-                                        const size_t  nArgs);
+                                        const int     nArgs);
 
                 void emitDefinitions( ios::ostream &fp, const string &prefix ) const;
 

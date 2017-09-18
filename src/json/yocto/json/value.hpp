@@ -71,11 +71,18 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             Value(const String &);
             Value(const Number  );
 
-
-
+            inline friend
+            std::ostream & operator<<( std::ostream &os, const Value &v )
+            {
+                v.display(os,0);
+                return os;
+            }
+            
+            void display( std::ostream &, int depth ) const;
 
         private:
             void      *impl;
+
         };
 
         typedef vector<Value> ArrayBase;
@@ -88,6 +95,7 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             Array(const Array &);
             inline size_t length() const throw() { return size(); }
 
+            void display( std::ostream &, int depth ) const;
 
         private:
             YOCTO_DISABLE_ASSIGN(Array);

@@ -19,7 +19,7 @@ namespace yocto {
 		virtual type       &peek() throw()        = 0;
 		virtual void        pop() throw()         = 0;
 		
-		inline void pop( size_t n ) throw() 
+		inline void popn( size_t n ) throw()
 		{
 			assert( n <= this->size() );
 			while( n-- > 0 ) this->pop();

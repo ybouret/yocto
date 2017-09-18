@@ -155,6 +155,30 @@ namespace yocto
             return 1;
         }
 
+
+        static inline
+        string jstr2cstr(const String &jstr )
+        {
+            string ans = jstr;
+
+            return ans;
+        }
+
+        void Value:: display( std::ostream &os, int depth ) const
+        {
+            switch(type)
+            {
+                case IsFalse:  os << "false";     break;
+                case IsTrue:   os << "true";      break;
+                case IsNull:   os << "null";      break;
+                case IsNumber: { const string s = vformat("%.15g",toNumber()); os << s; } break;
+                case IsString: { const string s = jstr2cstr(toString());      os << s; } break;
+                case IsArray:  toArray().display(os,depth); break;
+                case IsObject: break;
+            }
+        }
+
+
     }
 }
 
@@ -175,6 +199,21 @@ namespace yocto
 
         Array:: Array(const Array &other) : ArrayBase(other) {}
 
+        void Array:: display(std::ostream &os, int depth) const
+        {
+            os << '[' << std::endl;
+            ++depth;
+            for(size_t i=1;i<=size();++i)
+            {
+                for(int j=0;j<depth;++j) os << ' ';
+                (*this)[i].display(os,depth);
+                if(i<size()) os << ',';
+                os << std::endl;
+            }
+            --depth;
+            for(int i=0;i<depth;++i) os << ' ';
+            os << ']';
+        }
         
     }
 }

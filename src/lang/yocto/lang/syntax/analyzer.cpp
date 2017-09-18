@@ -121,7 +121,7 @@ namespace yocto
 
             void Analyzer:: onInternal(const string &label,
                                        const int     hCode,
-                                       const size_t  nArgs)
+                                       const int     nArgs)
             {
                 const string hText = vformat("[%04d]",hCode);
                 __indent() << "call " << hText << ' ' << label << "/" << nArgs << std::endl;

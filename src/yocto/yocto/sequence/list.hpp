@@ -166,11 +166,16 @@ namespace yocto
 			while( pool_.size > n ) node_type::release( pool_.query() );
 		}
         
-        virtual void reverse() throw()
+        inline virtual void reverse() throw()
         {
             list_.reverse();
         }
-		
+
+        inline virtual void reverse_last(const size_t n) throw()
+        {
+            list_.reverse_last(n);
+        }
+
         
         inline friend std::ostream & operator<<( std::ostream &os, const list &a )
 		{

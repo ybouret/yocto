@@ -33,7 +33,7 @@ namespace yocto {
 		virtual size_t size() const throw()     { return sequence_.size();      }
 		virtual size_t capacity() const throw() { return sequence_.available(); }
 		
-		virtual void free() throw() { sequence_.free(); }
+		virtual void free()    throw() { sequence_.free();    }
 		virtual void release() throw() { sequence_.release(); }
 		
 		virtual void reserve( size_t n ) { sequence_.reserve(n); }
@@ -45,13 +45,14 @@ namespace yocto {
 		virtual void        pop() throw()           {         pop( int2type<TYPE>() ); }
 		virtual const_type &peek() const throw()    { return peek( int2type<TYPE>() ); }
 		virtual type       &peek() throw()          { return peek( int2type<TYPE>() ); }
-        
+
         inline friend
         std::ostream & operator<<( std::ostream &os, const pipe &p)
         {
             os << p.sequence_;
             return os;
         }
+
         
 	private:
 		YOCTO_DISABLE_COPY_AND_ASSIGN(pipe);
