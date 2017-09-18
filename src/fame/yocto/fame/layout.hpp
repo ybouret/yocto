@@ -4,6 +4,8 @@
 #include "yocto/fame/types.hpp"
 #include <iostream>
 
+YOCTO_FAME_COORD_EXTERN();
+
 namespace yocto
 {
     namespace fame

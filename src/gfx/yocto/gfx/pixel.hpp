@@ -23,6 +23,14 @@ namespace yocto
             static float    to_float(const T) throw();
             static float    L2(const T a, const T b) throw();
         };
+
+#define YOCTO_GFX_PIXEL_EXTERN_(TYPE) extern template const TYPE yocto::gfx::pixel<TYPE>::opaque
+
+#define YOCTO_GFX_PIXEL_EXTERN()  \
+YOCTO_GFX_PIXEL_EXTERN_(uint8_t); \
+YOCTO_GFX_PIXEL_EXTERN_(float);   \
+YOCTO_GFX_PIXEL_EXTERN_(double)
+
     }
 }
 

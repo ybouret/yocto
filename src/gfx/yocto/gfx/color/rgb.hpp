@@ -11,6 +11,8 @@
 #undef RGBA
 #endif
 
+YOCTO_GFX_PIXEL_EXTERN();
+
 namespace yocto
 {
     namespace gfx

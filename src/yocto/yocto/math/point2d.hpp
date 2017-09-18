@@ -6,6 +6,7 @@
 #include "yocto/math/types.hpp"
 #include "yocto/code/rand32.hpp"
 #include <iostream>
+#include "yocto/math/types.hxx"
 
 namespace yocto
 {

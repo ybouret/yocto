@@ -35,7 +35,13 @@ static const size_t DIMENSION = YOCTO_FAME_DIM_OF(COORD)
             YOCTO_FAME_DECL_COORD;
             static const_coord  zero;
         };
-        
+
+#define YOCTO_FAME_COORD_EXTERN_(TYPE) extern template const yocto::fame::TYPE yocto::fame::coord_data<yocto::fame::TYPE>::zero
+#define YOCTO_FAME_COORD_EXTERN()  \
+YOCTO_FAME_COORD_EXTERN_(coord1d); \
+YOCTO_FAME_COORD_EXTERN_(coord2d); \
+YOCTO_FAME_COORD_EXTERN_(coord3d)
+
         template <typename COORD>
         inline coord1d *__coord_addr(const COORD &C) throw()
         {
