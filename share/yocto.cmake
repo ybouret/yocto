@@ -139,8 +139,7 @@ IF( "${CC_NAME}" MATCHES "^gcc.*" )
 	MESSAGE( STATUS "Testing Clang Version ${YOCTO_COMPILER_VERSION}")
 	IF( "${YOCTO_COMPILER_VERSION}" VERSION_GREATER_EQUAL "3.9.1")
 		MESSAGE( STATUS " DEACTIVATING VAR TEMPLATE WARNINGS...." )
-		SET(SPECIAL_CXX_FLAGS "-Wno-undefined-var-template")
-	
+		#SET(SPECIAL_CXX_FLAGS "-Wno-undefined-var-template")
 	ENDIF()
 	
 	SET(COMMON_CXX_FLAGS        "-Wall -pipe -fexceptions -Weffc++ ${PIC_FLAGS} ${SPECIAL_CXX_FLAGS}")

@@ -13,14 +13,24 @@
 
 namespace yocto
 {
+    
+    //typedef memory::small_object<YOCTO_LIMIT_SIZE,YOCTO_CHUNK_SIZE> object;
 
-    typedef memory::small_object<YOCTO_LIMIT_SIZE,YOCTO_CHUNK_SIZE> object;
-    
-    
+    class object : public memory::small_object<YOCTO_LIMIT_SIZE,YOCTO_CHUNK_SIZE>
+    {
+    public:
+        inline explicit object() throw() {}
+        inline virtual ~object() throw() {}
+
+    private:
+        YOCTO_DISABLE_COPY_AND_ASSIGN(object);
+    };
+
+
 #define YOCTO_MAKE_OBJECT \
 	static inline void * operator new( size_t block_size ) { return object::operator new(block_size); } \
 	static inline void   operator delete(void *p, size_t block_size) throw() { object::operator delete(p,block_size); }
-	
+
 }
 
 #endif
