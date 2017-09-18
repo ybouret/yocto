@@ -128,7 +128,7 @@ namespace yocto
 
                     case JSON_empty_array:
                     {
-                        assert(0==nArgs>0);
+                        assert(0==nArgs);
                         Value v(Value::IsArray);
                         vStack.push(nil);
                         vStack.peek().swap_with(v);
@@ -178,8 +178,6 @@ namespace yocto
             static jCompiler & jLoader = jCompiler::instance();
 
             jLoader.ld(source);
-            std::cerr << "<JSON/>" << std::endl;
-            std::cerr << "value=" << jLoader.value << std::endl;
             return jLoader.value;
         }
     }

@@ -22,5 +22,6 @@ YOCTO_UNIT_TEST_IMPL(load)
         Lang::Source         source(hModule);
         value = JSON::Value::LoadFrom(source);
     }
+    std::cerr << "value=" << value << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()
