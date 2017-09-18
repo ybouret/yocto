@@ -87,32 +87,40 @@ namespace yocto
 #endif
 			
 			//-- set the name
-			if( id )
-			{
-				const size_t len = min_of<size_t>( strlen(id), sizeof(name_)-1);
-				memcpy( name_, id, len );
-			}
-			else 
-			{
-				YOCTO_STATIC_CHECK(sizeof(name_)>2*sizeof(void*),mutex_name_too_small);
-				union  {
-					void   *addr;
-					uint8_t data[sizeof(void*)]; 
-				} alias = { this };
-				for( size_t i=0,j=0; i < sizeof(void*); ++i )
-				{
-					const uint8_t B = alias.data[i];
-					name_[j++] = hexa_char[ (B>>4) & 0xf ];
-					name_[j++] = hexa_char[ (B   ) & 0xf ];
-				}
-			}
-			
+            rename(id);
+
 #if YOCTO_MUTEX_VERBOSE == 1
 			std::cerr << "[+mutex] '" << name_ << "'" << std::endl;
 #endif
 			
 		}
-		
+
+        void mutex::rename(const char *id) throw()
+        {
+            memset(name_,0,sizeof(name_));
+            if( id )
+            {
+                const size_t len = min_of<size_t>( strlen(id), sizeof(name_)-1);
+                memcpy( name_, id, len );
+            }
+            else
+            {
+                YOCTO_STATIC_CHECK(sizeof(name_)>2*sizeof(void*),mutex_name_too_small);
+                union  {
+                    void   *addr;
+                    uint8_t data[sizeof(void*)];
+                } alias = { this };
+                for( size_t i=0,j=0; i < sizeof(void*); ++i )
+                {
+                    const uint8_t B = alias.data[i];
+                    name_[j++] = hexa_char[ (B>>4) & 0xf ];
+                    name_[j++] = hexa_char[ (B   ) & 0xf ];
+                }
+            }
+
+        }
+
+
 		void mutex::lock() throw()
 		{
 #if YOCTO_MUTEX_VERBOSE == 1

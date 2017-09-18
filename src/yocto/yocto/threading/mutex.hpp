@@ -35,7 +35,9 @@ namespace yocto
 			virtual void unlock()   throw();
 			virtual bool try_lock() throw();
 			const char *name() const throw();
-			
+
+            void rename(const char *id) throw();
+
 		private:
 			YOCTO_DISABLE_COPY_AND_ASSIGN(mutex);
 #if	defined(YOCTO_BSD)

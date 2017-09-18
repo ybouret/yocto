@@ -1,12 +1,5 @@
 #include "yocto/math/types.hpp"
 
-#define real_t float
-#include "types.cxx"
-
-#undef real_t
-#define real_t double
-#include "types.cxx"
-
 namespace yocto
 {
     namespace math
@@ -32,3 +25,11 @@ namespace yocto
     }
     
 }
+
+#define real_t float
+#include "types.cxx"
+
+#undef real_t
+#define real_t double
+#include "types.cxx"
+

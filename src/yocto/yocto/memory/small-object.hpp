@@ -8,9 +8,25 @@
 
 namespace yocto
 {
+
+
     namespace memory
     {
-        
+
+        //! wrapper to avoir warning compilation
+        class provider_data
+        {
+        public:
+            virtual ~provider_data() throw() {}
+            static const char name[];
+
+        protected:
+            explicit provider_data() throw() {}
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(provider_data);
+        };
+
         template <size_t LIMIT_SIZE,size_t CHUNK_SIZE>
         class small_object
         {
@@ -67,7 +83,7 @@ namespace yocto
             static inline void  operator delete( void *, void *) throw() {}
             
             
-            class provider : public singleton<provider>
+            class provider : public provider_data, public singleton<provider>
             {
             public:
                 
@@ -98,10 +114,8 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(provider);
                 
                 kBlocks blocks_;
-                
                 friend class singleton<provider>;
-                static const char name[];
-                
+
             public:
                 static const threading::longevity life_time = global::life_time - 1;
                 

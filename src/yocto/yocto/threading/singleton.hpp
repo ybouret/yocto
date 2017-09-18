@@ -141,10 +141,13 @@ namespace yocto
 	
 	template <typename T>
 	volatile T * singleton<T>::instance_ = NULL;
-	
+
+#if 1
 	template <typename T>
 	threading::mutex singleton<T>::access( T::name );
-	
+#endif
+    
+    
     template <typename T>
     bool singleton<T>::verbose = false;
 
