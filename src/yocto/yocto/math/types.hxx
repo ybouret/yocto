@@ -36,6 +36,7 @@ YOCTO_MATH_EXTERN(tiny);
 YOCTO_MATH_EXTERN(huge);
 YOCTO_MATH_EXTERN(sqrt_tiny);
 YOCTO_MATH_EXTERN(gold);
+YOCTO_MATH_EXTERN(gold_inv);
 
 
 #endif

@@ -4,6 +4,7 @@
 #include "yocto/sequence/vector.hpp"
 #include <typeinfo>
 #include "../../yocto/tests/support.hpp"
+#include "yocto/math/types.hxx"
 
 #define SHOW(VAR) std::cerr << "numeric<" << name << ">::" #VAR " = " << numeric<T>::VAR << std::endl
 
