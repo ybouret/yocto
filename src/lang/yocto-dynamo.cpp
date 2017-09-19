@@ -25,8 +25,8 @@ YOCTO_PROGRAM_START()
     const string tag      = parser->tag; ((string&)tag).to_lower();
     const string inclFile = gramWork + tag + inclExt;
     const string defsFile = gramWork + tag + defsExt;
-    std::cerr << "code in " << inclFile << std::endl;
-    std::cerr << "defs in " << defsFile << std::endl;
+    //std::cerr << "code in " << inclFile << std::endl;
+    //std::cerr << "defs in " << defsFile << std::endl;
 
     {
         ios::wcstream fp(inclFile);

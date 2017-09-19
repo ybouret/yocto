@@ -130,7 +130,10 @@ namespace yocto
             void Parser:: Encode(const string &filename,
                                  ios::ostream &fp)
             {
+                //______________________________________________________________
+                //
                 // prefetching lexemes
+                //______________________________________________________________
                 Lexical::Units           lexemes;
                 auto_ptr<DynamoCompiler> compiler( new DynamoCompiler() );
                 Hasher                  &H = compiler->strHash;
@@ -143,8 +146,10 @@ namespace yocto
                     auto_ptr<Parser> parser( compiler->encode(compiler->parse(source)));
                 }
 
+                //______________________________________________________________
                 //
-                std::cerr << "#lexemes=" << lexemes.size << std::endl;
+                // OK, the grammar seems valid, now write a compact version
+                //______________________________________________________________
                 Emitter em(fp);
                 for(const Lexical::Unit *u=lexemes.head;u;u=u->next)
                 {
