@@ -15,9 +15,9 @@ YOCTO_UNIT_TEST_IMPL(esf)
     {
         alpha.increase(uint8_t(C));
         //alpha.display_items();
-        alpha.display_ilist();
+        //alpha.display_ilist();
     }
-
+    alpha.display_ilist();
 }
 YOCTO_UNIT_TEST_DONE()
 

@@ -63,10 +63,21 @@ namespace yocto
                     ++count;
                 }
                 assert(iPool.size>0);
+                // prepare the node
                 ItemNode *node = (item->node = iPool.query());
                 node->item     = item;
                 item->freq     = 1;
+
+                //prepare insertion
+                ItemList iTemp;
+                while(iList.tail&&iList.tail->item->code>=MaxBytes)
+                {
+                    iTemp.push_front( iList.pop_back() );
+                }
                 iList.push_back(node);
+
+                // restore state
+                iList.merge_back(iTemp);
             }
         }
 
@@ -81,34 +92,47 @@ namespace yocto
 
         }
 
+        const char * ESF:: get_text(const CharType ch) throw()
+        {
+            static char tmp[4];
+            if(ch>=32&&ch<127)
+            {
+                tmp[0] = tmp[2] = '\'';
+                tmp[1] = ch;
+                tmp[3] = 0;
+                return tmp;
+            }
+            else
+            {
+                switch(ch)
+                {
+                    case NYT: return "NYT";
+                    case END: return "END";
+                    default:
+                    {
+                        const char *txt = hexa_text_lower[ch&0xff];
+                        tmp[0] = 'x';
+                        tmp[1] = txt[0];
+                        tmp[2] = txt[1];
+                        tmp[3] = 0;
+                        return tmp;
+                    }
+                }
+            }
+        }
+
         void ESF::Alphabet:: display_items() const
         {
             std::cerr << "ESF_Alpha:" << std::endl;
-            for(size_t i=0;i<MaxBytes;++i)
+            for(size_t i=0;i<MaxItems;++i)
             {
                 assert(items[i].code==i);
                 if(items[i].freq>0)
                 {
-                    std::cerr << '\t';
-                    if(i>=32&&i<127)
-                    {
-                        std::cerr << '\'' << char(i) << '\'';
-                    }
-                    else
-                    {
-                        std::cerr << 'x' << hexa_text[i];
-                    }
-                    std::cerr << " : " << items[i].freq << std::endl;
+                    std::cerr << "\t" << get_text(items[i].code) << " : " << items[i].freq << std::endl;
                 }
             }
-            if(items[NYT].freq>0)
-            {
-                std::cerr << "\tNYT : " << items[NYT].freq << std::endl;
-            }
-            if(items[END].freq>0)
-            {
-                std::cerr << "\tEND : " << items[END].freq << std::endl;
-            }
+
         }
 
         void ESF::Alphabet:: display_ilist() const
@@ -117,23 +141,7 @@ namespace yocto
             for(const ItemNode *node = iList.head; node; node=node->next)
             {
                 const Item     &item = *(node->item);
-                const CharType  ch   = item.code;
-                std::cerr << '\t';
-                if(ch>=32&&ch<127)
-                {
-                    std::cerr << '\'' << char(ch) << '\'';
-                }
-                else
-                {
-                    switch(ch)
-                    {
-                        case NYT: std::cerr << "NYT"; break;
-                        case END: std::cerr << "END"; break;
-                        default:
-                            std::cerr << 'x' << hexa_text[ch&0xff];
-                    }
-                }
-                std::cerr << " : " << item.freq << std::endl;
+                std::cerr << "\t" << get_text(item.code) << " : " << item.freq << std::endl;
             }
         }
 

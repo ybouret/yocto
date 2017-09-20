@@ -15,10 +15,12 @@ namespace yocto
             static const size_t   MaxBytes = 256;
             static const size_t   NumCtrls = 2;
             static const size_t   MaxItems = MaxBytes + NumCtrls;
-            typedef int           CharType;
+            typedef unsigned      CharType;
             typedef size_t        FreqType;
-            static const CharType NYT   = MaxBytes+0;
-            static const CharType END   = MaxBytes+1;
+            static const CharType END   = MaxBytes+0;
+            static const CharType NYT   = MaxBytes+1;
+
+            static const char * get_text(const CharType ch) throw();
 
             struct ItemNode;
 
