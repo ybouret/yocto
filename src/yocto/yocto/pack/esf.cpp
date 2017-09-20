@@ -43,7 +43,7 @@ namespace yocto
             if(item->freq)
             {
                 ++(item->freq);
-                // update list
+                update(item->node);
             }
             else
             {
@@ -62,7 +62,7 @@ namespace yocto
 
         void ESF::Alphabet:: update(ItemNode *node) throw()
         {
-            
+            if(iList.size<=1) return;
         }
 
 

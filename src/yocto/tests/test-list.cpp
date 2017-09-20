@@ -147,12 +147,44 @@ YOCTO_UNIT_TEST_IMPL(list)
 		}
 	}
 	std::cerr << std::endl;
-	std::cerr << "--" << std::endl;
+	std::cerr << "-- move to front" << std::endl;
 	for( size_t i=0; i < 100 * num; ++i )
 	{
 		L.move_to_front( L.fetch( alea_lt( L.size ) ) );
 	}
-	L.reset();
+
+    std::cerr << "-- random insert" << std::endl;
+    for(size_t i=0;i<100*num;++i)
+    {
+        {
+            node_type *node = L.unlink( L.fetch(alea_lt(L.size) ) );
+            L.insert_after(L.fetch(alea_lt(L.size)),node);
+        }
+
+        {
+            node_type *node = L.unlink( L.fetch(alea_lt(L.size) ) );
+            L.insert_before(L.fetch(alea_lt(L.size)),node);
+        }
+
+        {
+            node_type *node = L.fetch(alea_lt(L.size) );
+            if(node!=L.tail&&L.size>=2)
+            {
+                L.towards_tail(node);
+            }
+        }
+        {
+            node_type *node = L.fetch(alea_lt(L.size) );
+            if(node!=L.head&&L.size>=2)
+            {
+                L.towards_head(node);
+            }
+        }
+
+    }
+
+    L.reset();
+
 	delete [] nodes;
 }
 YOCTO_UNIT_TEST_DONE()

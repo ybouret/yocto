@@ -329,7 +329,65 @@ namespace yocto
                 }
                 merge_back(tmp);
             }
-					
+
+            inline void insert_after(NODE *mine, NODE *yours) throw()
+            {
+                assert( size>0     );
+                assert( owns(mine) );
+                assert( NULL == yours->prev );
+                assert( NULL == yours->next );
+                if(tail==mine)
+                {
+                    push_back(yours);
+                }
+                else
+                {
+                    assert(size>1);
+                    NODE *next = mine->next;
+                    mine->next = yours; yours->prev = mine;
+                    next->prev = yours; yours->next = next;
+                    ++size;
+                }
+            }
+
+            inline void insert_before(NODE *mine, NODE *yours) throw()
+            {
+                assert( size>0     );
+                assert( owns(mine) );
+                assert( NULL == yours->prev );
+                assert( NULL == yours->next );
+                if(head==mine)
+                {
+                    push_front(yours);
+                }
+                else
+                {
+                    assert(size>1);
+                    NODE *prev = mine->prev;
+                    mine->prev = yours; yours->next = mine;
+                    prev->next = yours; yours->prev = prev;
+                    ++size;
+                }
+            }
+
+
+            inline void towards_tail(NODE *node) throw()
+            {
+                assert(owns(node));
+                assert(size>=2);
+                assert(node->next);
+                NODE *next = node->next;
+                insert_after(next,unlink(node));
+            }
+
+            inline void towards_head(NODE *node) throw()
+            {
+                assert(owns(node));
+                assert(size>=2);
+                assert(node->prev);
+                NODE *prev = node->prev;
+                insert_after(prev,unlink(node));
+            }
 		private:
 			YOCTO_DISABLE_COPY_AND_ASSIGN(list_of);
 			inline void push_first( NODE *node ) throw()
