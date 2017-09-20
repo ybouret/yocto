@@ -48,6 +48,9 @@ namespace yocto
 
                 void increase(const CharType ch) throw();
 
+                void display_items() const;
+                void display_ilist() const;
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Alphabet);
                 const size_t itemDataOffset;
