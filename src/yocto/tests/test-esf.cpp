@@ -18,6 +18,9 @@ YOCTO_UNIT_TEST_IMPL(esf)
         //alpha.display_ilist();
     }
     alpha.display_ilist();
+    //alpha.rescale();
+    //alpha.display_ilist();
+
 }
 YOCTO_UNIT_TEST_DONE()
 

@@ -35,20 +35,25 @@ namespace yocto
 
         void ESF:: Alphabet:: reset() throw()
         {
+            // clean up
             memset(wksp,0,wlen);
             iPool.reset();
             iList.reset();
+            count = 0;
             for(size_t i=0;i<MaxItems;++i)
             {
+                assert(0==items[i].code);
+                assert(0==items[i].freq);
                 items[i].code = i;
                 iPool.store( nodes+i );
             }
+
+            // prepare
         }
 
         void ESF:: Alphabet:: increase(const CharType ch) throw()
         {
-            assert(ch>=0);
-            assert(ch<MaxItems);
+            assert(ch<MaxBytes);
             Item *item = &items[ch];
             if(item->freq>0)
             {
@@ -91,6 +96,17 @@ namespace yocto
             }
 
         }
+
+        void ESF::Alphabet:: rescale() throw()
+        {
+            for(ItemNode *node = iList.head;node;node=node->next)
+            {
+                FreqType &freq = node->item->freq;
+                assert(freq>0);
+                (freq >>= 1) |= 1;
+            }
+        }
+
 
         const char * ESF:: get_text(const CharType ch) throw()
         {

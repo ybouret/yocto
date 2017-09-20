@@ -49,6 +49,7 @@ namespace yocto
                 void reset() throw();
 
                 void increase(const CharType ch) throw();
+                void rescale() throw();
 
                 void display_items() const;
                 void display_ilist() const;
