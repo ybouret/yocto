@@ -75,6 +75,9 @@
 /*--------------------------------------------------------------------*/
 #if 	defined(_MSC_VER)
 
+#if _MSC_VER >= 1900
+#include <stdint.h>
+#else
 /* Microsoft built-in types */
 typedef unsigned __int8  uint8_t;
 typedef unsigned __int16 uint16_t;
@@ -85,6 +88,8 @@ typedef __int8  int8_t;
 typedef __int16 int16_t;
 typedef __int32 int32_t;
 typedef __int64 int64_t;
+#endif
+
 #		define	YOCTO_HAS_STDINT 1
 #		define	YOCTO_U64(X) X##ui64
 #		define	YOCTO_I64(X) X##i64

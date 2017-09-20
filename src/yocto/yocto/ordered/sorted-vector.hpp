@@ -142,7 +142,8 @@ namespace yocto
 			return item_[ index ];
 		}
 		
-        inline friend std::ostream & operator<<( std::ostream &os, const sorted_vector<T> &a )
+        inline friend 
+		std::ostream & operator<<( std::ostream &os, const sorted_vector<T> &a )
 		{
 			os << "[ ";
 			for( size_t i=1; i <= a.size(); ++i ) os <<  a[i] << ' ';

@@ -7,7 +7,7 @@
 #	endif
 #endif
 
-#include <cmath>
+#include <math.h>
 
 namespace yocto 
 {

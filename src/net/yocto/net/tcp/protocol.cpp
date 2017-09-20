@@ -100,7 +100,7 @@ namespace yocto
             // admin...
             try
             {
-                std::cerr << "[protocol] connexion from " << cnx->self() << ":" << int(swap_be(cnx->self().port)) << std::endl;
+                //std::cerr << "[protocol] connexion from " << cnx->self() << ":" << int(swap_be(cnx->self().port)) << std::endl;
                 onInit(*cnx);
             }
             catch(...)
@@ -147,7 +147,7 @@ namespace yocto
                 //
                 //--------------------------------------------------------------
                 {
-                    std::cerr << "[protocol]-" << cnx.self() << ":" << int(swap_nbo(cnx.self().port)) << std::endl;
+                    //std::cerr << "[protocol]-" << cnx.self() << ":" << int(swap_nbo(cnx.self().port)) << std::endl;
                     onQuit(cnx);
                 }
                 
@@ -229,7 +229,7 @@ namespace yocto
                         // PROCESS INPUT
                         //
                         //------------------------------------------------------
-                        std::cerr << "[protocol]+" << cnx.self() << ":" << int(swap_nbo(cnx.self().port)) << ": #" << nr << std::endl;
+                        //std::cerr << "[protocol]+" << cnx.self() << ":" << int(swap_nbo(cnx.self().port)) << ": #" << nr << std::endl;
                         onRecv(cnx);
                     }
                 }

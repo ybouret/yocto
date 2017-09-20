@@ -39,7 +39,7 @@ namespace yocto
                 // compute all parameters
                 //______________________________________________________________
                 const size_t block_round    = YOCTO_ALIGN_FOR_ITEM(word_type,block_size);
-                (word_type &)blockIncrement = block_round/sizeof(word_type);
+                (word_type &)blockIncrement = word_type(block_round/sizeof(word_type));
                 
                 const size_t top_blocks     = chunk_size/block_round;
                 stillAvailable              = (MaxBlocks < top_blocks) ? MaxBlocks : top_blocks;
