@@ -22,6 +22,7 @@ namespace yocto
         iPool(),
         nodes( (ItemNode *) &wksp[itemNodeOffset] )
         {
+            std::cerr << "ESF::Alphabet#Bytes=" << wlen << std::endl;
             reset();
         }
 
@@ -42,9 +43,11 @@ namespace yocto
             count = 0;
             for(size_t i=0;i<MaxItems;++i)
             {
-                assert(0==items[i].code);
+                assert(0==items[i].Char);
                 assert(0==items[i].freq);
+                items[i].Char = i;
                 items[i].code = i;
+                items[i].bits = 8;
                 iPool.store( nodes+i );
             }
 
@@ -75,7 +78,7 @@ namespace yocto
 
                 //prepare insertion
                 ItemList iTemp;
-                while(iList.tail&&iList.tail->item->code>=MaxBytes)
+                while(iList.tail&&iList.tail->item->Char>=MaxBytes)
                 {
                     iTemp.push_front( iList.pop_back() );
                 }
@@ -142,10 +145,10 @@ namespace yocto
             std::cerr << "ESF_Alpha:" << std::endl;
             for(size_t i=0;i<MaxItems;++i)
             {
-                assert(items[i].code==i);
+                assert(items[i].Char==i);
                 if(items[i].freq>0)
                 {
-                    std::cerr << "\t" << get_text(items[i].code) << " : " << items[i].freq << std::endl;
+                    std::cerr << "\t" << get_text(items[i].Char) << " : " << items[i].freq << std::endl;
                 }
             }
 
@@ -157,7 +160,7 @@ namespace yocto
             for(const ItemNode *node = iList.head; node; node=node->next)
             {
                 const Item     &item = *(node->item);
-                std::cerr << "\t" << get_text(item.code) << " : " << item.freq << std::endl;
+                std::cerr << "\t" << get_text(item.Char) << " : " << item.freq << std::endl;
             }
         }
 

@@ -19,6 +19,7 @@ namespace yocto
             typedef size_t        FreqType;
             static const CharType END   = MaxBytes+0;
             static const CharType NYT   = MaxBytes+1;
+            typedef unsigned      CodeType;
 
             static const char * get_text(const CharType ch) throw();
 
@@ -26,9 +27,11 @@ namespace yocto
 
             struct Item
             {
-                CharType  code;
+                CharType  Char;
                 FreqType  freq;
                 ItemNode *node;
+                CodeType  code;
+                size_t    bits;
             };
 
             struct ItemNode
