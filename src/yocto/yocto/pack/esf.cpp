@@ -50,7 +50,7 @@ namespace yocto
             assert(ch>=0);
             assert(ch<MaxItems);
             Item *item = &items[ch];
-            if(item->freq)
+            if(item->freq>0)
             {
                 ++(item->freq);
                 update(item->node);

@@ -386,7 +386,7 @@ namespace yocto
                 assert(size>=2);
                 assert(node->prev);
                 NODE *prev = node->prev;
-                insert_after(prev,unlink(node));
+                insert_before(prev,unlink(node));
             }
 		private:
 			YOCTO_DISABLE_COPY_AND_ASSIGN(list_of);
