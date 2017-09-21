@@ -54,14 +54,14 @@ namespace yocto
             // prepare
         }
 
-        void ESF:: Alphabet:: increase(const CharType ch) throw()
+        bool ESF:: Alphabet:: increase(const CharType ch) throw()
         {
             assert(ch<MaxBytes);
             Item *item = &items[ch];
             if(item->freq>0)
             {
                 ++(item->freq);
-                update(item->node);
+                return update(item->node);
             }
             else
             {
@@ -86,18 +86,21 @@ namespace yocto
 
                 // restore state
                 iList.merge_back(iTemp);
+                return true;
             }
         }
 
-        void ESF::Alphabet:: update(ItemNode *node) throw()
+        bool ESF::Alphabet:: update(ItemNode *node) throw()
         {
             assert(iList.size>0);
             assert(iList.owns(node));
+            bool ans = false;
             while(node->prev&&node->prev->item->freq<node->item->freq)
             {
                 iList.towards_head(node);
+                ans = true;
             }
-
+            return ans;
         }
 
         void ESF::Alphabet:: rescale() throw()

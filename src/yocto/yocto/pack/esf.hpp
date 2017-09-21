@@ -51,7 +51,7 @@ namespace yocto
 
                 void reset() throw();
 
-                void increase(const CharType ch) throw();
+                bool increase(const CharType ch) throw();
                 void rescale() throw();
 
                 void display_items() const;
@@ -70,7 +70,7 @@ namespace yocto
                 ItemList     iList; //!< list of ordered char
                 ItemPool     iPool; //!< pool of nodes
                 ItemNode    *nodes; //!< memory for nodes
-                void update(ItemNode *node) throw();
+                bool update(ItemNode *node) throw();
             };
 
         };
