@@ -106,8 +106,14 @@ namespace yocto
             size_t ipos = 0;
             while( true )
             {
+#if 0
                 const size_t lpos = at_left(  ipos );
                 const size_t rpos = at_right( ipos );
+#else
+                const size_t ishl = (ipos<<1);
+                const size_t lpos = ishl+1;
+                const size_t rpos = ishl+2;
+#endif
                 size_t       mpos = ipos;
                 //--------------------------------------------------------------
                 //-- test left

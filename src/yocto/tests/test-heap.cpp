@@ -9,7 +9,7 @@ YOCTO_UNIT_TEST_IMPL(heap)
 {
     heap<int>   H;
     vector<int> V;
-    for( size_t i=1; i <= 32; ++i )
+    for( size_t i=1; i <= 32+alea_lt(100); ++i )
     {
         V.push_back( i );
     }
