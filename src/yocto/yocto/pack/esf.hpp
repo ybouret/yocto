@@ -34,6 +34,7 @@ namespace yocto
                 size_t    bits;
             };
 
+            
             struct ItemNode
             {
                 ItemNode *next;
