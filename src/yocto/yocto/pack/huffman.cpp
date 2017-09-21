@@ -144,7 +144,7 @@ namespace yocto {
                 parent->bits  =  0;
                 nheap.push(parent);
             }
-            std::cerr << "#nodes=" << (iNode-MaxItems) << "/count=" << count << std::endl;
+            //std::cerr << "#nodes=" << (iNode-MaxItems) << "/count=" << count << std::endl;
         }
 
     }

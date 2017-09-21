@@ -46,6 +46,7 @@ YOCTO_UNIT_TEST_IMPL(is_prime)
 }
 YOCTO_UNIT_TEST_DONE()
 
+    
 
 #include "yocto/code/primes-diff.hpp"
 YOCTO_UNIT_TEST_IMPL(Primes)
