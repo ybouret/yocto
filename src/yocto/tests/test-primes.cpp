@@ -28,6 +28,24 @@ YOCTO_UNIT_TEST_IMPL(primes)
 }
 YOCTO_UNIT_TEST_DONE()
 
+YOCTO_UNIT_TEST_IMPL(is_prime)
+{
+    size_t count = 0;
+    for(size_t i=2;;++i)
+    {
+        if(is_prime(i))
+        {
+            std::cout << i << std::endl;
+            if(++count>10000)
+            {
+                break;
+            }
+        }
+
+    }
+}
+YOCTO_UNIT_TEST_DONE()
+
 
 #include "yocto/code/primes-diff.hpp"
 YOCTO_UNIT_TEST_IMPL(Primes)

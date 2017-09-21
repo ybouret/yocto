@@ -71,7 +71,7 @@ namespace yocto
             //------------------------------------------------------------------
             //-- organize heap
             //------------------------------------------------------------------
-            while( ipos > 0 && comp_( *data_[ppos], *data_[ipos] ) < 0 )
+            while( (ipos > 0) && (comp_( *data_[ppos], *data_[ipos] ) < 0) )
             {
                 cswap<slot_t>( data_[ppos], data_[ipos] );
                 ipos = ppos;
@@ -112,13 +112,13 @@ namespace yocto
                 //--------------------------------------------------------------
                 //-- test left
                 //--------------------------------------------------------------
-                if( lpos < size_ && comp_( *data_[ipos], *data_[lpos] ) < 0 )
+                if( (lpos < size_) && (comp_( *data_[ipos], *data_[lpos] ) < 0) )
                     mpos = lpos;
                 
                 //--------------------------------------------------------------
                 //-- test right
                 //--------------------------------------------------------------
-                if( rpos < size_ && comp_( *data_[mpos], *data_[rpos] ) < 0 )
+                if( (rpos < size_) && (comp_( *data_[mpos], *data_[rpos] ) < 0) )
                     mpos = rpos;
                 
                 //--------------------------------------------------------------
