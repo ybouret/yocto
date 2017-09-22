@@ -3,6 +3,7 @@
 
 #include "yocto/ordered/heap.hpp"
 #include "yocto/code/round.hpp"
+#include <iosfwd>
 
 namespace yocto
 {
@@ -28,6 +29,7 @@ namespace yocto
             {
                 Node    *left;
                 Node    *right;
+                Node    *parent;
                 FreqType freq;
                 CodeType code;
                 size_t   bits;
@@ -46,6 +48,9 @@ namespace yocto
                     YOCTO_DISABLE_COPY_AND_ASSIGN(Comparator);
                 };
                 typedef heap<Node,Node::Comparator> Heap;
+
+                friend std::ostream & operator<<(std::ostream &, const Node &);
+
             };
 
             class Alphabet
@@ -62,9 +67,10 @@ namespace yocto
                 
             private:
                 size_t     count; //!< used alphabet size
+                Node      *root;  //!< tree root
                 Node::Heap nheap;
                 Node       nodes[MaxNodes];
-
+                
             };
 
         };
