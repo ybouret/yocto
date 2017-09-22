@@ -20,8 +20,9 @@ namespace yocto
 
             void assign(Pattern *p) throw();
 
-            bool completely(const string &line) const;
-            bool partially(const string &line) const;
+
+            bool wholly_matches(const string &line) const;
+            bool partly_matches(const string &line) const;
 
             void swap_with( Matching &other ) throw();
             

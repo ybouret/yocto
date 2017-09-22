@@ -18,12 +18,12 @@ YOCTO_UNIT_TEST_IMPL(match)
         while( fp.gets(line) )
         {
             //std::cerr << line << std::endl;
-            if(matching.completely(line))
+            if(matching.wholly_matches(line))
             {
                 std::cerr << "+" << line << std::endl;
             }
 
-            if(matching.partially(line))
+            if(matching.partly_matches(line))
             {
                 std::cerr << "*" << line << std::endl;
             }

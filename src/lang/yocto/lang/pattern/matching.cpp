@@ -62,7 +62,7 @@ namespace yocto
         }
 
 
-        bool Matching:: completely(const string &line) const
+        bool Matching:: wholly_matches(const string &line) const
         {
             Module::Handle hModule( new Module(line.c_str(),line.size()) );
             Source         source( hModule );
@@ -84,7 +84,7 @@ namespace yocto
             }
         }
 
-        bool Matching:: partially(const string &line) const
+        bool Matching:: partly_matches(const string &line) const
         {
             Module::Handle hModule( new Module(line.c_str(),line.size()) );
             Source         source( hModule );
