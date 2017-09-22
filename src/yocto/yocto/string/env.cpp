@@ -222,6 +222,7 @@ namespace yocto
             if(s=="true"||s=="TRUE"||s=="1")
             {
                 value = true;
+                return true;
             }
             
             throw imported::exception("environment::check<bool>","invalid value '%s'", s.c_str());
