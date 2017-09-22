@@ -64,6 +64,7 @@ namespace yocto
                 void increase(uint8_t B) throw();
                 void rescale() throw();
                 void build_tree();
+                void graph_tree() const;
                 
             private:
                 size_t     count; //!< used alphabet size

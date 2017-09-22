@@ -17,9 +17,15 @@ YOCTO_UNIT_TEST_IMPL(huff)
     }
     alpha.display();
     alpha.build_tree();
-    
-    alpha.rescale();
+    alpha.graph_tree();
     alpha.display();
+
+
+    if(false)
+    {
+        alpha.rescale();
+        alpha.display();
+    }
 }
 YOCTO_UNIT_TEST_DONE()
 

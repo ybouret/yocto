@@ -5,6 +5,9 @@
 #include <iostream>
 #include <iomanip>
 
+#include "yocto/ios/ocstream.hpp"
+#include "yocto/ios/graphviz.hpp"
+
 namespace yocto {
 
     namespace pack
@@ -209,6 +212,38 @@ namespace yocto {
             }
 
             
+        }
+
+        void Huffman:: Alphabet:: graph_tree() const
+        {
+            const string outName = "huff.dot";
+            {
+                ios::wcstream fp(outName);
+                fp << "digraph G {\n";
+                if(root)
+                {
+                    for(const Node *node = nodes; node <= root; ++node)
+                    {
+                        if(node->freq<=0) continue;
+                        fp.viz(node); fp("[label=\"%s:%u\"];\n", GetChar(node->symb), unsigned(node->freq));
+                    }
+
+                    for(const Node *node = nodes; node <= root; ++node)
+                    {
+                        if(node->freq<=0) continue;
+                        if(node->left)
+                        {
+                            fp.viz(node); fp << "->"; fp.viz(node->left); fp << "[label=\"0\"]\n";
+                        }
+                        if(node->right)
+                        {
+                            fp.viz(node); fp << "->"; fp.viz(node->right); fp << "[label=\"1\"]\n";
+                        }
+                    }
+                }
+                fp << "}\n";
+            }
+            ios::graphviz_render(outName);
         }
 
     }
