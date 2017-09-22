@@ -18,7 +18,7 @@ namespace yocto {
             os << Huffman::GetChar(node.symb);
             os << " : ";
             os << std::setw(10) << node.freq;
-            os << " #" << node.bits;
+            os << " #" << std::setw(3) << node.bits;
             os << "  : ";
             for(size_t i=node.bits;i>0;--i)
             {
@@ -164,53 +164,72 @@ namespace yocto {
         void Huffman:: Alphabet:: build_tree()
         {
             static const CodeType __ONE = 1;
-            
-            // initialize heap
-            nheap.free();
+        BUILD_TREE:
+            {
+                //______________________________________________________________
+                //
+                // initialize heap
+                //______________________________________________________________
+                nheap.free();
 #define Y_HUFF_ENQUEUE(I) Node *node = &nodes[I]; if(node->freq>0) { node->code=0; node->bits=1; node->parent = 0; nheap.push(node); }
-            YOCTO_LOOP_FUNC_(MaxItems,Y_HUFF_ENQUEUE,0);
+                YOCTO_LOOP_FUNC_(MaxItems,Y_HUFF_ENQUEUE,0);
 
-            // build tree
-            size_t iNode = MaxItems;
-            while(nheap.size()>=2)
-            {
-                Node *right   = nheap.pop();
-                Node *left    = nheap.pop();
-                Node *parent  = &nodes[iNode++];
-                parent->freq  = right->freq + left->freq;
-                parent->left  = left;
-                parent->right = right;
-                parent->symb  = -1;
-                parent->code  =  0;
-                const size_t  rbits = right->bits;
-                const size_t  lbits = left->bits;
-                left->code    = 0;
-                right->code   = __ONE << (rbits-1);
-                parent->bits  = 1+max_of(rbits,lbits);
-                left->parent = right->parent = parent;
-                std::cerr << "\tLeft =" << *left  << std::endl;
-                std::cerr << "\tRight=" << *right << std::endl;
-
-                nheap.push(parent);
-            }
-            assert(1==nheap.size());
-            root = nheap.pop();
-            
-            for(size_t i=0;i<MaxBytes;++i)
-            {
-                Node &node = nodes[i];
-                if(node.freq>0)
+                //______________________________________________________________
+                //
+                // build tree
+                //______________________________________________________________
+                size_t iNode = MaxItems;
+                while(nheap.size()>=2)
                 {
-                    Node *curr = &node;
-                    node.bits  = 0;
-                    for(curr=curr->parent;curr;curr=curr->parent)
+                    Node *right   = nheap.pop();
+                    Node *left    = nheap.pop();
+                    Node *parent  = &nodes[iNode++];
+                    parent->freq  = right->freq + left->freq;
+                    parent->left  = left;
+                    parent->right = right;
+                    parent->symb  = -1;
+                    parent->code  =  0;
+                    const size_t  rbits = right->bits;
+                    const size_t  lbits = left->bits;
+                    left->code    = 0;
+                    right->code   = __ONE << (rbits-1);
+                    parent->bits  = 1+max_of(rbits,lbits);;
+                    if(parent->bits>16)
                     {
-                        ++node.bits;
-                        node.code |= curr->code;
+                        rescale();
+                        goto BUILD_TREE;
+                    }
+                    left->parent = right->parent = parent;
+                    //std::cerr << "\tLeft =" << *left  << std::endl;
+                    //std::cerr << "\tRight=" << *right << std::endl;
+
+                    nheap.push(parent);
+                }
+                assert(1==nheap.size());
+                root = nheap.pop();
+
+                //______________________________________________________________
+                //
+                //
+                //______________________________________________________________
+                size_t max_bits = 0;
+                for(size_t i=0;i<MaxBytes;++i)
+                {
+                    Node &node = nodes[i];
+                    if(node.freq>0)
+                    {
+                        Node *curr = &node;
+                        node.bits  = 0;
+                        for(curr=curr->parent;curr;curr=curr->parent)
+                        {
+                            ++node.bits;
+                            node.code |= curr->code;
+                        }
+                        max_bits = max_of(node.bits,max_bits);
                     }
                 }
+                std::cerr << "root.bits=" << root->bits << "/max_bits=" << max_bits << std::endl;
             }
-
             
         }
 
