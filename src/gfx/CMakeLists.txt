@@ -56,3 +56,6 @@ INSTALL( TARGETS y-gfx ARCHIVE DESTINATION lib)
 IF(YOCTO_BUILD_TESTS)
 	ADD_SUBDIRECTORY(tests)
 ENDIF()
+
+ADD_EXECUTABLE(yocto-to-jpg yocto-to-jpg.cpp)
+TARGET_LINK_YOCTO(yocto-to-jpg gfx tiff png)
