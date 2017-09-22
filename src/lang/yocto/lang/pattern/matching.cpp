@@ -1,6 +1,7 @@
 #include "yocto/lang/pattern/matching.hpp"
 #include "yocto/lang/pattern/regexp.hpp"
 #include "yocto/exception.hpp"
+#include "yocto/lang/pattern/basic.hpp"
 
 namespace yocto
 {
@@ -8,6 +9,12 @@ namespace yocto
     {
 
         Matching:: ~Matching() throw() {}
+
+        Matching:: Matching() :
+        motif( new Any1() )
+        {
+            check();
+        }
 
         Matching::Matching(Pattern *p) throw() :
         motif(p)
@@ -41,6 +48,10 @@ namespace yocto
             check();
         }
 
+        void Matching:: swap_with(Matching &other) throw()
+        {
+            motif.swap_with(other.motif);
+        }
 
         void Matching:: check()
         {
