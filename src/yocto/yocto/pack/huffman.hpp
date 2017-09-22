@@ -2,6 +2,7 @@
 #define YOCTO_PACK_HUFFMAN_INCLUDED 1
 
 #include "yocto/ordered/heap.hpp"
+#include "yocto/code/round.hpp"
 
 namespace yocto
 {
@@ -17,7 +18,7 @@ namespace yocto
             static const size_t   MaxBytes = 256;
             static const size_t   Controls = 2;
             static const size_t   MaxItems = MaxBytes + Controls;
-            static const size_t   MaxNodes = 3*MaxItems;
+            static const size_t   MaxNodes = YOCTO_ROUND16(2*MaxItems+1);
             static const CharType NYT      = MaxBytes+0;
             static const CharType END      = MaxBytes+1;
 

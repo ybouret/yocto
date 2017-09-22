@@ -7,6 +7,7 @@ using namespace pack;
 
 YOCTO_UNIT_TEST_IMPL(huff)
 {
+    std::cerr << "MaxNodes=" << Huffman::MaxNodes << std::endl;
     Huffman::Alphabet alpha;
     ios::icstream fp(ios::cstdin);
     char C = 0;
