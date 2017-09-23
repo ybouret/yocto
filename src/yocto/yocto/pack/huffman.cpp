@@ -171,7 +171,7 @@ namespace yocto {
                 // initialize heap
                 //______________________________________________________________
                 nheap.free();
-#define Y_HUFF_ENQUEUE(I) Node *node = &nodes[I]; if(node->freq>0) { node->code=0; node->bits=1; node->parent = 0; nheap.push(node); }
+#define Y_HUFF_ENQUEUE(I) Node *node = &nodes[I]; if(node->freq>0) { node->code=0; node->bits=0; node->parent = 0; nheap.push(node); }
                 YOCTO_LOOP_FUNC_(MaxItems,Y_HUFF_ENQUEUE,0);
 
                 //______________________________________________________________
@@ -192,7 +192,7 @@ namespace yocto {
                     const size_t  rbits = right->bits;
                     const size_t  lbits = left->bits;
                     left->code    = 0;
-                    right->code   = __ONE << (rbits-1);
+                    right->code   = __ONE << rbits;
                     parent->bits  = 1+max_of(rbits,lbits);;
                     if(parent->bits>16)
                     {
@@ -200,9 +200,6 @@ namespace yocto {
                         goto BUILD_TREE;
                     }
                     left->parent = right->parent = parent;
-                    //std::cerr << "\tLeft =" << *left  << std::endl;
-                    //std::cerr << "\tRight=" << *right << std::endl;
-
                     nheap.push(parent);
                 }
                 assert(1==nheap.size());
@@ -213,7 +210,7 @@ namespace yocto {
                 //
                 //______________________________________________________________
                 size_t max_bits = 0;
-                for(size_t i=0;i<MaxBytes;++i)
+                for(size_t i=0;i<MaxItems;++i)
                 {
                     Node &node = nodes[i];
                     if(node.freq>0)
