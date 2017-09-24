@@ -15,7 +15,7 @@ namespace yocto {
 
         void Huffman::Node::__viz( ios::ostream &fp ) const
         {
-            fp.viz(this);fp("[label=\"%s:%u\"];\n", GetChar(symb), unsigned(freq));
+            fp.viz(this);fp("[label=\"%s#%u\"];\n", GetChar(symb), unsigned(freq));
             if(left)
             {
                 left->__viz(fp);
@@ -98,7 +98,7 @@ namespace yocto {
 
         static inline bool __is_special(const Huffman::CharType C) throw()
         {
-            return (C=='\\');
+            return (C=='\\') || (C=='\'') || (C=='\"');
         }
 
         const char *Huffman:: GetChar(const CharType ch) throw()
@@ -145,7 +145,6 @@ namespace yocto {
                 const Node &node = nodes[i];
                 if(node.freq>0)
                 {
-                    //std::cerr << "\t" << GetChar(node.symb) << " : " << node.freq << std::endl;
                     std::cerr << "\t" << node << std::endl;
                 }
             }
@@ -157,6 +156,7 @@ namespace yocto {
             if(node.freq>0)
             {
                 ++(node.freq);
+                //return false;
             }
             else
             {
@@ -165,7 +165,14 @@ namespace yocto {
                 if(++count>=MaxBytes)
                 {
                     nodes[NYT].freq = 0;
+                    //return false;
                 }
+                /*
+                 else
+                 {
+                 return true;
+                 }
+                 */
             }
         }
 
@@ -180,7 +187,6 @@ namespace yocto {
 
         void Huffman:: Alphabet:: build_tree()
         {
-            static const CodeType __ONE = 1;
         BUILD_TREE:
             {
                 //______________________________________________________________
@@ -198,24 +204,24 @@ namespace yocto {
                 size_t iNode = MaxItems;
                 while(nheap.size()>=2)
                 {
-                    Node *right   = nheap.pop();
-                    Node *left    = nheap.pop();
-                    Node *parent  = &nodes[iNode++];
-                    parent->freq  = right->freq + left->freq;
-                    parent->left  = left;
-                    parent->right = right;
-                    parent->symb  = -1;
-                    parent->code  =  0;
-                    const size_t  rbits = right->bits;
-                    const size_t  lbits = left->bits;
-                    left->code    = 0;
-                    right->code   = 1;//__ONE << rbits;
-                    if((parent->bits=1+max_of(rbits,lbits))>=16)
+                    Node *right       = nheap.pop(); assert(0==right->code);
+                    Node *left        = nheap.pop(); assert(0==left->code);
+                    const size_t bits = 1+max_of(right->bits,left->bits);
+                    if(bits>=16)
                     {
                         rescale();
                         goto BUILD_TREE;
                     }
-                    left->parent = right->parent = parent;
+                    Node *parent  = &nodes[iNode++];
+                    parent->bits  = bits;
+                    parent->freq  = (right->freq + left->freq);
+                    parent->left  = left;
+                    parent->right = right;
+                    parent->symb  = -1;
+                    parent->code  =  0;
+                    right->code   =  1;
+                    left->parent  = parent;
+                    right->parent = parent;
                     nheap.push(parent);
                 }
                 assert(1==nheap.size());
@@ -223,9 +229,8 @@ namespace yocto {
 
                 //______________________________________________________________
                 //
-                //
+                // deduce codes
                 //______________________________________________________________
-                size_t max_bits = 0;
                 for(size_t i=0;i<MaxItems;++i)
                 {
                     Node &node = nodes[i];
@@ -235,13 +240,10 @@ namespace yocto {
                         node.bits  = 0;
                         for(curr=curr->parent;curr;curr=curr->parent)
                         {
-                            ++node.bits;
-                            //node.code |= curr->code;
+                            node.code |= (curr->code << (++node.bits) );
                         }
-                        max_bits = max_of(node.bits,max_bits);
                     }
                 }
-                std::cerr << "root.bits=" << root->bits << "/max_bits=" << max_bits << std::endl;
             }
             
         }
