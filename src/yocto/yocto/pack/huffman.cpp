@@ -13,6 +13,23 @@ namespace yocto {
     namespace pack
     {
 
+        void Huffman::Node::__viz( ios::ostream &fp ) const
+        {
+            fp.viz(this);fp("[label=\"%s:%u\"];\n", GetChar(symb), unsigned(freq));
+            if(left)
+            {
+                left->__viz(fp);
+                fp.viz(this); fp << "->"; fp.viz(left); fp << "[label=\"0\"]\n";
+            }
+            if(right)
+            {
+                right->__viz(fp);
+                fp.viz(this); fp << "->"; fp.viz(right); fp << "[label=\"1\"]\n";
+            }
+        }
+
+
+
         std::ostream & operator<<(std::ostream &os, const Huffman::Node &node)
         {
             os << Huffman::GetChar(node.symb);
@@ -192,9 +209,8 @@ namespace yocto {
                     const size_t  rbits = right->bits;
                     const size_t  lbits = left->bits;
                     left->code    = 0;
-                    right->code   = __ONE << rbits;
-                    parent->bits  = 1+max_of(rbits,lbits);;
-                    if(parent->bits>16)
+                    right->code   = 1;//__ONE << rbits;
+                    if((parent->bits=1+max_of(rbits,lbits))>=16)
                     {
                         rescale();
                         goto BUILD_TREE;
@@ -220,7 +236,7 @@ namespace yocto {
                         for(curr=curr->parent;curr;curr=curr->parent)
                         {
                             ++node.bits;
-                            node.code |= curr->code;
+                            //node.code |= curr->code;
                         }
                         max_bits = max_of(node.bits,max_bits);
                     }
@@ -238,24 +254,7 @@ namespace yocto {
                 fp << "digraph G {\n";
                 if(root)
                 {
-                    for(const Node *node = nodes; node <= root; ++node)
-                    {
-                        if(node->freq<=0) continue;
-                        fp.viz(node); fp("[label=\"%s:%u\"];\n", GetChar(node->symb), unsigned(node->freq));
-                    }
-
-                    for(const Node *node = nodes; node <= root; ++node)
-                    {
-                        if(node->freq<=0) continue;
-                        if(node->left)
-                        {
-                            fp.viz(node); fp << "->"; fp.viz(node->left); fp << "[label=\"0\"]\n";
-                        }
-                        if(node->right)
-                        {
-                            fp.viz(node); fp << "->"; fp.viz(node->right); fp << "[label=\"1\"]\n";
-                        }
-                    }
+                    root->__viz(fp);
                 }
                 fp << "}\n";
             }

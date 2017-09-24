@@ -4,6 +4,7 @@
 #include "yocto/ordered/heap.hpp"
 #include "yocto/code/round.hpp"
 #include <iosfwd>
+#include "yocto/ios/ostream.hpp"
 
 namespace yocto
 {
@@ -50,7 +51,7 @@ namespace yocto
                 typedef heap<Node,Node::Comparator> Heap;
 
                 friend std::ostream & operator<<(std::ostream &, const Node &);
-
+                void __viz( ios::ostream &fp ) const;
             };
 
             class Alphabet
