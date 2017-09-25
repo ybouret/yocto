@@ -54,15 +54,24 @@ namespace yocto {
 
         Huffman:: Alphabet:: ~Alphabet() throw()
         {
+            memory::kind<memory::global>::release_as<Node>(nodes,nsize);
         }
 
         Huffman:: Alphabet:: Alphabet() :
         count(0),
         root(0),
-        nodes()
+        nheap(),
+        nsize(MaxNodes),
+        nodes(memory::kind<memory::global>::acquire_as<Node>(nsize))
         {
             initialize();
         }
+
+        size_t Huffman::Alphabet:: treeBytes() const throw()
+        {
+            return nsize*sizeof(Node);
+        }
+
 
         void Huffman::Alphabet::initialize() throw()
         {
@@ -150,13 +159,12 @@ namespace yocto {
             }
         }
 
-        void Huffman:: Alphabet:: increase(uint8_t B) throw()
+        void Huffman:: Alphabet:: increase(const uint8_t B) throw()
         {
             Node &node = nodes[B];
             if(node.freq>0)
             {
                 ++(node.freq);
-                //return false;
             }
             else
             {
@@ -165,14 +173,7 @@ namespace yocto {
                 if(++count>=MaxBytes)
                 {
                     nodes[NYT].freq = 0;
-                    //return false;
                 }
-                /*
-                 else
-                 {
-                 return true;
-                 }
-                 */
             }
         }
 
@@ -261,6 +262,26 @@ namespace yocto {
                 fp << "}\n";
             }
             ios::graphviz_render(outName);
+        }
+
+    }
+}
+
+namespace yocto
+{
+    namespace pack
+    {
+        Huffman:: AlphaEncoder:: AlphaEncoder() : Alphabet()
+        {
+        }
+
+        Huffman:: AlphaEncoder:: ~AlphaEncoder() throw()
+        {
+        }
+
+        void Huffman::AlphaEncoder::encode(const uint8_t B, ios::bitio &bio)
+        {
+            
         }
 
     }

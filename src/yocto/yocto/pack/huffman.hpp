@@ -5,6 +5,7 @@
 #include "yocto/code/round.hpp"
 #include <iosfwd>
 #include "yocto/ios/ostream.hpp"
+#include "yocto/ios/bitio.hpp"
 
 namespace yocto
 {
@@ -58,21 +59,39 @@ namespace yocto
             {
             public:
                 Alphabet();
-                ~Alphabet() throw();
+                virtual ~Alphabet() throw();
                 void initialize() throw();
 
                 void display() const;
-                void increase(uint8_t B) throw();
+                void increase(const uint8_t B) throw();
                 void rescale() throw();
                 void build_tree();
                 void graph_tree() const;
-                
-            private:
+
+                size_t treeBytes() const throw();
+
+            protected:
                 size_t     count; //!< used alphabet size
                 Node      *root;  //!< tree root
-                Node::Heap nheap;
-                Node       nodes[MaxNodes];
-                
+
+            private:
+                Node::Heap  nheap;
+                size_t      nsize;
+                Node       *nodes;
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Alphabet);
+            };
+
+            class AlphaEncoder : public Alphabet
+            {
+            public:
+                explicit AlphaEncoder();
+                virtual ~AlphaEncoder() throw();
+
+                void encode(const uint8_t B, ios::bitio &bio);
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(AlphaEncoder);
+
             };
 
         };
