@@ -31,6 +31,7 @@ namespace yocto
             //! wrapper
             template <typename T>
             inline T Get(const char *name) { const string Name(name); return Get<T>(Name); }
+            
 
             template <typename T>
             void Push( typename type_traits<T>::parameter_type arg);

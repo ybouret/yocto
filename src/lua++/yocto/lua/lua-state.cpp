@@ -216,6 +216,13 @@ namespace yocto
             return string(s,l);
         }
 
+        template <>
+        bool State:: To<bool>(const int idx)
+        {
+            if(!lua_isboolean(L,idx)) throw exception("To<bool> failure");
+            return lua_toboolean(L,idx);
+        }
+
     }
 }
 
