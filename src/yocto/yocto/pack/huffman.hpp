@@ -81,6 +81,7 @@ namespace yocto
                 
             protected:
                 Node       *nodes;
+                Node       &nyt;
             };
 
             class AlphaEncoder : public Alphabet

@@ -62,7 +62,8 @@ namespace yocto {
         root(0),
         nheap(),
         nsize(MaxNodes),
-        nodes(memory::kind<memory::global>::acquire_as<Node>(nsize))
+        nodes(memory::kind<memory::global>::acquire_as<Node>(nsize)),
+        nyt( nodes[NYT] )
         {
             initialize();
         }
@@ -172,7 +173,7 @@ namespace yocto {
                 node.freq = 1;
                 if(++count>=MaxBytes)
                 {
-                    nodes[NYT].freq = 0;
+                    nyt.freq = 0;
                 }
             }
         }
@@ -183,7 +184,7 @@ namespace yocto {
 #define Y_HUFF_RESCALE(I) Node &node = nodes[I]; if(node.freq>0)  (node.freq>>=1) |= 1
             YOCTO_LOOP_FUNC_(MaxBytes,Y_HUFF_RESCALE,0);
 #undef Y_HUFF_RESCALE
-
+            assert(nodes[END].freq==1);
         }
 
         void Huffman:: Alphabet:: build_tree()
@@ -195,8 +196,20 @@ namespace yocto {
                 // initialize heap
                 //______________________________________________________________
                 nheap.free();
-#define Y_HUFF_ENQUEUE(I) Node *node = &nodes[I]; if(node->freq>0) { node->code=0; node->bits=0; node->parent = 0; nheap.push(node); }
-                YOCTO_LOOP_FUNC_(MaxItems,Y_HUFF_ENQUEUE,0);
+
+
+                for(size_t i=0;i<MaxItems;++i)
+                {
+                    Node *node = &nodes[i];
+                    if(node->freq>0)
+                    {
+                        assert(i==node->symb);
+                        node->code   = 0;
+                        node->bits   = 0;
+                        node->parent = 0;
+                        nheap.push(node);
+                    }
+                }
 
                 //______________________________________________________________
                 //
@@ -205,6 +218,7 @@ namespace yocto {
                 size_t iNode = MaxItems;
                 while(nheap.size()>=2)
                 {
+                    // get children
                     Node *right       = nheap.pop(); assert(0==right->code);
                     Node *left        = nheap.pop(); assert(0==left->code);
                     const size_t bits = 1+max_of(right->bits,left->bits);
@@ -213,6 +227,8 @@ namespace yocto {
                         rescale();
                         goto BUILD_TREE;
                     }
+
+                    // make parents
                     Node *parent  = &nodes[iNode++];
                     parent->bits  = bits;
                     parent->freq  = (right->freq + left->freq);
@@ -290,7 +306,19 @@ namespace yocto
             }
             else
             {
-
+                assert(count<MaxBytes);
+                node.freq = 1;
+                assert(B==node.code);
+                assert(8==node.bits);
+                if(count>0&&nyt.bits>0)
+                {
+                    bio.push<CodeType>(nyt.code,nyt.bits);
+                }
+                bio.push<CodeType>(node.code,node.bits);
+                if(++count>=MaxBytes)
+                {
+                    nyt.freq=0;
+                }
             }
             build_tree();
         }
