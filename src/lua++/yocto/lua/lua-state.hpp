@@ -28,6 +28,14 @@ namespace yocto
             template <typename T>
             T Get(const string &name);
 
+            bool Has(const string &name);
+            inline
+            bool Hash(const char *name)
+            {
+                const string __name(name);
+                return Has(__name);
+            }
+
             //! wrapper
             template <typename T>
             inline T Get(const char *name) { const string Name(name); return Get<T>(Name); }

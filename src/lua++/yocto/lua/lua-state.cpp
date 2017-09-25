@@ -70,6 +70,16 @@ namespace yocto
             printf("</%s>\n", name);
         }
 
+        bool State:: Has(const string &name)
+        {
+            lua_settop(L,0);
+            lua_getglobal(L,name.c_str());
+            if(!lua_isnil(L,-1))
+                return true;
+            return false;
+        }
+
+
     }
 
 }
@@ -196,21 +206,21 @@ namespace yocto
         template <>
         double State:: To<double>(const int idx)
         {
-            if( !lua_isnumber(L,idx) ) throw exception("To<double> failure");
+            if( !lua_isnumber(L,idx) ) throw exception("To<double>(%d) failure",idx);
             return double( lua_tonumber(L,idx) );
         }
 
         template <>
         int State:: To<int>(const int idx)
         {
-            if( !lua_isinteger(L,idx) ) throw exception("To<int> failure");
+            if( !lua_isinteger(L,idx) ) throw exception("To<int>(%d) failure",idx);
             return int( lua_tointeger(L,idx) );
         }
 
         template <>
         string State:: To<string>(const int idx)
         {
-            if(!lua_isstring(L,idx)) throw exception("To<string> failure");
+            if(!lua_isstring(L,idx)) throw exception("To<string>(%d) failure",idx);
             size_t      l = 0;
             const char *s = lua_tolstring(L, idx, &l);
             return string(s,l);
@@ -219,7 +229,7 @@ namespace yocto
         template <>
         bool State:: To<bool>(const int idx)
         {
-            if(!lua_isboolean(L,idx)) throw exception("To<bool> failure");
+            if(!lua_isboolean(L,idx)) throw exception("To<bool>(%d) failure",idx);
             return lua_toboolean(L,idx);
         }
 
