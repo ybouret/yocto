@@ -279,9 +279,20 @@ namespace yocto
         {
         }
 
-        void Huffman::AlphaEncoder::encode(const uint8_t B, ios::bitio &bio)
+        void Huffman::AlphaEncoder::encode(const uint8_t B,
+                                           ios::bitio   &bio)
         {
-            
+            Node &node = nodes[B];
+            if(node.freq>0)
+            {
+                bio.push<CodeType>(node.code,node.bits);
+                ++node.freq;
+            }
+            else
+            {
+
+            }
+            build_tree();
         }
 
     }

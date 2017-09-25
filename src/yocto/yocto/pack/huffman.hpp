@@ -75,10 +75,12 @@ namespace yocto
                 Node      *root;  //!< tree root
 
             private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Alphabet);
                 Node::Heap  nheap;
                 size_t      nsize;
+                
+            protected:
                 Node       *nodes;
-                YOCTO_DISABLE_COPY_AND_ASSIGN(Alphabet);
             };
 
             class AlphaEncoder : public Alphabet
