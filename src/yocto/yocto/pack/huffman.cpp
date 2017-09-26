@@ -222,7 +222,7 @@ namespace yocto {
                     Node *right       = nheap.pop(); assert(0==right->code);
                     Node *left        = nheap.pop(); assert(0==left->code);
                     const size_t bits = 1+max_of(right->bits,left->bits);
-                    if(bits>=16)
+                    if(bits>=MaxBits)
                     {
                         rescale();
                         goto BUILD_TREE;

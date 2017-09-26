@@ -22,6 +22,7 @@ namespace yocto
             static const size_t   Controls = 2;
             static const size_t   MaxItems = MaxBytes + Controls;
             static const size_t   MaxNodes = YOCTO_ROUND16(2*MaxItems+1);
+            static const size_t   MaxBits  = 16;
             static const CharType NYT      = MaxBytes+0;
             static const CharType END      = MaxBytes+1;
 
