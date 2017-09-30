@@ -19,7 +19,7 @@ typedef YOCTO_TUPLE_PARAM(T1) PARAM1;\
 typedef YOCTO_TUPLE_PARAM(T2) PARAM2;\
 inline CLASS( PARAM1 P1, PARAM2 P2) :\
 N1(P1),N2(P2) {} \
-inline CLASS(const CLASS &other) : \
+inline CLASS(const CLASS &other) : object(),\
 N1(other.N1), N2(other.N2) {}\
 inline virtual ~CLASS() throw() {} \
 friend inline \
@@ -43,7 +43,7 @@ typedef YOCTO_TUPLE_PARAM(T2) PARAM2;\
 typedef YOCTO_TUPLE_PARAM(T3) PARAM3;\
 inline CLASS( PARAM1 P1, PARAM2 P2, PARAM3 P3) :\
 N1(P1),N2(P2),N3(P3) {} \
-inline CLASS(const CLASS &other) : \
+inline CLASS(const CLASS &other) : object(),\
 N1(other.N1), N2(other.N2), N3(other.N3) {}\
 inline virtual ~CLASS() throw() {} \
 friend inline \
@@ -68,7 +68,7 @@ typedef YOCTO_TUPLE_PARAM(T3) PARAM3;\
 typedef YOCTO_TUPLE_PARAM(T4) PARAM4;\
 inline CLASS( PARAM1 P1, PARAM2 P2, PARAM3 P3, PARAM4 P4) :\
 N1(P1),N2(P2),N3(P3),N4(P4) {} \
-inline CLASS(const CLASS &other) : \
+inline CLASS(const CLASS &other) : object(),\
 N1(other.N1), N2(other.N2), N3(other.N3),N4(other.N4) {}\
 inline virtual ~CLASS() throw() {} \
 friend inline \
@@ -96,7 +96,7 @@ typedef YOCTO_TUPLE_PARAM(T4) PARAM4;\
 typedef YOCTO_TUPLE_PARAM(T5) PARAM5;\
 inline CLASS( PARAM1 P1, PARAM2 P2, PARAM3 P3, PARAM4 P4, PARAM5 P5) :\
 N1(P1),N2(P2),N3(P3),N4(P4),N5(P5) {} \
-inline CLASS(const CLASS &other) : \
+inline CLASS(const CLASS &other) : object(),\
 N1(other.N1),N2(other.N2),N3(other.N3),N4(other.N4),N5(other.N5) {}\
 inline virtual ~CLASS() throw() {} \
 friend inline \
@@ -125,7 +125,7 @@ typedef YOCTO_TUPLE_PARAM(T5) PARAM5;\
 typedef YOCTO_TUPLE_PARAM(T6) PARAM6;\
 inline CLASS( PARAM1 P1, PARAM2 P2, PARAM3 P3, PARAM4 P4, PARAM5 P5, PARAM6 P6) :\
 N1(P1),N2(P2),N3(P3),N4(P4),N5(P5),N6(P6) {} \
-inline CLASS(const CLASS &other) : \
+inline CLASS(const CLASS &other) : object(),\
 N1(other.N1),N2(other.N2),N3(other.N3),N4(other.N4),N5(other.N5),N6(other.N6) {}\
 inline virtual ~CLASS() throw() {} \
 friend inline \
@@ -156,7 +156,7 @@ typedef YOCTO_TUPLE_PARAM(T6) PARAM6;\
 typedef YOCTO_TUPLE_PARAM(T7) PARAM7;\
 inline CLASS( PARAM1 P1, PARAM2 P2, PARAM3 P3, PARAM4 P4, PARAM5 P5, PARAM6 P6, PARAM7 P7) :\
 N1(P1),N2(P2),N3(P3),N4(P4),N5(P5),N6(P6),N7(P7) {} \
-inline CLASS(const CLASS &other) : \
+inline CLASS(const CLASS &other) : object(),\
 N1(other.N1),N2(other.N2),N3(other.N3),N4(other.N4),N5(other.N5),N6(other.N6),N7(other.N7) {}\
 inline virtual ~CLASS() throw() {} \
 friend inline \

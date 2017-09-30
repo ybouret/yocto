@@ -32,7 +32,10 @@ namespace yocto
 		
 		
 		//! copy: duplicate the functor context
-		inline functor( const functor &other ) : function_( other.function_->clone() ) { assert( function_ ); }
+		inline functor( const functor &other ) :
+        callable(),
+        function_( other.function_->clone() )
+        { assert( function_ ); }
 		
 		//! assign: duplicate source context
 		inline functor & operator=( const functor &other )

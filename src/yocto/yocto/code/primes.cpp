@@ -62,8 +62,7 @@ namespace yocto
 		{
 			case 0:
 			case 1:
-				if( n < 2 )
-					throw libc::exception( ERANGE, "prev_prime(%u)", unsigned(n) );
+                throw libc::exception( ERANGE, "prev_prime(%u)", unsigned(n) );
 				
 			case 2: return 2;
 			case 3: return 3;

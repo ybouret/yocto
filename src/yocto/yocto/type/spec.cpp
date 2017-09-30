@@ -27,6 +27,7 @@ namespace yocto {
 	}
 	
 	type_spec::type_spec( const type_spec &other ) throw() :
+    memory::ro_buffer(),
 	info_( other.info_ ),
 	len_( other.len_ )
 	{
