@@ -132,6 +132,7 @@ namespace yocto {
         
         static string &as_directory( string &path );
         static string  to_directory( const string &path );
+        static string  to_directory( const char   *path );
         static void    change_extension( string &path, const string &ext );
         static void    remove_extension( string &path ) throw();
         static string  base_name_from(const string &name);  //!< make an acceptable file name

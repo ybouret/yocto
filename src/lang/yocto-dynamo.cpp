@@ -16,8 +16,7 @@ YOCTO_PROGRAM_START()
         throw exception("usage: %s grammar.g dir",program);
     }
     const string             gramFile = argv[1];
-    const string             gramWork = argv[2];
-    vfs::as_directory((string&)gramWork);
+    const string             gramWork = vfs::to_directory(argv[2]);
     const string             inclExt  = ".inc";
     const string             defsExt  = ".def";
 

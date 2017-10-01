@@ -204,7 +204,13 @@ namespace yocto
     string  vfs::to_directory( const string &path )
     {
         string temp(path);
-        return as_directory( temp );
+        return string(as_directory( temp ));
+    }
+
+    string  vfs::to_directory( const char *path )
+    {
+        string temp(path);
+        return string(as_directory( temp ));
     }
 
     string  vfs:: base_name_from(const string &name)
