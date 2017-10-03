@@ -8,6 +8,7 @@ namespace yocto
 {
     namespace Lang
     {
+        //! smart pointer for a generated parser
         class DynamicParser
         {
         public:
@@ -21,6 +22,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(DynamicParser);
         };
 
+        //! a language compiler: load the AST and walk it
         class Compiler :
         public DynamicParser,
         public Syntax::Analyzer
@@ -29,8 +31,8 @@ namespace yocto
             virtual ~Compiler() throw();
             explicit Compiler(Syntax::Parser *p);
 
-            virtual void initialize();
-            void         ld(Source &source);
+            virtual void initialize();         //!< default: do nothing, but should clear stacks....
+            void         ld(Source &source);   //!< load source and walk the AST
 
 
         private:

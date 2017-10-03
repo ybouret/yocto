@@ -9,6 +9,7 @@ namespace yocto
     namespace Lang
     {
 
+        //! accept any single char
         class Any1 : public Pattern
         {
         public:
@@ -30,6 +31,7 @@ namespace yocto
     namespace Lang
     {
 
+        //! accept a single selected char
         class Single : public Pattern
         {
         public:
@@ -52,6 +54,7 @@ namespace yocto
     namespace Lang
     {
 
+        //! accept a char in a selected range
         class Range : public Pattern
         {
         public:

@@ -16,17 +16,23 @@ namespace yocto
         public CharInfo
         {
         public:
-            Char   *prev;
-            Char   *next;
-            uint8_t code;
+            Char   *prev; //!< for token
+            Char   *next; //!< for token
+            uint8_t code; //!< any byte
 
-            virtual ~Char() throw();
+            virtual ~Char() throw(); //!< default dtor
+
+            //! build from info
             explicit Char(const CharInfo &info,
                           const uint8_t   data) throw();
-            
+
+            //! copy constructor
             Char(const Char &other) throw();
 
+            //! make a representable state
             const char *text() const throw();
+
+            //! clone the char with a substituted code
             Char       *subst(const uint8_t data) const;
 
         private:

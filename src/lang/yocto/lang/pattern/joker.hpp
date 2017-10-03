@@ -7,6 +7,7 @@ namespace yocto
 {
     namespace Lang
     {
+        //! smart pointer
         class Joker : public Pattern
         {
         public:
@@ -31,6 +32,7 @@ namespace yocto
 {
     namespace Lang
     {
+        //! optional char
         class Optional : public Joker
         {
         public:
@@ -49,6 +51,7 @@ namespace yocto
 {
     namespace Lang
     {
+        //! generic at least count repeating pattern
         class AtLeast : public Joker
         {
         public:
@@ -72,6 +75,8 @@ namespace yocto
 {
     namespace Lang
     {
+
+        //! a given count of a repeating pattern
         class Counting : public Joker
         {
         public:

@@ -21,9 +21,9 @@ namespace yocto
             virtual ~CharInfo() throw();
             CharInfo(const CharInfo &) throw();
             
-            const int   column;
-            const int   line;
-            const Stamp stamp;
+            const int   column; //!< column in stamp
+            const int   line;   //!< line   in stamp
+            const Stamp stamp;  //!< stamp  name
             
             void newChar() throw();
             void newLine() throw();
