@@ -43,7 +43,8 @@ namespace yocto
             {
                 "drop",
                 "endl",
-                "comment"
+                "comment",
+                "include"
             };
 
             DynamoCompiler:: DynamoCompiler() :

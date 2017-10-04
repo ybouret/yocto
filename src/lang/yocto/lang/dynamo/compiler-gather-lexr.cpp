@@ -11,7 +11,7 @@ namespace yocto
 
             void DynamoCompiler:: lexr(const Node &node)
             {
-                static const char fn[] = "DynamoCompiler.lexr: ";
+                static const char fn[] = "DynamoCompiler.lexer: ";
                 assert("LEXR"==node.origin.label);
                 const Node::List &children = node.toList(); assert(children.size>0);
                 const Node       *child    = children.head; assert(child!=NULL);
@@ -83,11 +83,21 @@ namespace yocto
                         } break;
 
                         default:
-                            throw exception("%s: comment requires 1 or 2 arguments",fn);
+                            throw exception("%s: comment requires 1 or 2 arguments, got %u",fn,unsigned(args));
                     }
                         break;
 
-
+                        
+                        //______________________________________________________
+                        //
+                        //
+                    case 3: assert("include"==lexrKey);
+                        //
+                        //______________________________________________________
+                        if(verbose) { std::cerr << " >> INCLUDE << "; }
+                        if(1!=args) throw exception("%sinclude requires 1 argument, got %d",fn,unsigned(args));
+                        break;
+                        
                     default:
                         throw exception("%sunhandled lexical rule '%s'", fn, *lexrKey);
                 }
