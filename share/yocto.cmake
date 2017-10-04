@@ -6,7 +6,7 @@
 ##
 ########################################################################
 MESSAGE("")
-MESSAGE("===> <yocto>")
+MESSAGE("===> <yocto.cmake>")
 SET(CMAKE_SKIP_PREPROCESSED_SOURCE_RULES ON)
 SET(CMAKE_SKIP_ASSEMBLY_SOURCE_RULES     ON)
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS    ON)
@@ -271,6 +271,9 @@ MACRO(TARGET_LINK_YOCTO tgt)
 			
 			IF( "visit" STREQUAL ${extra} )
 				LIST( APPEND ylibs "y-mpi" )
+				IF(YOCTO_LINUX)
+					LIST( APPEND dl )
+				ENDIF()
 			ENDIF()
 			
 	ENDFOREACH(extra)
@@ -329,8 +332,8 @@ ENDMACRO(TARGET_LINK_YOCTO)
 FUNCTION(YOCTO_FILE2DATA source target)
 ADD_CUSTOM_COMMAND(
 OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${target}
-COMMAND yocto_file2data ${CMAKE_CURRENT_SOURCE_DIR}/${source} ${CMAKE_CURRENT_SOURCE_DIR}/${target}
-DEPENDS yocto_file2data ${CMAKE_CURRENT_SOURCE_DIR}/${source}
+COMMAND yocto-file2data ${CMAKE_CURRENT_SOURCE_DIR}/${source} ${CMAKE_CURRENT_SOURCE_DIR}/${target}
+DEPENDS yocto-file2data ${CMAKE_CURRENT_SOURCE_DIR}/${source}
 COMMENT "[File2Data] ${source} => ${target}"
 )
 ENDFUNCTION(YOCTO_FILE2DATA)
@@ -342,4 +345,4 @@ ENDFUNCTION(YOCTO_FILE2DATA)
 ##
 ##
 ########################################################################
-MESSAGE("===> </yocto>")
+MESSAGE("===> </yocto.cmake>")
