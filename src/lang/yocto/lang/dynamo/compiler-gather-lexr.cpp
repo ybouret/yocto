@@ -1,7 +1,6 @@
 #include "yocto/lang/dynamo/compiler.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/lang/lexical/plugin/comment.hpp"
-#include "yocto/fs/vfs.hpp"
 
 namespace yocto
 {
@@ -88,28 +87,6 @@ namespace yocto
                     }
                         break;
 
-                        
-                        //______________________________________________________
-                        //
-                        //
-                    case 3: assert("include"==lexrKey);
-                        //
-                        //______________________________________________________
-                        if(1!=args)
-                            throw exception("%sinclude requires 1 argument, got %d",fn,unsigned(args));
-                        else
-                        {
-                            const Lexeme &lex    = arg->toLex();
-                            const string modName = lex.moduleName();
-                            const string modDir  = vfs::get_file_dir(modName);
-                            const string incFile = lex.toString();
-                            const string incPath = modDir + incFile;
-                            if(verbose)
-                            {
-                                std::cerr << "@include <<" << incPath << ">>";
-                            }
-                        }
-                        break;
                         
                     default:
                         throw exception("%sunhandled lexical rule '%s'", fn, *lexrKey);

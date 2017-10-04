@@ -12,8 +12,5 @@ COM     : 'COM';
 @drop   : "[:blank:]" ' ';
 @endl   : "[:endl:]";
 
-@comment: "#";
 @comment: "/\\*" "\\*/";
-
-//%MergesSingle : code;
 

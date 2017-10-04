@@ -43,8 +43,7 @@ namespace yocto
             {
                 "drop",
                 "endl",
-                "comment",
-                "include"
+                "comment"
             };
 
             DynamoCompiler:: DynamoCompiler() :
@@ -68,7 +67,7 @@ namespace yocto
             {
                 if(!master) throw exception("DynamoCompiler.encode(NULL)");
                 auto_ptr<Node> guard(master);
-#if 1
+#if 0
                 if(verbose)
                 {
                     std::cerr << "== Dynamo Input" << std::endl;
@@ -77,6 +76,15 @@ namespace yocto
                 }
 #endif
                 parser.release();
+                checkIncludes(master);
+#if 0
+                if(verbose)
+                {
+                    std::cerr << "== Dynamo Input2" << std::endl;
+                    master->graphviz("dyninput2.dot");
+                    ios::graphviz_render("dyninput2.dot");
+                }
+#endif
                 createTopLevelFrom(master);
                 gatherFrom(master);
                 finalize();

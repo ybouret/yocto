@@ -7,6 +7,7 @@ ADD_EXECUTABLE(test-lang main.cpp ${srcs}
 	json.g
 	calc.g
 	seem.g
+    lex.g
 )
 
 TARGET_LINK_YOCTO(test-lang lang)
