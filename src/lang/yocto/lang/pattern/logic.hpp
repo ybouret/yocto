@@ -7,6 +7,7 @@ namespace yocto
 {
     namespace Lang
     {
+        //! base class for logical operation
         class Logical : public Pattern
         {
         public:

@@ -123,6 +123,11 @@ namespace yocto
             }
             return Pattern::Optimize(compiler.subExpr());
         }
-        
+
+        Pattern *RegExp( const char *expr, const PatternDict *dict )
+        {
+            const string Expr(expr);
+            return RegExp(Expr,dict);
+        }
     }
 }

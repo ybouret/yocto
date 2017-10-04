@@ -14,6 +14,7 @@ namespace yocto
         namespace Lexical
         {
 
+            //! Result of a lexical Action
             enum Result
             {
                 Forward, //!< will produce an unit
@@ -30,7 +31,7 @@ namespace yocto
             public:
                 Rule                 *next;   //!< for Rules
                 Rule                 *prev;   //!< for Rules
-                const Stamp           stamp;  //!< dynamic stamp
+                const Stamp           stamp;  //!< dynamic stamp for Unit
                 const string         &label;  //!< *stamp
                 const Pattern::Handle motif;  //!< the pattern
                 Action                action; //!< the action
@@ -41,9 +42,10 @@ namespace yocto
                      const Pattern::Handle &,
                      const Action          &);
 
-
+                Rule(const Rule &);
+                
             private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(Rule);
+                YOCTO_DISABLE_ASSIGN(Rule);
 
             };
 

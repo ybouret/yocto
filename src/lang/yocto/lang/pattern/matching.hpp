@@ -8,6 +8,7 @@ namespace yocto
     namespace Lang
     {
 
+        //! wrapper to check regular expressions against strings
         class Matching
         {
         public:

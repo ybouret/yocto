@@ -9,7 +9,7 @@ namespace yocto
     {
 
         Pattern *RegExp( const string &expr, const PatternDict *dict );
-        
+        Pattern *RegExp( const char   *expr, const PatternDict *dict );
     }
 }
 

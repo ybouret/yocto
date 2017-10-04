@@ -23,7 +23,16 @@ namespace yocto
                 
             }
 
-
+            Rule:: Rule( const Rule &other ) :
+            next(0),
+            prev(0),
+            stamp( other.stamp ),
+            label( *stamp ),
+            motif( other.motif ),
+            action( other.action )
+            {
+            }
+            
         }
         
     }
