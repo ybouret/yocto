@@ -58,16 +58,16 @@ INSTALL( TARGETS y-z ARCHIVE       DESTINATION lib )
 
 IF(YOCTO_BUILD_TESTS)
 	enable_testing()
-	add_executable(zlib_example test/example.c)
-	target_link_libraries(zlib_example y-z)
-	add_test(zlib_example zlib_example)
+	add_executable(z-example test/example.c)
+	target_link_libraries(z-example y-z)
+	add_test(z-example z-example)
 	
-	IF(FALSE)
+	IF(TRUE)
 		add_executable(minigzip test/minigzip.c)
 		target_link_libraries(minigzip y-z)
 	
-		add_executable(zlib_infcover test/infcover.c)
-		target_link_libraries(zlib_infcover y-z)
+		add_executable(z-infcover test/infcover.c)
+		target_link_libraries(z-infcover y-z)
 	ENDIF()
 	
 ENDIF()

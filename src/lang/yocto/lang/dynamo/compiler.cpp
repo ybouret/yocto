@@ -67,7 +67,7 @@ namespace yocto
             {
                 if(!master) throw exception("DynamoCompiler.encode(NULL)");
                 auto_ptr<Node> guard(master);
-#if 0
+#if 1
                 if(verbose)
                 {
                     std::cerr << "== Dynamo Input" << std::endl;

@@ -2,8 +2,8 @@ SET(keys_inc rsa-keys.inc)
 SET(keys_bin rsa-keys.bin)
 ADD_CUSTOM_COMMAND(
 OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${keys_inc}
-COMMAND yocto_file2data ${CMAKE_CURRENT_SOURCE_DIR}/${keys_bin} ${CMAKE_CURRENT_SOURCE_DIR}/${keys_inc}
-DEPENDS yocto_file2data ${CMAKE_CURRENT_SOURCE_DIR}/${keys_bin}
+COMMAND yocto-file2data ${CMAKE_CURRENT_SOURCE_DIR}/${keys_bin} ${CMAKE_CURRENT_SOURCE_DIR}/${keys_inc}
+DEPENDS yocto-file2data ${CMAKE_CURRENT_SOURCE_DIR}/${keys_bin}
 )
 
 INCLUDE_DIRECTORIES(../../mk)
