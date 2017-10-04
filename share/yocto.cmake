@@ -272,7 +272,7 @@ MACRO(TARGET_LINK_YOCTO tgt)
 			IF( "visit" STREQUAL ${extra} )
 				LIST( APPEND ylibs "y-mpi" )
 				IF(YOCTO_LINUX)
-					LIST( APPEND dl )
+					LIST( APPEND ylibs dl )
 				ENDIF()
 			ENDIF()
 			
