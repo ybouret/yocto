@@ -91,7 +91,7 @@ namespace yocto
                 explicit Node(const Rule &r, Lexeme *l) throw();
 
             public:
-                void *user; //!< pointer to external user's data
+                const void *user; //!< pointer to external user's data
             };
 
 

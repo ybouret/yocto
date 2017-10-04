@@ -72,7 +72,7 @@ namespace yocto
                             if(!inc.is_valid()) throw exception("%sunexpected NULL parsed file",fn);
                             
                             Node::List &content = inc->toList(); assert(content.size>0);
-                            delete content.pop_front(); // the include "grammar" name
+                            auto_ptr<Node> nameNode( content.pop_front() );
                             tmp.merge_back(content);
                         }
                     }

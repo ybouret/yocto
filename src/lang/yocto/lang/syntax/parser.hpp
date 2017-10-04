@@ -2,6 +2,7 @@
 #define YOCTO_LANG_SYNTAX_PARSER_INCLUDED 1
 
 #include "yocto/lang/syntax/grammar.hpp"
+#include "yocto/sequence/list.hpp"
 
 namespace yocto
 {
@@ -106,6 +107,9 @@ namespace yocto
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);
                 Terminal & plugin(const string &label);
+
+            protected:
+                list<Stamp> stamps;
             };
             
             
