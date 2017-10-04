@@ -226,6 +226,7 @@ namespace yocto
 
                 const Rule *head() const throw();
 
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Scanner);
                 Rules rules;

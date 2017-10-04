@@ -125,7 +125,8 @@ namespace yocto
 
                 typedef set<string,Scanner::Handle> ScannerDB;
 
-                void getAll( Units &, Source & );
+                //! get all units from the source
+                void getAll(Units &,Source &);
                 
             private:
                 Scanner::Handle  _root;
