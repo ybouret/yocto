@@ -31,7 +31,5 @@ IF(MPI_FOUND)
 	TARGET_LINK_YOCTO(test-mpl-par mpi)
 	TARGET_LINK_LIBRARIES(test-mpl-par ${MPI_LIBRARIES})
 
-
-
 ENDIF(MPI_FOUND)
 
