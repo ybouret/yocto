@@ -31,7 +31,7 @@ namespace yocto
             size_t      in_cache() const throw();
             bool        is_active();
             inline const Token & operator*() const throw() { return cache; }
-
+            inline const Stamp &stamp() const throw() { return module->stamp; }
             
         private:
             friend class Lexical::Scanner;

@@ -27,7 +27,7 @@ namespace yocto
                     if(lex->label==label)
                     {
                         YOCTO_LANG_SYNTAX(std::cerr << "<+TERM '" << label << "'='" << *lex << "'>" << std::endl);
-                        Node::Grow(tree, Node::Create(*this,lex));
+                        Node::Grow(tree, Node::Create(source,*this,lex));
                         return true;
                     }
                     else

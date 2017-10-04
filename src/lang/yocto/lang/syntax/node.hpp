@@ -37,10 +37,10 @@ namespace yocto
                 virtual ~Node() throw();
 
                 //! create an internal node
-                static Node *Create(const Rule &r);
+                static Node *Create(const Source &source, const Rule &r);
 
                 //! create a terminal node, lexeme is taken care of
-                static Node *Create(const Rule &r, Lexeme *l);
+                static Node *Create(const Source &source, const Rule &r, Lexeme *l);
 
                 //! update tree
                 static void Grow( Node * &tree, Node *child ) throw();
@@ -85,13 +85,13 @@ namespace yocto
                 Node(const Node &other);
 
                 //! make a non terminal node
-                explicit Node(const Rule &r);
+                explicit Node(const Source &, const Rule &r);
 
                 //! a terminal node
-                explicit Node(const Rule &r, Lexeme *l) throw();
+                explicit Node(const Source &, const Rule &r, Lexeme *l) throw();
 
             public:
-                const void *user; //!< pointer to external user's data
+                const Stamp stamp;
             };
 
 

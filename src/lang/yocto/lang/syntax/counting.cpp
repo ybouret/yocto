@@ -37,7 +37,7 @@ namespace yocto
             bool Counting:: admit( YOCTO_LANG_SYNTAX_RULE_ADMIT_ARGS ) const
             {
                 YOCTO_LANG_SYNTAX(std::cerr << "<?COUNT '" << label << "' (>=" << minCount << ")>" << std::endl);
-                Node *subTree = Node::Create(*this);
+                Node *subTree = Node::Create(source,*this);
                 auto_ptr<Node> guard(subTree);
                 size_t count = 0;
                 ++depth;

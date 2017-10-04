@@ -53,7 +53,7 @@ namespace yocto
                 //
                 // create a subTree
                 //______________________________________________________________
-                Node          *subTree = Node::Create(*this);
+                Node          *subTree = Node::Create(source,*this);
                 auto_ptr<Node> pTree(subTree);
 
                 //______________________________________________________________

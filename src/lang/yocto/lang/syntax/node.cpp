@@ -32,43 +32,43 @@ namespace yocto
                 return lex;
             }
 
-            Node:: Node(const Rule &r) :
+            Node:: Node(const Source &source, const Rule &r) :
             next(0),
             prev(0),
             origin(r),
             terminal(false),
             internal(true),
             impl( new List() ),
-            user( NULL )
+            stamp( source.stamp() )
             {
                 //std::cerr << "+Node(" << origin.label << ")/internal" << std::endl;
             }
 
-            Node * Node:: Create(const Rule &r)
+            Node * Node:: Create(const Source &source, const Rule &r)
             {
-                return new Node(r);
+                return new Node(source,r);
             }
 
 
-            Node:: Node(const Rule &r, Lexeme *l) throw() :
+            Node:: Node(const Source &source, const Rule &r, Lexeme *l) throw() :
             next(0),
             prev(0),
             origin(r),
             terminal(true),
             internal(false),
             impl(l),
-            user(NULL)
+            stamp(source.stamp())
             {
                 //std::cerr << "+Node(" << origin.label << ")/terminal" << std::endl;
             }
 
 
-            Node * Node::Create(const Rule &r, Lexeme *l)
+            Node * Node::Create(const Source &source, const Rule &r, Lexeme *l)
             {
                 assert(NULL!=l);
                 try
                 {
-                    return new Node(r,l);
+                    return new Node(source,r,l);
                 }
                 catch(...)
                 {
@@ -85,7 +85,7 @@ namespace yocto
             terminal(other.terminal),
             internal(other.terminal),
             impl(NULL),
-            user(other.user)
+            stamp(other.stamp)
             {
                 if(terminal)
                 {

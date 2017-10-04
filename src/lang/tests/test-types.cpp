@@ -1,5 +1,5 @@
 #include "yocto/lang/char.hpp"
-#include "yocto/lang/syntax/rules.hpp"
+#include "yocto/lang/syntax/parser.hpp"
 
 #include "yocto/utest/run.hpp"
 using namespace yocto;
@@ -45,6 +45,8 @@ YOCTO_UNIT_TEST_IMPL(types)
     __SHOW(Syntax::Aggregate);
     __SHOW(Syntax::Optional);
     __SHOW(Syntax::Counting);
+    __SHOW(Stamp);
+    __SHOW(Syntax::Parser);
 
     const int shift = 0x70000000;
     std::cerr << "shift=" << shift << std::endl;

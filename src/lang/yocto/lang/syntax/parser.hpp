@@ -16,8 +16,8 @@ namespace yocto
             public:
                 explicit Parser(const string &id);
                 virtual ~Parser() throw();
-                const string tag;
-                RPN_Set      rdb;
+                const string   tag;
+                RPN_Set        rdb;
                 
                 //______________________________________________________________
                 //
@@ -108,8 +108,9 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);
                 Terminal & plugin(const string &label);
 
-            protected:
-                list<Stamp> stamps;
+            public:
+                uint32_t uuid;
+
             };
             
             
