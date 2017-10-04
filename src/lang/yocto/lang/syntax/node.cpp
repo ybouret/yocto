@@ -38,7 +38,8 @@ namespace yocto
             origin(r),
             terminal(false),
             internal(true),
-            impl( new List() )
+            impl( new List() ),
+            user( NULL )
             {
                 //std::cerr << "+Node(" << origin.label << ")/internal" << std::endl;
             }
@@ -55,7 +56,8 @@ namespace yocto
             origin(r),
             terminal(true),
             internal(false),
-            impl(l)
+            impl(l),
+            user(NULL)
             {
                 //std::cerr << "+Node(" << origin.label << ")/terminal" << std::endl;
             }
@@ -82,7 +84,8 @@ namespace yocto
             origin(other.origin),
             terminal(other.terminal),
             internal(other.terminal),
-            impl(NULL)
+            impl(NULL),
+            user(other.user)
             {
                 if(terminal)
                 {

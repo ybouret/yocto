@@ -80,7 +80,7 @@ namespace yocto
                 Node *clone() const;
 
             private:
-                void                *impl;
+                void                *impl;  //!< lexeme or list
                 YOCTO_DISABLE_ASSIGN(Node);
                 Node(const Node &other);
 
@@ -89,6 +89,9 @@ namespace yocto
 
                 //! a terminal node
                 explicit Node(const Rule &r, Lexeme *l) throw();
+
+            public:
+                void *user; //!< pointer to external user's data
             };
 
 
