@@ -24,6 +24,12 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             Syntax::Parser::Encode(parserFile,fp);
         }
 
+        {
+            ios::wcstream     fp("def.dat");
+            const string      prefix = parser->tag + '_';
+            Syntax::Analyzer  analyzer(*parser);
+            analyzer.emitDefinitions(fp,prefix);
+        }
 
         // open stdio
         const Module::Handle hModule( new Module() );
