@@ -17,7 +17,7 @@ namespace yocto {
 		
         //! check and parse value if it exists
         /**
-         implemented for bool
+         implemented for bool, int
          \return true is env 'name' exists
          */
         template <typename T>
