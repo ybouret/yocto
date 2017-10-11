@@ -4,6 +4,7 @@
 #include "yocto/fs/vfs.hpp"
 #include "yocto/core/list.hpp"
 #include "yocto/counted-object.hpp"
+#include "yocto/sequence/c-array.hpp"
 
 namespace yocto
 {
@@ -12,13 +13,7 @@ namespace yocto
     {
     public:
 
-        class file_type : public counted_object
-        {
-        public:
-            explicit file_type();
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(file_type);
-        };
+        typedef c_array<char> file_type;
 
         // node
         class node_type;
@@ -39,7 +34,10 @@ namespace yocto
             const entry::attribute attr;
             node_type             *next;
             node_type             *prev;
-            explicit node_type();
+            file_type             *file;
+            const string           path;
+
+            explicit node_type(const string &node_path);
             virtual ~node_type() throw();
 
         private:
