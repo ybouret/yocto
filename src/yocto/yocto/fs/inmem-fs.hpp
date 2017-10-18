@@ -13,7 +13,7 @@ namespace yocto
     {
     public:
 
-        typedef c_array<char> file_type;
+        //typedef c_array<char> file_type;
 
         // node
         class node_type;
@@ -34,7 +34,6 @@ namespace yocto
             const entry::attribute attr;
             node_type             *next;
             node_type             *prev;
-            file_type             *file;
             const string           path;
 
             explicit node_type(const string &node_path);
