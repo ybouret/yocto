@@ -31,11 +31,12 @@ namespace yocto
         class node_type : public object
         {
         public:
-            const entry::attribute attr;
+            const entry::attribute attr; //!< is_dir or is_reg
             node_type             *next;
             node_type             *prev;
             const string           path;
-
+            nodes                  entries;
+            
             explicit node_type(const string &node_path);
             virtual ~node_type() throw();
 
