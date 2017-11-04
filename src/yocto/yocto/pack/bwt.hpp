@@ -31,7 +31,7 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(common16);
             };
 		};
-		
+
 	}
 	
 }

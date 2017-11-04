@@ -41,7 +41,10 @@ namespace yocto
             assert(!(NULL==output&&size>0));
             assert(!(NULL==input&&size>0));
 
-            if(size<=0) return 0;
+            if(size<=0)
+            {
+                return 0;
+            }
             else
             {
                 const uint8_t    *buf_in  = (const uint8_t *)input;
@@ -102,7 +105,7 @@ namespace yocto
             {
                 size_t      &__b = buckets[i];
                 const size_t __t = __b;
-                __b = sum;
+                __b  = sum;
                 sum += __t;
             }
 
