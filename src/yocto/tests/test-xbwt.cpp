@@ -22,6 +22,7 @@ YOCTO_UNIT_TEST_IMPL(xbwt)
     }
     const size_t size = input.size();
     vector<char>   output(size);
+    vector<char>   decode(size);
     vector<size_t> indices(size);
     const size_t pidx = pack::xbwt::encode(output(), input(), size, indices() );
     std::cerr << "pidx=" << pidx << std::endl;
@@ -36,12 +37,19 @@ YOCTO_UNIT_TEST_IMPL(xbwt)
         fp << output;
     }
 
-    for(size_t i=size;i>0;--i) input[i] = 0;
-    pack::xbwt::decode(input(), output(), size, indices(), pidx);
+   // for(size_t i=size;i>0;--i) input[i] = 0;
+    pack::xbwt::decode(decode(), output(), size, indices(), pidx);
     {
         ios::wcstream fp("xdec.dat");
-        fp << input;
+        fp << decode;
     }
 
+    for(size_t i=decode.size();i>0;--i)
+    {
+        if(decode[i]!=input[i])
+        {
+            throw exception("XBWT error");
+        }
+    }
 }
 YOCTO_UNIT_TEST_DONE()

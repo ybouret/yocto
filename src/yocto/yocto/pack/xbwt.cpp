@@ -72,7 +72,6 @@ namespace yocto {
                     {
                         const size_t idx = indices[ii];
                         buf_out[ii] = mtf.encode(buf_in[ (idx+shft) % size]);
-                        //buf_out[ii] =           (buf_in[ (idx+shft) % size]);
                         if( 0 == idx )
                         {
                             pidx=ii;
@@ -83,21 +82,16 @@ namespace yocto {
                     for(++ii;ii<size;++ii)
                     {
                         buf_out[ii] = mtf.encode(buf_in[ (indices[ii]+shft) % size]);
-                        //buf_out[ii] =           (buf_in[ (indices[ii]+shft) % size]);
                     }
-
-                    /*
-                    for(size_t i=0;i<size;++i)
-                    {
-                        //buf_out[i] = mtf.encode(buf_out[i]);
-                     }*/
 
                     return pidx;
                 }
             }
         }
 
-        void   xbwt:: decode( void *output,  void *input, const size_t size, size_t *indices, const size_t primary_index) throw()
+
+
+        void   xbwt:: decode( void *output,  const void *input, const size_t size, size_t *indices, const size_t primary_index) throw()
         {
             assert(!(NULL==output&&size>0));
             assert(!(NULL==input&&size>0));
@@ -110,8 +104,8 @@ namespace yocto {
             move_to_front mtf;
             for( size_t i=0; i < size; ++i )
             {
-                buf_in[i]       = mtf.decode(buf_in[i]);
-                const size_t bi = buf_in[i];
+
+                const size_t bi = ( buf_in[i] = mtf.decode(buf_in[i]) );
                 indices[i] = buckets[bi];
                 buckets[bi]++;
             }
@@ -125,7 +119,6 @@ namespace yocto {
                 sum += __t;
             }
 
-            //mtf.reset();
             size_t      j = primary_index;
             uint8_t    *c = buf_out + size;
             for( size_t i=size;i>0;--i)
@@ -135,7 +128,11 @@ namespace yocto {
                 j = buckets[bj] + indices[j];
             }
 
-
+            mtf.reset();
+            for(size_t i=0;i<size;++i)
+            {
+                buf_in[j] = mtf.encode(buf_in[j]);
+            }
         }
 
     }
