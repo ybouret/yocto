@@ -110,7 +110,7 @@ namespace yocto {
             move_to_front mtf;
             for( size_t i=0; i < size; ++i )
             {
-                //buf_in[i]       = mtf.decode(buf_in[i]);
+                buf_in[i]       = mtf.decode(buf_in[i]);
                 const size_t bi = buf_in[i];
                 indices[i] = buckets[bi];
                 buckets[bi]++;

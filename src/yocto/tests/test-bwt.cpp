@@ -68,6 +68,10 @@ namespace
                  pack::bwt::common16 &BWT)
     {
         std::cerr << "+";std::cerr.flush();
+        for(size_t i=1;i<=input.size();++i)
+        {
+            input[i] = uint8_t(i);
+        }
         const uint16_t pidx = BWT.encode( &output[1], &input[1], input.size() );
         std::cerr << "-"; std::cerr.flush();
         BWT.decode(&input2[1], &output[1], input.size(), pidx);
@@ -88,7 +92,9 @@ YOCTO_UNIT_TEST_IMPL(bwt16)
     vector<uint8_t> output(65536,as_capacity);
     vector<uint8_t> input2(65536,as_capacity);
 
-    for(size_t n=1;n<=65536;n*=2)
+    for(size_t n=1;
+        n<=1024;
+        n*=2)
     {
         if(n<=0)
             continue;

@@ -73,7 +73,7 @@ namespace yocto
                     }
                 }
 
-                for(;ii<size;++ii)
+                for(++ii;ii<size;++ii)
                 {
                     buf_out[ii] = buf_in[ (indices[ii]+shft) % size];
                 }
