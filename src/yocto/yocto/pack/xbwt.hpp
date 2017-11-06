@@ -12,8 +12,10 @@ namespace yocto
 
         struct xbwt
         {
-            static size_t encode( void *output, const void *input, const size_t size, size_t *indices) throw();
-            static void   decode( void *output, const void *input, const size_t size, size_t *indices, const size_t primary_index) throw();
+
+            static size_t encode( void *output, const void *input, const size_t size);
+            static void   decode( void *output, const void *input, const size_t size, const size_t primary_index);
+
         };
 
     }
