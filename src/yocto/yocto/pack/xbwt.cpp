@@ -96,24 +96,26 @@ namespace yocto {
             assert(!(NULL==output&&size>0));
             assert(!(NULL==input&&size>0));
 
-            size_t   wlen    = memory::align((sizeof(size_t) + 1) * size);
-            uint8_t *wksp    = memory::kind<memory::global>::acquire_as<uint8_t>(wlen);
-            size_t *indices  = (size_t *)&wksp[0];
-            uint8_t *buf_tmp = (uint8_t *)&indices[size];
+            size_t         wlen    = memory::align((sizeof(size_t) + 1) * size);
+            uint8_t       *wksp    = memory::kind<memory::global>::acquire_as<uint8_t>(wlen);
+            size_t        *indices = (size_t *)&wksp[0];
+            uint8_t       *buf_tmp = (uint8_t *)&indices[size];
             size_t         buckets[256];
             const uint8_t *buf_in  = (const uint8_t *)input;
             uint8_t       *buf_out = (uint8_t *)output;
             memset(buckets,0,sizeof(buckets));
 
-            move_to_front mtf;
-            for( size_t i=0; i < size; ++i )
             {
+                move_to_front mtf;
+                for( size_t i=0; i < size; ++i )
+                {
 
-                const size_t bi = ( buf_tmp[i] = mtf.decode(buf_in[i]) );
-                indices[i] = buckets[bi];
-                buckets[bi]++;
+                    const size_t bi = ( buf_tmp[i] = mtf.decode(buf_in[i]) );
+                    indices[i] = buckets[bi];
+                    buckets[bi]++;
+                }
             }
-
+            
             size_t sum = 0;
             for( size_t i=0; i < 256; ++i )
             {
