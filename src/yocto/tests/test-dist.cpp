@@ -13,6 +13,7 @@
 #include "yocto/sequence/vector.hpp"
 #include "yocto/sort/heap.hpp"
 #include <cmath>
+#include "yocto/math/point3d.hpp"
 
 using namespace yocto;
 
@@ -56,7 +57,46 @@ static inline void test_random( Random::Uniform &ran )
 	sig = sqrt( sig/(n-1) );
 	std::cerr << "-- gaussian: ave= " << ave << "| sig= " << sig << " | <sq>=" << sq << std::endl;
 	
-	std::cerr << std::endl;
+
+    point2d<double> c;
+    point2d<float>  cf;
+
+    point3d<double> p;
+    point3d<float>  pf;
+    for(size_t i=0;i<n;++i)
+    {
+        point3d<double> q;
+        ran.onSphere(q.x,q.y,q.z);
+        p+=q;
+
+        point3d<float> qf;
+        ran.onSphere(qf.x,qf.y,qf.z);
+        pf+=qf;
+
+        point2d<double> d;
+        ran.onCircle(d.x,d.y);
+        c += d;
+
+        point2d<float> df;
+        ran.onCircle(df.x,df.y);
+        cf += df;
+    }
+    p  /= double(n);
+    pf /= float(n);
+    c  /= double(n);
+    cf /= double(n);
+    std::cerr << "<onCircle>=" << c << "," << cf << std::endl;
+    std::cerr << "<onSphere>=" << p << "," << pf << std::endl;
+    for(size_t i=0;i<=4;++i)
+    {
+        p = ran.getUnit3D< point3d<double> >();
+        std::cerr << "unit3d=" << p << ", norm=" << p.norm() << std::endl;
+        c = ran.getUnit2D< point2d<double> >();
+        std::cerr << "unit2d=" << c << ", norm=" << c.norm() << std::endl;
+
+    }
+    std::cerr << std::endl;
+
 }
 
 YOCTO_UNIT_TEST_IMPL(dist)
