@@ -1,4 +1,4 @@
-#ifndef YOCTO_RANDOM_INCLUDED
+    #ifndef YOCTO_RANDOM_INCLUDED
 #define YOCTO_RANDOM_INCLUDED 1
 
 #include "yocto/random/bits.hpp"
@@ -18,6 +18,8 @@ namespace yocto {
 
             void onSphere(double &x, double &y, double &z) throw();
             void onSphere(float  &x, float  &y, float  &z) throw();
+
+            void inBall(double &x, double &y, double &z) throw();
 
             void onCircle(double &x, double &y) throw();
             void onCircle(float  &x, float  &y) throw();

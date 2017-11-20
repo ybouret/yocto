@@ -89,6 +89,27 @@ namespace yocto {
                 break;
             }
         }
+
+        void Uniform:: inBall(double &x, double &y, double &z) throw()
+        {
+            Uniform &ran = *this;
+            while(true)
+            {
+                double xx = ran();
+                double yy = ran();
+                double zz = ran();
+                xx += xx - 1.0;
+                const double xx2 = xx*xx;
+                yy += yy - 1.0;
+                const double yy2 = yy*yy;
+                zz += zz - 1.0;
+                if(xx2+yy2+(zz*zz)>=1.0) continue;
+                x = xx;
+                y = yy;
+                z = zz;
+                break;
+            }
+        }
 	}
 	
 }
