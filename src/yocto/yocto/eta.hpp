@@ -19,7 +19,10 @@ namespace yocto
 		void   reset();                    //!< initialize values and timer
 		double now();                      //!< query timer, values untouched 
 		void   operator()( double ratio ); //!< update all
-		
+
+        void progress(double ratio);
+        void progress_flush();
+        
 	private:
 		wtime chrono_;
 		YOCTO_DISABLE_COPY_AND_ASSIGN(eta);

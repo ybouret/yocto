@@ -2,6 +2,9 @@
 #include "yocto/duration.hpp"
 #include "yocto/code/utils.hpp"
 
+#include <iostream>
+#include <cstdio>
+
 namespace yocto
 {
 	
@@ -45,4 +48,37 @@ namespace yocto
 		else 
 			(double &)time_left = num / ratio;
 	}
+
+    void eta:: progress(double ratio)
+    {
+        static const char wheels[] = { '-','\\','|','/' };
+        static const char nwheel   = sizeof(wheels)/sizeof(wheels[0]);
+        static unsigned   iwheel   = 0;
+        eta &self = *this;
+        self(ratio);
+        duration done(time_done);
+        duration left(time_left);
+        std::cerr.flush();
+        fprintf(stderr, "[%c] %6.2f%% in ",wheels[(iwheel++)%nwheel], 100.0*ratio_done);
+        if(done.d>0)
+        {
+            fprintf(stderr,"%02dD+",done.d);
+        }
+        fprintf(stderr,"%02dh%02dm%05.2fs",done.h,done.m,done.s);
+        fprintf(stderr, " | ETA=" );
+        if(left.d>0)
+        {
+            fprintf(stderr,"%02dD+",left.d);
+        }
+        fprintf(stderr,"%02dh%02dm%05.2fs",left.h,left.m,left.s);
+        fprintf(stderr,"          \r");
+        fflush(stderr);
+    }
+
+    void eta::progress_flush()
+    {
+        std::cerr.flush();
+        fprintf(stderr,"\r");
+        fflush(stderr);
+    }
 }

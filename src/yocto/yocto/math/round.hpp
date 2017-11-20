@@ -25,22 +25,33 @@ namespace yocto
             return  a_one * Pow( T(10.0),a_log);
         }
         
-        
-
         template <typename T>
-        inline size_t simulation_save_every( T &dt, T &dt_save )
+        inline size_t simulation_save_every_(const T dt, T &dt_save) throw()
         {
             assert(dt>0);
-            dt = log_round_ceil(dt);
-            if(dt_save<=dt) dt_save = dt;
-            size_t every = size_t(Floor(dt_save/dt));
-            if(every<1) every=1;
+            if(dt_save<=dt)
+            {
+                dt_save = dt;
+            }
+            size_t every = size_t(Anint(dt_save/dt));
+            if(every<1)
+            {
+                every=1;
+            }
             dt_save = every*dt;
             return every;
         }
 
         template <typename T>
-        inline size_t simulation_iter( const T t_run, const T dt, const size_t every )
+        inline size_t simulation_save_every( T &dt, T &dt_save ) throw()
+        {
+            assert(dt>0);
+            dt = log_round_ceil(dt);
+            return simulation_save_every_(dt,dt_save);
+        }
+
+        template <typename T>
+        inline size_t simulation_iter( const T t_run, const T dt, const size_t every ) throw()
         {
             assert(dt>0);
             size_t iter = size_t(Ceil(Fabs(t_run/dt)));

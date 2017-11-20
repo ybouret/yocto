@@ -149,7 +149,9 @@ namespace yocto
 		
 		inline float  Floor( float  x ) throw()  { return floorf( x ); }
 		inline double Floor( double x ) throw()  { return floor(  x );  }
-		
+
+        inline float  Anint(float  x) throw() { return floorf(0.5f+x); }
+        inline double Anint(double x) throw() { return floor(0.5+x);   }
 
 		inline float Hypotenuse( float a, float b) throw()
         {
