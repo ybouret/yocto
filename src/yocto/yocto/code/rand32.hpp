@@ -35,7 +35,7 @@ namespace yocto
 
             //! make a random 0 or 1
             template <typename T>
-            static inline T to_bit( uint32_t u ) throw()
+            static inline T to_bit( const uint32_t u ) throw()
             {
                 static const uint32_t threshold = uint32_t(1) << 31;
                 static const T __zero(0);
@@ -45,13 +45,13 @@ namespace yocto
 
 
             //! convert to 0:1 exclusive
-            static inline double to_double( uint32_t u ) throw()
+            static inline double to_double( const uint32_t u ) throw()
             {
                 return (0.5+double(u))/4294967296.0;
             }
 
             //! convert to 0:1 exclusive
-            static inline float to_float( uint32_t u ) throw()
+            static inline float to_float( const uint32_t u ) throw()
             {
                 return (0.5f+float(u))/4294967296.0f;
             }
@@ -99,7 +99,7 @@ namespace yocto
         }
 
         //! return in 0..n-1
-        inline size_t lt( size_t n ) throw()
+        inline size_t lt( const size_t n ) throw()
         {
             assert(n>0);
             return full<size_t>() % n;
@@ -108,7 +108,7 @@ namespace yocto
 
         //! Knuth shuffle of a[0..n-1]
         template <typename T>
-        inline void shuffle( T *a, size_t n ) throw()
+        inline void shuffle( T *a, const size_t n ) throw()
         {
             assert(!(NULL==a&&n>0));
             if( n > 1 )
@@ -123,7 +123,7 @@ namespace yocto
 
         //! Knuth co shuffle of a[0..n-1] and b[0..n-1]
         template <typename T, typename U>
-        inline void shuffle( T *a, U *b, size_t n) throw()
+        inline void shuffle( T *a, U *b, const size_t n) throw()
         {
             assert(!(NULL==a&&n>0));
             if( n > 1 )
