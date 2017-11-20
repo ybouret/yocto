@@ -1,4 +1,4 @@
-#include "yocto/math/point3d.hpp"
+#include "yocto/math/pbc.hpp"
 #include "yocto/utest/run.hpp"
 #include "support.hpp"
 
@@ -10,6 +10,7 @@ void fill(T* arr, const size_t num)
         arr[i] = gen<T>::get();
     }
 }
+
 template <typename POINT>
 static inline void doPoints()
 {
@@ -42,6 +43,24 @@ static inline void doPoints()
     q *= gen<type>::get();
     std::cerr << q << std::endl;
     std::cerr << p*q << std::endl;
+}
+
+template <typename POINT>
+static inline void doPBC(const POINT Box) throw()
+{
+    typedef typename     POINT::type type;
+    static  const size_t DIM = sizeof(POINT)/sizeof(type);
+
+    for(size_t i=0;i<=1000;++i)
+    {
+        POINT p;
+        fill(&p.x,DIM); p *= type(10);
+        PBC::OnX(p,Box);
+        fill(&p.x,DIM); p *= type(10);
+        PBC::OnXY(p,Box);
+        fill(&p.x,DIM); p *= type(10);
+        PBC::OnXYZ(p,Box);
+    }
 }
 
 #include "yocto/ios/ocstream.hpp"
@@ -89,6 +108,10 @@ YOCTO_UNIT_TEST_IMPL(points)
         }
 
     }
+
+    doPBC( point3d<double>(5,6,7) );
+    doPBC( point3d<float>(5,6,7) );
+
 
 }
 YOCTO_UNIT_TEST_DONE()
