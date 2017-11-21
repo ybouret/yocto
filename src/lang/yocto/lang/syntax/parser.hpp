@@ -107,10 +107,6 @@ namespace yocto
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);
                 Terminal & plugin(const string &label);
-
-            public:
-                uint32_t uuid;
-
             };
             
             
