@@ -59,7 +59,8 @@ namespace yocto
         duration done(time_done);
         duration left(time_left);
         std::cerr.flush();
-        fprintf(stderr, "[%c] %6.2f%% in ",wheels[(iwheel++)%nwheel], 100.0*ratio_done);
+        const char C = (ratio<1.0) ? wheels[(iwheel++)%nwheel] : '#';
+        fprintf(stderr, "[%c] %6.2f%% in ",C, 100.0*ratio_done);
         if(done.d>0)
         {
             fprintf(stderr,"%02dD+",done.d);
@@ -78,7 +79,7 @@ namespace yocto
     void eta::progress_flush()
     {
         std::cerr.flush();
-        fprintf(stderr,"\r");
+        fprintf(stderr,"\n");
         fflush(stderr);
     }
 }

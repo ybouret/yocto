@@ -37,11 +37,9 @@ YOCTO_UNIT_TEST_IMPL(eta)
 		wtime::sleep( 0.02 * alea<double>() );
 		X += 0.01 * alea<double>();
 		ETA(X);
-		const duration d( ETA.time_left );
-		std::cerr << d << "        \r";
-		std::cerr.flush();
+        ETA.progress(X);
 	}
-	std::cerr << std::endl;
+    ETA.progress_flush();
 }
 YOCTO_UNIT_TEST_DONE()
 
