@@ -401,13 +401,17 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
             //! universal FFT based mul function
             static natural mul(const void *lhs, const size_t nl,
                                const void *rhs, const size_t nr);
+
+            //! slow mul function, to chech
             static natural mul_v2(const void *lhs, const size_t nl,
                                   const void *rhs, const size_t nr);
             YOCTO_MPN_DECL(natural,*,mul)
             YOCTO_MPN_DECL_SELF(*=,*)
 
-            
+
+            //! fast square function
             static natural sqr(const natural &);
+
             static inline
             natural power(const natural &rhs,  word_t p)
             {
@@ -424,6 +428,14 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
                 return ans;
             }
 
+            //__________________________________________________________________
+            //
+            //
+            // combinatorics
+            //
+            //__________________________________________________________________
+
+            //! factorial of an integral type
             static inline
             natural factorial(const word_t n)
             {
@@ -435,6 +447,7 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
                 return ans;
             }
 
+            //! factorial of a natural
             static inline
             natural factorial(const natural &n)
             {
@@ -445,7 +458,7 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
                 }
                 return ans;
             }
-
+            
 
             //__________________________________________________________________
             //
