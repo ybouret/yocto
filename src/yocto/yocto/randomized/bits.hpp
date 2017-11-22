@@ -28,6 +28,17 @@ namespace yocto
             }
             
             template <typename T>
+            inline T rand(const size_t nbits) throw()
+            {
+                T ans(0);
+                for(size_t i=nbits;i>0;--i)
+                {
+                    (ans<<=1) |= nextBit<T>();
+                }
+                return ans;
+            }
+            
+            template <typename T>
             inline T full() throw()
             {
                 T ans(0);
@@ -38,6 +49,19 @@ namespace yocto
                 return ans;
             }
             
+            //! lesser than than for unsigned type
+            template <typename T>
+            inline T lt(const T X) throw()
+            {
+                const T __zero(0);
+                return ( (X<=__zero) ? __zero : (full<T>()%X) );
+            }
+            
+            template <typename T>
+            inline T fuzz() throw()
+            {
+                return rand<T>(1+lt<size_t>(sizeof(T)*8));
+            }
             
             //__________________________________________________________________
             //
@@ -61,6 +85,20 @@ namespace yocto
             static inline double ToSymmetricDouble(const uint32_t u) throw()
             {
                 return (double(u)-2147483647.5)/2147483648.0;
+            }
+            
+            template <typename T,const uint32_t TOP>
+            static inline float ToUnitFloat2(const uint32_t u) throw()
+            {
+                assert(u<TOP);
+                return (0.5f+float(u))/TOP;
+            }
+            
+            template <typename T,const uint32_t TOP>
+            static inline float ToUnitDouble2(const uint32_t u) throw()
+            {
+                assert(u<TOP);
+                return (0.5+double(u))/TOP;
             }
             
             //! 8 bits to 2 bits table
