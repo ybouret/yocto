@@ -37,7 +37,12 @@ namespace yocto
         
         void Bits:: fill( memory::rw_buffer &buffer ) throw()
         {
-            
+            const size_t  buflen = buffer.length();
+            uint8_t      *p      = static_cast<uint8_t *>(buffer.rw());
+            for(size_t i=0;i<buflen;++i)
+            {
+                p[i] = ToByte(next32());
+            }
         }
     }
 

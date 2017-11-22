@@ -20,7 +20,25 @@ namespace yocto
             virtual  uint32_t next32() throw() = 0;
             inline   float    nextUnitFloat()  throw() { return ToUnitFloat(next32()); }
             inline   float    nextUnitDouble() throw() { return ToUnitDouble(next32()); }
-
+            template <typename T>
+            inline T nextBit() throw()
+            {
+                static const uint32_t half32 = 0x80000000;
+                return (( next32() >= half32 ) ? T(1) : T(0));
+            }
+            
+            template <typename T>
+            inline T full() throw()
+            {
+                T ans(0);
+                for(unsigned i=sizeof(T)*8;i>0;--i)
+                {
+                    (ans <<= 1) |= nextBit<T>();
+                }
+                return ans;
+            }
+            
+            
             //__________________________________________________________________
             //
             // utility functions
