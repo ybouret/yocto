@@ -94,12 +94,6 @@ namespace yocto
                 return (0.5f+float(u))/TOP;
             }
             
-            template <typename T,const uint32_t TOP>
-            static inline float ToUnitDouble2(const uint32_t u) throw()
-            {
-                assert(u<TOP);
-                return (0.5+double(u))/TOP;
-            }
             
             //! 8 bits to 2 bits table
             static const  uint8_t Table2[256];
