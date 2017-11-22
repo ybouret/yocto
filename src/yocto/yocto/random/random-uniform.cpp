@@ -48,6 +48,24 @@ namespace yocto {
             }
         }
 
+        void Uniform:: inDisk(double &x, double &y) throw()
+        {
+            Uniform &ran = *this;
+            while(true)
+            {
+                double xx = ran();
+                double yy = ran();
+                xx += xx-1.0;
+                yy += yy-1.0;
+                if(xx*xx+yy*yy<1.0)
+                {
+                    x = xx;
+                    y = yy;
+                    return;
+                }
+            }
+        }
+
         void Uniform:: onSphere(double &x, double &y, double &z) throw()
         {
             Uniform &ran = *this;
