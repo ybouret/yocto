@@ -2,6 +2,7 @@
 #include "yocto/utest/run.hpp"
 #include <cstdlib>
 #include <math.h>
+#include <cstdio>
 
 using namespace yocto;
 using namespace Randomized;
