@@ -56,6 +56,8 @@ namespace yocto
                 return ( (X<=0) ? T(0) : ( full<T>() % X ) );
             }
 
+            static Bits & Simple();
+            static Bits & Crypto();
 
         protected:
             explicit Bits(const uint32_t maxValue) throw();

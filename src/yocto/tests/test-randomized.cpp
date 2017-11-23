@@ -4,6 +4,10 @@
 #include "yocto/randomized/uniform2.hpp"
 #include "yocto/randomized/uniform3.hpp"
 #include "yocto/randomized/uniform64.hpp"
+
+#include "yocto/randomized/isaac.hpp"
+
+
 #include "yocto/sys/timings.hpp"
 
 #include "yocto/utest/run.hpp"
@@ -71,7 +75,7 @@ YOCTO_UNIT_TEST_IMPL(randomized)
     __IMPL(Uniform3);
     __IMPL(Uniform64NR);
     __IMPL(Uniform64BJ);
-
+    __IMPL(ISAAC<4>);
 
     Generator<double,cstdbits> ran;
 
