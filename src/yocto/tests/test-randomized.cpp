@@ -25,6 +25,8 @@ void test_rg( Bits &bits, const char *name )
 {
     std::cerr << "<" << name << ">" << std::endl;
 
+    //bits.reseed( Bits::Simple() );
+
     {
         double sum    = 0;
         double sum_sq = 0;
@@ -59,12 +61,12 @@ void test_rg( Bits &bits, const char *name )
 
     timings tmx;
     volatile uint32_t r32=0;
-    YOCTO_TIMINGS(tmx,1,r32=bits.next32());
+    YOCTO_TIMINGS(tmx,0.5,r32=bits.next32());
     std::cerr << "\t\tspeed = " << tmx.speed*1e-6 << " Mops" << std::endl;
 
 }
 
-#define __IMPL(TYPE) do { TYPE rg; test_rg(rg,#TYPE); } while(false)
+#define __IMPL(TYPE) do { TYPE rg; test_rg(rg,#TYPE " 1/2"); rg.reseed(Bits::Simple()); test_rg(rg,#TYPE " 2/2"); } while(false)
 
 YOCTO_UNIT_TEST_IMPL(randomized)
 {
@@ -76,6 +78,8 @@ YOCTO_UNIT_TEST_IMPL(randomized)
     __IMPL(Uniform64NR);
     __IMPL(Uniform64BJ);
     __IMPL(ISAAC<4>);
+    __IMPL(ISAAC<8>);
+
 
     Generator<double,cstdbits> ran;
 
