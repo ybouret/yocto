@@ -1,4 +1,5 @@
 #include "yocto/randomized/isaac.hpp"
+#include "yocto/randomized/urand32.hpp"
 #include "yocto/utest/run.hpp"
 #include <cstdlib>
 #include <math.h>
@@ -19,7 +20,10 @@ YOCTO_UNIT_TEST_IMPL(randomized)
     
     ISAAC_FAST::Generator isaac_f(ISAAC_INIT_RAND);
     ISAAC::Generator      isaac(ISAAC_INIT_RAND);
-    
+
+    __rand32              r32;
+    r32.test();
+
     for(int i=0;i<10;++i)
     {
         const uint32_t u = stdRand32();
