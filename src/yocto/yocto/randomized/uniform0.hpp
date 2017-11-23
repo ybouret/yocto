@@ -14,10 +14,12 @@ namespace yocto
             virtual ~Uniform0() throw();
 
             virtual uint32_t next32() throw();
+            virtual void     reseed(Bits &bits) throw();
 
         private:
             int32_t   seed_;
             YOCTO_DISABLE_COPY_AND_ASSIGN(Uniform0);
+            
         };
     }
 }

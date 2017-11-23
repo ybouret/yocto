@@ -14,7 +14,8 @@ namespace yocto
             virtual ~Uniform2() throw();
 
             virtual uint32_t next32() throw();
-
+            virtual void     reseed( Bits &bits ) throw();
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Uniform2);
 
@@ -23,7 +24,7 @@ namespace yocto
             int32_t  iy_;
             int32_t  iv_[32];
 
-            void initialize() throw();
+            void initialize(const int32_t s) throw();
         };
     }
 }

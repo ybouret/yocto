@@ -28,6 +28,12 @@ namespace yocto {
                 return rword;
             }
 
+            inline virtual void reseed( Bits &bits ) throw()
+            {
+                seed_=1;
+                saux_=bits.full<uint32_t>();
+            }
+
         protected:
             explicit hprng() throw() :
             Bits(0xffffffff),

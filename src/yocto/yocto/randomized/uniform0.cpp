@@ -20,6 +20,11 @@ namespace yocto
         {
         }
 
+        void Uniform0:: reseed(Bits &bits) throw()
+        {
+            seed_ = bits.full<int32_t>();
+        }
+
         uint32_t Uniform0:: next32() throw()
         {
             seed_ ^= MASK;

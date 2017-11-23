@@ -15,6 +15,7 @@ namespace yocto
         {
         public:
             const uint32_t span;     //!< returns in 0..span
+            const uint32_t half;     //!< span/2
             const double   denD;     //!< double(span)+1.0
             const float    denF;     //!< float(span)+1.0f
             const double   halfDenD; //!< denD/2
@@ -24,10 +25,38 @@ namespace yocto
             virtual ~Bits() throw();
 
             virtual uint32_t next32() throw() = 0;
+            virtual void     reseed( Bits &bits ) throw() = 0;
 
-            template <typename T> T to() throw();
-            template <typename T> T symm() throw();
-            
+            template <typename T> T to()   throw(); //!< in 0:1 exclusive
+            template <typename T> T symm() throw(); //!< in -1:1 exclusive
+
+            //! random bit as integral type
+            template <typename T> inline
+            T nextBit() throw()
+            {
+                return ( ( next32() < half ) ? T(0) : T(1) );
+            }
+
+            //! random full integral type
+            template <typename T> inline
+            T full() throw()
+            {
+                T ans(0);
+                for(size_t i=sizeof(T)*8;i>0;--i)
+                {
+                    (ans<<=1) |= nextBit<T>();
+                }
+                return ans;
+            }
+
+            //! random unsigned integral in 0..X-1
+            template <typename T> inline
+            T lt(const T X) throw()
+            {
+                return ( (X<=0) ? T(0) : ( full<T>() % X ) );
+            }
+
+
         protected:
             explicit Bits(const uint32_t maxValue) throw();
             
@@ -65,6 +94,7 @@ namespace yocto
             explicit cstdbits() throw();
             virtual ~cstdbits() throw();
             virtual uint32_t next32() throw();
+            virtual void     reseed(Bits &) throw();
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(cstdbits);

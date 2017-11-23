@@ -4,6 +4,7 @@
 #include "yocto/randomized/uniform2.hpp"
 #include "yocto/randomized/uniform3.hpp"
 #include "yocto/randomized/uniform64.hpp"
+#include "yocto/sys/timings.hpp"
 
 #include "yocto/utest/run.hpp"
 #include <cstdlib>
@@ -13,7 +14,7 @@
 using namespace yocto;
 using namespace Randomized;
 
-#define N 1000
+#define N 10000
 
 static inline
 void test_rg( Bits &bits, const char *name )
@@ -51,6 +52,12 @@ void test_rg( Bits &bits, const char *name )
         std::cerr << "ave0=" << ave << std::endl;
         std::cerr << "sig0=" << sig << std::endl;
     }
+
+    timings tmx;
+    volatile uint32_t r32=0;
+    YOCTO_TIMINGS(tmx,1,r32=bits.next32());
+    std::cerr << "\t\tspeed = " << tmx.speed*1e-6 << " Mops" << std::endl;
+
 }
 
 #define __IMPL(TYPE) do { TYPE rg; test_rg(rg,#TYPE); } while(false)

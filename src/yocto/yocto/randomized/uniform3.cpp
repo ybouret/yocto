@@ -14,19 +14,21 @@ namespace yocto
         inext_(0),
         inextp_(0)
         {
-            initialize();
+            initialize(0);
         }
 
         Uniform3:: ~Uniform3() throw() {
 
         }
 
-
-
-        void Uniform3:: initialize(  ) throw()
+        void Uniform3:: reseed(Bits &bits) throw()
         {
-            //const int32_t _s = s.full<int32_t>();
-            const int32_t _s = 0;
+            initialize(bits.full<int32_t>());
+        }
+
+        void Uniform3:: initialize(const int32_t userSeed) throw()
+        {
+            const int32_t _s = userSeed;
             const int32_t ms = _s < 0 ? - _s  : _s ;
             int32_t mj = MSEED - ( max_of<int32_t>(1,ms) );
             if(mj<0)

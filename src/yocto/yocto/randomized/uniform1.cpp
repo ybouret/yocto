@@ -27,12 +27,18 @@ namespace yocto
         iy_( 0 ),
         iv_()
         {
-            initialize();
+            initialize(0);
         }
 
-        void Uniform1:: initialize() throw()
+
+        void Uniform1:: reseed(Bits &bits) throw()
         {
-            // TODO: set seed_
+            initialize( bits.full<int32_t>() );
+        }
+
+        void Uniform1:: initialize(const int32_t s) throw()
+        {
+            seed_ = s;
             if( seed_ <= 0 )
             {
                 const int32_t ms = -seed_;
