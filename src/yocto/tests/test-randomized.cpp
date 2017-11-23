@@ -1,4 +1,10 @@
 #include "yocto/randomized/generator.hpp"
+#include "yocto/randomized/uniform0.hpp"
+#include "yocto/randomized/uniform1.hpp"
+#include "yocto/randomized/uniform2.hpp"
+#include "yocto/randomized/uniform3.hpp"
+#include "yocto/randomized/uniform64.hpp"
+
 #include "yocto/utest/run.hpp"
 #include <cstdlib>
 #include <math.h>
@@ -47,12 +53,18 @@ void test_rg( Bits &bits, const char *name )
     }
 }
 
+#define __IMPL(TYPE) do { TYPE rg; test_rg(rg,#TYPE); } while(false)
 
 YOCTO_UNIT_TEST_IMPL(randomized)
 {
-    
-    cstdbits cran;
-    test_rg(cran,"cstdbits");
+    __IMPL(cstdbits);
+    __IMPL(Uniform0);
+    __IMPL(Uniform1);
+    __IMPL(Uniform2);
+    __IMPL(Uniform3);
+    __IMPL(Uniform64NR);
+    __IMPL(Uniform64BJ);
+
 
     Generator<double,cstdbits> ran;
 

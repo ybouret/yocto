@@ -7,7 +7,18 @@ namespace yocto
 {
     namespace Randomized
     {
+        class Uniform0 : public Bits
+        {
+        public:
+            explicit Uniform0() throw();
+            virtual ~Uniform0() throw();
 
+            virtual uint32_t next32() throw();
+
+        private:
+            int32_t   seed_;
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Uniform0);
+        };
     }
 }
 
