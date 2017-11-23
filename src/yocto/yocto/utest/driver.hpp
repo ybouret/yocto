@@ -125,7 +125,8 @@ namespace yocto
 
 #define YOCTO_UNIT_TEST_INIT(N)             \
 /*	*/	int main( int argc, char *argv[] )  \
-/*	*/	{	yocto::utest::suite<N> tests;  
+/*	*/	{	yocto::utest::suite<N> tests;   \
+/*  */      srand(time(NULL));
 
 #define YOCTO_UNIT_TEST_DECL(NAME) do{                                \
 /*	*/		extern int yocto_unit_test_##NAME(int argc, char **argv); \

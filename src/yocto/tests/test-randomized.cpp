@@ -1,5 +1,4 @@
-#include "yocto/randomized/isaac.hpp"
-#include "yocto/randomized/urand32.hpp"
+#include "yocto/randomized/bits.hpp"
 #include "yocto/utest/run.hpp"
 #include <cstdlib>
 #include <math.h>
@@ -8,33 +7,52 @@
 using namespace yocto;
 using namespace Randomized;
 
-static inline uint32_t stdRand32()
+#define N 1000
+
+static inline
+void test_rg( Bits &bits, const char *name )
 {
-    return uint32_t( floor(0.5 + 4294967296.0 * double( rand() ) / RAND_MAX ) );
+    std::cerr << "<" << name << ">" << std::endl;
+
+    {
+        double sum    = 0;
+        double sum_sq = 0;
+        for(size_t i=0;i<N;++i)
+        {
+            const double x = bits.nextDouble();
+            sum    += x;
+            sum_sq += x*x;
+        }
+        const double ave = sum/N;
+        const double var = (sum_sq - sum*sum/N)/(N-1);
+        const double sig = sqrt(var);
+        std::cerr << "ave1=" << ave << std::endl;
+        std::cerr << "sig1=" << sig << std::endl;
+    }
+
+    {
+        double sum    = 0;
+        double sum_sq = 0;
+        for(size_t i=0;i<N;++i)
+        {
+            const double x = bits.nextDoubleSymm();
+            sum    += x;
+            sum_sq += x*x;
+        }
+        const double ave = sum/N;
+        const double var = (sum_sq - sum*sum/N)/(N-1);
+        const double sig = sqrt(var);
+        std::cerr << "ave1=" << ave << std::endl;
+        std::cerr << "sig1=" << sig << std::endl;
+    }
 }
+
 
 YOCTO_UNIT_TEST_IMPL(randomized)
 {
-    srand(time(NULL));
-   
     
-    ISAAC_FAST::Generator isaac_f(ISAAC_INIT_RAND);
-    ISAAC::Generator      isaac(ISAAC_INIT_RAND);
-
-    __rand32              r32;
-    r32.test();
-
-    for(int i=0;i<10;++i)
-    {
-        const uint32_t u = stdRand32();
-        const uint8_t  b = Bits::ToByte(u);
-        fprintf(stderr,"u32=0x%08x => %02x\n",  unsigned(u),unsigned(b));
-        fprintf(stderr,"\tisaac: %08x, %08x\n", unsigned(isaac.next32()),unsigned(isaac_f.next32()));
-        fprintf(stderr,"\t full: %08x, %08x\n", isaac.full<unsigned>(), isaac_f.full<unsigned>());
-        fprintf(stderr,"\t fuzz: %08x, %08x\n", isaac.fuzz<unsigned>(), isaac_f.fuzz<unsigned>());
-
-    }
-    
+    cstdbits cran;
+    test_rg(cran,"cstdbits");
     
 }
 YOCTO_UNIT_TEST_DONE()
