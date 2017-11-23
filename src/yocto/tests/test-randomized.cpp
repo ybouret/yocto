@@ -1,4 +1,4 @@
-#include "yocto/randomized/bits.hpp"
+#include "yocto/randomized/generator.hpp"
 #include "yocto/utest/run.hpp"
 #include <cstdlib>
 #include <math.h>
@@ -53,7 +53,14 @@ YOCTO_UNIT_TEST_IMPL(randomized)
     
     cstdbits cran;
     test_rg(cran,"cstdbits");
-    
+
+    Generator<double,cstdbits> ran;
+
+    for(size_t i=0;i<10;++i)
+    {
+        std::cerr << "\t" << ran() << std::endl;
+    }
+
 }
 YOCTO_UNIT_TEST_DONE()
 
