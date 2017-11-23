@@ -7,8 +7,10 @@ namespace yocto
 {
     namespace Randomized
     {
-
-        //! 32 bits interface
+        //______________________________________________________________________
+        //
+        //! 32 bits uniform generator interface
+        //______________________________________________________________________
         class Bits : public object
         {
         public:
@@ -23,19 +25,9 @@ namespace yocto
 
             virtual uint32_t next32() throw() = 0;
 
-            inline float  nextFloat()  throw() { return (0.5f+float(next32()))/denF; }
-            inline double nextDouble() throw() { return (0.5+double(next32()))/denD; }
-
-            inline float  nextFloatSymm() throw()
-            {
-                return ( float(next32()) + addNumF ) / halfDenF;
-            }
-
-            inline double nextDoubleSymm() throw()
-            {
-                return ( double(next32()) + addNumD ) / halfDenD;
-            }
-
+            template <typename T> T to() throw();
+            template <typename T> T symm() throw();
+            
         protected:
             explicit Bits(const uint32_t maxValue) throw();
             
@@ -43,6 +35,30 @@ namespace yocto
             YOCTO_DISABLE_ASSIGN(Bits);
         };
 
+        template <> inline float Bits::to<float>() throw()
+        {
+            return (0.5f+float(next32()))/denF;
+        }
+
+        template <> inline double Bits::to<double>() throw()
+        {
+            return (0.5+double(next32()))/denD;
+        }
+
+        template <> inline float Bits::symm<float>() throw()
+        {
+            return ( float(next32()) + addNumF ) / halfDenF;
+        }
+
+        template <> inline double Bits::symm<double>() throw()
+        {
+            return ( double(next32()) + addNumD ) / halfDenD;
+        }
+
+        //______________________________________________________________________
+        //
+        //! sample base and rand()
+        //______________________________________________________________________
         class cstdbits : public Bits
         {
         public:
@@ -53,6 +69,7 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(cstdbits);
         };
+        
 
     }
 }

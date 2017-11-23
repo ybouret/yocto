@@ -19,7 +19,7 @@ void test_rg( Bits &bits, const char *name )
         double sum_sq = 0;
         for(size_t i=0;i<N;++i)
         {
-            const double x = bits.nextDouble();
+            const double x = bits.to<double>();
             sum    += x;
             sum_sq += x*x;
         }
@@ -31,19 +31,19 @@ void test_rg( Bits &bits, const char *name )
     }
 
     {
-        double sum    = 0;
-        double sum_sq = 0;
+        float sum    = 0;
+        float sum_sq = 0;
         for(size_t i=0;i<N;++i)
         {
-            const double x = bits.nextDoubleSymm();
+            const double x = bits.symm<float>();
             sum    += x;
             sum_sq += x*x;
         }
-        const double ave = sum/N;
-        const double var = (sum_sq - sum*sum/N)/(N-1);
-        const double sig = sqrt(var);
-        std::cerr << "ave1=" << ave << std::endl;
-        std::cerr << "sig1=" << sig << std::endl;
+        const float ave = sum/N;
+        const float var = (sum_sq - sum*sum/N)/(N-1);
+        const float sig = sqrtf(var);
+        std::cerr << "ave0=" << ave << std::endl;
+        std::cerr << "sig0=" << sig << std::endl;
     }
 }
 
