@@ -53,7 +53,7 @@ namespace yocto
             template <typename T>
             inline T lt(const T X) throw()
             {
-                const T __zero(0);
+                static const T __zero(0);
                 return ( (X<=__zero) ? __zero : (full<T>()%X) );
             }
             
@@ -91,7 +91,8 @@ namespace yocto
             static inline float ToUnitFloat2(const uint32_t u) throw()
             {
                 assert(u<TOP);
-                return (0.5f+float(u))/TOP;
+                static const float __TOP(TOP);
+                return (0.5f+float(u))/__TOP;
             }
             
             

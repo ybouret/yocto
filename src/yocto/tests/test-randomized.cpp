@@ -26,6 +26,9 @@ YOCTO_UNIT_TEST_IMPL(randomized)
         const uint8_t  b = Bits::ToByte(u);
         fprintf(stderr,"u32=0x%08x => %02x\n",  unsigned(u),unsigned(b));
         fprintf(stderr,"\tisaac: %08x, %08x\n", unsigned(isaac.next32()),unsigned(isaac_f.next32()));
+        fprintf(stderr,"\t full: %08x, %08x\n", isaac.full<unsigned>(), isaac_f.full<unsigned>());
+        fprintf(stderr,"\t fuzz: %08x, %08x\n", isaac.fuzz<unsigned>(), isaac_f.fuzz<unsigned>());
+
     }
     
     
