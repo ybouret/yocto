@@ -4,6 +4,7 @@
 #include "yocto/randomized/uniform2.hpp"
 #include "yocto/randomized/uniform3.hpp"
 #include "yocto/randomized/uniform64.hpp"
+#include "yocto/randomized/uniform-mt.hpp"
 
 #include "yocto/randomized/isaac.hpp"
 
@@ -39,8 +40,7 @@ void test_rg( Bits &bits, const char *name )
         const double ave = sum/N;
         const double var = (sum_sq - sum*sum/N)/(N-1);
         const double sig = sqrt(var);
-        std::cerr << "ave1=" << ave << std::endl;
-        std::cerr << "sig1=" << sig << std::endl;
+        std::cerr << "ave1=" << ave << ", sig1=" << sig << std::endl;
     }
 
     {
@@ -55,18 +55,17 @@ void test_rg( Bits &bits, const char *name )
         const float ave = sum/N;
         const float var = (sum_sq - sum*sum/N)/(N-1);
         const float sig = sqrtf(var);
-        std::cerr << "ave0=" << ave << std::endl;
-        std::cerr << "sig0=" << sig << std::endl;
+        std::cerr << "ave0=" << ave << ", sig0=" << sig << std::endl;
     }
 
     timings tmx;
     volatile uint32_t r32=0;
-    YOCTO_TIMINGS(tmx,0.5,r32=bits.next32());
-    std::cerr << "\t\tspeed = " << tmx.speed*1e-6 << " Mops" << std::endl;
-
+    YOCTO_TIMINGS(tmx,1,r32=bits.next32());
+    std::cerr << "\tspeed = " << tmx.speed*1e-6 << " Mops" << std::endl;
+    std::cerr << std::endl;
 }
 
-#define __IMPL(TYPE) do { TYPE rg; test_rg(rg,#TYPE " 1/2"); rg.reseed(Bits::Simple()); test_rg(rg,#TYPE " 2/2"); } while(false)
+#define __IMPL(TYPE) do { TYPE rg; test_rg(rg,#TYPE); } while(false)
 
 YOCTO_UNIT_TEST_IMPL(randomized)
 {
@@ -79,6 +78,7 @@ YOCTO_UNIT_TEST_IMPL(randomized)
     __IMPL(Uniform64BJ);
     __IMPL(ISAAC<4>);
     __IMPL(ISAAC<8>);
+    __IMPL(UniformMT);
 
 
     Generator<double,cstdbits> ran;
