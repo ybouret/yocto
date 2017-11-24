@@ -1,4 +1,5 @@
 #include "yocto/randomized/bits.hpp"
+#include "yocto/code/binary.hpp"
 #include <cstdlib>
 
 namespace yocto
@@ -11,6 +12,7 @@ namespace yocto
 
         Bits:: Bits(const uint32_t maxValue) throw() :
         span(maxValue),
+        bits(bits_for(span)),
         half(span>>1),
         denD(double(span)+1.0),
         denF(float(span)+1.0f),

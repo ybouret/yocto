@@ -15,6 +15,7 @@ namespace yocto
         {
         public:
             const uint32_t span;     //!< returns in 0..span
+            const size_t   bits;     //!< bits_for_span
             const uint32_t half;     //!< span/2
             const double   denD;     //!< double(span)+1.0
             const float    denF;     //!< float(span)+1.0f

@@ -5,6 +5,7 @@
 #include "yocto/randomized/uniform3.hpp"
 #include "yocto/randomized/uniform64.hpp"
 #include "yocto/randomized/uniform-mt.hpp"
+#include "yocto/randomized/urand32.hpp"
 
 #include "yocto/randomized/isaac.hpp"
 
@@ -24,8 +25,8 @@ using namespace Randomized;
 static inline
 void test_rg( Bits &bits, const char *name )
 {
-    std::cerr << "<" << name << ">" << std::endl;
-
+    std::cerr << "<" << name << ">: 0.." << bits.span << " => bits=" << bits.bits << std::endl;
+    
     //bits.reseed( Bits::Simple() );
 
     {
@@ -80,6 +81,8 @@ YOCTO_UNIT_TEST_IMPL(randomized)
     __IMPL(ISAAC<8>);
     __IMPL(UniformMT);
 
+    __rand32 rr;
+    rr.test();
 
     Generator<double,cstdbits> ran;
 
