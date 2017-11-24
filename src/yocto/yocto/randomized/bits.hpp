@@ -43,10 +43,16 @@ namespace yocto
             T full() throw()
             {
                 T ans(0);
-                for(size_t i=sizeof(T)*8;i>0;--i)
+                
+                static const size_t tbits = sizeof(T)*8;
+                const  size_t       nbits = bits;
+                size_t              rbits = 0;
+                do
                 {
-                    (ans<<=1) |= nextBit<T>();
+                    (ans <<= nbits) |= T(next32());
+                    rbits += nbits;
                 }
+                while(rbits<tbits);
                 return ans;
             }
 

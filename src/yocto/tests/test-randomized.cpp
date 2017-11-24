@@ -59,6 +59,13 @@ void test_rg( Bits &bits, const char *name )
         std::cerr << "ave0=" << ave << ",\tsig0=" << sig << std::endl;
     }
 
+    for(size_t i=0;i<10;++i)
+    {
+        const uint64_t u64 = bits.full<uint64_t>();
+        const uint64_t u16 = bits.full<uint16_t>();
+        std::cerr << "\tu16=" << u16 << ", u64=" << u64 << std::endl;
+    }
+    
     timings tmx;
     volatile uint32_t r32=0;
     YOCTO_TIMINGS(tmx,1,r32=bits.next32());
