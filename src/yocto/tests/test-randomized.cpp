@@ -40,7 +40,7 @@ void test_rg( Bits &bits, const char *name )
         const double ave = sum/N;
         const double var = (sum_sq - sum*sum/N)/(N-1);
         const double sig = sqrt(var);
-        std::cerr << "ave1=" << ave << ", sig1=" << sig << std::endl;
+        std::cerr << "ave1=" << ave << ",\tsig1=" << sig << std::endl;
     }
 
     {
@@ -55,7 +55,7 @@ void test_rg( Bits &bits, const char *name )
         const float ave = sum/N;
         const float var = (sum_sq - sum*sum/N)/(N-1);
         const float sig = sqrtf(var);
-        std::cerr << "ave0=" << ave << ", sig0=" << sig << std::endl;
+        std::cerr << "ave0=" << ave << ",\tsig0=" << sig << std::endl;
     }
 
     timings tmx;
