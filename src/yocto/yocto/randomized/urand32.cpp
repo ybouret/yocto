@@ -85,6 +85,19 @@ namespace yocto
             settable(iv[0], iv[1], iv[2], iv[3], iv[4], iv[5]);
         }
         
+        
+    }
+    
+}
+
+
+
+
+namespace yocto
+{
+    namespace Randomized
+    {
+        
         __rand32:: ~__rand32() throw()
         {
         }
@@ -122,6 +135,42 @@ namespace yocto
         uint32_t __rand32:: swb() throw()
         {
             return SWB;
+        }
+    }
+}
+
+#include "yocto/sys/wtime.hpp"
+#include "yocto/sys/pid.hpp"
+#include "yocto/hashing/hash64.hpp"
+
+namespace yocto
+{
+    namespace Randomized
+    {
+        static
+        inline uint64_t __h64( const uint64_t x ) throw()
+        {
+            return hashing::hash64::mix64(x, hashing::hash64::NR);
+        }
+        
+        void __rand32:: initialize() throw()
+        {
+            const uint64_t w0 = __h64(wtime::ticks()) ^ __h64( getpid() );
+            const uint64_t w1 = __h64(w0+wtime::ticks());
+            const uint64_t w2 = __h64(w1+wtime::ticks());
+            union
+            {
+                uint64_t qw[3];
+                uint32_t iv[6];
+            } u = { {w0,w1,w2} };
+            settable(u.iv[0],
+                     u.iv[1],
+                     u.iv[2],
+                     u.iv[3],
+                     u.iv[4],
+                     u.iv[5]);
+            
+            
         }
     }
 }

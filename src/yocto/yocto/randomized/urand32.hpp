@@ -30,7 +30,7 @@ namespace yocto
             
             void settable( uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4, uint32_t i5, uint32_t i6 ) throw();
             void reset( uint32_t s ) throw();
-
+            void initialize() throw(); //!< initialize with pid/wtime
             
             static void test();
         private:
@@ -38,16 +38,16 @@ namespace yocto
         };
 
         template <__rand32::generator G>
-        class URand : public Bits
+        class URand : public Bits, public __rand32
         {
         public:
             inline virtual ~URand() throw() {}
             inline explicit URand() throw() :
             Bits(0xffffffff),
-            r()
+            __rand32()
             {}
 
-            inline virtual uint32_t next32() throw() { return (r.*G)(); }
+            inline virtual uint32_t next32() throw() { return (*this.*G)(); }
             inline virtual void     reseed(Bits &s) throw()
             {
                 uint32_t iv[6] = { 0 };
@@ -55,12 +55,13 @@ namespace yocto
                 {
                     iv[i] = s.full<uint32_t>();
                 }
-                r.settable(iv[0],iv[1],iv[2],iv[3],iv[4],iv[5]);
+                settable(iv[0],iv[1],iv[2],iv[3],iv[4],iv[5]);
             }
+            
+            
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(URand);
-            __rand32 r;
         };
 
         typedef URand< & __rand32::kiss > Kiss32;

@@ -5,10 +5,7 @@
 
 namespace yocto
 {
-    struct alea
-    {
-        static Randomized::Kiss32 bits;
-    };
+    extern Randomized::Kiss32 alea;
 }
 
 #endif

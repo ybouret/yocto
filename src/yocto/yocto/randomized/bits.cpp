@@ -28,6 +28,8 @@ namespace yocto
     }
 }
 
+#include "yocto/string.hpp"
+
 namespace yocto
 {
     namespace Randomized
@@ -49,6 +51,18 @@ namespace yocto
         {
             return to<double>();
         }
+        
+        template <>
+        string Bits::get<string>()
+        {
+            string ans;
+            for(size_t i=3+leq(13);i>0;--i)
+            {
+                ans += 'a' + leq('z'-'a');
+            }
+            return ans;
+        }
+        
     }
 }
 

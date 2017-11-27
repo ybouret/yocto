@@ -3,4 +3,5 @@
 
 namespace yocto
 {
+    Randomized::Kiss32 alea;
 }

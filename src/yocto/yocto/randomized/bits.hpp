@@ -107,13 +107,13 @@ namespace yocto
                 }
             }
 
-            //! converson in float|double|int
+            //! converson in float|double|int|string
             template <typename T>
             T get();
             
 
-            static Bits & Simple();
-            static Bits & Crypto();
+            static Bits & Simple(); //!< isaac4
+            static Bits & Crypto(); //!< isaac8
 
         protected:
             explicit Bits(const uint32_t maxValue) throw();
