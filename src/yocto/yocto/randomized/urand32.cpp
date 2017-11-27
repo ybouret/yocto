@@ -155,7 +155,7 @@ namespace yocto
         
         void __rand32:: initialize() throw()
         {
-            const uint64_t w0 = __h64(wtime::ticks()) ^ __h64( getpid() );
+            const uint64_t w0 = __h64(wtime::ticks()+__h64( getpid() ));
             const uint64_t w1 = __h64(w0+wtime::ticks());
             const uint64_t w2 = __h64(w1+wtime::ticks());
             union
@@ -169,8 +169,11 @@ namespace yocto
                      u.iv[3],
                      u.iv[4],
                      u.iv[5]);
-            
-            
+#if 0
+            fprintf(stderr,"64: %016llx %016llx %016llx\n",u.qw[0],u.qw[1],u.qw[2]);
+            fprintf(stderr,"32: %08x %08x %08x %08x %08x %08x\n",
+                    u.iv[0],u.iv[1],u.iv[2],u.iv[3],u.iv[4],u.iv[5]);
+#endif
         }
     }
 }

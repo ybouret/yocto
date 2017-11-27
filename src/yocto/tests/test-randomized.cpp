@@ -6,6 +6,7 @@
 #include "yocto/randomized/uniform64.hpp"
 #include "yocto/randomized/uniform-mt.hpp"
 #include "yocto/randomized/urand32.hpp"
+#include "yocto/code/alea.hpp"
 
 #include "yocto/randomized/isaac.hpp"
 
@@ -98,6 +99,26 @@ YOCTO_UNIT_TEST_IMPL(randomized)
         std::cerr << "\t" << ran() << std::endl;
     }
 
+}
+YOCTO_UNIT_TEST_DONE()
+
+#define ALEA_GET(TYPE) std::cerr << #TYPE << "\t " << alea.get<TYPE>() << std::endl
+#include "yocto/string.hpp"
+
+YOCTO_UNIT_TEST_IMPL(alea)
+{
+    for(size_t i=0;i<10;++i)
+    {
+        alea.initialize();
+        std::cerr << "<=10: " << alea.leq(10) << std::endl;
+        std::cerr << "<10:  " << alea.lt(10)  << std::endl;
+        ALEA_GET(float);
+        ALEA_GET(double);
+        ALEA_GET(int);
+        ALEA_GET(string);
+    }
+
+    
 }
 YOCTO_UNIT_TEST_DONE()
 
