@@ -64,6 +64,7 @@ namespace yocto
                 return ( (X<=0) ? T(0) : ( full<T>() % X ) );
             }
 
+            //! 0..n-1
             inline size_t lt(const size_t n) throw()
             {
                 return __lt<size_t>(n);
@@ -106,6 +107,10 @@ namespace yocto
                 }
             }
 
+            //! converson in float|double|int
+            template <typename T>
+            T get();
+            
 
             static Bits & Simple();
             static Bits & Crypto();

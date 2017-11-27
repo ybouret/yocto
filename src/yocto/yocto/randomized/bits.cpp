@@ -23,8 +23,35 @@ namespace yocto
         {
             
         }
+
+
     }
 }
+
+namespace yocto
+{
+    namespace Randomized
+    {
+        template <>
+        int Bits::get<int>()
+        {
+            return full<int>();
+        }
+
+        template <>
+        float Bits::get<float>()
+        {
+            return to<float>();
+        }
+
+        template <>
+        double Bits::get<double>()
+        {
+            return to<double>();
+        }
+    }
+}
+
 
 namespace yocto
 {
