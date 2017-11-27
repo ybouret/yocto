@@ -19,7 +19,7 @@ namespace yocto
             explicit __rand32() throw();
             virtual ~__rand32() throw();
             
-            //typedef uint32_t (rand32::*generator)();
+            typedef uint32_t (__rand32::*generator)();
             uint32_t mwc()   throw();
             uint32_t shr3()  throw();
             uint32_t cong()  throw();
@@ -30,34 +30,40 @@ namespace yocto
             
             void settable( uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4, uint32_t i5, uint32_t i6 ) throw();
             void reset( uint32_t s ) throw();
-            
-            //! make a random 0 or 1
-            template <typename T>
-            static inline T to_bit( const uint32_t u ) throw()
-            {
-                static const uint32_t threshold = uint32_t(1) << 31;
-                static const T __zero(0);
-                static const T __one(1);
-                return u >= threshold ? __one : __zero;
-            }
-            
-            
-            //! convert to 0:1 exclusive
-            static inline double to_double( const uint32_t u ) throw()
-            {
-                return (0.5+double(u))/4294967296.0;
-            }
-            
-            //! convert to 0:1 exclusive
-            static inline float to_float( const uint32_t u ) throw()
-            {
-                return (0.5f+float(u))/4294967296.0f;
-            }
+
             
             static void test();
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(__rand32);
         };
+
+        template <__rand32::generator G>
+        class URand : public Bits
+        {
+        public:
+            inline virtual ~URand() throw() {}
+            inline explicit URand() throw() :
+            Bits(0xffffffff),
+            r()
+            {}
+
+            inline virtual uint32_t next32() throw() { return (r.*G)(); }
+            inline virtual void     reseed(Bits &s) throw()
+            {
+                uint32_t iv[6] = { 0 };
+                for(size_t i=0;i<sizeof(iv)/sizeof(iv[0]);++i)
+                {
+                    iv[i] = s.full<uint32_t>();
+                }
+                r.settable(iv[0],iv[1],iv[2],iv[3],iv[4],iv[5]);
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(URand);
+            __rand32 r;
+        };
+
+        typedef URand< & __rand32::kiss > Kiss32;
     }
 }
 

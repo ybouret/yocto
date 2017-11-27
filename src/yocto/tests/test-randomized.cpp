@@ -87,7 +87,7 @@ YOCTO_UNIT_TEST_IMPL(randomized)
     __IMPL(ISAAC<4>);
     __IMPL(ISAAC<8>);
     __IMPL(UniformMT);
-
+    __IMPL(Kiss32);
     __rand32 rr;
     rr.test();
 

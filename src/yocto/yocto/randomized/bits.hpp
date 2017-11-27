@@ -2,6 +2,7 @@
 #define YOCTO_RANDOMIZED_BITS_INCLUDED 1
 
 #include "yocto/memory/buffer.hpp"
+#include "yocto/code/bswap.hpp"
 
 namespace yocto
 {
@@ -58,10 +59,53 @@ namespace yocto
 
             //! random unsigned integral in 0..X-1
             template <typename T> inline
-            T lt(const T X) throw()
+            T __lt(const T X) throw()
             {
                 return ( (X<=0) ? T(0) : ( full<T>() % X ) );
             }
+
+            inline size_t lt(const size_t n) throw()
+            {
+                return __lt<size_t>(n);
+            }
+
+            //! returns in 0..n
+            inline size_t leq( size_t n ) throw()
+            {
+                return full<size_t>() % (++n);
+            }
+
+            //! Knuth shuffle of a[0..n-1]
+            template <typename T>
+            inline void shuffle( T *a, const size_t n ) throw()
+            {
+                assert(!(NULL==a&&n>0));
+                if( n > 1 )
+                {
+                    for( size_t i=n-1;i>0;--i)
+                    {
+                        const size_t j   = leq(i);
+                        bswap( a[i], a[j] );
+                    }
+                }
+            }
+
+            //! Knuth co shuffle of a[0..n-1] and b[0..n-1]
+            template <typename T, typename U>
+            inline void shuffle( T *a, U *b, const size_t n) throw()
+            {
+                assert(!(NULL==a&&n>0));
+                if( n > 1 )
+                {
+                    for( size_t i=n-1;i>0;--i)
+                    {
+                        const size_t j   = leq(i);
+                        bswap( a[i], a[j] );
+                        bswap( b[i], b[j] );
+                    }
+                }
+            }
+
 
             static Bits & Simple();
             static Bits & Crypto();
