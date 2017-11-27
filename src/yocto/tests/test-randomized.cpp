@@ -21,7 +21,7 @@
 using namespace yocto;
 using namespace Randomized;
 
-#define N 10000
+static const size_t NUM=10000;
 
 static inline
 void test_rg( Bits &bits, const char *name )
@@ -33,14 +33,14 @@ void test_rg( Bits &bits, const char *name )
     {
         double sum    = 0;
         double sum_sq = 0;
-        for(size_t i=0;i<N;++i)
+        for(size_t i=0;i<NUM;++i)
         {
             const double x = bits.to<double>();
             sum    += x;
             sum_sq += x*x;
         }
-        const double ave = sum/N;
-        const double var = (sum_sq - sum*sum/N)/(N-1);
+        const double ave = sum/NUM;
+        const double var = (sum_sq - sum*sum/NUM)/(NUM-1);
         const double sig = sqrt(var);
         std::cerr << "ave1=" << ave << ",\tsig1=" << sig << std::endl;
     }
@@ -48,14 +48,14 @@ void test_rg( Bits &bits, const char *name )
     {
         float sum    = 0;
         float sum_sq = 0;
-        for(size_t i=0;i<N;++i)
+        for(size_t i=0;i<NUM;++i)
         {
             const double x = bits.symm<float>();
             sum    += x;
             sum_sq += x*x;
         }
-        const float ave = sum/N;
-        const float var = (sum_sq - sum*sum/N)/(N-1);
+        const float ave = sum/NUM;
+        const float var = (sum_sq - sum*sum/NUM)/(NUM-1);
         const float sig = sqrtf(var);
         std::cerr << "ave0=" << ave << ",\tsig0=" << sig << std::endl;
     }
@@ -105,20 +105,47 @@ YOCTO_UNIT_TEST_DONE()
 #define ALEA_GET(TYPE) std::cerr << #TYPE << "\t " << alea.get<TYPE>() << std::endl
 #include "yocto/string.hpp"
 
+#include "yocto/sort/quick.hpp"
+#include "yocto/sequence/vector.hpp"
+
 YOCTO_UNIT_TEST_IMPL(alea)
 {
+    alea.initialize();
     for(size_t i=0;i<10;++i)
     {
-        alea.initialize();
-        std::cerr << "<=10: " << alea.leq(10) << std::endl;
-        std::cerr << "<10:  " << alea.lt(10)  << std::endl;
+        //do { std::cerr << "<=10: " << alea.leq(10) << std::endl; } while(false);
+        //std::cerr << "<10:  " << alea.lt(10)  << std::endl;
         ALEA_GET(float);
         ALEA_GET(double);
         ALEA_GET(int);
         ALEA_GET(string);
     }
+    vector<string> strings;
+    for(size_t i=5+alea.leq(20);i>0;--i)
+    {
+        const string tmp = alea.get<string>();
+        strings.push_back(tmp);
+    }
+    quicksort(strings);
+    vector<size_t> indices(strings.size());
 
-    
+    for(size_t i=1;i<=strings.size();++i)
+    {
+        indices[i] = i;
+    }
+    std::cerr << "strings=" << strings << std::endl;
+    std::cerr << "indices=" << indices << std::endl;
+    std::cerr << std::endl;
+    alea.shuffle(strings(),indices(),strings.size());
+    std::cerr << "strings=" << strings << std::endl;
+    std::cerr << "indices=" << indices << std::endl;
+    std::cerr << std::endl;
+
+    co_qsort(indices,strings);
+    std::cerr << "strings=" << strings << std::endl;
+    std::cerr << "indices=" << indices << std::endl;
+    std::cerr << std::endl;
+
 }
 YOCTO_UNIT_TEST_DONE()
 
