@@ -1,7 +1,6 @@
 #include "yocto/math/alg/spike.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
 #include <cmath>
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/sort/quick.hpp"
@@ -18,7 +17,7 @@ YOCTO_UNIT_TEST_IMPL(spike)
 
     for(size_t i=1;i<=N;++i)
     {
-        x[i] = 5.0 * ((double)i + 0.2 * ( alea<double>() - 0.5 ))/N;
+        x[i] = 5.0 * ((double)i + 0.2 * ( alea.to<double>() - 0.5 ))/N;
         y[i] = sin(x[i]) + x[i]*sin(x[i]*x[i]);
     }
 

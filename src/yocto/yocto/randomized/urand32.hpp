@@ -64,6 +64,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(URand);
         };
 
+        typedef URand< & __rand32::mwc  > Mwc32;
         typedef URand< & __rand32::kiss > Kiss32;
     }
 }

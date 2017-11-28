@@ -2,7 +2,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/sort/quick.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/ios/ocstream.hpp"
 
 using namespace yocto;
@@ -56,12 +55,11 @@ YOCTO_UNIT_TEST_IMPL(cwt)
     vector<double> y(N,as_capacity);
 
     const double width = 10;
-    alea_init();
 
     x.push_back(0);
     for(size_t i=1;i<N;++i)
     {
-        x.push_back( x.back() + 0.1 + alea<double>() );
+        x.push_back( x.back() + 0.1 + alea.to<double>() );
     }
     {
         assert(x.size()==N);
@@ -78,7 +76,7 @@ YOCTO_UNIT_TEST_IMPL(cwt)
         const double xx = x[i];
         //const double yy = //0.4 + sin(xx);// + 1.2 * sin(2.1*xx);
         const double dx = (xx-4);
-        const double yy = 0.3 + 0.1 *exp(-1.1*dx*dx) + 0.02 * ( 0.5 - alea<double>());
+        const double yy = 0.3 + 0.1 *exp(-1.1*dx*dx) + 0.02 * ( 0.5 - alea.to<double>());
         y.push_back(yy);
     }
 

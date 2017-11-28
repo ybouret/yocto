@@ -10,7 +10,6 @@
 #include "yocto/gfx/color/ramp/cold_to_hot.hpp"
 #include "yocto/gfx/color/ramp/grey.hpp"
 
-#include "yocto/code/rand.hpp"
 #include "yocto/string/conv.hpp"
 #include "yocto/utest/run.hpp"
 

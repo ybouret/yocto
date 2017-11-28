@@ -2,7 +2,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/code/utils.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/sys/timings.hpp"
 #include "yocto/sort/quick.hpp"
 

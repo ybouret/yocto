@@ -1,6 +1,5 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/math/core/svd.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/sequence/vector.hpp"
 
 using namespace yocto;
@@ -10,8 +9,8 @@ YOCTO_UNIT_TEST_IMPL(svd)
 {
     for( size_t iter=1; iter <= 100; ++iter)
     {
-        const size_t M = 1 + alea_lt(10);
-        const size_t N = 1 + alea_lt(10);
+        const size_t M = 1 + alea.lt(10);
+        const size_t N = 1 + alea.lt(10);
         matrix<double> A(M,N);
         matrix<double> U(M,N);
         matrix<double> V(N,N);
@@ -21,7 +20,7 @@ YOCTO_UNIT_TEST_IMPL(svd)
         {
             for(size_t j=1; j<=N;++j)
             {
-                A[i][j] = (0.5-alea<double>());
+                A[i][j] = (0.5-alea.to<double>());
             }
         }
         
@@ -84,7 +83,7 @@ YOCTO_UNIT_TEST_IMPL(svdgs)
         {
             for(size_t j=1;j<=P.cols;++j)
             {
-                P[i][j] = 0.5 - alea<double>();
+                P[i][j] = 0.5 - alea.to<double>();
             }
         }
         std::cerr << "P=" << P << std::endl;

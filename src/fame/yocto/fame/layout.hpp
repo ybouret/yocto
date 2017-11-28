@@ -2,6 +2,7 @@
 #define YOCTO_FAME_LAYOUT_INCLUDED 1
 
 #include "yocto/fame/types.hpp"
+#include "yocto/code/bswap.hpp"
 #include <iostream>
 
 YOCTO_FAME_COORD_EXTERN();

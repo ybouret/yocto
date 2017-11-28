@@ -1,7 +1,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/crypto/sc/arc4.hpp"
 #include "../../yocto/tests/support.hpp"
-#include "yocto/random/uuid.hpp"
+#include "yocto/randomized/uuid.hpp"
 #include "yocto/crypto/sc/isaac-ks.hpp"
 
 using namespace yocto;

@@ -1,7 +1,6 @@
 #include "yocto/math/fcn/newton.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/math/core/tao.hpp"
-#include "yocto/code/rand.hpp"
 
 using namespace yocto;
 using namespace math;
@@ -53,7 +52,7 @@ YOCTO_UNIT_TEST_IMPL(newton)
 
     for(size_t i=X.size();i>0;--i)
     {
-        X[i] = 1.0 - 2.0 * alea<double>();
+        X[i] = 1.0 - 2.0 * alea.to<double>();
     }
 
     newton.run(F, J, X);

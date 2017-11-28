@@ -12,7 +12,6 @@ using namespace yocto;
 using namespace math;
 
 
-#include "yocto/code/rand.hpp"
 
 namespace
 {
@@ -29,9 +28,9 @@ namespace
         k4(0),
         beta(0)
         {
-            k1 = 1   * (1+alea<double>());
-            k2 = 0.1 * (1+alea<double>());
-            k3 = 0.2 * (1+alea<double>());
+            k1 = 1   * (1+alea.to<double>());
+            k2 = 0.1 * (1+alea.to<double>());
+            k3 = 0.2 * (1+alea.to<double>());
             k4 = 0.08;
             
             beta = (k4*k2)/(k1*k3);
@@ -125,7 +124,7 @@ YOCTO_UNIT_TEST_IMPL(michaelis)
     double &P  = y[4];
     
     S  = 1;
-    E  = 0.1 + 0.5*(1+alea<double>());
+    E  = 0.1 + 0.5*(1+alea.to<double>());
     _ES = 0;
     P  = 0;
     

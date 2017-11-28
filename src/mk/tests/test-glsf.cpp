@@ -111,7 +111,6 @@ YOCTO_UNIT_TEST_IMPL(glsf)
 }
 YOCTO_UNIT_TEST_DONE()
 
-#include "yocto/code/rand.hpp"
 
 YOCTO_UNIT_TEST_IMPL(glsf_poly)
 {
@@ -119,7 +118,7 @@ YOCTO_UNIT_TEST_IMPL(glsf_poly)
 
 
     const size_t  N     = 20;
-    const float   omega = 1.0f + 0.2f*alea<float>();
+    const float   omega = 1.0f + 0.2f*alea.to<float>();
     vector<float> X(N);
     vector<float> Y(N);
 
@@ -129,7 +128,7 @@ YOCTO_UNIT_TEST_IMPL(glsf_poly)
     {
         const float x = (3.14f*(i-1))/N;
         X[i] = x;
-        Y[i] = sin(omega*x) + 0.05f*(0.5f-alea<float>());
+        Y[i] = sin(omega*x) + 0.05f*(0.5f-alea.to<float>());
     }
 
 
@@ -260,7 +259,7 @@ YOCTO_UNIT_TEST_IMPL(glsf_gauss)
     {
         const double t = (i*Tmx)/N;
         X[i] = t;
-        Y[i] = make_gauss(t,a1, mu1, sig1) + make_gauss(t, a2, mu2, sig2) + 1*(0.5-alea<double>());
+        Y[i] = make_gauss(t,a1, mu1, sig1) + make_gauss(t, a2, mu2, sig2) + 1*(0.5-alea.to<double>());
     }
 
     std::cerr << "dectecting spikes" << std::endl;

@@ -5,7 +5,6 @@
 #include "yocto/fame/mpi/domains.hpp"
 #include "yocto/fame/fields.hpp"
 #include "yocto/fame/visit.hpp"
-#include "yocto/code/rand32.hpp"
 
 using namespace yocto;
 using namespace fame;

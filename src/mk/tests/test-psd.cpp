@@ -4,7 +4,6 @@
 #include "yocto/math/types.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/container/matrix.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/math/alg/spike.hpp"
 #include "yocto/sort/quick.hpp"
 
@@ -31,17 +30,17 @@ void perform_psd( const size_t p, const size_t q, const size_t K)
     const T dt  = T(20) / n;
     
     const T f1    = T(3);
-    const T phi1  = numeric<T>::two_pi * alea<T>();
+    const T phi1  = numeric<T>::two_pi * alea.get<T>();
     const T f2    = T(7);
-    const T phi2  = numeric<T>::two_pi * alea<T>();
-    const T rho   = 0.5  + 1.5  * alea<T>();
-    const T noise = 0.05 + 0.05 * alea<T>();
+    const T phi2  = numeric<T>::two_pi * alea.get<T>();
+    const T rho   = 0.5  + 1.5  * alea.get<T>();
+    const T noise = 0.05 + 0.05 * alea.get<T>();
     
-    const T offset = 2*alea<T>();
+    const T offset = 2*alea.to<T>();
     for( size_t i=1; i < n; ++i )
     {
         const T t = times[i] = (i-1) * dt;
-        data[i] = Cos( numeric<T>::two_pi * f1 * t + phi1 ) + rho * Cos( numeric<T>::two_pi * f2 * t + phi2 ) + noise * alea<T>() + offset;
+        data[i] = Cos( numeric<T>::two_pi * f1 * t + phi1 ) + rho * Cos( numeric<T>::two_pi * f2 * t + phi2 ) + noise * alea.get<T>() + offset;
     }
     
     {

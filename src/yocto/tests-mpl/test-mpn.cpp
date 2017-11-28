@@ -1,6 +1,6 @@
 #include "yocto/mpl/natural.hpp"
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/sort/quick.hpp"
 #include <cmath>
@@ -21,7 +21,7 @@ YOCTO_UNIT_TEST_IMPL(mpn)
 
         for(size_t i=0;i<1000;++i)
         {
-            word_t x = _rand.full<word_t>();
+            word_t x = alea.full<word_t>();
             mpn    X = x;
             if(X.lsw()!=x) throw exception("invalid lsw!");
             mpn    Y(X);
@@ -40,8 +40,8 @@ YOCTO_UNIT_TEST_IMPL(mpn)
 
         for(size_t i=0;i<1000;++i)
         {
-            word_t x = _rand.full<word_t>();
-            word_t y = _rand.full<word_t>();
+            word_t x = alea.full<word_t>();
+            word_t y = alea.full<word_t>();
             mpn    X = x;
             mpn    Y = y;
             const int c = __compare(x,y);
@@ -55,7 +55,7 @@ YOCTO_UNIT_TEST_IMPL(mpn)
                 std::cerr << "c=" << c << "  | C=" << C << std::endl;
                 throw exception("invalid comparison");
             }
-            mpn tmp  = _rand.full<word_t>();
+            mpn tmp  = alea.full<word_t>();
             values.push_back(tmp);
         }
         quicksort(values);
@@ -75,7 +75,7 @@ YOCTO_UNIT_TEST_IMPL(mpn)
         size_t count = 0;
         for(size_t i=0;i<100;++i)
         {
-            const size_t n = alea_leq(100);
+            const size_t n = alea.leq(100);
             const mpn    v = mpn::rand(n);
             values.push_back(v);
             vbits.push_back(n);
@@ -97,7 +97,7 @@ YOCTO_UNIT_TEST_IMPL(mpn)
         Q.free();
         for(size_t i=0;i<100;++i)
         {
-            const size_t n = alea_leq(200);
+            const size_t n = alea.leq(200);
             const mpn    v = mpn::rand(n);
             values.push_back(v);
             v.put(Q,200);
@@ -118,8 +118,8 @@ YOCTO_UNIT_TEST_IMPL(mpn)
         vector<mpn> values;
         for(size_t i=0;i<1000;++i)
         {
-            word_t x = _rand.full<uint32_t>();
-            word_t y = _rand.full<uint32_t>();
+            word_t x = alea.full<uint32_t>();
+            word_t y = alea.full<uint32_t>();
             word_t z = x + y;
 
             mpn X = x;
@@ -128,7 +128,7 @@ YOCTO_UNIT_TEST_IMPL(mpn)
 
             if(Z!=z) throw exception("invalid addition");
 
-            const mpn tmp = _rand.full<word_t>();
+            const mpn tmp = alea.full<word_t>();
             values.push_back(tmp);
         }
         mpn s1 = 0;
@@ -136,7 +136,7 @@ YOCTO_UNIT_TEST_IMPL(mpn)
         {
             s1 += values[i];
         }
-        c_shuffle(values(),values.size());
+        alea.shuffle(values(),values.size());
         mpn s2 = 0;
         for(size_t i=values.size();i>0;--i)
         {
@@ -150,8 +150,8 @@ YOCTO_UNIT_TEST_IMPL(mpn)
     {
         for(size_t i=0;i<1000;++i)
         {
-            word_t x = _rand.full<word_t>();
-            word_t y = _rand.full<word_t>();
+            word_t x = alea.full<word_t>();
+            word_t y = alea.full<word_t>();
             if(x<y) cswap(x,y);
             word_t z = x-y;
             mpn X = x;
@@ -166,8 +166,8 @@ YOCTO_UNIT_TEST_IMPL(mpn)
     {
         for(size_t i=0;i<1000;++i)
         {
-            word_t x = _rand.full<uint32_t>();
-            word_t y = _rand.full<uint32_t>();
+            word_t x = alea.full<uint32_t>();
+            word_t y = alea.full<uint32_t>();
             word_t z = x*y;
             mpn X = x;
             mpn Y = y;
@@ -185,7 +185,7 @@ YOCTO_UNIT_TEST_IMPL(mpn)
         vector<mpn> values(nv,as_capacity);
         for(size_t i=0;i<nv;++i)
         {
-            const mpn tmp = mpn::rand(1+alea_leq(500));
+            const mpn tmp = mpn::rand(1+alea.leq(500));
             values.push_back(tmp);
         }
         for(size_t i=1;i<=nv;++i)
@@ -250,8 +250,8 @@ YOCTO_UNIT_TEST_IMPL(mpn)
     std::cerr << std::hex;
     for(size_t iter=1;iter<=10;++iter)
     {
-        mpn p = mpn::rand(6+alea_leq(25));
-        mpn q = mpn::rand(6+alea_leq(25));
+        mpn p = mpn::rand(6+alea.leq(25));
+        mpn q = mpn::rand(6+alea.leq(25));
         p = mpn::__next_prime(p);
         std::cerr << "\tp=" << p << std::endl;
         q = mpn::__next_prime(q);
@@ -269,7 +269,7 @@ YOCTO_UNIT_TEST_IMPL(mpn)
         const size_t bmax = n.bits()-2;
         for(size_t i=1;i<=10;++i)
         {
-            const mpn M = mpn::rand(alea_leq(bmax));
+            const mpn M = mpn::rand(alea.leq(bmax));
             const mpn C = mpn::mod_exp(M,e,n);
             const mpn P = mpn::mod_exp(C,d,n);
             std::cerr << "M=" << M << " => C=" << C << "=> P=" << P << std::endl;
@@ -303,14 +303,14 @@ YOCTO_UNIT_TEST_IMPL(mpn)
         }
         for(size_t i=1;i<=10;++i)
         {
-            mpn n = mpn::rand(alea_leq(40));
+            mpn n = mpn::rand(alea.leq(40));
             double x = n.to_real();
             std::cerr << n << " -> " << x << std::endl;
         }
         for(size_t i=1;i<=10;++i)
         {
-            const mpn num = mpn::rand(alea_leq(40));
-            const mpn den = mpn::rand(alea_leq(40));
+            const mpn num = mpn::rand(alea.leq(40));
+            const mpn den = mpn::rand(alea.leq(40));
             if(den>0)
             {
                 const double x = num.to_real();

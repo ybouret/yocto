@@ -5,6 +5,7 @@
 #include "yocto/math/point3d.hpp"
 #include "yocto/type/traits.hpp"
 #include "yocto/hashing/function.hpp"
+#include "yocto/code/bswap.hpp"
 
 namespace yocto
 {

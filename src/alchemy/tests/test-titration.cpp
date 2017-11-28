@@ -1,7 +1,6 @@
 #include "yocto/alchemy/boot.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/ios/ocstream.hpp"
 

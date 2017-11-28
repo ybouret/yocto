@@ -3,7 +3,6 @@
 #include "yocto/sequence/vector.hpp"
 #include "yocto/math/types.hpp"
 #include "yocto/ios/ocstream.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/container/matrix.hpp"
 
 using namespace yocto;
@@ -18,7 +17,7 @@ YOCTO_UNIT_TEST_IMPL(spline)
     vector<double> Y(nc,0);
     for(size_t i=2;i<=nc;++i)
     {
-        X[i] = X[i-1] + (0.01+alea<double>());
+        X[i] = X[i-1] + (0.01+alea.to<double>());
     }
     
     {
@@ -155,11 +154,11 @@ YOCTO_UNIT_TEST_IMPL(spline2d)
     //--------------------------------------------------------------------------
     for(size_t i=2;i<=nc;++i)
     {
-        theta[i] = theta[i-1] + (0.01+alea<double>());
+        theta[i] = theta[i-1] + (0.01+alea.to<double>());
     }
     
     {
-        const double fac = (numeric<double>::two_pi * ( 0.9 + 0.1*alea<double>())) / theta[nc];
+        const double fac = (numeric<double>::two_pi * ( 0.9 + 0.1*alea.to<double>())) / theta[nc];
         for(size_t i=2;i<=nc;++i)
         {
             theta[i] *= fac;
@@ -169,8 +168,8 @@ YOCTO_UNIT_TEST_IMPL(spline2d)
     //--------------------------------------------------------------------------
     // construct points
     //--------------------------------------------------------------------------
-    const double Rx = 2 * (1+alea<double>());
-    const double Ry = (1+alea<double>());
+    const double Rx = 2 * (1+alea.to<double>());
+    const double Ry = (1+alea.to<double>());
     for( size_t i=1; i <=nc; ++i )
     {
         vtx v( Rx * Cos(theta[i]), Ry*Sin(theta[i]));

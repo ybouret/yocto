@@ -12,7 +12,6 @@
 #include "yocto/gfx/ops/edges.hpp"
 #include "yocto/gfx/ops/diff.hpp"
 #include "yocto/parallel/basic.hpp"
-#include "yocto/code/rand.hpp"
 
 #include "yocto/utest/run.hpp"
 

@@ -62,7 +62,6 @@ namespace
 
 }
 
-#include "yocto/code/rand.hpp"
 
 YOCTO_UNIT_TEST_IMPL(newt)
 {
@@ -71,9 +70,9 @@ YOCTO_UNIT_TEST_IMPL(newt)
     newt<double>::Jacobian Jn( &p, & Param::jacob   );
     vector<double>         X(3,0);
 
-    X[1] = 10.0*(alea<double>()-0.5);
-    X[2] = 10.0*(alea<double>()-0.5);
-    X[3] = 10.0*(alea<double>()-0.5);
+    X[1] = 10.0*(alea.to<double>()-0.5);
+    X[2] = 10.0*(alea.to<double>()-0.5);
+    X[3] = 10.0*(alea.to<double>()-0.5);
 
     vector<double> Y(X);
     vector<double> F(X.size(),0);

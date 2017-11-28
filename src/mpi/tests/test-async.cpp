@@ -2,15 +2,13 @@
 
 #include "yocto/mpi/async.hpp"
 #include "yocto/memory/buffers.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/hashing/sha1.hpp"
 
 using namespace yocto;
 
 YOCTO_UNIT_TEST_IMPL(async)
 {
-	
-	_rand.wseed();
     hashing::sha1 H;
     
     YOCTO_MPI(MPI_THREAD_MULTIPLE);

@@ -4,7 +4,7 @@
 #include "yocto/sequence/vector.hpp"
 #include "yocto/sequence/list.hpp"
 
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/ios/ocstream.hpp"
 
 using namespace yocto;
@@ -12,9 +12,9 @@ using namespace yocto;
 YOCTO_UNIT_TEST_IMPL(ihist)
 {
     vector<int> data;
-    for(size_t j=10+alea_leq(200);j>0;--j)
+    for(size_t j=10+alea.leq(200);j>0;--j)
     {
-        data.push_back( int(alea_leq(100)) - 50 );
+        data.push_back( int(alea.leq(100)) - 50 );
     }
     
     list<int>      bins;

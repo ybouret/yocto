@@ -1,6 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/math/core/diag.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/string/conv.hpp"
 
@@ -20,7 +20,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
         {
             for(size_t j=1; j<=n;++j)
             {
-                A[i][j] = (0.5-alea<double>());// + (i==j?a.rows:0);
+                A[i][j] = (0.5-alea.to<double>());// + (i==j?a.rows:0);
             }
         }
         std::cerr << "A=" << A << std::endl;
@@ -45,14 +45,14 @@ void test_diag()
     
     for(size_t iter=1; iter <= 16; ++iter )
     {
-        const size_t   n = 1 + alea_lt(10);
+        const size_t   n = 1 + alea.lt(10);
         matrix<T> a(n,n);
         
         for(size_t i=1; i<=n; ++i )
         {
             for(size_t j=1; j<=n;++j)
             {
-                a[i][j] = (T(0.5)-alea<T>());// + (i==j?a.rows:0);
+                a[i][j] = (T(0.5)-alea.get<T>());// + (i==j?a.rows:0);
             }
         }
         std::cerr << "a=" << a << std::endl;
@@ -78,7 +78,6 @@ YOCTO_UNIT_TEST_IMPL(diag)
 {
     test_diag<double>();
     test_diag<float>();
-    
 }
 YOCTO_UNIT_TEST_DONE()
 
@@ -119,14 +118,14 @@ void __test_eigv()
     std::cerr << std::endl << "EIGV for <" << typeid(T).name() << ">" << std::endl;
     for(size_t iter=1; iter <= 3; ++iter )
     {
-        const size_t   n = 1 + alea_lt(10);
+        const size_t   n = 1 + alea.lt(10);
         matrix<T> A(n,n);
         
         for(size_t i=1; i<=n; ++i )
         {
             for(size_t j=1; j<=n;++j)
             {
-                A[i][j] = (T(0.5)-alea<T>());// + (i==j?a.rows:0);
+                A[i][j] = (T(0.5)-alea.get<T>());// + (i==j?a.rows:0);
             }
         }
         __perform_eigv(A);
@@ -138,11 +137,10 @@ YOCTO_UNIT_TEST_IMPL(eigv)
 {
     matrix<double> A(3,3);
     A.ld1();
-    A[1][1] = 1 + alea<double>();
-    A[2][1] = 0.5-alea<double>();
-    A[3][1] = 0.5-alea<double>();
+    A[1][1] = 1 + alea.get<double>();
+    A[2][1] = 0.5-alea.get<double>();
+    A[3][1] = 0.5-alea.get<double>();
     __perform_eigv(A);
-    
     __test_eigv<float>();
     
 }

@@ -1,7 +1,7 @@
 #include "yocto/mpi/mpi.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/hashing/sha1.hpp"
 #include "yocto/string/conv.hpp"
 
@@ -37,7 +37,7 @@ YOCTO_UNIT_TEST_IMPL(sr)
 
         for(size_t i=1;i<=n;++i)
         {
-            sndbuf[i] = _rand.full<word_t>();
+            sndbuf[i] = alea.full<word_t>();
         }
         if(1==MPI.CommWorldSize)
         {

@@ -2,6 +2,7 @@
 #define YOCTO_UTEST_RUN_INCLUDED 1
 
 #include "yocto/exception.hpp"
+#include "yocto/code/alea.hpp"
 #include <iostream>
 
 #if defined(__ICC)

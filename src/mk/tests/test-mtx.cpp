@@ -1,7 +1,6 @@
 #include "yocto/container/matrix.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/string.hpp"
-#include "yocto/code/rand.hpp"
 #include "../../yocto/tests/support.hpp"
 #include "yocto/mpl/rational.hpp"
 #include "yocto/string/xnum.hpp"
@@ -21,7 +20,7 @@ void __test_access()
     
     for(size_t iter=0;iter<1000;++iter)
     {
-        matrix<T> M(1+alea_leq(20),1+alea_leq(20));
+        matrix<T> M(1+alea.leq(20),1+alea.leq(20));
         for(size_t i=1;i<=M.rows;++i)
         {
             for(size_t j=1;j<=M.cols;++j)
@@ -42,7 +41,7 @@ void __test_access()
         if(iter<=0)
             std::cerr << "R=" << R << std::endl;
 
-        matrix<T> SQ(1+alea_leq(20));
+        matrix<T> SQ(1+alea.leq(20));
 
         SQ.ldz();
     }
@@ -60,7 +59,7 @@ void __test_mp()
 
     for(size_t iter=0;iter<1;++iter)
     {
-        matrix<T> M(2+alea_leq(3),1+alea_leq(10));
+        matrix<T> M(2+alea.leq(3),1+alea.leq(10));
         for(size_t i=1;i<=M.rows;++i)
         {
             for(size_t j=1;j<=M.cols;++j)
@@ -75,7 +74,7 @@ void __test_mp()
         
         matrix<T> P(M);
         matrix<T> Q(M,YOCTO_MATRIX_TRANSPOSE);
-        matrix<T> SQ(1+alea_leq(100));
+        matrix<T> SQ(1+alea.leq(100));
     }
     
 }

@@ -2,7 +2,7 @@
 #define YOCTO_KRYPTO_ISAAC_INCLUDED 1
 
 #include "yocto/crypto/sc/key-stream.hpp"
-#include "yocto/random/isaac.hpp"
+#include "yocto/randomized/isaac.hpp"
 
 namespace yocto
 {
@@ -21,7 +21,7 @@ namespace yocto
 			
 		private:
 			YOCTO_DISABLE_COPY_AND_ASSIGN(isaac_key_stream);
-			Random::ISAAC isaac_;
+			Randomized::isaac<8> isaac_;
 		};
 		
 	}

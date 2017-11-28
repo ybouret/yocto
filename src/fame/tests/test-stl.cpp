@@ -1,7 +1,6 @@
 #include "yocto/fame/format/stl.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/container/matrix.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/math/trigconv.hpp"
@@ -28,7 +27,7 @@ YOCTO_UNIT_TEST_IMPL(stl)
     for(size_t i=1;i<=nz;++i)
     {
         const double z      = (i-1)*Lz/(nz-1);
-        const double radius = R+z/Lz+alea<double>();
+        const double radius = R+z/Lz+alea.to<double>();
         for(size_t j=1;j<=nr;++j)
         {
             const double angle =  (j-1)*360.0/nr;
@@ -44,7 +43,7 @@ YOCTO_UNIT_TEST_IMPL(stl)
     vector< stl::facet<double> > facets;
 
     // close one side
-    const vtx top(0,0,-alea<double>());
+    const vtx top(0,0,-alea.to<double>());
     stl::close_contour(facets,shape[1],top,inside);
 
     for(size_t i=1;i<nz;++i)
@@ -54,7 +53,7 @@ YOCTO_UNIT_TEST_IMPL(stl)
 
 
     // close the other side
-    const vtx bot(0,0,Lz+alea<double>());
+    const vtx bot(0,0,Lz+alea.to<double>());
     stl::close_contour(facets, shape[nz],bot,inside);
 
     std::cerr << "Got " << facets.size() << " facets" << std::endl;

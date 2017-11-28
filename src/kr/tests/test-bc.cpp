@@ -12,11 +12,11 @@
 #include "yocto/crypto/bc/block-cipher-pcbc.hpp"
 
 #include "yocto/crypto/sc/arc4.hpp"
-#include "yocto/random/uuid.hpp"
+#include "yocto/randomized/uuid.hpp"
 
 #include "yocto/ios/icstream.hpp"
 
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 using namespace crypto;
@@ -129,7 +129,7 @@ YOCTO_UNIT_TEST_IMPL(bc)
 	string line;
 	for( size_t i=0; i < 64; ++i )
 	{
-		line += char( 'a'+alea_lt(25) );
+		line += char( 'a'+alea.leq(26) );
 		process_pair( e_aes128, d_aes128, line, usr_iv );
 		process_pair( e_aes192, d_aes192, line, usr_iv );
 		process_pair( e_aes256, d_aes256, line, usr_iv );

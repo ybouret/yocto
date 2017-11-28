@@ -109,13 +109,14 @@ namespace yocto
                 }
             }
 
-            //! converson in float|double|int|string
-            template <typename T>
-            T get();
+            //! converson in float|double|int|string|point2d in unit square|point3d in unit box
+            template <typename T> T get();
             
 
             static Bits & Simple(); //!< isaac4
             static Bits & Crypto(); //!< isaac8
+
+            
 
         protected:
             explicit Bits(const uint32_t maxValue) throw();

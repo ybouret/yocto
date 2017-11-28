@@ -1,6 +1,5 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/math/types.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/sequence/vector.hpp"
 #include <typeinfo>
 #include "../../yocto/tests/support.hpp"

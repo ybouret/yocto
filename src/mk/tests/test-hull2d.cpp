@@ -1,6 +1,6 @@
 #include "yocto/math/alg/delaunay.hpp"
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/sequence/vector.hpp"
@@ -21,7 +21,7 @@ YOCTO_UNIT_TEST_IMPL(tr2d)
     vector<V2> vec2(n,as_capacity);
     for(size_t i=1; i<=n; ++i )
     {
-        const V2 tmp( 10.0 * ( 0.5 - alea<double>()), 10.0 * ( 0.5 - alea<double>()) );
+        const V2 tmp( 10.0 * ( 0.5 - alea.to<double>()), 10.0 * ( 0.5 - alea.to<double>()) );
         vec2.push_back(tmp);
     }
     

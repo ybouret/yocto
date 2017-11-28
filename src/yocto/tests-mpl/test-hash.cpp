@@ -1,6 +1,6 @@
 #include "yocto/mpl/rational.hpp"
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include <cstdio>
 
 using namespace yocto;
@@ -13,9 +13,9 @@ YOCTO_UNIT_TEST_IMPL(hash)
 
     for(size_t i=1;i<=10;++i)
     {
-        mpn n = alea<uint32_t>();
-        mpz z = integer_t(alea<uint32_t>())*( (alea<float>()<0.5f) ? -1 : 1 );
-        mpq q(integer_t(alea<uint32_t>())*( (alea<float>()<0.5f) ? -1 : 1 ),1+alea<uint32_t>());
+        mpn n = alea.full<uint32_t>();
+        mpz z = integer_t(alea.full<uint32_t>())*( (alea.get<float>()<0.5f) ? -1 : 1 );
+        mpq q(integer_t(alea.full<uint32_t>())*( (alea.get<float>()<0.5f) ? -1 : 1 ),1+alea.full<uint32_t>());
         std::cerr << "n=" << n << std::endl;
         std::cerr << "z=" << z << std::endl;
         std::cerr << "q=" << q << std::endl;

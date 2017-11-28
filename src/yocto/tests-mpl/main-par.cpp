@@ -1,6 +1,6 @@
 #include "yocto/mpl/mpi.hpp"
 #include "yocto/program.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 using namespace mpl;
@@ -12,7 +12,7 @@ YOCTO_PROGRAM_START()
     MPI.Printf(stderr, "'%s' is ready\n",MPI.ProcessorName);
     MPI.Printf0(stderr, "ThreadLevel= %s\n", MPI.ThreadLevelName());
     
-    alea_init();
+    alea.initialize();
     
     if(MPI.IsParallel)
     {
@@ -24,7 +24,7 @@ YOCTO_PROGRAM_START()
                 if( MPI.IsFirst )
                 {
                     // send data
-                    x = mpn::rand( 2 + alea_leq(100) );
+                    x = mpn::rand( 2 + alea.leq(100) );
                     for(int r=1;r<MPI.CommWorldSize;++r)
                     {
                         mpl::send<mpn>(MPI,x,r,MPI_COMM_WORLD);
@@ -61,7 +61,7 @@ YOCTO_PROGRAM_START()
                 if( MPI.IsFirst )
                 {
                     // send data
-                    z = _rand.full<integer_t>();
+                    z = alea.full<integer_t>();
                     for(int r=1;r<MPI.CommWorldSize;++r)
                     {
                         mpl::send<mpz>(MPI,z,r,MPI_COMM_WORLD);
@@ -100,7 +100,7 @@ YOCTO_PROGRAM_START()
                 if( MPI.IsFirst )
                 {
                     // send data
-                    q = rational(_rand.full<integer_t>(),1+_rand.full<int32_t>());
+                    q = rational(alea.full<integer_t>(),1+alea.full<int32_t>());
                     for(int r=1;r<MPI.CommWorldSize;++r)
                     {
                         mpl::send<mpq>(MPI,q,r,MPI_COMM_WORLD);

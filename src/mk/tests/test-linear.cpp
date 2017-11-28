@@ -1,6 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/math/dat/linear.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 #include "yocto/sequence/vector.hpp"
 #include "yocto/math/types.hpp"
@@ -22,9 +22,9 @@ YOCTO_UNIT_TEST_IMPL(linear)
     
     x.push_back(0);
     y.push_back( F(x.back()) );
-    for( size_t i=200 + alea_leq(100); i>0; --i )
+    for( size_t i=200 + alea.leq(100); i>0; --i )
     {
-        x.push_back( x.back() + 0.1 * alea<double>() );
+        x.push_back( x.back() + 0.1 * alea.to<double>() );
         y.push_back( F(x.back()) );
     }
     

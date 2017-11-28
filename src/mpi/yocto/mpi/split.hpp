@@ -6,7 +6,7 @@
 #include "yocto/sequence/vector.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/sort/quick.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/mpl/rational.hpp"
 #include "yocto/counted-object.hpp"
 #include "yocto/ptr/arc.hpp"
@@ -583,7 +583,7 @@ namespace yocto
                 parts[i]->alpha = alpha;
                 parts[i]->cost2d();
             }
-            c_shuffle(parts(),parts.size());
+            alea.shuffle(parts(),parts.size());
             quicksort(parts,part_t::compare_costs2d);
 #if 0
             for(size_t i=1;i<=parts.size();++i)
@@ -643,7 +643,7 @@ namespace yocto
                 parts[i]->alpha = alpha;
                 parts[i]->cost3d();
             }
-            c_shuffle(parts(),parts.size());
+            alea.shuffle(parts(),parts.size());
             quicksort(parts,part_t::compare_costs3d);
 #if 0
             for(size_t i=1;i<=parts.size();++i)

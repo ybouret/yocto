@@ -378,7 +378,6 @@ namespace yocto
 
 
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/math/core/svd.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/exception.hpp"

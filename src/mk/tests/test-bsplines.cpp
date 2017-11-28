@@ -1,12 +1,11 @@
 #include "yocto/math/dat/b-splines.hpp"
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand32.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sequence/vector.hpp"
 
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/math/types.hpp"
 #include "yocto/math/point2d.hpp"
-#include "yocto/code/rand.hpp"
 
 #include "yocto/math/fcn/intg.hpp"
 
@@ -19,7 +18,7 @@ YOCTO_UNIT_TEST_IMPL(bsplines)
 
     typedef point2d<double>                   vtx_t;
     typedef CubicApproximation<double,point2d> Approx;
-    size_t m=4+alea_lt(5);
+    size_t m=4+alea.lt(5);
     Approx P;
     P.reserve(m);
 
@@ -28,7 +27,7 @@ YOCTO_UNIT_TEST_IMPL(bsplines)
 
     for(size_t i=1;i<m;++i)
     {
-        const vtx_t  pp( alea<double>(), alea<double>());
+        const vtx_t  pp( alea.get<double>(), alea.get<double>());
 
         P.push_back(pp);
     }

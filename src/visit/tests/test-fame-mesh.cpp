@@ -3,7 +3,6 @@
 #include "yocto/fame/mpi/ghosts.hpp"
 
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
 
 using namespace yocto;
 using namespace fame;
@@ -149,7 +148,7 @@ public:
         {
             for(coord1d i=l.lower.x;i<=l.upper.x;++i)
             {
-                F[j][i] = alea<T>();
+                F[j][i] = alea.get<T>();
             }
         }
     }
@@ -160,7 +159,7 @@ public:
         const layout<coord1d> &l = F.outer;
         for(coord1d i=l.lower;i<=l.upper;++i)
         {
-            F[i] = alea<T>();
+            F[i] = alea.get<T>();
         }
     }
 
@@ -174,7 +173,7 @@ public:
             {
                 for(coord1d i=l.lower.x;i<=l.upper.x;++i)
                 {
-                    F[k][j][i] = alea<T>();
+                    F[k][j][i] = alea.get<T>();
                 }
             }
         }

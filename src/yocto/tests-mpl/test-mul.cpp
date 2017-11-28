@@ -2,7 +2,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/code/utils.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sys/timings.hpp"
 #include "yocto/sort/quick.hpp"
 
@@ -41,7 +41,7 @@ YOCTO_UNIT_TEST_IMPL(mul)
             v.push_back(x);
         }
     }
-    c_shuffle(v(),v.size());
+    alea.shuffle(v(),v.size());
     assert(v.size()==count);
     std::cerr << "-- Checking products" << std::endl;
     for(size_t i=1,j=count;i<=count;++i,--j)

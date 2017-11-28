@@ -1,7 +1,6 @@
 #include "yocto/math/sig/smooth.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/string/conv.hpp"
 #include "yocto/math/core/tao.hpp"
@@ -27,13 +26,13 @@ YOCTO_UNIT_TEST_IMPL(expand)
     }
 
 
-    const size_t    n=50+alea_leq(100);
+    const size_t    n=50+alea.leq(100);
     vector<double>  x(n,0.0);
     vector<double>  y(n,0.0);
     vector<double>  z(n,0.0);
     for( size_t i=2; i <= n; ++i )
     {
-        x[i] = x[i-1] + 0.5 + alea<double>();
+        x[i] = x[i-1] + 0.5 + alea.to<double>();
     }
 
     const double fac   = (numeric<double>::two_pi / x[n]);
@@ -42,7 +41,7 @@ YOCTO_UNIT_TEST_IMPL(expand)
     {
         x[i] *= fac;
         y[i] = 0.2+sin(x[i]) + sin(3*x[i]);
-        z[i] = y[i] + NOISE * ( 0.5 - alea<double>() );
+        z[i] = y[i] + NOISE * ( 0.5 - alea.to<double>() );
     }
     y[n] = y[1];
     z[1] = y[1];

@@ -5,7 +5,7 @@
 #include "yocto/ios/ocstream.hpp"
 
 #include "yocto/code/xbitrev.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sys/rt-clock.hpp"
 
 #include <typeinfo>
@@ -90,8 +90,8 @@ namespace {
             {
                 for(size_t i=1;i<=n;++i)
                 {
-                    data1[i] = c1[i].re = T(0.5)-alea<T>();
-                    data2[i] = c2[i].re = T(0.5)-alea<T>();
+                    data1[i] = c1[i].re = T(0.5)-alea.get<T>();
+                    data2[i] = c2[i].re = T(0.5)-alea.get<T>();
                     c1[i].im = 0;
                     c2[i].im = 0;
                 }

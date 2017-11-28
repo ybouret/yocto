@@ -2,7 +2,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/code/utils.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sys/timings.hpp"
 #include "yocto/sort/quick.hpp"
 
@@ -42,7 +42,7 @@ YOCTO_UNIT_TEST_IMPL(add)
     {
         seed += v[i];
     }
-    c_shuffle(v(),v.size());
+    alea.shuffle(v(),v.size());
     for(size_t i=v.size();i>0;--i)
     {
         sorg += v[i];

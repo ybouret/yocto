@@ -1,7 +1,6 @@
 #include "yocto/alchemy/equilibrium.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
 
 using namespace yocto;
 using namespace alchemy;
@@ -22,7 +21,7 @@ YOCTO_UNIT_TEST_IMPL(equilibrium)
     vector<double> C( chemlib->size() + 2);
     for(size_t i=1;i<=C.size(); ++i)
     {
-        C[i] = alea<double>();
+        C[i] = alea.to<double>();
     }
 
     chemlib->display(std::cerr,C);

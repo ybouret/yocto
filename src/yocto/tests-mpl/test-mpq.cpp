@@ -2,7 +2,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/math/core/determinant.hpp"
 #include "yocto/math/core/lu.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/math/core/tao.hpp"
 
 using namespace yocto;
@@ -21,7 +21,7 @@ YOCTO_UNIT_TEST_IMPL(mpq)
     {
         for(size_t j=1;j<=M.cols;++j)
         {
-            const int tmp = _rand.full<int16_t>();
+            const int tmp = alea.full<int16_t>();
             M[i][j] = tmp;
             A[i][j] = tmp;
         }

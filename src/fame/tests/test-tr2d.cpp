@@ -2,7 +2,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/gfx/image/png.hpp"
 #include "yocto/gfx/rawpix.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/gfx/color/named-colors.hpp"
 #include "yocto/gfx/pixel.hpp"
 
@@ -29,8 +28,8 @@ YOCTO_UNIT_TEST_IMPL(tr2d)
         vertex tr[3];
         for(size_t i=0;i<3;++i)
         {
-            tr[i].x = alea_lt(w);
-            tr[i].y = alea_lt(h);
+            tr[i].x = alea.lt(w);
+            tr[i].y = alea.lt(h);
         }
 
         const gfx::RGB c = gfx::named_color::fetch(iter);

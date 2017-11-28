@@ -2,7 +2,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/mpi/mpi.hpp"
 #include "yocto/memory/buffers.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/code/utils.hpp"
 #include "yocto/threading/threads.hpp"
 
@@ -45,11 +45,10 @@ namespace {
         const int size = MPI.CommWorldSize;
         
         
-        _rand.wseed();
         for( size_t i=0; i < block_size; ++i )
         {
-            send_next[i] = _rand.full<uint8_t>();
-            send_prev[i] = _rand.full<uint8_t>();
+            send_next[i] = alea.full<uint8_t>();
+            send_prev[i] = alea.full<uint8_t>();
         }
         
         //----------------------------------------------------------------------

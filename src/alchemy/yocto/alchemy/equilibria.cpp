@@ -181,7 +181,6 @@ namespace yocto
 
 #include "yocto/sort/quick.hpp"
 #include <cmath>
-#include "yocto/code/rand.hpp"
 
 namespace yocto
 {

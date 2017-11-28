@@ -1,6 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/math/fft/fftn.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include <cstdio>
 
 using namespace yocto;
@@ -20,7 +20,7 @@ static inline void perform_fftn()
             {
                 for(size_t j=1;j<=nc;++j)
                 {
-                    M[i][j].re = alea<T>();
+                    M[i][j].re = alea.get<T>();
                 }
             }
             matrix< complex<T> > M0 = M;
@@ -76,7 +76,7 @@ YOCTO_UNIT_TEST_IMPL(fftn)
                 {
                     for(size_t j=1;j<=nc;++j)
                     {
-                        M[i][j].re = alea<double>();
+                        M[i][j].re = alea.get<double>();
                     }
                 }
                 YOCTO_TIMINGS(tmx,0.5, FFT(M); iFFT(M) );

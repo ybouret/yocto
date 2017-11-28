@@ -1,7 +1,6 @@
 #include "yocto/alchemy/equilibria.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/math/core/tao.hpp"
 
 
@@ -32,7 +31,7 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     vector<double> C( chemlib->size() + 2);
     for(size_t i=1;i<=C.size(); ++i)
     {
-        C[i] = 1e-4*alea<double>()*(0.8-alea<double>());
+        C[i] = 1e-4*alea.to<double>()*(0.8-alea.to<double>());
     }
 
 
@@ -102,7 +101,7 @@ YOCTO_UNIT_TEST_IMPL(equilibria)
     vector<double> rate(chemlib->size()+3,0);
     for(size_t i=chemlib->size();i>0;--i)
     {
-        rate[i] = alea<double>()-0.5;
+        rate[i] = alea.to<double>()-0.5;
     }
 
     std::cerr << "rate0=" << rate << std::endl;

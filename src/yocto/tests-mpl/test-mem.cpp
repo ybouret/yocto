@@ -1,7 +1,7 @@
 #include "yocto/mpl/types.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/memory/global.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/math/complex.hpp"
 
 using namespace yocto;
@@ -27,10 +27,10 @@ YOCTO_UNIT_TEST_IMPL(mem)
     {
         for(size_t i=0;i<nb;++i)
         {
-            blk[i].size = alea_lt(2*manager::max_bytes);
+            blk[i].size = alea.lt(2*manager::max_bytes);
             blk[i].addr = mgr.acquire(blk[i].size);
         }
-        c_shuffle(blk,nb);
+        alea.shuffle(blk,nb);
         for(size_t i=0;i<nb;++i)
         {
             mgr.release(blk[i].addr,blk[i].size);

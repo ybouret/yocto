@@ -29,6 +29,7 @@ namespace yocto
 }
 
 #include "yocto/string.hpp"
+#include "yocto/math/point3d.hpp"
 
 namespace yocto
 {
@@ -62,7 +63,31 @@ namespace yocto
             }
             return ans;
         }
-        
+
+        template <>
+        point2d<float> Bits::get< point2d<float> >()
+        {
+            return point2d<float>( to<float>(), to<float>() );
+        }
+
+        template <>
+        point2d<double> Bits::get< point2d<double> >()
+        {
+            return point2d<double>( to<double>(), to<double>() );
+        }
+
+        template <>
+        point3d<float> Bits::get< point3d<float> >()
+        {
+            return point3d<float>( to<float>(), to<float>(), to<float>() );
+        }
+
+        template <>
+        point3d<double> Bits::get< point3d<double> >()
+        {
+            return point3d<double>( to<double>(), to<double>(), to<double>() );
+        }
+
     }
 }
 

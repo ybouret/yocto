@@ -15,9 +15,6 @@
 #include "yocto/gfx/color/ramp/cold_to_very_hot.hpp"
 #include "yocto/gfx/color/ramp/grey.hpp"
 #include "yocto/gfx/ops/edges.hpp"
-
-#include "yocto/code/rand.hpp"
-
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
@@ -177,7 +174,7 @@ YOCTO_UNIT_TEST_IMPL(ops)
         {
             for(unit_t i=0;i<w;++i)
             {
-                fch[0][j][i] *= 0.5f+0.3f*alea<float>();
+                fch[0][j][i] *= 0.5f+0.3f*alea.to<float>();
             }
         }
 

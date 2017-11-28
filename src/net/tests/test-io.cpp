@@ -2,7 +2,7 @@
 #include "yocto/net/io/queue.hpp"
 #include "yocto/ios/icstream.hpp"
 #include "yocto/string/conv.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 using namespace network;
@@ -30,7 +30,7 @@ YOCTO_UNIT_TEST_IMPL(io)
         {
             nch += line.size();
             Q.put_all(line,done);
-            const size_t nb = 1+ alea_lt(sizeof(buffer));
+            const size_t nb = 1+ alea.lt(sizeof(buffer));
             Q.get(buffer,nb,done);
         }
     }
@@ -47,7 +47,7 @@ YOCTO_UNIT_TEST_IMPL(io)
     const size_t nh = Q.bytes() /2;
     while( Q.bytes() > nh )
     {
-        const size_t nb = 1+ alea_lt(sizeof(buffer));
+        const size_t nb = 1+ alea.lt(sizeof(buffer));
         Q.get(buffer,nb,done);
     }
     std::cerr << "Q.bytes= " << Q.bytes() << std::endl;

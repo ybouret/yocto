@@ -1,5 +1,4 @@
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/math/types.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/string/conv.hpp"
@@ -18,9 +17,9 @@ YOCTO_UNIT_TEST_IMPL(fit_circle)
         n = strconv::to<size_t>(argv[1],"n");
     }
 
-    const double Xc = 10 + (alea<double>() - 0.5) * 20;
-    const double Yc = 10 + (alea<double>() - 0.5) * 20;
-    const double R  = 1  + 10*alea<double>();
+    const double Xc = 10 + (alea.to<double>() - 0.5) * 20;
+    const double Yc = 10 + (alea.to<double>() - 0.5) * 20;
+    const double R  = 1  + 10*alea.to<double>();
 
     std::cerr << "Xc=" << Xc << std::endl;
     std::cerr << "Yc=" << Yc << std::endl;
@@ -33,10 +32,10 @@ YOCTO_UNIT_TEST_IMPL(fit_circle)
         ios::ocstream fp("circ.dat",false);
         for( size_t i=1; i <= n; ++i )
         {
-            const double theta = alea<double>() * numeric<double>::two_pi;
-            const double X     = Xc+R * Cos(theta) + (0.5-alea<double>());
-            const double Y     = Yc+R * Sin(theta) + (0.5-alea<double>());
-            const double weight = 1+0.5*alea<double>();
+            const double theta = alea.to<double>() * numeric<double>::two_pi;
+            const double X     = Xc+R * Cos(theta) + (0.5-alea.to<double>());
+            const double Y     = Yc+R * Sin(theta) + (0.5-alea.to<double>());
+            const double weight = 1+0.5*alea.to<double>();
             fcd.append(X,Y,weight);
             fcf.append(float(X),float(Y));
             fp("%g %g\n",X,Y);
@@ -87,12 +86,12 @@ YOCTO_UNIT_TEST_IMPL(fit_ellipse)
         n = strconv::to<size_t>(argv[1],"n");
     }
 
-    const double Xc = 10 + (alea<double>() - 0.5) * 20;
-    const double Yc = 10 + (alea<double>() - 0.5) * 20;
+    const double Xc = 10 + (alea.to<double>() - 0.5) * 20;
+    const double Yc = 10 + (alea.to<double>() - 0.5) * 20;
 
-    const double Ra     = 4 + 2*alea<double>();
-    const double Rb     = 1.5 + alea<double>();
-    const double phi    = alea<double>() * numeric<double>::two_pi;
+    const double Ra     = 4 + 2*alea.to<double>();
+    const double Rb     = 1.5 + alea.to<double>();
+    const double phi    = alea.to<double>() * numeric<double>::two_pi;
     const double CosPhi = Cos(phi);
     const double SinPhi = Sin(phi);
 
@@ -117,11 +116,11 @@ YOCTO_UNIT_TEST_IMPL(fit_ellipse)
 
         for( size_t i=1; i <= n; ++i )
         {
-            const double theta = alea<double>() * numeric<double>::two_pi;
+            const double theta = alea.to<double>() * numeric<double>::two_pi;
             const double X     = Ra * Cos(theta);
             const double Y     = Rb * Sin(theta);
-            const double x     = Xc + X*CosPhi - Y*SinPhi + (0.5 - alea<double>()) * noise;
-            const double y     = Yc + X*SinPhi + Y*CosPhi + (0.5 - alea<double>()) * noise;;
+            const double x     = Xc + X*CosPhi - Y*SinPhi + (0.5 - alea.to<double>()) * noise;
+            const double y     = Yc + X*SinPhi + Y*CosPhi + (0.5 - alea.to<double>()) * noise;;
             fp("%g %g\n", x, y);
             xmin = min_of(xmin,x);
             xmax = max_of(xmax,x);
@@ -129,7 +128,7 @@ YOCTO_UNIT_TEST_IMPL(fit_ellipse)
             ymax = max_of(ymax,y);
 
 
-            const double weight = 1+0.5*alea<double>();
+            const double weight = 1+0.5*alea.to<double>();
             fcd.append(x,y);
             fcf.append(float(x),float(y),float(weight));
             XX.push_back(x);

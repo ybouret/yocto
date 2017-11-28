@@ -2,7 +2,7 @@
 
 #include "yocto/mpl/rational.hpp"
 
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/adjoint.hpp"
 
@@ -23,7 +23,7 @@ void __test_adjoint()
             {
                 for(size_t j=1;j<=n;++j)
                 {
-                    const int64_t x = -int64_t(n) + int64_t(alea_leq(2*n));
+                    const int64_t x = -int64_t(n) + int64_t(alea.leq(2*n));
                     M[i][j] = T(x);
                 }
             }
@@ -54,7 +54,7 @@ void __test_iadjoint()
             {
                 for(size_t j=1;j<=n;++j)
                 {
-                    const int64_t x = -int64_t(n) + int64_t(alea_leq(2*n));
+                    const int64_t x = -int64_t(n) + int64_t(alea.leq(2*n));
                     M[i][j] = x;
                 }
             }

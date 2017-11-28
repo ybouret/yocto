@@ -1,7 +1,6 @@
 #include "yocto/math/core/tao.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/container/matrix.hpp"
 
 using namespace yocto;
@@ -29,7 +28,7 @@ void test_tao(const size_t N, const size_t M)
     {
         for(size_t j=M;j>0;--j)
         {
-            m[i][j] = V(int( 10.0 * (alea<double>() - 0.5) ));
+            m[i][j] = V(int( 10.0 * (alea.to<double>() - 0.5) ));
         }
     }
     std::cerr << "m=" << m << std::endl;
@@ -44,7 +43,7 @@ void test_tao(const size_t N, const size_t M)
     
     for(size_t iter=1;iter<=10;++iter)
     {
-        const size_t ns = 1 + alea_leq(N+M);
+        const size_t ns = 1 + alea.leq(N+M);
         matrix<V> b(N,ns);
         matrix<V> c(ns,M);
         tao::mmul(m,b,c);
@@ -54,11 +53,11 @@ void test_tao(const size_t N, const size_t M)
     
     for(size_t iter=1;iter<=3;++iter)
     {
-        const T fac( int( 16.0 * (alea<double>() - 0.5) ) );
+        const T fac( int( 16.0 * (alea.to<double>() - 0.5) ) );
         for(size_t i=N;i>0;--i)
         {
             vt[i] = T(0);
-            if(alea<double>()>0.5) vt[i] = fac * T(int( 16.0 * (alea<double>() - 0.5) ));
+            if(alea.to<double>()>0.5) vt[i] = fac * T(int( 16.0 * (alea.to<double>() - 0.5) ));
         }
         std::cerr << "v0=" << vt << std::endl;
         (void)tao::simplify(vt);
@@ -73,9 +72,9 @@ void test_tao(const size_t N, const size_t M)
         {
             for(size_t j=N;j>=i;--j)
             {
-                H[i][j] = H[j][i] = V(int( 10.0 * (alea<double>() - 0.5) ));
+                H[i][j] = H[j][i] = V(int( 10.0 * (alea.to<double>() - 0.5) ));
             }
-            X[i] = T(10*(alea<double>()-(0.5)));
+            X[i] = T(10*(alea.to<double>()-(0.5)));
         }
         const T q = tao::quadratic(H, X);
         vector<T> tmp(N,0);

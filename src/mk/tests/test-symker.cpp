@@ -2,7 +2,6 @@
 #include "yocto/math/core/tao.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/math/core/determinant.hpp"
 #include "yocto/math/core/cholesky.hpp"
 
@@ -26,7 +25,7 @@ void do_symdiag()
             {
                 for(size_t j=i;j<=n;++j)
                 {
-                    a[i][j] = a[j][i] = -T(AMPLITUDE)/2 + alea<T>() * AMPLITUDE;
+                    a[i][j] = a[j][i] = -T(AMPLITUDE)/2 + alea.get<T>() * AMPLITUDE;
                 }
             }
             //std::cerr << "a=" << a << std::endl;
@@ -66,7 +65,7 @@ void do_symker()
 
         for(size_t iter=0;iter<2;++iter)
         {
-            const size_t   m = n + alea_leq(n);
+            const size_t   m = n + alea.leq(n);
             matrix<unit_t> J(n,m);
 
             const unit_t nm = m;
@@ -74,14 +73,14 @@ void do_symker()
             {
                 for(size_t j=1;j<=m;++j)
                 {
-                    J[i][j] = -nm + unit_t(alea_leq(2*nm));
+                    J[i][j] = -nm + unit_t(alea.leq(2*nm));
                 }
             }
 
-            for(size_t ncpy=alea_leq(1);ncpy>0;--ncpy)
+            for(size_t ncpy=alea.leq(1);ncpy>0;--ncpy)
             {
-                const int r1 = 1+alea_lt(n);
-                const int r2 = 1+alea_lt(n);
+                const int r1 = 1+alea.lt(n);
+                const int r2 = 1+alea.lt(n);
                 if(r1!=r2)
                 {
                     std::cerr << "copy row " << r1 << " to " << r2 << std::endl;
@@ -121,7 +120,7 @@ void do_symker()
                 else
                 {
                     std::cerr << "L=" << L << std::endl;
-                    for(size_t i=1;i<=n;++i) b[i] = -nm + unit_t(alea_leq(2*nm));
+                    for(size_t i=1;i<=n;++i) b[i] = -nm + unit_t(alea.leq(2*nm));
                     cholesky<double>::solve(x,L,b);
                     tao::mul(u,G,x);
                     std::cerr << "b=" << b << std::endl;

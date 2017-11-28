@@ -2,7 +2,6 @@
 
 #include "yocto/mpl/rational.hpp"
 #include "yocto/math/core/lu.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/math/core/determinant.hpp"
@@ -33,7 +32,7 @@ void __test_lu()
                     }
                     else
                     {
-                        const int64_t x = -int64_t(n) + int64_t(alea_leq(2*n));
+                        const int64_t x = -int64_t(n) + int64_t(alea.leq(2*n));
                         //std::cerr << "x=" << x << std::endl;
                         M[i][j] = x;
                     }
@@ -77,7 +76,7 @@ void __test_lu()
 
                 for(size_t i=1;i<=n;++i)
                 {
-                    const int64_t x = -int64_t(n) + int64_t(alea_leq(2*n));
+                    const int64_t x = -int64_t(n) + int64_t(alea.leq(2*n));
                     const T       y(x);
                     b.push_back(y);
                     const int64_t x0 = 0;
