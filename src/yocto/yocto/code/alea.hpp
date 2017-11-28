@@ -6,6 +6,7 @@
 namespace yocto
 {
     extern Randomized::Kiss32 alea;
+
 }
 
 #endif

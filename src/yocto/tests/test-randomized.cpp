@@ -113,8 +113,6 @@ YOCTO_UNIT_TEST_IMPL(alea)
     alea.initialize();
     for(size_t i=0;i<10;++i)
     {
-        //do { std::cerr << "<=10: " << alea.leq(10) << std::endl; } while(false);
-        //std::cerr << "<10:  " << alea.lt(10)  << std::endl;
         ALEA_GET(float);
         ALEA_GET(double);
         ALEA_GET(int);
