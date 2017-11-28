@@ -24,7 +24,7 @@ void test_catalog()
 		type tmp = gen<mutable_type>::get();
 		if( C.insert( (param_type)tmp ) )
 		{
-			if( alea<float>() > 0.6f ) 
+			if( alea.get<float>() > 0.6f ) 
 			{
 				objs.push_back(tmp);
 			}

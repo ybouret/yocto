@@ -73,7 +73,7 @@ YOCTO_UNIT_TEST_IMPL(points)
     doPoints< point3d<int64_t>   >();
     doPoints< point3d<double>    >();
 
-
+#if 0
     {
         ios::wcstream fp("on_circle.dat");
         for(size_t i=10+alea_lt(50);i>0;--i)
@@ -108,7 +108,8 @@ YOCTO_UNIT_TEST_IMPL(points)
         }
 
     }
-
+#endif
+    
     doPBC( point3d<double>(5,6,7) );
     doPBC( point3d<float>(5,6,7) );
 

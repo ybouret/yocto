@@ -2,7 +2,7 @@
 #include "yocto/associative/dictionary.hpp"
 
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/memory/pooled.hpp"
 
 #include "support.hpp"
@@ -35,7 +35,7 @@ static inline void test_dict()
 			}
 			else
 			{
-				if( alea<float>() > 0.5f )
+				if( alea.get<float>() > 0.5f )
 				{
 					keys.push_back(key);
 				}

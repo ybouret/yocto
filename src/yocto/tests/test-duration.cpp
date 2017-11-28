@@ -1,6 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/duration.hpp"
-
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 
@@ -23,7 +23,6 @@ YOCTO_UNIT_TEST_IMPL(duration)
 }
 YOCTO_UNIT_TEST_DONE()
 
-#include "yocto/code/rand.hpp"
 #include "yocto/eta.hpp"
 
 YOCTO_UNIT_TEST_IMPL(eta)
@@ -34,8 +33,8 @@ YOCTO_UNIT_TEST_IMPL(eta)
 	
 	while( X < 1 )
 	{
-		wtime::sleep( 0.02 * alea<double>() );
-		X += 0.01 * alea<double>();
+		wtime::sleep( 0.02 * alea.get<double>() );
+		X += 0.01 * alea.get<double>();
 		ETA(X);
         ETA.progress(X);
 	}

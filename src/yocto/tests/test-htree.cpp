@@ -35,7 +35,7 @@ YOCTO_UNIT_TEST_IMPL(htree)
         }
     }
 #else
-    for(size_t i=10+alea_lt(10);i>0;--i)
+    for(size_t i=10+alea.lt(10);i>0;--i)
     {
         const string key = gen<string>::get();
         if( !H.insert(key,i) )

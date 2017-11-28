@@ -39,6 +39,8 @@ namespace yocto
                 return ( ( next32() < half ) ? T(0) : T(1) );
             }
 
+            inline bool nextBool() throw() { return ( next32()<half ); }
+
             //! random full integral type
             template <typename T> inline
             T full() throw()

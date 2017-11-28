@@ -4,7 +4,6 @@
 #include "yocto/bitwise.hpp"
 #include "yocto/type/args.hpp"
 #include "yocto/math/types.hpp"
-#include "yocto/code/rand32.hpp"
 #include <iostream>
 #include "yocto/math/types.hxx"
 
@@ -105,27 +104,6 @@ namespace yocto
         inline friend bool operator!=(const point2d &lhs, const point2d &rhs) throw()
         {
             return (lhs.x!=rhs.x) || (lhs.y!=rhs.y);
-        }
-
-        //! on unit circle, T=float|double
-        static inline
-        point2d on_unit_circle( urand32 &ran ) throw()
-        {
-            const T angle = math::numeric<T>::two_pi * ran.get<T>();
-            return point2d( math::Cos(angle), math::Sin(angle) );
-        }
-
-        static inline
-        point2d in_unit_disk( urand32 &ran ) throw()
-        {
-            while(true)
-            {
-                const T X = ran.sym1<T>();
-                const T Y = ran.sym1<T>();
-                const T r2 = (X*X) + (Y*Y);
-                if(r2>=T(1)) continue;
-                return point2d(X,Y);
-            }
         }
 
         inline type __prod() const throw() { return x*y; }

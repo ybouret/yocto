@@ -1,6 +1,7 @@
+#if 0
 #include "yocto/utest/run.hpp"
 
-#include "yocto/random/default.hpp"
+#include "yocto/randomized/default.hpp"
 #include "yocto/random/uniform-isaac.hpp"
 #include "yocto/random/uniform0.hpp"
 #include "yocto/random/uniform1.hpp"
@@ -122,4 +123,4 @@ YOCTO_UNIT_TEST_IMPL(dist)
 	
 }
 YOCTO_UNIT_TEST_DONE()
-
+#endif

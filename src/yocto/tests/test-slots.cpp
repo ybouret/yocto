@@ -1,6 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/slots.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/string.hpp"
 #include "support.hpp"
 
@@ -18,7 +18,7 @@ YOCTO_UNIT_TEST_IMPL(slots)
 
         for(size_t i=s.size+1;i<=s.capacity;++i)
         {
-            s.append<size_t>(alea_lt(100));
+            s.append<size_t>(alea.lt(100));
         }
 
         for(size_t i=0;i<s.size;++i)
@@ -52,7 +52,7 @@ YOCTO_UNIT_TEST_IMPL(slots)
         slots_of<int>    src(8);
         while(src.size<src.capacity)
         {
-            src.push_back( alea_lt(100) );
+            src.push_back( alea.lt(100) );
         }
         tgt.build_from(src);
         for(size_t i=0;i<tgt.size;++i)

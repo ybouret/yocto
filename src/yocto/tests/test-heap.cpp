@@ -1,7 +1,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/ordered/heap.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 
@@ -9,12 +9,12 @@ YOCTO_UNIT_TEST_IMPL(heap)
 {
     heap<int>   H;
     vector<int> V;
-    for( size_t i=1; i <= 32+alea_lt(100); ++i )
+    for( size_t i=1; i <= 32+alea.lt(100); ++i )
     {
         V.push_back( i );
     }
     
-    c_shuffle<int>( &V[1], V.size() );
+    alea.shuffle<int>( &V[1], V.size() );
     std::cerr << "------------- insert heap -------------" << std::endl;
     for( size_t i=1; i <= V.size(); ++i )
     {

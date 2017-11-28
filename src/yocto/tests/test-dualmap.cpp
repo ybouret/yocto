@@ -32,7 +32,7 @@ YOCTO_UNIT_TEST_IMPL(dualmap)
     
     for(size_t iter=10;iter>0;--iter)
     {
-        for(size_t i=10 + alea_leq(1000); i>0;--i)
+        for(size_t i=10 + alea.leq(1000); i>0;--i)
         {
             const int    k = gen<int>::get();
             const string s = gen<string>::get();
@@ -45,7 +45,7 @@ YOCTO_UNIT_TEST_IMPL(dualmap)
         dm.release();
     }
     
-    for(size_t i=20 + alea_leq(20); i>0;--i)
+    for(size_t i=20 + alea.leq(20); i>0;--i)
     {
         const int    k = gen<int>::get();
         const string s = gen<string>::get();

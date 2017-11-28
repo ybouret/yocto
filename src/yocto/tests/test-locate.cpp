@@ -1,7 +1,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/core/locate.hpp"
 #include "yocto/memory/buffers.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 
@@ -78,7 +78,7 @@ YOCTO_UNIT_TEST_IMPL(locate)
 		std::cerr << "raw=";
 		for( size_t i=0; i < n; ++i )
 		{
-			const int x    = alea_leq(1000);
+			const int x    = alea.leq(1000);
 			size_t    indx = 0;
 			if( !core::locate( &x, tab(), j, indx, compare ) )
 			{

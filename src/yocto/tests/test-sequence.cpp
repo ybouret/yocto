@@ -49,7 +49,7 @@ namespace  {
 
 
 template <>
-struct gen<dummy> { static inline dummy get() { return dummy(alea_of<int>()); } };
+struct gen<dummy> { static inline dummy get() { return dummy(alea.full<int>()); } };
 
 namespace {	
 	
@@ -73,7 +73,7 @@ namespace {
 		for( size_t i=0; i<n; ++i )
 		{
 			const T obj = gen<T>::get();
-			if( alea<float>() < 0.5f )
+			if( alea.get<float>() < 0.5f )
 			{
 				seq.push_front( obj );
 			}
@@ -85,7 +85,7 @@ namespace {
 		std::cerr << ".. " << seq.size() << " / " << seq.capacity() << std::endl;
 		for( size_t i=seq.size()/2; i >0; --i )
 		{
-			if( alea<float>() < 0.5f )
+			if( alea.get<float>() < 0.5f )
 			{
 				seq.pop_back();
 			}
@@ -98,7 +98,7 @@ namespace {
 		for( size_t i=0; i<n; ++i )
 		{
 			const T obj = gen<T>::get();
-			if( alea<float>() < 0.5f )
+			if( alea.get<float>() < 0.5f )
 			{
 				seq.push_front( obj );
 			}
@@ -121,7 +121,7 @@ namespace {
 		for( size_t i=0; i < 16; ++i )
 		{
 			const T obj = gen<T>::get();
-			if( alea<float>() < 0.5f )
+			if( alea.get<float>() < 0.5f )
 			{
 				seq.push_front( obj );
 			}

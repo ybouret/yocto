@@ -1,5 +1,4 @@
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
 #include "yocto/memory/pooled.hpp"
 
 #include "yocto/sequence/some-arrays.hpp"
@@ -16,7 +15,7 @@ static inline void process_arrays( arrays_manager<T> &M )
     {
         for(size_t i=0;i<M.num_arrays();++i)
         {
-            M.allocate(1+alea_lt(1000));
+            M.allocate(1+alea.lt(1000));
             std::cerr << "size=" << M.size << std::endl;
 
 
@@ -44,14 +43,14 @@ YOCTO_UNIT_TEST_IMPL(multi_arrays)
     some_arrays<12,int, memory::pooled> M2;
     process_arrays(M2);
 
-    many_arrays<float,memory::global> M3(5+alea_lt(10));
+    many_arrays<float,memory::global> M3(5+alea.lt(10));
     process_arrays(M3);
 
 
-    many_arrays<uint64_t,memory::pooled> M4(8+alea_lt(10));
+    many_arrays<uint64_t,memory::pooled> M4(8+alea.lt(10));
     process_arrays(M4);
 
-    many_arrays<string,memory::pooled> M5(3+alea_lt(10));
+    many_arrays<string,memory::pooled> M5(3+alea.lt(10));
     process_arrays(M5);
 }
 YOCTO_UNIT_TEST_DONE()

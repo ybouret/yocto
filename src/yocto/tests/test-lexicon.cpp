@@ -1,7 +1,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/associative/lexicon.hpp"
 #include "yocto/string.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 

@@ -22,7 +22,7 @@ template <typename T>
 static inline void test_sort()
 {
 	std::cerr << "-- sorting" << std::endl;
-	const size_t n = 1 + alea_leq( 20 );
+	const size_t n = 1 + alea.leq( 20 );
 	vector<T>    ra(n,as_capacity);
 	for( size_t i=0; i < n; ++i )
 	{
@@ -39,7 +39,7 @@ template <typename T,typename U>
 static inline void test_cosort()
 {
 	std::cerr << "-- co-sorting" << std::endl;
-	const size_t n = 1 + alea_leq( 20 );
+	const size_t n = 1 + alea.leq( 20 );
 	vector<T>    ra(n,as_capacity);
 	vector<U>    rb(n,as_capacity);
 	for( size_t i=0; i < n; ++i )
@@ -68,7 +68,7 @@ static inline void test_netsort()
 {
     std::cerr << "-- sorting network" << std::endl;
 
-    const size_t n = 1 + alea_leq( 20 );
+    const size_t n = 1 + alea.leq( 20 );
     vector<T> ra(6,as_capacity);
     
     //-- level 2
@@ -127,7 +127,7 @@ static inline void test_co_netsort()
 {
     std::cerr << "-- co_sorting network" << std::endl;
 
-    const size_t n = 1 + alea_leq( 20 );
+    const size_t n = 1 + alea.leq( 20 );
     vector<T> ra(6,as_capacity);
     vector<U> rb(6,as_capacity);
     
@@ -185,7 +185,7 @@ template <typename T>
 static inline void test_qsort()
 {
 	std::cerr << "-- sorting" << std::endl;
-	const size_t n = 1 + alea_leq( 20 );
+	const size_t n = 1 + alea.leq( 20 );
 	vector<T>    ra(n,as_capacity);
 	for( size_t i=0; i < n; ++i )
 	{
@@ -202,7 +202,7 @@ template <typename T,typename U>
 static inline void test_coqsort()
 {
 	std::cerr << "-- co-quicksorting" << std::endl;
-	const size_t n = 1 + alea_leq( 20 );
+	const size_t n = 1 + alea.leq( 20 );
 	vector<T>    ra(n,as_capacity);
 	vector<U>    rb(n,as_capacity);
 	for( size_t i=0; i < n; ++i )
@@ -270,7 +270,7 @@ inline double test_perf( size_t n, SortWith proc )
     double average = 0;
     for(size_t i=0;i<ITER_MAX;++i)
     {
-        c_shuffle( &arr[1], n);
+        alea.shuffle( &arr[1], n);
         const double stamp = chrono.query();
         switch(proc)
         {

@@ -1,7 +1,7 @@
 #include "yocto/threading/thread.hpp"
 #include "yocto/sys/wtime.hpp"
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/core/list.hpp"
 
 using namespace yocto;
@@ -22,7 +22,7 @@ namespace
 		mutex             &m = *d.synchro;
 		for( size_t i=0; i < 10; ++i)
 		{
-			wtime::sleep( alea<double>() * 0.1 );
+			wtime::sleep( alea.get<double>() * 0.1 );
 			YOCTO_LOCK(m);
 			std::cerr << "\tId=" << thread::get_current_handle() << std::endl;
 			d.sum += 1;

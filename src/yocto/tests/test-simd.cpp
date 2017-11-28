@@ -1,6 +1,6 @@
 #include "yocto/threading/scheme/simd.hpp"
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand32.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sys/wtime.hpp"
 
 using namespace yocto;
@@ -22,8 +22,8 @@ namespace {
 
         inline void proc( threading::context &ctx ) throw()
         {
-            rand32_kiss r;
-            r.seed(ctx.rank);
+            Randomized::Kiss32 r;
+            r.reset(ctx.indx);
             double sum    = 0;
             size_t offset = 0;
             size_t length = count;

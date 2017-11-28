@@ -2,7 +2,7 @@
 #include "yocto/sort/unique.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/comparator.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 #include "support.hpp"
 
@@ -13,9 +13,9 @@ YOCTO_UNIT_TEST_IMPL(unique)
 {
     vector<int> a;
     
-    for( size_t i= 2 + alea_leq(20); i>0; --i )
+    for( size_t i= 2 + alea.leq(20); i>0; --i )
     {
-        a.push_back( int(alea_leq(15) ) );
+        a.push_back( int(alea.leq(15) ) );
     }
     
     std::cerr << "a1=" << a << std::endl;
@@ -25,12 +25,12 @@ YOCTO_UNIT_TEST_IMPL(unique)
     std::cerr << "a3=" << a << std::endl;
     
     vector<string> b;
-    for(size_t i=2+alea_leq(20);i>0;--i)
+    for(size_t i=2+alea.leq(20);i>0;--i)
     {
         string s;
-        for(size_t j=1+alea_lt(3);j>0;--j)
+        for(size_t j=1+alea.lt(3);j>0;--j)
         {
-            s += char( 'A' + alea_lt(2) );
+            s += char( 'A' + alea.lt(2) );
         }
         b.push_back(s);
     }

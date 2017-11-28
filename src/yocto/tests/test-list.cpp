@@ -1,6 +1,6 @@
 #include "yocto/core/list.hpp"
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sort/merge.hpp"
 #include "yocto/comparator.hpp"
 using namespace yocto;
@@ -43,7 +43,7 @@ namespace
 
 YOCTO_UNIT_TEST_IMPL(list)
 {
-	const size_t num   = 30 + alea_leq(100);
+	const size_t num   = 30 + alea.leq(100);
 	node_type   *nodes = new node_type[num];
 	core::list_of<node_type> L;
 	
@@ -58,7 +58,7 @@ YOCTO_UNIT_TEST_IMPL(list)
 	for( size_t i=0; i < num; ++i )
 	{
 		node_type *node = nodes+i;
-		if( alea<float>() < 0.5 )
+		if( alea.get<float>() < 0.5 )
 		{
 			L.push_front( node );
 			std::cerr << ">";
@@ -82,7 +82,7 @@ YOCTO_UNIT_TEST_IMPL(list)
 		size_t i=0;
 		while( L.size > 0 )
 		{
-			node_type *node =  alea<float>() < 0.5 ? L.pop_front() : L.pop_back();
+			node_type *node =  alea.get<float>() < 0.5f ? L.pop_front() : L.pop_back();
 			std::cerr << ++i << " : " << node->data << std::endl;	
 		}
 	}
@@ -90,7 +90,7 @@ YOCTO_UNIT_TEST_IMPL(list)
 	for( size_t i=0; i < num; ++i )
 	{
 		node_type *node = nodes+i;
-		if( alea<float>() < 0.5 )
+		if( alea.get<float>() < 0.5 )
 		{
 			L.push_front( node );
 			std::cerr << ">";
@@ -110,7 +110,7 @@ YOCTO_UNIT_TEST_IMPL(list)
 	for( size_t i=0; i < num; ++i )
 	{
 		node_type *node = nodes+i;
-		if( alea<float>() < 0.5 )
+		if( alea.get<float>() < 0.5f )
 		{
 			L.push_front( node );
 			std::cerr << ">";
@@ -127,7 +127,7 @@ YOCTO_UNIT_TEST_IMPL(list)
 		size_t j=0;
 		while( L.size )
 		{
-			node_type *node = L.unlink( L.fetch( alea_lt( L.size ) ) );
+			node_type *node = L.unlink( L.fetch( alea.lt( L.size ) ) );
 			std::cerr << ++j << " : " << node->data << std::endl;	
 		}
 	}
@@ -135,7 +135,7 @@ YOCTO_UNIT_TEST_IMPL(list)
 	for( size_t i=0; i < num; ++i )
 	{
 		node_type *node = nodes+i;
-		if( alea<float>() < 0.5 )
+		if( alea.get<float>() < 0.5f )
 		{
 			L.push_front( node );
 			std::cerr << ">";
@@ -150,31 +150,31 @@ YOCTO_UNIT_TEST_IMPL(list)
 	std::cerr << "-- move to front" << std::endl;
 	for( size_t i=0; i < 100 * num; ++i )
 	{
-		L.move_to_front( L.fetch( alea_lt( L.size ) ) );
+		L.move_to_front( L.fetch( alea.lt( L.size ) ) );
 	}
 
     std::cerr << "-- random insert" << std::endl;
     for(size_t i=0;i<100*num;++i)
     {
         {
-            node_type *node = L.unlink( L.fetch(alea_lt(L.size) ) );
-            L.insert_after(L.fetch(alea_lt(L.size)),node);
+            node_type *node = L.unlink( L.fetch(alea.lt(L.size) ) );
+            L.insert_after(L.fetch(alea.lt(L.size)),node);
         }
 
         {
-            node_type *node = L.unlink( L.fetch(alea_lt(L.size) ) );
-            L.insert_before(L.fetch(alea_lt(L.size)),node);
+            node_type *node = L.unlink( L.fetch(alea.lt(L.size) ) );
+            L.insert_before(L.fetch(alea.lt(L.size)),node);
         }
 
         {
-            node_type *node = L.fetch(alea_lt(L.size) );
+            node_type *node = L.fetch(alea.lt(L.size) );
             if(node!=L.tail&&L.size>=2)
             {
                 L.towards_tail(node);
             }
         }
         {
-            node_type *node = L.fetch(alea_lt(L.size) );
+            node_type *node = L.fetch(alea.lt(L.size) );
             if(node!=L.head&&L.size>=2)
             {
                 L.towards_head(node);
@@ -195,7 +195,7 @@ YOCTO_UNIT_TEST_IMPL(clist)
     
     for( size_t iter =1 ; iter <= 1024; ++iter )
     {
-        const size_t num   = 20 + alea_leq(20);
+        const size_t num   = 20 + alea.leq(20);
         node_type   *nodes = new node_type[num];
         core::clist_of<node_type> L;
         
@@ -209,7 +209,7 @@ YOCTO_UNIT_TEST_IMPL(clist)
         
         for( size_t i=0; i < num; ++i )
         {
-            if( alea<float>() > 0.5f )
+            if( alea.get<float>() > 0.5f )
             {
                 L.push_back(nodes+i);
             }
@@ -229,7 +229,7 @@ YOCTO_UNIT_TEST_IMPL(clist)
         
         while( L.size > 0 )
         {
-            if( alea<float>() > 0.5f )
+            if( alea.get<float>() > 0.5f )
             {
                 node_type *node = L.pop_back();
                 std::cerr << "pop_back  = " << node->data << std::endl;
@@ -241,7 +241,7 @@ YOCTO_UNIT_TEST_IMPL(clist)
             }
         }
         
-        c_shuffle(nodes, num);
+        alea.shuffle(nodes, num);
         for( size_t i=0; i < num; ++i )
         {
             L.push_back(nodes+i);
@@ -249,7 +249,7 @@ YOCTO_UNIT_TEST_IMPL(clist)
         
         while( L.size > 0 )
         {
-            node_type *node = L.fetch( alea_lt(L.size) );
+            node_type *node = L.fetch( alea.lt(L.size) );
             node_type *curr = L.unlink(node);
             assert(curr==node);
 		if(curr)

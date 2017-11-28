@@ -36,7 +36,7 @@ YOCTO_UNIT_TEST_IMPL(mlock)
 }
 YOCTO_UNIT_TEST_DONE()
 
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sequence/vector.hpp"
 
 namespace
@@ -59,7 +59,7 @@ namespace
         for(;;)
         {
             pblock B;
-            B.size = alea_lt(3*sizeof(memory::page::block_t));
+            B.size = alea.lt(3*sizeof(memory::page::block_t));
             std::cerr << "B.size=" << B.size;
             B.addr = P.acquire(B.size);
             if(!B.addr)
@@ -83,7 +83,7 @@ YOCTO_UNIT_TEST_IMPL(pages)
         fill(blocks,*P);
         size_t nb = blocks.size();
         std::cerr << "\t\t#BLOCKS=" << nb << std::endl;
-        if(nb) c_shuffle( &blocks[1], nb);
+        if(nb) alea.shuffle( &blocks[1], nb);
         while(blocks.size()>nb/2)
         {
             P->release(blocks.back().addr);
@@ -92,7 +92,7 @@ YOCTO_UNIT_TEST_IMPL(pages)
         fill(blocks,*P);
         nb = blocks.size();
         std::cerr << "\t\t#BLOCKS=" << nb << std::endl;
-        if(nb) c_shuffle( &blocks[1], nb);
+        if(nb) alea.shuffle( &blocks[1], nb);
         while(blocks.size()>0)
         {
             P->release(blocks.back().addr);

@@ -1,6 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/fragment/layout.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/hashing/sha1.hpp"
 
 using namespace yocto;
@@ -17,7 +17,7 @@ YOCTO_UNIT_TEST_IMPL(frag_layout)
 {
 	
 	
-	for( size_t block_size=1; block_size<=300; block_size += 1 + alea_leq(30) )
+	for( size_t block_size=1; block_size<=300; block_size += 1 + alea.leq(30) )
 	{
 		std::cerr << "block_size=" << block_size << std::endl;
 		for( size_t ln2 = fragment::layout::round_log2_min; ln2 <= fragment::layout::round_log2_max; ++ln2 )
@@ -40,7 +40,7 @@ YOCTO_UNIT_TEST_IMPL(frag_block)
 	
 	hashing::sha1 H;
 	
-	for( size_t bs=0; bs<=1024; bs += 1 + alea_leq(100) )
+	for( size_t bs=0; bs<=1024; bs += 1 + alea.leq(100) )
 	{
 		fragment::block B( bs );
 		std::cerr << std::dec << "length = " << B.length() << " | unused=" << B.unused() << std::endl;
@@ -48,8 +48,8 @@ YOCTO_UNIT_TEST_IMPL(frag_block)
 		while( B.unused() > 0 )
 		{
 			char buffer[32];
-			const size_t buflen = 1+alea_lt( sizeof(buffer) );
-			for( size_t j=0; j < buflen; ++j ) buffer[j] = char('A' + alea_lt(26) );
+			const size_t buflen = 1+alea.lt( sizeof(buffer) );
+			for( size_t j=0; j < buflen; ++j ) buffer[j] = char('A' + alea.lt(26) );
 			const size_t len = B.write(buffer, buflen);
 			std::cerr << ".";
 			H.run(buffer,len);
@@ -62,10 +62,10 @@ YOCTO_UNIT_TEST_IMPL(frag_block)
 		while( B.length() > 0 )
 		{
 			char buffer[32];
-			const size_t buflen = 1+alea_lt( sizeof(buffer) );
+			const size_t buflen = 1+alea.lt( sizeof(buffer) );
 			const size_t len = B.read(buffer,buflen);
 			H.run(buffer,len);
-			if( alea<float>() > 0.66f ) 
+			if( alea.get<float>() > 0.66f )
 			{
 				B.defrag(); std::cerr << "*";
 			}
@@ -89,7 +89,7 @@ YOCTO_UNIT_TEST_IMPL(frag_queue)
 	hashing::sha1 H;
 	const size_t size = 16 * 1024;
 	uint8_t     *huge = new uint8_t[ size ];
-	for( size_t i=0; i < size; ++i ) huge[i] = alea_of<uint8_t>();
+	for( size_t i=0; i < size; ++i ) huge[i] = alea.full<uint8_t>();
 	
 	H.set();
 	H.run(huge,size);
@@ -100,7 +100,7 @@ YOCTO_UNIT_TEST_IMPL(frag_queue)
 	
 	try
 	{
-		for( size_t bs=10; bs < 1000; bs += 1 + alea_leq(100) )
+		for( size_t bs=10; bs < 1000; bs += 1 + alea.leq(100) )
 		{
 			fragment::queue Q(bs);
 			std::cerr << "block_size=" << Q.block_size << std::endl;
@@ -121,7 +121,7 @@ YOCTO_UNIT_TEST_IMPL(frag_queue)
 				size_t buflen = 0;
 				while( Q.bytes() )
 				{
-					Q.get( buffer, 1+alea_lt(sizeof(buffer)), buflen );
+					Q.get( buffer, 1+alea.lt(sizeof(buffer)), buflen );
 					//std::cerr << "+" << buflen << std::endl;
 					H.run( buffer, buflen );
 				}

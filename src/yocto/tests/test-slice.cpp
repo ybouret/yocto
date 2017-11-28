@@ -1,6 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/memory/slice.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/memory/global.hpp"
 
 using namespace yocto;
@@ -8,8 +8,8 @@ using namespace memory;
 
 YOCTO_UNIT_TEST_IMPL(slice)
 {
-	std::cerr << "sizeof(slice)=" << sizeof(slice) << std::endl;
-	std::cerr << "sizeof(block_t)=" << sizeof(slice::block_t) << std::endl;
+	std::cerr << "sizeof(slice)   = " << sizeof(slice) << std::endl;
+	std::cerr << "sizeof(block_t) = " << sizeof(slice::block_t) << std::endl;
 	{
 		std::cerr << "block alignment" << std::endl;
 		size_t s = 0;
@@ -25,7 +25,7 @@ YOCTO_UNIT_TEST_IMPL(slice)
 	
 	for( size_t k = 0; k < 16; ++k )
 	{
-		const size_t mini_size = 100 + alea_leq(4000);
+		const size_t mini_size = 100 + alea.leq(4000);
 		std::cerr << "#blocks for " << mini_size << " = " << slice::blocks_for( mini_size ) << std::endl;
 		slice S(0,mini_size);
 		std::cerr << "S.count=" << S.count() << std::endl;
@@ -47,7 +47,7 @@ YOCTO_UNIT_TEST_IMPL(slice)
 		for(;;)
 		{
 			std::cerr << "+";
-			length = 1 + alea_lt(8*sizeof(slice::block_t));
+			length = 1 + alea.lt(8*sizeof(slice::block_t));
 			//std::cerr << "? " << length << " => "; 
 			p      = S.acquire(length);
 			if( !p )
@@ -62,7 +62,7 @@ YOCTO_UNIT_TEST_IMPL(slice)
 		for( size_t iter = 0; iter < 16; ++iter )
 		{
 			std::cerr << "-";
-			c_shuffle(addr, num);
+			alea.shuffle(addr, num);
 			const int ntop = num/2;
 			while (num>ntop)
 			{
@@ -72,7 +72,7 @@ YOCTO_UNIT_TEST_IMPL(slice)
 			std::cerr << "+";
 			for(;;)
 			{
-				length = 1 + alea_lt(8*sizeof(slice::block_t));
+				length = 1 + alea.lt(8*sizeof(slice::block_t));
 				//std::cerr << "? " << length << " => "; 
 				p      = S.acquire(length);
 				if( !p )
@@ -86,7 +86,7 @@ YOCTO_UNIT_TEST_IMPL(slice)
 		}
 		
 		std::cerr << "-";
-		c_shuffle(addr, num);
+		alea.shuffle(addr, num);
 		for( int i=0; i < num; ++i )
 		{
 			S.release( addr[i] );

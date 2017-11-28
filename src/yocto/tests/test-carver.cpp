@@ -1,7 +1,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/memory/carver.hpp"
 #include "yocto/code/utils.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/memory/global.hpp"
 #include "yocto/sort/gnome.hpp"
 
@@ -31,7 +31,7 @@ YOCTO_UNIT_TEST_IMPL(carver)
 	{
 		for( size_t i=0; i < num; ++i )
 		{
-			size_t length = 1 + alea_leq(100);
+			size_t length = 1 + alea.leq(100);
 			addr[i] = C.acquire( length );
 		}
 		std::cerr << "#slices=" << C.used_slices() << std::endl;
@@ -39,7 +39,7 @@ YOCTO_UNIT_TEST_IMPL(carver)
 		const size_t nfree = (3*num)/4;
 		for( size_t j=0; j < 16; ++j )
 		{
-			c_shuffle(addr, num);
+			alea.shuffle(addr, num);
 			for( size_t i=0; i < nfree; ++i )
 			{
 				C.release(addr[i]);
@@ -47,7 +47,7 @@ YOCTO_UNIT_TEST_IMPL(carver)
 			std::cerr << "#slices=" << C.used_slices() << std::endl;
 			for( size_t i=0; i < nfree; ++i )
 			{
-				size_t length = 1 + alea_leq(100);
+				size_t length = 1 + alea.leq(100);
 				addr[i] = C.acquire( length );
 			}
 			

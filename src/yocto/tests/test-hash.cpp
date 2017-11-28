@@ -99,7 +99,7 @@ YOCTO_UNIT_TEST_IMPL(hash)
 		std::cerr << std::dec;
 		size_t   bytes = 1024 * 1024;
 		uint8_t *data  = kind<global>::acquire_as<uint8_t>( bytes );
-		for( size_t i=0; i < bytes; ++i ) data[i] = alea_of<uint8_t>();
+		for( size_t i=0; i < bytes; ++i ) data[i] = alea.full<uint8_t>();
 		
 		h_perf( h_reg, h_num, data, bytes);
 		kind<global>::release_as<uint8_t>( data, bytes );

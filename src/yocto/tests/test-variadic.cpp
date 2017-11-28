@@ -1,7 +1,7 @@
 #include "yocto/utest/run.hpp"
 #include <cstdarg>
 #include <cstdio>
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 
@@ -26,7 +26,7 @@ template <typename T>
 inline void varalloc()
 {
     T *p,*q;
-    const size_t n=100+alea_leq(100);
+    const size_t n=100+alea.leq(100);
     size_t m = n;
     memory::kind<memory::global>::acquire_chunks<T>(m,2,&p,&q);
     std::cerr << "p@" << (void*)p << std::endl;

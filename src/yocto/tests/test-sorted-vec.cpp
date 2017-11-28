@@ -1,7 +1,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/ordered/sorted-vector.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "support.hpp"
 #include "yocto/code/utils.hpp"
 
@@ -18,7 +18,7 @@ YOCTO_UNIT_TEST_IMPL(sorted_vec)
 		const size_t nmax = 1000;
 		for( size_t i=0; i < nmax; ++i)
 		{
-			if( sv.insert( alea_lt(nmax) ) )
+			if( sv.insert( alea.lt(nmax) ) )
 			{
 				++count;
 			}

@@ -1,7 +1,7 @@
 #ifndef YOCTO_UTEST_DRIVER_INCLUDED
 #define YOCTO_UTEST_DRIVER_INCLUDED 1
 
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -85,7 +85,7 @@ namespace yocto
 				}
 				else
 				{
-					alea_init();
+                    alea.initialize();
 					const char *name = argv[1];
 					const proc_type *proc = search( name );
 					if( !proc )

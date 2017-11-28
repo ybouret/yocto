@@ -1,6 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/string.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/core/list.hpp"
 
 using namespace yocto;
@@ -16,7 +16,7 @@ namespace
         memory_node *next, *prev;
         cslot        data;
 
-        explicit memory_node() : next(0), prev(0), data( alea_leq(100) )
+        explicit memory_node() : next(0), prev(0), data( alea.leq(100) )
         {
         }
 
@@ -40,7 +40,7 @@ namespace
             mlist tmp;
             while(size)
             {
-                if( alea<double>() > 0.5 )
+                if( alea.get<double>() > 0.5 )
                 {
                     tmp.push_front( pop_back() );
                 }
@@ -63,11 +63,11 @@ YOCTO_UNIT_TEST_IMPL(cslot)
     std::cerr << "sizeof(cslot)=" << sizeof(cslot) << std::endl;
 
     mlist L;
-    for(size_t i=100+alea_leq(200);i>0;--i) L.push_back( new memory_node() );
+    for(size_t i=100+alea.leq(200);i>0;--i) L.push_back( new memory_node() );
     std::cerr << "#mlist=" << L.size << std::endl;
     L.shuffle();
     std::cerr << "#mlist=" << L.size << std::endl;
-    for(size_t i=100+alea_leq(200);i>0;--i) L.push_back( new memory_node() );
+    for(size_t i=100+alea.leq(200);i>0;--i) L.push_back( new memory_node() );
     std::cerr << "#mlist=" << L.size << std::endl;
     L.shuffle();
     std::cerr << "#mlist=" << L.size << std::endl;

@@ -1,5 +1,5 @@
 #include "yocto/utest/run.hpp"
-#include "yocto/random/uuid.hpp"
+#include "yocto/randomized/uuid.hpp"
 #include "yocto/sequence/list.hpp"
 
 

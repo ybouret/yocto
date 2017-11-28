@@ -21,9 +21,9 @@ YOCTO_UNIT_TEST_IMPL(multi_set)
     {
         const string k = gen<string>::get();
 
-        for(size_t j=2+alea_leq(2);j>0;--j)
+        for(size_t j=2+alea.leq(2);j>0;--j)
         {
-            ms.insert(k,alea<double>());
+            ms.insert(k,alea.get<double>());
         }
 
     }

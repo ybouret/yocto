@@ -2,7 +2,7 @@
 #include "yocto/error.hpp"
 #include "yocto/code/utils.hpp"
 #include "yocto/code/endian.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 #include "yocto/sys/hw.hpp"
 
@@ -13,7 +13,7 @@ static inline void test_endian()
 {
 	for( size_t i=0; i < 4; ++i )
 	{
-		T x = alea_of<T>();
+		T x = alea.full<T>();
 		T y = swap_be<T>(x);
 		T z = swap_be<T>(y);
 		std::cerr << std::hex;

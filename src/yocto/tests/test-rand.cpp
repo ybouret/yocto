@@ -1,5 +1,6 @@
+#if 0
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/threading/mutex.hpp"
 
 using namespace yocto;
@@ -21,7 +22,7 @@ YOCTO_UNIT_TEST_IMPL(rand)
 		double              sum = 0;
 		for( size_t i=0; i < N; ++i )
 		{
-			r[i] = alea<double>();
+			r[i] = alea.get<double>();
 			sum += r[i];
 		}
 		const double ave = sum /= N;
@@ -55,3 +56,5 @@ YOCTO_UNIT_TEST_IMPL(rand)
 	
 }
 YOCTO_UNIT_TEST_DONE()
+#endif
+

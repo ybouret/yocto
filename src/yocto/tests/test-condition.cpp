@@ -1,7 +1,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/threading/threads.hpp"
 #include "yocto/threading/condition.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sys/wtime.hpp"
 
 using namespace yocto;
@@ -36,7 +36,7 @@ void inc_count( void *args ) throw()
 		count_mutex->unlock();
 		
 		//-- sleep in a while to allow other thread(s) to run
-		wtime::sleep( 0.2 * alea<double>() );
+		wtime::sleep( 0.2 * alea.get<double>() );
     }
 }
 

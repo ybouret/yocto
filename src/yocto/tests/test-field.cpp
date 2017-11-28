@@ -1,6 +1,6 @@
 #include "yocto/parallel/field.hpp"
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/string.hpp"
 #include "support.hpp"
 #include "yocto/math/point2d.hpp"
@@ -14,7 +14,7 @@ YOCTO_UNIT_TEST_IMPL(field)
     parallel::field1D<float> F1( parallel::patch1D(-10,12) );
     for(unit_t x=F1.lower;x<=F1.upper;++x)
     {
-        F1[x] = alea<float>();
+        F1[x] = alea.get<float>();
     }
 
     {
@@ -30,7 +30,7 @@ YOCTO_UNIT_TEST_IMPL(field)
     {
         for(unit_t x=F2d.lower.x;x<=F2d.upper.x;++x)
         {
-            F2d[y][x] = alea<double>();
+            F2d[y][x] = alea.get<double>();
         }
     }
 

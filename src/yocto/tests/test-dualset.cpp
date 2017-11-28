@@ -52,7 +52,7 @@ YOCTO_UNIT_TEST_IMPL(dualset)
     
     ds_t ds1;
     
-    for(size_t i= 100 + alea_leq(1000); i>0;--i)
+    for(size_t i= 100 + alea.leq(1000); i>0;--i)
     {
         const int    a = gen<int>::get();
         const string b = gen<string>::get();
@@ -116,7 +116,7 @@ YOCTO_UNIT_TEST_IMPL(dualset2)
     
     ds_t ds1;
     
-    for(size_t i= 100 + alea_leq(1000); i>0;--i)
+    for(size_t i= 100 + alea.leq(1000); i>0;--i)
     {
         const int    a = gen<int>::get();
         const string b = gen<string>::get();

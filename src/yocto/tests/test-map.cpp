@@ -35,7 +35,7 @@ static inline void test_map()
 			}
 			else
 			{
-				if( alea<float>() > 0.5f )
+				if( alea.get<float>() > 0.5f )
 				{
 					keys.push_back(key);
 				}

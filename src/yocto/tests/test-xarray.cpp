@@ -35,7 +35,7 @@ static inline void test_xarray()
 			}
 		}
 		
-		c_shuffle(arr.table, count);
+		alea.shuffle(arr.table, count);
 		for( size_t i=0; i < count; ++i )
 		{
 			T *p = arr.table[i];

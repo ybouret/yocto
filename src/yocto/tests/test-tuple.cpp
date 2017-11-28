@@ -1,6 +1,5 @@
 #include "yocto/container/tuple.hpp"
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
 
 using namespace yocto;
 

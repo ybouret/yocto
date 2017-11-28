@@ -77,7 +77,7 @@ namespace
                 dummy<KEY> d( k );
                 if( S.insert( d ) )
                 {
-                    if( alea<float>() > 0.6f ) keys.push_back( k );
+                    if( alea.get<float>() > 0.6f ) keys.push_back( k );
                 }
                 else {
                     std::cerr << "Multiple Key '" << k << "'" << std::endl;

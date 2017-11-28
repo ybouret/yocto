@@ -1,6 +1,6 @@
 #include "yocto/core/pool.hpp"
 #include "yocto/utest/run.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 
@@ -29,7 +29,7 @@ YOCTO_UNIT_TEST_IMPL(pool)
 		nodes[i].next = NULL;
 		nodes[i].data = i;
 	}
-	c_shuffle( nodes, num);
+	alea.shuffle( nodes, num);
 	
 	for( size_t i=0; i < num; ++i )
 	{

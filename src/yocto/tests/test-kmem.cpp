@@ -1,7 +1,7 @@
 #include "yocto/memory/kchunk.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/memory/global.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 #include "yocto/sys/wtime.hpp"
 #include <cstdlib>
 
@@ -40,7 +40,7 @@ namespace
                 ++nb;
             }
             
-            c_shuffle(blk,nb);
+            alea.shuffle(blk,nb);
             
             {
                 const size_t nk = nb/2;
@@ -60,7 +60,7 @@ namespace
                 ++nb;
             }
             
-            c_shuffle(blk,nb);
+            alea.shuffle(blk,nb);
             
             {
                 const size_t nk = nb;
@@ -80,64 +80,6 @@ namespace
         
     }
 
-#if 0
-    template <bool ZEROED>
-    static inline void kChunkPerf()
-    {
-        rt_clock chrono;
-        chrono.calibrate();
-        if(ZEROED)
-        {
-            std::cerr << "-- ZEROED blocks..." << std::endl;
-        }
-        else
-        {
-            std::cerr << "-- DIRTY blocks..." << std::endl;
-        }
-        size_t chunk_size = 4096;
-        for(size_t block_size=1;block_size<=512;block_size*=2)
-        {
-            std::cerr << "block_size=" << block_size; std::cerr.flush();
-            void *data = kind<global>::acquire(chunk_size);
-
-
-            tChunk<uint16_t,ZEROED> ch(data,block_size,chunk_size);
-            size_t   num_blocks = ch.stillAvailable;
-            block_t *blk        = kind<global>::acquire_as<block_t>(num_blocks);
-
-            size_t         cycles= 0;
-            uint64_t       t64   = 0;
-            do
-            {
-                ++cycles;
-                const uint64_t mark = rt_clock::ticks();
-                size_t nb = 0;
-                while(ch.stillAvailable)
-                {
-                    //blk[nb].size = block_size;
-                    blk[nb].addr = ch.acquire();
-                    ++nb;
-                }
-                t64 += (rt_clock::ticks()-mark);
-                c_shuffle(blk,nb);
-                while(nb--)
-                {
-                    ch.release(blk[nb].addr);
-                }
-
-                //std::cerr << "t64=" << t64 << std::endl;
-                //std::cerr << "tmx=" << chrono(t64) << std::endl;
-            }
-            while( chrono(t64) < 1.0 );
-
-            kind<global>::release_as<block_t>(blk,num_blocks);
-            kind<global>::release(data,chunk_size);
-            const double tmx = chrono(t64);
-            const double speed = 1e-6 * double(cycles)/tmx;
-            std::cerr << "\t\tspeed=" << speed << std::endl;
-        }
-    }
-#endif
     
 }
 
@@ -191,7 +133,7 @@ namespace
         
         for(size_t iter=0;iter<8;++iter)
         {
-            c_shuffle(blk,nb);
+            alea.shuffle(blk,nb);
             for(size_t i=nb/2;i>0;--i)
             {
                 --nb;
@@ -206,7 +148,7 @@ namespace
             }
         }
         
-        c_shuffle(blk,nb);
+        alea.shuffle(blk,nb);
         
         
         while(nb>0)
@@ -273,14 +215,14 @@ std::cerr << "ChunkSize=" << chunk_size << ", playing with " << num_blocks << " 
     {
         while(nb<num_blocks)
         {
-            blk[nb].size = 1+alea_lt(100);
+            blk[nb].size = 1+alea.lt(100);
             blk[nb].addr = B.acquire(blk[nb].size);
             ++nb;
         }
         
         for(size_t iter=0;iter<8;++iter)
         {
-            c_shuffle(blk,nb);
+            alea.shuffle(blk,nb);
             for(size_t i=nb/2;i>0;--i)
             {
                 --nb;
@@ -289,13 +231,13 @@ std::cerr << "ChunkSize=" << chunk_size << ", playing with " << num_blocks << " 
             
             while(nb<num_blocks)
             {
-                blk[nb].size = 1+alea_lt(100);
+                blk[nb].size = 1+alea.lt(100);
                 blk[nb].addr = B.acquire(blk[nb].size);
                 ++nb;
             }
         }
         
-        c_shuffle(blk,nb);
+        alea.shuffle(blk,nb);
         while(nb>0)
         {
             --nb;
@@ -324,14 +266,14 @@ YOCTO_UNIT_TEST_IMPL(kObject)
     {
         while(nb<num_blocks)
         {
-            blk[nb].size = 1+alea_lt(2*object::limit_size);
+            blk[nb].size = 1+alea.lt(2*object::limit_size);
             blk[nb].addr = object::operator new(blk[nb].size);
             ++nb;
         }
         
         for(size_t iter=0;iter<8;++iter)
         {
-            c_shuffle(blk,nb);
+            alea.shuffle(blk,nb);
             for(size_t i=nb/2;i>0;--i)
             {
                 --nb;
@@ -340,13 +282,13 @@ YOCTO_UNIT_TEST_IMPL(kObject)
             
             while(nb<num_blocks)
             {
-                blk[nb].size =  1+alea_lt(2*object::limit_size);
+                blk[nb].size =  1+alea.lt(2*object::limit_size);
                 blk[nb].addr = object::operator new(blk[nb].size);
                 ++nb;
             }
         }
         
-        c_shuffle(blk,nb);
+        alea.shuffle(blk,nb);
         while(nb>0)
         {
             --nb;
@@ -403,7 +345,7 @@ namespace
         const double tmx = chrono.query();
         for(size_t i=num;i>0;--i)
         {
-            if( alea<double>()>0.5 )
+            if( alea.get<double>()>0.5 )
             {
                 L.push_back( new NODE() );
             }

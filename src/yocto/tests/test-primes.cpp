@@ -1,6 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/code/primes.hpp"
-#include "yocto/code/rand.hpp"
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 
@@ -20,7 +20,7 @@ YOCTO_UNIT_TEST_IMPL(primes)
 	{
 		for( size_t j=0; j < 4; ++j )
 		{
-			const size_t n = 2 + alea_lt( 0xFFFFFF );
+			const size_t n = 2 + alea.lt( 0xFFFFFF );
 			std::cerr << "(" << prev_prime(n) << "," << n << "," << next_prime(n) << ") ";
 		}
 		std::cerr << std::endl;

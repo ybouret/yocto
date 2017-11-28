@@ -1,7 +1,7 @@
 #include "yocto/mpl/types.hpp"
 #include <cmath>
 
-#include "yocto/random/bits.hpp"
+#include "yocto/randomized/bits.hpp"
 
 namespace yocto
 {
@@ -35,8 +35,8 @@ namespace yocto
 
         bool manager:: random_bit()
         {
-            static Random::Bits &ran = Random::CryptoBits();
-            return ran();
+            static Randomized::Bits &ran = Randomized::Bits::Crypto();
+            return ran.nextBool();
         }
     }
 }
