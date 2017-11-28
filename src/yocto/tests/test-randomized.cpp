@@ -7,6 +7,7 @@
 #include "yocto/randomized/uniform-mt.hpp"
 #include "yocto/randomized/urand32.hpp"
 #include "yocto/code/alea.hpp"
+#include "yocto/randomized/gaussian.hpp"
 
 #include "yocto/randomized/isaac.hpp"
 
@@ -197,4 +198,33 @@ YOCTO_UNIT_TEST_IMPL(alea)
 
 }
 YOCTO_UNIT_TEST_DONE()
+
+    template <typename GEN>
+    static inline void test_Gen(GEN &G)
+    {
+        typedef typename GEN::type type;
+        type sum = 0;
+        type sum_sq = 0;
+        size_t n = 0;
+        for(size_t i=10000;i>0;--i)
+        {
+            const type x = G();
+            sum    += x;
+            sum_sq += x*x;
+            ++n;
+        }
+        const type ave = sum/n;
+        std::cerr << "ave=" << ave << std::endl;
+    }
+    
+    YOCTO_UNIT_TEST_IMPL(gaussian)
+    {
+        GaussianGenerator<double,UniformMT> Gd;
+        GaussianGenerator<float,UniformMT>  Gf;
+        Gd.reseed(alea);
+        Gf.reseed(alea);
+        test_Gen(Gd);
+        test_Gen(Gf);
+    }
+    YOCTO_UNIT_TEST_DONE()
 
