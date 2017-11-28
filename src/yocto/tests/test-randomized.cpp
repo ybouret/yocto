@@ -206,17 +206,23 @@ YOCTO_UNIT_TEST_DONE()
         type sum = 0;
         type sum_sq = 0;
         size_t n = 0;
-        for(size_t i=10000;i>0;--i)
+        for(size_t i=100000;i>0;--i)
         {
             const type x = G();
             sum    += x;
             sum_sq += x*x;
             ++n;
         }
-        const type ave = sum/n;
+        const double ave = sum/n;
+        const double var = (sum_sq - sum*sum/n)/(n-1);
+        const double sig = sqrt(var);
         std::cerr << "ave=" << ave << std::endl;
+        std::cerr << "sig=" << sig << std::endl;
+
     }
     
+#include "yocto/randomized/bivariate-gaussian.hpp"
+
     YOCTO_UNIT_TEST_IMPL(gaussian)
     {
         GaussianGenerator<double,UniformMT> Gd;
@@ -225,6 +231,33 @@ YOCTO_UNIT_TEST_DONE()
         Gf.reseed(alea);
         test_Gen(Gd);
         test_Gen(Gf);
+
+        BivariateGaussian<double,Uniform2> BG(1,2,0.1);
+        
+        double sum1=0,sum2=0,sq1=0,sq2=0;
+        size_t n = 0;
+        for(size_t i=1000;i>0;--i)
+        {
+            double u1,u2;
+            BG(u1,u2);
+            sum1 += u1;
+            sq1  += u1*u1;
+            sum2 += u2;
+            sq2  += u2*u2;
+            ++n;
+        }
+        
+        const double ave1 = sum1/n;
+        const double ave2 = sum2/n;
+        const double var1 = (sq1 - sum1*sum1/n)/(n-1);
+        const double var2 = (sq2 - sum2*sum2/n)/(n-1);
+        const double sig1 = sqrt(var1);
+        const double sig2 = sqrt(var2);
+        std::cerr << "ave1=" << ave1 << ", sig1=" << sig1 << std::endl;
+        std::cerr << "ave2=" << ave2 << ", sig2=" << sig2 << std::endl;
+        
     }
     YOCTO_UNIT_TEST_DONE()
+
+
 
