@@ -3,6 +3,7 @@
 
 #include "yocto/memory/buffer.hpp"
 #include "yocto/code/bswap.hpp"
+#include <math.h>
 
 namespace yocto
 {
@@ -116,7 +117,121 @@ namespace yocto
             static Bits & Simple(); //!< isaac4
             static Bits & Crypto(); //!< isaac8
 
-            
+
+
+            //! on unit circle
+            template <typename T>
+            inline void onCircle(T &x, T&y) throw()
+            {
+            PROBE:
+                {
+                    const T x1 = symm<T>();
+                    const T x2 = symm<T>();
+                    const T x1_sq = x1*x1;
+                    const T x2_sq = x2*x2;
+                    const T den   = x1_sq+x2_sq;
+                    if(den>=T(1)) goto PROBE;
+                    x = (x1_sq-x2_sq)/den;
+                    y = (x1*x2)/den;
+                    y+=y;
+                }
+            }
+
+            //! in unit disk
+            template <typename T>
+            inline void inDisk(T &x, T&y) throw()
+            {
+            PROBE:
+                {
+                    const T x1 = symm<T>();
+                    const T x2 = symm<T>();
+                    const T x1_sq = x1*x1;
+                    const T x2_sq = x2*x2;
+                    const T den   = x1_sq+x2_sq;
+                    if(den>=T(1)) goto PROBE;
+                    x = x1;
+                    y = x2;
+                }
+            }
+
+            //! wrapper for point2d
+            template <typename POINT>
+            inline POINT onCircle(void) throw()
+            {
+                POINT p;
+                onCircle<typename POINT::type>(p.x,p.y);
+                return p;
+            }
+
+            //! wrapper for point3d
+            template <typename POINT>
+            inline POINT inDisk(void) throw()
+            {
+                POINT p;
+                inDisk<typename POINT::type>(p.x,p.y);
+                return p;
+            }
+
+            static inline float  __sqrt(const float  x) throw() { return sqrtf(x); }
+            static inline double __sqrt(const double x) throw() { return sqrt(x);  }
+
+            //! on unit circle
+            template <typename T>
+            inline void onSphere(T &x, T&y, T &z) throw()
+            {
+                static const T __one(1);
+            PROBE:
+                {
+                    const T x1  = symm<T>();
+                    const T x2  = symm<T>();
+                    const T x12 = x1*x1;
+                    const T x22 = x2*x2;
+                    const T sum = x12+x22;
+                    if(sum>=__one) goto PROBE;
+                    const T oms = __one-sum;
+                    const T sqs = __sqrt(oms);
+                    const T hx  = x1 * sqs;
+                    const T hy  = x2 * sqs;
+                    z = __one-(sum+sum);
+                    x = hx+hx;
+                    y = hy+hy;
+                }
+            }
+
+            //! wrapper for point3d
+            template <typename POINT>
+            inline POINT onSphere(void) throw()
+            {
+                POINT p;
+                onSphere<typename POINT::type>(p.x,p.y,p.z);
+                return p;
+            }
+
+            //! within the unit ball
+            template <typename T>
+            inline void inBall(T &x, T&y, T &z) throw()
+            {
+                static const T __one(1);
+            PROBE:
+                {
+                    const T xx  = symm<T>();
+                    const T yy  = symm<T>();
+                    const T zz  = symm<T>();
+                    const T sq  = xx*xx+yy*yy+zz*zz;
+                    if(sq>=__one) goto PROBE;
+                    x = xx;
+                    y = yy;
+                    z = zz;
+                }
+            }
+
+            template <typename POINT>
+            inline POINT inBall(void) throw()
+            {
+                POINT p;
+                inBall<typename POINT::type>(p.x,p.y,p.z);
+                return p;
+            }
 
         protected:
             explicit Bits(const uint32_t maxValue) throw();

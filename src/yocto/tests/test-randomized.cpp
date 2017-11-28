@@ -107,6 +107,8 @@ YOCTO_UNIT_TEST_DONE()
 
 #include "yocto/sort/quick.hpp"
 #include "yocto/sequence/vector.hpp"
+#include "yocto/ios/ocstream.hpp"
+#include "yocto/math/point3d.hpp"
 
 YOCTO_UNIT_TEST_IMPL(alea)
 {
@@ -143,6 +145,55 @@ YOCTO_UNIT_TEST_IMPL(alea)
     std::cerr << "strings=" << strings << std::endl;
     std::cerr << "indices=" << indices << std::endl;
     std::cerr << std::endl;
+
+    {
+        ios::wcstream fp("circle.dat");
+        point2d<float> g;
+        size_t         n = 0;
+        for(size_t i=100+alea.leq(1000);i>0;--i)
+        {
+            point2d<float> p = alea.onCircle< point2d<float> >();
+            fp("%g %g\n",p.x,p.y);
+            g += p;
+            ++n;
+        }
+        g /= float(n);
+        fp("%g %g\n",g.x,g.y);
+    }
+
+    {
+        ios::wcstream fp("disk.dat");
+        for(size_t i=100+alea.leq(1000);i>0;--i)
+        {
+            point2d<double> p = alea.inDisk< point2d<double> >();
+            fp("%g %g\n",p.x,p.y);
+        }
+    }
+
+    {
+        ios::wcstream fp("sphere.dat");
+        point3d<float> g;
+        size_t         n = 0;
+        for(size_t i=100+alea.leq(1000);i>0;--i)
+        {
+            point3d<float> p = alea.onSphere< point3d<float> >();
+            fp("%g %g %g\n",p.x,p.y,p.z);
+            g += p;
+            ++n;
+        }
+        g /= float(n);
+    }
+
+    {
+        ios::wcstream fp("ball.dat");
+        for(size_t i=100+alea.leq(1000);i>0;--i)
+        {
+            point3d<double> p = alea.inBall< point3d<double> >();
+            fp("%g %g %g\n",p.x,p.y,p.z);
+        }
+    }
+
+
 
 }
 YOCTO_UNIT_TEST_DONE()
