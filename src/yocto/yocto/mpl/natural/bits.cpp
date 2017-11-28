@@ -225,6 +225,7 @@ namespace yocto {
             {
                 ans.shl().byte[0] |= static_cast<uint8_t>( manager::random_bit() ? 1 : 0 );
             }
+            ans.rescan();
             return ans;
         }
     }

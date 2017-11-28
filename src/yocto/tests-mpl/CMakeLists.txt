@@ -20,6 +20,7 @@ ADD_TEST(mpn test-mpl  mpn)
 ADD_TEST(mpz test-mpl  mpz)
 ADD_TEST(mpq test-mpl  mpq)
 ADD_TEST(hash test-mpl hash)
+ADD_TEST(rand test-mpl rand)
 
 FIND_PACKAGE(MPI)
 
