@@ -368,7 +368,7 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
             YOCTO_MPN_DECL(natural,-,sub)
             YOCTO_MPN_DECL_SELF(-=,-)
             
-          
+
             inline natural &dec()
             {
                 word_t       __one = 1;
@@ -491,7 +491,7 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
                                   const size_t nd);
             YOCTO_MPN_DECL(natural,%,modulo)
             YOCTO_MPN_DECL_SELF(%=,%)
-           
+
             //__________________________________________________________________
             //
             //
@@ -575,6 +575,26 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(key_hasher);
             };
+
+            //__________________________________________________________________
+            //
+            //
+            // boolean
+            //
+            //__________________________________________________________________
+            static natural booleanOps(const void *lhs, const size_t nl,
+                                      const void *rhs, const size_t nr,
+                                      uint8_t (*proc)(const uint8_t, const uint8_t));
+
+            static natural OR(const void *lhs, const size_t nl,
+                              const void *rhs, const size_t nr);
+            YOCTO_MPN_DECL(natural,|,OR)
+            YOCTO_MPN_DECL_SELF(|=,|)
+
+            static natural AND(const void *lhs, const size_t nl,
+                              const void *rhs, const size_t nr);
+            YOCTO_MPN_DECL(natural,&,AND)
+            YOCTO_MPN_DECL_SELF(&=,&)
 
         private:
             size_t   maxi; //!< maximum #bytes

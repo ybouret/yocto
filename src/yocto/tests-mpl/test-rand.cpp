@@ -25,13 +25,15 @@ YOCTO_UNIT_TEST_IMPL(rand)
         }
         ave /= n;
         std::cerr << std::hex << "ave = " << ave << std::endl;
+#if 1
         if(bits>0)
         {
-            const mpn expected = mpn::exp2(bits-1);
+            const mpn expected = ((mpn::exp2(bits-1)-1)>>1) | (mpn::exp2(bits-1));
             std::cerr << "for = " << expected << std::endl;
             mpq ratio(ave,expected);
             std::cerr << "ratio=" << ratio.to_double() << std::endl;
         }
+#endif
     }
 }
 YOCTO_UNIT_TEST_DONE()
