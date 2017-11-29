@@ -15,6 +15,8 @@ namespace yocto
         static const int32_t IQ2 = 52774;
         static const int32_t IR1 = 12211;
         static const int32_t IR2 = 3791;
+        static const int32_t SAUX = 123456789;
+
 #define              NDIV  (1+IMM1/32)
 
 #if defined(_MSC_VER)
@@ -27,7 +29,7 @@ namespace yocto
         Uniform2:: Uniform2() throw() :
         Bits(IM1-1),
         seed_( 0 ),
-        saux_( 0 ),
+        saux_( SAUX ),
         iy_(0),
         iv_( )
         {
@@ -48,7 +50,7 @@ namespace yocto
                 seed_ = max_of<int32_t>( 1, ms );
             }
             
-            saux_ = seed_;
+            saux_ = SAUX;
             for(int32_t j=32+7;j>=0;j--)
             {
                 const int32_t k=seed_/IQ1;

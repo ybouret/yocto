@@ -233,7 +233,8 @@ YOCTO_UNIT_TEST_DONE()
         test_Gen(Gf);
 
         BivariateGaussian<double,Uniform2> BG(1,2,0.1);
-        
+        //BG.reseed(alea);
+
         double sum1=0,sum2=0,sq1=0,sq2=0;
         size_t n = 0;
         for(size_t i=1000;i>0;--i)

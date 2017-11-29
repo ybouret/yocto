@@ -58,7 +58,12 @@ namespace yocto
         
         void __rand32:: settable( uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4, uint32_t i5, uint32_t i6 ) throw()
         {
-            z=i1;w=i2,jsr=i3; jcong=i4; a=i5; b=i6;
+            z=i1;
+            w=i2,
+            jsr=i3;
+            jcong=i4;
+            a=i5;
+            b=i6;
             for(size_t i=0;i<256;++i)
                 t[i]=KISS;
             c=0;
