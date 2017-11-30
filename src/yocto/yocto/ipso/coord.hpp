@@ -51,7 +51,7 @@ namespace yocto
 
             //! for integral types
             template <typename COORD>
-            static inline bool are_same(const COORD &lhs, const COORD &rhs) throw()
+            static inline bool eq(const COORD &lhs, const COORD &rhs) throw()
             {
                 const_type *L = (const_type *)&lhs;
                 const_type *R = (const_type *)&rhs;
@@ -62,6 +62,7 @@ namespace yocto
                 return true;
             }
 
+            
         };
     }
 }
