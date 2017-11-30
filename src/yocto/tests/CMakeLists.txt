@@ -104,6 +104,8 @@ ADD_TEST(HTree       test-main htree)
 ADD_TEST(SIMD        test-main SIMD)
 ADD_TEST(server      test-main server)
 ADD_TEST(randomized  test-main randomized)
+ADD_TEST(alea        test-main alea)
+ADD_TEST(gaussian    test-main gaussian)
 
 
 #ADD_CUSTOM_TARGET(check-main COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS test-main)

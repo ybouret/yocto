@@ -60,7 +60,7 @@ void test_rg( Bits &bits, const char *name )
         const float sig = sqrtf(var);
         std::cerr << "ave0=" << ave << ",\tsig0=" << sig << std::endl;
     }
-
+    
     for(size_t i=0;i<10;++i)
     {
         const uint64_t u64 = bits.full<uint64_t>();
@@ -99,6 +99,68 @@ YOCTO_UNIT_TEST_IMPL(randomized)
     {
         std::cerr << "\t" << ran() << std::endl;
     }
+
+}
+YOCTO_UNIT_TEST_DONE()
+
+#include "yocto/associative/map.hpp"
+static inline
+void rand_quality( Bits &bits, const char *name)
+{
+    static const double count32 = 4294967296.0;
+    static const size_t min_cap = 1048576;
+    static const size_t max_try = 2097152;
+    std::cerr << "Quality of " << name << std::endl;
+    map<uint32_t,size_t> counts(min_cap,as_capacity);
+    const size_t nmax = counts.capacity();
+    std::cerr << "nmax=" << nmax << std::endl;
+
+    std::cerr << "...generating" << std::endl;
+    for(size_t i=0;i<max_try;++i)
+    {
+        const uint32_t r = bits.next32();
+        size_t        *p = counts.search(r);
+        if(p)
+        {
+            ++(*p);
+        }
+        else
+        {
+            if(counts.size()>=nmax)
+            {
+                std::cerr << "full counts @" << i+1 << "/" << nmax << std::endl;
+                break;
+            }
+            else
+            {
+                if(!counts.insert(r,1))
+                {
+                    throw exception("unexpected insertion failure");
+                }
+            }
+        }
+    }
+    std::cerr << "..done" << std::endl;
+
+    std::cerr << "...entropy" << std::endl;
+    double E = 0;
+    for(map<uint32_t,size_t>::iterator it=counts.begin();it!=counts.end();++it)
+    {
+        const size_t ni = *it; assert(ni>0);
+        const double pi = double(ni)/count32;
+        E -= log(pi)*pi;
+    }
+    std::cerr << "E=" << E*1.0e6 << " ppm" << std::endl;
+}
+
+#define __QC(TYPE) do { TYPE __##TYPE; rand_quality(__##TYPE,#TYPE); } while(false)
+YOCTO_UNIT_TEST_IMPL(randQC)
+{
+    __QC(cstdbits);
+    __QC(Kiss32);
+    __QC(UniformMT);
+    //__QC(ISAAC<4>);
+    //__QC(ISAAC<8>);
 
 }
 YOCTO_UNIT_TEST_DONE()
@@ -196,8 +258,8 @@ YOCTO_UNIT_TEST_IMPL(alea)
 
 
 
-}
-YOCTO_UNIT_TEST_DONE()
+    }
+    YOCTO_UNIT_TEST_DONE()
 
     template <typename GEN>
     static inline void test_Gen(GEN &G)

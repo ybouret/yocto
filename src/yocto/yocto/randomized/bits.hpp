@@ -116,8 +116,7 @@ namespace yocto
 
             static Bits & Simple(); //!< isaac4
             static Bits & Crypto(); //!< isaac8
-
-
+            
 
             //! on unit circle
             template <typename T>

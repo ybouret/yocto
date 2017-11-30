@@ -21,10 +21,12 @@ namespace yocto
         
         void __rand32::test(void)
         {
+            fflush(stdout);
             __rand32 r;
             r.settable(12345,65435,34221,12345,9983651,95746118);
             uint32_t k;
             int      i;
+            printf("==> rand32 tests\n");
             for(i=1;i<1000001;i++){k=r.lfib4();} printf("%u\n", k-1064612766U);
             for(i=1;i<1000001;i++){k=r.swb()  ;} printf("%u\n", k- 627749721U);
             for(i=1;i<1000001;i++){k=r.kiss() ;} printf("%u\n", k-1372460312U);
@@ -32,6 +34,7 @@ namespace yocto
             for(i=1;i<1000001;i++){k=r.shr3() ;} printf("%u\n", k-2642725982U);
             for(i=1;i<1000001;i++){k=r.mwc()  ;} printf("%u\n", k- 904977562U);
             for(i=1;i<1000001;i++){k=r.fib()  ;} printf("%u\n", k-3519793928U);
+            printf("==> done\n");
         }
         
         
