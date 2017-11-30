@@ -59,7 +59,7 @@ namespace yocto
             string ans;
             for(size_t i=3+leq(13);i>0;--i)
             {
-                ans += 'a' + leq('z'-'a');
+                ans += 'a' + char(leq('z'-'a'));
             }
             return ans;
         }

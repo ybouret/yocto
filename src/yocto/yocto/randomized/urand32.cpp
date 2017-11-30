@@ -163,7 +163,7 @@ namespace yocto
         
         void __rand32:: initialize() throw()
         {
-            const uint64_t w0 = __h64(wtime::ticks()+__h64( getpid() ));
+            const uint64_t w0 = __h64(wtime::ticks()+ get_process_h32());
             const uint64_t w1 = __h64(w0+wtime::ticks());
             const uint64_t w2 = __h64(w1+wtime::ticks());
             union
