@@ -108,8 +108,9 @@ static inline
 void rand_quality( Bits &bits, const char *name)
 {
     static const double count32 = 4294967296.0;
-    static const size_t min_cap = 1048576;
-    static const size_t max_try = 2097152;
+    static const size_t min_cap = 2097152;
+    static const size_t max_try = 4194304;
+
     std::cerr << "Quality of " << name << std::endl;
     map<uint32_t,size_t> counts(min_cap,as_capacity);
     const size_t nmax = counts.capacity();
@@ -140,27 +141,29 @@ void rand_quality( Bits &bits, const char *name)
             }
         }
     }
-    std::cerr << "..done" << std::endl;
+    std::cerr << "...done" << std::endl;
 
-    std::cerr << "...entropy" << std::endl;
-    double E = 0;
+    double E = (double(nmax)/count32) * log(1.0/count32);
+    std::cerr << "...entropy (default=" << -E << ")" << std::endl;
     for(map<uint32_t,size_t>::iterator it=counts.begin();it!=counts.end();++it)
     {
         const size_t ni = *it; assert(ni>0);
         const double pi = double(ni)/count32;
         E -= log(pi)*pi;
     }
-    std::cerr << "E=" << E*1.0e6 << " ppm" << std::endl;
+    std::cerr << "Exs=" << E*1.0e6 << " ppm" << std::endl;
+
+    std::cerr << std::endl;
 }
 
-#define __QC(TYPE) do { TYPE __##TYPE; rand_quality(__##TYPE,#TYPE); } while(false)
+#define __QC(TYPE) do { TYPE rg; rg.reseed(alea); rand_quality(rg,#TYPE); } while(false)
 YOCTO_UNIT_TEST_IMPL(randQC)
 {
     __QC(cstdbits);
     __QC(Kiss32);
     __QC(UniformMT);
-    //__QC(ISAAC<4>);
-    //__QC(ISAAC<8>);
+    __QC(ISAAC<4>);
+    __QC(ISAAC<8>);
 
 }
 YOCTO_UNIT_TEST_DONE()

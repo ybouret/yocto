@@ -103,7 +103,7 @@ namespace yocto
 
         void cstdbits:: reseed(Bits &bits) throw()
         {
-            srand( bits.full<int>() );
+            srand( bits.full<unsigned>() );
         }
 
     }
