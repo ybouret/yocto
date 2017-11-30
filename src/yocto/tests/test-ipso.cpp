@@ -28,6 +28,15 @@ YOCTO_UNIT_TEST_IMPL(ipso)
     std::cerr << "c=" << c << std::endl;
     display_coords<int>(c);
 
+    coord<int>::_3 d = c;
+    if( coord<int>::are_same(c,d) )
+    {
+        std::cerr << "OK" << std::endl;
+    }
+    d=coord<int>::dec(c);
+    std::cerr << "c=" << c << std::endl;
+    std::cerr << "d=" << d << std::endl;
+
 }
 YOCTO_UNIT_TEST_DONE()
 
