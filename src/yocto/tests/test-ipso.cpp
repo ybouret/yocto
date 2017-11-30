@@ -1,5 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/ipso/patch.hpp"
+#include "yocto/ipso/utils.hpp"
 
 using namespace yocto;
 using namespace ipso;
