@@ -106,6 +106,7 @@ ADD_TEST(server      test-main server)
 ADD_TEST(randomized  test-main randomized)
 ADD_TEST(alea        test-main alea)
 ADD_TEST(gaussian    test-main gaussian)
+ADD_TEST(ipso        test-main ipso)
 
 
 #ADD_CUSTOM_TARGET(check-main COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS test-main)
