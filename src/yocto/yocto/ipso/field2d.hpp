@@ -8,7 +8,7 @@ namespace yocto
     namespace ipso
     {
         template <typename T>
-        class field2D : public patch2D
+        class field2D : public field<T>, public patch2D
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
@@ -17,9 +17,9 @@ namespace yocto
             inline explicit field2D(const patch2D &p,
                                     void *usr_data=NULL,
                                     void *usr_rows=NULL) :
+            field<T>(),
             patch2D(p),
             row_patch(p.lower.x,p.upper.x),
-            entry(0),
             rows(0),
             wksp(0),
             wlen(0)
@@ -40,13 +40,12 @@ namespace yocto
                     uint8_t *q = static_cast<uint8_t *>(wksp);
                     link(&q[data_offset],&q[rows_offset]);
                 }
+                this->set_bytes(this->items);
             }
 
 
             inline virtual ~field2D() throw()
             {
-                entry = 0;
-                rows  = 0;
                 memory::kind<memory::global>::release(wksp,wlen);
             }
 
@@ -64,7 +63,6 @@ namespace yocto
 
 
             const patch1D row_patch;
-            type *entry; //!< linear space of this->items
 
         private:
             row   *rows; //!< allocated rows
@@ -77,17 +75,17 @@ namespace yocto
                 assert(data_addr!=NULL); assert(rows_addr!=NULL);
                 // prepare memory
                 {
-                    entry      = (type *) data_addr;
-                    rows       = (row  *) rows_addr;
-                    rows      -= this->lower.y;
+                    this->entry = (type *) data_addr;
+                    rows        = (row  *) rows_addr;
+                    rows       -= this->lower.y;
                 }
 
                 // link rows
                 {
-                    type *r = entry;
-                    for(coord1D j=this->lower.y;j<=this->upper.y;++j,r+=this->width.x)
+                    type *data = this->entry;
+                    for(coord1D j=this->lower.y;j<=this->upper.y;++j,data+=this->width.x)
                     {
-                        new (rows+j) row(row_patch,r);
+                        new (rows+j) row(row_patch,data);
                     }
                 }
             }

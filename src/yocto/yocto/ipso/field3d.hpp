@@ -8,7 +8,7 @@ namespace yocto
     namespace ipso
     {
         template <typename T>
-        class field3D : public patch3D
+        class field3D : public field<T>, public patch3D
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
@@ -16,13 +16,13 @@ namespace yocto
             typedef field2D<T> slice;
 
             inline explicit field3D( const patch3D &p ) :
+            field<T>(),
             patch3D(p),
-            entry(0),
             slice_patch( coord2D(p.lower.x,p.lower.y), coord2D(p.upper.x,p.upper.y) ),
             wksp(0),
             wlen(0)
             {
-                // compute require memory
+                // compute required memory
                 const size_t data_offset   = 0;
                 const size_t data_length   = this->items * sizeof(type);
                 const size_t slices_offset = memory::align( data_offset+data_length );
@@ -35,13 +35,13 @@ namespace yocto
                 wksp = memory::kind<memory::global>::acquire(wlen);
                 uint8_t *q = static_cast<uint8_t *>(wksp);
 
-                entry  = (type  *) &q[ data_offset   ];
-                slices = (slice *) &q[ slices_offset ];
-                rows   = (row   *) &q[ rows_offset   ];
-                slices -= this->lower.z;
+                this->entry  = (type  *) &q[ data_offset   ];
+                slices       = (slice *) &q[ slices_offset ];
+                rows         = (row   *) &q[ rows_offset   ];
+                slices      -= this->lower.z;
 
                 // link memory
-                type         *data           = entry;
+                type         *data           = this->entry;
                 const coord1D data_per_slice = this->pitch.z;
                 row          *r              = rows;
                 const coord1D rows_per_slice = this->width.y;
@@ -53,11 +53,13 @@ namespace yocto
                     rows += rows_per_slice;
                 }
 
+                this->set_bytes(this->items);
+
+
             }
 
             inline virtual ~field3D() throw()
             {
-                entry = 0;
                 memory::kind<memory::global>::release(wksp,wlen);
             }
 
@@ -75,7 +77,6 @@ namespace yocto
                 return slices[k];
             }
 
-            type         *entry;
             const patch2D slice_patch;
 
         private:

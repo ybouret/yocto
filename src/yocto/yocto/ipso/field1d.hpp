@@ -1,7 +1,7 @@
 #ifndef YOCTO_IPSO_FIELD1D_INCLUDED
 #define YOCTO_IPSO_FIELD1D_INCLUDED 1
 
-#include "yocto/ipso/patch.hpp"
+#include "yocto/ipso/field.hpp"
 
 namespace yocto
 {
@@ -9,7 +9,7 @@ namespace yocto
     {
 
         template <typename T>
-        class field1D : public patch1D
+        class field1D : public field<T>, public patch1D
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
@@ -17,8 +17,8 @@ namespace yocto
             //! construct a field or link it is usr!=NULL
             inline explicit field1D(const patch1D &p,
                                     void          *usr=NULL) :
+            field<T>(),
             patch1D(p),
-            entry(0),
             item(0),
             wksp(0),
             wlen(0)
@@ -27,19 +27,18 @@ namespace yocto
                 {
                     wlen  = this->items * sizeof(type);
                     wksp  = memory::kind<memory::global>::acquire(wlen);
-                    entry = static_cast<type*>(wksp);
+                    this->entry = static_cast<type*>(wksp);
                 }
                 else
                 {
-                    entry = static_cast<type*>(usr);
+                    this->entry = static_cast<type*>(usr);
                 }
-                item  = entry - p.lower;
+                item  = this->entry - p.lower;
+                this->set_bytes(this->items);
             }
 
             inline virtual ~field1D() throw()
             {
-                entry = NULL;
-                item  = NULL;
                 memory::kind<memory::global>::release(wksp,wlen);
             }
 
@@ -55,7 +54,6 @@ namespace yocto
                 return item[i];
             }
 
-            type *entry; //!< base address for this->items T
 
         private:
             type  *item;
