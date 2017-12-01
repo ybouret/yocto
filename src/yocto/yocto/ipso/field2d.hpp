@@ -14,7 +14,9 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
             typedef field1D<T> row;
 
-            inline explicit field2D( const patch2D &p, void *usr=NULL ) :
+            inline explicit field2D(const patch2D &p,
+                                    void *usr_data=NULL,
+                                    void *usr_rows=NULL) :
             patch2D(p),
             row_patch(p.lower.x,p.upper.x),
             entry(0),
@@ -27,15 +29,16 @@ namespace yocto
                 const size_t data_length = this->items * sizeof(type);
                 const size_t rows_offset = memory::align(data_offset+data_length);
                 const size_t rows_length = this->width.y * sizeof(row);
-                if(usr)
+                if(usr_data)
                 {
-                    link(usr,data_offset,rows_offset);
+                    link(usr_data,usr_rows);
                 }
                 else
                 {
                     wlen = memory::align(rows_offset+rows_length);
                     wksp = memory::kind<memory::global>::acquire(wlen);
-                    link(wksp,data_offset,rows_offset);
+                    uint8_t *q = static_cast<uint8_t *>(wksp);
+                    link(&q[data_offset],&q[rows_offset]);
                 }
             }
 
@@ -69,16 +72,13 @@ namespace yocto
             size_t wlen; //!< if allocated
             YOCTO_DISABLE_COPY_AND_ASSIGN(field2D);
             
-            inline void link(void        *addr,
-                             const size_t data_offset,
-                             const size_t rows_offset ) throw()
+            inline void link(void *data_addr,void *rows_addr) throw()
             {
-                assert(addr!=NULL);
+                assert(data_addr!=NULL); assert(rows_addr!=NULL);
                 // prepare memory
                 {
-                    uint8_t *q = static_cast<uint8_t *>(addr);
-                    entry      = (type *) &q[data_offset];
-                    rows       = (row  *) &q[rows_offset];
+                    entry      = (type *) data_addr;
+                    rows       = (row  *) rows_addr;
                     rows      -= this->lower.y;
                 }
 
