@@ -13,57 +13,36 @@ namespace yocto
     namespace ipso
     {
 
-        template <typename T>
-        struct coord
+        typedef unit_t           coord1D;
+        typedef point2d<coord1D> coord2D;
+        typedef point3d<coord1D> coord3D;
+
+        template <typename COORD>
+        inline coord1D & __coord(COORD &C,const size_t dim) throw()
         {
-            YOCTO_ARGUMENTS_DECL_T;
-            
-            typedef type          _1;
-            typedef point2d<type> _2;
-            typedef point3d<type> _3;
+            assert(dim<sizeof(COORD)/sizeof(coord1D)); return ((coord1D*)&C)[dim];
+        }
 
-            //! access
-            template <typename COORD>
-            static inline T & get(COORD &C, const size_t dim) throw()
+        template <typename COORD>
+        inline const coord1D & __coord(const COORD &C,const size_t dim) throw()
+        {
+            assert(dim<sizeof(COORD)/sizeof(coord1D)); return ((coord1D*)&C)[dim];
+        }
+
+        template <typename COORD>
+        inline bool __coord_eq(const COORD &lhs, const COORD &rhs) throw()
+        {
+            const coord1D  *L = (const coord1D  *)&lhs;
+            const coord1D  *R = (const coord1D  *)&rhs;
+            for(size_t i=0;i<sizeof(COORD)/sizeof(coord1D);++i)
             {
-                assert(dim<sizeof(COORD)/sizeof(T)); return ((type*)&C)[dim];
+                if(L[i]!=R[i]) return false;
             }
+            return true;
+        }
 
-            //! const access
-            template <typename COORD>
-            static inline const_type & get(const COORD &C, const size_t dim) throw()
-            {
-                assert(dim<sizeof(COORD)/sizeof(T));
-                return ((const_type *)&C)[dim];
-            }
+        
 
-            //! decrease all coordinates
-            template <typename COORD>
-            static inline COORD dec(COORD C) throw()
-            {
-                type *q = (type *)&C;
-                for(size_t i=0;i<sizeof(COORD)/sizeof(T);++i)
-                {
-                    --q[i];
-                }
-                return C;
-            }
-
-            //! for integral types
-            template <typename COORD>
-            static inline bool eq(const COORD &lhs, const COORD &rhs) throw()
-            {
-                const_type *L = (const_type *)&lhs;
-                const_type *R = (const_type *)&rhs;
-                for(size_t i=0;i<sizeof(COORD)/sizeof(T);++i)
-                {
-                    if(L[i]!=R[i]) return false;
-                }
-                return true;
-            }
-
-            
-        };
     }
 }
 

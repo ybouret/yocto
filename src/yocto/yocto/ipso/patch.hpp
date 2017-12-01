@@ -10,17 +10,12 @@ namespace yocto
     namespace ipso
     {
 
-        template <
-        typename T,
-        typename COORD>
+        template <typename COORD>
         class patch
         {
         public:
-            YOCTO_ARGUMENTS_DECL_T;
+            static const size_t DIM = sizeof(COORD)/sizeof(coord1D);
 
-            static const size_t DIM = sizeof(COORD)/sizeof(type);
-
-            typedef ipso::coord<T>                              __coord;
             typedef COORD                                         coord;         //!< POD coordinate
             typedef const     COORD                               const_coord;   //!< const coordinate
             typedef typename  type_traits<COORD>::parameter_type  param_coord;   //!< coordinate as parameter
@@ -40,16 +35,16 @@ namespace yocto
             pitch(),
             items(1)
             {
-                type   *l =  (type   *)&lower;
-                type   *u =  (type   *)&upper;
-                type   *w =  (type   *)&width;
+                coord1D   *l =  (coord1D   *)&lower;
+                coord1D   *u =  (coord1D   *)&upper;
+                coord1D   *w =  (coord1D   *)&width;
                 size_t &n = *(size_t *)&items;
                 for(size_t i=0;i<DIM;++i)
                 {
                     if(l[i]>u[i]) cswap(l[i],u[i]);
-                    n *= size_t( w[i] = T(1)+u[i]-l[i] );
+                    n *= size_t( w[i] = coord1D(1)+u[i]-l[i] );
                 }
-                type *p = (type *)&pitch;
+                coord1D *p = (coord1D *)&pitch;
                 p[0] = 1;
                 for(size_t i=1;i<DIM;++i)
                 {
@@ -76,16 +71,16 @@ namespace yocto
             //! offset of a coordinate in the patch
             inline unit_t offset_of( param_coord c ) const throw()
             {
-                unit_t ans = unit_t(__coord::get(c,0)) - unit_t(__coord::get(lower,0));
+                unit_t ans = unit_t(__coord(c,0)) - unit_t(__coord(lower,0));
                 for( size_t i=1; i < DIM; ++i )
-                    ans += unit_t(__coord::get(pitch,i)) * ( unit_t(__coord::get(c,i)) - unit_t(__coord::get(lower,i)) );
+                    ans += unit_t(__coord(pitch,i)) * ( unit_t(__coord(c,i)) - unit_t(__coord(lower,i)) );
                 return ans;
             }
 
             //!equality
             static inline bool eq(const patch &lhs, const patch &rhs) throw()
             {
-                return __coord::eq(lhs.lower,rhs.lower) && __coord::eq(lhs.upper,rhs.upper);
+                return __coord_eq(lhs.lower,rhs.lower) && __coord_eq(lhs.upper,rhs.upper);
             }
 
             //! has one point
@@ -93,9 +88,9 @@ namespace yocto
             {
                 for(size_t i=0;i<DIM;++i)
                 {
-                    const_type c = __coord::get(C,i);
-                    if(c<__coord::get(lower,i)) return false;
-                    if(c>__coord::get(upper,i)) return false;
+                    const coord1D c = __coord(C,i);
+                    if(c<__coord(lower,i)) return false;
+                    if(c>__coord(upper,i)) return false;
                 }
                 return true;
             }
