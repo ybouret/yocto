@@ -1,6 +1,5 @@
 #include "yocto/utest/run.hpp"
-#include "yocto/ipso/patch.hpp"
-#include "yocto/ipso/utils.hpp"
+#include "yocto/ipso/split.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -51,11 +50,51 @@ YOCTO_UNIT_TEST_IMPL(ipso)
     display_patch(patch1u);
     std::cerr << "offset_of(5)=" << patch1u.offset_of(5) << std::endl;
 
+    {
+        std::cerr << std::endl;
+        for(size_t cpus=1;cpus<=4;++cpus)
+        {
+            std::cerr << "#cpus=" << cpus << std::endl;
+            split::in1D s(cpus,patch1u);
+            for(size_t rank=0;rank<cpus;++rank)
+            {
+                patch1D sub = s(rank);
+                std::cerr << "\trank#" << rank << "=" << sub << std::endl;
+            }
+            std::cerr << std::endl;
+        }
+    }
+
 
     patch<coord2D> patch2i( coord2D(-5,6), coord2D(5,-6) );
     display_patch(patch2i);
     const coord2D v2(0,0);
     std::cerr << "offset_of(" << v2 << ")=" << patch2i.offset_of(v2) << std::endl;
+
+    {
+        std::cerr << std::endl;
+        for(size_t cpus=1;cpus<=4;++cpus)
+        {
+            std::cerr << "#cpus=" << cpus << std::endl;
+            for(size_t nx=1;nx<=cpus;++nx)
+            {
+                for(size_t ny=1;ny<=cpus;++ny)
+                {
+                    if(nx*ny!=cpus) continue;
+                    std::cerr << "\tnx=" << nx << ", ny=" << ny << std::endl;
+                    split::in2D s(nx,ny,patch2i);
+                    for(size_t rank=0;rank<cpus;++rank)
+                    {
+                        const coord2D ranks = s.get_ranks(rank);
+                        std::cerr << "\t\tranks(" << rank << ")=" << ranks << std::endl;
+                        const patch2D sub   = s(rank);
+                        std::cerr << "\t\trank#" << rank << "=" << sub << std::endl;
+                    }
+                    std::cerr << std::endl;
+                }
+            }
+        }
+    }
 
 }
 YOCTO_UNIT_TEST_DONE()

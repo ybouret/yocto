@@ -103,9 +103,13 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_ASSIGN(patch);
-            
-
         };
+
+        typedef patch<coord1D> patch1D;
+        typedef patch<coord2D> patch2D;
+        typedef patch<coord3D> patch3D;
+        
+
     }
 }
 

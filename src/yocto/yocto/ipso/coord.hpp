@@ -41,6 +41,15 @@ namespace yocto
             return true;
         }
 
+        template <typename COORD>
+        inline void __coord_dec(COORD &C) throw()
+        {
+            coord1D  *q = (coord1D *)&C;
+            for(size_t i=0;i<sizeof(COORD)/sizeof(coord1D);++i)
+            {
+                --q[i];
+            }
+        }
         
 
     }
