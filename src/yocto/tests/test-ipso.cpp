@@ -91,8 +91,6 @@ YOCTO_UNIT_TEST_IMPL(ipso)
                     split::in2D s(nx,ny,patch2i);
                     for(size_t rank=0;rank<cpus;++rank)
                     {
-                        const coord2D ranks = s.get_ranks(rank);
-                        std::cerr << "\t\tranks(" << rank << ")=" << ranks << std::endl;
                         const patch2D sub   = s(rank);
                         std::cerr << "\t\trank#" << rank << "=" << sub << std::endl;
                     }
@@ -120,8 +118,6 @@ YOCTO_UNIT_TEST_IMPL(ipso)
                         split::in3D s(nx,ny,nz,p3);
                         for(size_t rank=0;rank<cpus;++rank)
                         {
-                            //const coord3D ranks = s.get_ranks(rank);
-                            //std::cerr << "\t\tranks(" << rank << ")=" << ranks << std::endl;
                             const patch3D sub   = s(rank);
                             std::cerr << "\t\trank#" << rank << "=" << sub << std::endl;
                         }
