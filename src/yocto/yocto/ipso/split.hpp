@@ -60,7 +60,7 @@ namespace yocto
                                      const patch1D &p) throw() :
                 split_type(n,p)
                 {
-                    assert(length>=cores);
+                    assert(length>=coord1D(cores));
                 }
 
                 inline in1D(const in1D &other) throw() : split_type(other) {}

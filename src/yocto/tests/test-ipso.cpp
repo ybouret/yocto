@@ -1,5 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/ipso/split.hpp"
+#include "yocto/ipso/field3d.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -27,6 +28,8 @@ static inline void display_patch(const PATCH &p)
 
 YOCTO_UNIT_TEST_IMPL(ipso)
 {
+    std::cerr << "COORD" << std::endl;
+
     coord1D a = 0;
     std::cerr << "a=" << a << std::endl;
     display_coords<unit_t>(a);
@@ -45,6 +48,9 @@ YOCTO_UNIT_TEST_IMPL(ipso)
         std::cerr << "OK" << std::endl;
     }
 
+    std::cerr << std::endl;
+
+    std::cerr << "PATCH" << std::endl;
 
     patch<coord1D> patch1u(10,0);
     display_patch(patch1u);
@@ -124,8 +130,46 @@ YOCTO_UNIT_TEST_IMPL(ipso)
                 }
             }
         }
+    }
+    std::cerr << std::endl;
+
+
+    std::cerr << "FIELDS" << std::endl;
+
+    std::cerr << "\tField1D" << std::endl;
+    for(size_t iter=0;iter<100;++iter)
+    {
+        patch1D p1( alea.leq(100), alea.leq(100) );
+        field1D<double> f1f(p1);
+        field1D< point2d<int> > f1pi(p1);
+        for(coord1D i=p1.lower;i<=p1.upper;++i)
+        {
+            f1f[i]    = i;
+            f1pi[i].x = i;
+        }
+    }
+
+    std::cerr << "\tField2D" << std::endl;
+    for(size_t iter=0;iter<100;++iter)
+    {
+        patch2D P2( coord2D(alea.leq(100),alea.leq(100)), coord2D(alea.leq(100),alea.leq(100)) );
+
+        field2D<float> f2f(P2);
+        field2D< point3d<double> > f2p(P2);
+        for(coord1D j=P2.lower.y;j<=P2.upper.y;++j)
+        {
+            field2D<float>::row &Rj = f2f[j];
+            for(coord1D i=P2.lower.x;i<=P2.upper.x;++i)
+            {
+                Rj[i] = i*j;
+                f2p[j][i].z = alea.to<double>();
+            }
+        }
 
     }
+
+    std::cerr << "\tField3D" << std::endl;
+
 
 }
 YOCTO_UNIT_TEST_DONE()
