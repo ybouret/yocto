@@ -133,6 +133,65 @@ namespace yocto
                 YOCTO_DISABLE_ASSIGN(in2D);
             };
 
+
+            class in3D : public __split<coord3D>
+            {
+            public:
+                typedef __split<coord3D> split_type;
+                typedef patch3D          patch_type;
+
+                const coord3D cmap; //!< cores map
+                //const coord1D coef; //!< nx*ny
+
+                inline virtual ~in3D() throw() {}
+
+                inline explicit in3D(const size_t   nx,
+                                     const size_t   ny,
+                                     const size_t   nz,
+                                     const patch3D &p) throw() :
+                split_type(nx*ny*nz,p),
+                cmap(nx,ny,nz)
+                {
+                }
+
+
+                inline in3D( const in3D &other ) throw() :
+                split_type(other),
+                cmap(other.cmap)
+                {
+                }
+
+                inline coord3D get_ranks(const size_t rank) const throw()
+                {
+                    assert(rank<cores);
+                    const ldiv_t lx = ldiv( long(rank), long(cmap.x) );
+                    const unit_t xr = unit_t(lx.rem);  assert(xr<cmap.x);
+                    const ldiv_t ly = ldiv( lx.quot, long(cmap.y) );
+                    const unit_t yr = unit_t(ly.rem);  assert(yr<cmap.y);
+                    const unit_t zr = unit_t(ly.quot); assert(zr<cmap.z);
+                    return coord3D(xr,yr,zr);
+                }
+
+                virtual patch_type operator()(const size_t rank) const throw()
+                {
+                    assert(rank<cores);
+                    const coord3D ranks = get_ranks(rank);
+                    coord3D __offset = offset;
+                    coord3D __length = length;
+                    
+                    basic_split(ranks.x,cmap.x,__offset.x,__length.x);
+                    basic_split(ranks.y,cmap.y,__offset.y,__length.y);
+                    basic_split(ranks.z,cmap.z,__offset.z,__length.z);
+
+                    __length += __offset;
+                    __coord_dec(__length);
+                    return patch_type(__offset,__length);
+                }
+
+            private:
+                YOCTO_DISABLE_ASSIGN(in3D);
+            };
+
         };
 
     }

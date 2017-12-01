@@ -96,6 +96,37 @@ YOCTO_UNIT_TEST_IMPL(ipso)
         }
     }
 
+    patch<coord3D> p3( coord3D(1,1,1), coord3D(10,20,30) );
+    display_patch(p3);
+    {
+        std::cerr << std::endl;
+        for(size_t cpus=1;cpus<=8;++cpus)
+        {
+            std::cerr << "#cpus=" << cpus << std::endl;
+            for(size_t nx=1;nx<=cpus;++nx)
+            {
+                for(size_t ny=1;ny<=cpus;++ny)
+                {
+                    for(size_t nz=1;nz<=cpus;++nz)
+                    {
+                        if(nx*ny*nz!=cpus) continue;
+                        std::cerr << "\tnx=" << nx << ", ny=" << ny << ", nz=" << nz << std::endl;
+                        split::in3D s(nx,ny,nz,p3);
+                        for(size_t rank=0;rank<cpus;++rank)
+                        {
+                            //const coord3D ranks = s.get_ranks(rank);
+                            //std::cerr << "\t\tranks(" << rank << ")=" << ranks << std::endl;
+                            const patch3D sub   = s(rank);
+                            std::cerr << "\t\trank#" << rank << "=" << sub << std::endl;
+                        }
+                        std::cerr << std::endl;
+                    }
+                }
+            }
+        }
+
+    }
+
 }
 YOCTO_UNIT_TEST_DONE()
 
