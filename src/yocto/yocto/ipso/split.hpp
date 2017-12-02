@@ -14,9 +14,10 @@ namespace yocto
         class __split
         {
         public:
-            const size_t cores;
-            const COORD  offset;
-            const COORD  length;
+            const   size_t cores;
+            const   COORD  offset;
+            const   COORD  length;
+            mutable COORD  last_ranks;
 
             inline virtual ~__split() throw() {}
             //! get local ranks from global rank
@@ -30,7 +31,8 @@ namespace yocto
                                     const patch<COORD> &p) throw() :
             cores(n),
             offset(p.lower),
-            length(p.width)
+            length(p.width),
+            last_ranks()
             {
                 assert(cores>0);
             }
@@ -39,7 +41,8 @@ namespace yocto
             inline explicit __split(const __split &other) throw() :
             cores(other.cores),
             offset(other.offset),
-            length(other.length)
+            length(other.length),
+            last_ranks(other.last_ranks)
             {
             }
 
@@ -77,6 +80,7 @@ namespace yocto
                     basic_split(rank,cores,__offset,__length);
                     assert(__length>0);
                     --__length;
+                    last_ranks = rank;
                     return patch1D(__offset,__offset+__length);
                 }
 
@@ -135,6 +139,8 @@ namespace yocto
                     basic_split(ranks.y,cmap.y,__offset.y,__length.y);
                     __length += __offset;
                     __coord_dec(__length);
+
+                    last_ranks = ranks;
                     return patch_type(__offset,__length);
                 }
 
@@ -195,6 +201,8 @@ namespace yocto
 
                     __length += __offset;
                     __coord_dec(__length);
+
+                    last_ranks = ranks;
                     return patch_type(__offset,__length);
                 }
 

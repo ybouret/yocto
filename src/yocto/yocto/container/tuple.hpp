@@ -28,6 +28,14 @@ std::ostream & operator<<( std::ostream &pair_os, const CLASS &self )\
 pair_os << '(' << #N1 << '=' << self.N1 << ',' << #N2 << '=' << self.N2 << ')';\
 return pair_os;\
 }\
+friend inline bool operator==(const CLASS &lhs, const CLASS &rhs) throw()\
+{\
+return (lhs.N1==rhs.N1) && (lhs.N2==rhs.N2);\
+}\
+friend inline bool operator!=(const CLASS &lhs, const CLASS &rhs) throw()\
+{\
+return (lhs.N1!=rhs.N1) || (lhs.N2!=rhs.N2);\
+}\
 T1 N1;\
 T2 N2
 
