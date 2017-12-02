@@ -143,6 +143,12 @@ YOCTO_UNIT_TEST_IMPL(ipso)
             f1f[i]    = i;
             f1pi[i].x = i;
         }
+        f1f.ldz();
+        f1pi.ldz();
+
+        f1f.ld(1.0f);
+        f1pi.ld( point2d<int>(1,2) );
+
     }
 
     std::cerr << "\tField2D" << std::endl;
@@ -160,6 +166,19 @@ YOCTO_UNIT_TEST_IMPL(ipso)
                 Rj[i] = i*j;
                 f2p[j][i].z = alea.to<double>();
             }
+        }
+
+        f2f.ldz();
+        f2p.ldz();
+        f2f.ld(2.0f);
+        f2p.ld( point3d<double>(4,5,6) );
+
+        for(coord1D j=P2.lower.y;j<=P2.upper.y;++j)
+        {
+            f2f[j].ldz();
+            f2p[j].ldz();
+            f2f[j].ld(1.0f);
+            f2p[j].ld( point3d<double>(1,2,3) );
         }
 
     }
