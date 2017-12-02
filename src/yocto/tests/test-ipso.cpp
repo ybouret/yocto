@@ -189,10 +189,16 @@ YOCTO_UNIT_TEST_IMPL(ipso)
         patch3D P3( coord3D(alea.leq(100),alea.leq(100),alea.leq(100)), coord3D(alea.leq(100),alea.leq(100),alea.leq(100)) );
         //std::cerr << "P3=" << P3 << std::endl;
         field3D<double> f3d(P3);
+        f3d.ldz();
+        f3d.ld(1.0);
         for(coord1D k=P3.lower.z;k<=P3.upper.z;++k)
         {
+            f3d[k].ldz();
+            f3d[k].ld(k);
             for(coord1D j=P3.lower.y;j<=P3.upper.y;++j)
             {
+                f3d[k][j].ldz();
+                f3d[k][j].ld(j);
                 for(coord1D i=P3.lower.x;i<=P3.upper.x;++i)
                 {
                     f3d[k][j][i] = i*j*k;
