@@ -19,7 +19,11 @@ namespace yocto
             const COORD  length;
 
             inline virtual ~__split() throw() {}
-            inline virtual patch<COORD> operator()(const size_t rank) const throw() = 0;
+            //! get local ranks from global rank
+            virtual COORD        get_ranks(const size_t rank)  const throw() = 0;
+
+            //! get sub patch from global rank
+            virtual patch<COORD> operator()(const size_t rank) const throw() = 0;
 
         protected:
             inline explicit __split(const size_t        n,
@@ -76,6 +80,14 @@ namespace yocto
                     return patch1D(__offset,__offset+__length);
                 }
 
+                virtual coord1D get_ranks(const size_t rank) const throw()
+                {
+                    return rank;
+                }
+
+                static coord1D computeCoresMap(const size_t cores, const coord1D length, const coord1D pbc) throw();
+
+
             private:
                 YOCTO_DISABLE_ASSIGN(in1D);
             };
@@ -90,7 +102,7 @@ namespace yocto
 
                 inline virtual ~in2D() throw() {}
 
-                inline explicit in2D(const coord2D &n,
+                inline explicit in2D(const coord2D  n,
                                      const patch2D &p) throw() :
                 split_type(n.x*n.y,p),
                 cmap(n)
@@ -126,6 +138,8 @@ namespace yocto
                     return patch_type(__offset,__length);
                 }
 
+                static coord2D computeCoresMap(const size_t cores, const coord2D length, const coord2D pbc) throw();
+
 
             private:
                 YOCTO_DISABLE_ASSIGN(in2D);
@@ -143,7 +157,7 @@ namespace yocto
 
                 inline virtual ~in3D() throw() {}
 
-                inline explicit in3D(const coord3D &n,
+                inline explicit in3D(const coord3D  n,
                                      const patch3D &p) throw() :
                 split_type(n.x*n.y*n.z,p),
                 cmap(n)
