@@ -19,6 +19,8 @@ namespace yocto
             field<T>(),
             patch3D(p),
             slice_patch( coord2D(p.lower.x,p.lower.y), coord2D(p.upper.x,p.upper.y) ),
+            slices(0),
+            rows(0),
             wksp(0),
             wlen(0)
             {
