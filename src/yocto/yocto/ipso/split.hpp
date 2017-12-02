@@ -48,7 +48,6 @@ namespace yocto
         {
 
 
-
             class in1D : public __split<coord1D>
             {
             public:
@@ -56,7 +55,7 @@ namespace yocto
                 typedef patch1D          patch_type;
 
 
-                inline explicit in1D(const size_t   n,
+                inline explicit in1D(const coord1D &n,
                                      const patch1D &p) throw() :
                 split_type(n,p)
                 {
@@ -91,11 +90,10 @@ namespace yocto
 
                 inline virtual ~in2D() throw() {}
 
-                inline explicit in2D(const size_t   nx,
-                                     const size_t   ny,
+                inline explicit in2D(const coord2D &n,
                                      const patch2D &p) throw() :
-                split_type(nx*ny,p),
-                cmap(nx,ny)
+                split_type(n.x*n.y,p),
+                cmap(n)
                 {
                 }
 
@@ -145,12 +143,10 @@ namespace yocto
 
                 inline virtual ~in3D() throw() {}
 
-                inline explicit in3D(const size_t   nx,
-                                     const size_t   ny,
-                                     const size_t   nz,
+                inline explicit in3D(const coord3D &n,
                                      const patch3D &p) throw() :
-                split_type(nx*ny*nz,p),
-                cmap(nx,ny,nz)
+                split_type(n.x*n.y*n.z,p),
+                cmap(n)
                 {
                 }
 

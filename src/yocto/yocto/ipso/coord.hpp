@@ -50,6 +50,18 @@ namespace yocto
                 --q[i];
             }
         }
+
+        template <typename COORD>
+        inline COORD __coord_abs(COORD C) throw()
+        {
+            coord1D  *q = (coord1D *)&C;
+            for(size_t i=0;i<sizeof(COORD)/sizeof(coord1D);++i)
+            {
+                const coord1D value = q[i];
+                if(value<0) q[i] = -value;
+            }
+            return C;
+        }
         
 
     }

@@ -88,7 +88,7 @@ YOCTO_UNIT_TEST_IMPL(ipso)
                 {
                     if(nx*ny!=cpus) continue;
                     std::cerr << "\tnx=" << nx << ", ny=" << ny << std::endl;
-                    split::in2D s(nx,ny,patch2i);
+                    split::in2D s( coord2D(nx,ny),patch2i);
                     for(size_t rank=0;rank<cpus;++rank)
                     {
                         const patch2D sub   = s(rank);
@@ -115,7 +115,7 @@ YOCTO_UNIT_TEST_IMPL(ipso)
                     {
                         if(nx*ny*nz!=cpus) continue;
                         std::cerr << "\tnx=" << nx << ", ny=" << ny << ", nz=" << nz << std::endl;
-                        split::in3D s(nx,ny,nz,p3);
+                        split::in3D s( coord3D(nx,ny,nz),p3);
                         for(size_t rank=0;rank<cpus;++rank)
                         {
                             const patch3D sub   = s(rank);
