@@ -1,6 +1,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/ipso/split.hpp"
 #include "yocto/ipso/field3d.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -220,6 +221,33 @@ YOCTO_UNIT_TEST_IMPL(ipso)
 
     }
 
+    {
+        ios::ocstream::overwrite("parts.dat");
+        for(unsigned nc=1;nc<=128;++nc)
+        {
+            unsigned count2 = 0;
+            unsigned count3 = 0;
+            for(unsigned nx=1;nx<=nc;++nx)
+            {
+                for(unsigned ny=1;ny<=nc;++ny)
+                {
+                    if(nc==nx*ny)
+                    {
+                        ++count2;
+                    }
+                    for(unsigned nz=1;nz<=nc;++nz)
+                    {
+                        if(nc==nx*ny*nz)
+                        {
+                            ++count3;
+                        }
+                    }
+                }
+            }
+            ios::acstream fp("parts.dat");
+            fp("%u %u %u\n",nc,count2,count3);
+        }
+    }
 }
 YOCTO_UNIT_TEST_DONE()
 
