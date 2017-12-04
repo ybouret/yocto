@@ -206,6 +206,9 @@ namespace yocto
                     return patch_type(__offset,__length);
                 }
 
+                static coord3D computeCoresMap(const size_t cores, const coord3D length, const coord3D pbc) throw();
+
+
             private:
                 YOCTO_DISABLE_ASSIGN(in3D);
             };
