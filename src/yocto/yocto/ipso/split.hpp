@@ -54,6 +54,17 @@ namespace yocto
         struct split
         {
 
+            static inline  bool is_bulk(const coord1D rank,
+                                        const coord1D size) throw()
+            {
+                return (size>1) && (rank>0) && (rank<(size-1));
+            }
+
+            static inline bool is_side(const coord1D rank,
+                                       const coord1D size) throw()
+            {
+                return !is_bulk(rank,size);
+            }
 
             class in1D : public __split<coord1D>
             {
@@ -102,29 +113,29 @@ namespace yocto
                 typedef __split<coord2D> split_type;
                 typedef patch2D          patch_type;
 
-                const coord2D cmap; //!< cores map
+                const coord2D ncore; //!< cores map
 
                 inline virtual ~in2D() throw() {}
 
                 inline explicit in2D(const coord2D  n,
                                      const patch2D &p) throw() :
                 split_type(n.x*n.y,p),
-                cmap(n)
+                ncore(n)
                 {
                 }
 
                 inline in2D(const in2D &other) throw() :
                 split_type(other),
-                cmap(other.cmap)
+                ncore(other.ncore)
                 {
                 }
 
                 inline coord2D get_ranks(const size_t rank) const throw()
                 {
                     assert(rank<cores);
-                    const ldiv_t l = ldiv( long(rank), long(cmap.x) );
-                    assert(unit_t(l.rem)<cmap.x);
-                    assert(unit_t(l.quot)<cmap.y);
+                    const ldiv_t l = ldiv( long(rank), long(ncore.x) );
+                    assert(unit_t(l.rem)<ncore.x);
+                    assert(unit_t(l.quot)<ncore.y);
                     return coord2D(l.rem,l.quot);
                 }
 
@@ -135,8 +146,8 @@ namespace yocto
                     const coord2D ranks = get_ranks(rank);
                     coord2D __offset = offset;
                     coord2D __length = length;
-                    basic_split(ranks.x,cmap.x,__offset.x,__length.x);
-                    basic_split(ranks.y,cmap.y,__offset.y,__length.y);
+                    basic_split(ranks.x,ncore.x,__offset.x,__length.x);
+                    basic_split(ranks.y,ncore.y,__offset.y,__length.y);
                     __length += __offset;
                     __coord_dec(__length);
 
@@ -158,33 +169,32 @@ namespace yocto
                 typedef __split<coord3D> split_type;
                 typedef patch3D          patch_type;
 
-                const coord3D cmap; //!< cores map
-                //const coord1D coef; //!< nx*ny
+                const coord3D ncore; //!< cores map
 
                 inline virtual ~in3D() throw() {}
 
                 inline explicit in3D(const coord3D  n,
                                      const patch3D &p) throw() :
                 split_type(n.x*n.y*n.z,p),
-                cmap(n)
+                ncore(n)
                 {
                 }
 
 
                 inline in3D( const in3D &other ) throw() :
                 split_type(other),
-                cmap(other.cmap)
+                ncore(other.ncore)
                 {
                 }
 
                 inline coord3D get_ranks(const size_t rank) const throw()
                 {
                     assert(rank<cores);
-                    const ldiv_t lx = ldiv( long(rank), long(cmap.x) );
-                    const unit_t xr = unit_t(lx.rem);  assert(xr<cmap.x);
-                    const ldiv_t ly = ldiv( lx.quot, long(cmap.y) );
-                    const unit_t yr = unit_t(ly.rem);  assert(yr<cmap.y);
-                    const unit_t zr = unit_t(ly.quot); assert(zr<cmap.z);
+                    const ldiv_t lx = ldiv( long(rank), long(ncore.x) );
+                    const unit_t xr = unit_t(lx.rem);  assert(xr<ncore.x);
+                    const ldiv_t ly = ldiv( lx.quot, long(ncore.y) );
+                    const unit_t yr = unit_t(ly.rem);  assert(yr<ncore.y);
+                    const unit_t zr = unit_t(ly.quot); assert(zr<ncore.z);
                     return coord3D(xr,yr,zr);
                 }
 
@@ -195,9 +205,9 @@ namespace yocto
                     coord3D __offset = offset;
                     coord3D __length = length;
                     
-                    basic_split(ranks.x,cmap.x,__offset.x,__length.x);
-                    basic_split(ranks.y,cmap.y,__offset.y,__length.y);
-                    basic_split(ranks.z,cmap.z,__offset.z,__length.z);
+                    basic_split(ranks.x,ncore.x,__offset.x,__length.x);
+                    basic_split(ranks.y,ncore.y,__offset.y,__length.y);
+                    basic_split(ranks.z,ncore.z,__offset.z,__length.z);
 
                     __length += __offset;
                     __coord_dec(__length);

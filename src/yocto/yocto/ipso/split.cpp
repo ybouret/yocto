@@ -72,8 +72,11 @@ namespace yocto
                         break;
                     }
                 }
-                if(w) push_back(w);
-                    }
+                if(w)
+                {
+                    push_back(w);
+                }
+            }
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Works);
@@ -81,6 +84,26 @@ namespace yocto
 
         namespace
         {
+
+            template <typename COORD> static inline
+            coord1D computeComs(const COORD &com,
+                                const COORD &pbc,
+                                const COORD &ranks,
+                                const COORD &ncore) throw()
+            {
+                unit_t ans = com.__sum();
+                std::cerr << "\t\tcom=" << ans << std::endl;
+                for(size_t i=0;i<sizeof(COORD)/sizeof(coord1D);++i)
+                {
+                    if( __coord(pbc,i) || split::is_bulk( __coord(ranks,i), __coord(ncore,i) ) )
+                    {
+                        ans += __coord(com,i);
+                        std::cerr << "\t\t\t+com/" << i << "=" << __coord(com,i) << std::endl;
+                    }
+                }
+                return ans;
+            }
+
 
             class Part2D : public split::in2D, public Works
             {
@@ -91,17 +114,16 @@ namespace yocto
                 split::in2D(n,p),
                 Works()
                 {
+                    std::cerr << "Part2D(" << n <<  ")" << std::endl;
                     for(size_t rank=0;rank<cores;++rank)
                     {
                         const patch2D sub   = (*this)(rank);
                         const coord2D ranks = last_ranks;
-                        Work          *w = new Work();
-                        const unit_t   cx = sub.width.y;
-                        const unit_t   cy = sub.width.x;
+                        Work          *w    = new Work();
+                        const coord2D  com(sub.width.y,sub.width.x);
+                        std::cerr << "\tranks=" << ranks << std::endl;
                         w->run  = sub.items;
-                        w->com += cx;
-                        w->com += cy;
-                        // using pbc
+                        w->com  = computeComs(com,pbc,ranks,ncore);
 
                         // adding
                         add_unique(w);
@@ -128,16 +150,12 @@ namespace yocto
                         const patch3D sub   = (*this)(rank);
                         const coord3D ranks = last_ranks;
                         Work          *w = new Work();
-                        const unit_t   cx = sub.width.y*sub.width.z;
-                        const unit_t   cy = sub.width.x*sub.width.z;
-                        const unit_t   cz = sub.width.x*sub.width.y;
+                        const coord3D com(sub.width.y*sub.width.z,
+                                          sub.width.x*sub.width.z,
+                                          sub.width.x*sub.width.y);
                         w->run  = sub.items;
-                        w->com += cx;
-                        w->com += cy;
-                        w->com += cz;
-
-                        // using pbc
-
+                        w->com  = computeComs(com,pbc,ranks,ncore);
+                        
                         // adding
                         add_unique(w);
                     }

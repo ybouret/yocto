@@ -213,10 +213,14 @@ YOCTO_UNIT_TEST_IMPL(ipso)
 
     {
         patch2D p2( coord2D(1,1), coord2D(10,10) );
-        for(size_t cores=1;cores<=4;++cores)
+        std::cerr << "Splitting " << p2 << std::endl;
+        for(size_t cores=1;cores<=3;++cores)
         {
-            std::cerr << "\t2D: cores=" << cores << std::endl;
+            std::cerr << "\t2D: cores=" << cores << "/pbc.xy" << std::endl;
             split::in2D::computeCoresMap(cores,p2.width,coord2D(1,1));
+            std::cerr << std::endl;
+            std::cerr << "\t2D: cores=" << cores << "/no_pbc" << std::endl;
+            split::in2D::computeCoresMap(cores,p2.width,coord2D(0,0));
         }
 
     }
