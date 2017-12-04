@@ -4,6 +4,7 @@
 #include "yocto/sequence/list.hpp"
 #include "yocto/core/list.hpp"
 #include "yocto/core/node.hpp"
+#include "yocto/mpl/natural.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -101,16 +102,23 @@ namespace yocto
                                 const COORD &ncore) throw()
             {
                 std::cerr << "\tranks=" << ranks << std::endl;
-                unit_t ans = com.__sum();
-                std::cerr << "\t\tcom=" << ans << std::endl;
+                unit_t ans = 0;
                 for(size_t i=0;i<sizeof(COORD)/sizeof(coord1D);++i)
                 {
-                    if( __coord(pbc,i) || split::is_bulk( __coord(ranks,i), __coord(ncore,i) ) )
+                    const coord1D ni = __coord(ncore,i);
+                    if(ni>1)
                     {
-                        ans += __coord(com,i);
+                        const coord1D ci = __coord(com,i);
+                        ans += ci;
+                        if( __coord(pbc,i) || split::is_bulk( __coord(ranks,i), ni ) )
+                        {
+                            ans += ci;
+                        }
                         std::cerr << "\t\t\t+com/" << i << "=" << __coord(com,i) << std::endl;
                     }
+                    // else no splitting in this direction!
                 }
+                std::cerr << "\t\tcom=" << ans << std::endl;
                 return ans;
             }
 
@@ -203,6 +211,9 @@ namespace yocto
             Part2D        part2x1(core2x1,p,pbc);
             part2x1.show();
 
+            const coord2D core1x2(1,2);
+            Part2D        part1x2(core1x2,p,pbc);
+            part1x2.show();
 
             std::cerr << std::endl << std::endl;
             return coord2D(1,1);
