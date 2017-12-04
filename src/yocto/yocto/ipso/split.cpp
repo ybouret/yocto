@@ -78,6 +78,15 @@ namespace yocto
                 }
             }
 
+            inline void show() const
+            {
+                std::cerr << "\t\t/--------" << std::endl;
+                for(const Work *sub = head;sub;sub=sub->next)
+                {
+                    std::cerr << "\t\t|" << *sub << std::endl;
+                }
+                std::cerr << "\t\t\\--------" << std::endl;
+            }
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Works);
         };
@@ -91,6 +100,7 @@ namespace yocto
                                 const COORD &ranks,
                                 const COORD &ncore) throw()
             {
+                std::cerr << "\tranks=" << ranks << std::endl;
                 unit_t ans = com.__sum();
                 std::cerr << "\t\tcom=" << ans << std::endl;
                 for(size_t i=0;i<sizeof(COORD)/sizeof(coord1D);++i)
@@ -121,7 +131,6 @@ namespace yocto
                         const coord2D ranks = last_ranks;
                         Work          *w    = new Work();
                         const coord2D  com(sub.width.y,sub.width.x);
-                        std::cerr << "\tranks=" << ranks << std::endl;
                         w->run  = sub.items;
                         w->com  = computeComs(com,pbc,ranks,ncore);
 
@@ -155,7 +164,7 @@ namespace yocto
                                           sub.width.x*sub.width.y);
                         w->run  = sub.items;
                         w->com  = computeComs(com,pbc,ranks,ncore);
-                        
+
                         // adding
                         add_unique(w);
                     }
@@ -183,10 +192,25 @@ namespace yocto
             //__________________________________________________________________
             const   coord1D Lx   = length.x;
             const   coord1D Ly   = length.y;
-            coord1D         Run1 = Lx*Ly;
-            coord1D         Com1 = 0;
-            if(pbc.x) Com1 += (Ly+Ly);
-            if(pbc.y) Com1 += (Lx+Lx);
+            coord1D         Run  = Lx*Ly;
+            std::cerr  << "Run=" << Run << std::endl;
+
+            //__________________________________________________________________
+            //
+            // Run and Com for 2x1
+            //__________________________________________________________________
+            const coord2D core2x1(2,1);
+            Part2D        part2x1(core2x1,p,pbc);
+            part2x1.show();
+
+
+            std::cerr << std::endl << std::endl;
+            return coord2D(1,1);
+            //__________________________________________________________________
+            //
+            // Run and Com for 1x1
+            //__________________________________________________________________
+
 
             const coord1D nmax(cores);
             coord2D       n;
@@ -204,9 +228,9 @@ namespace yocto
                     {
                         std::cerr << "\t" << *w << std::endl;
                     }
+                    std::cerr << std::endl;
                 }
             }
-
 
             return coord2D(1,1);
         }
