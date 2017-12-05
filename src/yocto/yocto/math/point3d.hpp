@@ -117,7 +117,26 @@ namespace yocto
             return (lhs.x!=rhs.x) || (lhs.y!=rhs.y) || (lhs.z!=rhs.z);
         }
 
-
+        static inline int lexicompare(const point3d &lhs, const point3d &rhs) throw()
+        {
+            if(lhs.x<rhs.x)
+            {
+                return -1;
+            }
+            else
+            {
+                if(rhs.x<lhs.x)
+                {
+                    return 1;
+                }
+                else
+                {
+                    const  point2d<T> lsub(lhs.y,lhs.z);
+                    const  point2d<T> rsub(rhs.y,rhs.z);
+                    return point2d<T>::lexicompare(lsub,rsub);
+                }
+            }
+        }
     };
     
     

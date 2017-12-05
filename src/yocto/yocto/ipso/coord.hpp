@@ -62,7 +62,6 @@ namespace yocto
             }
             return C;
         }
-        
 
     }
 }

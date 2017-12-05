@@ -6,6 +6,7 @@
 #include "yocto/math/types.hpp"
 #include <iostream>
 #include "yocto/math/types.hxx"
+#include "yocto/comparator.hpp"
 
 namespace yocto
 {
@@ -108,7 +109,25 @@ namespace yocto
 
         inline type __prod() const throw() { return x*y; }
         inline type __sum()  const throw() { return x+y; }
-        
+        static inline int lexicompare(const point2d &lhs, const point2d &rhs) throw()
+        {
+            if(lhs.x<rhs.x)
+            {
+                return -1;
+            }
+            else
+            {
+                if(rhs.x<lhs.x)
+                {
+                    return 1;
+                }
+                else
+                {
+                    // lhs.x==rhs.x
+                    return __compare(lhs.y,rhs.y);
+                }
+            }
+        }
     };
 
 

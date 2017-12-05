@@ -1,10 +1,10 @@
 #include "yocto/ipso/split.hpp"
 #include "yocto/code/utils.hpp"
 #include "yocto/container/tuple.hpp"
-#include "yocto/sequence/list.hpp"
 #include "yocto/core/list.hpp"
 #include "yocto/core/node.hpp"
 #include "yocto/mpl/natural.hpp"
+#include "yocto/sort/merge.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -81,108 +81,182 @@ namespace yocto
 
             inline void show() const
             {
-                std::cerr << "\t\t/--------" << std::endl;
+                //std::cerr << "\t\t/--------" << std::endl;
                 for(const Work *sub = head;sub;sub=sub->next)
                 {
-                    std::cerr << "\t\t|" << *sub << std::endl;
+                    //std::cerr << "\t\t|" << *sub << std::endl;
                 }
-                std::cerr << "\t\t\\--------" << std::endl;
+                //std::cerr << "\t\t\\--------" << std::endl;
             }
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Works);
         };
 
-        namespace
-        {
 
-            template <typename COORD> static inline
-            coord1D computeComs(const COORD &com,
-                                const COORD &pbc,
-                                const COORD &ranks,
-                                const COORD &ncore) throw()
+        template <typename COORD> static inline
+        coord1D computeComs(const COORD &com,
+                            const COORD &pbc,
+                            const COORD &ranks,
+                            const COORD &ncore) throw()
+        {
+            unit_t ans = 0;
+            for(size_t i=0;i<sizeof(COORD)/sizeof(coord1D);++i)
             {
-                std::cerr << "\tranks=" << ranks << std::endl;
-                unit_t ans = 0;
-                for(size_t i=0;i<sizeof(COORD)/sizeof(coord1D);++i)
+                const coord1D ni = __coord(ncore,i);
+                if(ni>1)
                 {
-                    const coord1D ni = __coord(ncore,i);
-                    if(ni>1)
+                    // parallel in dimension #i
+                    const coord1D ci = __coord(com,i);
+                    ans += ci; // at least
+                    if( __coord(pbc,i) || split::is_bulk( __coord(ranks,i), ni ) )
                     {
-                        // parallel in dimension #i
-                        const coord1D ci = __coord(com,i);
-                        ans += ci; // at least
-                        if( __coord(pbc,i) || split::is_bulk( __coord(ranks,i), ni ) )
-                        {
-                            ans += ci; // in other direction
-                        }
-                        std::cerr << "\t\t\t+com/" << i << "=" << __coord(com,i) << std::endl;
+                        ans += ci; // in other direction
                     }
-                    // else no splitting in this direction!
                 }
-                std::cerr << "\t\tcom=" << ans << std::endl;
-                return ans;
+                // else no splitting in this direction!
+            }
+            return ans;
+        }
+
+        template <typename PART>
+        static inline int compareByCores(const PART *lhs, const PART *rhs, void *) throw()
+        {
+            if(lhs->cores<rhs->cores)
+            {
+                return -1;
+            }
+            else
+            {
+                if(rhs->cores<lhs->cores)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return PART::Coord::lexicompare(lhs->ncore,rhs->ncore);
+                }
             }
 
-
-            class Part2D : public split::in2D, public Works
-            {
-            public:
-                explicit Part2D(const coord2D &n,
-                                const patch2D &p,
-                                const coord2D &pbc) :
-                split::in2D(n,p),
-                Works()
-                {
-                    std::cerr << "Part2D(" << n <<  ")" << std::endl;
-                    for(size_t rank=0;rank<cores;++rank)
-                    {
-                        const patch2D sub   = (*this)(rank);
-                        const coord2D ranks = last_ranks;
-                        Work          *w    = new Work();
-                        const coord2D  com(sub.width.y,sub.width.x);
-                        w->run  = sub.items;
-                        w->com  = computeComs(com,pbc,ranks,ncore);
-
-                        // adding
-                        add_unique(w);
-                    }
-                }
-
-                virtual ~Part2D() throw() {}
-
-            private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(Part2D);
-            };
-
-            class Part3D : public split::in3D, public Works
-            {
-            public:
-                explicit Part3D(const coord3D &n,
-                                const patch3D &p,
-                                const coord3D &pbc) :
-                split::in3D(n,p),
-                Works()
-                {
-                    for(size_t rank=0;rank<cores;++rank)
-                    {
-                        const patch3D sub   = (*this)(rank);
-                        const coord3D ranks = last_ranks;
-                        Work          *w = new Work();
-                        const coord3D com(sub.width.y*sub.width.z,
-                                          sub.width.x*sub.width.z,
-                                          sub.width.x*sub.width.y);
-                        w->run  = sub.items;
-                        w->com  = computeComs(com,pbc,ranks,ncore);
-
-                        // adding
-                        add_unique(w);
-                    }
-                }
-
-            private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(Part3D);
-            };
         }
+
+        class Part2D : public object, public split::in2D, public Works
+        {
+        public:
+            typedef coord2D Coord;
+            typedef core::list_of_cpp<Part2D> List;
+            Part2D *next;
+            Part2D *prev;
+            explicit Part2D(const coord2D &n,
+                            const patch2D &p,
+                            const coord2D &pbc) :
+            split::in2D(n,p),
+            Works(),
+            next(0),
+            prev(0)
+            {
+                std::cerr << "Part2D(" << n <<  ")" << std::endl;
+                for(size_t rank=0;rank<cores;++rank)
+                {
+                    const patch2D sub   = (*this)(rank);
+                    const coord2D ranks = last_ranks;
+                    Work          *w    = new Work();
+                    const coord2D  com(sub.width.y,sub.width.x);
+                    w->run  = sub.items;
+                    w->com  = computeComs(com,pbc,ranks,ncore);
+
+                    // adding
+                    add_unique(w);
+                }
+            }
+
+            virtual ~Part2D() throw() {}
+
+            static inline
+            void Build(List          &parts,
+                       const size_t   nmax,
+                       const patch2D &p,
+                       const coord2D &pbc)
+            {
+                coord2D       n;
+                for(n.y=1;n.y<=nmax;++n.y)
+                {
+                    for(n.x=1;n.x<=nmax;++n.x)
+                    {
+                        if(1==n.x&&1==n.y) continue;
+                        const coord1D ncpu = n.__prod();
+                        if(ncpu>nmax) continue;
+                        Part2D *part = new Part2D(n,p,pbc);
+                        parts.push_back(part);
+                    }
+                }
+                core::merging<Part2D>::sort(parts,compareByCores,NULL);
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Part2D);
+        };
+
+        class Part3D : public split::in3D, public Works
+        {
+        public:
+            typedef coord3D Coord;
+            typedef core::list_of_cpp<Part3D> List;
+            Part3D *next;
+            Part3D *prev;
+
+            explicit Part3D(const coord3D &n,
+                            const patch3D &p,
+                            const coord3D &pbc) :
+            split::in3D(n,p),
+            Works(),
+            next(0),
+            prev(0)
+            {
+                for(size_t rank=0;rank<cores;++rank)
+                {
+                    const patch3D sub   = (*this)(rank);
+                    const coord3D ranks = last_ranks;
+                    Work          *w = new Work();
+                    const coord3D com(sub.width.y*sub.width.z,
+                                      sub.width.x*sub.width.z,
+                                      sub.width.x*sub.width.y);
+                    w->run  = sub.items;
+                    w->com  = computeComs(com,pbc,ranks,ncore);
+
+                    // adding
+                    add_unique(w);
+                }
+            }
+
+            static inline
+            void Build(List          &parts,
+                       const size_t   nmax,
+                       const patch3D &p,
+                       const coord3D &pbc)
+            {
+                coord3D       n;
+                for(n.z=1;n.z<=nmax;++n.z)
+                {
+                    for(n.y=1;n.y<=nmax;++n.y)
+                    {
+                        for(n.x=1;n.x<=nmax;++n.x)
+                        {
+                            if(1==n.x&&1==n.y&&1==n.z) continue;
+                            const coord1D ncpu = n.__prod();
+                            if(ncpu>nmax) continue;
+                            Part3D *part = new Part3D(n,p,pbc);
+                            parts.push_back(part);
+                        }
+                    }
+                }
+                core::merging<Part3D>::sort(parts,compareByCores,NULL);
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Part3D);
+        };
+
+
 
         coord2D split::in2D::computeCoresMap(const size_t  cores,
                                              const coord2D length,
@@ -206,45 +280,19 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // Run and Com for 2x1
+            // compute partitions
             //__________________________________________________________________
-#if 0
-            const coord2D core2x1(2,1);
-            Part2D        part2x1(core2x1,p,pbc);
-            part2x1.show();
-
-            const coord2D core1x2(1,2);
-            Part2D        part1x2(core1x2,p,pbc);
-            part1x2.show();
-#endif
-            std::cerr << std::endl << std::endl;
-            return coord2D(1,1);
-            //__________________________________________________________________
-            //
-            // Run and Com for 1x1
-            //__________________________________________________________________
-
-
-            const coord1D nmax(cores);
-            coord2D       n;
-            for(n.x=1;n.x<=nmax;++n.x)
+            Part2D::List  parts;
+            Part2D::Build(parts,cores,p,pbc);
+            std::cerr << "study #" << parts.size << " partitions" << std::endl;
+            for(const Part2D *part = parts.head;part;part=part->next)
             {
-                for(n.y=1;n.y<=nmax;++n.y)
+                std::cerr << "\tcores=" << part->cores << ", " << part->ncore << std::endl;
+                for(const Work *w=part->head;w;w=w->next)
                 {
-                    if(1==n.x&&1==n.y) continue;
-                    const coord1D ncpu = n.__prod();
-                    if(ncpu>nmax) continue;
-                    std::cerr << "n=" << n << std::endl;
-                    Part2D part(n,p,pbc);
-                    std::cerr << "works: " << std::endl;
-                    for(const Work *w=part.head;w;w=w->next)
-                    {
-                        std::cerr << "\t" << *w << std::endl;
-                    }
-                    std::cerr << std::endl;
+                    std::cerr << "\t\t" << *w << std::endl;
                 }
             }
-
             return coord2D(1,1);
         }
 
@@ -265,32 +313,10 @@ namespace yocto
             //__________________________________________________________________
             const   coord1D Lx   = length.x;
             const   coord1D Ly   = length.y;
-            coord1D         Run1 = Lx*Ly;
-            coord1D         Com1 = 0;
-            if(pbc.x) Com1 += (Ly+Ly);
-            if(pbc.y) Com1 += (Lx+Lx);
+            const   mpn     Run  = Lx*Ly;
 
-            const coord1D nmax(cores);
-            coord3D       n;
-            for(n.x=1;n.x<=nmax;++n.x)
-            {
-                for(n.y=1;n.y<=nmax;++n.y)
-                {
-                    for(n.z=1;n.z<=nmax;++n.z)
-                    {
-                        if(1==n.x&&1==n.y&&1==n.z) continue;
-                        const coord1D ncpu = n.__prod();
-                        if(ncpu>nmax) continue;
-                        std::cerr << "n=" << n << std::endl;
-                        Part3D part(n,p,pbc);
-                        std::cerr << "works: " << std::endl;
-                        for(const Work *w=part.head;w;w=w->next)
-                        {
-                            std::cerr << "\t" << *w << std::endl;
-                        }
-                    }
-                }
-            }
+            Part3D::List parts;
+            Part3D::Build(parts,cores,p,pbc);
 
 
             return coord3D(1,1,1);
