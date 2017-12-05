@@ -217,7 +217,7 @@ namespace yocto
 
             static inline
             void Build(List          &parts,
-                       const size_t   nmax,
+                       const coord1D  nmax,
                        const patch2D &p,
                        const coord2D &pbc)
             {
@@ -275,7 +275,7 @@ namespace yocto
 
             static inline
             void Build(List          &parts,
-                       const size_t   nmax,
+                       const coord1D  nmax,
                        const patch3D &p,
                        const coord3D &pbc)
             {
