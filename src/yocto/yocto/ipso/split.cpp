@@ -5,9 +5,8 @@
 #include "yocto/core/node.hpp"
 #include "yocto/mpl/rational.hpp"
 #include "yocto/sort/merge.hpp"
-#include "yocto/sort/network.hpp"
+#include "yocto/sort/quick.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/code/alea.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -71,6 +70,7 @@ namespace yocto
             {
             }
 
+            //! add a new Work, check not the same than a previous one
             inline void add_unique(Work *w) throw()
             {
                 assert(w!=NULL);
@@ -184,6 +184,7 @@ namespace yocto
             }
         }
 
+        //! a 2D partitions, witch its domains
         class Part2D : public object, public split::in2D, public Works
         {
         public:
@@ -234,6 +235,13 @@ namespace yocto
                     }
                 }
                 core::merging<Part2D>::sort(parts,compareByCores,NULL);
+#if 0
+                std::cerr << "#Part2D=" << parts.size << std::endl;
+                for(const Part2D *p=parts.head;p;p=p->next)
+                {
+                    std::cerr << "#cores=" << p->cores << "/" << p->ncore << std::endl;
+                }
+#endif
             }
 
 
@@ -241,6 +249,8 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(Part2D);
         };
 
+
+        //! a 3D partition, with its domain
         class Part3D : public object, public split::in3D, public Works
         {
         public:
@@ -301,42 +311,37 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(Part3D);
         };
 
-        template <const size_t DIM> void __netsort(mpq *);
 
-        template <> void __netsort<2>(mpq *arr)
-        {
-            netsort<mpq>::level2(arr);
-        }
 
-        template <> void __netsort<3>(mpq *arr)
-        {
-            netsort<mpq>::level3(arr);
-        }
-
-        //! the DIM first partitions have 2 cores, only one way to split!
+        //! the DIM first partitions have 2 cores
         /**
          compute the coefficient so that the worst work domain is faster than
          the full domain
          */
         template <typename PART>
-        mpq computeComFactor(const typename PART::List &parts, const mpn &Run)
+        mpq computeComFactor(const typename PART::List &parts,
+                             const mpn                 &Run)
         {
             static const size_t DIM = sizeof(typename PART::Coord)/sizeof(coord1D);
             assert(parts.size>=DIM);
+
+            //! list of beta
+            vector<mpq> beta(2*DIM,as_capacity);
+
+            //! compute the ratio for the unique
             const PART *p = parts.head;
-            //std::cerr << "Run=" << Run << std::endl;
-            vector<mpq> beta(DIM,as_capacity);
             for(size_t count=DIM;count>0;--count,p=p->next)
             {
-                assert(1==p->size);
                 assert(2==p->cores);
-                const Work *w   = p->head;
-                const mpn   den = Run-w->run;
-                const mpq   fac = mpq(den,w->com);
-                beta.push_back(fac);
-                //std::cerr << "\trun=" << w->run << ", com=" << w->com << " => beta=" << beta.back() << std::endl;
+                assert(2>=p->size );
+                for(const Work *w   = p->head;w;w=w->next)
+                {
+                    const mpn   den = Run-w->run;
+                    const mpq   fac = mpq(den,w->com);
+                    beta.push_back(fac);
+                }
             }
-            __netsort<DIM>(beta());
+            quicksort(beta);
             return beta[1];
         }
 
@@ -352,7 +357,7 @@ namespace yocto
             // sort by increasing timing, then lexicographic cores
             core::merging<PART>::sort(parts,compareByTmx<PART>,NULL);
 
-#if 0
+#if 1
             for(const PART *part = parts.head;part;part=part->next)
             {
                 std::cerr << part->ncore << " => " << part->tmx << std::endl;
@@ -389,6 +394,7 @@ namespace yocto
             //__________________________________________________________________
             Part2D::List  parts;
             Part2D::Build(parts,cores,p,pbc);
+
 
             //__________________________________________________________________
             //

@@ -212,7 +212,7 @@ YOCTO_UNIT_TEST_IMPL(ipso)
     std::cerr << "SPLIT" << std::endl;
 
     {
-        patch2D p2( coord2D(1,1), coord2D(10,10) );
+        patch2D p2( coord2D(1,1), coord2D(11,10) );
         std::cerr << "Splitting " << p2 << std::endl;
         for(size_t cores=4;cores<=4;++cores)
         {
