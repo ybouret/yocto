@@ -100,6 +100,44 @@ namespace yocto
 
     };
 
+    template <typename T,typename FUNC>
+    struct __netsort
+    {
+        static inline
+        void op2( T &p0, T &p1, FUNC &cmp) throw()
+        {
+            if(cmp(p1,p0)<0) core::bswap<sizeof(T)>(&p0,&p1);
+        }
+
+        static inline
+        void op3( T &p0, T &p1, T &p2, FUNC &cmp ) throw()
+        {
+            op2(p0,p1,cmp);
+            op2(p1,p2,cmp);
+            op2(p0,p1,cmp);
+        }
+
+        static inline
+        void op4( T &p0, T &p1, T &p2, T &p3, FUNC &cmp ) throw()
+        {
+            op2(p0, p1, cmp);
+            op2(p2, p3, cmp);
+            op2(p0, p2, cmp);
+            op2(p1, p3, cmp);
+            op2(p1, p2, cmp);
+        }
+
+        static inline
+        void op6( T &p0, T &p1, T &p2, T &p3, T &p4, T &p5, FUNC &cmp ) throw()
+        {
+            op3(p0, p1, p2, cmp);
+            op3(p3, p4, p5, cmp);
+            op2(p0, p3,cmp);
+            op2(p2, p5,cmp);
+            op4(p1, p2, p3, p4,cmp);
+        }
+    };
+
 }
 #endif
 

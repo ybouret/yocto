@@ -95,6 +95,7 @@ YOCTO_UNIT_TEST_INIT(150)
     YOCTO_UNIT_TEST_DECL(bmove);
     YOCTO_UNIT_TEST_DECL(qsort);
     YOCTO_UNIT_TEST_DECL(sort_perf);
+    YOCTO_UNIT_TEST_DECL(ysort);
     YOCTO_UNIT_TEST_DECL(bzset);
     YOCTO_UNIT_TEST_DECL(clock);
     YOCTO_UNIT_TEST_DECL(multi_arrays);

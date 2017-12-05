@@ -2,6 +2,7 @@
 #include "yocto/sort/heap.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/comparator.hpp"
+#include "yocto/sort/ysort.hpp"
 
 #include "support.hpp"
 
@@ -21,43 +22,43 @@ static inline void check_sorted( const array<T> &ra, const char *ctx)
 template <typename T>
 static inline void test_sort()
 {
-	std::cerr << "-- sorting" << std::endl;
-	const size_t n = 1 + alea.leq( 20 );
-	vector<T>    ra(n,as_capacity);
-	for( size_t i=0; i < n; ++i )
-	{
-		T tmp( gen<T>::get() );
-		ra.push_back( tmp );
-	}
-	std::cerr << "raw=" << ra << std::endl;
-	hsort( ra, __compare<T> );
-	std::cerr << "srt=" << ra << std::endl;
+    std::cerr << "-- sorting" << std::endl;
+    const size_t n = 1 + alea.leq( 20 );
+    vector<T>    ra(n,as_capacity);
+    for( size_t i=0; i < n; ++i )
+    {
+        T tmp( gen<T>::get() );
+        ra.push_back( tmp );
+    }
+    std::cerr << "raw=" << ra << std::endl;
+    hsort( ra, __compare<T> );
+    std::cerr << "srt=" << ra << std::endl;
     check_sorted(ra, "sorting");
 }
 
 template <typename T,typename U>
 static inline void test_cosort()
 {
-	std::cerr << "-- co-sorting" << std::endl;
-	const size_t n = 1 + alea.leq( 20 );
-	vector<T>    ra(n,as_capacity);
-	vector<U>    rb(n,as_capacity);
-	for( size_t i=0; i < n; ++i )
-	{
-		{
-			T tmp( gen<T>::get() );
-			ra.push_back( tmp );
-		}
-		{
-			U tmp( gen<U>::get() );
-			rb.push_back( tmp );
-		}
-	}
-	std::cerr << "rawa=" << ra << std::endl;
-	std::cerr << "rawb=" << rb << std::endl;
-	hsort( ra, rb, __compare<T> );
-	std::cerr << "srta=" << ra << std::endl;
-	std::cerr << "srtb=" << rb << std::endl;
+    std::cerr << "-- co-sorting" << std::endl;
+    const size_t n = 1 + alea.leq( 20 );
+    vector<T>    ra(n,as_capacity);
+    vector<U>    rb(n,as_capacity);
+    for( size_t i=0; i < n; ++i )
+    {
+        {
+            T tmp( gen<T>::get() );
+            ra.push_back( tmp );
+        }
+        {
+            U tmp( gen<U>::get() );
+            rb.push_back( tmp );
+        }
+    }
+    std::cerr << "rawa=" << ra << std::endl;
+    std::cerr << "rawb=" << rb << std::endl;
+    hsort( ra, rb, __compare<T> );
+    std::cerr << "srta=" << ra << std::endl;
+    std::cerr << "srtb=" << rb << std::endl;
     check_sorted(ra, "co-sorting");
 }
 
@@ -170,10 +171,10 @@ static inline void test_co_netsort()
 
 YOCTO_UNIT_TEST_IMPL(sort)
 {
-	test_sort<int>();
-	test_sort<float>();
-	test_sort<string>();
-	test_cosort<int,string>();
+    test_sort<int>();
+    test_sort<float>();
+    test_sort<string>();
+    test_cosort<int,string>();
     test_netsort<float>();
     test_co_netsort<int, float>();
     
@@ -184,43 +185,43 @@ YOCTO_UNIT_TEST_DONE()
 template <typename T>
 static inline void test_qsort()
 {
-	std::cerr << "-- sorting" << std::endl;
-	const size_t n = 1 + alea.leq( 20 );
-	vector<T>    ra(n,as_capacity);
-	for( size_t i=0; i < n; ++i )
-	{
-		T tmp( gen<T>::get() );
-		ra.push_back( tmp );
-	}
-	std::cerr << "raw=" << ra << std::endl;
-	quicksort( ra, __compare<T> );
-	std::cerr << "srt=" << ra << std::endl;
+    std::cerr << "-- sorting" << std::endl;
+    const size_t n = 1 + alea.leq( 20 );
+    vector<T>    ra(n,as_capacity);
+    for( size_t i=0; i < n; ++i )
+    {
+        T tmp( gen<T>::get() );
+        ra.push_back( tmp );
+    }
+    std::cerr << "raw=" << ra << std::endl;
+    quicksort( ra, __compare<T> );
+    std::cerr << "srt=" << ra << std::endl;
     check_sorted(ra, "sorting");
 }
 
 template <typename T,typename U>
 static inline void test_coqsort()
 {
-	std::cerr << "-- co-quicksorting" << std::endl;
-	const size_t n = 1 + alea.leq( 20 );
-	vector<T>    ra(n,as_capacity);
-	vector<U>    rb(n,as_capacity);
-	for( size_t i=0; i < n; ++i )
-	{
-		{
-			T tmp( gen<T>::get() );
-			ra.push_back( tmp );
-		}
-		{
-			U tmp( gen<U>::get() );
-			rb.push_back( tmp );
-		}
-	}
-	std::cerr << "rawa=" << ra << std::endl;
-	std::cerr << "rawb=" << rb << std::endl;
-	co_qsort( ra, rb, __compare<T> );
-	std::cerr << "srta=" << ra << std::endl;
-	std::cerr << "srtb=" << rb << std::endl;
+    std::cerr << "-- co-quicksorting" << std::endl;
+    const size_t n = 1 + alea.leq( 20 );
+    vector<T>    ra(n,as_capacity);
+    vector<U>    rb(n,as_capacity);
+    for( size_t i=0; i < n; ++i )
+    {
+        {
+            T tmp( gen<T>::get() );
+            ra.push_back( tmp );
+        }
+        {
+            U tmp( gen<U>::get() );
+            rb.push_back( tmp );
+        }
+    }
+    std::cerr << "rawa=" << ra << std::endl;
+    std::cerr << "rawb=" << rb << std::endl;
+    co_qsort( ra, rb, __compare<T> );
+    std::cerr << "srta=" << ra << std::endl;
+    std::cerr << "srtb=" << rb << std::endl;
     check_sorted(ra, "co-sorting");
 }
 
@@ -250,7 +251,8 @@ enum SortWith
 {
     HeapSort,
     QuickSort,
-    LibcSort
+    LibcSort,
+    YoctoSort
 };
 
 template <typename T>
@@ -285,6 +287,9 @@ inline double test_perf( size_t n, SortWith proc )
             case LibcSort:
                 qsort(&arr[1],n,sizeof(T),compare_args<T>);
                 break;
+
+            case YoctoSort:
+                _ySort(&arr[1],__compare<T>, 0, n-1);
         }
         average += chrono.query() - stamp;
         check_sorted(arr,"sorting perf");
@@ -305,8 +310,9 @@ inline void compare_perf(size_t nmax, const char *filename )
         const double htmx = test_perf<T>(n,HeapSort);
         const double qtmx = test_perf<T>(n,QuickSort);
         const double ctmx = test_perf<T>(n,LibcSort);
+        const double ytmx = test_perf<T>(n,YoctoSort);
         ios::ocstream fp(filename,true);
-        fp("%g %g %g %g\n", double(n), htmx, qtmx, ctmx);
+        fp("%g %g %g %g %g\n", double(n), htmx, qtmx, ctmx, ytmx);
     }
     std::cerr << std::endl;
     
@@ -324,4 +330,30 @@ YOCTO_UNIT_TEST_IMPL(sort_perf)
 }
 YOCTO_UNIT_TEST_DONE()
 
+
+#define __SHOW_IVEC std::cerr << ivec << std::endl
+YOCTO_UNIT_TEST_IMPL(ysort)
+{
+    vector<int> ivec(20,0);
+
+    for(size_t iter=0;iter<10;++iter)
+    {
+        for(size_t i=1;i<=ivec.size();++i)
+        {
+            ivec[i] = alea.full<int>()%1000;
+        }
+        //
+        __ySort(ivec(),0,ivec.size()-1);
+        __SHOW_IVEC;
+        check_sorted(ivec,"ysort");
+
+        alea.shuffle(ivec(), ivec.size());
+        //std::cerr << ivec << std::endl;
+        _ySort(ivec(),__compare<int>,0,ivec.size()-1);
+        __SHOW_IVEC;
+        check_sorted(ivec,"ysort");
+    }
+    std::cerr << "sizeof(string)=" << sizeof(string) << std::endl;
+}
+YOCTO_UNIT_TEST_DONE()
 
