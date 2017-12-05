@@ -161,9 +161,9 @@ const TYPE tmp = *(TYPE *)lhs; \
 	{
 		if( size > 1 )
 		{
-			const size_t n = size/2;
-			const size_t m = size-1;
-			for( size_t i=0; i < n; ++i )
+			register const size_t n = size/2;
+			register const size_t m = size-1;
+			for( register size_t i=0; i < n; ++i )
 			{
                 core::bswap<sizeof(T)>( &base[i], &base[m-i]);
 			}
@@ -176,7 +176,7 @@ const TYPE tmp = *(TYPE *)lhs; \
 		assert( !(NULL==source && length > 0 ) );
 		uint8_t *p = (uint8_t *)target;
 		uint8_t *q = (uint8_t *)source;
-		for( size_t i=length;i>0;--i,++p,++q) cswap( *p, *q );
+		for( register size_t i=length;i>0;--i,++p,++q) cswap( *p, *q );
 	}
     
 }

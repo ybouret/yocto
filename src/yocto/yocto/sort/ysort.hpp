@@ -97,7 +97,16 @@ namespace yocto
                 _ySort(tableau,cmp,++droite,fin);
             }
         }
+    }
 
+    template <typename T,typename FUNC>
+    inline void ySort(array<T> &arr, FUNC &compare) throw()
+    {
+        const size_t n = arr.size();
+        if(n>1)
+        {
+            _ySort(&arr[1],compare,0,n-1);
+        }
     }
 
 }

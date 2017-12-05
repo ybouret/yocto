@@ -330,30 +330,30 @@ YOCTO_UNIT_TEST_IMPL(sort_perf)
 }
 YOCTO_UNIT_TEST_DONE()
 
+template <typename T>
+static inline void test_ysort()
+{
+    std::cerr << "-- sorting/ySort" << std::endl;
+    const size_t n = 1 + alea.leq( 30 );
+    vector<T>    ra(n,as_capacity);
+    for( size_t i=0; i < n; ++i )
+    {
+        T tmp( gen<T>::get() );
+        ra.push_back( tmp );
+    }
+    std::cerr << "raw=" << ra << std::endl;
+    ySort( ra, __compare<T> );
+    std::cerr << "srt=" << ra << std::endl;
+    check_sorted(ra, "ySort");
+}
 
 #define __SHOW_IVEC std::cerr << ivec << std::endl
 YOCTO_UNIT_TEST_IMPL(ysort)
 {
-    vector<int> ivec(20,0);
-
-    for(size_t iter=0;iter<10;++iter)
-    {
-        for(size_t i=1;i<=ivec.size();++i)
-        {
-            ivec[i] = alea.full<int>()%1000;
-        }
-        //
-        __ySort(ivec(),0,ivec.size()-1);
-        __SHOW_IVEC;
-        check_sorted(ivec,"ysort");
-
-        alea.shuffle(ivec(), ivec.size());
-        //std::cerr << ivec << std::endl;
-        _ySort(ivec(),__compare<int>,0,ivec.size()-1);
-        __SHOW_IVEC;
-        check_sorted(ivec,"ysort");
-    }
-    std::cerr << "sizeof(string)=" << sizeof(string) << std::endl;
+    test_ysort<int>();
+    test_ysort<float>();
+    test_ysort<double>();
+    test_ysort<string>();
 }
 YOCTO_UNIT_TEST_DONE()
 
