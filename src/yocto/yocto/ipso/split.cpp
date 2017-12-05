@@ -44,7 +44,7 @@ namespace yocto
     namespace ipso
     {
         // common for 2D/3D
-        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,__Work,size_t,run,size_t,com);
+        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,__Work,mpn,run,mpn,com);
         inline __Work() throw() : run(0), com(0) {}
         YOCTO_PAIR_END();
 
@@ -108,11 +108,12 @@ namespace yocto
                     const coord1D ni = __coord(ncore,i);
                     if(ni>1)
                     {
+                        // parallel in dimension #i
                         const coord1D ci = __coord(com,i);
-                        ans += ci;
+                        ans += ci; // at least
                         if( __coord(pbc,i) || split::is_bulk( __coord(ranks,i), ni ) )
                         {
-                            ans += ci;
+                            ans += ci; // in other direction
                         }
                         std::cerr << "\t\t\t+com/" << i << "=" << __coord(com,i) << std::endl;
                     }
@@ -200,13 +201,14 @@ namespace yocto
             //__________________________________________________________________
             const   coord1D Lx   = length.x;
             const   coord1D Ly   = length.y;
-            coord1D         Run  = Lx*Ly;
+            const   mpn     Run  = Lx*Ly;
             std::cerr  << "Run=" << Run << std::endl;
 
             //__________________________________________________________________
             //
             // Run and Com for 2x1
             //__________________________________________________________________
+#if 0
             const coord2D core2x1(2,1);
             Part2D        part2x1(core2x1,p,pbc);
             part2x1.show();
@@ -214,7 +216,7 @@ namespace yocto
             const coord2D core1x2(1,2);
             Part2D        part1x2(core1x2,p,pbc);
             part1x2.show();
-
+#endif
             std::cerr << std::endl << std::endl;
             return coord2D(1,1);
             //__________________________________________________________________
