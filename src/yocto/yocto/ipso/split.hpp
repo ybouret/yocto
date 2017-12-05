@@ -155,7 +155,7 @@ namespace yocto
                     return patch_type(__offset,__length);
                 }
 
-                static coord2D computeCoresMap(const size_t cores, const coord2D length, const coord2D pbc) throw();
+                static coord2D computeCoresMap(const size_t cores, const coord2D length, const coord2D pbc);
 
 
             private:
@@ -216,7 +216,7 @@ namespace yocto
                     return patch_type(__offset,__length);
                 }
 
-                static coord3D computeCoresMap(const size_t cores, const coord3D length, const coord3D pbc) throw();
+                static coord3D computeCoresMap(const size_t cores, const coord3D length, const coord3D pbc);
 
 
             private:

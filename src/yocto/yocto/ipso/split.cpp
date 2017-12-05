@@ -3,8 +3,11 @@
 #include "yocto/container/tuple.hpp"
 #include "yocto/core/list.hpp"
 #include "yocto/core/node.hpp"
-#include "yocto/mpl/natural.hpp"
+#include "yocto/mpl/rational.hpp"
 #include "yocto/sort/merge.hpp"
+#include "yocto/sort/network.hpp"
+#include "yocto/sequence/vector.hpp"
+#include "yocto/code/alea.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -43,17 +46,24 @@ namespace yocto
 {
     namespace ipso
     {
-        // common for 2D/3D
+        //! common for 2D/3D
+        /**
+         number of items to run and to com(municate)
+         */
         YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,__Work,mpn,run,mpn,com);
         inline __Work() throw() : run(0), com(0) {}
         YOCTO_PAIR_END();
 
+        //! make a node of the tuples
         typedef core::node_of<__Work>   Work;
+
+        //! make a list of tuples
         typedef core::list_of_cpp<Work> __Works;
         class Works : public __Works
         {
         public:
-            inline explicit Works() throw() : __Works()
+            mpn tmx;
+            inline explicit Works() throw() : __Works(), tmx(0)
             {
             }
 
@@ -79,20 +89,33 @@ namespace yocto
                 }
             }
 
-            inline void show() const
+
+            //! compute an integer timing coefficient
+            inline void computeTmxWith(const mpq &beta)
             {
-                //std::cerr << "\t\t/--------" << std::endl;
-                for(const Work *sub = head;sub;sub=sub->next)
+                const mpn   den = beta.den;
+                const mpn   num = beta.num.n;
+                const Work *w   = head;
+
+                mpn res = (w->run+num*w->com)*den;
+                for(w=w->next;w;w=w->next)
                 {
-                    //std::cerr << "\t\t|" << *sub << std::endl;
+                    const mpn tmp = (w->run+num*w->com)*den;
+                    if(res<tmp)
+                    {
+                        res = tmp;
+                    }
                 }
-                //std::cerr << "\t\t\\--------" << std::endl;
+                tmx = res;
             }
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Works);
         };
 
 
+        //! compute the number of items to communicate
         template <typename COORD> static inline
         coord1D computeComs(const COORD &com,
                             const COORD &pbc,
@@ -108,6 +131,8 @@ namespace yocto
                     // parallel in dimension #i
                     const coord1D ci = __coord(com,i);
                     ans += ci; // at least
+
+                    // check is another connection is to be made
                     if( __coord(pbc,i) || split::is_bulk( __coord(ranks,i), ni ) )
                     {
                         ans += ci; // in other direction
@@ -136,7 +161,27 @@ namespace yocto
                     return PART::Coord::lexicompare(lhs->ncore,rhs->ncore);
                 }
             }
+        }
 
+        template <typename PART> static inline
+        int compareByTmx(const PART *lhs, const PART *rhs,void*) throw()
+        {
+            if(lhs->tmx<rhs->tmx)
+            {
+                return -1;
+            }
+            else
+            {
+                if(rhs->tmx<lhs->tmx)
+                {
+                    return 1;
+                }
+                else
+                {
+                    // same timings
+                    return PART::Coord::lexicompare(lhs->ncore,rhs->ncore);
+                }
+            }
         }
 
         class Part2D : public object, public split::in2D, public Works
@@ -154,7 +199,6 @@ namespace yocto
             next(0),
             prev(0)
             {
-                std::cerr << "Part2D(" << n <<  ")" << std::endl;
                 for(size_t rank=0;rank<cores;++rank)
                 {
                     const patch2D sub   = (*this)(rank);
@@ -192,11 +236,12 @@ namespace yocto
                 core::merging<Part2D>::sort(parts,compareByCores,NULL);
             }
 
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Part2D);
         };
 
-        class Part3D : public split::in3D, public Works
+        class Part3D : public object, public split::in3D, public Works
         {
         public:
             typedef coord3D Coord;
@@ -256,11 +301,72 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(Part3D);
         };
 
+        template <const size_t DIM> void __netsort(mpq *);
+
+        template <> void __netsort<2>(mpq *arr)
+        {
+            netsort<mpq>::level2(arr);
+        }
+
+        template <> void __netsort<3>(mpq *arr)
+        {
+            netsort<mpq>::level3(arr);
+        }
+
+        //! the DIM first partitions have 2 cores, only one way to split!
+        /**
+         compute the coefficient so that the worst work domain is faster than
+         the full domain
+         */
+        template <typename PART>
+        mpq computeComFactor(const typename PART::List &parts, const mpn &Run)
+        {
+            static const size_t DIM = sizeof(typename PART::Coord)/sizeof(coord1D);
+            assert(parts.size>=DIM);
+            const PART *p = parts.head;
+            //std::cerr << "Run=" << Run << std::endl;
+            vector<mpq> beta(DIM,as_capacity);
+            for(size_t count=DIM;count>0;--count,p=p->next)
+            {
+                assert(1==p->size);
+                assert(2==p->cores);
+                const Work *w   = p->head;
+                const mpn   den = Run-w->run;
+                const mpq   fac = mpq(den,w->com);
+                beta.push_back(fac);
+                //std::cerr << "\trun=" << w->run << ", com=" << w->com << " => beta=" << beta.back() << std::endl;
+            }
+            __netsort<DIM>(beta());
+            return beta[1];
+        }
+
+        template <typename PART>
+        const PART  *computeTmxAndSort(typename PART::List &parts, const mpq &beta )
+        {
+            // compute the timing coef for each partition
+            for(PART *part=parts.head;part;part=part->next)
+            {
+                part->computeTmxWith(beta);
+            }
+
+            // sort by increasing timing, then lexicographic cores
+            core::merging<PART>::sort(parts,compareByTmx<PART>,NULL);
+
+#if 0
+            for(const PART *part = parts.head;part;part=part->next)
+            {
+                std::cerr << part->ncore << " => " << part->tmx << std::endl;
+            }
+#endif
+            
+            return parts.head;
+        }
+
 
 
         coord2D split::in2D::computeCoresMap(const size_t  cores,
                                              const coord2D length,
-                                             const coord2D pbc) throw()
+                                             const coord2D pbc)
         {
             if(cores<=1)
             {
@@ -276,7 +382,6 @@ namespace yocto
             const   coord1D Lx   = length.x;
             const   coord1D Ly   = length.y;
             const   mpn     Run  = Lx*Ly;
-            std::cerr  << "Run=" << Run << std::endl;
 
             //__________________________________________________________________
             //
@@ -284,21 +389,24 @@ namespace yocto
             //__________________________________________________________________
             Part2D::List  parts;
             Part2D::Build(parts,cores,p,pbc);
-            std::cerr << "study #" << parts.size << " partitions" << std::endl;
-            for(const Part2D *part = parts.head;part;part=part->next)
-            {
-                std::cerr << "\tcores=" << part->cores << ", " << part->ncore << std::endl;
-                for(const Work *w=part->head;w;w=w->next)
-                {
-                    std::cerr << "\t\t" << *w << std::endl;
-                }
-            }
-            return coord2D(1,1);
+
+            //__________________________________________________________________
+            //
+            // compute com ratio
+            //__________________________________________________________________
+            const mpq beta = computeComFactor<Part2D>(parts,Run);
+
+            //__________________________________________________________________
+            //
+            // compute com ratio
+            //__________________________________________________________________
+            return computeTmxAndSort<Part2D>(parts,beta)->ncore;
+            //return coord2D(1,1);
         }
 
         coord3D split::in3D::computeCoresMap(const size_t  cores,
                                              const coord3D length,
-                                             const coord3D pbc) throw()
+                                             const coord3D pbc)
         {
             if(cores<=1)
             {
@@ -313,13 +421,15 @@ namespace yocto
             //__________________________________________________________________
             const   coord1D Lx   = length.x;
             const   coord1D Ly   = length.y;
-            const   mpn     Run  = Lx*Ly;
+            const   coord1D Lz   = length.z;
+            const   mpn     Run  = Lx*Ly*Lz;
+
 
             Part3D::List parts;
             Part3D::Build(parts,cores,p,pbc);
 
-
-            return coord3D(1,1,1);
+            const mpq beta = computeComFactor<Part3D>(parts,Run);
+            return computeTmxAndSort<Part3D>(parts,beta)->ncore;
         }
 
     }

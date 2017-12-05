@@ -97,9 +97,9 @@ namespace yocto
             level2(p2, p5);
             level4(p1, p2, p3, p4);
         }
-    
+
     };
-    
+
 }
 #endif
 
