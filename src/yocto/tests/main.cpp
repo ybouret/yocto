@@ -3,7 +3,7 @@
 using namespace yocto;
 
 
-YOCTO_UNIT_TEST_INIT(150)
+YOCTO_UNIT_TEST_INIT(200)
 {
 
     YOCTO_UNIT_TEST_DECL(platform);
