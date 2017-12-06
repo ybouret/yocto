@@ -39,18 +39,3 @@ ADD_TEST(Source  test-lang source)
 ADD_TEST(POSIX   test-lang posix)
 ADD_TEST(Types   test-lang types)
 
- # sample code
-ADD_CUSTOM_COMMAND(
-OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/netsort.inc
-COMMAND yocto-dynamo ${CMAKE_CURRENT_SOURCE_DIR}/netsort.g ${CMAKE_CURRENT_SOURCE_DIR}
-DEPENDS yocto-dynamo ${CMAKE_CURRENT_SOURCE_DIR}/netsort.g
-)
-
-ADD_EXECUTABLE(gen-netsort
-gen-netsort.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/netsort.inc
-netsort.g
-netsort.db
-)
-
-TARGET_LINK_YOCTO(gen-netsort lang)
