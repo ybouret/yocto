@@ -1,0 +1,7 @@
+// TERMINALS
+#define netsort_size     0
+// INTERNALS
+#define netsort_networks 1000
+#define netsort_network  1001
+#define netsort_line     1002
+#define netsort_pair     1003
