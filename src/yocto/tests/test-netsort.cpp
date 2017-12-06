@@ -108,6 +108,65 @@ static const XCH xch8[] =
     XCH(3, 4)
 };
 
+static const XCH xch9[] =
+{
+
+    XCH(0, 1),
+
+    XCH(2, 3),
+
+    XCH(0, 2),
+
+    XCH(1, 3),
+
+    XCH(1, 2),
+
+    XCH(4, 5),
+
+    XCH(7, 8),
+
+    XCH(6, 8),
+
+    XCH(6, 7),
+
+    XCH(4, 7),
+
+    XCH(4, 6),
+
+    XCH(5, 8),
+
+    XCH(5, 7),
+
+    XCH(5, 6),
+
+    XCH(0, 5),
+
+    XCH(0, 4),
+
+    XCH(1, 6),
+
+    XCH(1, 5),
+
+    XCH(1, 4),
+
+    XCH(2, 7),
+
+    XCH(3, 8),
+
+    XCH(3, 7),
+
+    XCH(2, 5),
+
+    XCH(2, 4),
+
+    XCH(3, 6),
+
+    XCH(3, 5),
+
+    XCH(3, 4)
+
+};
+
 #define __XCH(ID) { ID, sizeof(ID)/sizeof(ID[0]) }
 static const XCH_OPS xch_ops[] =
 {
@@ -119,7 +178,8 @@ static const XCH_OPS xch_ops[] =
     __XCH(xch5),
     __XCH(xch6),
     __XCH(xch7),
-    __XCH(xch8)
+    __XCH(xch8),
+    __XCH(xch9)
 };
 
 template <typename T,const size_t N>
@@ -178,6 +238,7 @@ perform_test<TYPE,5>();\
 perform_test<TYPE,6>();\
 perform_test<TYPE,7>();\
 perform_test<TYPE,8>();\
+perform_test<TYPE,9>();\
 } while(false)
 
 YOCTO_UNIT_TEST_IMPL(netsort)

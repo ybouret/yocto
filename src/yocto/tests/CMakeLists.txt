@@ -1,7 +1,7 @@
 
 FILE(GLOB test_srcs test-*.cpp *.hpp)
 INCLUDE_DIRECTORIES(../../kr)
-ADD_EXECUTABLE(test-main main.cpp ${test_srcs} ../../kr/yocto/hashing/md5.cpp)
+ADD_EXECUTABLE(test-main main.cpp ${test_srcs} ../../kr/yocto/hashing/md5.cpp netsort.inc)
 
 TARGET_LINK_YOCTO( test-main )
 IF( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
