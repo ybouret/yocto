@@ -1,0 +1,9 @@
+// TERMINALS
+#define nwsrt_int   0
+#define nwsrt_info  1
+// INTERNALS
+#define nwsrt_codes 1000
+#define nwsrt_code  1001
+#define nwsrt_name  1002
+#define nwsrt_swap  1003
+#define nwsrt_swaps 1004

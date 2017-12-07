@@ -15,12 +15,13 @@ for (my $i = 3; $i <= 8; $i++) {
     # Print the comparator list using the default format,
     # and print a graph of the list.
     #
-    print "$i", "\n";
+    #print "$i", "\n";
+    print "$i-", $nw->title(), "\n";
     print $nw->formatted(),"\n\n";
 
 }
 
-for (my $i = 9; $i <= 16; $i++)
+for (my $i = 9; $i <= 24; $i++)
 {
     my $inputs = $i;
 
