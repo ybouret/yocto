@@ -187,15 +187,18 @@ private:
 };
 
 
+
 YOCTO_PROGRAM_START()
 {
     TheCompiler nws;
     if(argc>1)
     {
+        // read and compile codes
         const Module::Handle hModule( new Module(argv[1]) );
         Source               source( hModule );
-
         nws.ld(source);
+
+        // ready to write
     }
 
 }
