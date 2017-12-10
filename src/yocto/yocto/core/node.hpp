@@ -31,6 +31,11 @@ namespace yocto
             template <typename U>
             inline explicit node_of(typename type_traits<U>::parameter_type args) : T(args), next(0), prev(0) {}
 
+            template <typename U,typename V>
+            inline explicit node_of(typename type_traits<U>::parameter_type argU,
+                                    typename type_traits<V>::parameter_type argV) : T(argU,argV), next(0), prev(0) {}
+
+
         private:
             YOCTO_DISABLE_ASSIGN(node_of);
         };

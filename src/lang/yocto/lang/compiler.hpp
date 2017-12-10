@@ -14,7 +14,9 @@ namespace yocto
         public:
             explicit DynamicParser(Syntax::Parser *p) throw();
             virtual ~DynamicParser() throw();
-            
+
+            const Syntax::Parser & parser() const throw();
+
         protected:
             auto_ptr<Syntax::Parser> impl;
 

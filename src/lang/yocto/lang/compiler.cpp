@@ -16,6 +16,12 @@ namespace yocto
         {
         }
 
+        const Syntax::Parser & DynamicParser:: parser() const throw()
+        {
+            return *impl;
+        }
+
+
     }
 }
 

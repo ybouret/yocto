@@ -105,9 +105,9 @@ namespace yocto
                 return std::cerr;
             }
 
-            void Analyzer:: onTerminal(const string &label,
-                                       const int     hCode,
-                                       const string &content)
+            void Analyzer:: showTerminal(const string &label,
+                                         const int     hCode,
+                                         const string &content) const
             {
                 const string hText = vformat("[%04d]",hCode);
                 __indent() << "push " << hText << ' ';
@@ -119,13 +119,28 @@ namespace yocto
                 std::cerr << std::endl;
             }
 
-            void Analyzer:: onInternal(const string &label,
+
+            void Analyzer:: onTerminal(const string &label,
                                        const int     hCode,
-                                       const int     nArgs)
+                                       const string &content)
+            {
+                showTerminal(label,hCode,content);
+            }
+
+            void Analyzer:: showInternal(const string &label,
+                                         const int     hCode,
+                                         const int     nArgs) const
             {
                 const string hText = vformat("[%04d]",hCode);
                 __indent() << "call " << hText << ' ' << label << "/" << nArgs << std::endl;
 
+            }
+
+            void Analyzer:: onInternal(const string &label,
+                                       const int     hCode,
+                                       const int     nArgs)
+            {
+                showTerminal(label,hCode,nArgs);
             }
 
 

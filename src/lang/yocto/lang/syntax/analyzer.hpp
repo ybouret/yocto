@@ -34,6 +34,13 @@ namespace yocto
 
                 void emitDefinitions( ios::ostream &fp, const string &prefix ) const;
 
+                void showTerminal(const string &label,
+                                  const int     hCode,
+                                  const string &content) const;
+
+                void showInternal(const string &label,
+                                  const int     hCode,
+                                  const int     nArgs) const;
 
             private:
                 Hasher       terminalHash; //!< hashing of terminals
