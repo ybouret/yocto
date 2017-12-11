@@ -204,6 +204,7 @@ YOCTO_PROGRAM_START()
         fp << "#define YOCTO_NWSRT_INCLUDED\n\n";
         fp << "#include \"yocto/code/bswap.hpp\"\n\n";
         fp << "#define YOCTO_NWSRT_SWAP(I,J) { T &aI = a[I]; T &aJ = a[J]; if(compare(aI,aJ)<0) core::bswap<sizeof(T)>(&aI,&aJ); }\n\n";
+        fp << "#define YOCTO_NWSRT_SWP2(I,J) { T &aI = a[I]; T &aJ = a[J]; if(compare(aI,aJ)<0) { core::bswap<sizeof(T)>(&aI,&aJ); core::bswap<sizeof(U)>(&b[I],&b[J]);} }\n\n";
         fp << "namespace yocto {\n\n";
         fp << "\tstruct nwsrt {\n\n";
         // ready to write
@@ -216,17 +217,19 @@ YOCTO_PROGRAM_START()
             const int     count = name.count;
             //const string &info  = name.info;
             const Swaps &swaps = *(code->swaps);
-            fp << "\t\ttemplate <typename T,typename FUNC>\n";
-            fp << "\t\tstatic inline void ";
-            fp("op%d",count);
+            string fn = vformat("op%d",count);
             if(lastCount==count)
             {
-                fp("_%d",++iSub);
+                fn += vformat("_%d",++iSub);
             }
             else
             {
                 iSub=0;
             }
+
+            fp << "\t\ttemplate <typename T,typename FUNC>\n";
+            fp << "\t\tstatic inline void ";
+            fp << fn;
             fp << "(T *a,FUNC &compare) throw() {\n";
             for(const Swap *swap = swaps.head;swap; swap=swap->next )
             {
@@ -234,6 +237,20 @@ YOCTO_PROGRAM_START()
                 fp("\t\t\tYOCTO_NWSRT_SWAP(%2d,%2d)\n",swap->I,swap->J);
             }
             fp << "\t\t}\n\n";
+
+            fp << "\t\ttemplate <typename T,typename U,typename FUNC>\n";
+            fp << "\t\tstatic inline void ";
+            fp << fn;
+            fp << "(T *a, U *b, FUNC &compare) throw() {\n";
+            for(const Swap *swap = swaps.head;swap; swap=swap->next )
+            {
+                //std::cerr << "\tswp(" << swap->I << "," << swap->J << ")" << std::endl;
+                fp("\t\t\tYOCTO_NWSRT_SWP2(%2d,%2d)\n",swap->I,swap->J);
+            }
+            fp << "\t\t}\n\n";
+
+
+
             lastCount = count;
         }
         fp << "\t};\n";
