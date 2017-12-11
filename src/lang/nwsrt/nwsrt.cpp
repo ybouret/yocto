@@ -4,6 +4,7 @@
 #include "yocto/core/node.hpp"
 #include "yocto/string/conv.hpp"
 #include "yocto/container/tuple.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 #include "nwsrt.def"
 
@@ -198,20 +199,47 @@ YOCTO_PROGRAM_START()
         Source               source( hModule );
         nws.ld(source);
 
+        ios::ocstream fp( ios::cstdout );
+        fp << "#ifndef YOCTO_NWSRT_INCLUDED\n";
+        fp << "#define YOCTO_NWSRT_INCLUDED\n\n";
+        fp << "#include \"yocto/code/bswap.hpp\"\n\n";
+        fp << "#define YOCTO_NWSRT_SWAP(I,J) { T &aI = a[I]; T &aJ = a[J]; if(compare(aI,aJ)<0) core::bswap<sizeof(T)>(&aI,&aJ); }\n\n";
+        fp << "namespace yocto {\n\n";
+        fp << "\tstruct nwsrt {\n\n";
         // ready to write
-        for(const Code *code = nws.codes.head;code;code=code->next)
+        int lastCount = 0;
+        int iCode     = 0;
+        int iSub      = 0;
+        for(const Code *code = nws.codes.head;code;code=code->next,++iCode)
         {
             const Name   &name = *(code->name);
             const int     count = name.count;
-            const string &info  = name.info;
+            //const string &info  = name.info;
             const Swaps &swaps = *(code->swaps);
-
-            std::cerr << count << " <" << info << ">" << std::endl;
+            fp << "\t\ttemplate <typename T,typename FUNC>\n";
+            fp << "\t\tstatic inline void ";
+            fp("op%d",count);
+            if(lastCount==count)
+            {
+                fp("_%d",++iSub);
+            }
+            else
+            {
+                iSub=0;
+            }
+            fp << "(T *a,FUNC &compare) throw() {\n";
             for(const Swap *swap = swaps.head;swap; swap=swap->next )
             {
                 //std::cerr << "\tswp(" << swap->I << "," << swap->J << ")" << std::endl;
+                fp("\t\t\tYOCTO_NWSRT_SWAP(%2d,%2d)\n",swap->I,swap->J);
             }
+            fp << "\t\t}\n\n";
+            lastCount = count;
         }
+        fp << "\t};\n";
+        fp << "}\n";
+        fp << "#endif\n";
+
 
     }
 
