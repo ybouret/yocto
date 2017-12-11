@@ -117,7 +117,7 @@ public:
                             const int     hCode,
                             const string &content)
     {
-        showTerminal(label,hCode,content);
+        //showTerminal(label,hCode,content);
         switch(hCode)
         {
             case nwsrt_info: infoStack.push_back( new Info(content) ); break;
@@ -130,7 +130,7 @@ public:
                             const int     hCode,
                             const int     nArgs)
     {
-        showInternal(label,hCode,nArgs);
+        //showInternal(label,hCode,nArgs);
         switch(hCode)
         {
             case nwsrt_name:
@@ -199,6 +199,20 @@ YOCTO_PROGRAM_START()
         nws.ld(source);
 
         // ready to write
+        for(const Code *code = nws.codes.head;code;code=code->next)
+        {
+            const Name   &name = *(code->name);
+            const int     count = name.count;
+            const string &info  = name.info;
+            const Swaps &swaps = *(code->swaps);
+
+            std::cerr << count << " <" << info << ">" << std::endl;
+            for(const Swap *swap = swaps.head;swap; swap=swap->next )
+            {
+                //std::cerr << "\tswp(" << swap->I << "," << swap->J << ")" << std::endl;
+            }
+        }
+
     }
 
 }
