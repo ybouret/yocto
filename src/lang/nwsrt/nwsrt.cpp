@@ -203,10 +203,10 @@ YOCTO_PROGRAM_START()
         fp << "#ifndef YOCTO_NWSRT_INCLUDED\n";
         fp << "#define YOCTO_NWSRT_INCLUDED\n\n";
         fp << "#include \"yocto/code/bswap.hpp\"\n\n";
-        fp << "#define YOCTO_NWSRT_SWAP(I,J) { T &aI = a[I]; T &aJ = a[J]; if(compare(aI,aJ)<0) core::bswap<sizeof(T)>(&aI,&aJ); }\n\n";
-        fp << "#define YOCTO_NWSRT_SWP2(I,J) { T &aI = a[I]; T &aJ = a[J]; if(compare(aI,aJ)<0) { core::bswap<sizeof(T)>(&aI,&aJ); core::bswap<sizeof(U)>(&b[I],&b[J]);} }\n\n";
+        fp << "#define YOCTO_NWSRT_SWAP(I,J) { T &aI = a[I]; T &aJ = a[J]; if(compare(aJ,aI)<0) core::bswap<sizeof(T)>(&aI,&aJ); }\n\n";
+        fp << "#define YOCTO_NWSRT_SWP2(I,J) { T &aI = a[I]; T &aJ = a[J]; if(compare(aJ,aI)<0) { core::bswap<sizeof(T)>(&aI,&aJ); core::bswap<sizeof(U)>(&b[I],&b[J]);} }\n\n";
         fp << "namespace yocto {\n\n";
-        fp << "\tstruct nwsrt {\n\n";
+        fp << "\ttemplate <typename T> struct nwsrt {\n\n";
         // ready to write
         int lastCount = 0;
         int iCode     = 0;
@@ -227,7 +227,7 @@ YOCTO_PROGRAM_START()
                 iSub=0;
             }
 
-            fp << "\t\ttemplate <typename T,typename FUNC>\n";
+            fp << "\t\ttemplate <typename FUNC>\n";
             fp << "\t\tstatic inline void ";
             fp << fn;
             fp << "(T *a,FUNC &compare) throw() {\n";
@@ -238,8 +238,8 @@ YOCTO_PROGRAM_START()
             }
             fp << "\t\t}\n\n";
 
-            fp << "\t\ttemplate <typename T,typename U,typename FUNC>\n";
-            fp << "\t\tstatic inline void ";
+            fp << "\t\ttemplate <typename U,typename FUNC>\n";
+            fp << "\t\tstatic inline void co_";
             fp << fn;
             fp << "(T *a, U *b, FUNC &compare) throw() {\n";
             for(const Swap *swap = swaps.head;swap; swap=swap->next )

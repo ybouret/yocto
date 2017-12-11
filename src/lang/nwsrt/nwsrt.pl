@@ -1,7 +1,7 @@
 use Algorithm::Networksort;
 use Algorithm::Networksort::Best qw(:all);
 
-for (my $i = 3; $i <= 8; $i++) {
+for (my $i = 2; $i <= 8; $i++) {
     my $inputs = $i;
     my $algorithm = "bosenelson";
 
@@ -45,3 +45,22 @@ for (my $i = 9; $i <= 24; $i++)
     }
 }
 
+for (my $i = 25; $i <= 32; $i++) {
+    my $inputs = $i;
+    my $algorithm = "bosenelson";
+
+    #
+    # Generate the sorting network (a list of comparators).
+    #
+    my $nw = Algorithm::Networksort->new(inputs =>$inputs,algorithm => $algorithm);
+    #$nw->formats([ " swap(%d,%d)," ]);
+
+    #
+    # Print the comparator list using the default format,
+    # and print a graph of the list.
+    #
+    #print "$i", "\n";
+    print "$i-", $nw->title(), "\n";
+    print $nw->formatted(),"\n\n";
+
+}
