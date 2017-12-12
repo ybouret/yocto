@@ -1,5 +1,5 @@
 #ifndef YOCTO_NWSRT_INCLUDED
-#define YOCTO_NWSRT_INCLUDED
+#define YOCTO_NWSRT_INCLUDED 1
 
 #include "yocto/code/bswap.hpp"
 
