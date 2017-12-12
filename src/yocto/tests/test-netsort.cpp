@@ -2,6 +2,7 @@
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/container/tuple.hpp"
 #include "yocto/sequence/vector.hpp"
+#include <typeinfo>
 
 using namespace yocto;
 
