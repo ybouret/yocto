@@ -1,5 +1,6 @@
 #include "yocto/json/value.hpp"
 #include "yocto/utest/run.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 using namespace yocto;
 
@@ -20,5 +21,10 @@ YOCTO_UNIT_TEST_IMPL(load)
         value = JSON::Value::LoadFrom(source);
     }
     std::cerr << "value=" << value << std::endl;
+    std::cerr << "output: " << std::endl;
+    std::cerr.flush();
+    ios::ocstream fp( ios::cstderr );
+    value.output(fp);
+    fp << "\n";
 }
 YOCTO_UNIT_TEST_DONE()

@@ -6,6 +6,7 @@
 #include "yocto/associative/set.hpp"
 #include "yocto/counted-object.hpp"
 #include "yocto/lang/source.hpp"
+#include "yocto/ios/ostream.hpp"
 
 namespace yocto
 {
@@ -75,8 +76,10 @@ namespace yocto
             
             void display( std::ostream &, int depth ) const;
 
-            template <typename T> T &as() throw();
+            template <typename T> T       &as() throw();
             template <typename T> const T &as() const throw();
+
+            void output( ios::ostream &fp, int blanks = 0) const;
 
         private:
             void      *impl;
