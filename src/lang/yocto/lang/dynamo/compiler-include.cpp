@@ -65,8 +65,8 @@ namespace yocto
                             //
                             // recursive call
                             //__________________________________________________
-                            const Module::Handle hIncl( new Module(incPath) );
-                            Source               source(hIncl);
+                            //const Module::Handle hIncl( new Module(incPath) );
+                            Source               source( Module::OpenFile(incPath) );
                             reset();
                             auto_ptr<Node> inc(parse(source));
                             if(!inc.is_valid()) throw exception("%sunexpected NULL parsed file",fn);

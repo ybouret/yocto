@@ -11,8 +11,7 @@ using namespace Lang;
 YOCTO_UNIT_TEST_IMPL(pattern)
 {
     {
-        Module::Handle hModule( new Module() );
-        Source         source( hModule );
+        Source         source( Module::OpenSTDIN() );
         source.prefetch(10);
 
         {

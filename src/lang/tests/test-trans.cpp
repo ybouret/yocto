@@ -104,8 +104,7 @@ private:
 YOCTO_UNIT_TEST_IMPL(trans)
 {
     myTrans        trans;
-    Module::Handle hModule( new Module() ); // open stdio
-    Source         source( hModule );       // register it in source
+    Source         source( Module::OpenSTDIN() );       // register it in source
 
     Lexical::Units lexemes;
 

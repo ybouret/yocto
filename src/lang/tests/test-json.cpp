@@ -84,8 +84,7 @@ YOCTO_UNIT_TEST_IMPL(json)
 
     jParser        J;
     {
-        Module::Handle hm( new Module() );
-        Source         source( hm );
+        Source         source( Module::OpenSTDIN() );
         std::cerr << std::endl << "Ready..." << std::endl;
         auto_ptr<Syntax::Node> tree( J.parse(source) );
         if(tree.is_valid())

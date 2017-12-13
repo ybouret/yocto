@@ -52,8 +52,7 @@ private:
 YOCTO_UNIT_TEST_IMPL(scan)
 {
     
-    Module::Handle hModule( new Module() ); // open stdio
-    Source         source( hModule );       // register it in source
+    Source         source( Module::OpenSTDIN() );       // register it in source
 
     myScanner scanner;
     Lexical::Units lexemes;

@@ -67,8 +67,7 @@ YOCTO_UNIT_TEST_IMPL(gram)
     fs.try_remove_file("gram.dot");
     fs.try_remove_file("gram.png");
 
-    Module::Handle hm( new Module() );
-    Source         source( hm );
+    Source         source( Module::OpenSTDIN() );
     myLexer        lexer;
     myGram         G;
 

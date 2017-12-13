@@ -21,36 +21,48 @@ namespace yocto
         input(in)
         {
         }
+
+        Module * Module:: OpenFile(const string &id)
+        {
+            const Input in( new ios::icstream(id) );
+            return new Module(id,in);
+        }
+
+        Module * Module:: OpenFile(const char *id)
+        {
+            const Input in( new ios::icstream(id) );
+            return new Module(id,in);
+        }
+
+        Module * Module:: OpenSTDIN()
+        {
+            const string id = "STDIN";
+            const Input  in( new ios::icstream(ios::cstdin) );
+            return new Module(id,in);
+        }
+
+        Module * Module:: OpenData(const string &id, const void *buffer, const size_t buflen)
+        {
+            const Input in(new ios::imstream(buffer,buflen));
+            return new Module(id,in);
+        }
+
+        Module * Module:: OpenData(const char *id, const void *buffer, const size_t buflen)
+        {
+            const string ID(id);
+            return OpenData(ID,buffer,buflen);
+        }
+
+        Module * Module:: OpenData(const string &id, const memory::ro_buffer &buff )
+        {
+            return OpenData( id, buff.ro(), buff.length() );
+        }
+
+        Module * Module:: OpenData(const char *id, const memory::ro_buffer &buff )
+        {
+            return OpenData( id, buff.ro(), buff.length() );
+        }
         
-        Module:: Module(const string &id) :
-        CharInfo( new string(id) ),
-        input( new ios::icstream( *stamp) )
-        {
-        }
-
-        Module:: Module(const string &id,
-                        const void   *buffer,
-                        const size_t  buflen) :
-        CharInfo( new string(id) ),
-        input( new ios::imstream(buffer,buflen) )
-        {
-        }
-
-        Module:: Module(const char   *id,
-                        const void   *buffer,
-                        const size_t  buflen) :
-        CharInfo( new string(id) ),
-        input( new ios::imstream(buffer,buflen) )
-        {
-        }
-
-
-        
-        Module:: Module() :
-        CharInfo( new string("STDIN") ),
-        input( new ios::icstream( ios::cstdin) )
-        {
-        }
 
         Char * Module:: get()
         {

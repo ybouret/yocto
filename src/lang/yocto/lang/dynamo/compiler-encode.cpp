@@ -138,8 +138,7 @@ namespace yocto
                 auto_ptr<DynamoCompiler> compiler( new DynamoCompiler() );
                 Hasher                  &H = compiler->strHash;
                 {
-                    const Module::Handle     hModule( new Module(filename) );
-                    Source                   source(hModule);
+                    Source source( Module::OpenFile(filename) );
 
                     compiler->getAll(lexemes,source);
                     compiler->ungetCopyOf(lexemes);

@@ -9,7 +9,7 @@ YOCTO_UNIT_TEST_IMPL(module)
 {
     if(argc>1)
     {
-        Module::Handle hModule( new Module(argv[1]) );
+        Module::Handle hModule( Module::OpenFile(argv[1]) );
         Char *ch = 0;
         while( 0 != (ch=hModule->get()) )
         {

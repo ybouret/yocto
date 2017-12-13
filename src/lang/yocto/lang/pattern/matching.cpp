@@ -66,8 +66,7 @@ namespace yocto
 
         bool Matching:: wholly_matches(const string &line) const
         {
-            Module::Handle hModule( new Module(local_module_id,line.c_str(),line.size()) );
-            Source         source( hModule );
+            Source         source( Module::OpenData(local_module_id,line) );
             Token          tkn;
             if( motif->match(source,tkn) )
             {
@@ -88,8 +87,7 @@ namespace yocto
 
         bool Matching:: partly_matches(const string &line) const
         {
-            Module::Handle hModule( new Module(local_module_id,line.c_str(),line.size()) );
-            Source         source( hModule );
+            Source         source( Module::OpenData(local_module_id,line) );
             Token          tkn;
 
             while(source.peek())

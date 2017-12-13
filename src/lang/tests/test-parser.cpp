@@ -65,8 +65,7 @@ YOCTO_UNIT_TEST_IMPL(parser)
     fs.try_remove_file("gram.dot");
     fs.try_remove_file("gram.png");
 
-    Module::Handle hm( new Module() );
-    Source         source( hm );
+    Source         source( Module::OpenSTDIN() );
     myParser       parser;
 
     auto_ptr<Syntax::Node> tree( parser.parse(source) );

@@ -9,8 +9,8 @@ namespace yocto
         {
         }
 
-        Source:: Source( const Module::Handle &hModule ) :
-        module(hModule),
+        Source:: Source( Module *pModule ) throw() :
+        module(pModule),
         cache()
         {
         }

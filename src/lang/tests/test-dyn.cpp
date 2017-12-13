@@ -32,8 +32,7 @@ YOCTO_UNIT_TEST_IMPL(dyn)
         }
 
         // open stdio
-        const Module::Handle hModule( new Module() );
-        Source               source(hModule);
+        Source               source(Module::OpenSTDIN());
         
         // clean output
         const string parserOutDot = parser->tag + "_out.dot";

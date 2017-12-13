@@ -26,29 +26,21 @@ namespace yocto
             //! default constructor
             explicit Module(const string  &id,
                             const Input   &in);
-
-            //! open a file
-            explicit Module(const string &id);
-
-            //! open a data
-            explicit Module(const string &id,
-                            const void   *buffer,
-                            const size_t  buflen);
-
-            explicit Module(const char   *id,
-                            const void   *buffer,
-                            const size_t  buflen);
-            
-
-            //! open std input
-            explicit Module();
-
             virtual ~Module() throw();
             
             const Input    input;
 
             //! get next char
             Char *get(); 
+
+            static Module *OpenFile(const string &id);
+            static Module *OpenFile(const char   *id);
+            static Module *OpenSTDIN();
+            static Module *OpenData(const string &id, const void *buffer, const size_t buflen );
+            static Module *OpenData(const char   *id, const void *buffer, const size_t buflen );
+            static Module *OpenData(const string &id, const memory::ro_buffer &buff);
+            static Module *OpenData(const char   *id, const memory::ro_buffer &buff);
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Module);

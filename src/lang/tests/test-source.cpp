@@ -9,8 +9,7 @@ YOCTO_UNIT_TEST_IMPL(source)
 {
     if(argc>1)
     {
-        Module::Handle hModule( new Module(argv[1]) );
-        Source         source( hModule );
+        Source         source( Module::OpenFile(argv[1] ) );
         source.prefetch(10);
         Char *ch = 0;
         while( 0 != (ch=source.query()) )

@@ -104,8 +104,7 @@ namespace yocto
             static inline
             Parser * __GenerateFrom( Module *module , const bool verbose)
             {
-                const Module::Handle     hModule(module);
-                Source                   source(hModule);
+                Source                   source(module);
                 auto_ptr<DynamoCompiler> compiler( new DynamoCompiler() );
 
                 compiler->verbose = verbose;
@@ -117,7 +116,7 @@ namespace yocto
             Parser * Parser::GenerateFromFile(const string &filename,
                                               const bool    verbose)
             {
-                return __GenerateFrom( new Module(filename), verbose );
+                return __GenerateFrom( Module::OpenFile(filename), verbose );
             }
 
             Parser * Parser::GenerateFromData(const char    *buffID,
@@ -125,7 +124,7 @@ namespace yocto
                                               const size_t   buflen,
                                               const bool     verbose)
             {
-                return __GenerateFrom( new Module(buffID,buffer,buflen), verbose );
+                return __GenerateFrom(  Module::OpenData(buffID,buffer,buflen), verbose );
             }
 
 
