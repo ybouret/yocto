@@ -23,9 +23,7 @@ namespace yocto
         public:
             typedef arc_ptr<Module> Handle;
             
-            //! default constructor
-            explicit Module(const string  &id,
-                            const Input   &in);
+
             virtual ~Module() throw();
             
             const Input    input;
@@ -41,7 +39,10 @@ namespace yocto
             static Module *OpenData(const string &id, const memory::ro_buffer &buff);
             static Module *OpenData(const char   *id, const memory::ro_buffer &buff);
 
-
+        protected:
+            //! default constructor
+            explicit Module(const string  &id,
+                            const Input   &in);
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Module);
         };

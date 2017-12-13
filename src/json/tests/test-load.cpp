@@ -10,15 +10,13 @@ YOCTO_UNIT_TEST_IMPL(load)
     {
         for(int i=1;i<argc;++i)
         {
-            Lang::Module::Handle hModule( Lang::Module::OpenFile(argv[1]) );
-            Lang::Source         source(hModule);
+            Lang::Source         source( Lang::Module::OpenFile(argv[1]) );
             value = JSON::Value::LoadFrom(source);
         }
     }
     else
     {
-        Lang::Module::Handle hModule( Lang::Module::OpenSTDIN() );
-        Lang::Source         source(hModule);
+        Lang::Source         source(Lang::Module::OpenSTDIN());
         value = JSON::Value::LoadFrom(source);
     }
     std::cerr << "value=" << value << std::endl;
