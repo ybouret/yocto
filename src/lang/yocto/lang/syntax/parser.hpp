@@ -93,14 +93,15 @@ namespace yocto
                 Node * parse(Source &source);
 
                 //! generation
-                static Parser *Generate(const string &filename,
-                                        const bool    verbose=false);
+                static Parser *GenerateFromFile(const string &filename,
+                                                const bool    verbose=false);
 
                 //! generation
-                static Parser *Generate(const void    *buffer,
-                                        const size_t   buflen,
-                                        const bool     verbose=false);
-
+                static Parser *GenerateFromData(const char    *buffID,
+                                                const void    *buffer,
+                                                const size_t   buflen,
+                                                const bool     verbose=false);
+                
                 static void Encode(const string &filename,
                                    ios::ostream &output);
 

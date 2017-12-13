@@ -19,42 +19,37 @@ namespace yocto
         class          Array;
         class          Pair;
 
+        enum Type
+        {
+            IsString,
+            IsNumber,
+            IsObject,
+            IsArray,
+            IsTrue,
+            IsFalse,
+            IsNull
+        };
 
-#define YOCTO_JSON_VALUE_TO(CLASS) \
-inline CLASS       & to##CLASS() throw()       { assert(Is##CLASS==type); return *static_cast<CLASS *>(impl);       }\
-inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return *static_cast<const CLASS *>(impl); }
+
 
 #define YOCTO_JSON_VALUE_CHECK(TYPE) inline bool is##TYPE() const throw() { return Is##TYPE == type; }
 
         class Value
         {
         public:
-            enum Type
-            {
-                IsString,
-                IsNumber,
-                IsObject,
-                IsArray,
-                IsTrue,
-                IsFalse,
-                IsNull
-            };
 
-            Value() throw(); // IsNull
-            Value(const Type t);
-            ~Value() throw();
+
+            Value() throw();     //!< IsNull
+            Value(const Type t); //!< default empty Type
+            ~Value() throw(); 
             Value(const Value &other);
             Value & operator=( const Value &other);
             
             void   swap_with(Value &other) throw();
             size_t length() const throw();
-            void   clear() throw();
+            void   clear() throw(); //!< to IsNull
 
-
-            YOCTO_JSON_VALUE_TO(Number)
-            YOCTO_JSON_VALUE_TO(String)
-            YOCTO_JSON_VALUE_TO(Array)
-            YOCTO_JSON_VALUE_TO(Object)
+            Value & make(const Type t);
 
             YOCTO_JSON_VALUE_CHECK(String)
             YOCTO_JSON_VALUE_CHECK(Number)
@@ -80,6 +75,9 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             
             void display( std::ostream &, int depth ) const;
 
+            template <typename T> T &as() throw();
+            template <typename T> const T &as() const throw();
+
         private:
             void      *impl;
 
@@ -96,6 +94,9 @@ inline const CLASS & to##CLASS() const throw() { assert(Is##CLASS==type); return
             inline size_t length() const throw() { return size(); }
 
             void display( std::ostream &, int depth ) const;
+
+            template <typename T> T & append();
+            friend Array & operator<<( Array &, const Type);
 
         private:
             YOCTO_DISABLE_ASSIGN(Array);

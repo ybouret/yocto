@@ -5,6 +5,22 @@ namespace yocto
 {
     namespace JSON
     {
+#define Y_JSON_IMPL_CONV(TYPE) \
+template <> TYPE & Value:: as<TYPE>() throw()\
+{\
+assert(Is##TYPE==type);\
+return *static_cast<TYPE *>(impl);\
+}\
+template <> const TYPE & Value:: as<TYPE>() const throw()\
+{\
+assert(Is##TYPE==type);\
+return *static_cast<const TYPE *>(impl);\
+}
+        Y_JSON_IMPL_CONV(String)
+        Y_JSON_IMPL_CONV(Number)
+        Y_JSON_IMPL_CONV(Array)
+        Y_JSON_IMPL_CONV(Object)
+
         Value:: ~Value() throw()
         {
             switch(type)
@@ -75,6 +91,14 @@ namespace yocto
 
         }
 
+        Value & Value:: make(const Type t)
+        {
+            Value tmp(t);
+            swap_with(tmp);
+            return *this;
+        }
+
+
         Value:: Value(const String &s) :
         type(IsNull),
         impl( new String(s) )
@@ -87,7 +111,7 @@ namespace yocto
         impl( object::acquire1<Number>() )
         {
             (Type&)type = IsNumber;
-            toNumber()  = x;
+            as<Number>()  = x;
         }
 
 
@@ -171,12 +195,13 @@ namespace yocto
                 case IsFalse:  os << "false";     break;
                 case IsTrue:   os << "true";      break;
                 case IsNull:   os << "null";      break;
-                case IsNumber: { const string s = vformat("%.15g",toNumber()); os << s; } break;
-                case IsString: { const string s = jstr2cstr(toString());      os << '\"' << s << '\"'; } break;
-                case IsArray:  toArray().display(os,depth);  break;
-                case IsObject: toObject().display(os,depth); break;
+                case IsNumber: { const string s = vformat("%.15g",as<Number>()); os << s; } break;
+                case IsString: { const string s = jstr2cstr(as<String>());      os << '\"' << s << '\"'; } break;
+                case IsArray:  as<Array>().display(os,depth);  break;
+                case IsObject: as<Object>().display(os,depth); break;
             }
         }
+
 
 
     }
@@ -211,7 +236,26 @@ namespace yocto
             }
             os << ' ' << ']';
         }
-        
+
+#define Y_JSON_ARRAY_APPEND(TYPE)\
+template <> TYPE & Array::append<TYPE>() {\
+sequence<Value> &self = *this;\
+return self.back().as<TYPE>();\
+}\
+
+        Y_JSON_ARRAY_APPEND(String)
+        Y_JSON_ARRAY_APPEND(Number)
+        Y_JSON_ARRAY_APPEND(Object)
+        Y_JSON_ARRAY_APPEND(Array)
+
+        Array & operator<<( Array &a, const Type t)
+        {
+            const Value v(t);
+            a.push_back(v);
+            return a;
+        }
+
+
     }
 }
 

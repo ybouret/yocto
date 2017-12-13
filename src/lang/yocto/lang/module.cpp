@@ -28,11 +28,22 @@ namespace yocto
         {
         }
 
-        Module:: Module(const void *buffer, const size_t buflen) :
-        CharInfo( new string("data") ),
+        Module:: Module(const string &id,
+                        const void   *buffer,
+                        const size_t  buflen) :
+        CharInfo( new string(id) ),
         input( new ios::imstream(buffer,buflen) )
         {
         }
+
+        Module:: Module(const char   *id,
+                        const void   *buffer,
+                        const size_t  buflen) :
+        CharInfo( new string(id) ),
+        input( new ios::imstream(buffer,buflen) )
+        {
+        }
+
 
         
         Module:: Module() :

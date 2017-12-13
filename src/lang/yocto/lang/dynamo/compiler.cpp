@@ -114,21 +114,22 @@ namespace yocto
                 return compiler->encode(master);
             }
 
-            Parser * Parser::Generate(const string &filename,
-                                      const bool    verbose)
+            Parser * Parser::GenerateFromFile(const string &filename,
+                                              const bool    verbose)
             {
                 return __GenerateFrom( new Module(filename), verbose );
             }
 
-            Parser * Parser::Generate(const void    *buffer,
-                                      const size_t   buflen,
-                                      const bool     verbose)
+            Parser * Parser::GenerateFromData(const char    *buffID,
+                                              const void    *buffer,
+                                              const size_t   buflen,
+                                              const bool     verbose)
             {
-                return __GenerateFrom( new Module(buffer,buflen), verbose );
+                return __GenerateFrom( new Module(buffID,buffer,buflen), verbose );
             }
 
 
-           
+
         }
     }
 }

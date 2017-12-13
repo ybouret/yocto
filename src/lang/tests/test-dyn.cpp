@@ -18,7 +18,7 @@ YOCTO_UNIT_TEST_IMPL(dyn)
     {
         // create it
         const string             parserFile = argv[1];
-        auto_ptr<Syntax::Parser> parser( Syntax::Parser::Generate(parserFile,true) );
+        auto_ptr<Syntax::Parser> parser( Syntax::Parser::GenerateFromFile(parserFile,true) );
         {
             ios::wcstream fp("tmp.dat");
             Syntax::Parser::Encode(parserFile,fp);

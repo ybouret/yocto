@@ -31,11 +31,18 @@ namespace yocto
             explicit Module(const string &id);
 
             //! open a data
-            explicit Module(const void *buffer, const size_t buflen);
+            explicit Module(const string &id,
+                            const void   *buffer,
+                            const size_t  buflen);
+
+            explicit Module(const char   *id,
+                            const void   *buffer,
+                            const size_t  buflen);
+            
 
             //! open std input
             explicit Module();
-            
+
             virtual ~Module() throw();
             
             const Input    input;

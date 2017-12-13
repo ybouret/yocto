@@ -62,9 +62,11 @@ namespace yocto
         }
 
 
+        static const char local_module_id[] = "line";
+
         bool Matching:: wholly_matches(const string &line) const
         {
-            Module::Handle hModule( new Module(line.c_str(),line.size()) );
+            Module::Handle hModule( new Module(local_module_id,line.c_str(),line.size()) );
             Source         source( hModule );
             Token          tkn;
             if( motif->match(source,tkn) )
@@ -86,7 +88,7 @@ namespace yocto
 
         bool Matching:: partly_matches(const string &line) const
         {
-            Module::Handle hModule( new Module(line.c_str(),line.size()) );
+            Module::Handle hModule( new Module(local_module_id,line.c_str(),line.size()) );
             Source         source( hModule );
             Token          tkn;
 

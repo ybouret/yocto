@@ -23,7 +23,7 @@ namespace yocto
         {
         public:
             explicit jCompiler() :
-            Compiler( Syntax::Parser::Generate( jCode, sizeof(jCode) ) ),
+            Compiler( Syntax::Parser::GenerateFromData("embedded JSON grammar",jCode, sizeof(jCode) ) ),
             value(),
             vStack(),
             pStack(),
@@ -69,9 +69,9 @@ namespace yocto
                         vStack.push(str);
                     } break;
 
-                    case JSON_null:   { const Value v(Value::IsNull);  vStack.push(v); } break;
-                    case JSON_true:   { const Value v(Value::IsTrue);  vStack.push(v); } break;
-                    case JSON_false:  { const Value v(Value::IsFalse); vStack.push(v); } break;
+                    case JSON_null:   { const Value v(JSON::IsNull);  vStack.push(v); } break;
+                    case JSON_true:   { const Value v(JSON::IsTrue);  vStack.push(v); } break;
+                    case JSON_false:  { const Value v(JSON::IsFalse); vStack.push(v); } break;
                     default:
                         throw exception("%s: unexpected terminal %s", name, *label);
                 }
@@ -86,7 +86,7 @@ namespace yocto
                 {
                     case JSON_empty_object: {
                         assert(0==nArgs);
-                        Value v(Value::IsObject);
+                        Value v(JSON::IsObject);
                         vStack.push(nil);
                         vStack.peek().swap_with(v);
                     } break;
@@ -95,9 +95,9 @@ namespace yocto
                     {
                         assert(nArgs>0);
                         assert(pStack.size()>=size_t(nArgs));
-                        Value v(Value::IsObject);
+                        Value v(JSON::IsObject);
                         {
-                            Object &obj = v.toObject();
+                            Object &obj = v.as<Object>();
                             for(int i=-nArgs;i<0;++i)
                             {
                                 const Pair &p = pStack[i];
@@ -121,7 +121,7 @@ namespace yocto
                         // fetch name
                         Value n = nil; n.swap_with(vStack.peek()); vStack.pop();
                         assert(n.isString());
-                        Pair p(n.toString());
+                        Pair p(n.as<String>());
                         p.value.swap_with(v);
                         pStack.push(p);
                     } break;
@@ -129,17 +129,17 @@ namespace yocto
                     case JSON_empty_array:
                     {
                         assert(0==nArgs);
-                        Value v(Value::IsArray);
+                        Value v(JSON::IsArray);
                         vStack.push(nil);
                         vStack.peek().swap_with(v);
                     }   break;
 
                     case JSON_heavy_array:{
                         assert(nArgs>0);
-                        Value v(Value::IsArray);
+                        Value v(JSON::IsArray);
                         for(int i=-nArgs;i<0;++i)
                         {
-                            v.toArray().push_back( vStack[i] );
+                            v.as<Array>().push_back( vStack[i] );
                         }
                         vStack.popn(nArgs);
                         vStack.push(nil);

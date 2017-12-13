@@ -20,7 +20,7 @@ YOCTO_PROGRAM_START()
     const string             inclExt  = ".inc";
     const string             defsExt  = ".def";
 
-    auto_ptr<Syntax::Parser> parser( Syntax::Parser::Generate(gramFile) );
+    auto_ptr<Syntax::Parser> parser( Syntax::Parser::GenerateFromFile(gramFile) );
     const string tag      = parser->tag; ((string&)tag).to_lower();
     const string inclFile = gramWork + tag + inclExt;
     const string defsFile = gramWork + tag + defsExt;
