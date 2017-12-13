@@ -334,20 +334,31 @@ template <typename T>
 static inline void test_ysort()
 {
     std::cerr << "-- sorting/ySort" << std::endl;
-    const size_t n = 1 + alea.leq( 30 );
-    vector<T>    ra(n,as_capacity);
-    for( size_t i=0; i < n; ++i )
+    for(size_t iter=0;iter<1000;++iter)
     {
-        T tmp( gen<T>::get() );
-        ra.push_back( tmp );
-    }
-    std::cerr << "raw=" << ra << std::endl;
-    ySort( ra, __compare<T> );
-    std::cerr << "srt=" << ra << std::endl;
-    check_sorted(ra, "ySort");
+        const size_t n = 1 + alea.leq( 5000 );
+        vector<T>    ra(n,as_capacity);
+        for( size_t i=0; i < n; ++i )
+        {
+            T tmp( gen<T>::get() );
+            ra.push_back( tmp );
+        }
+        //std::cerr << "raw=" << ra << std::endl;
+        ySort( ra, __compare<T> );
+        //std::cerr << "srt=" << ra << std::endl;
+        check_sorted(ra, "ySort");
 
-    alea.shuffle(&ra[1],ra.size());
-    
+        alea.shuffle(&ra[1],n);
+        vector<int> indx(n);
+        for(size_t i=1;i<=n;++i)
+        {
+            indx[i]=i;
+        }
+        yCoSort(ra,indx,__compare<T>);
+        check_sorted(ra,"yCoSort/values");
+        yCoSort(indx,ra,__compare<int>);
+        check_sorted(indx,"yCoSort/indices");
+    }
 }
 
 #define __SHOW_IVEC std::cerr << ivec << std::endl
