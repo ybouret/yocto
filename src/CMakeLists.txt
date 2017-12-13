@@ -30,6 +30,9 @@ ENDMACRO(YOCTO_BUILD)
 ADD_SUBDIRECTORY(yocto)
 INSTALL( FILES 
 	../share/yocto.cmake
+	../share/fltk.cmake
+	../share/visit.cmake
+	../share/R.cmake
 	../build.cmake
 	../purge.cmake
 	../clean.cmake

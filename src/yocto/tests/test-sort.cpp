@@ -345,6 +345,9 @@ static inline void test_ysort()
     ySort( ra, __compare<T> );
     std::cerr << "srt=" << ra << std::endl;
     check_sorted(ra, "ySort");
+
+    alea.shuffle(&ra[1],ra.size());
+    
 }
 
 #define __SHOW_IVEC std::cerr << ivec << std::endl

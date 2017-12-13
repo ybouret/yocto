@@ -6,7 +6,8 @@
 
 namespace yocto
 {
-#define Y_SORT_IMPL(N) case N: nwsrt<T>::op##N(&tableau[debut],cmp); break
+#define Y_SORT_IMPL(N)  case N: nwsrt<T>::op##N(&tableau[debut],cmp); break
+#define Y_SORT_IMPL2(N) case N: nwsrt<T>::co_op##N(&arr[debut],&brr[debut],cmp); break
 #define Y_SORT_REPEAT(MACRO) \
 MACRO( 2); MACRO( 3); MACRO( 4); MACRO( 5); MACRO( 6); MACRO( 7); MACRO( 8); \
 MACRO( 9); MACRO(10); MACRO(11); MACRO(12); MACRO(13); MACRO(14); MACRO(15); \
@@ -61,6 +62,60 @@ MACRO(23); MACRO(24)
         if(n>1)
         {
             _ySort(&arr[1],compare,0,n-1);
+        }
+    }
+
+    template <typename T,typename U,typename FUNC>
+    inline void _ySort2(T        *arr,
+                        U        *brr,
+                        FUNC     &cmp,
+                        const int debut,
+                        const int fin ) throw()
+    {
+        if(debut>=fin) return;
+
+        register int       gauche = debut;
+        register int       droite = fin;
+        register const int objets = fin - (--gauche);
+
+        switch(objets)
+        {
+                Y_SORT_REPEAT(Y_SORT_IMPL2);
+
+            default: {
+                ++droite;
+                uint64_t     tmp[YOCTO_U64_FOR_ITEM(T)];
+                T           &pivot  = *(T*)&tmp[0];
+                core::bmove<sizeof(T)>(&pivot,&arr[debut]);
+
+                while(true)
+                {
+                    do droite--; while( cmp(pivot,arr[droite]) < 0 );
+                    do gauche++; while( cmp(arr[gauche],pivot) < 0 );
+                    if(gauche<droite)
+                    {
+                        core::bswap<sizeof(T)>(&arr[gauche],&arr[droite]);
+                        core::bswap<sizeof(U)>(&brr[gauche],&brr[droite]);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                _ySort2(arr,brr,cmp,debut,droite);
+                _ySort2(arr,brr,cmp,++droite,fin);
+            }
+        }
+    }
+
+    template <typename T, typename U, typename FUNC>
+    inline void yCoSort(array<T> &arr, array<U> &brr, FUNC &compare) throw()
+    {
+        assert(arr.size()==brr.size());
+        const size_t n = arr.size();
+        if(n>1)
+        {
+            _ySort2(&arr[1],&brr[1],compare,0,n-1);
         }
     }
 
