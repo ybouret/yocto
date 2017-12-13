@@ -22,6 +22,17 @@ namespace yocto
         {
         }
 
+        Module * Module:: Open(const string &id, const Input &in)
+        {
+            return new Module(id,in);
+        }
+
+        Module * Module:: Open(const char *id, const Input &in)
+        {
+            const string ID(id);
+            return new Module(ID,in);
+        }
+
         Module * Module:: OpenFile(const string &id)
         {
             const Input in( new ios::icstream(id) );

@@ -31,6 +31,9 @@ namespace yocto
             //! get next char
             Char *get(); 
 
+            static Module *Open(const string &id, const Input &in);
+            static Module *Open(const char   *id, const Input &in);
+            
             static Module *OpenFile(const string &id);
             static Module *OpenFile(const char   *id);
             static Module *OpenSTDIN();
