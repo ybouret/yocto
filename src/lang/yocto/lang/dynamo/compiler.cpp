@@ -67,7 +67,7 @@ namespace yocto
             {
                 if(!master) throw exception("DynamoCompiler.encode(NULL)");
                 auto_ptr<Node> guard(master);
-#if 0
+#if 1
                 if(verbose)
                 {
                     std::cerr << "== Dynamo Input" << std::endl;
@@ -77,7 +77,7 @@ namespace yocto
 #endif
                 parser.release();
                 checkIncludes(master);
-#if 0
+#if 1
                 if(verbose)
                 {
                     std::cerr << "== Dynamo Input2" << std::endl;
@@ -102,7 +102,8 @@ namespace yocto
             }
 
             static inline
-            Parser * __GenerateFrom( Module *module , const bool verbose)
+            Parser * __GenerateFrom(Module    *module ,
+                                    const bool verbose)
             {
                 Source                   source(module);
                 auto_ptr<DynamoCompiler> compiler( new DynamoCompiler() );
