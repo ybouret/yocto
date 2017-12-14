@@ -41,7 +41,7 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // check includes
+                // check includes in the master node
                 //______________________________________________________________
                 void checkIncludes( Node *master );
                 
@@ -71,7 +71,7 @@ namespace yocto
                 // Finalize
                 //______________________________________________________________
                 void finalize();
-                void __scan(Rule *r);
+                //! detecte what kind of merging is expected
                 void __detectPropertiesOf( Aggregate &agg );
                 
             private:

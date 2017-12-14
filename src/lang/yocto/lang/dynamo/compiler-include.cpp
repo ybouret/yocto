@@ -65,7 +65,6 @@ namespace yocto
                             //
                             // recursive call
                             //__________________________________________________
-                            //const Module::Handle hIncl( new Module(incPath) );
                             Source               source( Module::OpenFile(incPath) );
                             reset();
                             auto_ptr<Node> inc(parse(source));
