@@ -179,7 +179,17 @@ namespace yocto
                 for( list<string>::const_iterator i = keywords.begin(); i != keywords.end(); ++i)
                 {
                     const string &kw = *i;
-                    fp << "#define " << prefix << kw; for(size_t j=kw.length();j<max_size;++j) fp << ' ';
+                    fp << "#define " << prefix;
+                    for(size_t j=0;j<kw.size();++j)
+                    {
+                        char c = kw[j];
+                        if( !isalnum(c)  )
+                        {
+                            c = '_';
+                        }
+                        fp << c;
+                    }
+                    for(size_t j=kw.length();j<max_size;++j) fp << ' ';
                     fp(" %d\n", H(kw));
                 }
 

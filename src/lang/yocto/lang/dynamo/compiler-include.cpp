@@ -33,8 +33,8 @@ namespace yocto
                         //
                         // check for LEXR @include
                         //______________________________________________________
-                        const Node::List &children = node->toList(); assert(children.size>0);
-                        const Node       *child    = children.head; assert(child!=NULL);
+                        const Node::List &children = node->toList();     assert(children.size>0);
+                        const Node       *child    = children.head;      assert(child!=NULL);
                         const string      lexrKey  = child->toString(1);
                         if("include"==lexrKey)
                         {
@@ -71,7 +71,9 @@ namespace yocto
                             if(!inc.is_valid()) throw exception("%sunexpected NULL parsed file",fn);
                             
                             Node::List &content = inc->toList(); assert(content.size>0);
+                            // remove the nameNode
                             auto_ptr<Node> nameNode( content.pop_front() );
+                            // and append the parsed content to the local tree
                             tmp.merge_back(content);
                         }
                     }
