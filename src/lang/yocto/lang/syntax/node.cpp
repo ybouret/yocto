@@ -102,12 +102,6 @@ namespace yocto
                 }
             }
 
-            Node *Node:: clone() const
-            {
-                return new Node(*this);
-            }
-
-
 
             Node::List & Node:: toList() throw()
             {
