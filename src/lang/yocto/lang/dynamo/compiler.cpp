@@ -67,9 +67,10 @@ namespace yocto
 
             Parser *DynamoCompiler:: encode( Node *master )
             {
+                parser.release();
                 if(!master) throw exception("DynamoCompiler.encode(NULL)");
                 auto_ptr<Node> guard(master);
-#if 1
+#if 0
                 if(verbose)
                 {
                     std::cerr << "== Dynamo Input" << std::endl;
@@ -77,29 +78,10 @@ namespace yocto
                     ios::graphviz_render("dyninput.dot");
                 }
 #endif
-                parser.release();
                 checkIncludes(master);
-                if(true)
-                {
-                    const string sh1 = master->signature();
-                    std::cerr << "signature1=" << sh1 << std::endl;
-                    {
-                        std::cerr << "serialize master node" << std::endl;
-                        ios::wcstream fp("master.dat");
-                        master->serialize(fp);
-                    }
 
-                    {
-                        std::cerr << "reload master node" << std::endl;
-                        Source S( Module::OpenFile("master.dat") );
-                        auto_ptr<Node> reloaded( Node::loadFrom(S,*this) );
-                        const string sh2 = reloaded->signature();
-                        std::cerr << "signature2=" << sh2 << std::endl;
-                    }
-                }
-
-
-#if 1
+#if 0
+                // debug: checkIncludes
                 if(verbose)
                 {
                     std::cerr << "== Dynamo Input2" << std::endl;
@@ -121,6 +103,15 @@ namespace yocto
                 }
 
                 return parser.yield();
+            }
+
+            void DynamoCompiler::serialize( Node *master, ios::ostream &fp )
+            {
+                if(!master) throw exception("DynamoCompiler.serialize(NULL)");
+                parser.release();
+                auto_ptr<Node> guard(master);
+                checkIncludes(master);
+                master->serialize(fp);
             }
 
             static inline

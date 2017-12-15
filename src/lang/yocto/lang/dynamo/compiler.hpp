@@ -37,7 +37,17 @@ namespace yocto
                 explicit DynamoCompiler();
                 virtual ~DynamoCompiler() throw();
 
+                //! create a parser from a master node, with checkIncludes
+                /**
+                 master node is deleted
+                 */
                 Parser *encode( Node *master );
+
+                //! save a compiled version of the tree, with checkIncludes
+                /**
+                 master node is deleted
+                 */
+                void    serialize( Node *master, ios::ostream &fp );
 
                 //______________________________________________________________
                 //
