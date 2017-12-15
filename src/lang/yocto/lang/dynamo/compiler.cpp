@@ -1,6 +1,7 @@
 #include "yocto/lang/dynamo/compiler.hpp"
 #include "yocto/ios/graphviz.hpp"
 #include "yocto/exception.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 namespace yocto
 {
@@ -77,6 +78,12 @@ namespace yocto
 #endif
                 parser.release();
                 checkIncludes(master);
+                if(true)
+                {
+                    std::cerr << "serialize master node" << std::endl;
+                    ios::wcstream fp("master.dat");
+                    master->serialize(fp);
+                }
 #if 1
                 if(verbose)
                 {

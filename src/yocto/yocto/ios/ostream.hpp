@@ -32,11 +32,11 @@ namespace yocto
 			
             //! emit a BigEndian integral type
 			template <typename T>
-			inline void emit( T x ) { x = swap_be_as<T>(x); save(&x,sizeof(T)); } 
+            inline ostream & emit( T x ) { x = swap_be_as<T>(x); save(&x,sizeof(T)); return *this; } 
 			
 			
 			void append( const char *buffer, size_t buflen );
-
+            
             
             ostream & operator<<( const char *buffer);
             ostream & operator<<( const memory::ro_buffer &buffer );

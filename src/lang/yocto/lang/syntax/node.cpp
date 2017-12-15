@@ -263,3 +263,47 @@ namespace yocto
         }
     }
 }
+
+
+namespace yocto
+{
+    namespace Lang
+    {
+        namespace Syntax
+        {
+            void Node:: serialize(ios::ostream &fp) const
+            {
+                // write the label
+                const string &label = origin.label;
+                fp.emit<uint32_t>(label.size()) << label;
+
+                if(terminal)
+                {
+                    // set terminal
+                    fp.write('T');
+
+                    // write the content
+                    const Lexeme *lex = (const Lexeme *)impl;
+                    fp.emit<uint32_t>(lex->size);
+                    for(const Char *ch = lex->head;ch;ch=ch->next)
+                    {
+                        fp.write(ch->code);
+                    }
+                }
+                else
+                {
+                    // set internal
+                    fp.write('I');
+
+                    // write the children
+                    const List *children = (const List *)impl;
+                    fp.emit<uint32_t>(children->size);
+                    for(const Node *sub = children->head;sub;sub=sub->next)
+                    {
+                        sub->serialize(fp);
+                    }
+                }
+            }
+        }
+    }
+}

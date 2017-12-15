@@ -77,6 +77,7 @@ namespace yocto
                 //! wrapper to get lexeme content if terminal
                 string      toString(const size_t nskip=0) const;
 
+                void serialize( ios::ostream &fp ) const;
 
             private:
                 void                *impl;  //!< lexeme or list
