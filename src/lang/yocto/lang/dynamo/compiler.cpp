@@ -141,7 +141,16 @@ namespace yocto
                 return __GenerateFrom(  Module::OpenData(buffID,buffer,buflen), verbose );
             }
 
-
+            void Parser:: Compile(Module       *grammarInput,
+                                  ios::ostream &syntaxOutput,
+                                  const bool    verbose)
+            {
+                Source                   source(grammarInput);
+                auto_ptr<DynamoCompiler> compiler( new DynamoCompiler() );
+                Node                    *master = compiler->parse(source);
+                
+                compiler->serialize(master,syntaxOutput);
+            }
 
         }
     }

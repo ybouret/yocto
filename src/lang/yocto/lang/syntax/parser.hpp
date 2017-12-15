@@ -105,6 +105,11 @@ namespace yocto
                 static void Encode(const string &filename,
                                    ios::ostream &output);
 
+
+                static void Compile(Module       *grammarInput,
+                                    ios::ostream &syntaxOutput,
+                                    const bool    verbose=false);
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);
                 Terminal & plugin(const string &label);
