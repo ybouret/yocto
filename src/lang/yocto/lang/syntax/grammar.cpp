@@ -49,6 +49,14 @@ namespace yocto
                 return rules.head;
             }
 
+            const Rule & Grammar:: getRuleByLabel( const string &label ) const
+            {
+                for(const Rule *rule = rules.head; rule; rule=rule->next)
+                {
+                    if( label == rule->label ) return *rule;
+                }
+                throw exception("Syntax::Grammar: no rule '%s'", *label );
+            }
 
           
             void Grammar:: graphviz(const string &filename) const

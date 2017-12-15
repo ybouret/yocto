@@ -2,8 +2,9 @@
 #define YOCTO_LANG_SYNTAX_NODE_INCLUDED 1
 
 #include "yocto/lang/lexical/unit.hpp"
-#include "yocto/ios/ostream.hpp"
 #include "yocto/lang/syntax/rpn.hpp"
+#include "yocto/hashing/function.hpp"
+#include "yocto/ios/ostream.hpp"
 
 namespace yocto
 {
@@ -15,7 +16,8 @@ namespace yocto
 
             typedef Lexical::Unit  Lexeme;
 
-            class Rule; //!< forward declaration
+            class Rule;    //!< forward declaration
+            class Grammar; //!< forward declaration for I/O
 
             //! a node to build an AST
             class Node : public object
@@ -77,7 +79,17 @@ namespace yocto
                 //! wrapper to get lexeme content if terminal
                 string      toString(const size_t nskip=0) const;
 
+                //! serialize binary node
                 void serialize( ios::ostream &fp ) const;
+
+                //! fill the H function
+                void runHash( hashing::function &H ) const;
+
+                //! full hash and string conversion
+                string signature() const;
+
+                //! loading using grammar
+                static Node *loadFrom( Source &S, const Grammar &G );
 
             private:
                 void                *impl;  //!< lexeme or list

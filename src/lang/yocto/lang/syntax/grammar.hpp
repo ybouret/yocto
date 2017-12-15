@@ -68,6 +68,8 @@ namespace yocto
 
                 void __suppress( Rule *rule );
 
+                const Rule & getRuleByLabel( const string &label ) const;
+
             private:
                 Rule::List rules;
                 int        altCount;

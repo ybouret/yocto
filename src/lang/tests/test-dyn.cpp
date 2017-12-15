@@ -17,14 +17,18 @@ YOCTO_UNIT_TEST_IMPL(dyn)
     if(argc>1)
     {
         // create it
+        std::cerr << "-- Creating Parser" << std::endl;
         const string             parserFile = argv[1];
         auto_ptr<Syntax::Parser> parser( Syntax::Parser::GenerateFromFile(parserFile,true) );
+
         {
+            std::cerr << "\t-- Encoding..." << std::endl;
             ios::wcstream fp("tmp.dat");
             Syntax::Parser::Encode(parserFile,fp);
         }
 
         {
+            std::cerr << "\t-- Writing def" << std::endl;
             ios::wcstream     fp("def.dat");
             const string      prefix = parser->tag + '_';
             Syntax::Analyzer  analyzer(*parser);
@@ -32,6 +36,7 @@ YOCTO_UNIT_TEST_IMPL(dyn)
         }
 
         // open stdio
+        std::cerr << "-- Reading input from STDIN" << std::endl;
         Source               source(Module::OpenSTDIN());
         
         // clean output
@@ -49,6 +54,7 @@ YOCTO_UNIT_TEST_IMPL(dyn)
         (std::cerr << "...done" << std::endl ).flush();
 
         // save tree
+        std::cerr << "-- Runing Analyzer" << std::endl;
         Syntax::Analyzer analyzer( *parser );
 
         if( tree.is_valid() )

@@ -2,6 +2,7 @@
 #include "yocto/ios/graphviz.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/ios/ocstream.hpp"
+#include "yocto/ios/icstream.hpp"
 
 namespace yocto
 {
@@ -80,10 +81,24 @@ namespace yocto
                 checkIncludes(master);
                 if(true)
                 {
-                    std::cerr << "serialize master node" << std::endl;
-                    ios::wcstream fp("master.dat");
-                    master->serialize(fp);
+                    const string sh1 = master->signature();
+                    std::cerr << "signature1=" << sh1 << std::endl;
+                    {
+                        std::cerr << "serialize master node" << std::endl;
+                        ios::wcstream fp("master.dat");
+                        master->serialize(fp);
+                    }
+
+                    {
+                        std::cerr << "reload master node" << std::endl;
+                        Source S( Module::OpenFile("master.dat") );
+                        auto_ptr<Node> reloaded( Node::loadFrom(S,*this) );
+                        const string sh2 = reloaded->signature();
+                        std::cerr << "signature2=" << sh2 << std::endl;
+                    }
                 }
+
+
 #if 1
                 if(verbose)
                 {

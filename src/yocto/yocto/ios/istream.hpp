@@ -24,7 +24,10 @@ namespace yocto
 			virtual void store( char  C ) = 0;
 			char         read_char(const char *field=0);
             uint8_t      read_byte(const char *field=0);
-            
+
+            //! try to query and store char
+            bool is_active();
+
 			//! get at most buflen bytes
 			virtual void get( void *data, size_t size, size_t &done );
 			

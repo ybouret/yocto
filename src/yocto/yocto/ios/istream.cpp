@@ -11,7 +11,21 @@ namespace yocto
 		
 		istream:: ~istream() throw() {}
 		istream:: istream() throw()  {}
-		
+
+        bool istream:: is_active()
+        {
+            char C = 0;
+            if( query(C) )
+            {
+                store(C);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         char istream:: read_char(const char *field)
         {
             const char *msg = field ? field : "input byte";

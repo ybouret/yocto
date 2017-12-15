@@ -13,6 +13,11 @@ namespace yocto
             class Scanner; //!< to access module
         }
 
+        namespace Syntax
+        {
+            class Node; //!< to access module
+        }
+
         //! a source of dynamic char
         class Source
         {
@@ -32,9 +37,11 @@ namespace yocto
             bool        is_active();
             inline const Token & operator*() const throw() { return cache; }
             inline const Stamp &stamp() const throw() { return module->stamp; }
-            
+
         private:
             friend class Lexical::Scanner;
+            friend class Syntax::Node;
+            
             Module::Handle module;
             Token          cache;
 
