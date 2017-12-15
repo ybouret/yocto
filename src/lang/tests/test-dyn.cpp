@@ -35,6 +35,23 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             analyzer.emitDefinitions(fp,prefix);
         }
 
+        {
+            std::cerr << "\t-- Compiling" << std::endl;
+            Syntax::DynamoCompiler dyn;
+            {
+                ios::wcstream          fp("tree.dat");
+                dyn.Compile( Module::OpenFile(argv[1]) , fp);
+            }
+
+            {
+                std::cerr << "\t-- Reloading" << std::endl;
+                Syntax::Node *tree = Syntax::Node::loadFrom( Module::OpenFile("tree.dat"), dyn);
+                auto_ptr<Syntax::Parser> reloaded ( dyn.encode(tree) );
+                std::cerr << "\t\treloaded!" << std::endl;
+                reloaded.release();
+            }
+        }
+
         // open stdio
         std::cerr << "-- Reading input from STDIN" << std::endl;
         Source               source(Module::OpenSTDIN());

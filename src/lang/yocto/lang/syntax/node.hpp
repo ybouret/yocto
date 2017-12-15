@@ -89,7 +89,7 @@ namespace yocto
                 string signature() const;
 
                 //! loading using grammar
-                static Node *loadFrom( Source &S, const Grammar &G );
+                static Node *loadFrom( Module *module, const Grammar &G );
 
             private:
                 void                *impl;  //!< lexeme or list
@@ -101,6 +101,8 @@ namespace yocto
 
                 //! a terminal node
                 explicit Node(const Source &, const Rule &r, Lexeme *l) throw();
+
+                static Node * __loadFrom( Source &source, ios::istream &fp, const Grammar &G );
 
             public:
                 const Stamp stamp;

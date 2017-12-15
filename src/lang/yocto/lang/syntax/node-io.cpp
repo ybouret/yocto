@@ -97,10 +97,18 @@ namespace yocto
                 }
             }
 
-            Node * Node:: loadFrom( Source &S, const Grammar &G )
+            Node * Node:: loadFrom( Module *module, const  Grammar &G)
+            {
+                Source        source(module);
+                ios::istream &fp = (ios::istream &)(*(module->input));
+                return __loadFrom(source,fp,G);
+            }
+
+            Node * Node:: __loadFrom( Source &source, ios::istream &fp, const Grammar &G )
             {
                 static const char fn[] = "Syntax::Node::loadFrom";
-                ios::istream     &fp   = (ios::istream &)(*(S.module->input));
+                //Source            S(module);
+                //ios::istream     &fp   = (ios::istream &)(*module);
 
                 // read label
                 const size_t sz = fp.read<uint32_t>("label size");
@@ -117,7 +125,6 @@ namespace yocto
 
                 // read type
                 const int t = fp.read<uint8_t>("node type");
-                //std::cerr << "found node type=" << t <<  std::endl;
 
                 // act accordingly
                 switch(t)
@@ -125,25 +132,24 @@ namespace yocto
                     case __mark_terminal:
                     {
                         const size_t     nch = fp.read<uint32_t>("lexeme size");
-                        auto_ptr<Lexeme> lxm( new Lexeme(S.stamp()) );
+                        auto_ptr<Lexeme> lxm( new Lexeme(source.stamp()) );
                         for(size_t i=0;i<nch;++i)
                         {
                             const uint8_t code = fp.read_byte("lexeme code");
-                            Char *ch = new Char( *(S.module), code);
+                            Char *ch = new Char( source.info(), code);
                             lxm->push_back(ch);
                         }
-                        return Node::Create(S,r,lxm.yield());
+                        return Node::Create(source,r,lxm.yield());
                     }
 
                     case __mark_internal:
                     {
-                        //std::cerr << "new internal" << std::endl;
                         const size_t nch = fp.read<uint32_t>("children");
-                        auto_ptr<Node> node( Node::Create(S,r) );
+                        auto_ptr<Node> node( Node::Create(source,r) );
                         Node::List    &children = node->toList();
                         for(size_t i=0;i<nch;++i)
                         {
-                            children.push_back( loadFrom(S,G) );
+                            children.push_back( __loadFrom(source,fp,G) );
                         }
                         return node.yield();
                     }
