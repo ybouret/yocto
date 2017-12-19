@@ -145,10 +145,15 @@ namespace yocto
                                   ios::ostream &syntaxOutput,
                                   const bool    verbose)
             {
+                // prepare the compiler
                 Source                   source(grammarInput);
                 auto_ptr<DynamoCompiler> compiler( new DynamoCompiler() );
-                Node                    *master = compiler->parse(source);
-                
+                compiler->verbose = verbose;
+
+                // parse the source into the grammar syntax tree
+                Node *master = compiler->parse(source);
+
+                // serialize the master node
                 compiler->serialize(master,syntaxOutput);
             }
 
