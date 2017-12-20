@@ -98,7 +98,7 @@ SOURCE_GROUP( ios FILES ${ios_srcs} )
 FILE( GLOB randomized_decl yocto/randomized/*.hpp)
 FILE( GLOB randomized_impl yocto/randomized/*.cpp)
 SET( randomized_srcs ${randomized_decl} ${randomized_impl} )
-INSTALL( FILES ${randomized} DESTINATION include/yocto/randomized )
+INSTALL( FILES ${randomized_decl} DESTINATION include/yocto/randomized )
 SOURCE_GROUP( randomized FILES ${randomized_srcs} )
 
 FILE( GLOB associative_decl yocto/associative/*.hpp)
