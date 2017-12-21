@@ -61,8 +61,14 @@ YOCTO_UNIT_TEST_IMPL(primality)
         const bool ans = primality::check0(i);
         if(ans != primality::check1(i) )
         {
-            throw exception("different result for %lu", (unsigned long)(n));
+            throw exception("different result/v1 for %lu", (unsigned long)(i));
         }
+
+        if(ans != primality::check2(i) )
+        {
+            throw exception("different result/v2 for %lu", (unsigned long)(i));
+        }
+
         if(ans)
         {
             //std::cerr << ' ' << i;
@@ -80,6 +86,9 @@ YOCTO_UNIT_TEST_IMPL(primality)
     std::cerr << "speed0=" << speed0 << std::endl;
     const double speed1 = check_perf(n,primality::check1);
     std::cerr << "speed1=" << speed1 << std::endl;
+    const double speed2 = check_perf(n,primality::check2);
+    std::cerr << "speed2=" << speed2 << std::endl;
+
 }
 YOCTO_UNIT_TEST_DONE()
 
@@ -101,7 +110,7 @@ YOCTO_UNIT_TEST_IMPL(genprimes)
     size_t q=5;
     size_t max_bits=0;
     size_t max_bytes=0;
-    do
+    while(true)
     {
         const size_t d = q-p; assert(0==( (q-p)%2 ));
         const size_t code = (d/2)-1;
@@ -115,8 +124,16 @@ YOCTO_UNIT_TEST_IMPL(genprimes)
             break;
         }
         codes.push_back(code);
+
         //std::cerr << "d=" << d << " => " << code << std::endl;
         fprintf(stderr,"%12u->%12u : d=%4u => %4u | %2u (%2u)\n", unsigned(p), unsigned(q), unsigned(d), unsigned(code), unsigned(code_bytes), unsigned(code_bits) );
+        if(codes.size()>=n)
+        {
+            if(0==((q-5)%6))
+            {
+                break;
+            }
+        }
         p=q;
 
         /*
@@ -132,10 +149,13 @@ YOCTO_UNIT_TEST_IMPL(genprimes)
             q += 2;
         } while( !primality::check0(q) );
 
-    } while(codes.size()<n);
+    }
     fprintf(stderr,"#codes=%u | max_bits=%2u | max_bytes=%2u\n", unsigned(codes.size()), unsigned(max_bits), unsigned(max_bytes) );
+    std::cerr << "q=" << q << std::endl;
+
 
     ios::wcstream fp("prmcodes.inc");
+    fp("static const uint8_t codes[]=\n{\n");
     for(size_t i=1;i<=codes.size();++i)
     {
         fp(" %2u", unsigned(codes[i]));
@@ -148,5 +168,9 @@ YOCTO_UNIT_TEST_IMPL(genprimes)
             fp.write('\n');
         }
     }
+    fp("\n};\n\n");
+
+    fp("static const size_t ncode = sizeof(codes)/sizeof(codes[0]);\n\n");
+    fp("static const size_t icode = %u;\n\n", unsigned(q+6));
 }
 YOCTO_UNIT_TEST_DONE()

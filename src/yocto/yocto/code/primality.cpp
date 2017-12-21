@@ -1,4 +1,5 @@
 #include "yocto/code/primality.hpp"
+//#include <iostream>
 
 namespace yocto
 {
@@ -55,4 +56,59 @@ namespace yocto
             }
         }
     }
+
+
+#include "prmcodes.inc"
+
+
+    bool primality:: check2(const size_t n) throw()
+    {
+        switch(n)
+        {
+            case 0:
+            case 1:
+                return false;
+            case 2:
+            case 3:
+                return true;
+
+            default:
+                break;
+        }
+
+        if(0==(n%2))
+        {
+            return false;
+        }
+        else
+        {
+            size_t j=0;
+            size_t p=3;
+            do
+            {
+                if(!(n%p))
+                    return false;
+
+                if(j>=ncode)
+                {
+                    break;
+                }
+
+                p += ( (1+codes[j++])<<1 );
+                
+            } while(p*p<=n);
+
+            for(size_t i=icode;i*i<=n;i+=6)
+            {
+                if( (!(n%i)) || (!(n%(i+2))) )
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+
+
 }

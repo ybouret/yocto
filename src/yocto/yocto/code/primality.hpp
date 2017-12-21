@@ -10,7 +10,7 @@ namespace yocto
     {
         static bool check0( const size_t n ) throw();
         static bool check1( const size_t n ) throw();
-
+        static bool check2( const size_t n ) throw();
     };
 
 }
