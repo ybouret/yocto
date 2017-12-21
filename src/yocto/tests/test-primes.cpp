@@ -136,6 +136,17 @@ YOCTO_UNIT_TEST_IMPL(genprimes)
     fprintf(stderr,"#codes=%u | max_bits=%2u | max_bytes=%2u\n", unsigned(codes.size()), unsigned(max_bits), unsigned(max_bytes) );
 
     ios::wcstream fp("prmcodes.inc");
-
+    for(size_t i=1;i<=codes.size();++i)
+    {
+        fp(" %2u", unsigned(codes[i]));
+        if(i<codes.size())
+        {
+            fp.write(',');
+        }
+        if( !(i%32) )
+        {
+            fp.write('\n');
+        }
+    }
 }
 YOCTO_UNIT_TEST_DONE()
