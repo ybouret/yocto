@@ -12,10 +12,15 @@ YOCTO_UNIT_TEST_IMPL(isqrt)
     {
         n = strconv::to<size_t>(argv[1],"n");
     }
+    
+    
+    std::cerr.flush();
     for(size_t i=0;i<=n;++i)
     {
         const size_t ans = iSquareRoot(i);
-        std::cerr << "sqrt(" << i << "/" << n << ")=" << ans << std::endl;
+        fprintf(stderr,"isqrt(0x%08x)=%u   \r", unsigned(i), unsigned(ans) );
+        fflush(stderr);
     }
+    fprintf(stderr,"\n\n");
 }
 YOCTO_UNIT_TEST_DONE()

@@ -1,5 +1,4 @@
 #include "yocto/code/primality.hpp"
-//#include <iostream>
 
 namespace yocto
 {
@@ -57,7 +56,7 @@ namespace yocto
         }
     }
 
-
+#if 0
 #include "prmcodes.inc"
 
 
@@ -108,7 +107,7 @@ namespace yocto
             return true;
         }
     }
-
+#endif
 
 
 }

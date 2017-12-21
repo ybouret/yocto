@@ -64,10 +64,12 @@ YOCTO_UNIT_TEST_IMPL(primality)
             throw exception("different result/v1 for %lu", (unsigned long)(i));
         }
 
+#if 0
         if(ans != primality::check2(i) )
         {
             throw exception("different result/v2 for %lu", (unsigned long)(i));
         }
+#endif
 
         if(ans)
         {
@@ -86,9 +88,12 @@ YOCTO_UNIT_TEST_IMPL(primality)
     std::cerr << "speed0=" << speed0 << std::endl;
     const double speed1 = check_perf(n,primality::check1);
     std::cerr << "speed1=" << speed1 << std::endl;
+
+#if 0
     const double speed2 = check_perf(n,primality::check2);
     std::cerr << "speed2=" << speed2 << std::endl;
-
+#endif
+    
 }
 YOCTO_UNIT_TEST_DONE()
 
