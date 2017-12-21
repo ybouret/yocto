@@ -26,7 +26,8 @@ YOCTO_UNIT_TEST_INIT(200)
     YOCTO_UNIT_TEST_DECL(container);
     YOCTO_UNIT_TEST_DECL(sequence);
     YOCTO_UNIT_TEST_DECL(primes);
-    YOCTO_UNIT_TEST_DECL(is_prime);
+    YOCTO_UNIT_TEST_DECL(primality);
+    YOCTO_UNIT_TEST_DECL(genprimes);
     YOCTO_UNIT_TEST_DECL(hash);
     YOCTO_UNIT_TEST_DECL(hcol);
     YOCTO_UNIT_TEST_DECL(streams);
@@ -106,7 +107,6 @@ YOCTO_UNIT_TEST_INIT(200)
     YOCTO_UNIT_TEST_DECL(huff);
     YOCTO_UNIT_TEST_DECL(bwt);
     YOCTO_UNIT_TEST_DECL(bwt16);
-    YOCTO_UNIT_TEST_DECL(Primes);
     YOCTO_UNIT_TEST_DECL(file_size);
     YOCTO_UNIT_TEST_DECL(wallpaper);
 
