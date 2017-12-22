@@ -1,7 +1,7 @@
 #ifndef YOCTO_ISQRT_INCLUDED
 #define YOCTO_ISQRT_INCLUDED 1
 
-#include "yocto/code/utils.hpp"
+#include "yocto/os.hpp"
 
 namespace yocto
 {
@@ -15,15 +15,16 @@ namespace yocto
         else
         {
             T x0 = n;
-            T x1 = n/2+1;
-            do
+            T x1 = (n>>1);
+            while(true)
             {
                 x0 = x1;
-                x1 = (x0+n/x0)/2;
+                x1 = ((x0+n/x0)>>1);
+                if(x1>=x0)
+                {
+                    return x0;
+                }
             }
-            //while(!core::are_separated_by_less_than_one(x0,x1));
-            while( 1 < ((x0<x1) ? (x1-x0) : (x0-x1)) );
-            return min_of(x0,x1);
         }
 
     }

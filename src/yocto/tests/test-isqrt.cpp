@@ -7,7 +7,7 @@ using namespace yocto;
 
 YOCTO_UNIT_TEST_IMPL(isqrt)
 {
-    size_t       n = 10;
+    uint32_t   n = 10;
     if(argc>1)
     {
         n = strconv::to<size_t>(argv[1],"n");
@@ -15,11 +15,14 @@ YOCTO_UNIT_TEST_IMPL(isqrt)
     
     
     std::cerr.flush();
-    for(size_t i=0;i<=n;++i)
+    for(uint64_t i=0;i<=uint64_t(n);++i)
     {
-        const size_t ans = iSquareRoot(i);
-        fprintf(stderr,"isqrt(0x%08x)=%u   \r", unsigned(i), unsigned(ans) );
+        const uint64_t ans = iSquareRoot(i);
+        fprintf(stderr,"isqrt(%u)=%u   \r", unsigned(i), unsigned(ans) );
         fflush(stderr);
+        //fprintf(stderr,"\n");
+        if(ans*ans>i)         throw exception("too high!");
+       // if((ans+1)*(ans+1)<i) throw exception("too low!");
     }
     fprintf(stderr,"\n\n");
 }
