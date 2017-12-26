@@ -1,32 +1,8 @@
 #include "yocto/utest/run.hpp"
-#include "yocto/code/primes.hpp"
 #include "yocto/code/alea.hpp"
 
 using namespace yocto;
 
-YOCTO_UNIT_TEST_IMPL(primes)
-{
-    size_t p=0;
-    for( size_t i=0; i < 25; ++i )
-    {
-        for( size_t j=0; j < 16; ++j, ++p )
-        {
-            std::cerr << (p=next_prime(p)) << " ";
-        }
-        std::cerr << std::endl;
-    }
-
-    for( size_t i=0; i < 10; ++i )
-    {
-        for( size_t j=0; j < 4; ++j )
-        {
-            const size_t n = 2 + alea.lt( 0xFFFFFF );
-            std::cerr << "(" << prev_prime(n) << "," << n << "," << next_prime(n) << ") ";
-        }
-        std::cerr << std::endl;
-    }
-}
-YOCTO_UNIT_TEST_DONE()
 
 
 #include "yocto/code/primality.hpp"
@@ -58,35 +34,36 @@ YOCTO_UNIT_TEST_IMPL(primality)
     size_t j0=0;
     for(size_t i=0;i<=n;++i)
     {
-        const bool ans = primality::check0(i);
-        if(ans != primality::check1(i) )
+        const bool ans = primality::_check(i);
+        if(ans != primality::check(i) )
         {
             throw exception("different result/v1 for %lu", (unsigned long)(i));
         }
 
-#if 0
-        if(ans != primality::check2(i) )
-        {
-            throw exception("different result/v2 for %lu", (unsigned long)(i));
-        }
-#endif
 
         if(ans)
         {
-            //std::cerr << ' ' << i;
+            std::cerr << ' ' << i;
             if( !(++j0%16) )
             {
-                //std::cerr << std::endl;
+                std::cerr << std::endl;
             }
         }
 
     }
-    //std::cerr << std::endl;
+    std::cerr << std::endl;
+
+    for(size_t i=1+alea.leq(100);i>0;--i)
+    {
+        const size_t j=2+alea.leq(0x10000000);
+        std::cerr << primality::prev(j) << '\t' << j << '\t' << primality::next(j) << std::endl;
+    }
+
     std::cerr << "[" << j0 << "]" << std::endl;
     std::cerr << "Computing speeds..." << std::endl;
-    const double speed0 = check_perf(n,primality::check0);
+    const double speed0 = check_perf(n,primality::_check);
     std::cerr << "speed0=" << speed0 << std::endl;
-    const double speed1 = check_perf(n,primality::check1);
+    const double speed1 = check_perf(n,primality::check);
     std::cerr << "speed1=" << speed1 << std::endl;
 
 #if 0
@@ -97,85 +74,3 @@ YOCTO_UNIT_TEST_IMPL(primality)
 }
 YOCTO_UNIT_TEST_DONE()
 
-#include "yocto/sequence/vector.hpp"
-#include "yocto/code/binary.hpp"
-#include "yocto/code/utils.hpp"
-#include "yocto/ios/ocstream.hpp"
-
-YOCTO_UNIT_TEST_IMPL(genprimes)
-{
-    size_t n = 16384;
-    if(argc>1)
-    {
-        n = strconv::to_size(argv[1],"n");
-    }
-    vector<size_t> codes(n,as_capacity);
-
-    size_t p=3;
-    size_t q=5;
-    size_t max_bits=0;
-    size_t max_bytes=0;
-    while(true)
-    {
-        const size_t d = q-p; assert(0==( (q-p)%2 ));
-        const size_t code = (d/2)-1;
-        const size_t code_bytes = bytes_for(code);
-        const size_t code_bits  = bits_for(code);
-        max_bits  = max_of(max_bits,code_bits);
-        max_bytes = max_of(max_bytes,code_bytes);
-        if(code_bytes>1)
-        {
-            fprintf(stderr,"reached max encoding length\n");
-            break;
-        }
-        codes.push_back(code);
-
-        //std::cerr << "d=" << d << " => " << code << std::endl;
-        fprintf(stderr,"%12u->%12u : d=%4u => %4u | %2u (%2u)\n", unsigned(p), unsigned(q), unsigned(d), unsigned(code), unsigned(code_bytes), unsigned(code_bits) );
-        if(codes.size()>=n)
-        {
-            if(0==((q-5)%6))
-            {
-                break;
-            }
-        }
-        p=q;
-
-        /*
-        if(p>=65535)
-        {
-            fprintf(stderr,"reached 32bits limit\n");
-            break;
-        }
-         */
-
-        do
-        {
-            q += 2;
-        } while( !primality::check0(q) );
-
-    }
-    fprintf(stderr,"#codes=%u | max_bits=%2u | max_bytes=%2u\n", unsigned(codes.size()), unsigned(max_bits), unsigned(max_bytes) );
-    std::cerr << "q=" << q << std::endl;
-
-
-    ios::wcstream fp("prmcodes.inc");
-    fp("static const uint8_t codes[]=\n{\n");
-    for(size_t i=1;i<=codes.size();++i)
-    {
-        fp(" %2u", unsigned(codes[i]));
-        if(i<codes.size())
-        {
-            fp.write(',');
-        }
-        if( !(i%32) )
-        {
-            fp.write('\n');
-        }
-    }
-    fp("\n};\n\n");
-
-    fp("static const size_t ncode = sizeof(codes)/sizeof(codes[0]);\n\n");
-    fp("static const size_t icode = %u;\n\n", unsigned(q+6));
-}
-YOCTO_UNIT_TEST_DONE()
