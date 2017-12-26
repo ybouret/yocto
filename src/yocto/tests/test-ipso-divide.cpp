@@ -20,21 +20,24 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
     }
 
     {
-        std::cerr << "#CPU=" << cpus << " in 1D" << std::endl;
         const patch1D full(1,Nx);
+        std::cerr << "#CPU=" << cpus << " in 1D: " << full << std::endl;
         divide::in1D D(cpus,full);
         for(size_t rank=0;rank<D.size;++rank)
         {
             std::cerr << '\t' << D.get_ranks(rank) << std::endl;
+            const patch1D sub = D(rank);
+            std::cerr << "\t\t" << sub << std::endl;
         }
 
     }
 
 
     {
-        std::cerr << "#CPU=" << cpus << " in 2D" << std::endl;
 
         const patch2D full( coord2D(1,1),coord2D(Nx,Ny) );
+        std::cerr << "#CPU=" << cpus << " in 2D: " << full << std::endl;
+
         coord2D       sizes;
         for(sizes.x=1;sizes.x<=cpus;++sizes.x)
         {
@@ -46,6 +49,8 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
                 for(size_t rank=0;rank<D.size;++rank)
                 {
                     std::cerr << '\t' << D.get_ranks(rank) << std::endl;
+                    const patch2D sub = D(rank);
+                    std::cerr << "\t\t" << sub << std::endl;
                 }
             }
         }
@@ -53,9 +58,8 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
     }
 
     {
-        std::cerr << "#CPU=" << cpus << " in 3D" << std::endl;
-
         const patch3D full( coord3D(1,1,1),coord3D(Nx,Ny,Nz) );
+        std::cerr << "#CPU=" << cpus << " in 3D: " << full << std::endl;
         coord3D       sizes;
         for(sizes.x=1;sizes.x<=cpus;++sizes.x)
         {
@@ -69,6 +73,8 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
                     for(size_t rank=0;rank<D.size;++rank)
                     {
                         std::cerr << '\t' << D.get_ranks(rank) << std::endl;
+                        const patch3D sub = D(rank);
+                        std::cerr << "\t\t" << sub << std::endl;
                     }
                 }
             }
