@@ -12,7 +12,7 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
     size_t Ny = 10;
     size_t Nz = 10;
 
-    size_t cpus = 4;
+    coord1D cpus = 4;
 
     if(argc>1)
     {

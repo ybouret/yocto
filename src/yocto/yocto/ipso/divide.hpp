@@ -68,7 +68,7 @@ namespace yocto
                                      const patch_type &p) :
                 divide_type(n,p)
                 {
-                    if(size>this->width) throw libc::exception(EDOM,"in1D: size exceeds width");
+                    if( coord1D(size) >this->width) throw libc::exception(EDOM,"in1D: size exceeds width");
                 }
 
                 inline virtual ~in1D() throw()
