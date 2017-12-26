@@ -2,7 +2,7 @@
 #include "yocto/associative/multi-map.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/sequence/list.hpp"
-#include "yocto/code/primes.hpp"
+#include "yocto/code/primality.hpp"
 #include "yocto/code/alea.hpp"
 #include "yocto/sort/heap.hpp"
 #include "yocto/string.hpp"
@@ -17,7 +17,7 @@ YOCTO_UNIT_TEST_IMPL(multi_map)
     indx.reserve(100);
     for(size_t n=4;n<=100;++n)
     {
-        const size_t q = prev_prime(n-1);
+        const size_t q = primality::prev(n-1);
         indx.free();
         size_t       hkey   = alea.leq(0xFFFFFFFE);
         

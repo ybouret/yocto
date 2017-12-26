@@ -491,6 +491,17 @@ inline friend bool operator OP (const word_t   lhs, const natural &rhs) throw() 
                                   const size_t nd);
             YOCTO_MPN_DECL(natural,%,modulo)
             YOCTO_MPN_DECL_SELF(%=,%)
+            inline bool is_divisible_by(const natural &d) const
+            {
+                const natural q = (*this)%d;
+                return q.is_zero();
+            }
+
+            inline bool is_divisible_by(const word_t d) const
+            {
+                const natural q = (*this)%d;
+                return q.is_zero();
+            }
 
             //__________________________________________________________________
             //

@@ -1,6 +1,6 @@
 #include "yocto/code/htable.hpp"
 #include "yocto/exceptions.hpp"
-#include "yocto/code/primes.hpp"
+#include "yocto/code/primality.hpp"
 #include "yocto/code/utils.hpp"
 #include <cerrno>
 
@@ -28,7 +28,7 @@ namespace yocto
         //----------------------------------------------------------------------
         // get the corresponding prime size
         //----------------------------------------------------------------------
-        size_t slots = next_prime( nodes/load_factor );
+        size_t slots = primality::next( nodes/load_factor );
         if(slots<min_slots) throw libc::exception( ERANGE, "htable: #slots overflow" );
         
         //----------------------------------------------------------------------
@@ -55,7 +55,7 @@ namespace yocto
         const size_t count = slots/load_factor;
         if(count<items) throw libc::exception( ERANGE, "htable: #count overflow");
         
-        sub_prime = prev_prime(slots-1);
+        sub_prime = primality::prev(slots-1);
         items     = count;
         return slots;
     }
