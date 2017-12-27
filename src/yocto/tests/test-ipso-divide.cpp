@@ -6,6 +6,18 @@
 using namespace yocto;
 using namespace ipso;
 
+template <typename COORD>
+static inline
+void display( const typename domain<COORD>::list &L )
+{
+    for(const domain<COORD> *d = L.head; d; d=d->next)
+    {
+        std::cerr << "domain " << d->ranks << std::endl;
+        std::cerr << "\tinner: " << d->inner << std::endl;
+        std::cerr << "\touter: " << d->outer << std::endl;
+
+    }
+}
 
 YOCTO_UNIT_TEST_IMPL(ipso_divide)
 {
@@ -14,6 +26,7 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
     size_t Nz = 10;
 
     coord1D cpus = 4;
+    coord1D ng   = 1;
 
     if(argc>1)
     {
@@ -26,28 +39,31 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
         divide::in1D D(cpus,full);
         std::cerr << "Periodic:" << std::endl;
         std::cerr.flush();
+        domain<coord1D>::list p_domains;
         for(size_t rank=0;rank<D.size;++rank)
         {
             //std::cerr << '\t' << D.get_ranks(rank) << std::endl;
             //const patch1D sub = D(rank,NULL);
             //std::cerr << "\t\t" << sub << std::endl;
-            domain<coord1D> dom(D,rank,1,1);
+            p_domains.push_back( new domain<coord1D>(D,rank,ng,1) );
         }
         fflush(stderr);
         std::cerr << std::endl << std::endl;
-
+        display<coord1D>(p_domains);
 
         std::cerr << "NOT Periodic:" << std::endl;
         std::cerr.flush();
+        domain<coord1D>::list u_domains;
         for(size_t rank=0;rank<D.size;++rank)
         {
             //std::cerr << '\t' << D.get_ranks(rank) << std::endl;
             //const patch1D sub = D(rank,NULL);
             //std::cerr << "\t\t" << sub << std::endl;
-            domain<coord1D> dom(D,rank,1,0);
+            u_domains.push_back(new domain<coord1D>(D,rank,ng,0) );
         }
         fflush(stderr);
         std::cerr << std::endl << std::endl;
+        display<coord1D>(u_domains);
 
     }
 
