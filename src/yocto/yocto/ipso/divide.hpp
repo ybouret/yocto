@@ -36,10 +36,37 @@ namespace yocto
             //! get local ranks from global rank
             virtual COORD get_ranks(const size_t rank)  const throw() = 0;
 
+            //! get global rank from local ranks
+            virtual size_t get_rank_from(const COORD ranks) const throw() = 0;
+
             //! get local patch from this...
             virtual patch<COORD> operator()(const size_t rank, COORD *pRanks) const throw() = 0;
 
+            inline size_t prev_rank(const size_t rank, const size_t dim) const throw()
+            {
+                assert(dim<patch<COORD>::DIM);
+                if(rank<=0)
+                {
+                    return __coord(lasts,dim);
+                }
+                else
+                {
+                    return rank-1;
+                }
+            }
 
+            inline size_t next_rank(const size_t rank, const size_t dim) const throw()
+            {
+                assert(dim<patch<COORD>::DIM);
+                if(rank>=__coord(lasts,dim))
+                {
+                    return 0;
+                }
+                else
+                {
+                    return rank+1;
+                }
+            }
 
         protected:
             explicit divider(const COORD         s,
@@ -64,17 +91,6 @@ namespace yocto
 
         struct divide
         {
-
-
-            static inline bool isBulk(const size_t rank, const size_t size) throw()
-            {
-                return (size>1) && (rank>0) && (rank<size-1);
-            }
-
-            static inline bool isSide(const size_t rank, const size_t size) throw()
-            {
-                return !isBulk(rank,size);
-            }
 
 
 
@@ -109,6 +125,13 @@ namespace yocto
                 {
                     assert(rank<size);
                     return rank;
+                }
+
+                inline virtual size_t get_rank_from(const coord1D ranks) const throw()
+                {
+                    assert(ranks>=0);
+                    assert(ranks<sizes);
+                    return ranks;
                 }
 
                 inline virtual patch_type operator()(const size_t rank, coord1D *pRanks) const throw()
@@ -159,12 +182,22 @@ namespace yocto
                 inline virtual coord2D get_ranks(const size_t rank)  const throw()
                 {
                     assert(rank<size);
-                    assert(rank<size);
                     const ldiv_t l = ldiv( long(rank), long(sizes.x) );
                     assert(unit_t(l.rem)<sizes.x);
                     assert(unit_t(l.quot)<sizes.y);
                     return coord2D(l.rem,l.quot);
                 }
+
+                inline virtual size_t get_rank_from(const coord2D ranks) const throw()
+                {
+                    assert(ranks.x>=0);
+                    assert(ranks.x<sizes.x);
+                    assert(ranks.y>=0);
+                    assert(ranks.y<sizes.y);
+
+                    return ranks.y * sizes.x + ranks.x;
+                }
+
 
                 inline virtual patch_type operator()(const size_t rank, coord2D *pRanks) const throw()
                 {
@@ -222,6 +255,18 @@ namespace yocto
                     const unit_t yr = unit_t(ly.rem);  assert(yr<sizes.y);
                     const unit_t zr = unit_t(ly.quot); assert(zr<sizes.z);
                     return coord3D(xr,yr,zr);
+                }
+
+                inline virtual size_t get_rank_from(const coord3D ranks) const throw()
+                {
+                    assert(ranks.x>=0);
+                    assert(ranks.x<sizes.x);
+                    assert(ranks.y>=0);
+                    assert(ranks.y<sizes.y);
+                    assert(ranks.z>=0);
+                    assert(ranks.z<sizes.z);
+
+                    return (ranks.z * sizes.y + ranks.y) * sizes.x + ranks.x;
                 }
 
                 inline virtual patch_type operator()(const size_t rank, coord3D *pRanks) const throw()

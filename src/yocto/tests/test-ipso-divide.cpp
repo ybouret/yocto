@@ -18,14 +18,14 @@ void display( const typename domain<COORD>::list &L )
         std::cerr << "\t#async : " << d->async.size << std::endl;
         for(const ghosts *g=d->async.head;g;g=g->next)
         {
-            std::cerr << "\t\tsend: " << g->send << std::endl;
-            std::cerr << "\t\trecv: " << g->recv << std::endl;
+            std::cerr << "\t\tsend: " << g->source << "->" << g->target << "@" << g->send << std::endl;
+            std::cerr << "\t\trecv: " << g->source << "<-" << g->target << "@" << g->recv << std::endl;
         }
         std::cerr << "\t#local : " << d->local.size << std::endl;
         for(const ghosts *g=d->local.head;g;g=g->next)
         {
-            std::cerr << "\t\tsend: " << g->send << std::endl;
-            std::cerr << "\t\trecv: " << g->recv << std::endl;
+            std::cerr << "\t\tsend: " << g->source << "->" << g->target << "@" << g->send << std::endl;
+            std::cerr << "\t\trecv: " << g->source << "<-" << g->target << "@" << g->recv << std::endl;
         }
 
     }

@@ -15,6 +15,16 @@ namespace yocto
 
 
 
+#define X_LOWER_GHOSTS new ghosts( ghosts::x_lower,ng,rank, full.prev_rank(ranks,0) )
+#define X_UPPER_GHOSTS new ghosts( ghosts::x_upper,ng,rank, full.next_rank(ranks,0) )
+
+#define Y_LOWER_GHOSTS new ghosts( ghosts::y_lower,ng,rank, full.prev_rank(ranks,1) )
+#define Y_UPPER_GHOSTS new ghosts( ghosts::y_upper,ng,rank, full.next_rank(ranks,1) )
+
+#define Z_LOWER_GHOSTS new ghosts( ghosts::z_lower,ng,rank, full.prev_rank(ranks,2) )
+#define Z_UPPER_GHOSTS new ghosts( ghosts::z_upper,ng,rank, full.next_rank(ranks,2) )
+
+
         template <>
         domain<coord1D>::domain(const divider<coord1D> &full,
                                 const size_t            rank,
@@ -54,8 +64,8 @@ namespace yocto
                     Y_IPSO_CODE(fprintf(stderr,"<%02u>",unsigned(ranks)));
                     if(has_ghosts)
                     {
-                        async.push_back( new ghosts(-1,ng) );
-                        async.push_back( new ghosts(1,ng) );
+                        async.push_back( X_LOWER_GHOSTS );
+                        async.push_back( X_UPPER_GHOSTS );
                     }
                 }
                 else
@@ -65,8 +75,8 @@ namespace yocto
                     Y_IPSO_CODE(fprintf(stderr,"#%02u#",unsigned(ranks)));
                     if(has_ghosts)
                     {
-                        local.push_back( new ghosts(-1,ng) );
-                        local.push_back( new ghosts(1,ng) );
+                        local.push_back( X_LOWER_GHOSTS );
+                        local.push_back( X_UPPER_GHOSTS );
                     }
                 }
             }
@@ -86,7 +96,7 @@ namespace yocto
                         Y_IPSO_CODE(fprintf(stderr,"|%02u>",unsigned(ranks)));
                         if(has_ghosts)
                         {
-                            async.push_back( new ghosts(1,ng) );
+                            async.push_back( X_UPPER_GHOSTS );
                         }
                     }
                     else
@@ -98,7 +108,7 @@ namespace yocto
                             Y_IPSO_CODE(fprintf(stderr,"<%02u|",unsigned(ranks)));
                             if(has_ghosts)
                             {
-                                async.push_back( new ghosts(-1,ng) );
+                                async.push_back( X_LOWER_GHOSTS );
                             }
                         }
                         else
@@ -109,8 +119,8 @@ namespace yocto
                             Y_IPSO_CODE(fprintf(stderr,"<%02u>",unsigned(ranks)));
                             if(has_ghosts)
                             {
-                                async.push_back( new ghosts(-1,ng) );
-                                async.push_back( new ghosts(1,ng)  );
+                                async.push_back( X_LOWER_GHOSTS );
+                                async.push_back( X_UPPER_GHOSTS );
                             }
                         }
                     }

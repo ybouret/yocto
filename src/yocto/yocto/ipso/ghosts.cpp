@@ -10,14 +10,18 @@ namespace yocto
         {
         }
 
-        ghosts:: ghosts(const coord1D d,
-                        const coord1D n) throw() :
+        ghosts:: ghosts(const direction the_dir,
+                        const coord1D   the_ng,
+                        const size_t    the_source,
+                        const size_t    the_target) throw() :
         send(),
         recv(),
+        source(the_source),
+        target(the_target),
         next(0),
         prev(0),
-        dim(d),
-        ng(n)
+        dir(the_dir),
+        ng(the_ng)
         {
             assert(ng>0);
         }
@@ -30,9 +34,9 @@ namespace yocto
         void ghosts:: load(const patch1D &inner, const patch1D &outer)
         {
             assert(ng>0);
-            switch(dim)
+            switch(dir)
             {
-                case -1: {
+                case x_lower: {
                     send.make(ng);
                     recv.make(ng);
                     coord1D ix = inner.lower;
@@ -46,7 +50,7 @@ namespace yocto
                     }
                 }  break;
 
-                case 1: {
+                case x_upper: {
                     send.make(ng);
                     recv.make(ng);
                     coord1D ix = inner.upper-ng+1;
@@ -61,7 +65,7 @@ namespace yocto
                 } break;
 
                 default:
-                    throw exception("unexpected 1D ghosts.dim=%d", int(dim));
+                    throw exception("unexpected 1D ghosts direction");
             }
 
             ySort(send,__compare_coord1D);
