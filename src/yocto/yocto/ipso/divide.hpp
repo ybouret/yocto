@@ -15,17 +15,17 @@ namespace yocto
     {
 
         template <typename COORD>
-        class __divide : public patch<COORD>
+        class divider : public patch<COORD>
         {
         public:
             const COORD   sizes;     //!< sizes in different dimension
             const size_t  size;      //!< total number of cores, MPI style
             const COORD   lasts;     //!< last ranks
             //! destructor
-            inline virtual ~__divide() throw() {}
+            inline virtual ~divider() throw() {}
 
             //! copy constructor
-            inline __divide(const __divide &other) throw() :
+            inline divider(const divider &other) throw() :
             patch<COORD>(other),
             size(other.size),
             lasts(other.lasts)
@@ -42,7 +42,7 @@ namespace yocto
 
 
         protected:
-            explicit __divide(const COORD         s,
+            explicit divider(const COORD         s,
                               const patch<COORD> &p) :
             patch<COORD>(p),
             sizes(s),
@@ -56,7 +56,7 @@ namespace yocto
 
 
         private:
-            YOCTO_DISABLE_ASSIGN(__divide);
+            YOCTO_DISABLE_ASSIGN(divider);
         };
 
 
@@ -83,16 +83,16 @@ namespace yocto
             //! 1D API
             //
             ////////////////////////////////////////////////////////////////////
-            class in1D : public __divide<coord1D>
+            class in1D : public divider<coord1D>
             {
             public:
                 typedef patch1D           patch_type;
-                typedef __divide<coord1D> divide_type;
+                typedef divider<coord1D>  divider_type;
 
 
                 inline explicit in1D(const coord1D     s,
                                      const patch_type &p) :
-                divide_type(s,p)
+                divider_type(s,p)
                 {
                     if(sizes>this->width)
                     {
@@ -132,15 +132,15 @@ namespace yocto
             //! 2D API
             //
             ////////////////////////////////////////////////////////////////////
-            class in2D : public __divide<coord2D>
+            class in2D : public divider<coord2D>
             {
             public:
                 typedef patch2D           patch_type;
-                typedef __divide<coord2D> divide_type;
+                typedef divider<coord2D>  divider_type;
 
 
                 inline explicit in2D( const coord2D userSizes, const patch_type &p) throw() :
-                divide_type(userSizes,p)
+                divider_type(userSizes,p)
                 {
                     for(size_t dim=0;dim<DIM;++dim)
                     {
@@ -188,16 +188,16 @@ namespace yocto
             //! 3D API
             //
             ////////////////////////////////////////////////////////////////////
-            class in3D : public __divide<coord3D>
+            class in3D : public divider<coord3D>
             {
             public:
                 typedef patch3D           patch_type;
-                typedef __divide<coord3D> divide_type;
+                typedef divider<coord3D>  divider_type;
 
 
                 inline explicit in3D(const coord3D     userSizes,
                                      const patch_type &p) throw() :
-                divide_type(userSizes,p)
+                divider_type(userSizes,p)
                 {
                     for(size_t dim=0;dim<DIM;++dim)
                     {
@@ -251,13 +251,13 @@ namespace yocto
             class metrics
             {
             public:
-                void compute(const __divide<COORD> &full,
+                void compute(const divider<COORD>  &full,
                              const size_t           rank,
                              const COORD            pbcs);
 
                 const COORD ranks;
 
-                inline explicit metrics(const __divide<COORD> &full,
+                inline explicit metrics(const divider<COORD> &full,
                                         const size_t           rank,
                                         const COORD            pbcs) :
                 ranks(full.get_ranks(rank)),

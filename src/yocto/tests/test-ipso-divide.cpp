@@ -1,6 +1,7 @@
 #include "yocto/utest/run.hpp"
-#include "yocto/ipso/divide.hpp"
+#include "yocto/ipso/domain.hpp"
 #include "yocto/string/conv.hpp"
+#include <cstdio>
 
 using namespace yocto;
 using namespace ipso;
@@ -23,15 +24,30 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
         const patch1D full(1,Nx);
         std::cerr << "#CPU=" << cpus << " in 1D: " << full << std::endl;
         divide::in1D D(cpus,full);
+        std::cerr << "Periodic:\n" << std::endl;
+        std::cerr.flush();
         for(size_t rank=0;rank<D.size;++rank)
         {
             //std::cerr << '\t' << D.get_ranks(rank) << std::endl;
             //const patch1D sub = D(rank,NULL);
             //std::cerr << "\t\t" << sub << std::endl;
-            divide::metrics<coord1D> m(D,rank,0);
+            domain<coord1D> dom(D,rank,1,1);
         }
+        fflush(stderr);
+        std::cerr << std::endl;
 
 
+        std::cerr << "NOT Periodic:\n" << std::endl;
+        std::cerr.flush();
+        for(size_t rank=0;rank<D.size;++rank)
+        {
+            //std::cerr << '\t' << D.get_ranks(rank) << std::endl;
+            //const patch1D sub = D(rank,NULL);
+            //std::cerr << "\t\t" << sub << std::endl;
+            domain<coord1D> dom(D,rank,1,0);
+        }
+        fflush(stderr);
+        std::cerr << std::endl;
 
     }
 
