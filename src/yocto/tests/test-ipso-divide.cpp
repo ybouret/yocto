@@ -24,7 +24,7 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
         const patch1D full(1,Nx);
         std::cerr << "#CPU=" << cpus << " in 1D: " << full << std::endl;
         divide::in1D D(cpus,full);
-        std::cerr << "Periodic:\n" << std::endl;
+        std::cerr << "Periodic:" << std::endl;
         std::cerr.flush();
         for(size_t rank=0;rank<D.size;++rank)
         {
@@ -34,10 +34,10 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
             domain<coord1D> dom(D,rank,1,1);
         }
         fflush(stderr);
-        std::cerr << std::endl;
+        std::cerr << std::endl << std::endl;
 
 
-        std::cerr << "NOT Periodic:\n" << std::endl;
+        std::cerr << "NOT Periodic:" << std::endl;
         std::cerr.flush();
         for(size_t rank=0;rank<D.size;++rank)
         {
@@ -47,7 +47,7 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
             domain<coord1D> dom(D,rank,1,0);
         }
         fflush(stderr);
-        std::cerr << std::endl;
+        std::cerr << std::endl << std::endl;
 
     }
 

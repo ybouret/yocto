@@ -18,15 +18,24 @@ namespace yocto
         template <>
         domain<coord1D>::domain(const divider<coord1D> &full,
                                 const size_t            rank,
-                                const coord1D           ng,
+                                coord1D                 ng,
                                 const coord1D           pbcs) :
         ranks( 0 ),
         inner( full(rank, (coord1D *)&ranks) ),
-        outer( inner )
+        outer( inner ),
+        async(),
+        local(),
+        next(0),
+        prev(0)
         {
-            assert(ng>=0);
+            ng = __coord_abs(ng);
             coord1D lo = inner.lower;
             coord1D up = inner.upper;
+
+            //__________________________________________________________________
+            //
+            // Pass 1: computing outer
+            //__________________________________________________________________
 
             const bool periodic = (0!=pbcs);
             if(periodic)
@@ -42,12 +51,16 @@ namespace yocto
                 {
                     // always async
                     Y_IPSO_CODE(fprintf(stderr,"<%02u>",unsigned(ranks)));
+                    async.push_back( new ghosts() );
+                    async.push_back( new ghosts() );
                 }
                 else
                 {
-                    // 
+                    // always local
                     assert(1==full.sizes);
                     Y_IPSO_CODE(fprintf(stderr,"#%02u#",unsigned(ranks)));
+                    local.push_back( new ghosts() );
+                    local.push_back( new ghosts() );
                 }
             }
             else
@@ -64,6 +77,7 @@ namespace yocto
                         // @left
                         up += ng;
                         Y_IPSO_CODE(fprintf(stderr,"|%02u>",unsigned(ranks)));
+                        async.push_back( new ghosts() );
                     }
                     else
                     {
@@ -72,6 +86,7 @@ namespace yocto
                             // @right
                             lo -= ng;
                             Y_IPSO_CODE(fprintf(stderr,"<%02u|",unsigned(ranks)));
+                            async.push_back( new ghosts() );
                         }
                         else
                         {
@@ -79,6 +94,8 @@ namespace yocto
                             lo -= ng;
                             up += ng;
                             Y_IPSO_CODE(fprintf(stderr,"<%02u>",unsigned(ranks)));
+                            async.push_back( new ghosts() );
+                            async.push_back( new ghosts() );
                         }
                     }
                 }
