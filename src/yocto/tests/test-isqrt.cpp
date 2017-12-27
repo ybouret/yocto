@@ -1,6 +1,7 @@
 #include "yocto/code/isqrt.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/string/conv.hpp"
+#include <cstdio>
 
 using namespace yocto;
 
