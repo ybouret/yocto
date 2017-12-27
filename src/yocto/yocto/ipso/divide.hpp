@@ -18,15 +18,17 @@ namespace yocto
         class __divide : public patch<COORD>
         {
         public:
-            const size_t size; //!< total number of cores, MPI style
-
+            const COORD   sizes;     //!< sizes in different dimension
+            const size_t  size;      //!< total number of cores, MPI style
+            const COORD   lasts;     //!< last ranks
             //! destructor
             inline virtual ~__divide() throw() {}
 
             //! copy constructor
             inline __divide(const __divide &other) throw() :
             patch<COORD>(other),
-            size(other.size)
+            size(other.size),
+            lasts(other.lasts)
             {
             }
 
@@ -35,15 +37,20 @@ namespace yocto
             virtual COORD get_ranks(const size_t rank)  const throw() = 0;
 
             //! get local patch from this...
-            virtual patch<COORD> operator()(const size_t rank) const throw() = 0;
+            virtual patch<COORD> operator()(const size_t rank, COORD *pRanks) const throw() = 0;
+
+
 
         protected:
-            explicit __divide(const size_t        n,
+            explicit __divide(const COORD         s,
                               const patch<COORD> &p) :
             patch<COORD>(p),
-            size(n)
+            sizes(s),
+            size( __coord_prod(sizes) ),
+            lasts(sizes)
             {
                 if(size<=0) throw libc::exception(EDOM,"__divide<%uD>: no cores", unsigned(patch<COORD>::DIM));
+                __coord_dec( (COORD &)lasts );
             }
             
 
@@ -58,21 +65,6 @@ namespace yocto
         struct divide
         {
 
-            static inline coord1D getBorder(const coord1D) throw()
-            {
-                return 1;
-            }
-
-            static inline coord2D getBorder(const coord2D L) throw()
-            {
-                return coord2D(L.y,L.x);
-            }
-
-            static inline coord3D getBorder(const coord3D L) throw()
-            {
-                return coord3D(L.y*L.z,L.x*L.z,L.x*L.y);
-            }
-
 
             static inline bool isBulk(const size_t rank, const size_t size) throw()
             {
@@ -84,55 +76,6 @@ namespace yocto
                 return !isBulk(rank,size);
             }
 
-            template <typename COORD>
-            class metrics
-            {
-            public:
-                inline explicit metrics(const patch<COORD> &p,
-                                        const COORD         ranks,
-                                        const COORD         sizes,
-                                        const COORD         pbc) :
-                load(p.items),
-                copy(0),
-                coms(0)
-                {
-                    mpn to_copy = 0;
-                    mpn to_coms = 0;
-                    const COORD borders = getBorder(p.width);
-                    for(size_t dim=0;dim<patch<COORD>::DIM;++dim)
-                    {
-                        const size_t rank     = __coord(ranks,dim);
-                        const size_t size     = __coord(sizes,dim);
-                        const bool   periodic = (0!=__coord(pbc,dim) );
-                        const bool   bulk     = isBulk(rank,size);
-                        const size_t border   = __coord(borders,dim);
-                        assert(size>0);
-                        assert(rank<size);
-                    }
-
-                    to_copy.xch( (mpn&)copy );
-                    to_coms.xch( (mpn&)coms );
-                }
-
-                inline virtual ~metrics() throw()
-                {
-                }
-
-                const mpn load;  //!< number of items to compute
-                const mpn copy;  //!< number of items to copy
-                const mpn coms;  //!< number of items to exchange via coms channels
-
-                inline metrics(const metrics &other) :
-                load(other.load),
-                copy(other.copy),
-                coms(other.coms)
-                {
-                }
-                
-
-            private:
-                YOCTO_DISABLE_ASSIGN(metrics);
-            };
 
 
             ////////////////////////////////////////////////////////////////////
@@ -146,11 +89,12 @@ namespace yocto
                 typedef patch1D           patch_type;
                 typedef __divide<coord1D> divide_type;
 
-                inline explicit in1D(const size_t      n,
+
+                inline explicit in1D(const coord1D     s,
                                      const patch_type &p) :
-                divide_type(n,p)
+                divide_type(s,p)
                 {
-                    if( coord1D(size) >this->width)
+                    if(sizes>this->width)
                     {
                         throw libc::exception(EDOM,"in1D: size exceeds width");
                     }
@@ -167,10 +111,11 @@ namespace yocto
                     return rank;
                 }
 
-                inline virtual patch_type operator()(const size_t rank) const throw()
+                inline virtual patch_type operator()(const size_t rank, coord1D *pRanks) const throw()
                 {
                     coord1D lo = this->lower;
                     coord1D up = this->width;
+                    if(pRanks) *pRanks = rank;
                     basic_split(rank,size,lo,up); assert(up>0);
                     up += lo;
                     --up;
@@ -193,13 +138,9 @@ namespace yocto
                 typedef patch2D           patch_type;
                 typedef __divide<coord2D> divide_type;
 
-                const coord2D   sizes;
-                mutable coord2D lastRanks;
 
                 inline explicit in2D( const coord2D userSizes, const patch_type &p) throw() :
-                divide_type(userSizes.__prod(),p),
-                sizes(userSizes),
-                lastRanks()
+                divide_type(userSizes,p)
                 {
                     for(size_t dim=0;dim<DIM;++dim)
                     {
@@ -222,14 +163,15 @@ namespace yocto
                     const ldiv_t l = ldiv( long(rank), long(sizes.x) );
                     assert(unit_t(l.rem)<sizes.x);
                     assert(unit_t(l.quot)<sizes.y);
-                    return (lastRanks=coord2D(l.rem,l.quot));
+                    return coord2D(l.rem,l.quot);
                 }
 
-                inline virtual patch_type operator()(const size_t rank) const throw()
+                inline virtual patch_type operator()(const size_t rank, coord2D *pRanks) const throw()
                 {
                     coord2D       lo    = this->lower;
                     coord2D       up    = this->width;
                     const coord2D ranks = get_ranks(rank);
+                    if(pRanks) *pRanks  = ranks;
                     basic_split(ranks.x,sizes.x,lo.x,up.x); assert(up.x>0);
                     basic_split(ranks.y,sizes.y,lo.y,up.y); assert(up.y>0);
                     up += lo;
@@ -252,13 +194,10 @@ namespace yocto
                 typedef patch3D           patch_type;
                 typedef __divide<coord3D> divide_type;
 
-                const coord3D   sizes;
-                mutable coord3D lastRanks;
 
                 inline explicit in3D(const coord3D     userSizes,
                                      const patch_type &p) throw() :
-                divide_type(userSizes.__prod(),p),
-                sizes(userSizes)
+                divide_type(userSizes,p)
                 {
                     for(size_t dim=0;dim<DIM;++dim)
                     {
@@ -282,14 +221,15 @@ namespace yocto
                     const ldiv_t ly = ldiv( lx.quot, long(sizes.y) );
                     const unit_t yr = unit_t(ly.rem);  assert(yr<sizes.y);
                     const unit_t zr = unit_t(ly.quot); assert(zr<sizes.z);
-                    return (lastRanks=coord3D(xr,yr,zr));
+                    return coord3D(xr,yr,zr);
                 }
 
-                inline virtual patch_type operator()(const size_t rank) const throw()
+                inline virtual patch_type operator()(const size_t rank, coord3D *pRanks) const throw()
                 {
                     coord3D       lo    = this->lower;
                     coord3D       up    = this->width;
                     const coord3D ranks = get_ranks(rank);
+                    if(pRanks) *pRanks  = ranks;
                     basic_split(ranks.x,sizes.x,lo.x,up.x); assert(up.x>0);
                     basic_split(ranks.y,sizes.y,lo.y,up.y); assert(up.y>0);
                     basic_split(ranks.z,sizes.z,lo.z,up.z); assert(up.y>0);
@@ -302,6 +242,52 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(in3D);
             };
 
+            ////////////////////////////////////////////////////////////////////
+            //
+            //! computing metrics for a sub patch
+            //
+            ////////////////////////////////////////////////////////////////////
+            template <typename COORD>
+            class metrics
+            {
+            public:
+                void compute(const __divide<COORD> &full,
+                             const size_t           rank,
+                             const COORD            pbcs);
+
+                const COORD ranks;
+
+                inline explicit metrics(const __divide<COORD> &full,
+                                        const size_t           rank,
+                                        const COORD            pbcs) :
+                ranks(full.get_ranks(rank)),
+                load(0),
+                copy(0),
+                coms(0)
+                {
+                    compute(full,rank,pbcs);
+                }
+
+                inline virtual ~metrics() throw()
+                {
+                }
+
+                mpn load;  //!< number of items to compute
+                mpn copy;  //!< number of items to copy
+                mpn coms;  //!< number of items to exchange via coms channels
+
+                inline metrics(const metrics &other) :
+                ranks(other.ranks),
+                load(other.load),
+                copy(other.copy),
+                coms(other.coms)
+                {
+                }
+
+
+            private:
+                YOCTO_DISABLE_ASSIGN(metrics);
+            };
 
 
         };

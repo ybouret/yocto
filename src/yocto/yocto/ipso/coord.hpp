@@ -63,6 +63,18 @@ namespace yocto
             return C;
         }
 
+        template <typename COORD>
+        coord1D __coord_prod(COORD C) throw()
+        {
+            coord1D  *q   = (coord1D *)&C;
+            coord1D   p = q[0];
+            for(size_t i=1;i<sizeof(COORD)/sizeof(coord1D);++i)
+            {
+                p *= q[i];
+            }
+            return p;
+        }
+
     }
 }
 

@@ -25,13 +25,19 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
         divide::in1D D(cpus,full);
         for(size_t rank=0;rank<D.size;++rank)
         {
-            std::cerr << '\t' << D.get_ranks(rank) << std::endl;
-            const patch1D sub = D(rank);
-            std::cerr << "\t\t" << sub << std::endl;
+            //std::cerr << '\t' << D.get_ranks(rank) << std::endl;
+            //const patch1D sub = D(rank,NULL);
+            //std::cerr << "\t\t" << sub << std::endl;
+            divide::metrics<coord1D> m(D,rank,0);
         }
+
+
 
     }
 
+
+
+    return 0;
 
     {
 
@@ -49,7 +55,7 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
                 for(size_t rank=0;rank<D.size;++rank)
                 {
                     std::cerr << '\t' << D.get_ranks(rank) << std::endl;
-                    const patch2D sub = D(rank);
+                    const patch2D sub = D(rank,NULL);
                     std::cerr << "\t\t" << sub << std::endl;
                 }
             }
@@ -73,7 +79,7 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
                     for(size_t rank=0;rank<D.size;++rank)
                     {
                         std::cerr << '\t' << D.get_ranks(rank) << std::endl;
-                        const patch3D sub = D(rank);
+                        const patch3D sub = D(rank,NULL);
                         std::cerr << "\t\t" << sub << std::endl;
                     }
                 }
