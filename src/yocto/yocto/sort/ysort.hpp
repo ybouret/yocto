@@ -3,6 +3,7 @@
 
 #include "yocto/comparator.hpp"
 #include "yocto/sort/nwsrt.hpp"
+#include "yocto/code/bmove.hpp"
 
 namespace yocto
 {

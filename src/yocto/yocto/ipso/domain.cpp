@@ -29,6 +29,7 @@ namespace yocto
         prev(0)
         {
             ng = __coord_abs(ng);
+            const bool has_ghosts = (ng>0);
             coord1D lo = inner.lower;
             coord1D up = inner.upper;
 
@@ -51,16 +52,22 @@ namespace yocto
                 {
                     // always async
                     Y_IPSO_CODE(fprintf(stderr,"<%02u>",unsigned(ranks)));
-                    async.push_back( new ghosts() );
-                    async.push_back( new ghosts() );
+                    if(has_ghosts)
+                    {
+                        async.push_back( new ghosts(-1,ng) );
+                        async.push_back( new ghosts(1,ng) );
+                    }
                 }
                 else
                 {
                     // always local
                     assert(1==full.sizes);
                     Y_IPSO_CODE(fprintf(stderr,"#%02u#",unsigned(ranks)));
-                    local.push_back( new ghosts() );
-                    local.push_back( new ghosts() );
+                    if(has_ghosts)
+                    {
+                        local.push_back( new ghosts(-1,ng) );
+                        local.push_back( new ghosts(1,ng) );
+                    }
                 }
             }
             else
@@ -77,7 +84,10 @@ namespace yocto
                         // @left
                         up += ng;
                         Y_IPSO_CODE(fprintf(stderr,"|%02u>",unsigned(ranks)));
-                        async.push_back( new ghosts() );
+                        if(has_ghosts)
+                        {
+                            async.push_back( new ghosts(1,ng) );
+                        }
                     }
                     else
                     {
@@ -86,7 +96,10 @@ namespace yocto
                             // @right
                             lo -= ng;
                             Y_IPSO_CODE(fprintf(stderr,"<%02u|",unsigned(ranks)));
-                            async.push_back( new ghosts() );
+                            if(has_ghosts)
+                            {
+                                async.push_back( new ghosts(-1,ng) );
+                            }
                         }
                         else
                         {
@@ -94,8 +107,11 @@ namespace yocto
                             lo -= ng;
                             up += ng;
                             Y_IPSO_CODE(fprintf(stderr,"<%02u>",unsigned(ranks)));
-                            async.push_back( new ghosts() );
-                            async.push_back( new ghosts() );
+                            if(has_ghosts)
+                            {
+                                async.push_back( new ghosts(-1,ng) );
+                                async.push_back( new ghosts(1,ng)  );
+                            }
                         }
                     }
                 }
@@ -107,6 +123,21 @@ namespace yocto
             }
 
             new ((void*)&outer) patch1D(lo,up);
+
+
+            //__________________________________________________________________
+            //
+            // Pass 2: loading ghosts
+            //__________________________________________________________________
+            for(ghosts *g = async.head; g; g=g->next)
+            {
+                g->load(inner,outer);
+            }
+            
+            for(ghosts *g = local.head; g; g=g->next)
+            {
+                g->load(inner,outer);
+            }
 
         }
 
