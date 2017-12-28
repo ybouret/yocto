@@ -21,11 +21,33 @@ namespace yocto
             const patch_type inner;
             const patch_type outer;
 
-            ghosts::list     async; //!< async ghosts
-            ghosts::list     local; //!< local ghosts
+            ghosts::list     async[DIM]; //!< async ghosts
+            ghosts::list     local[DIM]; //!< local ghosts
 
             domain          *next;
             domain          *prev;
+
+
+            inline void query(size_t &numItems,
+                              size_t &numAsync,
+                              size_t &numLocal) const throw()
+            {
+                numItems = inner.items;
+                numAsync = 0;
+                numLocal = 0;
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    for(const ghosts *g=async[dim].head;g;g=g->next)
+                    {
+                        numAsync += g->count;
+                    }
+                    for(const ghosts *g=local[dim].head;g;g=g->next)
+                    {
+                        numLocal += g->count;
+                    }
+                }
+            }
+
 
             inline virtual ~domain() throw() {}
 
@@ -76,8 +98,8 @@ namespace yocto
                             //Y_IPSO_CODE(fprintf(stderr,"<%02u>",unsigned(ranks)));
                             if(has_ghosts)
                             {
-                                async.push_back( YOCTO_IPSO_LOWER_GHOSTS );
-                                async.push_back( YOCTO_IPSO_UPPER_GHOSTS );
+                                async[dim].push_back( YOCTO_IPSO_LOWER_GHOSTS );
+                                async[dim].push_back( YOCTO_IPSO_UPPER_GHOSTS );
                             }
                         }
                         else
@@ -87,8 +109,8 @@ namespace yocto
                             //Y_IPSO_CODE(fprintf(stderr,"#%02u#",unsigned(ranks)));
                             if(has_ghosts)
                             {
-                                local.push_back( YOCTO_IPSO_LOWER_GHOSTS );
-                                local.push_back( YOCTO_IPSO_UPPER_GHOSTS );
+                                local[dim].push_back( YOCTO_IPSO_LOWER_GHOSTS );
+                                local[dim].push_back( YOCTO_IPSO_UPPER_GHOSTS );
                             }
                         }
                     }
@@ -108,7 +130,7 @@ namespace yocto
                                 //Y_IPSO_CODE(fprintf(stderr,"|%02u>",unsigned(ranks)));
                                 if(has_ghosts)
                                 {
-                                    async.push_back( YOCTO_IPSO_UPPER_GHOSTS );
+                                    async[dim].push_back( YOCTO_IPSO_UPPER_GHOSTS );
                                 }
                             }
                             else
@@ -120,7 +142,7 @@ namespace yocto
                                     //Y_IPSO_CODE(fprintf(stderr,"<%02u|",unsigned(ranks)));
                                     if(has_ghosts)
                                     {
-                                        async.push_back( YOCTO_IPSO_LOWER_GHOSTS );
+                                        async[dim].push_back( YOCTO_IPSO_LOWER_GHOSTS );
                                     }
                                 }
                                 else
@@ -131,8 +153,8 @@ namespace yocto
                                     //Y_IPSO_CODE(fprintf(stderr,"<%02u>",unsigned(ranks)));
                                     if(has_ghosts)
                                     {
-                                        async.push_back( YOCTO_IPSO_LOWER_GHOSTS );
-                                        async.push_back( YOCTO_IPSO_UPPER_GHOSTS );
+                                        async[dim].push_back( YOCTO_IPSO_LOWER_GHOSTS );
+                                        async[dim].push_back( YOCTO_IPSO_UPPER_GHOSTS );
                                     }
                                 }
                             }
@@ -153,17 +175,20 @@ namespace yocto
                 // Pass 2: loading ghosts
                 //______________________________________________________________
                 std::cerr << "building async" << std::endl;
-                for(ghosts *g = async.head; g; g=g->next)
+                for(size_t dim=0;dim<DIM;++dim)
                 {
-                    std::cerr << "\tasync " << g->pos2txt(g->pos) << std::endl;
-                    g->load(inner,outer,build);
-                }
+                    for(ghosts *g = async[dim].head; g; g=g->next)
+                    {
+                        std::cerr << "\tasync " << g->pos2txt(g->pos) << std::endl;
+                        g->load(inner,outer,build);
+                    }
 
-                std::cerr << "building local" << std::endl;
-                for(ghosts *g = local.head; g; g=g->next)
-                {
-                    std::cerr << "\tlocal " << g->pos2txt(g->pos) << std::endl;
-                    g->load(inner,outer,build);
+                    std::cerr << "building local" << std::endl;
+                    for(ghosts *g = local[dim].head; g; g=g->next)
+                    {
+                        std::cerr << "\tlocal " << g->pos2txt(g->pos) << std::endl;
+                        g->load(inner,outer,build);
+                    }
                 }
             }
 

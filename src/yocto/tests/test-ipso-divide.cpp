@@ -83,17 +83,20 @@ void display( const typename domain<COORD>::list &L )
         std::cerr << "\tinner  : " << d->inner << std::endl;
         std::cerr << "\touter  : " << d->outer << std::endl;
         //continue;
-        std::cerr << "\t#async : " << d->async.size << std::endl;
-        for(const ghosts *g=d->async.head;g;g=g->next)
+        for(size_t dim=0;dim<domain<COORD>::DIM;++dim)
         {
-            std::cerr << "\t\tsend: " << g->source << "->" << g->target << "@" << g->send << std::endl;
-            std::cerr << "\t\trecv: " << g->source << "<-" << g->target << "@" << g->recv << std::endl;
-        }
-        std::cerr << "\t#local : " << d->local.size << std::endl;
-        for(const ghosts *g=d->local.head;g;g=g->next)
-        {
-            std::cerr << "\t\tsend: " << g->source << "->" << g->target << "@" << g->send << std::endl;
-            std::cerr << "\t\trecv: " << g->source << "<-" << g->target << "@" << g->recv << std::endl;
+            std::cerr << "\t#async[" << dim << "] : " << d->async[dim].size << std::endl;
+            for(const ghosts *g=d->async[dim].head;g;g=g->next)
+            {
+                std::cerr << "\t\tsend: " << g->source << "->" << g->target << "@" << g->send << std::endl;
+                std::cerr << "\t\trecv: " << g->source << "<-" << g->target << "@" << g->recv << std::endl;
+            }
+            std::cerr << "\t#local[" << dim << "] : " << d->local[dim].size << std::endl;
+            for(const ghosts *g=d->local[dim].head;g;g=g->next)
+            {
+                std::cerr << "\t\tsend: " << g->source << "->" << g->target << "@" << g->send << std::endl;
+                std::cerr << "\t\trecv: " << g->source << "<-" << g->target << "@" << g->recv << std::endl;
+            }
         }
 
     }
