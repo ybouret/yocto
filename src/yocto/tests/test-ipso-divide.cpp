@@ -82,6 +82,7 @@ void display( const typename domain<COORD>::list &L )
         std::cerr << "domain " << d->ranks << std::endl;
         std::cerr << "\tinner  : " << d->inner << std::endl;
         std::cerr << "\touter  : " << d->outer << std::endl;
+        continue;
         std::cerr << "\t#async : " << d->async.size << std::endl;
         for(const ghosts *g=d->async.head;g;g=g->next)
         {

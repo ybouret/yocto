@@ -27,6 +27,31 @@ namespace yocto
             assert(ng>0);
         }
 
+        ghosts::position ghosts::dim2pos(const size_t dim, const int s)
+        {
+
+            if(dim==0)
+            {
+                if(s==-1) return x_lower;
+                if(s== 1) return x_upper;
+            }
+
+            if(dim==1)
+            {
+                if(s==-1) return y_lower;
+                if(s== 1) return y_upper;
+            }
+
+            if(dim==2)
+            {
+                if(s==-1) return z_lower;
+                if(s== 1) return z_upper;
+            }
+
+            throw exception("ghosts::dim2pos: invalid dim=%u and sign=%d", unsigned(dim), int(s));
+        }
+
+
         static inline int __compare_coord1D(const coord1D lhs, const coord1D rhs) throw()
         {
             return lhs-rhs;

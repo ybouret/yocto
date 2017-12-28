@@ -8,6 +8,8 @@
 #define Y_IPSO_CODE(CODE)
 #endif
 
+#if 0
+
 namespace yocto
 {
     namespace ipso
@@ -154,6 +156,9 @@ namespace yocto
 
 }
 
+#endif
+
+#if 0
 namespace yocto
 {
     namespace ipso
@@ -281,11 +286,11 @@ namespace yocto
                     }
                 }
             }
-            
+
         }
 
 
     }
 
 }
-
+#endif

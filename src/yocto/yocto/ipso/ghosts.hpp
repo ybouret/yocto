@@ -28,6 +28,7 @@ namespace yocto
                 z_upper
             };
             typedef core::list_of_cpp<ghosts> list;
+
             const ghost     send;    //!< built by load if the 'build' flag is set
             const ghost     recv;    //!< built by load if the 'build' flag is set
             const size_t    count;   //!< built by load, always
@@ -47,6 +48,9 @@ namespace yocto
             void load(const patch1D &inner,
                       const patch1D &outer,
                       const bool     build);
+
+            static  position dim2pos(const size_t dim, const int s);
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts);
