@@ -18,7 +18,7 @@ namespace yocto
         class ghosts : public object
         {
         public:
-            enum direction
+            enum position
             {
                 x_lower,
                 x_upper,
@@ -28,20 +28,20 @@ namespace yocto
                 z_upper
             };
             typedef core::list_of_cpp<ghosts> list;
-            const ghost   send;    //!< built by load
-            const ghost   recv;    //!< built by load
-            const size_t  count;   //!< built by load
-            const size_t  source;  //!< MPI style source
-            const size_t  target;  //!< MPI style target
-            ghosts       *next;
-            ghosts       *prev;
-            const direction dir;
+            const ghost     send;    //!< built by load if the 'build' flag is set
+            const ghost     recv;    //!< built by load if the 'build' flag is set
+            const size_t    count;   //!< built by load, always
+            const size_t    source;  //!< MPI style source
+            const size_t    target;  //!< MPI style target
+            ghosts         *next;
+            ghosts         *prev;
+            const position  pos;
             const coord1D   ng;
-
-            explicit ghosts(const direction the_dir,
-                            const coord1D the_ng,
-                            const size_t  the_source,
-                            const size_t  the_target) throw();
+            
+            explicit ghosts(const position the_pos,
+                            const coord1D  the_ng,
+                            const size_t   the_source,
+                            const size_t   the_target) throw();
             virtual ~ghosts() throw();
 
             void load(const patch1D &inner,

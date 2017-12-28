@@ -13,16 +13,14 @@ namespace yocto
     namespace ipso
     {
 
-
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // 1D
+        //
+        ////////////////////////////////////////////////////////////////////////
 
 #define X_LOWER_GHOSTS new ghosts( ghosts::x_lower,ng,rank, full.prev_rank(ranks,0) )
 #define X_UPPER_GHOSTS new ghosts( ghosts::x_upper,ng,rank, full.next_rank(ranks,0) )
-
-#define Y_LOWER_GHOSTS new ghosts( ghosts::y_lower,ng,rank, full.prev_rank(ranks,1) )
-#define Y_UPPER_GHOSTS new ghosts( ghosts::y_upper,ng,rank, full.next_rank(ranks,1) )
-
-#define Z_LOWER_GHOSTS new ghosts( ghosts::z_lower,ng,rank, full.prev_rank(ranks,2) )
-#define Z_UPPER_GHOSTS new ghosts( ghosts::z_upper,ng,rank, full.next_rank(ranks,2) )
 
 
         template <>
@@ -48,7 +46,6 @@ namespace yocto
             //
             // Pass 1: computing outer
             //__________________________________________________________________
-
             const bool periodic = (0!=pbcs);
             if(periodic)
             {
@@ -150,6 +147,141 @@ namespace yocto
                 g->load(inner,outer,build);
             }
 
+        }
+
+
+    }
+
+}
+
+namespace yocto
+{
+    namespace ipso
+    {
+
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // 2D
+        //
+        ////////////////////////////////////////////////////////////////////////
+
+#define Y_LOWER_GHOSTS new ghosts( ghosts::y_lower,ng,rank, full.prev_rank(ranks,1) )
+#define Y_UPPER_GHOSTS new ghosts( ghosts::y_upper,ng,rank, full.next_rank(ranks,1) )
+
+#define Z_LOWER_GHOSTS new ghosts( ghosts::z_lower,ng,rank, full.prev_rank(ranks,2) )
+#define Z_UPPER_GHOSTS new ghosts( ghosts::z_upper,ng,rank, full.next_rank(ranks,2) )
+
+        template <>
+        domain<coord2D>::domain(const divider<coord2D> &full,
+                                const size_t            rank,
+                                coord1D                 ng,
+                                const coord2D           pbcs,
+                                const bool              build) :
+        ranks( ),
+        inner( full(rank, (coord2D *)&ranks) ),
+        outer( inner ),
+        async(),
+        local(),
+        next(0),
+        prev(0)
+        {
+            ng = __coord_abs(ng);
+            const bool has_ghosts = (ng>0);
+
+            coord2D lower = inner.lower;
+            coord2D upper = inner.upper;
+
+            //==================================================================
+            //
+            // along X
+            //
+            //==================================================================
+            {
+                const bool periodic = ( 0 != pbcs.x );
+                if(periodic)
+                {
+                    ////////////////////////////////////////////////////////////
+                    //
+                    // X PERIODIC CODE
+                    //
+                    ////////////////////////////////////////////////////////////
+                    lower.x -= ng;
+                    upper.x += ng;
+                    if(full.sizes.x>1)
+                    {
+                        // always async
+                        Y_IPSO_CODE(fprintf(stderr,"<%02u.%02u>",unsigned(ranks.x),unsigned(ranks.y)));
+                        if(has_ghosts)
+                        {
+                            async.push_back( X_LOWER_GHOSTS );
+                            async.push_back( X_UPPER_GHOSTS );
+                        }
+                    }
+                    else
+                    {
+                        // always local
+                        assert(1==full.sizes.x);
+                        Y_IPSO_CODE(fprintf(stderr,"#%02u.%02u#",unsigned(ranks.x),unsigned(ranks.y)));
+                        if(has_ghosts)
+                        {
+                            local.push_back( X_LOWER_GHOSTS );
+                            local.push_back( X_UPPER_GHOSTS );
+                        }
+                    }
+                }
+                else
+                {
+                    ////////////////////////////////////////////////////////////
+                    //
+                    // X NOT PERIODIC CODE
+                    //
+                    ////////////////////////////////////////////////////////////
+                    if(full.sizes.x>1)
+                    {
+                        if(0==ranks.x)
+                        {
+                            // @left
+                            upper.x += ng;
+                            Y_IPSO_CODE(fprintf(stderr,"|%02u.%02u>",unsigned(ranks.x),unsigned(ranks.y)));
+                            if(has_ghosts)
+                            {
+                                async.push_back( X_UPPER_GHOSTS );
+                            }
+                        }
+                        else
+                        {
+                            if(full.lasts.x==ranks.x)
+                            {
+                                // @right
+                                lower.x -= ng;
+                                Y_IPSO_CODE(fprintf(stderr,"<%02u.%02u|",unsigned(ranks.x),unsigned(ranks.y)));
+                                if(has_ghosts)
+                                {
+                                    async.push_back( X_LOWER_GHOSTS );
+                                }
+                            }
+                            else
+                            {
+                                // in bulk
+                                lower.x -= ng;
+                                upper.x += ng;
+                                Y_IPSO_CODE(fprintf(stderr,"<%02u.%02u>",unsigned(ranks.x),unsigned(ranks.y)));
+                                if(has_ghosts)
+                                {
+                                    async.push_back( X_LOWER_GHOSTS );
+                                    async.push_back( X_UPPER_GHOSTS );
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // nothing to do
+                        Y_IPSO_CODE(fprintf(stderr,"|%02u.%02u|",unsigned(ranks.x),unsigned(ranks.y)));
+                    }
+                }
+            }
+            
         }
 
 

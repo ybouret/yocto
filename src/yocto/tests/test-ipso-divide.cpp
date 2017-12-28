@@ -128,9 +128,6 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
         domain<coord1D>::list p_domains;
         for(size_t rank=0;rank<D.size;++rank)
         {
-            //std::cerr << '\t' << D.get_ranks(rank) << std::endl;
-            //const patch1D sub = D(rank,NULL);
-            //std::cerr << "\t\t" << sub << std::endl;
             p_domains.push_back( new domain<coord1D>(D,rank,ng,1,true) );
         }
         fflush(stderr);
@@ -142,9 +139,6 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
         domain<coord1D>::list u_domains;
         for(size_t rank=0;rank<D.size;++rank)
         {
-            //std::cerr << '\t' << D.get_ranks(rank) << std::endl;
-            //const patch1D sub = D(rank,NULL);
-            //std::cerr << "\t\t" << sub << std::endl;
             u_domains.push_back(new domain<coord1D>(D,rank,ng,0,true) );
         }
         fflush(stderr);
@@ -155,13 +149,12 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
 
 
 
-    return 0;
 
     {
 
         const patch2D full( coord2D(1,1),coord2D(Nx,Ny) );
+        std::cerr << std::endl;
         std::cerr << "#CPU=" << cpus << " in 2D: " << full << std::endl;
-
         coord2D       sizes;
         for(sizes.x=1;sizes.x<=cpus;++sizes.x)
         {
@@ -170,16 +163,28 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
                 if(sizes.__prod()!=cpus) continue;
                 std::cerr << "sizes=" << sizes << std::endl;
                 divide::in2D D(sizes,full);
-                for(size_t rank=0;rank<D.size;++rank)
                 {
-                    std::cerr << '\t' << D.get_ranks(rank) << std::endl;
-                    const patch2D sub = D(rank,NULL);
-                    std::cerr << "\t\t" << sub << std::endl;
+                    std::cerr << "Periodic:" << std::endl;
+                    std::cerr.flush();
+                    coord2D pbcs(1,1);
+                    domain<coord2D>::list domains;
+                    for(size_t rank=0;rank<D.size;++rank)
+                    {
+                        domains.push_back( new domain<coord2D>(D,rank,ng,pbcs,true) );
+                    }
+                    fflush(stderr);
+                    std::cerr << std::endl << std::endl;
+                    display<coord2D>(domains);
+
                 }
             }
+            std::cerr << std::endl;
         }
 
     }
+
+    return 0;
+
 
     {
         const patch3D full( coord3D(1,1,1),coord3D(Nx,Ny,Nz) );

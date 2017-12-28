@@ -42,30 +42,34 @@ namespace yocto
             //! get local patch from this...
             virtual patch<COORD> operator()(const size_t rank, COORD *pRanks) const throw() = 0;
 
-            inline size_t prev_rank(const size_t rank, const size_t dim) const throw()
+            inline size_t prev_rank( COORD ranks, const size_t dim) const throw()
             {
                 assert(dim<patch<COORD>::DIM);
-                if(rank<=0)
+                coord1D &r = __coord(ranks,dim);
+                if(r<=0)
                 {
-                    return __coord(lasts,dim);
+                    r = __coord(lasts,dim);
                 }
                 else
                 {
-                    return rank-1;
+                    --r;
                 }
+                return get_rank_from(ranks);
             }
 
-            inline size_t next_rank(const size_t rank, const size_t dim) const throw()
+            inline size_t next_rank( COORD ranks, const size_t dim) const throw()
             {
                 assert(dim<patch<COORD>::DIM);
-                if(rank>=__coord(lasts,dim))
+                coord1D &r = __coord(ranks,dim);
+                if(r>=__coord(lasts,dim))
                 {
-                    return 0;
+                    r = 0;
                 }
                 else
                 {
-                    return rank+1;
+                    ++r;
                 }
+                return get_rank_from(ranks);
             }
 
         protected:

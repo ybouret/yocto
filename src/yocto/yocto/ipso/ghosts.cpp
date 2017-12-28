@@ -10,7 +10,7 @@ namespace yocto
         {
         }
 
-        ghosts:: ghosts(const direction the_dir,
+        ghosts:: ghosts(const position  the_pos,
                         const coord1D   the_ng,
                         const size_t    the_source,
                         const size_t    the_target) throw() :
@@ -21,7 +21,7 @@ namespace yocto
         target(the_target),
         next(0),
         prev(0),
-        dir(the_dir),
+        pos(the_pos),
         ng(the_ng)
         {
             assert(ng>0);
@@ -40,7 +40,7 @@ namespace yocto
             ghost  & _send  = (ghost &)send;
             ghost  & _recv  = (ghost &)recv;
             size_t & _count = (size_t &)count;
-            switch(dir)
+            switch(pos)
             {
                 case x_lower: {
                     _count = ng;

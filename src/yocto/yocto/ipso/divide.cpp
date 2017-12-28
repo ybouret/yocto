@@ -12,6 +12,11 @@ namespace yocto
 {
     namespace ipso
     {
+        ////////////////////////////////////////////////////////////////////////
+        //
+        //
+        //
+        ////////////////////////////////////////////////////////////////////////
         template <>
         void divide:: metrics<coord1D>:: compute(const divider<coord1D> &full,
                                                  const size_t             rank,
@@ -75,11 +80,9 @@ namespace yocto
                 }
             }
 
-
-
-
-
         }
+
+
     }
 }
 
