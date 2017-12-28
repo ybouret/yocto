@@ -51,6 +51,21 @@ namespace yocto
             throw exception("ghosts::dim2pos: invalid dim=%u and sign=%d", unsigned(dim), int(s));
         }
 
+#define POS2TXT(ID) case ID: return #ID
+        const char * ghosts:: pos2txt(const position p) throw()
+        {
+            switch(p)
+            {
+                    POS2TXT(x_lower);
+                    POS2TXT(x_upper);
+                    POS2TXT(y_lower);
+                    POS2TXT(y_upper);
+                    POS2TXT(z_lower);
+                    POS2TXT(z_upper);
+            }
+            return "unknown";
+        }
+
 
         static inline int __compare_coord1D(const coord1D lhs, const coord1D rhs) throw()
         {
@@ -68,6 +83,11 @@ if(build) {                     \
 ySort(_send,__compare_coord1D); \
 ySort(_recv,__compare_coord1D); \
 }
+
+#define __LOAD_ALLOC() \
+_send.make(_count);    \
+_recv.make(_count)
+
         void ghosts:: load(const patch1D &inner,
                            const patch1D &outer,
                            const bool     build)
@@ -79,8 +99,7 @@ ySort(_recv,__compare_coord1D); \
                     _count = ng;
                     if(build)
                     {
-                        _send.make(_count);
-                        _recv.make(_count);
+                        __LOAD_ALLOC();
                         coord1D ix = inner.lower;
                         coord1D ox = outer.lower;
                         for(coord1D g=ng;g>0;--g,++ix,++ox)
@@ -97,8 +116,7 @@ ySort(_recv,__compare_coord1D); \
                     _count = ng;
                     if(build)
                     {
-                        _send.make(_count);
-                        _recv.make(_count);
+                        __LOAD_ALLOC();
                         coord1D ix = inner.upper-ng;
                         coord1D ox = outer.upper-ng;
                         for(coord1D g=ng;g>0;--g)
@@ -112,7 +130,7 @@ ySort(_recv,__compare_coord1D); \
                 } break;
 
                 default:
-                    throw exception("unexpected 1D ghosts position");
+                    throw exception("unexpected 1D ghosts %s", pos2txt(pos));
             }
 
             __LOAD_EPILOG();
@@ -126,8 +144,105 @@ ySort(_recv,__compare_coord1D); \
             __LOAD_PROLOG();
             switch(pos)
             {
+                case x_lower :
+                {
+                    _count = ng * outer.width.y;
+                    if(build)
+                    {
+                        __LOAD_ALLOC();
+                        coord1D ix = inner.lower.x;
+                        coord1D ox = outer.lower.x;
+                        size_t  ig = 0;
+                        for(coord1D g=ng;g>0;--g,++ix,++ox)
+                        {
+                            for(coord1D j=outer.lower.y;j<=outer.upper.y;++j)
+                            {
+                                const coord2D icoord(ix,j);
+                                const coord2D ocoord(ox,j);
+                                ++ig;
+                                _send[ig] = outer.offset_of(icoord);
+                                _recv[ig] = outer.offset_of(ocoord);
+                            }
+                        }
+                    }
+                } break;
+
+                case x_upper :
+                {
+                    _count = ng * outer.width.y;
+                    if(build)
+                    {
+                        __LOAD_ALLOC();
+                        coord1D ix = inner.upper.x-ng;
+                        coord1D ox = outer.upper.x-ng;
+                        size_t  ig = 0;
+                        for(coord1D g=ng;g>0;--g)
+                        {
+                            ++ix;
+                            ++ox;
+                            for(coord1D j=outer.lower.y;j<=outer.upper.y;++j)
+                            {
+                                const coord2D icoord(ix,j);
+                                const coord2D ocoord(ox,j);
+                                ++ig;
+                                _send[ig] = outer.offset_of(icoord);
+                                _recv[ig] = outer.offset_of(ocoord);
+                            }
+                        }
+                    }
+                } break;
+
+                case y_lower :
+                {
+                    _count = ng * outer.width.x;
+                    if(build)
+                    {
+                        __LOAD_ALLOC();
+                        coord1D iy = inner.lower.y;
+                        coord1D oy = outer.lower.y;
+                        size_t  ig = 0;
+                        for(coord1D g=ng;g>0;--g,++iy,++oy)
+                        {
+                            for(coord1D i=outer.lower.x;i<=outer.upper.x;++i)
+                            {
+                                const coord2D icoord(i,iy);
+                                const coord2D ocoord(i,oy);
+                                ++ig;
+                                _send[ig] = outer.offset_of(icoord);
+                                _recv[ig] = outer.offset_of(ocoord);
+                            }
+                        }
+                    }
+                } break;
+
+                case y_upper :
+                {
+                    _count = ng * outer.width.x;
+                    if(build)
+                    {
+                        __LOAD_ALLOC();
+                        coord1D iy = inner.upper.y-ng;
+                        coord1D oy = outer.upper.y-ng;
+                        size_t  ig = 0;
+                        for(coord1D g=ng;g>0;--g)
+                        {
+                            ++iy;
+                            ++oy;
+                            for(coord1D i=outer.lower.x;i<=outer.upper.x;++i)
+                            {
+                                const coord2D icoord(i,iy);
+                                const coord2D ocoord(i,oy);
+                                ++ig;
+                                _send[ig] = outer.offset_of(icoord);
+                                _recv[ig] = outer.offset_of(ocoord);
+                            }
+                        }
+                    }
+                } break;
+
+
                 default:
-                    throw exception("unexpected 2D ghosts position");
+                    throw exception("unexpected 2D ghosts %s", pos2txt(pos));
             }
             __LOAD_EPILOG();
         }
@@ -141,7 +256,7 @@ ySort(_recv,__compare_coord1D); \
             switch(pos)
             {
                 default:
-                    throw exception("unexpected 3D ghosts position");
+                    throw exception("unexpected 3D ghosts %s", pos2txt(pos));
             }
             __LOAD_EPILOG();
         }

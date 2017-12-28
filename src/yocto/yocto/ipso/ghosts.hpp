@@ -58,8 +58,8 @@ namespace yocto
                       const bool     build);
 
 
-            static  position dim2pos(const size_t dim, const int s);
-
+            static  position    dim2pos(const size_t dim, const int s);
+            static  const char *pos2txt(const position p) throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts);
