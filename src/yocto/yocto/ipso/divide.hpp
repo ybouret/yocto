@@ -42,6 +42,7 @@ namespace yocto
             //! get local patch from this...
             virtual patch<COORD> operator()(const size_t rank, COORD *pRanks) const throw() = 0;
 
+            //! get the global rank of the previous local ranks in dimension 'dim'
             inline size_t prev_rank( COORD ranks, const size_t dim) const throw()
             {
                 assert(dim<patch<COORD>::DIM);
@@ -57,6 +58,7 @@ namespace yocto
                 return get_rank_from(ranks);
             }
 
+            //! get the global rank of the next local ranks in dimension 'dim'
             inline size_t next_rank( COORD ranks, const size_t dim) const throw()
             {
                 assert(dim<patch<COORD>::DIM);
@@ -95,8 +97,6 @@ namespace yocto
 
         struct divide
         {
-
-
 
             ////////////////////////////////////////////////////////////////////
             //
@@ -289,53 +289,6 @@ namespace yocto
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(in3D);
-            };
-
-            ////////////////////////////////////////////////////////////////////
-            //
-            //! computing metrics for a sub patch
-            //
-            ////////////////////////////////////////////////////////////////////
-            template <typename COORD>
-            class metrics
-            {
-            public:
-                void compute(const divider<COORD>  &full,
-                             const size_t           rank,
-                             const COORD            pbcs);
-
-                const COORD ranks;
-
-                inline explicit metrics(const divider<COORD> &full,
-                                        const size_t           rank,
-                                        const COORD            pbcs) :
-                ranks(full.get_ranks(rank)),
-                load(0),
-                copy(0),
-                coms(0)
-                {
-                    compute(full,rank,pbcs);
-                }
-
-                inline virtual ~metrics() throw()
-                {
-                }
-
-                mpn load;  //!< number of items to compute
-                mpn copy;  //!< number of items to copy
-                mpn coms;  //!< number of items to exchange via coms channels
-
-                inline metrics(const metrics &other) :
-                ranks(other.ranks),
-                load(other.load),
-                copy(other.copy),
-                coms(other.coms)
-                {
-                }
-
-
-            private:
-                YOCTO_DISABLE_ASSIGN(metrics);
             };
 
 

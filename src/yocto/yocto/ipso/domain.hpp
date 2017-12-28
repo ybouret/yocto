@@ -21,8 +21,8 @@ namespace yocto
             const patch_type inner;
             const patch_type outer;
 
-            ghosts::list     async[DIM]; //!< async ghosts
-            ghosts::list     local[DIM]; //!< local ghosts
+            ghosts::list     async[DIM]; //!< async ghosts, by dimension: 0, 1 or 2
+            ghosts::list     local[DIM]; //!< local ghosts, by dimension: 0 or 2
 
             domain          *next;
             domain          *prev;
