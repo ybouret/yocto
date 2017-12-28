@@ -88,6 +88,11 @@ ySort(_recv,__compare_coord1D); \
 _send.make(_count);    \
 _recv.make(_count)
 
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // 1D
+        //
+        ////////////////////////////////////////////////////////////////////////
         void ghosts:: load(const patch1D &inner,
                            const patch1D &outer,
                            const bool     build)
@@ -137,6 +142,12 @@ _recv.make(_count)
 
         }
 
+
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // 2D
+        //
+        ////////////////////////////////////////////////////////////////////////
         void ghosts:: load(const patch2D &inner,
                            const patch2D &outer,
                            const bool     build)
@@ -164,6 +175,7 @@ _recv.make(_count)
                                 _recv[ig] = outer.offset_of(ocoord);
                             }
                         }
+                        assert(count==ig);
                     }
                 } break;
 
@@ -189,6 +201,7 @@ _recv.make(_count)
                                 _recv[ig] = outer.offset_of(ocoord);
                             }
                         }
+                        assert(count==ig);
                     }
                 } break;
 
@@ -212,6 +225,7 @@ _recv.make(_count)
                                 _recv[ig] = outer.offset_of(ocoord);
                             }
                         }
+                        assert(count==ig);
                     }
                 } break;
 
@@ -237,6 +251,7 @@ _recv.make(_count)
                                 _recv[ig] = outer.offset_of(ocoord);
                             }
                         }
+                        assert(count==ig);
                     }
                 } break;
 
@@ -248,6 +263,12 @@ _recv.make(_count)
         }
 
 
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // 3D
+        //
+        ////////////////////////////////////////////////////////////////////////
+
         void ghosts:: load(const patch3D &inner,
                            const patch3D &outer,
                            const bool     build)
@@ -255,6 +276,175 @@ _recv.make(_count)
             __LOAD_PROLOG();
             switch(pos)
             {
+                case x_lower :
+                {
+                    _count = ng * outer.width.y*outer.width.z;
+                    if(build)
+                    {
+                        __LOAD_ALLOC();
+                        coord1D ix = inner.lower.x;
+                        coord1D ox = outer.lower.x;
+                        size_t  ig = 0;
+                        for(coord1D g=ng;g>0;--g,++ix,++ox)
+                        {
+                            for(coord1D j=outer.lower.y;j<=outer.upper.y;++j)
+                            {
+                                for(coord1D k=outer.lower.z;k<=outer.upper.z;++k)
+                                {
+                                    const coord3D icoord(ix,j,k);
+                                    const coord3D ocoord(ox,j,k);
+                                    ++ig;
+                                    _send[ig] = outer.offset_of(icoord);
+                                    _recv[ig] = outer.offset_of(ocoord);
+                                }
+                            }
+                        }
+                        assert(count==ig);
+                    }
+                } break;
+
+                case x_upper :
+                {
+                    _count = ng * outer.width.y*outer.width.z;
+                    if(build)
+                    {
+                        __LOAD_ALLOC();
+                        coord1D ix = inner.upper.x-ng;
+                        coord1D ox = outer.upper.x-ng;
+                        size_t  ig = 0;
+                        for(coord1D g=ng;g>0;--g)
+                        {
+                            ++ix;
+                            ++ox;
+                            for(coord1D j=outer.lower.y;j<=outer.upper.y;++j)
+                            {
+                                for(coord1D k=outer.lower.z;k<=outer.upper.z;++k)
+                                {
+                                    const coord3D icoord(ix,j,k);
+                                    const coord3D ocoord(ox,j,k);
+                                    ++ig;
+                                    _send[ig] = outer.offset_of(icoord);
+                                    _recv[ig] = outer.offset_of(ocoord);
+                                }
+                            }
+                        }
+                        assert(count==ig);
+                    }
+                } break;
+
+                case y_lower :
+                {
+                    _count = ng * outer.width.x*outer.width.z;
+                    if(build)
+                    {
+                        __LOAD_ALLOC();
+                        coord1D iy = inner.lower.y;
+                        coord1D oy = outer.lower.y;
+                        size_t  ig = 0;
+                        for(coord1D g=ng;g>0;--g,++iy,++oy)
+                        {
+                            for(coord1D i=outer.lower.x;i<=outer.upper.x;++i)
+                            {
+                                for(coord1D k=outer.lower.z;k<=outer.upper.z;++k)
+                                {
+                                    const coord3D icoord(i,iy,k);
+                                    const coord3D ocoord(i,oy,k);
+                                    ++ig;
+                                    _send[ig] = outer.offset_of(icoord);
+                                    _recv[ig] = outer.offset_of(ocoord);
+                                }
+                            }
+                        }
+                        assert(count==ig);
+                    }
+                } break;
+
+                case y_upper :
+                {
+                    _count = ng * outer.width.x*outer.width.z;
+                    if(build)
+                    {
+                        __LOAD_ALLOC();
+                        coord1D iy = inner.upper.y-ng;
+                        coord1D oy = outer.upper.y-ng;
+                        size_t  ig = 0;
+                        for(coord1D g=ng;g>0;--g)
+                        {
+                            ++iy;
+                            ++oy;
+                            for(coord1D i=outer.lower.x;i<=outer.upper.x;++i)
+                            {
+                                for(coord1D k=outer.lower.z;k<=outer.upper.z;++k)
+                                {
+                                    const coord3D icoord(i,iy,k);
+                                    const coord3D ocoord(i,oy,k);
+                                    ++ig;
+                                    _send[ig] = outer.offset_of(icoord);
+                                    _recv[ig] = outer.offset_of(ocoord);
+                                }
+                            }
+                        }
+                        assert(count==ig);
+                    }
+                } break;
+
+
+                case z_lower :
+                {
+                    _count = ng * outer.width.x*outer.width.y;
+                    if(build)
+                    {
+                        __LOAD_ALLOC();
+                        coord1D iz = inner.lower.z;
+                        coord1D oz = outer.lower.z;
+                        size_t  ig = 0;
+                        for(coord1D g=ng;g>0;--g,++iz,++oz)
+                        {
+                            for(coord1D i=outer.lower.x;i<=outer.upper.x;++i)
+                            {
+                                for(coord1D j=outer.lower.y;j<=outer.upper.y;++j)
+                                {
+                                    const coord3D icoord(i,j,iz);
+                                    const coord3D ocoord(i,j,oz);
+                                    ++ig;
+                                    _send[ig] = outer.offset_of(icoord);
+                                    _recv[ig] = outer.offset_of(ocoord);
+                                }
+                            }
+                        }
+                        assert(count==ig);
+                    }
+                } break;
+
+                case z_upper :
+                {
+                    _count = ng * outer.width.x*outer.width.y;
+                    if(build)
+                    {
+                        __LOAD_ALLOC();
+                        coord1D iz = inner.upper.z-ng;
+                        coord1D oz = outer.upper.z-ng;
+                        size_t  ig = 0;
+                        for(coord1D g=ng;g>0;--g)
+                        {
+                            ++iz;
+                            ++oz;
+                            for(coord1D i=outer.lower.x;i<=outer.upper.x;++i)
+                            {
+                                for(coord1D j=outer.lower.y;j<=outer.upper.y;++j)
+                                {
+                                    const coord3D icoord(i,j,iz);
+                                    const coord3D ocoord(i,j,oz);
+                                    ++ig;
+                                    _send[ig] = outer.offset_of(icoord);
+                                    _recv[ig] = outer.offset_of(ocoord);
+                                }
+                            }
+                        }
+                        assert(count==ig);
+                    }
+                } break;
+
                 default:
                     throw exception("unexpected 3D ghosts %s", pos2txt(pos));
             }

@@ -152,13 +152,17 @@ namespace yocto
                 //
                 // Pass 2: loading ghosts
                 //______________________________________________________________
+                std::cerr << "building async" << std::endl;
                 for(ghosts *g = async.head; g; g=g->next)
                 {
+                    std::cerr << "\tasync " << g->pos2txt(g->pos) << std::endl;
                     g->load(inner,outer,build);
                 }
 
+                std::cerr << "building local" << std::endl;
                 for(ghosts *g = local.head; g; g=g->next)
                 {
+                    std::cerr << "\tlocal " << g->pos2txt(g->pos) << std::endl;
                     g->load(inner,outer,build);
                 }
             }
