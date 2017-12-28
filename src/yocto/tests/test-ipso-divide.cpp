@@ -82,7 +82,7 @@ void display( const typename domain<COORD>::list &L )
         std::cerr << "domain " << d->ranks << std::endl;
         std::cerr << "\tinner  : " << d->inner << std::endl;
         std::cerr << "\touter  : " << d->outer << std::endl;
-        continue;
+        //continue;
         std::cerr << "\t#async : " << d->async.size << std::endl;
         for(const ghosts *g=d->async.head;g;g=g->next)
         {
@@ -99,6 +99,91 @@ void display( const typename domain<COORD>::list &L )
     }
 }
 
+static coord1D ng   = 1;
+
+static inline
+void domains1D(const size_t   cpus,
+               const patch1D &full,
+               const coord1D  pbcs )
+{
+    std::cerr << std::endl;
+    std::cerr << "---------------" << std::endl;
+    std::cerr << "1D Periodicity=" << pbcs << std::endl;
+    std::cerr << "#CPUS=" << cpus << std::endl;
+    std::cerr << "---------------" << std::endl;
+
+    divide::in1D D(cpus,full);
+    domain<coord1D>::list domains;
+    for(size_t rank=0;rank<D.size;++rank)
+    {
+        domains.push_back( new domain<coord1D>(D,rank,ng,pbcs,true) );
+    }
+    display<coord1D>(domains);
+}
+
+static inline
+void domains2D(const size_t   cpus,
+               const patch2D &full,
+               const coord2D  pbcs )
+{
+    std::cerr << std::endl;
+    std::cerr << "---------------" << std::endl;
+    std::cerr << "2D Periodicity=" << pbcs << std::endl;
+    std::cerr << "#CPUS=" << cpus << std::endl;
+    std::cerr << "---------------" << std::endl;
+    coord2D sizes;
+    for(sizes.x=1;sizes.x<=cpus;++sizes.x)
+    {
+        for(sizes.y=1;sizes.y<=cpus;++sizes.y)
+        {
+            if(sizes.__prod()!=cpus) continue;
+            std::cerr << " sizes=" << sizes << std::endl;
+            divide::in2D D(sizes,full);
+            domain<coord2D>::list domains;
+            for(size_t rank=0;rank<D.size;++rank)
+            {
+                domains.push_back( new domain<coord2D>(D,rank,ng,pbcs,true) );
+            }
+            display<coord2D>(domains);
+            std::cerr << std::endl;
+        }
+    }
+}
+
+static inline
+void domains3D(const size_t   cpus,
+               const patch3D &full,
+               const coord3D  pbcs )
+{
+    std::cerr << std::endl;
+    std::cerr << "---------------" << std::endl;
+    std::cerr << "3D Periodicity=" << pbcs << std::endl;
+    std::cerr << "#CPUS=" << cpus << std::endl;
+    std::cerr << "---------------" << std::endl;
+    coord3D sizes;
+    for(sizes.x=1;sizes.x<=cpus;++sizes.x)
+    {
+        for(sizes.y=1;sizes.y<=cpus;++sizes.y)
+        {
+            for(sizes.z=1;sizes.z<=cpus;++sizes.z)
+            {
+                if(sizes.__prod()!=cpus) continue;
+                std::cerr << " sizes=" << sizes << std::endl;
+                divide::in3D D(sizes,full);
+                domain<coord3D>::list domains;
+                for(size_t rank=0;rank<D.size;++rank)
+                {
+                    domains.push_back( new domain<coord3D>(D,rank,ng,pbcs,true) );
+                }
+                display<coord3D>(domains);
+                std::cerr << std::endl;
+            }
+        }
+    }
+}
+
+
+
 YOCTO_UNIT_TEST_IMPL(ipso_divide)
 {
     test_rank_conversion(10);
@@ -108,7 +193,6 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
     size_t Nz = 10;
 
     coord1D cpus = 4;
-    coord1D ng   = 1;
 
     if(argc>1)
     {
@@ -122,30 +206,8 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
 
     {
         const patch1D full(1,Nx);
-        std::cerr << "#CPU=" << cpus << " in 1D: " << full << std::endl;
-        divide::in1D D(cpus,full);
-        std::cerr << "Periodic:" << std::endl;
-        std::cerr.flush();
-        domain<coord1D>::list p_domains;
-        for(size_t rank=0;rank<D.size;++rank)
-        {
-            p_domains.push_back( new domain<coord1D>(D,rank,ng,1,true) );
-        }
-        fflush(stderr);
-        std::cerr << std::endl << std::endl;
-        display<coord1D>(p_domains);
-
-        std::cerr << "NOT Periodic:" << std::endl;
-        std::cerr.flush();
-        domain<coord1D>::list u_domains;
-        for(size_t rank=0;rank<D.size;++rank)
-        {
-            u_domains.push_back(new domain<coord1D>(D,rank,ng,0,true) );
-        }
-        fflush(stderr);
-        std::cerr << std::endl << std::endl;
-        display<coord1D>(u_domains);
-
+        domains1D(cpus,full,1);
+        domains1D(cpus,full,0);
     }
 
 
@@ -154,62 +216,15 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
     {
 
         const patch2D full( coord2D(1,1),coord2D(Nx,Ny) );
-        std::cerr << std::endl;
-        std::cerr << "#CPU=" << cpus << " in 2D: " << full << std::endl;
-        coord2D       sizes;
-        for(sizes.x=1;sizes.x<=cpus;++sizes.x)
-        {
-            for(sizes.y=1;sizes.y<=cpus;++sizes.y)
-            {
-                if(sizes.__prod()!=cpus) continue;
-                std::cerr << "sizes=" << sizes << std::endl;
-                divide::in2D D(sizes,full);
-                {
-                    std::cerr << "Periodic:" << std::endl;
-                    std::cerr.flush();
-                    coord2D pbcs(1,1);
-                    domain<coord2D>::list domains;
-                    for(size_t rank=0;rank<D.size;++rank)
-                    {
-                        domains.push_back( new domain<coord2D>(D,rank,ng,pbcs,true) );
-                    }
-                    fflush(stderr);
-                    std::cerr << std::endl << std::endl;
-                    display<coord2D>(domains);
-
-                }
-            }
-            std::cerr << std::endl;
-        }
-
+        domains2D(cpus,full,coord2D(1,1));
+        domains2D(cpus,full,coord2D(0,0));
     }
-
-    return 0;
 
 
     {
         const patch3D full( coord3D(1,1,1),coord3D(Nx,Ny,Nz) );
-        std::cerr << "#CPU=" << cpus << " in 3D: " << full << std::endl;
-        coord3D       sizes;
-        for(sizes.x=1;sizes.x<=cpus;++sizes.x)
-        {
-            for(sizes.y=1;sizes.y<=cpus;++sizes.y)
-            {
-                for(sizes.z=1;sizes.z<=cpus;++sizes.z)
-                {
-                    if(sizes.__prod()!=cpus) continue;
-                    std::cerr << "sizes=" << sizes << std::endl;
-                    divide::in3D D(sizes,full);
-                    for(size_t rank=0;rank<D.size;++rank)
-                    {
-                        std::cerr << '\t' << D.get_ranks(rank) << std::endl;
-                        const patch3D sub = D(rank,NULL);
-                        std::cerr << "\t\t" << sub << std::endl;
-                    }
-                }
-            }
-        }
-
+        domains3D(cpus,full,coord3D(1,1,1));
+        domains3D(cpus,full,coord3D(0,0,0));
     }
 
 

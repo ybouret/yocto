@@ -57,14 +57,22 @@ namespace yocto
             return lhs-rhs;
         }
 
+#define __LOAD_PROLOG()           \
+assert(ng>0);                     \
+ghost  & _send  = (ghost  &)send; \
+ghost  & _recv  = (ghost  &)recv; \
+size_t & _count = (size_t &)count
+
+#define __LOAD_EPILOG()         \
+if(build) {                     \
+ySort(_send,__compare_coord1D); \
+ySort(_recv,__compare_coord1D); \
+}
         void ghosts:: load(const patch1D &inner,
                            const patch1D &outer,
                            const bool     build)
         {
-            assert(ng>0);
-            ghost  & _send  = (ghost &)send;
-            ghost  & _recv  = (ghost &)recv;
-            size_t & _count = (size_t &)count;
+            __LOAD_PROLOG();
             switch(pos)
             {
                 case x_lower: {
@@ -104,15 +112,38 @@ namespace yocto
                 } break;
 
                 default:
-                    throw exception("unexpected 1D ghosts direction");
+                    throw exception("unexpected 1D ghosts position");
             }
 
-            if(build)
+            __LOAD_EPILOG();
+
+        }
+
+        void ghosts:: load(const patch2D &inner,
+                           const patch2D &outer,
+                           const bool     build)
+        {
+            __LOAD_PROLOG();
+            switch(pos)
             {
-                ySort(_send,__compare_coord1D);
-                ySort(_recv,__compare_coord1D);
+                default:
+                    throw exception("unexpected 2D ghosts position");
             }
+            __LOAD_EPILOG();
+        }
 
+
+        void ghosts:: load(const patch3D &inner,
+                           const patch3D &outer,
+                           const bool     build)
+        {
+            __LOAD_PROLOG();
+            switch(pos)
+            {
+                default:
+                    throw exception("unexpected 3D ghosts position");
+            }
+            __LOAD_EPILOG();
         }
 
 

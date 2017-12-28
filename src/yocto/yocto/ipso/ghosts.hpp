@@ -49,6 +49,15 @@ namespace yocto
                       const patch1D &outer,
                       const bool     build);
 
+            void load(const patch2D &inner,
+                      const patch2D &outer,
+                      const bool     build);
+
+            void load(const patch3D &inner,
+                      const patch3D &outer,
+                      const bool     build);
+
+
             static  position dim2pos(const size_t dim, const int s);
 
 

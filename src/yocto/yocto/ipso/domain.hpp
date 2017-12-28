@@ -154,12 +154,12 @@ namespace yocto
                 //______________________________________________________________
                 for(ghosts *g = async.head; g; g=g->next)
                 {
-                    // g->load(inner,outer,build);
+                    g->load(inner,outer,build);
                 }
 
                 for(ghosts *g = local.head; g; g=g->next)
                 {
-                    //g->load(inner,outer,build);
+                    g->load(inner,outer,build);
                 }
             }
 
