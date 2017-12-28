@@ -10,6 +10,7 @@ namespace yocto
     namespace ipso
     {
 
+        //! list of offsets
         typedef vector<coord1D> ghost;
 
 
@@ -27,10 +28,11 @@ namespace yocto
                 z_upper
             };
             typedef core::list_of_cpp<ghosts> list;
-            ghost         send;
-            ghost         recv;
-            const size_t  source;
-            const size_t  target;
+            const ghost   send;    //!< built by load
+            const ghost   recv;    //!< built by load
+            const size_t  count;   //!< built by load
+            const size_t  source;  //!< MPI style source
+            const size_t  target;  //!< MPI style target
             ghosts       *next;
             ghosts       *prev;
             const direction dir;
@@ -43,7 +45,8 @@ namespace yocto
             virtual ~ghosts() throw();
 
             void load(const patch1D &inner,
-                      const patch1D &outer );
+                      const patch1D &outer,
+                      const bool     build);
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts);

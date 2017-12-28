@@ -62,7 +62,7 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
             //std::cerr << '\t' << D.get_ranks(rank) << std::endl;
             //const patch1D sub = D(rank,NULL);
             //std::cerr << "\t\t" << sub << std::endl;
-            p_domains.push_back( new domain<coord1D>(D,rank,ng,1) );
+            p_domains.push_back( new domain<coord1D>(D,rank,ng,1,true) );
         }
         fflush(stderr);
         std::cerr << std::endl << std::endl;
@@ -76,7 +76,7 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
             //std::cerr << '\t' << D.get_ranks(rank) << std::endl;
             //const patch1D sub = D(rank,NULL);
             //std::cerr << "\t\t" << sub << std::endl;
-            u_domains.push_back(new domain<coord1D>(D,rank,ng,0) );
+            u_domains.push_back(new domain<coord1D>(D,rank,ng,0,true) );
         }
         fflush(stderr);
         std::cerr << std::endl << std::endl;

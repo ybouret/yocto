@@ -29,7 +29,8 @@ namespace yocto
         domain<coord1D>::domain(const divider<coord1D> &full,
                                 const size_t            rank,
                                 coord1D                 ng,
-                                const coord1D           pbcs) :
+                                const coord1D           pbcs,
+                                const bool              build) :
         ranks( 0 ),
         inner( full(rank, (coord1D *)&ranks) ),
         outer( inner ),
@@ -141,12 +142,12 @@ namespace yocto
             //__________________________________________________________________
             for(ghosts *g = async.head; g; g=g->next)
             {
-                g->load(inner,outer);
+                g->load(inner,outer,build);
             }
             
             for(ghosts *g = local.head; g; g=g->next)
             {
-                g->load(inner,outer);
+                g->load(inner,outer,build);
             }
 
         }

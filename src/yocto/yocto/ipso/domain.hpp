@@ -31,7 +31,8 @@ namespace yocto
             explicit domain(const divider<COORD> &full,
                             const size_t          rank,
                             coord1D               ng,
-                            const COORD           pbcs);
+                            const COORD           pbcs,
+                            const bool            build);
 
 
 
