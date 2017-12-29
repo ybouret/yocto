@@ -1,5 +1,5 @@
 #include "yocto/utest/run.hpp"
-#include "yocto/ipso/domain.hpp"
+#include "yocto/ipso/partition.hpp"
 #include "yocto/string/conv.hpp"
 #include <cstdio>
 
@@ -75,7 +75,7 @@ void test_rank_conversion(const coord1D n)
 
 template <typename COORD>
 static inline
-void display( const typename domain<COORD>::list &L )
+void display( const partition<COORD> &L )
 {
     for(const domain<COORD> *d = L.head; d; d=d->next)
     {
@@ -98,7 +98,7 @@ void display( const typename domain<COORD>::list &L )
                 std::cerr << "\t\trecv: " << g->source << "<-" << g->target << "@" << g->recv << std::endl;
             }
         }
-
+        
     }
 }
 
@@ -116,11 +116,7 @@ void domains1D(const size_t   cpus,
     std::cerr << "---------------" << std::endl;
 
     divide::in1D D(cpus,full);
-    domain<coord1D>::list domains;
-    for(size_t rank=0;rank<D.size;++rank)
-    {
-        domains.push_back( new domain<coord1D>(D,rank,ng,pbcs,true) );
-    }
+    partition1D  domains(D,ng,pbcs,true);
     display<coord1D>(domains);
 }
 
@@ -142,11 +138,7 @@ void domains2D(const size_t   cpus,
             if(sizes.__prod()!=cpus) continue;
             std::cerr << " sizes=" << sizes << std::endl;
             divide::in2D D(sizes,full);
-            domain<coord2D>::list domains;
-            for(size_t rank=0;rank<D.size;++rank)
-            {
-                domains.push_back( new domain<coord2D>(D,rank,ng,pbcs,true) );
-            }
+            partition2D  domains(D,ng,pbcs,true);
             display<coord2D>(domains);
             std::cerr << std::endl;
         }
@@ -173,11 +165,7 @@ void domains3D(const size_t   cpus,
                 if(sizes.__prod()!=cpus) continue;
                 std::cerr << " sizes=" << sizes << std::endl;
                 divide::in3D D(sizes,full);
-                domain<coord3D>::list domains;
-                for(size_t rank=0;rank<D.size;++rank)
-                {
-                    domains.push_back( new domain<coord3D>(D,rank,ng,pbcs,true) );
-                }
+                partition3D  domains(D,ng,pbcs,true);
                 display<coord3D>(domains);
                 std::cerr << std::endl;
             }

@@ -8,7 +8,22 @@ namespace yocto
 {
     namespace ipso
     {
-        
+
+        class metrics
+        {
+        public:
+            const mpn items;
+            const mpn async;
+            const mpn local;
+
+            explicit metrics(const size_t num_items);
+            virtual ~metrics() throw();
+            metrics(const metrics&);
+
+        private:
+            YOCTO_DISABLE_ASSIGN(metrics);
+        };
+
         template <typename COORD>
         class domain : public object
         {
@@ -23,7 +38,7 @@ namespace yocto
 
             ghosts::list     async[DIM]; //!< async ghosts, by dimension: 0, 1 or 2
             ghosts::list     local[DIM]; //!< local ghosts, by dimension: 0 or 2
-
+            metrics          load;
             domain          *next;
             domain          *prev;
 
@@ -64,6 +79,7 @@ namespace yocto
             outer( inner ),
             async(),
             local(),
+            load( inner.items ),
             next(0),
             prev(0)
             {
@@ -174,30 +190,40 @@ namespace yocto
                 //
                 // Pass 2: loading ghosts
                 //______________________________________________________________
-                std::cerr << "building async" << std::endl;
+                size_t num_async = 0;
+                size_t num_local = 0;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     for(ghosts *g = async[dim].head; g; g=g->next)
                     {
-                        std::cerr << "\tasync " << g->pos2txt(g->pos) << std::endl;
                         g->load(inner,outer,build);
+                        num_async += g->count;
                     }
 
-                    std::cerr << "building local" << std::endl;
                     for(ghosts *g = local[dim].head; g; g=g->next)
                     {
-                        std::cerr << "\tlocal " << g->pos2txt(g->pos) << std::endl;
                         g->load(inner,outer,build);
+                        num_local += g->count;
                     }
                 }
+
+                //______________________________________________________________
+                //
+                // and update metrics
+                //______________________________________________________________
+                (mpn &)(load.async) = num_async;
+                (mpn &)(load.local) = num_local;
             }
 
 
 
         private:
-            YOCTO_DISABLE_ASSIGN(domain);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(domain);
         };
 
+        typedef domain<coord1D> domain1D;
+        typedef domain<coord2D> domain2D;
+        typedef domain<coord3D> domain3D;
     }
 }
 
