@@ -43,32 +43,15 @@ namespace yocto
             domain          *prev;
 
 
-            inline void query(size_t &numItems,
-                              size_t &numAsync,
-                              size_t &numLocal) const throw()
-            {
-                numItems = inner.items;
-                numAsync = 0;
-                numLocal = 0;
-                for(size_t dim=0;dim<DIM;++dim)
-                {
-                    for(const ghosts *g=async[dim].head;g;g=g->next)
-                    {
-                        numAsync += g->count;
-                    }
-                    for(const ghosts *g=local[dim].head;g;g=g->next)
-                    {
-                        numLocal += g->count;
-                    }
-                }
-            }
-
-
             inline virtual ~domain() throw() {}
 
 #define YOCTO_IPSO_LOWER_GHOSTS new ghosts( ghosts::dim2pos(dim,-1), ng, rank, full.prev_rank(ranks,dim) )
 #define YOCTO_IPSO_UPPER_GHOSTS new ghosts( ghosts::dim2pos(dim, 1), ng, rank, full.next_rank(ranks,dim) )
 
+            //! build the outer layout and ghosts
+            /**
+             now that's one function...
+             */
             inline explicit domain(const divider<COORD> &full,
                                    const size_t          rank,
                                    coord1D               ng,
@@ -96,9 +79,10 @@ namespace yocto
                     const bool    periodic = (0!=__coord(pbcs,dim));
                     coord1D      &lo       = __coord(lower,dim);
                     coord1D      &up       = __coord(upper,dim);
-                    const coord1D sz       = __coord(full.sizes,dim);
-                    const coord1D rk       = __coord(ranks,dim);
-                    const coord1D last     = __coord(full.lasts,dim);
+                    const coord1D sz       = __coord(full.sizes,dim); assert(sz>0);
+                    const bool    parallel = (sz>1);
+                    const coord1D rk       = __coord(ranks,dim);      assert(rk<sz);
+                    const coord1D last     = __coord(full.lasts,dim); assert(sz-1==last);
                     if(periodic)
                     {
                         ////////////////////////////////////////////////////////
@@ -108,10 +92,12 @@ namespace yocto
                         ////////////////////////////////////////////////////////
                         lo-=ng;
                         up+=ng;
-                        if(sz>1)
+                        if(parallel)
                         {
-                            // always async
-                            //Y_IPSO_CODE(fprintf(stderr,"<%02u>",unsigned(ranks)));
+                            //__________________________________________________
+                            //
+                            // PARALLEL in that dimension: always async
+                            //__________________________________________________
                             if(has_ghosts)
                             {
                                 async[dim].push_back( YOCTO_IPSO_LOWER_GHOSTS );
@@ -120,9 +106,11 @@ namespace yocto
                         }
                         else
                         {
-                            // always local
+                            //__________________________________________________
+                            //
+                            // SEQUENTIAL in that dimension: always local
+                            //__________________________________________________
                             assert(1==sz);
-                            //Y_IPSO_CODE(fprintf(stderr,"#%02u#",unsigned(ranks)));
                             if(has_ghosts)
                             {
                                 local[dim].push_back( YOCTO_IPSO_LOWER_GHOSTS );
@@ -137,7 +125,7 @@ namespace yocto
                         // NOT PERIODIC CODE
                         //
                         ////////////////////////////////////////////////////////
-                        if(sz>1)
+                        if(parallel)
                         {
                             if(0==rk)
                             {
@@ -215,6 +203,45 @@ namespace yocto
                 (mpn &)(load.local) = num_local;
             }
 
+
+            template <typename FIELD>
+            inline void copyLocal( FIELD &F ) const throw()
+            {
+                assert( patch_type::eq(outer,F) );
+                typename FIELD::type *data = F.entry;
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    const ghosts::list &G = local[dim];
+                    assert(2==G.size||0==G.size);
+                    if(G.size>0)
+                    {
+                        std::cerr << "copyLocal[" << dim << "] #=" << G.head->count << std::endl;
+                        const ghosts *a = G.head;
+                        const ghosts *b = G.tail;
+                        assert(a!=b);
+                        assert(a->count==b->count);
+                        const array<coord1D> &a_send = a->send;
+                        const array<coord1D> &a_recv = a->recv;
+                        const array<coord1D> &b_send = b->send;
+                        const array<coord1D> &b_recv = b->recv;
+
+                        assert(a->send.size() == a->count );
+                        assert(a->recv.size() == a->count );
+                        assert(b->send.size() == b->count );
+                        assert(b->recv.size() == b->count );
+                        for(size_t g=a->count;g>0;--g)
+                        {
+                            assert(a_recv[g] < F.items);
+                            assert(a_send[g] < F.items);
+                            assert(b_recv[g] < F.items);
+                            assert(b_send[g] < F.items);
+
+                            data[ a_recv[g] ] = data[ b_send[g] ];
+                            data[ b_recv[g] ] = data[ a_send[g] ];
+                        }
+                    }
+                }
+            }
 
 
         private:
