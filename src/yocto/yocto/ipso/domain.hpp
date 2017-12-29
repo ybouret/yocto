@@ -3,6 +3,7 @@
 
 #include "yocto/ipso/divide.hpp"
 #include "yocto/ipso/ghosts.hpp"
+#include "yocto/mpl/natural.hpp"
 
 namespace yocto
 {
@@ -19,7 +20,11 @@ namespace yocto
             explicit metrics(const size_t num_items);
             virtual ~metrics() throw();
             metrics(const metrics&);
-
+            friend inline std::ostream & operator<<( std::ostream &os, const metrics &m )
+            {
+                os << "(items=" << m.items << ", async=" << m.async << ", local=" << m.local << ")";
+                return os;
+            }
         private:
             YOCTO_DISABLE_ASSIGN(metrics);
         };

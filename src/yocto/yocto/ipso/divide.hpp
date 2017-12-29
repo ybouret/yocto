@@ -5,7 +5,6 @@
 #include "yocto/ipso/utils.hpp"
 
 #include "yocto/exceptions.hpp"
-#include "yocto/mpl/natural.hpp"
 
 #include <cerrno>
 

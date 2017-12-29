@@ -16,14 +16,17 @@ namespace yocto
             typedef typename domain_type::list   domains;
             typedef core::list_of_cpp<partition> list;
 
-            partition *next;
-            partition *prev;
+
+            const COORD sizes; //!< keep track of global sizes
+            partition  *next;
+            partition  *prev;
 
             explicit partition(const divider<COORD>  &full,
                                const size_t           ng,
                                const COORD            pbcs,
                                const bool             build=false) :
             domains(),
+            sizes(full.sizes),
             next(0),
             prev(0)
             {
@@ -42,6 +45,29 @@ namespace yocto
                                  const patch<COORD> &zone,
                                  const COORD         pbcs);
 
+            //! for 2D and 3D, rank by supposedly fastest partition
+            static inline
+            int compare(const partition *lhs, const partition *rhs, void *) throw()
+            {
+                const size_t nl = lhs->size;
+                const size_t nr = rhs->size;
+                if(nl<nr)
+                {
+                    return -1;
+                }
+                else
+                {
+                    if(nr<nl)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        assert(nl==nr);
+                        return -(COORD::lexicompare(lhs->sizes,rhs->sizes));
+                    }
+                }
+            }
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
         };
