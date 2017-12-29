@@ -70,7 +70,7 @@ YOCTO_UNIT_TEST_IMPL(ipso_opt)
         std::cerr << "opt_sizes=" << sizes << std::endl;
     }
 
-    if(true)
+    if(false)
     {
         const patch3D zone( coord3D(1,1,1), coord3D(dims.x,dims.y,dims.z) );
         coord3D sizes = partition<coord3D>::optimal(cpus,ng,zone,pbcs);

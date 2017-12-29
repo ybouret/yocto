@@ -77,6 +77,8 @@ namespace yocto
                 COORD upper = inner.upper;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
+                    assert(0==local[dim].size);
+                    assert(0==async[dim].size);
                     //__________________________________________________________
                     //
                     // Pass 1: computing outer
