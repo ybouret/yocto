@@ -166,14 +166,14 @@ namespace yocto
                 typedef divider<coord2D>  divider_type;
 
 
-                inline explicit in2D( const coord2D userSizes, const patch_type &p) throw() :
+                inline explicit in2D( const coord2D userSizes, const patch_type &p) :
                 divider_type(userSizes,p)
                 {
                     for(size_t dim=0;dim<DIM;++dim)
                     {
                         if( __coord(sizes,dim) > __coord(this->width,dim) )
                         {
-                            throw libc::exception(EDOM,"in2D.%c: size exceeds witdh",char('x'+DIM));
+                            throw libc::exception(EDOM,"in2D.%c: size exceeds witdh",char('x'+dim));
                         }
                     }
                 }
@@ -240,7 +240,7 @@ namespace yocto
                     {
                         if( __coord(sizes,dim) > __coord(this->width,dim) )
                         {
-                            throw libc::exception(EDOM,"in3D.%c: size exceeds witdh",char('x'+DIM));
+                            throw libc::exception(EDOM,"in3D.%c: size exceeds witdh",char('x'+dim));
                         }
                     }
                 }

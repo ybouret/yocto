@@ -54,6 +54,20 @@ YOCTO_UNIT_TEST_IMPL(ipso_opt)
     std::cerr << "pbcs=" << pbcs << std::endl;
     std::cerr << "cpus=" << cpus << std::endl;
 
+
+    {
+        const patch1D zone(1,dims.x);
+        coord1D sizes = partition<coord1D>::optimal(cpus,ng,zone,pbcs.x);
+        std::cerr << "sizes=" << sizes << std::endl;
+    }
+
+
+    {
+        const patch2D zone( coord2D(1,1), coord2D(dims.x,dims.y) );
+        coord2D sizes = partition<coord2D>::optimal(cpus,ng,zone,coord2D(pbcs.x,pbcs.y));
+        std::cerr << "sizes=" << sizes << std::endl;
+    }
+
 }
 YOCTO_UNIT_TEST_DONE()
 
