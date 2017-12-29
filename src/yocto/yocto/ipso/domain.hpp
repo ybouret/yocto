@@ -231,10 +231,10 @@ namespace yocto
                         assert(b->recv.size() == b->count );
                         for(size_t g=a->count;g>0;--g)
                         {
-                            assert(a_recv[g] < F.items);
-                            assert(a_send[g] < F.items);
-                            assert(b_recv[g] < F.items);
-                            assert(b_send[g] < F.items);
+                            assert(a_recv[g] < coord1D(F.items));
+                            assert(a_send[g] < coord1D(F.items));
+                            assert(b_recv[g] < coord1D(F.items));
+                            assert(b_send[g] < coord1D(F.items));
 
                             data[ a_recv[g] ] = data[ b_send[g] ];
                             data[ b_recv[g] ] = data[ a_send[g] ];
