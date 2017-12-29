@@ -125,7 +125,7 @@ void domains1D(const size_t   cpus,
 }
 
 static inline
-void domains2D(const size_t   cpus,
+void domains2D(const coord1D  cpus,
                const patch2D &full,
                const coord2D  pbcs )
 {
@@ -150,7 +150,7 @@ void domains2D(const size_t   cpus,
 }
 
 static inline
-void domains3D(const size_t   cpus,
+void domains3D(const coord1D  cpus,
                const patch3D &full,
                const coord3D  pbcs )
 {
