@@ -72,6 +72,8 @@ void test1D( const coord3D dims, const coord3D pbcs, const coord1D cpus)
         F1D &F = *fields[f];
         d->copyLocal(F);
     }
+    
+
     std::cerr << std::endl;
 }
 
