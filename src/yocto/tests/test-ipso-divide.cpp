@@ -98,7 +98,11 @@ void display( const partition<COORD> &L )
                 std::cerr << "\t\trecv: " << g->source << "<-" << g->target << "@" << g->recv << std::endl;
             }
         }
-        
+        std::cerr << "\tmetrics: #items=" << d-> load.items << std::endl;
+        std::cerr << "\t         #async=" << d-> load.async << std::endl;
+        std::cerr << "\t         #local=" << d-> load.local << std::endl;
+
+
     }
 }
 
@@ -209,6 +213,9 @@ YOCTO_UNIT_TEST_IMPL(ipso_divide)
         const patch2D full( coord2D(1,1),coord2D(Nx,Ny) );
         domains2D(cpus,full,coord2D(1,1));
         domains2D(cpus,full,coord2D(0,0));
+        domains2D(cpus,full,coord2D(1,0));
+        domains2D(cpus,full,coord2D(0,1));
+
     }
 
 

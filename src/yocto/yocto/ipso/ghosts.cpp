@@ -19,6 +19,8 @@ namespace yocto
         count(0),
         source(the_source),
         target(the_target),
+        source_index(source+1),
+        target_index(target+1),
         next(0),
         prev(0),
         pos(the_pos),

@@ -174,6 +174,7 @@ YOCTO_UNIT_TEST_INIT(200)
     YOCTO_UNIT_TEST_DECL(ipso);
     YOCTO_UNIT_TEST_DECL(ipso_split);
     YOCTO_UNIT_TEST_DECL(ipso_divide);
+    YOCTO_UNIT_TEST_DECL(ipso_coms);
 
     YOCTO_UNIT_TEST_DECL(netsort);
     YOCTO_UNIT_TEST_DECL(nwsrt);

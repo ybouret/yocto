@@ -3,6 +3,7 @@
 #define YOCTO_IPSO_FIELD_INCLUDED 1
 
 #include "yocto/ipso/patch.hpp"
+#include "yocto/counted-object.hpp"
 #include <cstring>
 
 namespace yocto
@@ -13,7 +14,7 @@ namespace yocto
 
 
         template <typename T>
-        class field
+        class field : public counted_object
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
