@@ -1,5 +1,4 @@
 #include "yocto/utest/run.hpp"
-#include "yocto/ipso/split.hpp"
 #include "yocto/ipso/field3d.hpp"
 #include "yocto/ios/ocstream.hpp"
 
@@ -57,20 +56,6 @@ YOCTO_UNIT_TEST_IMPL(ipso)
     display_patch(patch1u);
     std::cerr << "offset_of(5)=" << patch1u.offset_of(5) << std::endl;
 
-    {
-        std::cerr << std::endl;
-        for(size_t cpus=1;cpus<=4;++cpus)
-        {
-            std::cerr << "#cpus=" << cpus << std::endl;
-            split::in1D s(cpus,patch1u);
-            for(size_t rank=0;rank<cpus;++rank)
-            {
-                patch1D sub = s(rank);
-                std::cerr << "\trank#" << rank << "=" << sub << std::endl;
-            }
-            std::cerr << std::endl;
-        }
-    }
 
 
     patch<coord2D> patch2i( coord2D(-5,6), coord2D(5,-6) );
@@ -78,56 +63,11 @@ YOCTO_UNIT_TEST_IMPL(ipso)
     const coord2D v2(0,0);
     std::cerr << "offset_of(" << v2 << ")=" << patch2i.offset_of(v2) << std::endl;
 
-    {
-        std::cerr << std::endl;
-        for(size_t cpus=1;cpus<=4;++cpus)
-        {
-            std::cerr << "#cpus=" << cpus << std::endl;
-            for(size_t nx=1;nx<=cpus;++nx)
-            {
-                for(size_t ny=1;ny<=cpus;++ny)
-                {
-                    if(nx*ny!=cpus) continue;
-                    std::cerr << "\tnx=" << nx << ", ny=" << ny << std::endl;
-                    split::in2D s( coord2D(nx,ny),patch2i);
-                    for(size_t rank=0;rank<cpus;++rank)
-                    {
-                        const patch2D sub   = s(rank);
-                        std::cerr << "\t\trank#" << rank << "=" << sub << std::endl;
-                    }
-                    std::cerr << std::endl;
-                }
-            }
-        }
-    }
+
 
     patch<coord3D> p3( coord3D(1,1,1), coord3D(10,20,30) );
     display_patch(p3);
-    {
-        std::cerr << std::endl;
-        for(size_t cpus=1;cpus<=8;++cpus)
-        {
-            std::cerr << "#cpus=" << cpus << std::endl;
-            for(size_t nx=1;nx<=cpus;++nx)
-            {
-                for(size_t ny=1;ny<=cpus;++ny)
-                {
-                    for(size_t nz=1;nz<=cpus;++nz)
-                    {
-                        if(nx*ny*nz!=cpus) continue;
-                        std::cerr << "\tnx=" << nx << ", ny=" << ny << ", nz=" << nz << std::endl;
-                        split::in3D s( coord3D(nx,ny,nz),p3);
-                        for(size_t rank=0;rank<cpus;++rank)
-                        {
-                            const patch3D sub   = s(rank);
-                            std::cerr << "\t\trank#" << rank << "=" << sub << std::endl;
-                        }
-                        std::cerr << std::endl;
-                    }
-                }
-            }
-        }
-    }
+
     std::cerr << std::endl;
 
 
@@ -209,45 +149,7 @@ YOCTO_UNIT_TEST_IMPL(ipso)
     }
     std::cerr << std::endl;
 
-    std::cerr << "SPLIT" << std::endl;
-
-    {
-        patch2D p2( coord2D(1,1), coord2D(11,10) );
-        std::cerr << "Splitting " << p2 << std::endl;
-        for(size_t cores=4;cores<=4;++cores)
-        {
-            std::cerr << "\t2D: cores=" << cores << "/pbc.xy" << std::endl;
-            coord2D cmap = split::in2D::computeCoresMap(cores,p2.width,coord2D(1,1));
-            std::cerr << "=> " << cmap << std::endl;
-            std::cerr << std::endl;
-
-            std::cerr << "\t2D: cores=" << cores << "/no_pbc" << std::endl;
-            cmap = split::in2D::computeCoresMap(cores,p2.width,coord2D(0,0));
-            std::cerr << "=> " << cmap << std::endl;
-            std::cerr << std::endl;
-        }
-
-    }
-
-    {
-        patch3D p3( coord3D(1,1,1), coord3D(10,20,30) );
-        std::cerr << "Splitting " << p3 << std::endl;
-        for(size_t cores=4;cores<=4;++cores)
-        {
-            std::cerr << "\t3D: cores=" << cores << "/pbc.xyz" << std::endl;
-            coord3D cmap = split::in3D::computeCoresMap(cores,p3.width,coord3D(1,1,1));
-            std::cerr << "=> " << cmap << std::endl;
-            std::cerr << std::endl;
-
-
-            std::cerr << "\t3D: cores=" << cores << "/no_pbc" << std::endl;
-            cmap = split::in3D::computeCoresMap(cores,p3.width,coord3D(0,0,0));
-            std::cerr << "=> " << cmap << std::endl;
-            std::cerr << std::endl;
-        }
-
-    }
-
+    
 
     {
         ios::ocstream::overwrite("parts.dat");
