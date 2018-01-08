@@ -13,8 +13,16 @@
 
 \begin{document}
 
-Let us have a regular mesh that we want to divide into a regular partition of domains, using at most $N$ cores.
+Let us have a regular mesh that we want to divide into a regular partition of domains, using at most $C$ cores.
 How do we choose?\\
-Let us compute all 
-
+Let us compute all the acceptable partitions, with $n_g$ ghosts if necessary, and we note this $N$ partitions 
+$P_1,\ldots,P_i,\ldots,P_N$.\\
+Each partition is composed of $\#P_i=M_i$ domains $D_{i1},\ldots,D_{ij},\ldots,D_{iM_i}$.
+Each domain has a number of items $I_{ij}$, a number of asynchronous ghosts to be transferred $A_{ij}$, 
+and a number of local ghosts to be copied $B_{ij}$. We assume that we have an asynchronous relative
+timing $\alpha$ and a local copy relative timing $\beta$.
+So that the relative compute time of a domain is
+$$
+	\Theta_{ij} = I_{ij} + \alpha A_{ij} + \beta B_{ij}
+$$
 \end{document}
