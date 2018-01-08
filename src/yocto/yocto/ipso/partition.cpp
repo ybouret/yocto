@@ -47,7 +47,8 @@ namespace yocto
                         if(np>n) continue;
                         divide::in2D D(sizes,zone);                                 // create a divider
                         partition2D *p = new partition(D,num_ghosts,pbcs,false);    // all the domains in the partition
-                        plist.push_back(p); assert(sizes.__prod()==p->size);        // append the this
+                        plist.push_back(p);                                         // append to this
+                        assert(sizes.__prod()==coord1D(p->size));
                     }
                 }
             }
@@ -99,7 +100,8 @@ namespace yocto
                             if(np>n) continue;
                             divide::in3D D(sizes,zone);                                 // create a divider
                             partition3D *p = new partition(D,num_ghosts,pbcs,false);    // all the domains in the partition
-                            plist.push_back(p); assert(sizes.__prod()==p->size);
+                            plist.push_back(p);
+                            assert(sizes.__prod()==coord1D(p->size));
                         }
                     }
                 }
