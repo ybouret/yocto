@@ -8,6 +8,7 @@ namespace yocto
     namespace ipso
     {
 
+        //! a partition is a list of domains
         template <typename COORD>
         class partition : public object, public domain<COORD>::list
         {

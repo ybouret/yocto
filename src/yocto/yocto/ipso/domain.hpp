@@ -43,9 +43,9 @@ namespace yocto
 
             ghosts::list     async[DIM]; //!< async ghosts, by dimension: 0, 1 or 2
             ghosts::list     local[DIM]; //!< local ghosts, by dimension: 0 or 2
-            metrics          load;
-            domain          *next;
-            domain          *prev;
+            metrics          load;       //!< the data and communication metrics
+            domain          *next;       //!< for domain::list
+            domain          *prev;       //!< for domain::list
 
 
             inline virtual ~domain() throw() {}
@@ -216,6 +216,10 @@ namespace yocto
             }
 
 
+            //! copy the local ghosts in their position
+            /**
+             \param F a field based on the outer layout
+             */
             template <typename FIELD>
             inline void copyLocal( FIELD &F ) const throw()
             {

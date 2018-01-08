@@ -47,12 +47,12 @@ namespace yocto
                         if(np>n) continue;
                         divide::in2D D(sizes,zone);                                 // create a divider
                         partition2D *p = new partition(D,num_ghosts,pbcs,false);    // all the domains in the partition
-                        plist.push_back(p); assert(sizes.__prod()==p->size);
-
+                        plist.push_back(p); assert(sizes.__prod()==p->size);        // append the this
                     }
                 }
             }
-            
+
+            //! rank by cores/splitting: first is one core, the slowest
             core::merging<partition>::sort(plist,partition<coord2D>::compare, NULL);
 
             std::cerr << "#partitions=" << plist.size << std::endl;
