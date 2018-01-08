@@ -56,6 +56,11 @@ namespace yocto
             //! build the outer layout and ghosts
             /**
              now that's one function...
+             \param full a prepared divider with its size and sizes
+             \param rank the domain rank, rank<divider.size
+             \param ng   the number of desired ghosts
+             \param pbcs the periodic boundary conditions in each dimension
+             \param build if true, then compute the ghost's indices, not just the count
              */
             inline explicit domain(const divider<COORD> &full,
                                    const size_t          rank,

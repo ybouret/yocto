@@ -2,7 +2,7 @@
 #define YOCTO_IPSO_COORD_INCLUDED 1
 
 /**
- Interface Parallel Splitting Object
+ Interface for Parallel Splitting of Objects
  */
 
 #include "yocto/math/point3d.hpp"

@@ -39,6 +39,10 @@ namespace yocto
             virtual size_t get_rank_from(const COORD ranks) const throw() = 0;
 
             //! get local patch from this...
+            /**
+             \param rank rank<size
+             \param pRanks save local ranks if not NULL
+             */
             virtual patch<COORD> operator()(const size_t rank, COORD *pRanks) const throw() = 0;
 
             //! get the global rank of the previous local ranks in dimension 'dim'
