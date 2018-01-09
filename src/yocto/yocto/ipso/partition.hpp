@@ -21,7 +21,8 @@ namespace yocto
             const COORD sizes; //!< keep track of global sizes
             partition  *next;
             partition  *prev;
-            const mpq   alpha; //!< relative timing, computed or set
+            mpq         score;
+
             explicit partition(const divider<COORD>  &full,
                                const size_t           ng,
                                const COORD            pbcs,
@@ -30,7 +31,7 @@ namespace yocto
             sizes(full.sizes),
             next(0),
             prev(0),
-            alpha()
+            score()
             {
                 for(size_t rank=0;rank<full.size;++rank)
                 {
@@ -70,8 +71,70 @@ namespace yocto
                     }
                 }
             }
+
+            //! compute alpha relative to sequential timing
+            inline
+            mpq compute_alpha(const mpn &sequentialItems) const
+            {
+                assert(this->size>0);
+                // initialize with the first domain
+                const domain_type *d = this->head;
+                assert(d->load.async>0);
+                assert(d->load.items<=sequentialItems);
+                mpq alpha = d->load.compute_alpha(sequentialItems);
+                for(d=d->next;d;d=d->next)
+                {
+                    const mpq tmp = d->load.compute_alpha(sequentialItems);
+                    if(tmp<alpha) alpha=tmp;
+                }
+                return alpha;
+            }
+
+            //! compute score form items and alpha
+            inline
+            void compute_score(const mpq &alpha)
+            {
+                const domain_type *d = this->head;
+                score = d->load.compute_score(alpha);
+                for(d=d->next;d;d=d->next)
+                {
+                    const mpq tmp = d->load.compute_score(alpha);
+                    if(tmp>score) score=tmp;
+                }
+            }
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
+            static inline
+            COORD compute_optimal_from( list &plist )
+            {
+                assert(plist.size>0);
+                partition   *seq  = plist.head; assert(1==seq->size);
+                const mpn   &Is   = seq->head->load.items;
+                std::cerr << "#sequential=" << Is << std::endl;
+                if(plist.size>1)
+                {
+                    // take the slowest parallel partition
+                    partition *par   = seq->next; assert(par);
+                    const mpq  alpha = par->compute_alpha(Is);
+                    std::cerr << "alpha=" << alpha << " (" << alpha.to_double() << ")" << std::endl;
+
+                    // compute the score of each partition
+                    for(partition *p=plist.head;p;p=p->next)
+                    {
+                        p->compute_score(alpha);
+                        std::cerr << p->sizes << " => score=" << p->score.to_double() << std::endl;
+                    }
+                    return seq->sizes;
+
+                }
+                else
+                {
+                    return seq->sizes; //!< only one possible partition...
+                }
+            }
+
         };
 
         typedef partition<coord1D> partition1D;

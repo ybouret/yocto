@@ -19,7 +19,24 @@ namespace yocto
         local( other.local )
         {
         }
-        
+
+
+        mpq metrics:: compute_alpha(const mpn &seqItems) const
+        {
+            assert(async>0);
+            assert(items<=seqItems);
+            const mpn num = seqItems - items;
+            return mpq(num,async);
+        }
+
+        mpq metrics:: compute_score(const mpq &alpha) const
+        {
+            const mpq todo(items);
+            const mpq coms = alpha * async;
+            return todo+coms;
+        }
+
+
     }
 }
 

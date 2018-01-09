@@ -25,6 +25,13 @@ namespace yocto
                 os << "(items=" << m.items << ", async=" << m.async << ", local=" << m.local << ")";
                 return os;
             }
+
+            //! compute the timing coefficient
+            mpq compute_alpha(const mpn &seqItems) const;
+
+            //! compute the timing score
+            mpq compute_score(const mpq &alpha) const;
+
         private:
             YOCTO_DISABLE_ASSIGN(metrics);
         };

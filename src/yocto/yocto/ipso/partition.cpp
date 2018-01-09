@@ -46,7 +46,7 @@ namespace yocto
                         const coord1D np = sizes.__prod();
                         if(np>n) continue;
                         divide::in2D D(sizes,zone);                                 // create a divider
-                        partition2D *p = new partition(D,num_ghosts,pbcs,false);    // all the domains in the partition
+                        partition2D *p = new partition(D,num_ghosts,pbcs,false);    // all the domains in the partition, no ghost coodinates
                         plist.push_back(p);                                         // append to this
                         assert(sizes.__prod()==coord1D(p->size));
                     }
@@ -66,7 +66,8 @@ namespace yocto
                 }
             }
 
-            return coord2D(1,ny);
+            //! get the sequential count
+            return compute_optimal_from(plist);
         }
     }
 }
