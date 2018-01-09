@@ -23,7 +23,6 @@ namespace yocto
 
         mpq metrics:: compute_alpha(const mpn &seqItems) const
         {
-            assert(async>0);
             assert(items<=seqItems);
             const mpn num = seqItems - items;
             mpn       den = async;

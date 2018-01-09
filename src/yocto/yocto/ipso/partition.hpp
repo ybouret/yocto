@@ -104,7 +104,6 @@ namespace yocto
                 assert(this->size>0);
                 // initialize with the first domain
                 const domain_type *d = this->head;
-                assert(d->load.async>0);
                 assert(d->load.items<=sequentialItems);
                 mpq alpha = d->load.compute_alpha(sequentialItems);
                 for(d=d->next;d;d=d->next)
@@ -140,16 +139,23 @@ namespace yocto
                 std::cerr << "#sequential=" << Is << std::endl;
                 if(plist.size>1)
                 {
-                    // take the slowest parallel partition
-                    partition *par   = seq->next; assert(par);
-                    const mpq  alpha = par->compute_alpha(Is);
-                    std::cerr << "alpha=" << alpha << " (" << alpha.to_double() << ")" << std::endl;
+                    // take the slowest parallel partition with 2 cuts
+                    partition *par   = seq->next; assert(par); assert(2==par->size);
+                    size_t     count = 1;
+                    mpq        alpha = par->compute_alpha(Is);
+                    std::cerr << "alpha" << count << "=" << alpha << " (" << alpha.to_double() << ")" << std::endl;
+                    for(par=par->next;(NULL!=par)&&(2==par->size);par=par->next)
+                    {
+                        ++count;
+                        const mpq tmp = par->compute_alpha(Is);
+                        std::cerr << "alpha" << count << "=" << tmp << " (" << tmp.to_double() << ")" << std::endl;
+                        if(tmp<alpha) alpha=tmp;
+                    }
 
                     // compute the score of each partition
                     for(partition *p=plist.head;p;p=p->next)
                     {
                         p->compute_score(alpha);
-                        //std::cerr << p->sizes << " => score=" << p->score.to_double() << std::endl;
                     }
 
                     // then rank according to score and sizes
