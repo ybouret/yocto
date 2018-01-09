@@ -62,7 +62,7 @@ namespace yocto
                 std::cerr << "accepting sizes=" << p->sizes << ", #cpu=" << p->size << std::endl;
                 for(const domain2D *d = p->head; d; d=d->next)
                 {
-                    std::cerr << "\t" << d->ranks << " : " << d->load << std::endl;
+                    std::cerr << "\t" << d->ranks << " : " << d->load << " | " << d->inner << std::endl;
                 }
             }
 

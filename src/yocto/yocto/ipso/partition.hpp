@@ -90,8 +90,24 @@ namespace yocto
                     }
                     else
                     {
-                        assert(nl==nr);
-                        return (COORD::lexicompare(lhs->sizes,rhs->sizes));
+                        assert(nl==nr); // same scores
+                        const size_t lcores = lhs->size;
+                        const size_t rcores = rhs->size;
+                        if(lcores<rcores)
+                        {
+                            return 1;
+                        }
+                        else
+                        {
+                            if(rcores<lcores)
+                            {
+                                return -1;
+                            }
+                            else
+                            {
+                                return (COORD::lexicompare(lhs->sizes,rhs->sizes));
+                            }
+                        }
                     }
                 }
             }
@@ -162,7 +178,7 @@ namespace yocto
                     core::merging<partition>::sort(plist,partition<coord2D>::compare_by_score, NULL);
                     for(partition *p=plist.head;p;p=p->next)
                     {
-                        std::cerr << p->sizes << " => score=" << p->score.to_double() << std::endl;
+                        std::cerr << p->sizes << " => score=" << p->score << "\t=\t" << p->score.to_double() << std::endl;
                     }
 
                     // and the winner is...
