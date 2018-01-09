@@ -21,7 +21,7 @@ namespace yocto
             const COORD sizes; //!< keep track of global sizes
             partition  *next;
             partition  *prev;
-
+            const mpq   alpha; //!< relative timing, computed or set
             explicit partition(const divider<COORD>  &full,
                                const size_t           ng,
                                const COORD            pbcs,
@@ -29,7 +29,8 @@ namespace yocto
             domains(),
             sizes(full.sizes),
             next(0),
-            prev(0)
+            prev(0),
+            alpha()
             {
                 for(size_t rank=0;rank<full.size;++rank)
                 {

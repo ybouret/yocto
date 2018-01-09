@@ -3,7 +3,7 @@
 
 #include "yocto/ipso/divide.hpp"
 #include "yocto/ipso/ghosts.hpp"
-#include "yocto/mpl/natural.hpp"
+#include "yocto/mpl/rational.hpp"
 
 namespace yocto
 {
