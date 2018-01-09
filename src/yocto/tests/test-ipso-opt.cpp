@@ -43,15 +43,17 @@ static size_t ng = 2;
 
 YOCTO_UNIT_TEST_IMPL(ipso_opt)
 {
-    if(argc<=3)
+    if(argc<=4)
     {
-        throw exception("usage: %s DIMS PBCS CPUS", argv[0]);
+        throw exception("usage: %s DIMS PBCS GHOSTS CPUS", argv[0]);
     }
     const coord3D dims = parse_triple(argv[1],"dims");
     const coord3D pbcs = parse_triple(argv[2],"pbcs");
-    const size_t  cpus = strconv::to_size(argv[3],"cpus");
+    ng                 = strconv::to_size(argv[3],"ng");
+    const size_t  cpus = strconv::to_size(argv[4],"cpus");
     std::cerr << "dims=" << dims << std::endl;
     std::cerr << "pbcs=" << pbcs << std::endl;
+    std::cerr << "ng  =" << ng << std::endl;
     std::cerr << "cpus=" << cpus << std::endl;
 
 
