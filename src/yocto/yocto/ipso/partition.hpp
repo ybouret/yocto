@@ -50,7 +50,7 @@ namespace yocto
 
             //! for 2D and 3D, rank by supposedly fastest partition
             static inline
-            int compare(const partition *lhs, const partition *rhs, void *) throw()
+            int compare_by_cores(const partition *lhs, const partition *rhs, void *) throw()
             {
                 const size_t nl = lhs->size;
                 const size_t nr = rhs->size;
@@ -71,6 +71,31 @@ namespace yocto
                     }
                 }
             }
+
+
+            static inline
+            int compare_by_score(const partition *lhs, const partition *rhs, void *) throw()
+            {
+                const mpq &nl = lhs->score;
+                const mpq &nr = rhs->score;
+                if(nl<nr)
+                {
+                    return -1;
+                }
+                else
+                {
+                    if(nr<nl)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        assert(nl==nr);
+                        return (COORD::lexicompare(lhs->sizes,rhs->sizes));
+                    }
+                }
+            }
+
 
             //! compute alpha relative to sequential timing
             inline
@@ -124,10 +149,18 @@ namespace yocto
                     for(partition *p=plist.head;p;p=p->next)
                     {
                         p->compute_score(alpha);
+                        //std::cerr << p->sizes << " => score=" << p->score.to_double() << std::endl;
+                    }
+
+                    // then rank according to score and sizes
+                    core::merging<partition>::sort(plist,partition<coord2D>::compare_by_score, NULL);
+                    for(partition *p=plist.head;p;p=p->next)
+                    {
                         std::cerr << p->sizes << " => score=" << p->score.to_double() << std::endl;
                     }
-                    return seq->sizes;
 
+                    // and the winner is...
+                    return plist.head->sizes;
                 }
                 else
                 {

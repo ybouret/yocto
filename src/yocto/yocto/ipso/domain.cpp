@@ -26,13 +26,15 @@ namespace yocto
             assert(async>0);
             assert(items<=seqItems);
             const mpn num = seqItems - items;
-            return mpq(num,async);
+            mpn       den = async;
+            return mpq(num,den.inc());
         }
 
         mpq metrics:: compute_score(const mpq &alpha) const
         {
             const mpq todo(items);
-            const mpq coms = alpha * async;
+            const mpq n_io(async);
+            const mpq coms = alpha * n_io;
             return todo+coms;
         }
 

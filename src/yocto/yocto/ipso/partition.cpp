@@ -54,7 +54,7 @@ namespace yocto
             }
 
             //! rank by cores/splitting: first is one core, the slowest
-            core::merging<partition>::sort(plist,partition<coord2D>::compare, NULL);
+            core::merging<partition>::sort(plist,partition<coord2D>::compare_by_cores, NULL);
 
             std::cerr << "#partitions=" << plist.size << std::endl;
             for(const partition *p = plist.head;p;p=p->next)
@@ -107,7 +107,7 @@ namespace yocto
                     }
                 }
             }
-            core::merging<partition>::sort(plist,partition<coord3D>::compare, NULL);
+            core::merging<partition>::sort(plist,partition<coord3D>::compare_by_cores, NULL);
 
             std::cerr << "#partitions=" << plist.size << std::endl;
             for(const partition *p = plist.head;p;p=p->next)
