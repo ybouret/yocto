@@ -11,19 +11,6 @@ namespace yocto
     namespace ipso
     {
 
-        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,copy_rates,mpq,async,mpq,local);
-        inline copy_rates() throw() : async(), local() {}
-        inline void keep_min_of(const copy_rates &other)
-        {
-            if(other.async<async) async = other.async;
-            if(other.local<local) local = other.local;
-        }
-        YOCTO_PAIR_END();
-
-        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,scores,mpq,wxch,mpq,copy);
-        inline scores() : wxch(), copy() {}
-        YOCTO_PAIR_END();
-
         class metrics
         {
         public:
@@ -40,14 +27,7 @@ namespace yocto
                 os << "(items=" << m.items << ", async=" << m.async << ", local=" << m.local << ")";
                 return os;
             }
-
-            //! compute the timing coefficient
-            mpq  compute_alpha(const mpn &seqItems) const;
-            void compute_copy_rates( copy_rates &rates, const metrics &seq ) const;
-
-            //! compute the timing score
-            mpq compute_score(const mpq &alpha) const;
-            void compute_scores( scores &s, const copy_rates &rates) const;
+            
 
         private:
             YOCTO_DISABLE_ASSIGN(metrics);

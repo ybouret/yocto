@@ -8,7 +8,6 @@ namespace yocto
     namespace ipso
     {
 
-     
 
         //! a partition is a list of domains
         template <typename COORD>
@@ -75,101 +74,15 @@ namespace yocto
             }
 
 
-            static inline
-            int compare_by_score(const partition *lhs, const partition *rhs, void *) throw()
-            {
-                const mpq &nl = lhs->score;
-                const mpq &nr = rhs->score;
-                if(nl<nr)
-                {
-                    return -1;
-                }
-                else
-                {
-                    if(nr<nl)
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        assert(nl==nr); // same scores
-                        const size_t lcores = lhs->size;
-                        const size_t rcores = rhs->size;
-                        if(lcores<rcores)
-                        {
-                            return 1;
-                        }
-                        else
-                        {
-                            if(rcores<lcores)
-                            {
-                                return -1;
-                            }
-                            else
-                            {
-                                return (COORD::lexicompare(lhs->sizes,rhs->sizes));
-                            }
-                        }
-                    }
-                }
-            }
 
 
-            //! compute alpha relative to sequential timing
-            /**
-             uses each domain's metrics
-             */
-            inline
-            mpq compute_alpha(const mpn &sequentialItems) const
-            {
-                assert(this->size>0);
-                // initialize with the first domain
-                const domain_type *d = this->head;
-                assert(d->load.items<=sequentialItems);
-                mpq alpha = d->load.compute_alpha(sequentialItems);
-                for(d=d->next;d;d=d->next)
-                {
-                    const mpq tmp = d->load.compute_alpha(sequentialItems);
-                    if(tmp<alpha) alpha=tmp;
-                }
-                return alpha;
-            }
-
-
-            //! compute copy_rates using all domains
-            inline
-            void compute_copy_rates(copy_rates &rates, const metrics &seq) const
-            {
-                assert(this->size>0);
-                // initialize with the first domain
-                const domain_type *d = this->head;
-                d->load.compute_copy_rates(rates,seq);
-                for(d=d->next;d;d=d->next)
-                {
-                    copy_rates tmp;
-                    d->load.compute_copy_rates(tmp,seq);
-                    rates.keep_min_of(tmp);
-                }
-            }
-
-            //! compute score form items and alpha
-            inline
-            void compute_score(const mpq &alpha)
-            {
-                const domain_type *d = this->head;
-                score = d->load.compute_score(alpha);
-                for(d=d->next;d;d=d->next)
-                {
-                    const mpq tmp = d->load.compute_score(alpha);
-                    if(tmp>score) score=tmp;
-                }
-            }
 
 
 
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
+#if 0
             static inline
             COORD compute_optimal_from( list &plist )
             {
@@ -260,7 +173,7 @@ namespace yocto
                     return seq->sizes; //!< only one possible partition...
                 }
             }
-
+#endif
 
         };
 

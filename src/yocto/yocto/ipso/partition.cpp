@@ -82,7 +82,7 @@ namespace yocto
             }
 
             //! get the sequential count
-            return compute_optimal_v2_from(plist);
+            return coord2D(1,1);
         }
     }
 }
