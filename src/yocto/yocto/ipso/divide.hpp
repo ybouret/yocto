@@ -7,6 +7,7 @@
 #include "yocto/exceptions.hpp"
 
 #include <cerrno>
+#include <cstdlib>
 
 namespace yocto
 {
