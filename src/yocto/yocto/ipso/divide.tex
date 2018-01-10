@@ -20,16 +20,16 @@ $P_1,\ldots,P_i,\ldots,P_N$.\\
 Each partition is composed of $\#P_i=M_i$ domains $D_{i1},\ldots,D_{ij},\ldots,D_{iM_i}$.
 Each domain has a number of items $I_{ij}$, a number of asynchronous ghosts to be transferred $A_{ij}$, 
 and a number of local ghosts to be copied $B_{ij}$. We assume that we have an asynchronous relative
-timing $\alpha$ and a local copy relative timing $\beta$.
+timing $\alpha$ and a local copy relative timing $\lambda$.
 So that the relative compute time of a domain is
 $$
-	\Theta_{ij} = I_{ij} + \alpha A_{ij} + \beta B_{ij}.
+	\Theta_{ij} = I_{ij} + \alpha A_{ij} + \lambda L_{ij}.
 $$
 In particular, the sequential time is
 $$
-	\Theta_{s} = I_s + \beta B_s
+	\Theta_{s} = I_s + \beta L_s
 $$
-where there is no asynchronous items and maybe some local copy items $(B_s)$ because of some periodic boundary conditions.
+where there is no asynchronous items and maybe some local copy items $(L_s)$ because of some periodic boundary conditions.
 
 
 \section{Constraints on timing coefficients}
@@ -39,20 +39,15 @@ $$
 $$
 and by construction
 $$
-	A_{ij}>0, \;\; \left(B_s-B_{ij}\right) \geq 0.
+	A_{ij}>0, \;\; \left(L_s-L_{ij}\right) \geq 0.
 $$
 Accordingly we want, for the domain $D_{ij}$,
 $$
-\alpha \leq \dfrac{\left(I_s-I_{ij}\right) + \beta \left(B_s-B_{ij}\right)}{A_{ij}}
+\alpha < \dfrac{\left(I_s-I_{ij}\right) + \lambda \left(L_s-L_{ij}\right)}{A_{ij}}
 $$
-and obviously, we assume that it is interesting if
+or
 $$
-	\alpha \leq \dfrac{I_s-I_{ij}}{A_{ij}}.
+	\alpha \leq \underbrace{\dfrac{I_s-I_{ij}}{A_{ij}+1}}_{a_{ij}} + \lambda 
+	\underbrace{\dfrac{L_s-L_{ij}}{A_{ij}+1}}_{b_{ij}}
 $$
-Hence a partition $P_{i>1}$ is interesting if
-\begin{equation}
-	\alpha \leq \underbrace{\min_{j} \left\lbrace \dfrac{I_s-I_{ij}}{A_{ij}+1} \right\rbrace}_{\alpha_i}
-\end{equation}
-We add one to the numerator to be sure that using the parallel code is worth it.
-
 \end{document}
