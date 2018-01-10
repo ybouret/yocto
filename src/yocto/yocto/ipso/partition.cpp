@@ -38,18 +38,33 @@ namespace yocto
             std::cerr << "2D building list of partitions for <= " << n << " cpus" << std::endl;
             partition2D::list plist;
             {
+                bool              match = false;
                 coord2D           sizes;
                 for(sizes.x=1;sizes.x<=nx;++sizes.x)
                 {
                     for(sizes.y=1;sizes.y<=ny;++sizes.y)
                     {
                         const coord1D np = sizes.__prod();
-                        if(np>n) continue;
+                        //if(np>n)  continue;
+                        if( ! ( np==1 || np==2 || np == n) )
+                        {
+                            continue;
+                        }
+
+                        if(np==n)
+                        {
+                            match=true;
+                        }
+
                         divide::in2D D(sizes,zone);                                 // create a divider
                         partition2D *p = new partition(D,num_ghosts,pbcs,false);    // all the domains in the partition, no ghost coodinates
                         plist.push_back(p);                                         // append to this
                         assert(sizes.__prod()==coord1D(p->size));
                     }
+                }
+                if(!match)
+                {
+                    throw exception("partition2D: no match with #core=%u", unsigned(n) );
                 }
             }
 

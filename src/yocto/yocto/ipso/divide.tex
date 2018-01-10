@@ -48,6 +48,21 @@ $$
 or
 $$
 	\alpha \leq \underbrace{\dfrac{I_s-I_{ij}}{A_{ij}+1}}_{a_{ij}} + \lambda 
-	\underbrace{\dfrac{L_s-L_{ij}}{A_{ij}+1}}_{b_{ij}}
+	\underbrace{\dfrac{L_s-L_{ij}}{A_{ij}+1}}_{l_{ij}}.
+$$
+Accordingly, we impose that the use of a partition is interesting if
+$$
+\alpha \leq \alpha_{i} = \underbrace{\min_{j}\left\lbrace a_{ij}\right\rbrace}_{a_i} + \lambda \underbrace{\min_{j}\left\lbrace l_{ij}\right\rbrace}_{l_i}.
+$$
+This procedure is done for the first partitions with 2 domains, and we get
+$$
+	\alpha \leq \alpha_\lambda = \underbrace{\min_{i|M_i=2}\left\lbrace a_i\right\rbrace}_{a} 
+	+ \lambda \underbrace{\min_{i|M_i=2}\left\lbrace l_i\right\rbrace}_{l} 
+$$
+
+The upper relative compute time of the domain $D_{ij}$ is hence 
+$$
+	\hat\Theta_{ij} = I_{ij} + \alpha_\lambda A_{ij} + \lambda L_{ij}
+	= \underbrace{I_{ij} + a A_{ij}}_{p_{ij}} + \lambda \underbrace{\left( l A_{ij} + L_{ij} \right)}_{q_{ij}}
 $$
 \end{document}
