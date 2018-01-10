@@ -45,12 +45,13 @@ namespace yocto
                     for(sizes.y=1;sizes.y<=ny;++sizes.y)
                     {
                         const coord1D np = sizes.__prod();
-                        //if(np>n)  continue;
+                        if(np>n)  continue;
+#if 0
                         if( ! ( np==1 || np==2 || np == n) )
                         {
                             continue;
                         }
-
+#endif
                         if(np==n)
                         {
                             match=true;
@@ -62,10 +63,12 @@ namespace yocto
                         assert(sizes.__prod()==coord1D(p->size));
                     }
                 }
+#if 0
                 if(!match)
                 {
                     throw exception("partition2D: no match with #core=%u", unsigned(n) );
                 }
+#endif
             }
 
             //! rank by cores/splitting: first is one core, the slowest

@@ -11,12 +11,14 @@ namespace yocto
     namespace ipso
     {
 
+
         class metrics
         {
         public:
-            const mpn items;
-            const mpn async;
-            const mpn local;
+            typedef mpq type;
+            const type items;
+            const type async;
+            const type local;
 
 
             explicit metrics(const size_t num_items);
@@ -215,8 +217,8 @@ namespace yocto
                 //
                 // and update metrics
                 //______________________________________________________________
-                (mpn &)(load.async) = num_async;
-                (mpn &)(load.local) = num_local;
+                (metrics::type &)(load.async) = num_async;
+                (metrics::type &)(load.local) = num_local;
             }
 
 
