@@ -28,6 +28,19 @@ namespace yocto
             mpn       den = async;
             return mpq(num,den.inc());
         }
+        
+        void metrics:: compute_copy_rates( copy_rates &rates, const metrics &seq ) const
+        {
+            assert(items<=seq.items);
+            assert(local<=seq.local);
+            const mpn a_num = seq.items - items;
+            const mpn l_num = seq.local - local;
+            mpn       den   = async;
+            (void)den.inc();
+            rates.async = mpq(a_num,den);
+            rates.local = mpq(l_num,den);
+        }
+
 
         mpq metrics:: compute_score(const mpq &alpha) const
         {

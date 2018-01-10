@@ -114,6 +114,9 @@ namespace yocto
 
 
             //! compute alpha relative to sequential timing
+            /**
+             uses each domain's metrics
+             */
             inline
             mpq compute_alpha(const mpn &sequentialItems) const
             {
@@ -128,6 +131,23 @@ namespace yocto
                     if(tmp<alpha) alpha=tmp;
                 }
                 return alpha;
+            }
+
+
+            //! compute copy_rates using all domains
+            inline
+            void compute_copy_rates(copy_rates &rates, const metrics &seq) const
+            {
+                assert(this->size>0);
+                // initialize with the first domain
+                const domain_type *d = this->head;
+                d->load.compute_copy_rates(rates,seq);
+                for(d=d->next;d;d=d->next)
+                {
+                    copy_rates tmp;
+                    d->load.compute_copy_rates(tmp,seq);
+                    rates.keep_min_of(tmp);
+                }
             }
 
             //! compute score form items and alpha
@@ -189,6 +209,54 @@ namespace yocto
                     return seq->sizes; //!< only one possible partition...
                 }
             }
+
+            static inline
+            COORD compute_optimal_v2_from( list &plist )
+            {
+                assert(plist.size>0);
+                partition    *seq  = plist.head; assert(1==seq->size);
+                const metrics smx  = seq->head->load;
+                std::cerr << "#sequential=" << smx.items << std::endl;
+                if(plist.size>1)
+                {
+                    // take the slowest parallel partitions with 2 cuts
+                    partition *par   = seq->next; assert(par); assert(2==par->size);
+                    size_t     count = 1;
+                    copy_rates rates;
+                    par->compute_copy_rates(rates,smx);
+                    std::cerr << "rates" << count << "=" << rates << std::endl;
+                    for(par=par->next;(NULL!=par)&&(2==par->size);par=par->next)
+                    {
+                        ++count;
+                        copy_rates tmp;
+                        par->compute_copy_rates(tmp,smx);
+                        std::cerr << "rates" << count << "=" << tmp << std::endl;
+                        rates.keep_min_of(tmp);
+                    }
+                    std::cerr << "using rates=" << rates << std::endl;
+                    
+                    // compute the score of each partition
+                    for(partition *p=plist.head;p;p=p->next)
+                    {
+                        //p->compute_score(alpha);
+                    }
+
+                    // then rank according to score and sizes
+                    //core::merging<partition>::sort(plist,partition<coord2D>::compare_by_score, NULL);
+                    for(partition *p=plist.head;p;p=p->next)
+                    {
+                        std::cerr << p->sizes << " => score=" << p->score << "\t=\t" << p->score.to_double() << std::endl;
+                    }
+
+                    // and the winner is...
+                    return plist.head->sizes;
+                }
+                else
+                {
+                    return seq->sizes; //!< only one possible partition...
+                }
+            }
+
 
         };
 

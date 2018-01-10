@@ -67,7 +67,7 @@ namespace yocto
             }
 
             //! get the sequential count
-            return compute_optimal_from(plist);
+            return compute_optimal_v2_from(plist);
         }
     }
 }

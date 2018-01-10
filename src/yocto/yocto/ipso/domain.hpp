@@ -4,18 +4,29 @@
 #include "yocto/ipso/divide.hpp"
 #include "yocto/ipso/ghosts.hpp"
 #include "yocto/mpl/rational.hpp"
+#include "yocto/container/tuple.hpp"
 
 namespace yocto
 {
     namespace ipso
     {
 
+        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,copy_rates,mpq,async,mpq,local);
+        inline copy_rates() throw() : async(), local() {}
+        inline void keep_min_of(const copy_rates &other)
+        {
+            if(other.async<async) async = other.async;
+            if(other.local<local) local = other.local;
+        }
+        YOCTO_PAIR_END();
+        
         class metrics
         {
         public:
             const mpn items;
             const mpn async;
             const mpn local;
+
 
             explicit metrics(const size_t num_items);
             virtual ~metrics() throw();
@@ -27,7 +38,8 @@ namespace yocto
             }
 
             //! compute the timing coefficient
-            mpq compute_alpha(const mpn &seqItems) const;
+            mpq  compute_alpha(const mpn &seqItems) const;
+            void compute_copy_rates( copy_rates &rates, const metrics &seq ) const;
 
             //! compute the timing score
             mpq compute_score(const mpq &alpha) const;
