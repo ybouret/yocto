@@ -236,7 +236,7 @@ namespace yocto
 
 
                 inline explicit in3D(const coord3D     userSizes,
-                                     const patch_type &p) throw() :
+                                     const patch_type &p):
                 divider_type(userSizes,p)
                 {
                     for(size_t dim=0;dim<DIM;++dim)
