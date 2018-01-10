@@ -19,7 +19,11 @@ namespace yocto
             if(other.local<local) local = other.local;
         }
         YOCTO_PAIR_END();
-        
+
+        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,scores,mpq,wxch,mpq,copy);
+        inline scores() : wxch(), copy() {}
+        YOCTO_PAIR_END();
+
         class metrics
         {
         public:
@@ -43,6 +47,7 @@ namespace yocto
 
             //! compute the timing score
             mpq compute_score(const mpq &alpha) const;
+            void compute_scores( scores &s, const copy_rates &rates) const;
 
         private:
             YOCTO_DISABLE_ASSIGN(metrics);

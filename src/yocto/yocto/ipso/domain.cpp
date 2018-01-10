@@ -50,6 +50,18 @@ namespace yocto
             return todo+coms;
         }
 
+        void metrics:: compute_scores( scores &s, const copy_rates &rates) const
+        {
+            const mpq todo(items);
+            const mpq n_io(async);
+            const mpq coms = rates.async * n_io;
+            s.wxch = todo + coms;
+
+            const mpq n_cp(local);
+            s.copy = n_cp;
+            s.copy += rates.local * todo;
+
+        }
 
     }
 }
