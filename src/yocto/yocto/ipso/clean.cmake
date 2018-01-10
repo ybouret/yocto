@@ -1,6 +1,6 @@
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
 
-SET( latex_srcs "split" )
+SET( latex_srcs "divide" )
 
 FOREACH(item IN LISTS latex_srcs)
 	MESSAGE(STATUS "Cleaning temporary files for '${item}'")
