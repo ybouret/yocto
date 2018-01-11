@@ -54,10 +54,9 @@ namespace yocto
                 copy = dom.local + params.l * dom.async;
             }
 
-            void keep_max_from(const cycle_scores &scores )
+            mpq compute_lambda( const metrics &seq ) const
             {
-                //if(wxch<scores.wxch) wxch = scores.wxch;
-
+                return (seq.items - wxch)/copy;
             }
 
             inline friend std::ostream & operator<<( std::ostream &os, const cycle_scores &scores )
@@ -147,10 +146,11 @@ namespace yocto
                 }
             }
 
-            inline void compute_scores_using(const cycle_params &params)
+            inline void compute_scores_using(const cycle_params &params,
+                                             cycle_scores       &scores)
             {
                 std::cerr << "scores for " << sizes << std::endl;
-                cycle_scores scores;
+
                 const domain_type *dom = this->head;
                 scores.compute_from(dom->load,params);
                 std::cerr << "\t" << scores << " <= " << dom->load << std::endl;
@@ -159,7 +159,6 @@ namespace yocto
                     cycle_scores tmp;
                     tmp.compute_from(dom->load,params);
                     std::cerr << "\t" << tmp << " <= " << dom->load << std::endl;
-
                 }
             }
 
@@ -187,9 +186,14 @@ namespace yocto
                     }
                     if(half.size<=0) throw exception("unexpected no half partition!");
                     std::cerr << "Using #half_partition=" << half.size << std::endl;
+
+                    //__________________________________________________________
+                    //
+                    // compute the parameters
+                    //__________________________________________________________
                     {
-                        meta_node   *mp = half.head;
-                        size_t       count=1;
+                        meta_node   *mp    = half.head;
+                        size_t       count = 1;
                         mp->addr->compute_params(params,seq_load);
                         std::cerr << "\tparams" << count << " = " << params << std::endl;
                         for(mp=mp->next;mp;mp=mp->next)
@@ -205,11 +209,35 @@ namespace yocto
 
                     //__________________________________________________________
                     //
+                    //__________________________________________________________
+                    {
+                        cycle_scores scores;
+                        for(meta_node *mp=half.head;mp;mp=mp->next)
+                        {
+                            partition *p = mp->addr;
+                            std::cerr << "for " << p->sizes << std::endl;
+                            for(const domain_type *dom = p->head;dom;dom=dom->next)
+                            {
+                                scores.compute_from(dom->load,params);
+                                std::cerr << "\tscores=" << scores;
+                                const mpq lam = scores.compute_lambda(seq_load);
+                                std::cerr << " \tlam=" << lam.to_double()  << std::endl;
+                            }
+                        }
+                    }
+
+                    std::cerr << std::endl;
+
+                    //__________________________________________________________
+                    //
                     // compute all scores
                     //__________________________________________________________
-                    for(partition *p = plist.head; p; p=p->next)
                     {
-                        p->compute_scores_using(params);
+                        cycle_scores scores;
+                        for(partition *p = plist.head; p; p=p->next)
+                        {
+                            p->compute_scores_using(params,scores);
+                        }
                     }
 
                     return sequential->sizes;
@@ -223,100 +251,6 @@ namespace yocto
                     return sequential->sizes;
                 }
             }
-
-
-#if 0
-            static inline
-            COORD compute_optimal_from( list &plist )
-            {
-                assert(plist.size>0);
-                partition   *seq  = plist.head; assert(1==seq->size);
-                const mpn   &Is   = seq->head->load.items;
-                std::cerr << "#sequential=" << Is << std::endl;
-                if(plist.size>1)
-                {
-                    // take the slowest parallel partition with 2 cuts
-                    partition *par   = seq->next; assert(par); assert(2==par->size);
-                    size_t     count = 1;
-                    mpq        alpha = par->compute_alpha(Is);
-                    std::cerr << "alpha" << count << "=" << alpha << " (" << alpha.to_double() << ")" << std::endl;
-                    for(par=par->next;(NULL!=par)&&(2==par->size);par=par->next)
-                    {
-                        ++count;
-                        const mpq tmp = par->compute_alpha(Is);
-                        std::cerr << "alpha" << count << "=" << tmp << " (" << tmp.to_double() << ")" << std::endl;
-                        if(tmp<alpha) alpha=tmp;
-                    }
-
-                    // compute the score of each partition
-                    for(partition *p=plist.head;p;p=p->next)
-                    {
-                        p->compute_score(alpha);
-                    }
-
-                    // then rank according to score and sizes
-                    core::merging<partition>::sort(plist,partition<coord2D>::compare_by_score, NULL);
-                    for(partition *p=plist.head;p;p=p->next)
-                    {
-                        std::cerr << p->sizes << " => score=" << p->score << "\t=\t" << p->score.to_double() << std::endl;
-                    }
-
-                    // and the winner is...
-                    return plist.head->sizes;
-                }
-                else
-                {
-                    return seq->sizes; //!< only one possible partition...
-                }
-            }
-
-            static inline
-            COORD compute_optimal_v2_from( list &plist )
-            {
-                assert(plist.size>0);
-                partition    *seq  = plist.head; assert(1==seq->size);
-                const metrics smx  = seq->head->load;
-                std::cerr << "#sequential=" << smx.items << std::endl;
-                if(plist.size>1)
-                {
-                    // take the slowest parallel partitions with 2 cuts
-                    partition *par   = seq->next; assert(par); assert(2==par->size);
-                    size_t     count = 1;
-                    copy_rates rates;
-                    par->compute_copy_rates(rates,smx);
-                    std::cerr << "rates" << count << "=" << rates << std::endl;
-                    for(par=par->next;(NULL!=par)&&(2==par->size);par=par->next)
-                    {
-                        ++count;
-                        copy_rates tmp;
-                        par->compute_copy_rates(tmp,smx);
-                        std::cerr << "rates" << count << "=" << tmp << std::endl;
-                        rates.keep_min_of(tmp);
-                    }
-                    std::cerr << "using rates=" << rates << std::endl;
-                    
-                    // compute the score of each partition
-                    for(partition *p=plist.head;p;p=p->next)
-                    {
-                        //p->compute_score(alpha);
-                    }
-
-                    // then rank according to score and sizes
-                    //core::merging<partition>::sort(plist,partition<coord2D>::compare_by_score, NULL);
-                    for(partition *p=plist.head;p;p=p->next)
-                    {
-                        std::cerr << p->sizes << " => score=" << p->score << "\t=\t" << p->score.to_double() << std::endl;
-                    }
-
-                    // and the winner is...
-                    return plist.head->sizes;
-                }
-                else
-                {
-                    return seq->sizes; //!< only one possible partition...
-                }
-            }
-#endif
 
         };
 
