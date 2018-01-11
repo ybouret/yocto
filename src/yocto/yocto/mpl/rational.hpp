@@ -100,6 +100,26 @@ inline rational & operator OP1(const integer_t rhs) { rational r = *this OP rhs;
             inline rational operator+() const { return *this; }
             YOCTO_MPQ_DECL(+,+=,add)
 
+            inline rational & inc()
+            {
+                const rational __one(1);
+                return (*this+=__one);
+            }
+
+            //! prefix increment
+            inline rational & operator++()
+            {
+                return inc();
+            }
+
+            //! postfix increment
+            rational   operator++ (int)
+            {
+                rational sav(*this);
+                (void)inc();
+                return sav;
+            }
+            
             //__________________________________________________________________
             //
             //

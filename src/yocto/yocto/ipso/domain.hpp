@@ -16,6 +16,7 @@ namespace yocto
         {
         public:
             typedef mpq type;
+
             const type items;
             const type async;
             const type local;
@@ -34,6 +35,8 @@ namespace yocto
         private:
             YOCTO_DISABLE_ASSIGN(metrics);
         };
+
+       
 
         template <typename COORD>
         class domain : public object
@@ -217,8 +220,8 @@ namespace yocto
                 //
                 // and update metrics
                 //______________________________________________________________
-                (metrics::type &)(load.async) = num_async;
-                (metrics::type &)(load.local) = num_local;
+                (metrics::type &)(load.async) = metrics::type(num_async);
+                (metrics::type &)(load.local) = metrics::type(num_local);
             }
 
 
