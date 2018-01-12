@@ -1,5 +1,6 @@
 #include "yocto/mpi/mpi.hpp"
 
+#if 0
 namespace yocto
 {
     mpi:: comm_world:: comm_world( const mpi &ref ) :
@@ -17,4 +18,5 @@ namespace yocto
     
     
 }
+#endif
 

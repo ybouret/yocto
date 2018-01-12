@@ -421,6 +421,7 @@ namespace yocto
             ios::istream *fp;
         };
 
+#if 0
         //======================================================================
         //
         //! information relay
@@ -444,7 +445,8 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(comm_world);
         };
-        
+#endif
+
     private:
         friend class singleton<mpi>;                           //!< access mpi
         static const threading::longevity life_time = 0;       //!< TODO: set to a better value
