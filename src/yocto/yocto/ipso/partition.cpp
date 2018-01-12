@@ -30,7 +30,10 @@ namespace yocto
                                             const patch<coord2D> &zone,
                                             const coord2D         pbcs)
         {
+            //__________________________________________________________________
+            //
             // prepare valid cuts
+            //__________________________________________________________________
             const coord1D n  = max_of<coord1D>(1,max_cpus);
             const coord1D nx = min_of(n,zone.width.x);
             const coord1D ny = min_of(n,zone.width.y);
@@ -38,7 +41,6 @@ namespace yocto
             std::cerr << "2D building list of partitions for <= " << n << " cpus" << std::endl;
             partition2D::list plist;
             {
-                bool              match = false;
                 coord2D           sizes;
                 for(sizes.x=1;sizes.x<=nx;++sizes.x)
                 {
@@ -46,10 +48,7 @@ namespace yocto
                     {
                         const coord1D np = sizes.__prod();
                         if(np>n)  continue;
-                        if(np==n)
-                        {
-                            match=true;
-                        }
+
 
                         divide::in2D D(sizes,zone);                                 // create a divider
                         partition2D *p = new partition(D,num_ghosts,pbcs,false);    // all the domains in the partition, no ghost coodinates
@@ -59,7 +58,10 @@ namespace yocto
                 }
             }
 
-            //! rank by cores/splitting: first is one core, the slowest
+            //__________________________________________________________________
+            //
+            // rank by cores/splitting: first is one core, the slowest
+            //__________________________________________________________________
             core::merging<partition>::sort(plist,partition<coord2D>::compare_by_cores, NULL);
 
             std::cerr << "#partitions=" << plist.size << std::endl;
@@ -72,7 +74,10 @@ namespace yocto
                 }
             }
 
-            //! get the sequential count
+            //__________________________________________________________________
+            //
+            // then use algorithm
+            //__________________________________________________________________
             return compute_optimal_from(plist);
         }
     }
@@ -88,6 +93,10 @@ namespace yocto
                                             const patch<coord3D> &zone,
                                             const coord3D         pbcs)
         {
+            //__________________________________________________________________
+            //
+            // prepare valid cuts
+            //__________________________________________________________________
             const coord1D n  = max_of<coord1D>(1,max_cpus);
             const coord1D nx = min_of(n,zone.width.x);
             const coord1D ny = min_of(n,zone.width.y);
@@ -113,6 +122,11 @@ namespace yocto
                     }
                 }
             }
+
+            //__________________________________________________________________
+            //
+            // rank by cores/splitting: first is one core, the slowest
+            //__________________________________________________________________
             core::merging<partition>::sort(plist,partition<coord3D>::compare_by_cores, NULL);
 
             std::cerr << "#partitions=" << plist.size << std::endl;
@@ -126,7 +140,12 @@ namespace yocto
             }
 
 
-            return coord3D(1,1,nz);
+            //__________________________________________________________________
+            //
+            // then use algorithm
+            //__________________________________________________________________
+            return compute_optimal_from(plist);
         }
+        
     }
 }
