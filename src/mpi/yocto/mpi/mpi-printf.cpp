@@ -13,7 +13,7 @@ namespace yocto
     {
         if( CommWorldRank > 0 )
         {
-            fclose( stdin );
+            fclose( stdin  );
             fclose( stderr );
             fclose( stdout );
         }

@@ -70,8 +70,7 @@ namespace yocto
 	
 	void mpi:: onFinalize() throw()
 	{
-        std::cerr << "--MPI_Finalize" << std::endl;
-		*(int *) & CommWorldSize    = 0;
+        *(int *) & CommWorldSize    = 0;
 		*(int *) & CommWorldRank    = 0;
 		*(int *) & CommWorldLast    = 0;
 		clearProcessorName();

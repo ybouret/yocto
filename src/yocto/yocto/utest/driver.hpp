@@ -97,7 +97,7 @@ namespace yocto
 					{
 						std::cerr << "-- [enter] " << name << std::endl;
 						proc->func(--argc,++argv);
-						std::cerr << "-- [leave] " << name << std::endl;
+						//std::cerr << "-- [leave] " << name << std::endl;
 					}
 					catch(...)
 					{
