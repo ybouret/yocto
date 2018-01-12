@@ -62,18 +62,19 @@ namespace yocto
 		}
 	}
 	
-	void mpi:: clear_pname() throw()
+	void mpi:: clearProcessorName() throw()
 	{
 		*(int *) &ProcessorNameLength = 0;
 		memset( (void *) ProcessorName, 0, sizeof(ProcessorName) );
 	}
 	
-	void mpi:: on_finalize() throw()
+	void mpi:: onFinalize() throw()
 	{
+        std::cerr << "--MPI_Finalize" << std::endl;
 		*(int *) & CommWorldSize    = 0;
 		*(int *) & CommWorldRank    = 0;
 		*(int *) & CommWorldLast    = 0;
-		clear_pname();
+		clearProcessorName();
 		(void) MPI_Finalize();
 	}
 	
@@ -150,11 +151,11 @@ namespace yocto
             //==================================================================
             // MPI advanced setup
             //==================================================================
-			clear_pname();
+			clearProcessorName();
 			err = MPI_Get_processor_name( (char *) ProcessorName, (int *) & ProcessorNameLength );
 			if( err != MPI_SUCCESS )
 			{
-				clear_pname();
+				clearProcessorName();
                 // TODO: throw an exception ?
 			}
             
@@ -165,7 +166,7 @@ namespace yocto
         catch(...)
         {
             mpi_reset_();
-            on_finalize();
+            onFinalize();
             throw;
         }
     }
@@ -194,7 +195,7 @@ namespace yocto
     
     mpi:: ~mpi() throw()
     {
-        on_finalize();
+        onFinalize();
     }
     
     

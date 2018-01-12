@@ -420,33 +420,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(istream);
             ios::istream *fp;
         };
-
-#if 0
-        //======================================================================
-        //
-        //! information relay
-        //
-        //======================================================================
-        class comm_world
-        {
-        public:
-            explicit comm_world ( const mpi & );
-            virtual ~comm_world () throw();
-            
-            const mpi        &MPI;
-            const int        &size;
-            const int        &rank;
-            const int        &last;
-            const bool       &first;
-            const bool       &final;
-            const bool       &parallel;
-            
-            
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(comm_world);
-        };
-#endif
-
+        
     private:
         friend class singleton<mpi>;                           //!< access mpi
         static const threading::longevity life_time = 0;       //!< TODO: set to a better value
@@ -456,8 +430,8 @@ namespace yocto
         
         
         YOCTO_DISABLE_COPY_AND_ASSIGN(mpi);
-        void clear_pname() throw();
-        void on_finalize() throw(); //!< clean up
+        void clearProcessorName() throw();
+        void onFinalize() throw(); //!< clean up
         void gendb();
         
     };
