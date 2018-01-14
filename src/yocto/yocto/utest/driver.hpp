@@ -3,6 +3,7 @@
 
 #include "yocto/code/alea.hpp"
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <iomanip>
@@ -85,19 +86,20 @@ namespace yocto
 				}
 				else
 				{
-                    alea.initialize();
-					const char *name = argv[1];
+					const char      *name = argv[1];
 					const proc_type *proc = search( name );
 					if( !proc )
 					{
-						std::cerr << "Unknown Test '" << name << "'" << std::endl;
+						std::cerr << "-- unknown test '" << name << "'" << std::endl;
 						return -1;
 					}
 					try
 					{
-						std::cerr << "-- [enter] " << name << std::endl;
+                        fprintf(stderr, "-- [enter] %s\n", name);
+                        fflush(stderr);
 						proc->func(--argc,++argv);
-						//std::cerr << "-- [leave] " << name << std::endl;
+                        fprintf(stderr, "-- [leave] %s\n", name);
+                        fflush(stderr);
 					}
 					catch(...)
 					{
@@ -126,6 +128,7 @@ namespace yocto
 #define YOCTO_UNIT_TEST_INIT(N)             \
 /*	*/	int main( int argc, char *argv[] )  \
 /*	*/	{	yocto::utest::suite<N> tests;   \
+/*  */      yocto::alea.initialize();       \
 /*  */      srand(yocto::alea.full<unsigned>());
 
 #define YOCTO_UNIT_TEST_DECL(NAME) do{                                \
