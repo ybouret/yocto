@@ -3,6 +3,7 @@
 
 #include "yocto/memory/buffers.hpp"
 #include "yocto/exceptions.hpp"
+#include "yocto/ios/null-device.hpp"
 
 #include <cstdarg>
 #include <cerrno>
@@ -13,9 +14,9 @@ namespace yocto
     {
         if( CommWorldRank > 0 )
         {
-            fclose( stdin  );
-            fclose( stderr );
-            fclose( stdout );
+            ios::null_device::for_cstdin();
+            ios::null_device::for_cstdout();
+            ios::null_device::for_cstderr();
         }
     }
 
