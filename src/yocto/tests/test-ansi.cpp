@@ -14,16 +14,10 @@ YOCTO_UNIT_TEST_DONE()
 
 YOCTO_UNIT_TEST_IMPL(null_device)
 {
-    stdout = freopen(YOCTO_NULL_DEVICE,"w",stdout);
-    const int err = ferror(stdout);
-    if(err!=0)
-    {
-        throw libc::exception(err,"freopen(%s)\n",YOCTO_NULL_DEVICE);
-    }
-    if( fprintf(stdout,"Hello, World!\n") < 0 )
-    {
-        throw libc::exception(ferror(stdout),"fprintf to %s",YOCTO_NULL_DEVICE);
-    }
+    ios::null_device::for_cstdin();
+    ios::null_device::for_cstdout();
+    ios::null_device::for_cstderr();
+
 }
 YOCTO_UNIT_TEST_DONE()
 
