@@ -15,11 +15,18 @@ YOCTO_UNIT_TEST_DONE()
 
 YOCTO_UNIT_TEST_IMPL(null_device)
 {
+#if 0
     ios::null_device::for_cstdin();
     ios::null_device::for_cstdout();
     ios::null_device::for_cstderr();
+#endif
 
-
+    ios::null_device & dev_null = ios::null_device::instance();
+    std::cerr << "name=" << dev_null.name << std::endl;
+    dev_null.for_stdin();
+    dev_null.for_stderr();
+    dev_null.for_stdin();
+    
 }
 YOCTO_UNIT_TEST_DONE()
 
