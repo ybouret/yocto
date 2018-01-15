@@ -15,14 +15,9 @@ YOCTO_UNIT_TEST_DONE()
 
 YOCTO_UNIT_TEST_IMPL(null_device)
 {
-#if 0
-    ios::null_device::for_cstdin();
-    ios::null_device::for_cstdout();
-    ios::null_device::for_cstderr();
-#endif
 
     ios::null_device & dev_null = ios::null_device::instance();
-    std::cerr << "name=" << dev_null.name << std::endl;
+    fprintf(stderr,"name=%s\n", dev_null.name );
     dev_null.for_stdin();
     dev_null.for_stderr();
     dev_null.for_stdout();
@@ -33,6 +28,7 @@ YOCTO_UNIT_TEST_DONE()
 
 YOCTO_UNIT_TEST_IMPL(null_device_cpp)
 {
+#if 0
     std::ifstream f_in(YOCTO_NULL_DEVICE);
     if( f_in.fail() )
     {
@@ -59,7 +55,17 @@ YOCTO_UNIT_TEST_IMPL(null_device_cpp)
 
     }
     std::cout << "World, Hello!" << std::endl;
-    
+#endif
+
+    ios::null_device & dev_null = ios::null_device::instance();
+    std::cerr << "name=" << dev_null.name << std::endl;
+    dev_null.for_cin();
+    dev_null.for_cout();
+    dev_null.for_cerr();
+
+    std::cout << "Hello, World!" << std::endl;
+    std::cerr << "World, Hello!" << std::endl;
+
 }
 YOCTO_UNIT_TEST_DONE()
 

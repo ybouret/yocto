@@ -33,6 +33,8 @@ namespace yocto
             void for_stderr();
 
             void for_cin();
+            void for_cout();
+            void for_cerr();
 
             static const char name[];
             static const threading::longevity life_time = 0;
