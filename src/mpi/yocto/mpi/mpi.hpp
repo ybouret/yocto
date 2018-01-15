@@ -299,7 +299,7 @@ namespace yocto
         }
         
         typedef vector<data_type>   db_type;
-        const db_type               db;
+        const   db_type             db;
         mutable hashing_function    hasher;
 
         //======================================================================
@@ -320,10 +320,11 @@ namespace yocto
         template <typename T>
         inline T Allreduce1(const T &input, MPI_Op op, MPI_Comm comm ) const
         {
+            static const MPI_Datatype &__data_type = get_type<T>();
             T output(0);
             Allreduce1(&output,
                        &input,
-                       get_type<T>(),
+                       __data_type,
                        op,
                        comm);
             return output;
@@ -423,7 +424,7 @@ namespace yocto
         
     private:
         friend class singleton<mpi>;                           //!< access mpi
-        static const threading::longevity life_time = 0;       //!< TODO: set to a better value
+        static const threading::longevity life_time = -10;     //!< TODO: set to a better value/null_device!
         static const char                 name[];
         explicit mpi();
         virtual ~mpi() throw();

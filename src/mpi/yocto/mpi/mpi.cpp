@@ -150,6 +150,8 @@ namespace yocto
             //==================================================================
             // MPI advanced setup
             //==================================================================
+
+            // get the processor's name
 			clearProcessorName();
 			err = MPI_Get_processor_name( (char *) ProcessorName, (int *) & ProcessorNameLength );
 			if( err != MPI_SUCCESS )
@@ -157,7 +159,8 @@ namespace yocto
 				clearProcessorName();
                 // TODO: throw an exception ?
 			}
-            
+
+            // generate the database of types
             gendb();
             
             (string &)CommWorldID = vformat("%d.%d", CommWorldSize, CommWorldRank);
