@@ -39,6 +39,19 @@ YOCTO_UNIT_TEST_IMPL(null_device_cpp)
     }
     f_out << "Hello, World!" << std::endl;
 
+    std::streambuf *inbuf = std::cin.rdbuf(f_in.rdbuf());
+    if(inbuf)
+    {
+        //delete inbuf;
+    }
+
+    std::streambuf *outbuf = std::cout.rdbuf(f_out.rdbuf());
+    if(outbuf)
+    {
+
+    }
+    std::cout << "World, Hello!" << std::endl;
+    
 }
 YOCTO_UNIT_TEST_DONE()
 
