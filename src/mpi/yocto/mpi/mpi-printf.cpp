@@ -66,7 +66,7 @@ namespace yocto
             else
             {
                 //-- send sub messages
-                size_t n = 32;
+                size_t n = 64;
             TRY:
                 {
                     memory::buffer_of<char,memory::global> databuf( n );
