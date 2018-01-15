@@ -25,8 +25,9 @@ YOCTO_UNIT_TEST_IMPL(null_device)
     std::cerr << "name=" << dev_null.name << std::endl;
     dev_null.for_stdin();
     dev_null.for_stderr();
-    dev_null.for_stdin();
-    
+    dev_null.for_stdout();
+    fprintf(stdout,"Hello, World!\n");
+    fprintf(stderr,"World, Hello!\n");
 }
 YOCTO_UNIT_TEST_DONE()
 
