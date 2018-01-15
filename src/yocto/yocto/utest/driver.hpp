@@ -95,11 +95,11 @@ namespace yocto
 					}
 					try
 					{
-                        fprintf(stderr, "-- [enter] %s\n", name);
-                        fflush(stderr);
+                        //fprintf(stderr, "-- [enter] %s\n", name);
+                        //fflush(stderr);
 						proc->func(--argc,++argv);
-                        fprintf(stderr, "-- [leave] %s\n", name);
-                        fflush(stderr);
+                        //fprintf(stderr, "-- [leave] %s\n", name);
+                        //fflush(stderr);
 					}
 					catch(...)
 					{
