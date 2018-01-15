@@ -14,9 +14,16 @@ namespace yocto
     {
         if( CommWorldRank > 0 )
         {
-            ios::null_device::for_cstdin();
-            ios::null_device::for_cstdout();
-            ios::null_device::for_cstderr();
+            ios::null_device &dev_null = ios::null_device::instance();
+
+            dev_null.for_stdin();
+            dev_null.for_cin();
+
+            dev_null.for_stdout();
+            dev_null.for_cout();
+
+            dev_null.for_stderr();
+            dev_null.for_cerr();
         }
     }
 
