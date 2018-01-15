@@ -163,7 +163,8 @@ YOCTO_UNIT_TEST_INIT(200)
 
     YOCTO_UNIT_TEST_DECL(ansi);
     YOCTO_UNIT_TEST_DECL(null_device);
-    
+    YOCTO_UNIT_TEST_DECL(null_device_cpp);
+
     YOCTO_UNIT_TEST_DECL(multi_set);
 
     YOCTO_UNIT_TEST_DECL(xbwt);
