@@ -24,6 +24,7 @@ namespace yocto
     
     namespace ipso
     {
+
         template <>
         coord2D partition<coord2D>::optimal(const size_t          max_cpus,
                                             const size_t          num_ghosts,
@@ -37,7 +38,7 @@ namespace yocto
             const coord1D n  = max_of<coord1D>(1,max_cpus);
             const coord1D nx = min_of(n,zone.width.x);
             const coord1D ny = min_of(n,zone.width.y);
-
+            bool          match =  false;
             std::cerr << "2D building list of partitions for <= " << n << " cpus" << std::endl;
             partition2D::list plist;
             {
@@ -48,7 +49,7 @@ namespace yocto
                     {
                         const coord1D np = sizes.__prod();
                         if(np>n)  continue;
-
+                        if(np==n) match = true;
 
                         divide::in2D D(sizes,zone);                                 // create a divider
                         partition2D *p = new partition(D,num_ghosts,pbcs,false);    // all the domains in the partition, no ghost coodinates
@@ -57,6 +58,24 @@ namespace yocto
                     }
                 }
             }
+            if(false&&match)
+            {
+                partition2D::list tmp;
+                while(plist.size>0)
+                {
+                    partition2D *p = plist.pop_front();
+                    if(1==p->size||2==p->size||n==p->size)
+                    {
+                        tmp.push_back(p);
+                    }
+                    else
+                    {
+                        delete p;
+                    }
+                }
+                plist.swap_with(tmp);
+            }
+
 
             //__________________________________________________________________
             //

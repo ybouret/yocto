@@ -3,14 +3,42 @@
 
 #include "yocto/ipso/domain.hpp"
 #include "yocto/sequence/addr-list.hpp"
+#include "yocto/container/tuple.hpp"
 
 namespace yocto
 {
     namespace ipso
     {
 
+        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,cycle_params,metrics::type,w,metrics::type,l);
+        typedef metrics::type type;
+        inline cycle_params() : w(), l() {}
+        inline void compute_from_sequential(const metrics &seq, const metrics &dom)
+        {
+            const type dW = seq.items - dom.items;
+            const type dL = seq.local - dom.local;
+            const type dA = 1;
+            const type A  = dom.async + dA;
+            w = dW/A;
+            l = dL/A;
+        }
+        inline void keep_minimum(const cycle_params &other)
+        {
+            if(other.w<w) w=other.w;
+            if(other.l<l) l=other.l;
+        }
+        YOCTO_PAIR_END();
 
 
+        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,cycle_rates,metrics::type,wxch,metrics::type,copy);
+        typedef metrics::type type;
+        inline cycle_rates() : wxch(), copy() {}
+        inline void compute_from_params(const cycle_params &params, const metrics &dom)
+        {
+            wxch = dom.items + params.w * dom.async;
+            copy = dom.local + params.l * dom.async;
+        }
+        YOCTO_PAIR_END();
 
         //! a partition is a list of domains
         template <typename COORD>
@@ -75,6 +103,19 @@ namespace yocto
                 }
             }
 
+            void compute_params( cycle_params &params, const metrics &seq ) const
+            {
+                const domain_type *d = this->head;
+                params.compute_from_sequential(seq,d->load);
+                for(d=d->next;d;d=d->next)
+                {
+                    cycle_params tmp;
+                    tmp.compute_from_sequential(seq,d->load);
+                    params.keep_minimum(tmp);
+                }
+            }
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
 
@@ -82,8 +123,8 @@ namespace yocto
             COORD compute_optimal_from( list &plist )
             {
                 partition     *sequential  = plist.head; assert(1==sequential->size);
-                const metrics &seq_load    = sequential->head->load;
-                std::cerr << "#sequential=" << seq_load << std::endl;
+                const metrics &seq         = sequential->head->load;
+                std::cerr << "#sequential=" << seq << std::endl;
                 if( plist.size > 1 )
                 {
                     //__________________________________________________________
@@ -98,7 +139,31 @@ namespace yocto
                     }
                     if(half.size<=0) throw exception("unexpected no half partition!");
                     std::cerr << "Using #half_partition=" << half.size << std::endl;
-                    
+
+                    cycle_params params;
+                    {
+                        meta_node *mp = half.head;
+                        mp->addr->compute_params(params,seq);
+                        std::cerr << "\t\tparams=" << params << std::endl;
+                        for(mp=mp->next;mp;mp=mp->next)
+                        {
+                            cycle_params tmp;
+                            mp->addr->compute_params(tmp,seq);
+                            std::cerr << "\t\tparams=" << tmp << std::endl;
+                        }
+                    }
+                    std::cerr << "\tparams=" << params << std::endl;
+                    std::cerr << "computing rates: " << std::endl;
+                    for(partition *p=plist.head;p;p=p->next)
+                    {
+                        std::cerr << "for " << p->sizes << std::endl;
+                        for(const domain_type *d = p->head;d;d=d->next)
+                        {
+                            cycle_rates rates;
+                            rates.compute_from_params(params,d->load);
+                            std::cerr << "\t" << d->load << " => wxch=" << rates.wxch.to_double() << ", copy=" << rates.copy.to_double() << std::endl;
+                        }
+                    }
 
                     return sequential->sizes;
                 }
