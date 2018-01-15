@@ -429,6 +429,12 @@ integer tmp = (*this) + rhs; xch(tmp); return *this; }
                 const  natural p = lhs.n * rhs;
                 return integer(lhs.s,p);
             }
+
+            static inline integer sqr(const integer &z)
+            {
+                const natural n2 = natural::sqr(z.n);
+                return integer(n2);
+            }
             
             //__________________________________________________________________
             //

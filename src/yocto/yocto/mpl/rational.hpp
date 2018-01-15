@@ -138,6 +138,26 @@ inline rational & operator OP1(const integer_t rhs) { rational r = *this OP rhs;
             inline rational operator-() const { const integer nn = -num; return rational(nn,den); }
             YOCTO_MPQ_DECL(-,-=,sub)
 
+            inline rational & dec()
+            {
+                const rational __one(1);
+                return (*this-=__one);
+            }
+
+            //! prefix increment
+            inline rational & operator--()
+            {
+                return dec();
+            }
+
+            //! postfix increment
+            rational   operator-- (int)
+            {
+                rational sav(*this);
+                (void)dec();
+                return sav;
+            }
+
             //__________________________________________________________________
             //
             //
@@ -151,6 +171,13 @@ inline rational & operator OP1(const integer_t rhs) { rational r = *this OP rhs;
                 return rational(u,v);
             }
             YOCTO_MPQ_DECL(*,*=,mul)
+
+            inline static rational sqr( const rational &q )
+            {
+                const integer __num = integer::sqr( q.num );
+                const natural __den = natural::sqr( q.den );
+                return rational(__num,__den);
+            }
 
             //__________________________________________________________________
             //

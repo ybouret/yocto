@@ -17,6 +17,20 @@ YOCTO_UNIT_TEST_IMPL(mpq)
     std::cerr << x << "-" << y << "=" << x-y << std::endl;
     matrix<mpq>    M(5);
     matrix<double> A(5);
+
+    for(mpq i=mpq(11,10);i<10;++i)
+    {
+        const mpq i2 = mpq::sqr(i);
+        std::cerr << "i=" << i << ", i2=" << i2 << std::endl;
+    }
+
+    for(mpq i=mpq(122,10);i>=0;--i)
+    {
+        const mpq i2 = mpq::sqr(i);
+        std::cerr << "i=" << i << ", i2=" << i2 << std::endl;
+        
+    }
+
     for(size_t i=1;i<=M.rows;++i)
     {
         for(size_t j=1;j<=M.cols;++j)
