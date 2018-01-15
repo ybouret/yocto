@@ -22,6 +22,7 @@ namespace yocto
             w = dW/A;
             l = dL/A;
         }
+
         inline void keep_minimum(const cycle_params &other)
         {
             if(other.w<w) w=other.w;
@@ -38,6 +39,12 @@ namespace yocto
             wxch = dom.items + params.w * dom.async;
             copy = dom.local + params.l * dom.async;
         }
+
+        inline void keep_maximum(const cycle_rates &other)
+        {
+            if(wxch<other.wxch) wxch = other.wxch;
+            if(copy<other.copy) copy = other.copy;
+        }
         YOCTO_PAIR_END();
 
         //! a partition is a list of domains
@@ -51,9 +58,10 @@ namespace yocto
             typedef addr_list<partition>         meta_list;
             typedef addr_node<partition>         meta_node;
 
-            const COORD sizes; //!< keep track of global sizes
-            partition  *next;
-            partition  *prev;
+            const COORD   sizes; //!< keep track of global sizes
+            partition    *next;
+            partition    *prev;
+            metrics::type score;
 
             explicit partition(const divider<COORD>  &full,
                                const size_t           ng,
@@ -62,7 +70,8 @@ namespace yocto
             domains(),
             sizes(full.sizes),
             next(0),
-            prev(0)
+            prev(0),
+            score()
             {
                 for(size_t rank=0;rank<full.size;++rank)
                 {
@@ -150,19 +159,27 @@ namespace yocto
                             cycle_params tmp;
                             mp->addr->compute_params(tmp,seq);
                             std::cerr << "\t\tparams=" << tmp << std::endl;
+                            params.keep_minimum(tmp);
                         }
                     }
                     std::cerr << "\tparams=" << params << std::endl;
+
+
                     std::cerr << "computing rates: " << std::endl;
                     for(partition *p=plist.head;p;p=p->next)
                     {
                         std::cerr << "for " << p->sizes << std::endl;
+                        cycle_rates prate;
                         for(const domain_type *d = p->head;d;d=d->next)
                         {
                             cycle_rates rates;
                             rates.compute_from_params(params,d->load);
-                            std::cerr << "\t" << d->load << " => wxch=" << rates.wxch.to_double() << ", copy=" << rates.copy.to_double() << std::endl;
+                            std::cerr << "\t\t" << d->load << " => wxch=" << rates.wxch.to_double() << ", copy=" << rates.copy.to_double() << std::endl;
+                            prate.keep_maximum(rates);
                         }
+                        std::cerr << "\tprate: " << "wxch=" << prate.wxch.to_double() << ", copy=" << prate.copy.to_double() << std::endl;
+                        p->score = prate.wxch + prate.copy;
+                        std::cerr << "\tscore=" << p->score.to_double() << std::endl;
                     }
 
                     return sequential->sizes;
