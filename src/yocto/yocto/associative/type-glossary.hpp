@@ -33,7 +33,7 @@ namespace yocto
         inline void enroll( const std::type_info &ti, param_type arg)
         {
             const char *key = ti.name();
-            std::cerr << "key=" << key << " => " << arg << std::endl;
+            //std::cerr << "key=" << key << " => " << arg << std::endl;
             const_type *ans = this->search(key);
             if(ans)
             {
