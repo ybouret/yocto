@@ -30,13 +30,14 @@ YOCTO_UNIT_TEST_IMPL(null_device_cpp)
     {
         throw exception("ifstream(%s)",YOCTO_NULL_DEVICE);
     }
-    
+
 
     std::ofstream f_out(YOCTO_NULL_DEVICE);
     if( f_out.fail() )
     {
         throw exception("ofstream(%s)",YOCTO_NULL_DEVICE);
     }
+    f_out << "Hello, World!" << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()
