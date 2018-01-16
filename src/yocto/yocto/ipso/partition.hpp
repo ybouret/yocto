@@ -14,6 +14,8 @@ namespace yocto
         class partition : public object, public domain<COORD>::list
         {
         public:
+            static const size_t DIM = sizeof(COORD)/sizeof(coord1D);
+
             typedef domain<COORD>                domain_type;
             typedef typename domain_type::list   domains;
             typedef core::list_of_cpp<partition> list;
@@ -87,34 +89,79 @@ namespace yocto
                 }
             }
 
+            metrics::type compute_alpha(const metrics &seq ) const
+            {
+                const domain_type  *dom   = this->head;
+                metrics::type       alpha = dom->load.compute_alpha(seq);
+                for(dom=dom->next;dom;dom=dom->next)
+                {
+                    metrics::type tmp = dom->load.compute_alpha(seq);
+                    if(tmp<alpha) alpha=tmp;
+                }
+                return alpha;
+            }
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
+            static inline void find_half_partitions( meta_list &half, list &plist)
+            {
+                for(partition *p=plist.head;p;p=p->next)
+                {
+                    if(2==p->size)
+                    {
+                        half.append(p);
+                    }
+                }
+                if(half.size<=0) throw exception("no half size partition%u",unsigned(DIM));
+            }
+
+            static inline metrics::type find_alpha_from( const meta_list &half, const metrics &seq)
+            {
+                assert(half.size>0);
+                const meta_node *mp    = half.head;
+                metrics::type    alpha = mp->addr->compute_alpha(seq);
+                for(mp=mp->next;mp;mp=mp->next)
+                {
+                    const metrics::type tmp = mp->addr->compute_alpha(seq);
+                    if(tmp<alpha) alpha=tmp;
+                }
+                return alpha;
+            }
+
+            inline void compute_score(const metrics::type &alpha)
+            {
+                score = 0;
+                for(const domain_type *dom=this->head;dom;dom=dom->next)
+                {
+                    const metrics::type tmp = dom->load.items + alpha * dom->load.coeff;
+                    if(tmp>score) score=tmp;
+                }
+                std::cerr << "\tscore for " << sizes << "=" << score.to_double() << std::endl;
+            }
 
             static inline
             COORD compute_optimal_from( list &plist )
             {
                 partition     *sequential  = plist.head; assert(1==sequential->size);
-
                 const metrics &seq         = sequential->head->load;
                 std::cerr << "#sequential=" << seq << std::endl;
                 if(plist.size>1)
                 {
-                    for(partition *p=sequential->next;p;p=p->next)
+                    meta_list half;
+                    find_half_partitions(half,plist);
+
+                    for(const meta_node *mp=half.head;mp;mp=mp->next)
                     {
-                        assert(p->size>1);
-                        std::cerr << "for " << p->sizes << "\t:";
-                        const metrics::type min_W = sequential->largest->load.items/(p->size-1);
-                        const metrics::type min_L = sequential->largest->load.local/(p->size-1);
-                        // std::cerr << "\tmin_W=" << min_W.to_double() << ", min_L=" << min_L.to_double() << std::endl;
-                        const metrics::type dW = (sequential->largest->load.items - p->largest->load.items);
-                        const metrics::type dL = (sequential->largest->load.local - p->largest->load.local);
-                        const metrics::type dA = 1;
-                        const metrics::type A  = p->largest->load.async+dA;
-                        const metrics::type w  = dW/A;
-                        const metrics::type l  = dL/A;
-                        //std::cerr << "\tdW=" << dW.to_double() << ", dL=" << dL.to_double() << std::endl;
-                        std::cerr << "\talpha <= " << w.to_double() <<  "+lambda*(" << l.to_double() << ")\t" << w.to_double()+l.to_double() << std::endl;
+                        const metrics::type tmp = mp->addr->compute_alpha(seq);
+                        std::cerr << "\t\talpha=" << tmp << "=" << tmp.to_double() << std::endl;
                     }
+                    const metrics::type alpha = find_alpha_from(half,seq);
+                    std::cerr << "\talpha=" << alpha << "=" << alpha.to_double() << std::endl;
+                    for(partition *p=plist.head;p;p=p->next)
+                    {
+                        p->compute_score(alpha);
+                    }
+
                     return sequential->sizes;
                 }
                 else
