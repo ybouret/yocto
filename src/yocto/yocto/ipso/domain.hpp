@@ -210,7 +210,6 @@ namespace yocto
                 //______________________________________________________________
                 size_t       num_async  = 0;
                 size_t       num_local  = 0;
-                size_t       the_coeff  = 0;
                 const size_t weight     = __coord_sum(full.sizes);
                 for(size_t dim=0;dim<DIM;++dim)
                 {
@@ -219,7 +218,6 @@ namespace yocto
                         assert(rank==g->source);
                         g->load(inner,outer,build);
                         num_async += g->count;
-                        the_coeff += g->count * weight;
                     }
 
                     for(ghosts *g = local[dim].head; g; g=g->next)
@@ -235,7 +233,7 @@ namespace yocto
                 //______________________________________________________________
                 (metrics::type &)(load.async) = metrics::type(num_async);
                 (metrics::type &)(load.local) = metrics::type(num_local);
-                (metrics::type &)(load.coeff) = metrics::type(the_coeff);
+                (metrics::type &)(load.coeff) = metrics::type(num_async,weight);
 
             }
 
