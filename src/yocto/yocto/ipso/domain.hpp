@@ -30,7 +30,9 @@ namespace yocto
                 os << "(items=" << m.items << ", async=" << m.async << ", local=" << m.local << ")";
                 return os;
             }
-            
+
+            //! items.async.local
+            static int compare(const metrics &lhs, const metrics &rhs) throw();
 
         private:
             YOCTO_DISABLE_ASSIGN(metrics);

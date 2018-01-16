@@ -20,6 +20,42 @@ namespace yocto
         {
         }
 
+        int metrics::compare(const metrics &lhs, const metrics &rhs) throw()
+        {
+            if(lhs.items<rhs.items)
+            {
+                return -1;
+            }
+            else
+            {
+                if(rhs.items<lhs.items)
+                {
+                    return 1;
+                }
+                else
+                {
+                    assert(lhs.items==rhs.items);
+                    if(lhs.async<rhs.async)
+                    {
+                        return -1;
+                    }
+                    else
+                    {
+                        if(rhs.async<lhs.async)
+                        {
+                            return 1;
+                        }
+                        else
+                        {
+                            assert(lhs.async==rhs.async);
+                            return type::compare(lhs.local,rhs.local);
+                        }
+                    }
+                }
+            }
+        }
+
+
     }
 }
 

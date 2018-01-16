@@ -92,7 +92,10 @@ namespace yocto
                     std::cerr << "\t" << d->ranks << " : " << d->load << " | " << d->inner << std::endl;
                 }
             }
-
+            for(const partition *p = plist.head;p;p=p->next)
+            {
+                std::cerr << "largest for " << p->sizes << " is " <<  p->largest->load << std::endl;
+            }
             //__________________________________________________________________
             //
             // then use algorithm

@@ -9,44 +9,6 @@ namespace yocto
 {
     namespace ipso
     {
-
-        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,cycle_params,metrics::type,w,metrics::type,l);
-        typedef metrics::type type;
-        inline cycle_params() : w(), l() {}
-        inline void compute_from_sequential(const metrics &seq, const metrics &dom)
-        {
-            const type dW = seq.items - dom.items;
-            const type dL = seq.local - dom.local;
-            const type dA = 1;
-            const type A  = dom.async + dA;
-            w = dW/A;
-            l = dL/A;
-        }
-
-        inline void keep_minimum(const cycle_params &other)
-        {
-            if(other.w<w) w=other.w;
-            if(other.l<l) l=other.l;
-        }
-        YOCTO_PAIR_END();
-
-
-        YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,cycle_rates,metrics::type,wxch,metrics::type,copy);
-        typedef metrics::type type;
-        inline cycle_rates() : wxch(), copy() {}
-        inline void compute_from_params(const cycle_params &params, const metrics &dom)
-        {
-            wxch = dom.items + params.w * dom.async;
-            copy = dom.local + params.l * dom.async;
-        }
-
-        inline void keep_maximum(const cycle_rates &other)
-        {
-            if(wxch<other.wxch) wxch = other.wxch;
-            if(copy<other.copy) copy = other.copy;
-        }
-        YOCTO_PAIR_END();
-
         //! a partition is a list of domains
         template <typename COORD>
         class partition : public object, public domain<COORD>::list
@@ -58,10 +20,12 @@ namespace yocto
             typedef addr_list<partition>         meta_list;
             typedef addr_node<partition>         meta_node;
 
-            const COORD   sizes; //!< keep track of global sizes
-            partition    *next;
-            partition    *prev;
-            metrics::type score;
+            const COORD        sizes; //!< keep track of global sizes
+            partition         *next;
+            partition         *prev;
+            metrics::type      score;
+            const domain_type *largest;
+
 
             explicit partition(const divider<COORD>  &full,
                                const size_t           ng,
@@ -71,12 +35,23 @@ namespace yocto
             sizes(full.sizes),
             next(0),
             prev(0),
-            score()
+            score(),
+            largest(0)
             {
                 for(size_t rank=0;rank<full.size;++rank)
                 {
                     this->push_back( new domain_type(full,rank,ng,pbcs,build) );
                 }
+                const domain_type *dom = this->head;
+                largest = dom;
+                for(dom=dom->next;dom;dom=dom->next)
+                {
+                    if(metrics::compare(dom->load,largest->load)>0)
+                    {
+                        largest = dom;
+                    }
+                }
+                //std::cerr << "Largest of " << sizes << "=" << largest->load << std::endl;
             }
 
             virtual ~partition() throw()
@@ -112,19 +87,6 @@ namespace yocto
                 }
             }
 
-            void compute_params( cycle_params &params, const metrics &seq ) const
-            {
-                const domain_type *d = this->head;
-                params.compute_from_sequential(seq,d->load);
-                for(d=d->next;d;d=d->next)
-                {
-                    cycle_params tmp;
-                    tmp.compute_from_sequential(seq,d->load);
-                    params.keep_minimum(tmp);
-                }
-            }
-
-
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
 
@@ -132,56 +94,27 @@ namespace yocto
             COORD compute_optimal_from( list &plist )
             {
                 partition     *sequential  = plist.head; assert(1==sequential->size);
+
                 const metrics &seq         = sequential->head->load;
                 std::cerr << "#sequential=" << seq << std::endl;
-                if( plist.size > 1 )
+                if(plist.size>1)
                 {
-                    //__________________________________________________________
-                    //
-                    // take the slowest parallel partitions with 2 cuts
-                    // as test partitions
-                    //__________________________________________________________
-                    meta_list            half;
-                    for(partition *p=plist.head;p;p=p->next)
+                    for(partition *p=sequential->next;p;p=p->next)
                     {
-                        if(2==p->size) half.append(p);
+                        assert(p->size>1);
+                        std::cerr << "for " << p->sizes << "\t:";
+                        const metrics::type min_W = sequential->largest->load.items/(p->size-1);
+                        const metrics::type min_L = sequential->largest->load.local/(p->size-1);
+                        // std::cerr << "\tmin_W=" << min_W.to_double() << ", min_L=" << min_L.to_double() << std::endl;
+                        const metrics::type dW = (sequential->largest->load.items - p->largest->load.items);
+                        const metrics::type dL = (sequential->largest->load.local - p->largest->load.local);
+                        const metrics::type dA = 1;
+                        const metrics::type A  = p->largest->load.async+dA;
+                        const metrics::type w  = dW/A;
+                        const metrics::type l  = dL/A;
+                        //std::cerr << "\tdW=" << dW.to_double() << ", dL=" << dL.to_double() << std::endl;
+                        std::cerr << "\talpha <= " << w.to_double() <<  "+lambda*(" << l.to_double() << ")\t" << w.to_double()+l.to_double() << std::endl;
                     }
-                    if(half.size<=0) throw exception("unexpected no half partition!");
-                    std::cerr << "Using #half_partition=" << half.size << std::endl;
-
-                    cycle_params params;
-                    {
-                        meta_node *mp = half.head;
-                        mp->addr->compute_params(params,seq);
-                        std::cerr << "\t\tparams=" << params << std::endl;
-                        for(mp=mp->next;mp;mp=mp->next)
-                        {
-                            cycle_params tmp;
-                            mp->addr->compute_params(tmp,seq);
-                            std::cerr << "\t\tparams=" << tmp << std::endl;
-                            params.keep_minimum(tmp);
-                        }
-                    }
-                    std::cerr << "\tparams=" << params << std::endl;
-
-
-                    std::cerr << "computing rates: " << std::endl;
-                    for(partition *p=plist.head;p;p=p->next)
-                    {
-                        std::cerr << "for " << p->sizes << std::endl;
-                        cycle_rates prate;
-                        for(const domain_type *d = p->head;d;d=d->next)
-                        {
-                            cycle_rates rates;
-                            rates.compute_from_params(params,d->load);
-                            std::cerr << "\t\t" << d->load << " => wxch=" << rates.wxch.to_double() << ", copy=" << rates.copy.to_double() << std::endl;
-                            prate.keep_maximum(rates);
-                        }
-                        std::cerr << "\tprate: " << "wxch=" << prate.wxch.to_double() << ", copy=" << prate.copy.to_double() << std::endl;
-                        p->score = prate.wxch + prate.copy;
-                        std::cerr << "\tscore=" << p->score.to_double() << std::endl;
-                    }
-
                     return sequential->sizes;
                 }
                 else
