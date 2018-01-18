@@ -33,13 +33,6 @@ namespace yocto
             //! items.async.local
             static int compare(const metrics &lhs, const metrics &rhs) throw();
 
-            inline type compute_alpha(const metrics &seq) const
-            {
-                const type dW = seq.items - items;
-                const type dA = 1;
-                const type A  = async+dA;
-                return dW/A;
-            }
         private:
             YOCTO_DISABLE_ASSIGN(metrics);
         };
@@ -58,6 +51,21 @@ namespace yocto
         {
             if(other.w<w) w=other.w;
             if(other.l<l) l=other.l;
+        }
+        YOCTO_PAIR_END();
+
+        YOCTO_PAIR_DECL(STANDARD,cycle_rates,metrics::type,wxch,metrics::type,copy);
+        inline cycle_rates() : wxch(), copy() {}
+        void clear() { wxch.ldz(); copy.ldz(); }
+        inline void compute_from(const cycle_params &params, const metrics &par )
+        {
+            wxch = par.items + par.async * params.w;
+            copy = par.local + par.async * params.l;
+        }
+        inline void keep_max(const cycle_rates &other)
+        {
+            if(wxch<other.wxch) wxch = other.wxch;
+            if(copy<other.copy) copy = other.copy;
         }
         YOCTO_PAIR_END();
 

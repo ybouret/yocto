@@ -9,6 +9,9 @@ namespace yocto
 {
     namespace ipso
     {
+
+
+
         //! a partition is a list of domains
         template <typename COORD>
         class partition : public object, public domain<COORD>::list
@@ -25,8 +28,7 @@ namespace yocto
             const COORD        sizes; //!< keep track of global sizes
             partition         *next;
             partition         *prev;
-            metrics::type      score;
-            const domain_type *largest;
+            cycle_rates        rates;
 
 
             explicit partition(const divider<COORD>  &full,
@@ -37,22 +39,12 @@ namespace yocto
             sizes(full.sizes),
             next(0),
             prev(0),
-            score(),
-            largest(0)
+            rates()
             {
                 //std::cerr << "partition " << sizes << std::endl;
                 for(size_t rank=0;rank<full.size;++rank)
                 {
                     this->push_back( new domain_type(full,rank,ng,pbcs,build) );
-                }
-                const domain_type *dom = this->head;
-                largest = dom;
-                for(dom=dom->next;dom;dom=dom->next)
-                {
-                    if(metrics::compare(dom->load,largest->load)>0)
-                    {
-                        largest = dom;
-                    }
                 }
             }
 
@@ -101,6 +93,46 @@ namespace yocto
                 }
             }
 
+            inline void compute_rates(const cycle_params &params)
+            {
+                rates.clear();
+                for(const domain_type *dom=this->head;dom;dom=dom->next)
+                {
+                    cycle_rates tmp;
+                    tmp.compute_from(params,dom->load);
+                    rates.keep_max(tmp);
+                }
+            }
+
+            static inline
+            int compare_by_rates(const partition *lhs, const partition *rhs, void *) throw()
+            {
+                const metrics::type &wl = lhs->rates.wxch;
+                const metrics::type &wr = rhs->rates.wxch;
+                if(wl<wr)
+                {
+                    return -1;
+                }
+                else
+                {
+                    if(wr<wl)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        coord1D L[1+DIM] = { __coord_sum(lhs->sizes) };
+                        coord1D R[1+DIM] = { __coord_sum(rhs->sizes) };
+                        for(size_t dim=0;dim<DIM;++dim)
+                        {
+                            L[1+dim] = __coord(lhs->sizes,dim);
+                            R[1+dim] = __coord(rhs->sizes,dim);
+                        }
+                        return __lexicographic_inc_fwd<coord1D,1+DIM>(L,R);
+                    }
+                }
+            }
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
@@ -131,16 +163,7 @@ namespace yocto
                 std::cerr << "params : " << params.w.to_double() << "," << params.l.to_double() << std::endl;
             }
 
-            inline void compute_score(const metrics::type &alpha)
-            {
-                score = 0;
-                for(const domain_type *dom=this->head;dom;dom=dom->next)
-                {
-                    //const metrics::type tmp = dom->load.items + alpha * dom->load.coeff;
-                    //if(tmp>score) score=tmp;
-                }
-                std::cerr << "\tscore for " << sizes << "=" << score.to_double() << std::endl;
-            }
+
 
             static inline
             COORD compute_optimal_from( list &plist )
@@ -155,7 +178,20 @@ namespace yocto
 
                     cycle_params params;
                     find_half_params(params,half,seq);
+                    for(partition *p=plist.head;p;p=p->next)
+                    {
+                        //std::cerr << "for " << p->sizes;
+                        p->compute_rates(params);
+                        //std::cerr << "\trates=" << p->rates.wxch.to_double() << "\t+lambda*" << p->rates.copy.to_double() << std::endl;
+                    }
 
+                    core::merging<partition>::sort(plist,compare_by_rates,NULL);
+                    for(partition *p=plist.head;p;p=p->next)
+                    {
+                        std::cerr << "for " << p->sizes;
+                        p->compute_rates(params);
+                        std::cerr << "\trates=" << p->rates.wxch.to_double() << "\t+lambda*" << p->rates.copy.to_double() << "\t| " << p->rates << std::endl;
+                    }
 
                     return sequential->sizes;
                 }
