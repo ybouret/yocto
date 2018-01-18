@@ -84,6 +84,9 @@ namespace yocto
             core::merging<partition>::sort(plist,partition<coord2D>::compare_by_cores, NULL);
 
             std::cerr << "#partitions=" << plist.size << std::endl;
+            const metrics::type &Ws = plist.head->head->load.items;
+            const metrics::type &Ls = plist.head->head->load.local;
+            std::cerr << "\tsequential=" << Ws << ", local=" << Ls << std::endl;
             for(const partition *p = plist.head;p;p=p->next)
             {
                 std::cerr << "accepting sizes=" << p->sizes << ", #cpu=" << p->size << std::endl;
@@ -94,7 +97,10 @@ namespace yocto
             }
             for(const partition *p = plist.head;p;p=p->next)
             {
-                std::cerr << "largest for " << p->sizes << " is " <<  p->largest->load << std::endl;
+                const metrics::type nn = (p->size>1)?p->size-1:1;
+                const metrics::type ww = Ws/nn;
+                const metrics::type ll = Ls/nn;
+                std::cerr << "largest for " << p->sizes << " is " <<  p->largest->load << " | Wn=" << ww.to_double() << ", Ln=" << ll.to_double() << std::endl;
             }
             //__________________________________________________________________
             //

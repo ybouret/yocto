@@ -20,14 +20,13 @@ namespace yocto
             const type items;
             const type async;
             const type local;
-            const type coeff;
 
             explicit metrics(const size_t num_items);
             virtual ~metrics() throw();
             metrics(const metrics&);
             friend inline std::ostream & operator<<( std::ostream &os, const metrics &m )
             {
-                os << "(items=" << m.items << ", async=" << m.async << ", local=" << m.local << ", coeff=" << m.coeff << ")";
+                os << "(items=" << m.items << ", async=" << m.async << ", local=" << m.local <<  ")";
                 return os;
             }
 
@@ -210,13 +209,14 @@ namespace yocto
                 //______________________________________________________________
                 size_t       num_async  = 0;
                 size_t       num_local  = 0;
-                const size_t weight     = __coord_sum(full.sizes);
+                //std::cerr << "\tdomain@" << ranks << ":" << std::endl;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     for(ghosts *g = async[dim].head; g; g=g->next)
                     {
                         assert(rank==g->source);
                         g->load(inner,outer,build);
+                        //std::cerr << "\t\t" << g->source << "<->" << g->target << "+async@" << __coord_name(dim) << " " << g->count << std::endl;
                         num_async += g->count;
                     }
 
@@ -233,7 +233,7 @@ namespace yocto
                 //______________________________________________________________
                 (metrics::type &)(load.async) = metrics::type(num_async);
                 (metrics::type &)(load.local) = metrics::type(num_local);
-                (metrics::type &)(load.coeff) = metrics::type(num_async,weight);
+                //(metrics::type &)(load.coeff) = metrics::type(num_async,weight);
 
             }
 

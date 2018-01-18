@@ -87,6 +87,18 @@ namespace yocto
             return p;
         }
 
+        inline const char * __coord_name(const size_t dim) throw()
+        {
+            switch(dim)
+            {
+                case 0: return "x";
+                case 1: return "y";
+                case 2: return "z";
+                default:
+                    break;
+            }
+            return "?";
+        }
 
     }
 }

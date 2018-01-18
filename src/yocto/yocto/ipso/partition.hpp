@@ -40,6 +40,7 @@ namespace yocto
             score(),
             largest(0)
             {
+                //std::cerr << "partition " << sizes << std::endl;
                 for(size_t rank=0;rank<full.size;++rank)
                 {
                     this->push_back( new domain_type(full,rank,ng,pbcs,build) );
@@ -53,7 +54,6 @@ namespace yocto
                         largest = dom;
                     }
                 }
-                //std::cerr << "Largest of " << sizes << "=" << largest->load << std::endl;
             }
 
             virtual ~partition() throw()
@@ -133,8 +133,8 @@ namespace yocto
                 score = 0;
                 for(const domain_type *dom=this->head;dom;dom=dom->next)
                 {
-                    const metrics::type tmp = dom->load.items + alpha * dom->load.coeff;
-                    if(tmp>score) score=tmp;
+                    //const metrics::type tmp = dom->load.items + alpha * dom->load.coeff;
+                    //if(tmp>score) score=tmp;
                 }
                 std::cerr << "\tscore for " << sizes << "=" << score.to_double() << std::endl;
             }
