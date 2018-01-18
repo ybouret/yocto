@@ -11,7 +11,7 @@ namespace yocto
     namespace ipso
     {
 
-
+        //! a domain's metrics in terms or items to compute, async and local copy
         class metrics
         {
         public:
@@ -37,6 +37,7 @@ namespace yocto
             YOCTO_DISABLE_ASSIGN(metrics);
         };
 
+        //! parameters ensuring parallel division is worthy
         YOCTO_PAIR_DECL(STANDARD,cycle_params,metrics::type,w,metrics::type,l);
         typedef metrics::type type;
         inline cycle_params() : w(), l() {}
@@ -53,6 +54,7 @@ namespace yocto
             if(other.l<l) l=other.l;
         }
         YOCTO_PAIR_END();
+
 
         YOCTO_PAIR_DECL(STANDARD,cycle_rates,metrics::type,wxch,metrics::type,copy);
         inline cycle_rates() : wxch(), copy() {}

@@ -52,10 +52,15 @@ namespace yocto
             {
             }
 
-            static COORD optimal(const size_t        max_cpus,
+            //! build the possible partitions
+            /**
+             uses the unified call after that
+             */
+            static COORD optimal(const size_t       max_cpus,
                                  const size_t        num_ghosts,
                                  const patch<COORD> &zone,
-                                 const COORD         pbcs);
+                                 const COORD         pbcs,
+                                 COORD              *fallback);
 
             //! for 2D and 3D, rank by supposedly fastest partition
             static inline
@@ -166,25 +171,53 @@ namespace yocto
 
 
             static inline
-            COORD compute_optimal_from( list &plist )
+            COORD compute_optimal_from(list         &plist,
+                                       const coord1D max_cpus)
             {
+                assert(max_cpus>0);
+
+                //______________________________________________________________
+                //
+                // rank by cores/splitting: first is one core, the slowest
+                //______________________________________________________________
+                core::merging<partition>::sort(plist,partition::compare_by_cores, NULL);
+                std::cerr << "#partitions=" << plist.size << std::endl;
+
+                for(const partition *p = plist.head;p;p=p->next)
+                {
+                    std::cerr << "accepting sizes=" << p->sizes << ", #cpu=" << p->size << std::endl;
+                    for(const domain_type *d = p->head; d; d=d->next)
+                    {
+                        std::cerr << "\t" << d->ranks << " : " << d->load << " | " << d->inner << std::endl;
+                    }
+                }
+
+                //______________________________________________________________
+                //
+                // the use information
+                //______________________________________________________________
                 partition     *sequential  = plist.head; assert(1==sequential->size);
                 const metrics &seq         = sequential->head->load;
+                const COORD    seq_sizes   = sequential->sizes;
+
                 std::cerr << "#sequential=" << seq << std::endl;
                 if(plist.size>1)
                 {
+                    // find test partitions
                     meta_list            half;
                     find_half_partitions(half,plist);
 
+                    // compute parameters ensuring that test partitions are worthy
                     cycle_params params;
                     find_half_params(params,half,seq);
+
+                    // then compute rates to see if further parallelism is ok
                     for(partition *p=plist.head;p;p=p->next)
                     {
-                        //std::cerr << "for " << p->sizes;
                         p->compute_rates(params);
-                        //std::cerr << "\trates=" << p->rates.wxch.to_double() << "\t+lambda*" << p->rates.copy.to_double() << std::endl;
                     }
 
+                    // sort according to rates and topology
                     core::merging<partition>::sort(plist,compare_by_rates,NULL);
                     for(partition *p=plist.head;p;p=p->next)
                     {
@@ -193,7 +226,37 @@ namespace yocto
                         std::cerr << "\trates=" << p->rates.wxch.to_double() << "\t+lambda*" << p->rates.copy.to_double() << "\t| " << p->rates << std::endl;
                     }
 
-                    return sequential->sizes;
+                    // keep above optimal cpu counts
+                    const coord1D cpus    = plist.head->size;
+                    bool          has_max = false;
+                    std::cerr << "retaining #cpus=" << cpus << std::endl;
+
+
+                    {
+
+                        list tmp;
+                        while(plist.size>0)
+                        {
+                            partition *p = plist.pop_front();
+                            if(p->size>=cpus)
+                            {
+
+                                tmp.push_back(p);
+                            }
+                            else
+                            {
+                                delete p;
+                            }
+                        }
+                        plist.swap_with(tmp);
+                    }
+                    std::cerr << "kept partitions: " << std::endl;
+                    for(partition *p=plist.head;p;p=p->next)
+                    {
+                        std::cerr << p->sizes << "\trates=" << p->rates.wxch.to_double() << "\t+lambda*" << p->rates.copy.to_double() << "\t| " << p->rates << std::endl;
+                    }
+
+                    return seq_sizes;
                 }
                 else
                 {
@@ -201,7 +264,7 @@ namespace yocto
                     //
                     // only one possible way
                     //__________________________________________________________
-                    return sequential->sizes;
+                    return seq_sizes;
                 }
             }
 
