@@ -3,17 +3,17 @@
 
 using namespace yocto;
 
-YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,Coord,int,x,double,y);
+YOCTO_PAIR_DECL(STANDARD,Coord,int,x,double,y);
 
 YOCTO_DISABLE_ASSIGN(Coord);
 YOCTO_PAIR_END();
 
-YOCTO_TRIPLE_DECL(YOCTO_TUPLE_STANDARD,Coord3,int,x,const double,y,long,z);
+YOCTO_TRIPLE_DECL(STANDARD,Coord3,int,x,const double,y,long,z);
 
 YOCTO_DISABLE_ASSIGN(Coord3);
 YOCTO_TRIPLE_END();
 
-YOCTO_QUAD_DECL(YOCTO_TUPLE_STANDARD,Qat,int,x,const double,y,long,z,float,w);
+YOCTO_QUAD_DECL(STANDARD,Qat,int,x,const double,y,long,z,float,w);
 
 inline Qat() throw() : x(0), y(0), z(0), w(0) {}
 
@@ -21,10 +21,10 @@ YOCTO_DISABLE_ASSIGN(Qat);
 YOCTO_QUAD_END();
 
 
-YOCTO_PENTUPLE_DECL(YOCTO_TUPLE_STANDARD,Pentuple,int,a,int, b, int, c, int,d,int,e);
+YOCTO_PENTUPLE_DECL(STANDARD,Pentuple,int,a,int, b, int, c, int,d,int,e);
 YOCTO_PENTUPLE_END();
 
-YOCTO_SEXTUPLE_DECL(YOCTO_TUPLE_STANDARD,Sextuple,int,a,int, b, int, c, int,d,int,e,int,f);
+YOCTO_SEXTUPLE_DECL(STANDARD,Sextuple,int,a,int, b, int, c, int,d,int,e,int,f);
 YOCTO_SEXTUPLE_END();
 
 

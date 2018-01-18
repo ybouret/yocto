@@ -44,7 +44,22 @@ namespace yocto
             YOCTO_DISABLE_ASSIGN(metrics);
         };
 
-       
+        YOCTO_PAIR_DECL(STANDARD,cycle_params,metrics::type,w,metrics::type,l);
+        typedef metrics::type type;
+        inline cycle_params() : w(), l() {}
+        inline void compute_from(const metrics &seq, const metrics &par)
+        {
+            const type dA  = 1;
+            const type A   = par.async+1;
+            w = (seq.items - par.items)/A;
+            l = (seq.local - par.local)/A;
+        }
+        inline void keep_min(const cycle_params &other)
+        {
+            if(other.w<w) w=other.w;
+            if(other.l<l) l=other.l;
+        }
+        YOCTO_PAIR_END();
 
         template <typename COORD>
         class domain : public object

@@ -95,13 +95,7 @@ namespace yocto
                     std::cerr << "\t" << d->ranks << " : " << d->load << " | " << d->inner << std::endl;
                 }
             }
-            for(const partition *p = plist.head;p;p=p->next)
-            {
-                const metrics::type nn = (p->size>1)?p->size-1:1;
-                const metrics::type ww = Ws/nn;
-                const metrics::type ll = Ls/nn;
-                std::cerr << "largest for " << p->sizes << " is " <<  p->largest->load << " | Wn=" << ww.to_double() << ", Ln=" << ll.to_double() << std::endl;
-            }
+            
             //__________________________________________________________________
             //
             // then use algorithm

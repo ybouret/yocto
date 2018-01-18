@@ -6,7 +6,7 @@
 
 using namespace yocto;
 
-YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,XCH,int,i,int,j);
+YOCTO_PAIR_DECL(STANDARD,XCH,int,i,int,j);
 YOCTO_PAIR_END();
 
 struct XCH_OPS

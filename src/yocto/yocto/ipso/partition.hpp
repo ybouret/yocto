@@ -89,17 +89,18 @@ namespace yocto
                 }
             }
 
-            metrics::type compute_alpha(const metrics &seq ) const
+            inline void compute_params(cycle_params &params, const metrics &seq) const
             {
-                const domain_type  *dom   = this->head;
-                metrics::type       alpha = dom->load.compute_alpha(seq);
+                const domain_type *dom = this->head;
+                params.compute_from(seq,dom->load);
                 for(dom=dom->next;dom;dom=dom->next)
                 {
-                    metrics::type tmp = dom->load.compute_alpha(seq);
-                    if(tmp<alpha) alpha=tmp;
+                    cycle_params tmp;
+                    tmp.compute_from(seq,dom->load);
+                    params.keep_min(tmp);
                 }
-                return alpha;
             }
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
@@ -115,17 +116,19 @@ namespace yocto
                 if(half.size<=0) throw exception("no half size partition%u",unsigned(DIM));
             }
 
-            static inline metrics::type find_alpha_from( const meta_list &half, const metrics &seq)
+            static inline void find_half_params( cycle_params &params, const meta_list &half, const metrics &seq )
             {
-                assert(half.size>0);
-                const meta_node *mp    = half.head;
-                metrics::type    alpha = mp->addr->compute_alpha(seq);
-                for(mp=mp->next;mp;mp=mp->next)
+                const meta_node *mp = half.head;
+                mp->addr->compute_params(params,seq);
+                std::cerr << "for " << mp->addr->sizes << " : " << params.w.to_double() << "," << params.l.to_double() << std::endl;
+                for(mp = mp->next; mp; mp=mp->next)
                 {
-                    const metrics::type tmp = mp->addr->compute_alpha(seq);
-                    if(tmp<alpha) alpha=tmp;
+                    cycle_params tmp;
+                    mp->addr->compute_params(tmp,seq);
+                    std::cerr << "for " << mp->addr->sizes << " : " << tmp.w.to_double() << "," << tmp.l.to_double() << std::endl;
+                    params.keep_min(tmp);
                 }
-                return alpha;
+                std::cerr << "params : " << params.w.to_double() << "," << params.l.to_double() << std::endl;
             }
 
             inline void compute_score(const metrics::type &alpha)
@@ -147,20 +150,12 @@ namespace yocto
                 std::cerr << "#sequential=" << seq << std::endl;
                 if(plist.size>1)
                 {
-                    meta_list half;
+                    meta_list            half;
                     find_half_partitions(half,plist);
 
-                    for(const meta_node *mp=half.head;mp;mp=mp->next)
-                    {
-                        const metrics::type tmp = mp->addr->compute_alpha(seq);
-                        std::cerr << "\t\talpha=" << tmp << "=" << tmp.to_double() << std::endl;
-                    }
-                    const metrics::type alpha = find_alpha_from(half,seq);
-                    std::cerr << "\talpha=" << alpha << "=" << alpha.to_double() << std::endl;
-                    for(partition *p=plist.head;p;p=p->next)
-                    {
-                        p->compute_score(alpha);
-                    }
+                    cycle_params params;
+                    find_half_params(params,half,seq);
+
 
                     return sequential->sizes;
                 }

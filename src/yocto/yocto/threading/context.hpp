@@ -52,7 +52,7 @@ namespace yocto
             }
 
             //! example of data
-            YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,range,const size_t,offset,const size_t,length);
+            YOCTO_PAIR_DECL(STANDARD,range,const size_t,offset,const size_t,length);
             inline range(const context &ctx,const size_t n) throw() :
             offset(1), length(n) { ctx.split<size_t>((size_t&)offset,(size_t&)length); }
             YOCTO_PAIR_END();
