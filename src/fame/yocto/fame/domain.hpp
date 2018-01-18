@@ -26,7 +26,7 @@ namespace yocto
             //
             //! peer information about this and neigbors
             //__________________________________________________________________
-            YOCTO_TRIPLE_DECL(YOCTO_TUPLE_TEMPLATE,peer,
+            YOCTO_TRIPLE_DECL(TEMPLATE,peer,
                               const coord1d,rank,
                               const_coord,ranks,
                               bool,local);

@@ -17,7 +17,7 @@ namespace yocto
         class stencil
         {
         public:
-            YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,mask,vertex,r,float,weight);
+            YOCTO_PAIR_DECL(STANDARD,mask,vertex,r,float,weight);
             inline mask & operator=(const mask &other) throw()
             {
                 r=other.r;
@@ -26,7 +26,7 @@ namespace yocto
             }
             YOCTO_PAIR_END();
 
-            YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,info,float,vmin,float,vmax);
+            YOCTO_PAIR_DECL(STANDARD,info,float,vmin,float,vmax);
             inline info() throw() : vmin(0), vmax(0) {}
             inline info & operator=(const info &other) throw() { vmin = other.vmin; vmax = other.vmax; return *this; }
             YOCTO_PAIR_END();
