@@ -4,6 +4,7 @@
 #include "yocto/ipso/domain.hpp"
 #include "yocto/sequence/addr-list.hpp"
 #include "yocto/container/tuple.hpp"
+#include "yocto/core/node.hpp"
 
 namespace yocto
 {
@@ -19,12 +20,14 @@ namespace yocto
         public:
             static const size_t DIM = sizeof(COORD)/sizeof(coord1D);
 
-            typedef domain<COORD>                domain_type;
-            typedef typename domain_type::list   domains;
-            typedef core::list_of_cpp<partition> list;
-            typedef addr_list<partition>         meta_list;
-            typedef addr_node<partition>         meta_node;
-
+            typedef domain<COORD>                 domain_type;
+            typedef typename domain_type::list    domains;
+            typedef core::list_of_cpp<partition>  list;
+            typedef addr_list<partition>          meta_list;
+            typedef addr_node<partition>          meta_node;
+            typedef core::dnode_of<COORD>         sizes_node;
+            typedef core::list_of_cpp<sizes_node> sizes_list;
+            
             const COORD        sizes; //!< keep track of global sizes
             partition         *next;
             partition         *prev;
@@ -168,7 +171,40 @@ namespace yocto
                 std::cerr << "params : " << params.w.to_double() << "," << params.l.to_double() << std::endl;
             }
 
-
+            static inline void retain_cpus(const coord1D cpus,
+                                           list         &plist,
+                                           list         &flist )
+            {
+                assert(0==flist.size);
+                list tmp;
+                while(plist.size>0)
+                {
+                    partition *p = plist.pop_front();
+                    if(p->size<cpus)
+                    {
+                        delete p;
+                    }
+                    else
+                    {
+                        tmp.push_back(p);
+                    }
+                    
+                }
+                while(tmp.size>0)
+                {
+                    partition *p = tmp.pop_front();
+                    assert(p->size>=cpus);
+                    if(p->size>cpus)
+                    {
+                        flist.push_back(p);
+                    }
+                    else
+                    {
+                        plist.push_back(p);
+                    }
+                }
+                
+            }
 
             static inline
             COORD compute_optimal_from(list         &plist,
@@ -194,7 +230,7 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // the use information
+                // then use information
                 //______________________________________________________________
                 partition     *sequential  = plist.head; assert(1==sequential->size);
                 const metrics &seq         = sequential->head->load;
@@ -227,35 +263,23 @@ namespace yocto
                     }
 
                     // keep above optimal cpu counts
-                    const coord1D cpus    = plist.head->size;
-                    bool          has_max = false;
+                    const coord1D cpus = plist.head->size;
+                    list          flist; //!< fallback list
                     std::cerr << "retaining #cpus=" << cpus << std::endl;
-
-
+                    retain_cpus(cpus,plist,flist);
+                    
+                    std::cerr << "fallback partitions: " << std::endl;
+                    for(partition *p=flist.head;p;p=p->next)
                     {
-
-                        list tmp;
-                        while(plist.size>0)
-                        {
-                            partition *p = plist.pop_front();
-                            if(p->size>=cpus)
-                            {
-
-                                tmp.push_back(p);
-                            }
-                            else
-                            {
-                                delete p;
-                            }
-                        }
-                        plist.swap_with(tmp);
+                        std::cerr << p->sizes << "\trates=" << p->rates.wxch.to_double() << "\t+lambda*" << p->rates.copy.to_double() << "\t| " << p->rates << std::endl;
                     }
+                    
                     std::cerr << "kept partitions: " << std::endl;
                     for(partition *p=plist.head;p;p=p->next)
                     {
                         std::cerr << p->sizes << "\trates=" << p->rates.wxch.to_double() << "\t+lambda*" << p->rates.copy.to_double() << "\t| " << p->rates << std::endl;
                     }
-
+                    
                     return seq_sizes;
                 }
                 else

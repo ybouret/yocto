@@ -39,6 +39,24 @@ namespace yocto
         private:
             YOCTO_DISABLE_ASSIGN(node_of);
         };
+        
+        template <typename T>
+        class dnode_of
+        {
+        public:
+            YOCTO_ARGUMENTS_DECL_T;
+            dnode_of *next;
+            dnode_of *prev;
+            type      data;
+            inline  ~dnode_of() throw() { assert(!next); assert(!prev); }
+            inline   dnode_of() : next(0), prev(0), data() {}
+            inline   dnode_of(const dnode_of &other) : next(0), prev(0), data(other.data) {}
+            inline   dnode_of(const param_type args) : next(0), prev(0), data(args)       {}
+            
+            YOCTO_MAKE_OBJECT
+        private:
+            YOCTO_DISABLE_ASSIGN(dnode_of);
+        };
     }
 }
 

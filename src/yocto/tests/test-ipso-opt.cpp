@@ -73,7 +73,7 @@ YOCTO_UNIT_TEST_IMPL(ipso_opt)
         std::cerr << "opt_sizes=" << sizes << std::endl;
     }
 
-    if(false)
+    if(true)
     {
         const patch3D zone( coord3D(1,1,1), coord3D(dims.x,dims.y,dims.z) );
         coord3D fallback;
