@@ -31,7 +31,7 @@ namespace yocto
 
             const ghost     send;    //!< built by load if the 'build' flag is set
             const ghost     recv;    //!< built by load if the 'build' flag is set
-            const size_t    count;   //!< built by load, always
+            const size_t    count;   //!< built by load, ALWAYS
             const size_t    source;  //!< MPI style source
             const size_t    target;  //!< MPI style target
             const size_t    source_index; //!< source+1, C++ style
