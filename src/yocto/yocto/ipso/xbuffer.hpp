@@ -21,7 +21,7 @@ namespace yocto
             template <typename T>
             inline void store( const T &data ) throw()
             {
-                assert(wptr<base-sizeof(T));
+                assert(wptr<=last-sizeof(T));
                 memcpy(wptr,&data,sizeof(T));
                 wptr += sizeof(T);
             }
@@ -29,10 +29,19 @@ namespace yocto
             template <typename T>
             inline T query() throw()
             {
+                assert(rptr<=wptr-sizeof(T));
                 T ans(0);
                 memcpy(&ans,rptr,sizeof(T));
                 rptr += sizeof(T);
                 return ans;
+            }
+            
+            template <typename T>
+            inline void query( T &ans ) throw()
+            {
+                assert(rptr<=wptr-sizeof(T));
+                memcpy(&ans,rptr,sizeof(T));
+                rptr += sizeof(T);
             }
             
             

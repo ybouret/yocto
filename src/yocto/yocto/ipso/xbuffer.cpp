@@ -7,6 +7,7 @@ namespace yocto
     {
         exchange_buffer:: ~exchange_buffer() throw()
         {
+            memory::kind<memory::global>::release_as(base,size);
         }
         
         exchange_buffer:: exchange_buffer( const size_t num_bytes ) :

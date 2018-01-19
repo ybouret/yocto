@@ -5,4 +5,5 @@ TARGET_LINK_YOCTO(test-ipso)
 ENABLE_TESTING()
 ADD_TEST(ipso   test-ipso ipso)
 ADD_TEST(divide test-ipso divide)
+ADD_TEST(xbuff  test-ipso xbuff)
 
