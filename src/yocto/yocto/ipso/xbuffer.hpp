@@ -2,6 +2,7 @@
 #define YOCTO_IPSO_XBUFFER_INCLUDED 1
 
 #include "yocto/ipso/ghosts.hpp"
+#include "yocto/ipso/field.hpp"
 #include "yocto/counted-object.hpp"
 
 namespace yocto
@@ -43,6 +44,32 @@ namespace yocto
                 memcpy(&ans,rptr,sizeof(T));
                 rptr += sizeof(T);
             }
+            
+            //! store data from field/ghosts.send
+            template <typename T>
+            inline void store(const ghosts &G, const field<T> &F)
+            {
+                const ghost &g = G.send; assert(g.size()==G.count);
+                for(size_t i=G.count;i>0;--i)
+                {
+                    const coord1D j = g[i]; assert(j>=0); assert(j<F.count);
+                    store(F.entry[j]);
+                }
+            }
+            
+            //! query data into field/ghosts.recv
+            template <typename T>
+            inline void query(const ghosts &G, field<T> &F)
+            {
+                const ghost &g = G.recv; assert(g.size()==G.count);
+                for(size_t i=G.count;i>0;--i)
+                {
+                    const coord1D j = g[i]; assert(j>=0); assert(j<F.count);
+                    query(F.entry[j]);
+                }
+            }
+            
+            
             
             
         private:
