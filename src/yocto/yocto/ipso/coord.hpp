@@ -7,6 +7,7 @@
 
 #include "yocto/math/point3d.hpp"
 #include "yocto/type/args.hpp"
+#include <cstdio>
 
 namespace yocto
 {
