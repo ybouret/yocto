@@ -32,6 +32,8 @@ namespace yocto
 
             //! items.async.local
             static int compare(const metrics &lhs, const metrics &rhs) throw();
+            
+            //! mostly for debug
             inline void print(FILE *fp) const
             {
                 assert(fp);
@@ -60,6 +62,7 @@ namespace yocto
         YOCTO_PAIR_END();
 
 
+        //! effective rates
         YOCTO_PAIR_DECL(STANDARD,cycle_rates,metrics::type,wxch,metrics::type,copy);
         inline cycle_rates() : wxch(), copy() {}
         void clear() { wxch.ldz(); copy.ldz(); }
@@ -80,6 +83,8 @@ namespace yocto
         }
         YOCTO_PAIR_END();
 
+        
+        //! a domain describe the full topolgy of a field
         template <typename COORD>
         class domain : public object
         {
