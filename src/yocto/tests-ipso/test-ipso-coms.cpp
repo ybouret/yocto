@@ -179,7 +179,7 @@ void test3D(const coord3D dims,
 
 
 
-YOCTO_UNIT_TEST_IMPL(ipso_coms)
+YOCTO_UNIT_TEST_IMPL(coms)
 {
     if(argc<=3)
     {

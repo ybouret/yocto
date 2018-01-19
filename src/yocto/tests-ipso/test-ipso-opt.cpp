@@ -41,7 +41,7 @@ coord3D parse_triple(const char *text,const char *name)
 
 static size_t ng = 2;
 
-YOCTO_UNIT_TEST_IMPL(ipso_opt)
+YOCTO_UNIT_TEST_IMPL(opt)
 {
     if(argc<=4)
     {

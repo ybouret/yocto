@@ -179,7 +179,7 @@ void domains3D(const coord1D  cpus,
 
 
 
-YOCTO_UNIT_TEST_IMPL(ipso_divide)
+YOCTO_UNIT_TEST_IMPL(divide)
 {
     test_rank_conversion(10);
 
