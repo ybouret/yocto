@@ -4,7 +4,11 @@
 #include "yocto/ipso/domain.hpp"
 #include "yocto/sequence/addr-list.hpp"
 #include "yocto/container/tuple.hpp"
-#include "yocto/core/node.hpp"
+#if 0
+#include "yocto/counted-object.hpp"
+#include "yocto/associative/set.hpp"
+#include "yocto/ptr/intr.hpp"
+#endif
 
 namespace yocto
 {
@@ -25,8 +29,6 @@ namespace yocto
             typedef core::list_of_cpp<partition>  list;
             typedef addr_list<partition>          meta_list;
             typedef addr_node<partition>          meta_node;
-            typedef core::dnode_of<COORD>         sizes_node;
-            typedef core::list_of_cpp<sizes_node> sizes_list;
             
             const COORD        sizes; //!< keep track of global sizes
             partition         *next;
@@ -44,7 +46,6 @@ namespace yocto
             prev(0),
             rates()
             {
-                //std::cerr << "partition " << sizes << std::endl;
                 for(size_t rank=0;rank<full.size;++rank)
                 {
                     this->push_back( new domain_type(full,rank,ng,pbcs,build) );
@@ -59,11 +60,12 @@ namespace yocto
             /**
              uses the unified call after that
              */
-            static COORD optimal(const size_t       max_cpus,
+            static COORD optimal(const size_t        max_cpus,
                                  const size_t        num_ghosts,
                                  const patch<COORD> &zone,
                                  const COORD         pbcs,
-                                 COORD              *fallback);
+                                 COORD              *fallback,
+                                 FILE               *fp);
 
             //! for 2D and 3D, rank by supposedly fastest partition
             static inline
@@ -113,7 +115,20 @@ namespace yocto
             }
 
             static inline
-            int compare_by_rates(const partition *lhs, const partition *rhs, void *) throw()
+            int compare_extended_coords(const COORD &lsz, const COORD &rsz) throw()
+            {
+                coord1D L[1+DIM] = { __coord_sum(lsz) };
+                coord1D R[1+DIM] = { __coord_sum(rsz) };
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    L[1+dim] = __coord(lsz,dim);
+                    R[1+dim] = __coord(rsz,dim);
+                }
+                return __lexicographic_inc_fwd<coord1D,1+DIM>(L,R);
+            }
+
+            static inline
+            int compare_by_wxch(const partition *lhs, const partition *rhs, void *) throw()
             {
                 const metrics::type &wl = lhs->rates.wxch;
                 const metrics::type &wr = rhs->rates.wxch;
@@ -129,14 +144,29 @@ namespace yocto
                     }
                     else
                     {
-                        coord1D L[1+DIM] = { __coord_sum(lhs->sizes) };
-                        coord1D R[1+DIM] = { __coord_sum(rhs->sizes) };
-                        for(size_t dim=0;dim<DIM;++dim)
-                        {
-                            L[1+dim] = __coord(lhs->sizes,dim);
-                            R[1+dim] = __coord(rhs->sizes,dim);
-                        }
-                        return __lexicographic_inc_fwd<coord1D,1+DIM>(L,R);
+                        return compare_extended_coords(lhs->sizes,rhs->sizes);
+                    }
+                }
+            }
+
+            static inline
+            int compare_by_copy(const partition *lhs, const partition *rhs, void *) throw()
+            {
+                const metrics::type &cl = lhs->rates.copy;
+                const metrics::type &cr = rhs->rates.copy;
+                if(cl<cr)
+                {
+                    return -1;
+                }
+                else
+                {
+                    if(cr<cl)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return compare_extended_coords(lhs->sizes,rhs->sizes);
                     }
                 }
             }
@@ -144,59 +174,87 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(partition);
-            static inline void find_half_partitions( meta_list &half, list &plist)
+            //__________________________________________________________________
+            //
+            // find partition(s) with 2 domains
+            //__________________________________________________________________
+            static inline void find_half_partitions(meta_list &half,
+                                                    list      &plist)
             {
                 for(partition *p=plist.head;p;p=p->next)
                 {
-                    if(2==p->size)
-                    {
-                        half.append(p);
-                    }
+                    if(2==p->size) {  half.append(p); }
                 }
                 if(half.size<=0) throw exception("no half size partition%u",unsigned(DIM));
             }
 
-            static inline void find_half_params( cycle_params &params, const meta_list &half, const metrics &seq )
+            //__________________________________________________________________
+            //
+            // compute timing parameters for those partitions
+            //__________________________________________________________________
+            static inline void find_half_params(cycle_params    &params,
+                                                const meta_list &half,
+                                                const metrics   &seq )
             {
                 const meta_node *mp = half.head;
                 mp->addr->compute_params(params,seq);
-                std::cerr << "for " << mp->addr->sizes << " : " << params.w.to_double() << "," << params.l.to_double() << std::endl;
                 for(mp = mp->next; mp; mp=mp->next)
                 {
                     cycle_params tmp;
                     mp->addr->compute_params(tmp,seq);
-                    std::cerr << "for " << mp->addr->sizes << " : " << tmp.w.to_double() << "," << tmp.l.to_double() << std::endl;
                     params.keep_min(tmp);
                 }
-                std::cerr << "params : " << params.w.to_double() << "," << params.l.to_double() << std::endl;
             }
 
-            static inline void retain_cpus(const coord1D cpus,
+            //__________________________________________________________________
+            //
+            // integrated call to compute parameters for half partitions
+            //__________________________________________________________________
+            static inline void find_params(cycle_params  &params,
+                                           list          &plist,
+                                           const metrics &seq)
+            {
+                meta_list half;
+                find_half_partitions(half,plist);
+                find_half_params(params,half,seq);
+            }
+
+            //__________________________________________________________________
+            //
+            // retains partitions with the same optimial size
+            // and try to retain greater sizes for fallaback
+            //__________________________________________________________________
+            static inline void retain_cpus(const size_t  cpus,
                                            list         &plist,
                                            list         &flist )
             {
                 assert(0==flist.size);
-                list tmp;
+                size_t max_cpus = 0;
+                list   tmp;
+                // first pass: detect #max_cpus and remove those under #cpus
                 while(plist.size>0)
                 {
                     partition *p = plist.pop_front();
-                    if(p->size<cpus)
-                    {
-                        delete p;
-                    }
-                    else
-                    {
-                        tmp.push_back(p);
-                    }
-                    
+                    max_cpus = max_of(max_cpus,p->size);
+                    if(p->size<cpus) { delete p;        }
+                    else             { tmp.push_back(p);}
                 }
+
+                // second pass: retain #cpus in plist in #max_cpus in flist
                 while(tmp.size>0)
                 {
                     partition *p = tmp.pop_front();
                     assert(p->size>=cpus);
                     if(p->size>cpus)
                     {
-                        flist.push_back(p);
+                        if(max_cpus==p->size)
+                        {
+                            flist.push_back(p);
+                        }
+                        else
+                        {
+                            delete p;
+                        }
                     }
                     else
                     {
@@ -206,25 +264,34 @@ namespace yocto
                 
             }
 
+            inline void print_rates(FILE *fp) const
+            {
+                 fprintf(fp,"for "); __coord_printf(fp,sizes); fprintf(fp, "\trates= "); rates.print(fp); fprintf(fp,"\n");
+            }
+
             static inline
             COORD compute_optimal_from(list         &plist,
-                                       const coord1D max_cpus)
+                                       COORD        *fallback,
+                                       FILE         *fp)
             {
-                assert(max_cpus>0);
-
+                
                 //______________________________________________________________
                 //
                 // rank by cores/splitting: first is one core, the slowest
                 //______________________________________________________________
-                core::merging<partition>::sort(plist,partition::compare_by_cores, NULL);
-                std::cerr << "#partitions=" << plist.size << std::endl;
-
-                for(const partition *p = plist.head;p;p=p->next)
+                core::merging<partition>::template sort<core::list_of>(plist,partition::compare_by_cores, NULL);
+                if(fp)
                 {
-                    std::cerr << "accepting sizes=" << p->sizes << ", #cpu=" << p->size << std::endl;
-                    for(const domain_type *d = p->head; d; d=d->next)
+                    fprintf(fp,"#partitions=%u\n", unsigned(plist.size));
+                    for(const partition *p = plist.head;p;p=p->next)
                     {
-                        std::cerr << "\t" << d->ranks << " : " << d->load << " | " << d->inner << std::endl;
+                        fprintf(fp,"accepting sizes="); __coord_printf(fp,p->sizes); fprintf(fp," | #cpu=%u\n", unsigned(p->size));
+                        for(const domain_type *d = p->head; d; d=d->next)
+                        {
+                            fprintf(fp,"\t"); __coord_printf(fp,d->ranks);
+                            fprintf(fp," : "); d->load.print(fp);
+                            fprintf(fp,"\n");
+                        }
                     }
                 }
 
@@ -236,51 +303,75 @@ namespace yocto
                 const metrics &seq         = sequential->head->load;
                 const COORD    seq_sizes   = sequential->sizes;
 
-                std::cerr << "#sequential=" << seq << std::endl;
+                if(fp) { fprintf(fp,"#sequential="); seq.print(fp); fprintf(fp,"\n"); }
                 if(plist.size>1)
                 {
-                    // find test partitions
-                    meta_list            half;
-                    find_half_partitions(half,plist);
+                    //__________________________________________________________
+                    //
+                    // compute params based on half partition(s)
+                    //__________________________________________________________
 
-                    // compute parameters ensuring that test partitions are worthy
                     cycle_params params;
-                    find_half_params(params,half,seq);
+                    find_params(params,plist,seq);
+                    if(fp) { fprintf(fp,"params: w=%g l=%g\n", params.w.to_double(), params.l.to_double() ); }
 
+                    //__________________________________________________________
+                    //
                     // then compute rates to see if further parallelism is ok
+                    //__________________________________________________________
                     for(partition *p=plist.head;p;p=p->next)
                     {
                         p->compute_rates(params);
                     }
 
+                    //__________________________________________________________
+                    //
                     // sort according to rates and topology
-                    core::merging<partition>::sort(plist,compare_by_rates,NULL);
-                    for(partition *p=plist.head;p;p=p->next)
+                    //__________________________________________________________
+                    core::merging<partition>::template sort<core::list_of>(plist,compare_by_wxch,NULL);
+                    if(fp)
                     {
-                        std::cerr << "for " << p->sizes;
-                        p->compute_rates(params);
-                        std::cerr << "\trates=" << p->rates.wxch.to_double() << "\t+lambda*" << p->rates.copy.to_double() << "\t| " << p->rates << std::endl;
+                        for(const partition *p=plist.head;p;p=p->next)
+                        {
+                            p->print_rates(fp);
+                        }
                     }
 
+
+                    //__________________________________________________________
+                    //
                     // keep above optimal cpu counts
-                    const coord1D cpus = plist.head->size;
+                    //__________________________________________________________
+
+                    const size_t cpus = plist.head->size;
                     list          flist; //!< fallback list
-                    std::cerr << "retaining #cpus=" << cpus << std::endl;
+                    if(fp) fprintf(fp,"-- retaining #cpus>=%u\n", unsigned(cpus));
                     retain_cpus(cpus,plist,flist);
-                    
-                    std::cerr << "fallback partitions: " << std::endl;
-                    for(partition *p=flist.head;p;p=p->next)
+
+                    if(fp)
                     {
-                        std::cerr << p->sizes << "\trates=" << p->rates.wxch.to_double() << "\t+lambda*" << p->rates.copy.to_double() << "\t| " << p->rates << std::endl;
+                        fprintf(fp,"-- fallback partitions:\n");
+                        for(const partition *p=flist.head;p;p=p->next)
+                        {
+                            p->print_rates(fp);
+                        }
+
+                        fprintf(fp,"-- working  partitions:\n");
+                        for(const partition *p=plist.head;p;p=p->next)
+                        {
+                            p->print_rates(fp);
+                        }
                     }
-                    
-                    std::cerr << "kept partitions: " << std::endl;
-                    for(partition *p=plist.head;p;p=p->next)
+
+                    // then order sub lists by copy/extended coord
+                    core::merging<partition>::template sort<core::list_of>(plist,compare_by_copy,NULL);
+                    core::merging<partition>::template sort<core::list_of>(flist,compare_by_copy,NULL);
+                    const partition *pOptimize = plist.head;
+                    if(fallback)
                     {
-                        std::cerr << p->sizes << "\trates=" << p->rates.wxch.to_double() << "\t+lambda*" << p->rates.copy.to_double() << "\t| " << p->rates << std::endl;
+                        *fallback = ( (flist.size>0) ? flist.head : pOptimize)->sizes;
                     }
-                    
-                    return seq_sizes;
+                    return pOptimize->sizes;
                 }
                 else
                 {

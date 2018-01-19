@@ -32,7 +32,11 @@ namespace yocto
 
             //! items.async.local
             static int compare(const metrics &lhs, const metrics &rhs) throw();
-
+            inline void print(FILE *fp) const
+            {
+                assert(fp);
+                fprintf(fp,"(items=%g async=%g local=%g)",items.to_double(),async.to_double(),local.to_double());
+            }
         private:
             YOCTO_DISABLE_ASSIGN(metrics);
         };
@@ -68,6 +72,11 @@ namespace yocto
         {
             if(wxch<other.wxch) wxch = other.wxch;
             if(copy<other.copy) copy = other.copy;
+        }
+        void print(FILE *fp) const
+        {
+            assert(fp);
+            fprintf(fp,"%g\t+lambda*%g",wxch.to_double(),copy.to_double());
         }
         YOCTO_PAIR_END();
 

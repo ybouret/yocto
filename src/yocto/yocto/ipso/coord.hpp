@@ -100,6 +100,17 @@ namespace yocto
             return "?";
         }
 
+        template <typename COORD>
+        inline void __coord_printf(FILE *fp, const COORD C)
+        {
+            fprintf(fp,"[%g",double(__coord(C,0)));
+            for(size_t i=1;i<sizeof(COORD)/sizeof(coord1D);++i)
+            {
+                fprintf(fp," %g",double(__coord(C,i)));
+            }
+            fprintf(fp,"]");
+        }
+
     }
 }
 

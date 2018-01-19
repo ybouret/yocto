@@ -11,9 +11,13 @@ namespace yocto
                                             const size_t        ,
                                             const patch<coord1D> &zone,
                                             const coord1D         ,
-                                            coord1D              *fallback)
+                                            coord1D              *fallback,
+                                            FILE                 *fp)
         {
-            std::cerr << "1D optimized partition..." << std::endl;
+            if(fp)
+            {
+                fprintf(fp,"1D optimized partition\n");
+            }
             const coord1D ans = min_of<coord1D>(zone.width,max_of<coord1D>(max_cpus,1));
             if(fallback)
             {
@@ -36,7 +40,8 @@ namespace yocto
                                             const size_t          num_ghosts,
                                             const patch<coord2D> &zone,
                                             const coord2D         pbcs,
-                                            coord2D              *fallback)
+                                            coord2D              *fallback,
+                                            FILE                 *fp)
         {
             //__________________________________________________________________
             //
@@ -45,7 +50,10 @@ namespace yocto
             const coord1D n  = max_of<coord1D>(1,max_cpus);
             const coord1D nx = min_of(n,zone.width.x);
             const coord1D ny = min_of(n,zone.width.y);
-            std::cerr << "2D building list of partitions for <= " << n << " cpus" << std::endl;
+            if(fp)
+            {
+                fprintf(fp,"2D building list of partitions for #cpus=%u\n", unsigned(n));
+            }
             partition2D::list plist;
             {
                 coord2D           sizes;
@@ -69,7 +77,7 @@ namespace yocto
             //
             // then use algorithm
             //__________________________________________________________________
-            return compute_optimal_from(plist,n);
+            return compute_optimal_from(plist,fallback,fp);
         }
     }
 }
@@ -83,7 +91,8 @@ namespace yocto
                                             const size_t          num_ghosts,
                                             const patch<coord3D> &zone,
                                             const coord3D         pbcs,
-                                            coord3D              *fallback)
+                                            coord3D              *fallback,
+                                            FILE                 *fp)
         {
             //__________________________________________________________________
             //
@@ -94,7 +103,11 @@ namespace yocto
             const coord1D ny = min_of(n,zone.width.y);
             const coord1D nz = min_of(n,zone.width.z);
 
-            std::cerr << "3D building list of partitions for <= " << n << " cpus" << std::endl;
+           if(fp)
+           {
+               fprintf(fp,"3D building list of partitions for #cpus=%u\n", unsigned(n));
+           }
+
             partition3D::list plist;
             {
                 coord3D           sizes;
@@ -120,7 +133,7 @@ namespace yocto
             //
             // then use algorithm
             //__________________________________________________________________
-            return compute_optimal_from(plist,n);
+            return compute_optimal_from(plist,fallback,fp);
         }
         
     }
