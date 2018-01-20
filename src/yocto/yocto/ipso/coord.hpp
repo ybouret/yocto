@@ -7,6 +7,11 @@
 
 #include "yocto/math/point3d.hpp"
 #include "yocto/type/args.hpp"
+#include "yocto/string/tokenizer.hpp"
+#include "yocto/string.hpp"
+#include "yocto/sequence/vector.hpp"
+#include "yocto/memory/pooled.hpp"
+#include "yocto/exception.hpp"
 #include <cstdio>
 
 namespace yocto
@@ -17,6 +22,8 @@ namespace yocto
         typedef unit_t           coord1D;
         typedef point2d<coord1D> coord2D;
         typedef point3d<coord1D> coord3D;
+
+        
 
         template <typename COORD>
         inline coord1D & __coord(COORD &C,const size_t dim) throw()
@@ -111,6 +118,39 @@ namespace yocto
             }
             fprintf(fp,"]");
         }
+
+        struct __coord_parser
+        {
+            typedef vector<string,memory::pooled::allocator> strings;
+            template <typename COORD>
+            static inline COORD get(const char *text, const char *name)
+            {
+                static const size_t DIM = sizeof(COORD)/sizeof(coord1D);
+                const string id   = name;
+                const string data = text;
+                strings      words(DIM,as_capacity);
+                tokenizer::split(words,data,is_sep);
+                if(DIM!=words.size())
+                {
+                    throw exception("_coord_parser%uD: #words=%u", unsigned(DIM), unsigned(words.size()));
+                }
+                COORD ans;
+                coord1D *q = ( (coord1D *)&ans )  - 1;
+                for(size_t i=1;i<=DIM;++i)
+                {
+                    words[i].clean(is_bad);
+                    const string label = id + '.' + ('x'+(i-1));
+                    q[i] = string2coord(words[i],label);
+                }
+
+                return ans;
+            }
+
+            static coord1D string2coord(const string &word, const string &label);
+            static bool is_sep(char C) throw();
+            static bool is_bad(char C) throw();
+        };
+
 
     }
 }
