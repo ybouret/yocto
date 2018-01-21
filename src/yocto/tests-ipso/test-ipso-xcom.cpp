@@ -3,6 +3,7 @@
 #include "yocto/ipso/partition.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/string/conv.hpp"
+#include "yocto/ipso/field3d.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -27,6 +28,20 @@ void test1D(const coord3D dims,
     {
         std::cerr << "domain1D " << d->ranks << " : inner=" << d->inner << " | outer=" << d->outer << std::endl;
         std::cerr << "\tasyncs=" << d->asyncs << std::endl;
+        const size_t nm = __coord_max(d->asyncs);
+        std::cerr << "\txbuff with " << nm << std::endl;
+        field1D<T> F("f1d",d->outer);
+        exchange_buffer xbuff(nm*sizeof(T));
+
+        for(size_t dim=0;dim<1;++dim)
+        {
+            for(const ghosts *G = d->async[dim].head;G;G=G->next)
+            {
+                xbuff.reset();
+                xbuff.store(*G,F);
+                xbuff.query(*G,F);
+            }
+        }
     }
 }
 
@@ -49,8 +64,58 @@ void test2D(const coord3D dims,
     {
         std::cerr << "domain2D " << d->ranks << " : inner=" << d->inner << " | outer=" << d->outer << std::endl;
         std::cerr << "\tasyncs=" << d->asyncs << std::endl;
+        const size_t nm = __coord_max(d->asyncs);
+        std::cerr << "\txbuff with " << nm << std::endl;
+        field2D<T> F("f2d",d->outer);
+        exchange_buffer xbuff(nm*sizeof(T));
+
+        for(size_t dim=0;dim<1;++dim)
+        {
+            for(const ghosts *G = d->async[dim].head;G;G=G->next)
+            {
+                xbuff.reset();
+                xbuff.store(*G,F);
+                xbuff.query(*G,F);
+            }
+        }
     }
 }
+
+template <typename T>
+static inline
+void test3D(const coord3D dims,
+            const coord3D pbcs,
+            const coord1D cpus,
+            const coord1D ng)
+{
+    std::cerr << "######## 3D/cpus=" << cpus << std::endl;
+    const patch3D      region( coord3D(1,1,1),dims);
+    coord3D            fallback;
+    const coord3D sizes = partition3D::optimal(cpus,ng,region,pbcs, &fallback,NULL);
+    std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
+    const divide::in3D full(sizes,region);
+    const partition3D  parts(full,ng,pbcs,true);
+    for(const domain3D *d=parts.head;d;d=d->next)
+    {
+        std::cerr << "domain3D " << d->ranks << " : inner=" << d->inner << " | outer=" << d->outer << std::endl;
+        std::cerr << "\tasyncs=" << d->asyncs << std::endl;
+        const size_t nm = __coord_max(d->asyncs);
+        std::cerr << "\txbuff with " << nm << std::endl;
+        field3D<T> F("f3d",d->outer);
+        exchange_buffer xbuff(nm*sizeof(T));
+
+        for(size_t dim=0;dim<1;++dim)
+        {
+            for(const ghosts *G = d->async[dim].head;G;G=G->next)
+            {
+                xbuff.reset();
+                xbuff.store(*G,F);
+                xbuff.query(*G,F);
+            }
+        }
+    }
+}
+
 
 
 
@@ -73,6 +138,7 @@ YOCTO_UNIT_TEST_IMPL(xcom)
 
     test1D<float>(dims,pbcs,cpus,ng);
     test2D<double>(dims,pbcs,cpus,ng);
+    test3D<uint16_t>(dims,pbcs,cpus,ng);
 
     __SHOW(domain1D);
     __SHOW(domain2D);
