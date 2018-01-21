@@ -14,27 +14,20 @@ namespace yocto
         public:
             YOCTO_ARGUMENTS_DECL_T;
 
+#define YOCTO_IPSO_FIELD1D_CTOR() \
+field<T>(id),  \
+patch1D(p),     \
+item(0),         \
+wksp(0),          \
+wlen(0)
+
             //! construct a field or link it is usr!=NULL
-            inline explicit field1D(const patch1D &p,
+            inline explicit field1D(const char    *id,
+                                    const patch1D &p,
                                     void          *usr=NULL) :
-            field<T>(),
-            patch1D(p),
-            item(0),
-            wksp(0),
-            wlen(0)
+            YOCTO_IPSO_FIELD1D_CTOR()
             {
-                if(!usr)
-                {
-                    wlen  = this->items * sizeof(type);
-                    wksp  = memory::kind<memory::global>::acquire(wlen);
-                    this->entry = static_cast<type*>(wksp);
-                }
-                else
-                {
-                    this->entry = static_cast<type*>(usr);
-                }
-                item  = this->entry - p.lower;
-                this->set_bytes(this->items);
+                build_with(p,usr);
             }
 
             inline virtual ~field1D() throw()
@@ -85,6 +78,21 @@ namespace yocto
             size_t wlen;
 
             YOCTO_DISABLE_COPY_AND_ASSIGN(field1D);
+            inline void build_with(const patch1D &p,void *usr)
+            {
+                if(!usr)
+                {
+                    wlen  = this->items * sizeof(type);
+                    wksp  = memory::kind<memory::global>::acquire(wlen);
+                    this->entry = static_cast<type*>(wksp);
+                }
+                else
+                {
+                    this->entry = static_cast<type*>(usr);
+                }
+                item  = this->entry - p.lower;
+                this->set_bytes(this->items);
+            }
         };
 
     }

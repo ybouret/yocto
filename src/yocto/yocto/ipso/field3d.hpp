@@ -15,8 +15,9 @@ namespace yocto
             typedef field1D<T> row;
             typedef field2D<T> slice;
 
-            inline explicit field3D( const patch3D &p ) :
-            field<T>(),
+            inline explicit field3D(const char    *id,
+                                    const patch3D &p ) :
+            field<T>(id),
             patch3D(p),
             slice_patch( coord2D(p.lower.x,p.lower.y), coord2D(p.upper.x,p.upper.y) ),
             slices(0),
@@ -50,9 +51,10 @@ namespace yocto
 
                 for(coord1D k=this->lower.z;k<=this->upper.z;++k)
                 {
-                    new (slices+k) slice(slice_patch,data,r);
+                    const string slice_id = this->name + vformat("[%d]",int(k));
+                    new (&slices[k]) slice(*slice_id,slice_patch,data,r);
                     data += data_per_slice;
-                    rows += rows_per_slice;
+                    r    += rows_per_slice;
                 }
 
                 this->set_bytes(this->items);
@@ -62,6 +64,10 @@ namespace yocto
 
             inline virtual ~field3D() throw()
             {
+                for(coord1D k=this->upper.z;k>=this->lower.z;--k)
+                {
+                    destruct( &slices[k] );
+                }
                 memory::kind<memory::global>::release(wksp,wlen);
             }
 

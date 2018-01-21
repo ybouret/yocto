@@ -11,32 +11,44 @@ namespace yocto
     namespace ipso
     {
 
+        class field_info : public counted_object
+        {
+        public:
+            const string name;
+            const size_t count; //!< items count
+            const size_t bytes; //!< bytes
 
+            virtual ~field_info() throw();
+
+        protected:
+            explicit field_info(const char   *id);
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(field_info);
+        };
 
         template <typename T>
-        class field : public counted_object
+        class field : public field_info
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
 
             inline virtual ~field() throw() {}
+
             T           *entry; //!< linear items
-            const size_t count; //!< items count
-            const size_t bytes; //!< bytes
-            inline void ldz() throw() { memset(entry,0,bytes); }
+
+
+            inline void ldz() throw() { assert(entry); assert(bytes); memset(entry,0,bytes); }
             inline void ld( param_type arg ) throw()
             {
+                assert(entry); assert(bytes); 
                 for(size_t i=0;i<count;++i) memcpy(&entry[i],&arg,sizeof(T));
             }
 
         protected:
-            inline explicit field() throw() :
-            entry(0),
-            count(0),
-            bytes(0)
-            {
-            }
-
+            inline explicit field(const char *id) :
+            field_info(id), entry(0) {}
+            
             void set_bytes(const size_t items) throw()
             {
                 (size_t &)count = items;

@@ -34,7 +34,8 @@ void test1D( const coord3D dims, const coord3D pbcs, const coord1D cpus)
         std::cerr << "field#" << f << std::endl;
         std::cerr << "\tinner: " << d->inner << std::endl;
         std::cerr << "\touter: " << d->outer << std::endl;
-        F1Dptr pF( new F1D(d->outer) );
+        const string id = vformat("field1D#%u",unsigned(f));
+        F1Dptr pF( new F1D(*id,d->outer) );
         fields.push_back(pF);
         pF->ld(1);
     }
@@ -79,7 +80,8 @@ void test2D(const coord3D dims,
                 std::cerr << "field#" << f << std::endl;
                 std::cerr << "\tinner: " << d->inner << std::endl;
                 std::cerr << "\touter: " << d->outer << std::endl;
-                F2Dptr pF( new F2D(d->outer) );
+                const string id = vformat("field1D#%u",unsigned(f));
+                F2Dptr pF( new F2D(*id,d->outer) );
                 fields.push_back(pF);
                 pF->ld(1);
             }
@@ -129,7 +131,8 @@ void test3D(const coord3D dims,
                     std::cerr << "field#" << f << std::endl;
                     std::cerr << "\tinner: " << d->inner << std::endl;
                     std::cerr << "\touter: " << d->outer << std::endl;
-                    F3Dptr pF( new F3D(d->outer) );
+                    const string id = vformat("field3D#%u",unsigned(f));
+                    F3Dptr pF( new F3D(*id,d->outer) );
                     fields.push_back(pF);
                     pF->ld(1);
                 }

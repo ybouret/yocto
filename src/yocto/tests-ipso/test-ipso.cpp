@@ -73,55 +73,61 @@ YOCTO_UNIT_TEST_IMPL(ipso)
 
     std::cerr << "FIELDS" << std::endl;
 
-    std::cerr << "\tField1D" << std::endl;
-    for(size_t iter=0;iter<100;++iter)
+    if(true)
     {
-        patch1D p1( alea.leq(100), alea.leq(100) );
-        field1D<double> f1f(p1);
-        field1D< point2d<int> > f1pi(p1);
-        for(coord1D i=p1.lower;i<=p1.upper;++i)
+        std::cerr << "\tField1D" << std::endl;
+        for(size_t iter=0;iter<100;++iter)
         {
-            f1f[i]    = i;
-            f1pi[i].x = i;
+            patch1D p1( alea.leq(100), alea.leq(100) );
+            field1D<double> f1f("f1f",p1);
+            field1D< point2d<int> > f1pi("f1pi",p1);
+            for(coord1D i=p1.lower;i<=p1.upper;++i)
+            {
+                f1f[i]    = i;
+                f1pi[i].x = i;
+            }
+            f1f.ldz();
+            f1pi.ldz();
+
+            f1f.ld(1.0f);
+            f1pi.ld( point2d<int>(1,2) );
         }
-        f1f.ldz();
-        f1pi.ldz();
-
-        f1f.ld(1.0f);
-        f1pi.ld( point2d<int>(1,2) );
-
     }
 
-    std::cerr << "\tField2D" << std::endl;
-    for(size_t iter=0;iter<100;++iter)
+    if(true)
     {
-        patch2D P2( coord2D(alea.leq(100),alea.leq(100)), coord2D(alea.leq(100),alea.leq(100)) );
-
-        field2D<float> f2f(P2);
-        field2D< point3d<double> > f2p(P2);
-        for(coord1D j=P2.lower.y;j<=P2.upper.y;++j)
+        std::cerr << "\tField2D" << std::endl;
+        for(size_t iter=0;iter<100;++iter)
         {
-            field2D<float>::row &Rj = f2f[j];
-            for(coord1D i=P2.lower.x;i<=P2.upper.x;++i)
+            patch2D P2( coord2D(alea.leq(100),alea.leq(100)), coord2D(alea.leq(100),alea.leq(100)) );
+
+            field2D<float> f2f("f2f",P2);
+            field2D< point3d<double> > f2p("f2p",P2);
+
+            for(coord1D j=P2.lower.y;j<=P2.upper.y;++j)
             {
-                Rj[i] = i*j;
-                f2p[j][i].z = alea.to<double>();
+                field2D<float>::row &Rj = f2f[j];
+                for(coord1D i=P2.lower.x;i<=P2.upper.x;++i)
+                {
+                    Rj[i] = i*j;
+                    f2p[j][i].z = alea.to<double>();
+                }
             }
+
+            f2f.ldz();
+            f2p.ldz();
+            f2f.ld(2.0f);
+            f2p.ld( point3d<double>(4,5,6) );
+
+            for(coord1D j=P2.lower.y;j<=P2.upper.y;++j)
+            {
+                f2f[j].ldz();
+                f2p[j].ldz();
+                f2f[j].ld(1.0f);
+                f2p[j].ld( point3d<double>(1,2,3) );
+            }
+
         }
-
-        f2f.ldz();
-        f2p.ldz();
-        f2f.ld(2.0f);
-        f2p.ld( point3d<double>(4,5,6) );
-
-        for(coord1D j=P2.lower.y;j<=P2.upper.y;++j)
-        {
-            f2f[j].ldz();
-            f2p[j].ldz();
-            f2f[j].ld(1.0f);
-            f2p[j].ld( point3d<double>(1,2,3) );
-        }
-
     }
 
     std::cerr << "\tField3D" << std::endl;
@@ -129,7 +135,7 @@ YOCTO_UNIT_TEST_IMPL(ipso)
     {
         patch3D P3( coord3D(alea.leq(100),alea.leq(100),alea.leq(100)), coord3D(alea.leq(100),alea.leq(100),alea.leq(100)) );
         //std::cerr << "P3=" << P3 << std::endl;
-        field3D<double> f3d(P3);
+        field3D<double> f3d("f3d",P3);
         f3d.ldz();
         f3d.ld(1.0);
         for(coord1D k=P3.lower.z;k<=P3.upper.z;++k)

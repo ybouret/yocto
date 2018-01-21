@@ -14,10 +14,11 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
             typedef field1D<T> row;
 
-            inline explicit field2D(const patch2D &p,
+            inline explicit field2D(const char    *id,
+                                    const patch2D &p,
                                     void *usr_data=NULL,
                                     void *usr_rows=NULL) :
-            field<T>(),
+            field<T>(id),
             patch2D(p),
             row_patch(p.lower.x,p.upper.x),
             rows(0),
@@ -46,6 +47,10 @@ namespace yocto
 
             inline virtual ~field2D() throw()
             {
+                for(unit_t j=this->upper.y;j>=this->lower.y;--j)
+                {
+                    destruct( &rows[j] );
+                }
                 memory::kind<memory::global>::release(wksp,wlen);
             }
 
@@ -64,13 +69,45 @@ namespace yocto
 
             const patch1D row_patch;
 
+            template <typename U>
+            inline void load( const field2D<U> &F, const patch2D &zone) throw()
+            {
+                assert(this->has(zone));
+                for(unit_t y=zone.upper.y;y>=zone.lower.y;--y)
+                {
+                    const row &peer_row = F[y];
+                    row       &self_row = (*this)[y];
+                    for(unit_t x=zone.upper.x;x>=zone.lower.y;--x)
+                    {
+                        self_row[x] = static_cast<T>(peer_row[x]);
+                    }
+                }
+            }
+
+            template <typename U>
+            inline void save(  field2D<U> &F, const patch2D &zone) const throw()
+            {
+                assert(this->has(zone));
+                for(unit_t y=zone.upper.y;y>=zone.lower.y;--y)
+                {
+                    row       &peer_row = F[y];
+                    const row &self_row = (*this)[y];
+                    for(unit_t x=zone.upper.x;x>=zone.lower.y;--x)
+                    {
+                        peer_row[x] = static_cast<U>(self_row[x]);
+                    }
+                }
+            }
+
+
+
         private:
             row   *rows; //!< allocated rows
             void  *wksp; //!< for this->items * sizeof(T) + width.y * sizeof(row)
             size_t wlen; //!< if allocated
             YOCTO_DISABLE_COPY_AND_ASSIGN(field2D);
             
-            inline void link(void *data_addr,void *rows_addr) throw()
+            inline void link(void *data_addr,void *rows_addr)
             {
                 assert(data_addr!=NULL); assert(rows_addr!=NULL);
                 // prepare memory
@@ -85,7 +122,8 @@ namespace yocto
                     type *data = this->entry;
                     for(coord1D j=this->lower.y;j<=this->upper.y;++j,data+=this->width.x)
                     {
-                        new (rows+j) row(row_patch,data);
+                        const string row_id = this->name + vformat("[%d]",int(j));
+                        new (rows+j) row(*row_id,row_patch,data);
                     }
                 }
             }
