@@ -52,7 +52,7 @@ namespace yocto
                 const ghost &g = G.send; assert(g.size()==G.count);
                 for(size_t i=G.count;i>0;--i)
                 {
-                    const coord1D j = g[i]; assert(j>=0); assert(j<F.count);
+                    const coord1D j = g[i]; assert(j>=0); assert(j<coord1D(F.count));
                     store(F.entry[j]);
                 }
             }
@@ -64,7 +64,7 @@ namespace yocto
                 const ghost &g = G.recv; assert(g.size()==G.count);
                 for(size_t i=G.count;i>0;--i)
                 {
-                    const coord1D j = g[i]; assert(j>=0); assert(j<F.count);
+                    const coord1D j = g[i]; assert(j>=0); assert(j<coord1D(F.count));
                     query(F.entry[j]);
                 }
             }
