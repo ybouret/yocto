@@ -72,7 +72,7 @@ namespace yocto
             template <typename U>
             inline void load( const field2D<U> &F, const patch2D &zone) throw()
             {
-                assert(this->has(zone));
+                assert(this->contains(zone));
                 for(unit_t y=zone.upper.y;y>=zone.lower.y;--y)
                 {
                     const row &peer_row = F[y];
@@ -87,7 +87,7 @@ namespace yocto
             template <typename U>
             inline void save(  field2D<U> &F, const patch2D &zone) const throw()
             {
-                assert(this->has(zone));
+                assert(this->contains(zone));
                 for(unit_t y=zone.upper.y;y>=zone.lower.y;--y)
                 {
                     row       &peer_row = F[y];

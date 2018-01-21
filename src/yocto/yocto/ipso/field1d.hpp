@@ -50,7 +50,7 @@ wlen(0)
             template <typename U>
             inline void load( const field1D<U> &F, const patch1D &zone) throw()
             {
-                assert(this->has(zone));
+                assert(this->contains(zone));
                 T *       self = this->item;
                 const U * peer = F.item;
                 for(unit_t x=zone.upper;x>=zone.lower;--x)
@@ -62,7 +62,7 @@ wlen(0)
             template <typename U>
             inline void save( field1D<U> &F, const patch1D &zone) const throw()
             {
-                assert(this->has(zone));
+                assert(this->contains(zone));
                 const T *self = this->item;
                 U       *peer = F.item;
                 for(unit_t x=zone.upper;x>=zone.lower;--x)
