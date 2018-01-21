@@ -102,7 +102,7 @@ namespace yocto
             metrics          load;       //!< the data and communication metrics
             domain          *next;       //!< for domain::list
             domain          *prev;       //!< for domain::list
-            const COORD      max_async;
+            const COORD      asyncs;
 
             inline virtual ~domain() throw() {}
 
@@ -131,7 +131,7 @@ namespace yocto
             load( inner.items ),
             next(0),
             prev(0),
-            max_async()
+            asyncs()
             {
                 ng = __coord_abs(ng);
                 const bool has_ghosts = (ng>0);
@@ -249,10 +249,10 @@ namespace yocto
                 //______________________________________________________________
                 size_t       num_async  = 0;
                 size_t       num_local  = 0;
-                //std::cerr << "\tdomain@" << ranks << ":" << std::endl;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    coord1D &ma = __coord( (COORD &)max_async,dim);
+                    coord1D &ma = __coord( (COORD &)asyncs,dim);
+                    ma = 0;
                     for(ghosts *g = async[dim].head; g; g=g->next)
                     {
                         assert(rank==g->source);

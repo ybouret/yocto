@@ -83,7 +83,7 @@ namespace yocto
             return p;
         }
 
-        template <typename COORD>
+        template <typename COORD> inline
         coord1D __coord_sum(COORD C) throw()
         {
             coord1D  *q   = (coord1D *)&C;
@@ -95,18 +95,34 @@ namespace yocto
             return p;
         }
 
-        inline const char * __coord_name(const size_t dim) throw()
+        template <typename COORD> inline
+        coord1D __coord_max(COORD C) throw()
         {
-            switch(dim)
+            coord1D  *q   = (coord1D *)&C;
+            coord1D   p = q[0];
+            for(size_t i=1;i<sizeof(COORD)/sizeof(coord1D);++i)
             {
-                case 0: return "x";
-                case 1: return "y";
-                case 2: return "z";
-                default:
-                    break;
+                const coord1D qi = q[i];
+                if(qi>p) { p=q[i]; }
             }
-            return "?";
+            return p;
         }
+
+        template <typename COORD> inline
+        coord1D __coord_min(COORD C) throw()
+        {
+            coord1D  *q   = (coord1D *)&C;
+            coord1D   p = q[0];
+            for(size_t i=1;i<sizeof(COORD)/sizeof(coord1D);++i)
+            {
+                const coord1D qi = q[i];
+                if(qi<p) { p=q[i]; }
+            }
+            return p;
+        }
+
+
+        const char * __coord_name(const size_t dim) throw();
 
         template <typename COORD>
         inline void __coord_printf(FILE *fp, const COORD C)
@@ -116,7 +132,7 @@ namespace yocto
             {
                 fprintf(fp," %g",double(__coord(C,i)));
             }
-            fprintf(fp,"]");
+            fprintf(fp,"]'");
         }
 
         struct __coord_parser

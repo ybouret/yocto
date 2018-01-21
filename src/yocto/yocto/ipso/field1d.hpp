@@ -54,6 +54,30 @@ namespace yocto
                 return item[i];
             }
 
+            template <typename U>
+            inline void load( const field1D<U> &F, const patch1D &zone) throw()
+            {
+                assert(this->has(zone));
+                T *       self = this->item;
+                const U * peer = F.item;
+                for(unit_t x=zone.upper;x>=zone.lower;--x)
+                {
+                    self[x] = static_cast<T>(peer[x]);
+                }
+            }
+
+            template <typename U>
+            inline void save( field1D<U> &F, const patch1D &zone) const throw()
+            {
+                assert(this->has(zone));
+                const T *self = this->item;
+                U       *peer = F.item;
+                for(unit_t x=zone.upper;x>=zone.lower;--x)
+                {
+                    peer[x] = static_cast<U>(self[x]);
+                }
+            }
+
 
         private:
             type  *item;

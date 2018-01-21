@@ -23,13 +23,38 @@ void test1D(const coord3D dims,
     std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
     const divide::in1D full(sizes,region);
     const partition1D  parts(full,ng,PBC,true);
-    size_t count_max = 0;
     for(const domain1D *d=parts.head;d;d=d->next)
     {
-        
+        std::cerr << "domain1D " << d->ranks << " : inner=" << d->inner << " | outer=" << d->outer << std::endl;
+        std::cerr << "\tasyncs=" << d->asyncs << std::endl;
     }
 }
 
+template <typename T>
+static inline
+void test2D(const coord3D dims,
+            const coord3D pbcs,
+            const coord1D cpus,
+            const coord1D ng)
+{
+    std::cerr << "######## 2D/cpus=" << cpus << std::endl;
+    const patch2D      region( coord2D(1,1),coord2D(dims.x,dims.y));
+    const coord2D      PBC(pbcs.x,pbcs.y);
+    coord2D            fallback;
+    const coord2D sizes = partition2D::optimal(cpus,ng,region,PBC, &fallback,NULL);
+    std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
+    const divide::in2D full(sizes,region);
+    const partition2D  parts(full,ng,PBC,true);
+    for(const domain2D *d=parts.head;d;d=d->next)
+    {
+        std::cerr << "domain2D " << d->ranks << " : inner=" << d->inner << " | outer=" << d->outer << std::endl;
+        std::cerr << "\tasyncs=" << d->asyncs << std::endl;
+    }
+}
+
+
+
+#define __SHOW(TYPE) std::cerr << "sizeof(\t" << #TYPE << "\t) = " << sizeof(TYPE) << std::endl
 
 YOCTO_UNIT_TEST_IMPL(xcom)
 {
@@ -47,6 +72,12 @@ YOCTO_UNIT_TEST_IMPL(xcom)
     std::cerr << "cpus=" << cpus << std::endl;
 
     test1D<float>(dims,pbcs,cpus,ng);
+    test2D<double>(dims,pbcs,cpus,ng);
+
+    __SHOW(domain1D);
+    __SHOW(domain2D);
+    __SHOW(domain3D);
+    
 }
 YOCTO_UNIT_TEST_DONE()
 
