@@ -19,6 +19,21 @@ void mpi_xch( workspace<COORD> &W )
     W.sync_store(B);
     W.sync_init_recv();
 
+    string topology;
+    for(size_t dim=0;dim<W.DIM;++dim)
+    {
+        topology << "| " << __coord_name(dim) << ":";
+        const ghosts::list &gl = W.async[dim];
+        topology << vformat(" #async=%u", unsigned(gl.size) );
+        for(const ghosts *G=gl.head;G;G=G->next)
+        {
+            topology << vformat(" (%u<->%u@%s)", unsigned(G->source), unsigned(G->target), ghosts::pos2txt(G->pos) );
+        }
+        topology << " ";
+
+    }
+    MPI.Printf(stderr, "topology %s \n", *topology);
+
     W.sync_query(A);
     W.sync_query(B);
 }
