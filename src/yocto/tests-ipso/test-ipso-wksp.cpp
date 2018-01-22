@@ -14,6 +14,7 @@ static inline
 void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
 {
     const size_t cores = workspaces.size();
+    std::cerr << "---> prepare sync..." << std::endl;
     for(size_t rank=0;rank<cores;++rank)
     {
         workspace<COORD> &W = *workspaces[rank+1];
@@ -23,10 +24,11 @@ void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
 
     }
 
+    std::cerr << "---> do something with data" << std::endl;
     for(size_t rank=0;rank<cores;++rank)
     {
         workspace<COORD> &W = *workspaces[rank+1];
-        for(size_t dim=0;dim<=W.DIM;++dim)
+        for(size_t dim=0;dim<W.DIM;++dim)
         {
             exchange_buffers *B = W.iobuff[dim].head;
             for(ghosts       *G = W.async[dim].head;G;G=G->next,B=B->next)
@@ -36,13 +38,14 @@ void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
         }
     }
 
+    std::cerr << "---> finalize sync" << std::endl;
     for(size_t rank=0;rank<cores;++rank)
     {
         workspace<COORD> &W = *workspaces[rank+1];
         W.sync_query( W.fields["A"] );
         W.sync_query( W.fields["B"] );
     }
-
+    std::cerr << "---> done" << std::endl;
 }
 
 YOCTO_UNIT_TEST_IMPL(wksp)
@@ -139,7 +142,7 @@ YOCTO_UNIT_TEST_IMPL(wksp)
             pW->create< field3D< point3d<double> > >("B");
         }
 
-        //mimic_exchange(workspaces);
+        mimic_exchange(workspaces);
 
     }
 
