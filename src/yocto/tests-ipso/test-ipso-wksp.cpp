@@ -39,13 +39,15 @@ YOCTO_UNIT_TEST_IMPL(wksp)
         coord1D             sizes    = partition<coord1D>::optimal(cpus,ng,region,pbcs.x,&fallback,NULL);
         const size_t        cores    = __coord_prod(sizes);
         const divide::in1D  full(sizes,region);
-        vector<wPtr> workspaces(cores,as_capacity);
+        vector<wPtr>        workspaces(cores,as_capacity);
         for(size_t rank=0;rank<cores;++rank)
         {
             std::cerr << "---> rank=" << rank << std::endl;
             wPtr pW(new workspace<coord1D>(full,rank,ng,pbcs.x) );
             workspaces.push_back(pW);
         }
+        
+
     }
 
 

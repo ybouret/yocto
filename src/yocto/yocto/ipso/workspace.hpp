@@ -37,6 +37,8 @@ namespace yocto
             virtual ~workspace() throw()
             {
             }
+
+
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(workspace);
