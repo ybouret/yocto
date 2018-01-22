@@ -35,7 +35,34 @@ namespace yocto
             return static_cast<size_t>(last-wptr);
         }
 
+        void exchange_buffer:: load(const size_t input_bytes) throw()
+        {
+            assert(input_bytes<=size);
+            wptr = (rptr=base)+input_bytes;
+            assert(input_bytes==load());
+        }
 
+        const void * exchange_buffer:: addr() const throw()
+        {
+            return rptr;
+        }
+
+        void exchange_buffer:: copy(const exchange_buffer &from) throw()
+        {
+            assert(size>=from.load());
+            const size_t len = from.load();
+            this->load(len);
+            memcpy(rptr,from.rptr,len);
+        }
+
+    }
+
+}
+
+namespace yocto
+{
+    namespace ipso
+    {
         exchange_buffers:: exchange_buffers(const size_t bytes) :
         next(0),
         prev(0),

@@ -46,9 +46,15 @@ namespace yocto
                 rptr += sizeof(T);
             }
 
-            inline void set_load(const size_t input_bytes) throw();
+            //! artificial load, for I/O
+            void load(const size_t input_bytes) throw();
 
-            
+            //! current read only area, with length=load
+            const void *addr() const throw(); //!< first read only byte=rptr
+
+            //! mimic memory exchange
+            void copy(const exchange_buffer &from) throw();
+
         private:
             size_t         size; //!< total size in bytes
             uint8_t       *base; //!< memory base

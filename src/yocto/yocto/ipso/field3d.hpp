@@ -16,7 +16,7 @@ namespace yocto
             typedef field2D<T> slice;
 
 #define YOCTO_IPSO_FIELD3D_CTOR(ID)     \
-field<T>(id),                            \
+field<T>(ID),                            \
 patch3D(p),                               \
 slice_patch( p.lower.xy(), p.upper.xy() ), \
 slices(0),                                  \

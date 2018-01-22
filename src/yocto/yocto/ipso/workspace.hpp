@@ -37,7 +37,7 @@ namespace yocto
                     for(const ghosts *G = this->async[dim].head;G;G=G->next)
                     {
                         const size_t count = G->count;
-                        std::cerr << "in " << __coord_name(dim) << " new xbuffer(" << count << ") " << G->source << " <-> " << G->target << std::endl;
+                        std::cerr << "in " << __coord_name(dim) << " new xbuffer(" << count << ")\t" << G->source << " <-> " << G->target << std::endl;
                         iobuff[dim].push_back( new exchange_buffers(count*block_size) );
                     }
                 }

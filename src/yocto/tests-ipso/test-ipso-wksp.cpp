@@ -9,13 +9,50 @@ using namespace ipso;
 
 #define __SHOW(TYPE) std::cerr << "sizeof(\t" << #TYPE << "\t)\t=\t" << sizeof(TYPE) << std::endl
 
+template <typename COORD>
+static inline
+void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
+{
+    const size_t cores = workspaces.size();
+    for(size_t rank=0;rank<cores;++rank)
+    {
+        workspace<COORD> &W = *workspaces[rank+1];
+        W.sync_init();
+        W.sync_store( W.fields["A"] );
+        W.sync_store( W.fields["B"] );
+
+    }
+
+    for(size_t rank=0;rank<cores;++rank)
+    {
+        workspace<COORD> &W = *workspaces[rank+1];
+        for(size_t dim=0;dim<=W.DIM;++dim)
+        {
+            exchange_buffers *B = W.iobuff[dim].head;
+            for(ghosts       *G = W.async[dim].head;G;G=G->next,B=B->next)
+            {
+                B->recv.load(B->send.load());
+            }
+        }
+    }
+
+    for(size_t rank=0;rank<cores;++rank)
+    {
+        workspace<COORD> &W = *workspaces[rank+1];
+        W.sync_query( W.fields["A"] );
+        W.sync_query( W.fields["B"] );
+    }
+
+}
 
 YOCTO_UNIT_TEST_IMPL(wksp)
 {
     __SHOW(workspace<coord1D>);
     __SHOW(workspace<coord2D>);
     __SHOW(workspace<coord3D>);
-
+    __SHOW(exchange_buffer);
+    __SHOW(exchange_buffers);
+    
     if(argc<=4)
     {
         throw exception("usage: %s DIMS PBCS GHOSTS CPUS", argv[0]);
@@ -33,10 +70,13 @@ YOCTO_UNIT_TEST_IMPL(wksp)
 
 
     {
+        std::cerr << std::endl;
+        std::cerr << "In 1D" << std::endl;
         typedef arc_ptr< workspace<coord1D> > wPtr;
         const patch1D       region(1,dims.x);
         coord1D             fallback =0;
         coord1D             sizes    = partition<coord1D>::optimal(cpus,ng,region,pbcs.x,&fallback,NULL);
+        std::cerr << "sizes=" << sizes << std::endl;
         const size_t        cores    = __coord_prod(sizes);
         const divide::in1D  full(sizes,region);
         vector<wPtr>        workspaces(cores,as_capacity);
@@ -49,13 +89,57 @@ YOCTO_UNIT_TEST_IMPL(wksp)
             pW->create< field1D<double> >("B");
         }
 
+        mimic_exchange(workspaces);
+
+    }
+
+    {
+        std::cerr << std::endl;
+        std::cerr << "In 2D" << std::endl;
+
+        typedef arc_ptr< workspace<coord2D> > wPtr;
+        const patch2D       region(coord2D(1,1),dims.xy());
+        coord2D             fallback;
+        coord2D             sizes    = partition<coord2D>::optimal(cpus,ng,region,pbcs.xy(),&fallback,NULL);
+        std::cerr << "sizes=" << sizes << std::endl;
+        const size_t        cores    = __coord_prod(sizes);
+        const divide::in2D  full(sizes,region);
+        vector<wPtr>        workspaces(cores,as_capacity);
         for(size_t rank=0;rank<cores;++rank)
         {
-            workspace<coord1D> &W = *workspaces[rank+1];
-            W.sync_init();
-            W.sync_store( W.fields["A"] );
+            std::cerr << "---> rank=" << rank << std::endl;
+            wPtr pW(new workspace<coord2D>(full,rank,ng,pbcs.xy(),32) );
+            workspaces.push_back(pW);
+            pW->create< field2D<int>   >("A");
+            pW->create< field2D<short> >("B");
         }
 
+        mimic_exchange(workspaces);
+
+    }
+
+    {
+        std::cerr << std::endl;
+        std::cerr << "In 3D" << std::endl;
+
+        typedef arc_ptr< workspace<coord3D> > wPtr;
+        const patch3D       region(coord3D(1,1,1),dims);
+        coord3D             fallback;
+        coord3D             sizes    = partition<coord3D>::optimal(cpus,ng,region,pbcs,&fallback,NULL);
+        std::cerr << "sizes=" << sizes << std::endl;
+        const size_t        cores    = __coord_prod(sizes);
+        const divide::in3D  full(sizes,region);
+        vector<wPtr>        workspaces(cores,as_capacity);
+        for(size_t rank=0;rank<cores;++rank)
+        {
+            std::cerr << "---> rank=" << rank << std::endl;
+            wPtr pW(new workspace<coord3D>(full,rank,ng,pbcs,64) );
+            workspaces.push_back(pW);
+            pW->create< field3D<bool>   >("A");
+            pW->create< field3D< point3d<double> > >("B");
+        }
+
+        //mimic_exchange(workspaces);
 
     }
 
