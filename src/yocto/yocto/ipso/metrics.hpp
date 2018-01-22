@@ -3,6 +3,7 @@
 
 #include "yocto/mpl/rational.hpp"
 #include "yocto/container/tuple.hpp"
+#include <cstdio>
 
 namespace yocto
 {

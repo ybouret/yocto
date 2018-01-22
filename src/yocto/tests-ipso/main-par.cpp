@@ -5,6 +5,23 @@
 using namespace yocto;
 using namespace ipso;
 
+template <typename COORD>
+static inline
+void mpi_xch( workspace<COORD> &W )
+{
+    const mpi &MPI = mpi::instance();
+
+    field_info &A = W.fields["A"];
+    field_info &B = W.fields["B"];
+
+    W.sync_init_send();
+    W.sync_store(A);
+    W.sync_store(B);
+    W.sync_init_recv();
+
+    W.sync_query(A);
+    W.sync_query(B);
+}
 
 YOCTO_PROGRAM_START()
 {
@@ -58,15 +75,10 @@ YOCTO_PROGRAM_START()
 
         // initialize fields
         A.ld(rank+1);
+        B.ldz();
 
         // perform exchange
-        W.sync_init_send();
-        W.sync_store(A);
-        W.sync_store(B);
-        W.sync_init_recv();
-        
-        W.sync_query(A);
-        W.sync_query(B);
+        mpi_xch(W);
 
     }
 
@@ -101,15 +113,10 @@ YOCTO_PROGRAM_START()
 
         // initialize fields
         A.ld(rank+1);
+        B.ldz();
 
         // perform exchange
-        W.sync_init_send();
-        W.sync_store(A);
-        W.sync_store(B);
-        W.sync_init_recv();
-
-        W.sync_query(A);
-        W.sync_query(B);
+        mpi_xch(W);
 
     }
 
@@ -143,15 +150,10 @@ YOCTO_PROGRAM_START()
 
         // initialize fields
         A.ld(rank+1);
+        B.ldz();
 
         // perform exchange
-        W.sync_init_send();
-        W.sync_store(A);
-        W.sync_store(B);
-        W.sync_init_recv();
-
-        W.sync_query(A);
-        W.sync_query(B);
+        mpi_xch(W);
 
     }
 
