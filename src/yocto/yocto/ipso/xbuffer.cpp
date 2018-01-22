@@ -5,40 +5,38 @@ namespace yocto
 {
     namespace ipso
     {
-        xbuffer:: ~xbuffer() throw()
+        exchange_buffer:: ~exchange_buffer() throw()
         {
             memory::kind<memory::global>::release_as(base,size);
         }
         
-        xbuffer:: xbuffer( const size_t num_bytes ) :
+        exchange_buffer:: exchange_buffer( const size_t num_bytes ) :
         size(num_bytes),
         base( memory::kind<memory::global>::acquire_as<uint8_t>(size) ),
         rptr(base),
         wptr(base),
-        last( base+size ),
-        next(0),
-        prev(0)
+        last( base+size )
         {
         }
         
-        void xbuffer:: reset() throw()
+        void exchange_buffer:: reset() throw()
         {
             rptr = base;
             wptr = base;
         }
         
-        size_t xbuffer:: load() const throw()
+        size_t exchange_buffer:: load() const throw()
         {
             return static_cast<size_t>(wptr-rptr);
         }
         
-        size_t xbuffer:: left() const throw()
+        size_t exchange_buffer:: left() const throw()
         {
             return static_cast<size_t>(last-wptr);
         }
 
 
-        xbufferIO:: xbufferIO(const size_t bytes) :
+        exchange_buffers:: exchange_buffers(const size_t bytes) :
         next(0),
         prev(0),
         send(bytes),
@@ -46,11 +44,11 @@ namespace yocto
         {
         }
 
-        xbufferIO:: ~xbufferIO() throw()
+        exchange_buffers:: ~exchange_buffers() throw()
         {
         }
 
-        void xbufferIO:: reset() throw()
+        void exchange_buffers:: reset() throw()
         {
             send.reset();
             recv.reset();

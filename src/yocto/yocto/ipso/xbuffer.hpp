@@ -8,13 +8,12 @@ namespace yocto
 {
     namespace ipso
     {
-        class xbuffer : public object
+        class exchange_buffer
         {
         public:
-            typedef core::list_of_cpp<xbuffer> list;
-            
-            explicit xbuffer(const size_t num_bytes);
-            virtual ~xbuffer() throw();
+
+            exchange_buffer(const size_t num_bytes);
+            ~exchange_buffer() throw();
             
             void   reset() throw();
             size_t load() const throw(); //!< wptr-rptr, #active bytes
@@ -57,31 +56,29 @@ namespace yocto
             uint8_t       *wptr; //!< next address to store into
             const uint8_t *last; //!< base+size, first invalid byte
             
-            YOCTO_DISABLE_COPY_AND_ASSIGN(xbuffer);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(exchange_buffer);
 
-        public:
-            xbuffer *next;
-            xbuffer *prev;
+
         };
 
-
-        class xbufferIO : public object
+        //! a pair of exchange buffer
+        class exchange_buffers : public object
         {
         public:
-            typedef core::list_of_cpp<xbufferIO> list;
-            xbufferIO    *next;
-            xbufferIO    *prev;
-            xbuffer       send;
-            xbuffer       recv;
+            typedef core::list_of_cpp<exchange_buffers> list;
+            exchange_buffers    *next;
+            exchange_buffers    *prev;
+            exchange_buffer      send;
+            exchange_buffer      recv;
 
 
-            explicit xbufferIO(const size_t bytes);
-            virtual ~xbufferIO() throw();
+            explicit exchange_buffers(const size_t bytes);
+            virtual ~exchange_buffers() throw();
 
             void reset() throw();
 
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(xbufferIO);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(exchange_buffers);
         };
 
     }

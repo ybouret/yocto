@@ -31,7 +31,7 @@ void test1D(const coord3D dims,
         const size_t nm = __coord_max(d->asyncs);
         std::cerr << "\txbuff with " << nm << std::endl;
         field1D<T> F("f1d",d->outer);
-        xbuffer xbuff(nm*sizeof(T));
+        exchange_buffer xbuff(nm*sizeof(T));
 
         for(size_t dim=0;dim<1;++dim)
         {
@@ -67,7 +67,7 @@ void test2D(const coord3D dims,
         const size_t nm = __coord_max(d->asyncs);
         std::cerr << "\txbuff with " << nm << std::endl;
         field2D<T> F("f2d",d->outer);
-        xbuffer xbuff(nm*sizeof(T));
+        exchange_buffer xbuff(nm*sizeof(T));
 
         for(size_t dim=0;dim<1;++dim)
         {
@@ -102,7 +102,7 @@ void test3D(const coord3D dims,
         const size_t nm = __coord_max(d->asyncs);
         std::cerr << "\txbuff with " << nm << std::endl;
         field3D<T> F("f3d",d->outer);
-        xbuffer xbuff(nm*sizeof(T));
+        exchange_buffer xbuff(nm*sizeof(T));
 
         for(size_t dim=0;dim<1;++dim)
         {

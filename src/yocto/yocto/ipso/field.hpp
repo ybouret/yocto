@@ -28,11 +28,11 @@ namespace yocto
             virtual ~field_info() throw();
             const string &key() const throw();
 
-            virtual void store(const ghosts  &G,
-                               xbuffer       &xbuff ) const throw() = 0;
+            virtual void store(const ghosts    &G,
+                               exchange_buffer &xbuff ) const throw() = 0;
 
-            virtual void query(const ghosts  &G,
-                               xbuffer       &xbuff) throw() = 0;
+            virtual void query(const ghosts    &G,
+                               exchange_buffer &xbuff) throw() = 0;
 
             virtual void local(const ghosts::list &G) throw() = 0;
             
@@ -76,8 +76,8 @@ namespace yocto
                     }
 
             
-            inline virtual void store(const ghosts  &G,
-                                      xbuffer       &xbuff ) const throw()
+            inline virtual void store(const ghosts    &G,
+                                      exchange_buffer &xbuff ) const throw()
             {
                 assert(G.send.size()==G.count);
                 for(size_t i=G.count;i>0;--i)
@@ -88,8 +88,8 @@ namespace yocto
                 }
             }
 
-            inline virtual void query(const ghosts  &G,
-                                      xbuffer       &xbuff) throw()
+            inline virtual void query(const ghosts    &G,
+                                      exchange_buffer &xbuff) throw()
             {
                 assert(G.recv.size()==G.count);
                 for(size_t i=G.count;i>0;--i)

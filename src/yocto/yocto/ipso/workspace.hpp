@@ -15,8 +15,8 @@ namespace yocto
         public:
 
             static const size_t DIM = domain<COORD>::DIM;
-            xbufferIO::list xbufIO[DIM];
-            field_db        fields;
+            exchange_buffers::list iobuff[DIM];
+            field_db               fields;
 
             //! create a domain with its ghosts
             /**
@@ -28,17 +28,17 @@ namespace yocto
                                       const COORD           pbcs,
                                       const size_t          block_size) :
             domain<COORD>(full,rank,ng,pbcs,true),
-            xbufIO(),
+            iobuff(),
             fields(8)
             {
-                // create a 1:1 xbuffers with async ghosts
+                // create a 2:1 exchange_buffer with async ghosts
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     for(const ghosts *G = this->async[dim].head;G;G=G->next)
                     {
                         const size_t count = G->count;
                         std::cerr << "in " << __coord_name(dim) << " new xbuffer(" << count << ") " << G->source << " <-> " << G->target << std::endl;
-                        xbufIO[dim].push_back( new xbufferIO(count*block_size) );
+                        iobuff[dim].push_back( new exchange_buffers(count*block_size) );
                     }
                 }
             }
@@ -85,9 +85,9 @@ namespace yocto
             {
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    for(xbufferIO *pX = this->xbufIO[dim].head;pX;pX=pX->next)
+                    for(exchange_buffers *B = this->iobuff[dim].head;B;B=B->next)
                     {
-                        pX->reset();
+                        B->reset();
                     }
                 }
             }
@@ -103,17 +103,17 @@ namespace yocto
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     F.local( this->local[dim] );
-                    const ghosts     *pG = this->async[dim].head;
-                    xbufferIO        *pX = this->xbufIO[dim].head;
-                    for(;pG;pG=pG->next,pX=pX->next)
+                    const ghosts      *G = this->async[dim].head;
+                    exchange_buffers  *B = this->iobuff[dim].head;
+                    for(;G;G=G->next,B=B->next)
                     {
-                        assert(pX);
-                        F.store(*pG,pX->send);
+                        assert(B);
+                        F.store(*G,B->send);
                     }
                 }
             }
 
-            
+
 
             //! query all data from exchange buffers after I/O
             inline void sync_query( field_info &F ) throw()
@@ -121,12 +121,12 @@ namespace yocto
                 assert(owns(F));
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    const ghosts     *pG = this->async[dim].head;
-                    xbufferIO        *pX = this->xbufIO[dim].head;
-                    for(;pG;pG=pG->next,pX=pX->next)
+                    const ghosts     *G = this->async[dim].head;
+                    exchange_buffers *B = this->iobuff[dim].head;
+                    for(;G;G=G->next,B=B->next)
                     {
-                        assert(pX);
-                        F.query(*pG,pX->recv);
+                        assert(B);
+                        F.query(*G,B->recv);
                     }
                 }
             }
