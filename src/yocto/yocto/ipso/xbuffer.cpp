@@ -47,6 +47,12 @@ namespace yocto
             return rptr;
         }
 
+
+        void * exchange_buffer:: addr()  throw()
+        {
+            return rptr;
+        }
+        
         void exchange_buffer:: copy(const exchange_buffer &from) throw()
         {
             assert(size>=from.load());

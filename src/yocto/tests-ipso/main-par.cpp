@@ -7,7 +7,7 @@ using namespace ipso;
 
 template <typename COORD>
 static inline
-void mpi_xch( workspace<COORD> &W )
+void mpi_xch( mpi_workspace<COORD> &W )
 {
     const mpi &MPI = mpi::instance();
 
@@ -27,12 +27,35 @@ void mpi_xch( workspace<COORD> &W )
         topology << vformat(" #async=%u", unsigned(gl.size) );
         for(const ghosts *G=gl.head;G;G=G->next)
         {
-            topology << vformat(" (%u<->%u@%s)", unsigned(G->source), unsigned(G->target), ghosts::pos2txt(G->pos) );
+            topology << vformat(" (%2u<->%2u@%s: %4u)", unsigned(G->source), unsigned(G->target), ghosts::pos2txt(G->pos), unsigned(G->count));
         }
         topology << " ";
 
     }
     MPI.Printf(stderr, "topology %s \n", *topology);
+
+    for(size_t dim=0;dim<W.DIM;++dim)
+    {
+        const ghosts::list     &gl = W.async[dim];
+        exchange_buffers::list &bl = W.iobuf[dim];
+        assert(gl.size==bl.size);
+        switch(gl.size)
+        {
+
+            case 1: {
+                const ghosts     &g = *(gl.head);
+                exchange_buffers &b = *(bl.head);
+                assert( b.send.load() == b.recv.load() );
+                W.sendrecv(MPI,b.send,g.target,b.recv,g.target);
+            } break;
+
+            case 2:
+                break;
+
+            default:
+                break;
+        }
+    }
 
     W.sync_query(A);
     W.sync_query(B);
@@ -60,6 +83,7 @@ YOCTO_PROGRAM_START()
     }
     
 
+    if(true)
     {
         MPI.Printf0(stderr, "\nin 1D\n" );
         // setup from MPI
@@ -84,7 +108,7 @@ YOCTO_PROGRAM_START()
         divide::in1D           full(sizes,region);
 
         //create workspace
-        mpi_workspace<coord1D> W(full,rank,ng,pbcs.x,32);
+        mpi_workspace<coord1D> W(MPI,full,ng,pbcs.x,32);
         field1D<double> &A = W.create< field1D<double> >("A");
         field1D<float>  &B = W.create< field1D<float>  >("B");
 
@@ -98,6 +122,7 @@ YOCTO_PROGRAM_START()
     }
 
 
+    if(true)
     {
         MPI.Printf0(stderr, "\nin 2D\n" );
         // setup from MPI
@@ -122,7 +147,7 @@ YOCTO_PROGRAM_START()
         divide::in2D           full(sizes,region);
 
         //create workspace
-        mpi_workspace<coord2D> W(full,rank,ng,pbcs.xy(),32);
+        mpi_workspace<coord2D> W(MPI,full,ng,pbcs.xy(),32);
         field2D<double> &A = W.create< field2D<double> >("A");
         field2D<float>  &B = W.create< field2D<float>  >("B");
 
@@ -135,6 +160,7 @@ YOCTO_PROGRAM_START()
 
     }
 
+    if(true)
     {
         MPI.Printf0(stderr, "\nin 3D\n" );
         // setup from MPI
@@ -159,7 +185,7 @@ YOCTO_PROGRAM_START()
         divide::in3D           full(sizes,region);
 
         //create workspace
-        mpi_workspace<coord3D> W(full,rank,ng,pbcs,32);
+        mpi_workspace<coord3D> W(MPI,full,ng,pbcs,32);
         field3D<double> &A = W.create< field3D<double> >("A");
         field3D<float>  &B = W.create< field3D<float>  >("B");
 

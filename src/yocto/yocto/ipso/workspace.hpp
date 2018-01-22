@@ -15,7 +15,7 @@ namespace yocto
         public:
 
             static const size_t DIM = domain<COORD>::DIM;
-            exchange_buffers::list iobuff[DIM];
+            exchange_buffers::list iobuf[DIM];
             field_db               fields;
 
             //! create a domain with its ghosts
@@ -28,7 +28,7 @@ namespace yocto
                                       const COORD           pbcs,
                                       const size_t          block_size) :
             domain<COORD>(full,rank,ng,pbcs,true),
-            iobuff(),
+            iobuf(),
             fields(8)
             {
                 // create a 2:1 exchange_buffer with async ghosts
@@ -36,7 +36,7 @@ namespace yocto
                 {
                     for(const ghosts *G = this->async[dim].head;G;G=G->next)
                     {
-                        iobuff[dim].push_back( new exchange_buffers(G->count*block_size) );
+                        iobuf[dim].push_back( new exchange_buffers(G->count*block_size) );
                     }
                 }
             }
@@ -81,7 +81,7 @@ namespace yocto
             {
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    for(exchange_buffers *B = this->iobuff[dim].head;B;B=B->next)
+                    for(exchange_buffers *B = iobuf[dim].head;B;B=B->next)
                     {
                         B->reset();
                     }
@@ -100,7 +100,7 @@ namespace yocto
                 {
                     F.local( this->local[dim] );
                     const ghosts      *G = this->async[dim].head;
-                    exchange_buffers  *B = this->iobuff[dim].head;
+                    exchange_buffers  *B = this->iobuf[dim].head;
                     for(;G;G=G->next,B=B->next)
                     {
                         assert(B);
@@ -113,7 +113,7 @@ namespace yocto
             {
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    for(exchange_buffers *B = this->iobuff[dim].head;B;B=B->next)
+                    for(exchange_buffers *B = this->iobuf[dim].head;B;B=B->next)
                     {
                         B->recv.load( B->send.load() );
                     }
@@ -128,7 +128,7 @@ namespace yocto
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     const ghosts     *G = this->async[dim].head;
-                    exchange_buffers *B = this->iobuff[dim].head;
+                    exchange_buffers *B = this->iobuf[dim].head;
                     for(;G;G=G->next,B=B->next)
                     {
                         assert(B);

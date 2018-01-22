@@ -51,7 +51,7 @@ namespace yocto
 
             //! current read only area, with length=load
             const void *addr() const throw(); //!< first read only byte=rptr
-
+            void       *addr() throw();       //!< first read/write byte=rptr
             //! mimic memory exchange
             void copy(const exchange_buffer &from) throw();
 
