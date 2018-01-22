@@ -2,6 +2,7 @@
 #include "yocto/ipso/partition.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/string/conv.hpp"
+#include "yocto/ptr/arc.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -32,12 +33,18 @@ YOCTO_UNIT_TEST_IMPL(wksp)
 
 
     {
+        typedef arc_ptr< workspace<coord1D> > wPtr;
         const patch1D       region(1,dims.x);
         coord1D             fallback =0;
         coord1D             sizes    = partition<coord1D>::optimal(cpus,ng,region,pbcs.x,&fallback,NULL);
         const size_t        cores    = __coord_prod(sizes);
         const divide::in1D  full(sizes,region);
-        
+        vector<wPtr> workspaces(cores,as_capacity);
+        for(size_t rank=0;rank<cores;++rank)
+        {
+            wPtr pW(new workspace<coord1D>(full,rank,ng,pbcs.x) );
+            workspaces.push_back(pW);
+        }
     }
 
 
