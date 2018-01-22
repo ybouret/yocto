@@ -7,7 +7,7 @@ using namespace yocto;
 using namespace ipso;
 
 static inline
-void display( const exchange_buffer &xbuff )
+void display( const xbuffer &xbuff )
 {
     std::cerr << "\tload=" << xbuff.load() << " | left=" << xbuff.left() << std::endl;
 }
@@ -34,7 +34,7 @@ YOCTO_UNIT_TEST_IMPL(xbuffer)
         }
         const uint64_t i64 = H.key<uint64_t>();
         std::cerr << "i64=" << i64 << std::endl;
-        exchange_buffer xbuff(num_bytes);
+        xbuffer xbuff(num_bytes);
         display(xbuff);
         for(size_t i=1;i<=nw;++i)
         {

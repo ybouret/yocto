@@ -9,11 +9,13 @@ namespace yocto
 {
     namespace ipso
     {
-        class exchange_buffer : public counted_object
+        class xbuffer : public object
         {
         public:
-            explicit exchange_buffer(const size_t num_bytes);
-            virtual ~exchange_buffer() throw();
+            typedef core::list_of_cpp<xbuffer> list;
+            
+            explicit xbuffer(const size_t num_bytes);
+            virtual ~xbuffer() throw();
             
             void   reset() throw();
             size_t load() const throw(); //!< wptr-rptr, #active bytes
@@ -79,7 +81,11 @@ namespace yocto
             uint8_t       *wptr; //!< next address to store into
             const uint8_t *last; //!< base+size, first invalid byte
             
-            YOCTO_DISABLE_COPY_AND_ASSIGN(exchange_buffer);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(xbuffer);
+
+        public:
+            xbuffer *next;
+            xbuffer *prev;
         };
     }
 }

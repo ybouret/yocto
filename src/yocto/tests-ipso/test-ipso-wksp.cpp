@@ -21,7 +21,7 @@ YOCTO_UNIT_TEST_IMPL(wksp)
         throw exception("usage: %s DIMS PBCS GHOSTS CPUS", argv[0]);
     }
     const coord3D dims = __coord_parser::get<coord3D>(argv[1],"dims");
-    const coord3D pbcs = __coord_parser::get<coord3D>(argv[1],"pbcs");
+    const coord3D pbcs = __coord_parser::get<coord3D>(argv[2],"pbcs");
     const size_t  ng   = strconv::to_size(argv[3],"ng");
     const size_t  cpus = strconv::to_size(argv[4],"cpus");
     std::cerr << "dims=" << dims << std::endl;
@@ -42,6 +42,7 @@ YOCTO_UNIT_TEST_IMPL(wksp)
         vector<wPtr> workspaces(cores,as_capacity);
         for(size_t rank=0;rank<cores;++rank)
         {
+            std::cerr << "---> rank=" << rank << std::endl;
             wPtr pW(new workspace<coord1D>(full,rank,ng,pbcs.x) );
             workspaces.push_back(pW);
         }

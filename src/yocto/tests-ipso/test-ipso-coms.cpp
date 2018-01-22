@@ -163,7 +163,7 @@ YOCTO_UNIT_TEST_IMPL(coms)
         throw exception("usage: %s DIMS PBCS CPUS", argv[0]);
     }
     const coord3D dims = __coord_parser::get<coord3D>(argv[1],"dims");
-    const coord3D pbcs = __coord_parser::get<coord3D>(argv[1],"pbcs");
+    const coord3D pbcs = __coord_parser::get<coord3D>(argv[2],"pbcs");
     const size_t  cpus = strconv::to_size(argv[3],"cpus");
     std::cerr << "dims=" << dims << std::endl;
     std::cerr << "pbcs=" << pbcs << std::endl;
