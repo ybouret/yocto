@@ -53,6 +53,7 @@ YOCTO_UNIT_TEST_IMPL(wksp)
         {
             workspace<coord1D> &W = *workspaces[rank+1];
             W.sync_init();
+            W.sync_store( W.fields["A"] );
         }
 
 

@@ -4,7 +4,6 @@
 #include "yocto/ipso/domain.hpp"
 #include "yocto/ipso/xbuffer.hpp"
 #include "yocto/ipso/field3d.hpp"
-#include "yocto/associative/set.hpp"
 
 namespace yocto
 {
@@ -14,12 +13,10 @@ namespace yocto
         class workspace : public domain<COORD>, public counted
         {
         public:
-            typedef field_info::pointer    field_ptr;
-            typedef set<string,field_ptr>  field_db;
 
             static const size_t DIM = domain<COORD>::DIM;
-            xbuffer::list xbuff[DIM];
-            field_db      fields;
+            xbufferIO::list xbufIO[DIM];
+            field_db        fields;
 
             //! create a domain with its ghosts
             /**
@@ -31,8 +28,8 @@ namespace yocto
                                       const COORD           pbcs,
                                       const size_t          block_size) :
             domain<COORD>(full,rank,ng,pbcs,true),
-            xbuff(),
-            fields(8,as_capacity)
+            xbufIO(),
+            fields(8)
             {
                 // create a 1:1 xbuffers with async ghosts
                 for(size_t dim=0;dim<DIM;++dim)
@@ -41,7 +38,7 @@ namespace yocto
                     {
                         const size_t count = G->count;
                         std::cerr << "in " << __coord_name(dim) << " new xbuffer(" << count << ") " << G->source << " <-> " << G->target << std::endl;
-                        xbuff[dim].push_back( new xbuffer(count*block_size) );
+                        xbufIO[dim].push_back( new xbufferIO(count*block_size) );
                     }
                 }
             }
@@ -53,8 +50,8 @@ namespace yocto
             template <typename FIELD> inline
             FIELD & create( const string &field_name )
             {
-                FIELD    *F = new FIELD( field_name, this->outer );
-                field_ptr pF( F );
+                FIELD                     *F = new FIELD( field_name, this->outer );
+                const field_info::pointer  pF( F );
                 if(!fields.insert(pF))
                 {
                     throw exception("workspace%uD: multiple '%s'", unsigned(DIM), *field_name);
@@ -69,7 +66,7 @@ namespace yocto
                 return create<FIELD>(id);
             }
 
-            
+
 
             inline bool owns( const field_info &F ) const throw()
             {
@@ -83,17 +80,23 @@ namespace yocto
 
 
 
+            //! initialize all the exchange buffers
             inline void sync_init() throw()
             {
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    for(xbuffer *pX = this->xbuff[dim].head;pX;pX=pX->next)
+                    for(xbufferIO *pX = this->xbufIO[dim].head;pX;pX=pX->next)
                     {
                         pX->reset();
                     }
                 }
             }
 
+            //! store all data, them ready for I/O
+            /**
+             - perform local exchange
+             - store data to be sent in exchange buffers
+             */
             inline void sync_store( field_info &F ) throw()
             {
                 assert(owns(F));
@@ -101,11 +104,29 @@ namespace yocto
                 {
                     F.local( this->local[dim] );
                     const ghosts     *pG = this->async[dim].head;
-                    xbuffer          *pX = this->xbuff[dim].head;
+                    xbufferIO        *pX = this->xbufIO[dim].head;
                     for(;pG;pG=pG->next,pX=pX->next)
                     {
                         assert(pX);
-                        F.store(*pG,*pX);
+                        F.store(*pG,pX->send);
+                    }
+                }
+            }
+
+            
+
+            //! query all data from exchange buffers after I/O
+            inline void sync_query( field_info &F ) throw()
+            {
+                assert(owns(F));
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    const ghosts     *pG = this->async[dim].head;
+                    xbufferIO        *pX = this->xbufIO[dim].head;
+                    for(;pG;pG=pG->next,pX=pX->next)
+                    {
+                        assert(pX);
+                        F.query(*pG,pX->recv);
                     }
                 }
             }

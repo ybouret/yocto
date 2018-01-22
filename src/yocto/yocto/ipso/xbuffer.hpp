@@ -46,7 +46,8 @@ namespace yocto
                 memcpy(&ans,rptr,sizeof(T));
                 rptr += sizeof(T);
             }
-            
+
+            inline void set_load(const size_t input_bytes) throw();
 
             
         private:
@@ -62,6 +63,27 @@ namespace yocto
             xbuffer *next;
             xbuffer *prev;
         };
+
+
+        class xbufferIO : public object
+        {
+        public:
+            typedef core::list_of_cpp<xbufferIO> list;
+            xbufferIO    *next;
+            xbufferIO    *prev;
+            xbuffer       send;
+            xbuffer       recv;
+
+
+            explicit xbufferIO(const size_t bytes);
+            virtual ~xbufferIO() throw();
+
+            void reset() throw();
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(xbufferIO);
+        };
+
     }
 }
 

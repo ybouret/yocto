@@ -35,6 +35,7 @@ wlen(0)
                                     void          *usr = NULL ) :
             YOCTO_IPSO_FIELD1D_CTOR(*id)
             {
+                build_with(p,usr);
             }
 
             inline virtual ~field1D() throw()
@@ -85,6 +86,7 @@ wlen(0)
             size_t wlen;
 
             YOCTO_DISABLE_COPY_AND_ASSIGN(field1D);
+            
             inline void build_with(const patch1D &p,void *usr)
             {
                 if(!usr)

@@ -5,6 +5,7 @@
 #include "yocto/ipso/xbuffer.hpp"
 #include "yocto/counted-object.hpp"
 #include "yocto/ptr/intr.hpp"
+#include "yocto/associative/set.hpp"
 
 
 #include <cstring>
@@ -18,6 +19,7 @@ namespace yocto
         {
         public:
             typedef intr_ptr<string,field_info> pointer;
+            typedef set<string,pointer>         set_type;
 
             const string name;
             const size_t count; //!< items count, set by field after setup
@@ -39,6 +41,20 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_info);
+        };
+
+        class field_db : public field_info::set_type
+        {
+        public:
+            explicit field_db() throw();
+            explicit field_db(const size_t n);
+            virtual ~field_db() throw();
+            field_info       & operator[](const string &id);
+            const field_info & operator[](const string &id) const;
+            field_info       & operator[](const char *id);
+            const field_info & operator[](const char *id) const;
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(field_db);
         };
 
         template <typename T>
@@ -66,7 +82,8 @@ namespace yocto
                 assert(G.send.size()==G.count);
                 for(size_t i=G.count;i>0;--i)
                 {
-                    const coord1D j=G.send[i]; assert(j<coord1D(count));
+                    const coord1D j=G.send[i];
+                    assert(j<coord1D(count));
                     xbuff.store(entry[j]);
                 }
             }

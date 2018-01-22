@@ -37,5 +37,23 @@ namespace yocto
             return static_cast<size_t>(last-wptr);
         }
 
+
+        xbufferIO:: xbufferIO(const size_t bytes) :
+        next(0),
+        prev(0),
+        send(bytes),
+        recv(bytes)
+        {
+        }
+
+        xbufferIO:: ~xbufferIO() throw()
+        {
+        }
+
+        void xbufferIO:: reset() throw()
+        {
+            send.reset();
+            recv.reset();
+        }
     }
 }
