@@ -18,25 +18,19 @@ void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
     for(size_t rank=0;rank<cores;++rank)
     {
         workspace<COORD> &W = *workspaces[rank+1];
-        W.sync_init();
+        W.sync_init_send();
         W.sync_store( W.fields["A"] );
         W.sync_store( W.fields["B"] );
 
     }
-
-    std::cerr << "---> do something with data" << std::endl;
     for(size_t rank=0;rank<cores;++rank)
     {
         workspace<COORD> &W = *workspaces[rank+1];
-        for(size_t dim=0;dim<W.DIM;++dim)
-        {
-            exchange_buffers *B = W.iobuff[dim].head;
-            for(ghosts       *G = W.async[dim].head;G;G=G->next,B=B->next)
-            {
-                B->recv.load(B->send.load());
-            }
-        }
+        W.sync_init_recv();
     }
+    
+    std::cerr << "---> do something with data" << std::endl;
+
 
     std::cerr << "---> finalize sync" << std::endl;
     for(size_t rank=0;rank<cores;++rank)

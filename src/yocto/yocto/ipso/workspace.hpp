@@ -36,9 +36,7 @@ namespace yocto
                 {
                     for(const ghosts *G = this->async[dim].head;G;G=G->next)
                     {
-                        const size_t count = G->count;
-                        std::cerr << "in " << __coord_name(dim) << " new exchange_buffers(" << count << ")\t" << G->source << " <-> " << G->target << std::endl;
-                        iobuff[dim].push_back( new exchange_buffers(count*block_size) );
+                        iobuff[dim].push_back( new exchange_buffers(G->count*block_size) );
                     }
                 }
             }
@@ -79,7 +77,7 @@ namespace yocto
 
 
             //! initialize all the exchange buffers
-            inline void sync_init() throw()
+            inline void sync_init_send() throw()
             {
                 for(size_t dim=0;dim<DIM;++dim)
                 {
@@ -111,6 +109,16 @@ namespace yocto
                 }
             }
 
+            inline void sync_init_recv() throw()
+            {
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    for(exchange_buffers *B = this->iobuff[dim].head;B;B=B->next)
+                    {
+                        B->recv.load( B->send.load() );
+                    }
+                }
+            }
 
 
             //! query all data from exchange buffers after I/O

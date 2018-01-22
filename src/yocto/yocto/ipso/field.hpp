@@ -72,9 +72,13 @@ namespace yocto
             inline void ld( param_type arg ) throw()
             {
                 assert(entry); assert(bytes);
-                for(size_t i=0;i<count;++i) memcpy(&entry[i],&arg,sizeof(T));
-                    }
+                for(size_t i=0;i<count;++i)
+                {
+                    memcpy(&entry[i],&arg,sizeof(T));
+                }
 
+            }
+            
             
             inline virtual void store(const ghosts    &G,
                                       exchange_buffer &xbuff ) const throw()
