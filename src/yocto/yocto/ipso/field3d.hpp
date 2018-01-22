@@ -63,6 +63,46 @@ wlen(0)
 
             const patch2D slice_patch;
 
+            template <typename U>
+            inline void load( const field3D<U> &F, const patch3D &zone) throw()
+            {
+                assert(this->contains(zone));
+                for(unit_t z=zone.upper.z;z>=zone.lower.z;--z)
+                {
+                    const slice &peer_slice=F[z];
+                    slice       &self_slice=(*this)[z];
+                    for(unit_t y=zone.upper.y;y>=zone.lower.y;--y)
+                    {
+                        const row &peer_row = peer_slice[y];
+                        row       &self_row = self_slice[y];
+                        for(unit_t x=zone.upper.x;x>=zone.lower.y;--x)
+                        {
+                            self_row[x] = static_cast<T>(peer_row[x]);
+                        }
+                    }
+                }
+            }
+
+            template <typename U>
+            inline void save( field3D<U> &F, const patch3D &zone) const throw()
+            {
+                assert(this->contains(zone));
+                for(unit_t z=zone.upper.z;z>=zone.lower.z;--z)
+                {
+                    slice       &peer_slice=F[z];
+                    const slice &self_slice=(*this)[z];
+                    for(unit_t y=zone.upper.y;y>=zone.lower.y;--y)
+                    {
+                        const row &self_row = self_slice[y];
+                        row       &peer_row = peer_slice[y];
+                        for(unit_t x=zone.upper.x;x>=zone.lower.y;--x)
+                        {
+                            peer_row[x] = static_cast<U>(self_row[x]);
+                        }
+                    }
+                }
+            }
+
         private:
             slice *slices;
             row   *rows;
