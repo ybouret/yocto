@@ -22,7 +22,7 @@ namespace yocto
             const string name;
             const size_t count; //!< items count, set by field after setup
             const size_t bytes; //!< bytes count, set by field after setup
-
+            
             virtual ~field_info() throw();
             const string &key() const throw();
             

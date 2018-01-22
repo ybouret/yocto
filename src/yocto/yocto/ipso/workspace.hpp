@@ -22,11 +22,17 @@ namespace yocto
             field_db      fields;
 
             //! create a domain with its ghosts
-            explicit workspace(const divider<COORD> &full,
-                               const size_t          rank,
-                               coord1D               ng,
-                               const COORD           pbcs) :
-            domain<COORD>(full,rank,ng,pbcs,true)
+            /**
+             \param block_size maximum block_size per coordinate for I/O
+             */
+            inline explicit workspace(const divider<COORD> &full,
+                                      const size_t          rank,
+                                      coord1D               ng,
+                                      const COORD           pbcs,
+                                      const size_t          block_size) :
+            domain<COORD>(full,rank,ng,pbcs,true),
+            xbuff(),
+            fields(8,as_capacity)
             {
                 // create a 1:1 xbuffers with async ghosts
                 for(size_t dim=0;dim<DIM;++dim)
@@ -35,16 +41,16 @@ namespace yocto
                     {
                         const size_t count = G->count;
                         std::cerr << "in " << __coord_name(dim) << " new xbuffer(" << count << ") " << G->source << " <-> " << G->target << std::endl;
-                        xbuff[dim].push_back( new xbuffer(count) );
+                        xbuff[dim].push_back( new xbuffer(count*block_size) );
                     }
                 }
             }
             
-            virtual ~workspace() throw()
+            inline virtual ~workspace() throw()
             {
             }
 
-            template <typename FIELD>
+            template <typename FIELD> inline
             FIELD & create( const string &field_name )
             {
                 FIELD    *F = new FIELD( field_name, this->outer );
@@ -54,6 +60,13 @@ namespace yocto
                     throw exception("workspace%uD: multiple '%s'", unsigned(DIM), *field_name);
                 }
                 return *F;
+            }
+
+            template <typename FIELD> inline
+            FIELD & create( const char *field_name )
+            {
+                const string id(field_name);
+                return create<FIELD>(id);
             }
             
         private:

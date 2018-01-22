@@ -15,51 +15,27 @@ namespace yocto
             typedef field1D<T> row;
             typedef field2D<T> slice;
 
+#define YOCTO_IPSO_FIELD3D_CTOR(ID)     \
+field<T>(id),                            \
+patch3D(p),                               \
+slice_patch( p.lower.xy(), p.upper.xy() ), \
+slices(0),                                  \
+rows(0),                                     \
+wksp(0),                                      \
+wlen(0)
+
             inline explicit field3D(const char    *id,
                                     const patch3D &p ) :
-            field<T>(id),
-            patch3D(p),
-            slice_patch( coord2D(p.lower.x,p.lower.y), coord2D(p.upper.x,p.upper.y) ),
-            slices(0),
-            rows(0),
-            wksp(0),
-            wlen(0)
+            YOCTO_IPSO_FIELD3D_CTOR(id)
             {
-                // compute required memory
-                const size_t data_offset   = 0;
-                const size_t data_length   = this->items * sizeof(type);
-                const size_t slices_offset = memory::align( data_offset+data_length );
-                const size_t slices_length = this->width.z * sizeof(slice);
-                const size_t rows_offset   = memory::align( slices_offset+slices_length );
-                const size_t rows_length   = sizeof(row) * this->width.z * this->width.y;
+                build();
+            }
 
-                // allocate and map memory
-                wlen = memory::align(rows_offset+rows_length);
-                wksp = memory::kind<memory::global>::acquire(wlen);
-                uint8_t *q = static_cast<uint8_t *>(wksp);
-
-                this->entry  = (type  *) &q[ data_offset   ];
-                slices       = (slice *) &q[ slices_offset ];
-                rows         = (row   *) &q[ rows_offset   ];
-                slices      -= this->lower.z;
-
-                // link memory
-                type         *data           = this->entry;
-                const coord1D data_per_slice = this->pitch.z;
-                row          *r              = rows;
-                const coord1D rows_per_slice = this->width.y;
-
-                for(coord1D k=this->lower.z;k<=this->upper.z;++k)
-                {
-                    const string slice_id = this->name + vformat("[%d]",int(k));
-                    new (&slices[k]) slice(*slice_id,slice_patch,data,r);
-                    data += data_per_slice;
-                    r    += rows_per_slice;
-                }
-
-                this->set_bytes(this->items);
-
-
+            inline explicit field3D(const string  &id,
+                                    const patch3D &p ) :
+            YOCTO_IPSO_FIELD3D_CTOR(*id)
+            {
+                build();
             }
 
             inline virtual ~field3D() throw()
@@ -94,6 +70,43 @@ namespace yocto
             size_t wlen;
 
             YOCTO_DISABLE_COPY_AND_ASSIGN(field3D);
+
+            inline void build()
+            {
+                // compute required memory
+                const size_t data_offset   = 0;
+                const size_t data_length   = this->items * sizeof(type);
+                const size_t slices_offset = memory::align( data_offset+data_length );
+                const size_t slices_length = this->width.z * sizeof(slice);
+                const size_t rows_offset   = memory::align( slices_offset+slices_length );
+                const size_t rows_length   = sizeof(row) * this->width.z * this->width.y;
+
+                // allocate and map memory
+                wlen = memory::align(rows_offset+rows_length);
+                wksp = memory::kind<memory::global>::acquire(wlen);
+                uint8_t *q = static_cast<uint8_t *>(wksp);
+
+                this->entry  = (type  *) &q[ data_offset   ];
+                slices       = (slice *) &q[ slices_offset ];
+                rows         = (row   *) &q[ rows_offset   ];
+                slices      -= this->lower.z;
+
+                // link memory
+                type         *data           = this->entry;
+                const coord1D data_per_slice = this->pitch.z;
+                row          *r              = rows;
+                const coord1D rows_per_slice = this->width.y;
+
+                for(coord1D k=this->lower.z;k<=this->upper.z;++k)
+                {
+                    const string slice_id = this->name + vformat("[%d]",int(k));
+                    new (&slices[k]) slice(*slice_id,slice_patch,data,r);
+                    data += data_per_slice;
+                    r    += rows_per_slice;
+                }
+
+                this->set_bytes(this->items);
+            }
         };
     }
 }

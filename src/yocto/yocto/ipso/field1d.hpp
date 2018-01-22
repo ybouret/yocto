@@ -15,10 +15,10 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
 
 #define YOCTO_IPSO_FIELD1D_CTOR(ID) \
-field<T>(ID),  \
-patch1D(p),     \
-item(0),         \
-wksp(0),          \
+field<T>(ID),                        \
+patch1D(p),                           \
+item(0),                               \
+wksp(0),                                \
 wlen(0)
 
             //! construct a field or link it is usr!=NULL

@@ -21,6 +21,7 @@ namespace yocto
             size_t load() const throw(); //!< wptr-rptr, #active bytes
             size_t left() const throw(); //!< last-wptr, #available bytes
             
+
             template <typename T>
             inline void store( const T &data ) throw()
             {

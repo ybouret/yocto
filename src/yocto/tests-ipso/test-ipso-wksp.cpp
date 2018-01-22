@@ -48,7 +48,7 @@ YOCTO_UNIT_TEST_IMPL(wksp)
         for(size_t rank=0;rank<cores;++rank)
         {
             std::cerr << "---> rank=" << rank << std::endl;
-            wPtr pW(new workspace<coord1D>(full,rank,ng,pbcs.x) );
+            wPtr pW(new workspace<coord1D>(full,rank,ng,pbcs.x,32) );
             workspaces.push_back(pW);
             pW->create< field1D<float>  >("A");
             pW->create< field1D<double> >("B");

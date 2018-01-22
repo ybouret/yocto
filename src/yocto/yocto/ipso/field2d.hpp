@@ -127,6 +127,7 @@ wlen(0)
             inline void build_with(void *usr_data,
                                    void *usr_rows)
             {
+
                 assert(this->width.x==row_patch.width);
                 const size_t data_offset = 0;
                 const size_t data_length = this->items * sizeof(type);
