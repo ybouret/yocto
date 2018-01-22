@@ -3,7 +3,7 @@ ADD_EXECUTABLE(test-ipso main.cpp ${test_srcs})
 TARGET_LINK_YOCTO(test-ipso)
 
 ENABLE_TESTING()
-ADD_TEST(ipso   test-ipso ipso)
-ADD_TEST(divide test-ipso divide)
-ADD_TEST(xbuff  test-ipso xbuff)
+ADD_TEST(ipso     test-ipso ipso)
+ADD_TEST(divide   test-ipso divide)
+ADD_TEST(xbuffer  test-ipso xbuffer)
 
