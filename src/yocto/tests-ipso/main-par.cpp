@@ -49,8 +49,9 @@ void mpi_xch( mpi_workspace<COORD> &W )
                 W.sendrecv(MPI,b.send,g.target,b.recv,g.target);
             } break;
 
-            case 2:
-                break;
+            case 2:{
+                
+            } break;
 
             default:
                 break;

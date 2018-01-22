@@ -24,6 +24,7 @@ namespace yocto
             {
             }
 
+            //! wraps a send/recv operation
             void sendrecv(const mpi             &MPI,
                           const exchange_buffer &snd,
                           const int              snd_peer,
@@ -31,10 +32,11 @@ namespace yocto
                           const int              rcv_peer) const
 
             {
+                // TODO: add size checks ?
                 MPI_Status status;
                 MPI.Sendrecv(snd.addr(), snd.load(), MPI_BYTE, snd_peer, tag,
-                             rcv.addr(), rcv.load(), MPI_BYTE, rcv_peer, tag, MPI_COMM_WORLD,
-                             status);
+                             rcv.addr(), rcv.load(), MPI_BYTE, rcv_peer, tag,
+                             MPI_COMM_WORLD,status);
             }
 
         private:
