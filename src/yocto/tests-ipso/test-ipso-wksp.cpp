@@ -13,8 +13,13 @@ using namespace ipso;
 YOCTO_UNIT_TEST_IMPL(wksp)
 {
     __SHOW(workspace<coord1D>);
+    __SHOW(workspace<coord1D>::field_db);
+
     __SHOW(workspace<coord2D>);
+    __SHOW(workspace<coord2D>::field_db);
+
     __SHOW(workspace<coord3D>);
+    __SHOW(workspace<coord3D>::field_db);
 
     if(argc<=4)
     {
@@ -45,6 +50,8 @@ YOCTO_UNIT_TEST_IMPL(wksp)
             std::cerr << "---> rank=" << rank << std::endl;
             wPtr pW(new workspace<coord1D>(full,rank,ng,pbcs.x) );
             workspaces.push_back(pW);
+            pW->create< field1D<float>  >("A");
+            pW->create< field1D<double> >("B");
         }
         
 

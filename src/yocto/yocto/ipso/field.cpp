@@ -15,6 +15,10 @@ namespace yocto
         {
         }
 
+        const string & field_info:: key() const throw()
+        {
+            return name;
+        }
 
 
     }

@@ -14,34 +14,30 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
             typedef field1D<T> row;
 
+#define YOCTO_IPSO_FIELD2D_CTOR(ID) \
+field<T>(ID),                        \
+patch2D(p),                           \
+row_patch(p.lower.x,p.upper.x),        \
+rows(0),                                \
+wksp(0),                                 \
+wlen(0)
+
             inline explicit field2D(const char    *id,
                                     const patch2D &p,
                                     void *usr_data=NULL,
                                     void *usr_rows=NULL) :
-            field<T>(id),
-            patch2D(p),
-            row_patch(p.lower.x,p.upper.x),
-            rows(0),
-            wksp(0),
-            wlen(0)
+            YOCTO_IPSO_FIELD2D_CTOR(id)
             {
-                assert(this->width.x==row_patch.width);
-                const size_t data_offset = 0;
-                const size_t data_length = this->items * sizeof(type);
-                const size_t rows_offset = memory::align(data_offset+data_length);
-                const size_t rows_length = this->width.y * sizeof(row);
-                if(usr_data)
-                {
-                    link(usr_data,usr_rows);
-                }
-                else
-                {
-                    wlen = memory::align(rows_offset+rows_length);
-                    wksp = memory::kind<memory::global>::acquire(wlen);
-                    uint8_t *q = static_cast<uint8_t *>(wksp);
-                    link(&q[data_offset],&q[rows_offset]);
-                }
-                this->set_bytes(this->items);
+                build_with(usr_data,usr_rows);
+            }
+
+            inline explicit field2D(const string  &id,
+                                    const patch2D &p,
+                                    void *usr_data=NULL,
+                                    void *usr_rows=NULL) :
+            YOCTO_IPSO_FIELD2D_CTOR(*id)
+            {
+                build_with(usr_data,usr_rows);
             }
 
 
@@ -123,9 +119,31 @@ namespace yocto
                     for(coord1D j=this->lower.y;j<=this->upper.y;++j,data+=this->width.x)
                     {
                         const string row_id = this->name + vformat("[%d]",int(j));
-                        new (rows+j) row(*row_id,row_patch,data);
+                        new (rows+j) row(row_id,row_patch,data);
                     }
                 }
+            }
+
+            inline void build_with(void *usr_data,
+                                   void *usr_rows)
+            {
+                assert(this->width.x==row_patch.width);
+                const size_t data_offset = 0;
+                const size_t data_length = this->items * sizeof(type);
+                const size_t rows_offset = memory::align(data_offset+data_length);
+                const size_t rows_length = this->width.y * sizeof(row);
+                if(usr_data)
+                {
+                    link(usr_data,usr_rows);
+                }
+                else
+                {
+                    wlen = memory::align(rows_offset+rows_length);
+                    wksp = memory::kind<memory::global>::acquire(wlen);
+                    uint8_t *q = static_cast<uint8_t *>(wksp);
+                    link(&q[data_offset],&q[rows_offset]);
+                }
+                this->set_bytes(this->items);
             }
         };
 

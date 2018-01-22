@@ -3,17 +3,23 @@
 
 #include "yocto/ipso/domain.hpp"
 #include "yocto/ipso/xbuffer.hpp"
+#include "yocto/ipso/field3d.hpp"
+#include "yocto/associative/set.hpp"
 
 namespace yocto
 {
     namespace ipso
     {
         template <typename COORD>
-        class workspace : public domain<COORD>
+        class workspace : public domain<COORD>, public counted
         {
         public:
+            typedef field_info::pointer    field_ptr;
+            typedef set<string,field_ptr>  field_db;
+
             static const size_t DIM = domain<COORD>::DIM;
             xbuffer::list xbuff[DIM];
+            field_db      fields;
 
             //! create a domain with its ghosts
             explicit workspace(const divider<COORD> &full,
@@ -38,7 +44,17 @@ namespace yocto
             {
             }
 
-
+            template <typename FIELD>
+            FIELD & create( const string &field_name )
+            {
+                FIELD    *F = new FIELD( field_name, this->outer );
+                field_ptr pF( F );
+                if(!fields.insert(pF))
+                {
+                    throw exception("workspace%uD: multiple '%s'", unsigned(DIM), *field_name);
+                }
+                return *F;
+            }
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(workspace);

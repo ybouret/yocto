@@ -14,8 +14,8 @@ namespace yocto
         public:
             YOCTO_ARGUMENTS_DECL_T;
 
-#define YOCTO_IPSO_FIELD1D_CTOR() \
-field<T>(id),  \
+#define YOCTO_IPSO_FIELD1D_CTOR(ID) \
+field<T>(ID),  \
 patch1D(p),     \
 item(0),         \
 wksp(0),          \
@@ -25,9 +25,16 @@ wlen(0)
             inline explicit field1D(const char    *id,
                                     const patch1D &p,
                                     void          *usr=NULL) :
-            YOCTO_IPSO_FIELD1D_CTOR()
+            YOCTO_IPSO_FIELD1D_CTOR(id)
             {
                 build_with(p,usr);
+            }
+
+            inline explicit field1D(const string &id,
+                                    const patch1D &p,
+                                    void          *usr = NULL ) :
+            YOCTO_IPSO_FIELD1D_CTOR(*id)
+            {
             }
 
             inline virtual ~field1D() throw()

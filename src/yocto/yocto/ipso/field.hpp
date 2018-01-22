@@ -4,6 +4,9 @@
 
 #include "yocto/ipso/patch.hpp"
 #include "yocto/counted-object.hpp"
+#include "yocto/ptr/intr.hpp"
+
+
 #include <cstring>
 
 namespace yocto
@@ -14,12 +17,15 @@ namespace yocto
         class field_info : public counted_object
         {
         public:
+            typedef intr_ptr<string,field_info> pointer;
+
             const string name;
-            const size_t count; //!< items count
-            const size_t bytes; //!< bytes
+            const size_t count; //!< items count, set by field after setup
+            const size_t bytes; //!< bytes count, set by field after setup
 
             virtual ~field_info() throw();
-
+            const string &key() const throw();
+            
         protected:
             explicit field_info(const char   *id);
 
