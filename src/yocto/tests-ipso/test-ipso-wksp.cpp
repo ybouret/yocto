@@ -7,19 +7,14 @@
 using namespace yocto;
 using namespace ipso;
 
-#define __SHOW(TYPE) std::cerr << "sizeof(\t" << #TYPE << "\t) = " << sizeof(TYPE) << std::endl
+#define __SHOW(TYPE) std::cerr << "sizeof(\t" << #TYPE << "\t)\t=\t" << sizeof(TYPE) << std::endl
 
 
 YOCTO_UNIT_TEST_IMPL(wksp)
 {
     __SHOW(workspace<coord1D>);
-    __SHOW(workspace<coord1D>::field_db);
-
     __SHOW(workspace<coord2D>);
-    __SHOW(workspace<coord2D>::field_db);
-
     __SHOW(workspace<coord3D>);
-    __SHOW(workspace<coord3D>::field_db);
 
     if(argc<=4)
     {
@@ -53,7 +48,13 @@ YOCTO_UNIT_TEST_IMPL(wksp)
             pW->create< field1D<float>  >("A");
             pW->create< field1D<double> >("B");
         }
-        
+
+        for(size_t rank=0;rank<cores;++rank)
+        {
+            workspace<coord1D> &W = *workspaces[rank+1];
+            W.sync_init();
+        }
+
 
     }
 

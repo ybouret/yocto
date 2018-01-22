@@ -68,6 +68,48 @@ namespace yocto
                 const string id(field_name);
                 return create<FIELD>(id);
             }
+
+            
+
+            inline bool owns( const field_info &F ) const throw()
+            {
+                for( field_db::const_iterator i=fields.begin();i!=fields.end();++i)
+                {
+                    const field_info &f = **i;
+                    if( &f == &F ) return true;
+                }
+                return false;
+            }
+
+
+
+            inline void sync_init() throw()
+            {
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    for(xbuffer *pX = this->xbuff[dim].head;pX;pX=pX->next)
+                    {
+                        pX->reset();
+                    }
+                }
+            }
+
+            inline void sync_store( field_info &F ) throw()
+            {
+                assert(owns(F));
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    F.local( this->local[dim] );
+                    const ghosts     *pG = this->async[dim].head;
+                    xbuffer          *pX = this->xbuff[dim].head;
+                    for(;pG;pG=pG->next,pX=pX->next)
+                    {
+                        assert(pX);
+                        F.store(*pG,*pX);
+                    }
+                }
+            }
+            
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(workspace);

@@ -212,38 +212,14 @@ namespace yocto
             inline void copyLocal( FIELD &F ) const throw()
             {
                 assert( patch_type::eq(outer,F) );
-                typename FIELD::type *data = F.entry;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     const ghosts::list &G = local[dim];
-                    assert(2==G.size||0==G.size);
                     if(G.size>0)
                     {
                         std::cerr << "copyLocal[" << dim << "] #=" << G.head->count << std::endl;
-                        const ghosts *a = G.head;
-                        const ghosts *b = G.tail;
-                        assert(a!=b);
-                        assert(a->count==b->count);
-                        const array<coord1D> &a_send = a->send;
-                        const array<coord1D> &a_recv = a->recv;
-                        const array<coord1D> &b_send = b->send;
-                        const array<coord1D> &b_recv = b->recv;
-
-                        assert(a->send.size() == a->count );
-                        assert(a->recv.size() == a->count );
-                        assert(b->send.size() == b->count );
-                        assert(b->recv.size() == b->count );
-                        for(size_t g=a->count;g>0;--g)
-                        {
-                            assert(a_recv[g] < coord1D(F.items));
-                            assert(a_send[g] < coord1D(F.items));
-                            assert(b_recv[g] < coord1D(F.items));
-                            assert(b_send[g] < coord1D(F.items));
-
-                            data[ a_recv[g] ] = data[ b_send[g] ];
-                            data[ b_recv[g] ] = data[ a_send[g] ];
-                        }
                     }
+                    F.local(G);
                 }
             }
 

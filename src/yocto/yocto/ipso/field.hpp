@@ -2,7 +2,7 @@
 #ifndef YOCTO_IPSO_FIELD_INCLUDED
 #define YOCTO_IPSO_FIELD_INCLUDED 1
 
-#include "yocto/ipso/patch.hpp"
+#include "yocto/ipso/xbuffer.hpp"
 #include "yocto/counted-object.hpp"
 #include "yocto/ptr/intr.hpp"
 
@@ -25,6 +25,14 @@ namespace yocto
             
             virtual ~field_info() throw();
             const string &key() const throw();
+
+            virtual void store(const ghosts  &G,
+                               xbuffer       &xbuff ) const throw() = 0;
+
+            virtual void query(const ghosts  &G,
+                               xbuffer       &xbuff) throw() = 0;
+
+            virtual void local(const ghosts::list &G) throw() = 0;
             
         protected:
             explicit field_info(const char   *id);
@@ -47,8 +55,64 @@ namespace yocto
             inline void ldz() throw() { assert(entry); assert(bytes); memset(entry,0,bytes); }
             inline void ld( param_type arg ) throw()
             {
-                assert(entry); assert(bytes); 
+                assert(entry); assert(bytes);
                 for(size_t i=0;i<count;++i) memcpy(&entry[i],&arg,sizeof(T));
+                    }
+
+            
+            inline virtual void store(const ghosts  &G,
+                                      xbuffer       &xbuff ) const throw()
+            {
+                assert(G.send.size()==G.count);
+                for(size_t i=G.count;i>0;--i)
+                {
+                    const coord1D j=G.send[i]; assert(j<coord1D(count));
+                    xbuff.store(entry[j]);
+                }
+            }
+
+            inline virtual void query(const ghosts  &G,
+                                      xbuffer       &xbuff) throw()
+            {
+                assert(G.recv.size()==G.count);
+                for(size_t i=G.count;i>0;--i)
+                {
+                    const coord1D j=G.recv[i]; assert(j<coord1D(count));
+                    xbuff.query(entry[j]);
+                }
+            }
+            
+
+            virtual void local(const ghosts::list &G) throw()
+            {
+                assert(2==G.size||0==G.size);
+                if(G.size>0)
+                {
+                    const ghosts *a    = G.head;
+                    const ghosts *b    = G.tail;
+                    T            *data = entry;
+                    assert(a!=b);
+                    assert(a->count==b->count);
+                    const array<coord1D> &a_send = a->send;
+                    const array<coord1D> &a_recv = a->recv;
+                    const array<coord1D> &b_send = b->send;
+                    const array<coord1D> &b_recv = b->recv;
+
+                    assert(a->send.size() == a->count );
+                    assert(a->recv.size() == a->count );
+                    assert(b->send.size() == b->count );
+                    assert(b->recv.size() == b->count );
+                    for(size_t g=a->count;g>0;--g)
+                    {
+                        assert(a_recv[g] < coord1D(this->count));
+                        assert(a_send[g] < coord1D(this->count));
+                        assert(b_recv[g] < coord1D(this->count));
+                        assert(b_send[g] < coord1D(this->count));
+
+                        data[ a_recv[g] ] = data[ b_send[g] ];
+                        data[ b_recv[g] ] = data[ a_send[g] ];
+                    }
+                }
             }
 
         protected:

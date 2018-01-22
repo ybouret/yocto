@@ -38,8 +38,8 @@ void test1D(const coord3D dims,
             for(const ghosts *G = d->async[dim].head;G;G=G->next)
             {
                 xbuff.reset();
-                xbuff.store(*G,F);
-                xbuff.query(*G,F);
+                F.store(*G,xbuff);
+                F.query(*G,xbuff);
             }
         }
     }
@@ -74,8 +74,8 @@ void test2D(const coord3D dims,
             for(const ghosts *G = d->async[dim].head;G;G=G->next)
             {
                 xbuff.reset();
-                xbuff.store(*G,F);
-                xbuff.query(*G,F);
+                F.store(*G,xbuff);
+                F.query(*G,xbuff);
             }
         }
     }
@@ -109,8 +109,8 @@ void test3D(const coord3D dims,
             for(const ghosts *G = d->async[dim].head;G;G=G->next)
             {
                 xbuff.reset();
-                xbuff.store(*G,F);
-                xbuff.query(*G,F);
+                F.store(*G,xbuff);
+                F.query(*G,xbuff);
             }
         }
     }
