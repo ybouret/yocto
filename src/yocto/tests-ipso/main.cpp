@@ -3,7 +3,7 @@
 using namespace yocto;
 
 
-YOCTO_UNIT_TEST_INIT(8)
+YOCTO_UNIT_TEST_INIT(16)
 {
     
     YOCTO_UNIT_TEST_DECL(ipso);
@@ -12,7 +12,8 @@ YOCTO_UNIT_TEST_INIT(8)
     YOCTO_UNIT_TEST_DECL(opt);
     YOCTO_UNIT_TEST_DECL(xbuffer);
     YOCTO_UNIT_TEST_DECL(xcom);
-    
+    YOCTO_UNIT_TEST_DECL(wksp);
+
 }
 YOCTO_UNIT_TEST_EXEC()
 

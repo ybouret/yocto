@@ -5,6 +5,7 @@
 #include "yocto/ipso/ghosts.hpp"
 #include "yocto/mpl/rational.hpp"
 #include "yocto/container/tuple.hpp"
+#include "yocto/counted-object.hpp"
 
 namespace yocto
 {
@@ -86,7 +87,7 @@ namespace yocto
         
         //! a domain describe the full topolgy of a field
         template <typename COORD>
-        class domain : public object
+        class domain : public counted_object
         {
         public:
             typedef core::list_of_cpp<domain> list;
