@@ -18,7 +18,7 @@ void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
     for(size_t rank=0;rank<cores;++rank)
     {
         workspace<COORD> &W = *workspaces[rank+1];
-        W.sync_init_send();
+        W.sync_store_begin();
         W.sync_store( W.fields["A"] );
         W.sync_store( W.fields["B"] );
 
@@ -26,7 +26,7 @@ void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
     for(size_t rank=0;rank<cores;++rank)
     {
         workspace<COORD> &W = *workspaces[rank+1];
-        W.sync_init_recv();
+        W.sync_store_end();
     }
     
     std::cerr << "---> do something with data" << std::endl;

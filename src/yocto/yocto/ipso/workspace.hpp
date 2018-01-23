@@ -9,12 +9,13 @@ namespace yocto
 {
     namespace ipso
     {
+        
         template <typename COORD>
         class workspace : public domain<COORD>, public counted
         {
         public:
 
-            static const size_t DIM = domain<COORD>::DIM;
+            static const size_t    DIM = domain<COORD>::DIM;
             exchange_buffers::list iobuf[DIM];
             field_db               fields;
 
@@ -77,7 +78,7 @@ namespace yocto
 
 
             //! initialize all the exchange buffers
-            inline void sync_init_send() throw()
+            inline void sync_store_begin() throw()
             {
                 for(size_t dim=0;dim<DIM;++dim)
                 {
@@ -109,7 +110,8 @@ namespace yocto
                 }
             }
 
-            inline void sync_init_recv() throw()
+            //! prepare recv buffers once all the send buffers are filled
+            inline void sync_store_end() throw()
             {
                 for(size_t dim=0;dim<DIM;++dim)
                 {
@@ -119,7 +121,8 @@ namespace yocto
                     }
                 }
             }
-
+            
+            
 
             //! query all data from exchange buffers after I/O
             inline void sync_query( field_info &F ) throw()
