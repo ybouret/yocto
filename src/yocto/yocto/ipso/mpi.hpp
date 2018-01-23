@@ -94,13 +94,24 @@ namespace yocto
             {
             }
 
-            //! perform synchronization
+            //! perform synchronization on loaded buffers
             inline void synchronize()
             {
                 for(size_t dim=0;dim<workspace<COORD>::DIM;++dim)
                 {
                     exchange_dim(this->async[dim],this->iobuf[dim]);
                 }
+            }
+
+            //! for one field of some fields
+            template <typename FIELD_TYPE>
+            inline void synchronize( FIELD_TYPE &F )
+            {
+                this->sync_store_begin();
+                this->sync_store(F);
+                this->sync_store_end();
+                synchronize();
+                this->sync_query(F);
             }
 
             inline virtual ~mpi_workspace() throw()

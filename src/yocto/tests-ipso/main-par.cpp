@@ -19,8 +19,6 @@ void mpi_xch( mpi_workspace<COORD> &W )
     fvar.append(B);
 
     W.sync_store_begin();
-    //W.sync_store(A);
-    // W.sync_store(B);
     W.sync_store(fvar);
     W.sync_store_end();
 
@@ -43,41 +41,6 @@ void mpi_xch( mpi_workspace<COORD> &W )
     W.synchronize();
     W.sync_query(fvar);
 
-#if 0
-    for(size_t dim=0;dim<W.DIM;++dim)
-    {
-        const ghosts::list     &gl = W.async[dim];
-        exchange_buffers::list &bl = W.iobuf[dim];
-        assert(gl.size==bl.size);
-        switch(gl.size)
-        {
-
-            case 1: {
-                const ghosts     &g = *(gl.head);
-                exchange_buffers &b = *(bl.head);
-                assert( b.send.load() == b.recv.load() );
-                W.sendrecv(MPI,b.send,g.target,b.recv,g.target);
-            } break;
-
-            case 2:{
-                const ghosts     &g_lo = *(gl.head);
-                const ghosts     &g_up = *(gl.tail);
-                exchange_buffers &b_lo = *(bl.head);
-                exchange_buffers &b_up = *(bl.tail);
-                // up to lo
-                W.sendrecv(MPI,b_up.send,g_up.target,b_lo.recv,g_lo.target);
-                // to to up
-                W.sendrecv(MPI,b_lo.send,g_lo.target,b_up.recv,g_up.target);
-            } break;
-
-            default:
-                break;
-        }
-    }
-
-    W.sync_query(A);
-    W.sync_query(B);
-#endif
 }
 
 YOCTO_PROGRAM_START()
@@ -132,12 +95,25 @@ YOCTO_PROGRAM_START()
         field1D<double> &A = W.create< field1D<double> >("A");
         field1D<float>  &B = W.create< field1D<float>  >("B");
 
+
+
         // initialize fields
         A.ld(rank+1);
         B.ldz();
 
         // perform exchange
         mpi_xch(W);
+
+        fields fvar(2);
+        fvar.append(A);
+        fvar.append(B);
+
+        MPI.Printf0(stderr,"sync '%s' and '%s'\n", * A.name, *B.name );
+        W.synchronize(A);
+        W.synchronize(B);
+
+        MPI.Printf0(stderr,"sync fields\n");
+        W.synchronize(fvar);
 
     }
 
@@ -178,6 +154,17 @@ YOCTO_PROGRAM_START()
         // perform exchange
         mpi_xch(W);
 
+        fields fvar(2);
+        fvar.append(A);
+        fvar.append(B);
+
+        MPI.Printf0(stderr,"sync '%s' and '%s'\n", * A.name, *B.name );
+        W.synchronize(A);
+        W.synchronize(B);
+
+        MPI.Printf0(stderr,"sync fields\n");
+        W.synchronize(fvar);
+
     }
 
     if(true)
@@ -216,6 +203,17 @@ YOCTO_PROGRAM_START()
         // perform exchange
         mpi_xch(W);
 
+        fields fvar(2);
+        fvar.append(A);
+        fvar.append(B);
+
+        MPI.Printf0(stderr,"sync '%s' and '%s'\n", * A.name, *B.name );
+        W.synchronize(A);
+        W.synchronize(B);
+
+        MPI.Printf0(stderr,"sync fields\n");
+        W.synchronize(fvar);
+        
     }
 
 
