@@ -11,8 +11,10 @@ namespace yocto
 {
     namespace ipso
     {
-
+        //______________________________________________________________________
+        //
         //! common MPI operations for one dimension
+        //______________________________________________________________________
         class async_ops
         {
         public:
@@ -74,6 +76,10 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(async_ops);
         };
 
+        //______________________________________________________________________
+        //
+        //! workspace with MPI operations
+        //______________________________________________________________________
         template <typename COORD>
         class mpi_workspace : public async_ops, public workspace<COORD>
         {

@@ -15,25 +15,30 @@ namespace yocto
     namespace ipso
     {
 
+        //! dimension agnostic information about a field
         class field_info : public counted_object
         {
         public:
             typedef intr_ptr<string,field_info> pointer;
             typedef set<string,pointer>         set_type;
 
-            const string name;
+            const string name;  //!< unique identifier for database
             const size_t count; //!< items count, set by field after setup
             const size_t bytes; //!< bytes count, set by field after setup
             
             virtual ~field_info() throw();
-            const string &key() const throw();
 
+            const string &key() const throw(); //!< name
+
+            //! store data into xbuff.send
             virtual void store(const ghosts    &G,
                                exchange_buffer &xbuff ) const throw() = 0;
 
+            //! fetch data from xbuff.recv
             virtual void query(const ghosts    &G,
                                exchange_buffer &xbuff) throw() = 0;
 
+            //! exchange data locally
             virtual void local(const ghosts::list &G) throw() = 0;
             
         protected:
@@ -43,6 +48,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_info);
         };
 
+        //! a field database is a set with access by key
         class field_db : public field_info::set_type
         {
         public:
@@ -57,6 +63,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_db);
         };
 
+        //! With type, but dimension agnostic field
         template <typename T>
         class field : public field_info
         {
@@ -68,7 +75,10 @@ namespace yocto
             T           *entry; //!< linear items
 
 
+            //! set all to zero
             inline void ldz() throw() { assert(entry); assert(bytes); memset(entry,0,bytes); }
+
+            //! set all to arg
             inline void ld( param_type arg ) throw()
             {
                 assert(entry); assert(bytes);

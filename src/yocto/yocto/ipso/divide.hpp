@@ -14,6 +14,7 @@ namespace yocto
     namespace ipso
     {
 
+        //! divide patches in all dimensions
         template <typename COORD>
         class divider : public patch<COORD>
         {

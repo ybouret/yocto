@@ -155,7 +155,7 @@ namespace yocto
                 for(size_t i=1;i<=DIM;++i)
                 {
                     words[i].clean(is_bad);
-                    const string label = id + '.' + ('x'+(i-1));
+                    const string label = id + '.' + __coord_name(i-1);
                     q[i] = string2coord(words[i],label);
                 }
 

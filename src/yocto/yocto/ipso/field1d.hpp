@@ -79,6 +79,16 @@ wlen(0)
                 }
             }
 
+            inline void load_sub(const field1D &F) throw()
+            {
+                load<T>(F,F);
+            }
+
+            inline void save_sub(field1D &F) const throw()
+            {
+                save<T>(F,F);
+            }
+
 
         private:
             type  *item;

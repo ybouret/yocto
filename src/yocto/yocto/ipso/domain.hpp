@@ -60,8 +60,28 @@ namespace yocto
             prev(0),
             asyncs()
             {
+                //______________________________________________________________
+                //
+                // checking ghosts availability
+                //______________________________________________________________
                 ng = __coord_abs(ng);
                 const bool has_ghosts = (ng>0);
+                if(has_ghosts)
+                {
+                    for(size_t dim=0;dim<DIM;++dim)
+                    {
+                        const coord1D ww = __coord(inner.width,dim);
+                        if(ng>ww)
+                        {
+                            throw libc::exception(EDOM,"domain%uD: #ghost=%d>width.%s=%d", unsigned(DIM), int(ng), __coord_name(dim),int(ww));
+                        }
+                    }
+                }
+
+                //______________________________________________________________
+                //
+                // building domain
+                //______________________________________________________________
                 COORD lower = inner.lower;
                 COORD upper = inner.upper;
                 for(size_t dim=0;dim<DIM;++dim)

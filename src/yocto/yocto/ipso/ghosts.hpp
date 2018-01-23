@@ -14,10 +14,12 @@ namespace yocto
         typedef vector<coord1D> ghost;
 
 
-
+        //! ghots zone data
         class ghosts : public object
         {
         public:
+
+            //! the position
             enum position
             {
                 x_lower,
@@ -29,11 +31,11 @@ namespace yocto
             };
             typedef core::list_of_cpp<ghosts> list;
 
-            const ghost     send;    //!< built by load if the 'build' flag is set
-            const ghost     recv;    //!< built by load if the 'build' flag is set
-            const size_t    count;   //!< built by load, ALWAYS
-            const size_t    source;  //!< MPI style source
-            const size_t    target;  //!< MPI style target
+            const ghost     send;         //!< built by load if the 'build' flag is set
+            const ghost     recv;         //!< built by load if the 'build' flag is set
+            const size_t    count;        //!< built by load, ALWAYS
+            const size_t    source;       //!< MPI style source
+            const size_t    target;       //!< MPI style target
             const size_t    source_index; //!< source+1, C++ style
             const size_t    target_index; //!< target+1, C++ style
             ghosts         *next;
