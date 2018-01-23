@@ -11,12 +11,17 @@ void mpi_xch( mpi_workspace<COORD> &W )
 {
     YOCTO_MPI_GET();
 
-    field_info &A = W.fields["A"];
-    field_info &B = W.fields["B"];
+    field_info &A = W["A"];
+    field_info &B = W["B"];
+
+    fields fvar(2);
+    fvar.append(A);
+    fvar.append(B);
 
     W.sync_store_begin();
-    W.sync_store(A);
-    W.sync_store(B);
+    //W.sync_store(A);
+    // W.sync_store(B);
+    W.sync_store(fvar);
     W.sync_store_end();
 
     string topology;
@@ -36,8 +41,7 @@ void mpi_xch( mpi_workspace<COORD> &W )
     MPI.Printf0(stderr,"perform exchange...\n");
 
     W.synchronize();
-    W.sync_query(A);
-    W.sync_query(B);
+    W.sync_query(fvar);
 
 #if 0
     for(size_t dim=0;dim<W.DIM;++dim)

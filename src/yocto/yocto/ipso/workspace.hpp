@@ -3,7 +3,7 @@
 
 #include "yocto/ipso/domain.hpp"
 #include "yocto/ipso/xbuffer.hpp"
-#include "yocto/ipso/field3d.hpp"
+#include "yocto/ipso/fields.hpp"
 
 namespace yocto
 {
@@ -11,13 +11,13 @@ namespace yocto
     {
         
         template <typename COORD>
-        class workspace : public domain<COORD>, public counted
+        class workspace : public domain<COORD>, public field_db, public counted
         {
         public:
 
             static const size_t    DIM = domain<COORD>::DIM;
             exchange_buffers::list iobuf[DIM];
-            field_db               fields;
+            //field_db               fields;
 
             //! create a domain with its ghosts
             /**
@@ -29,8 +29,8 @@ namespace yocto
                                       const COORD           pbcs,
                                       const size_t          block_size) :
             domain<COORD>(full,rank,ng,pbcs,true),
-            iobuf(),
-            fields(8)
+            field_db(8),
+            iobuf()
             {
                 // create a 2:1 exchange_buffer with async ghosts
                 for(size_t dim=0;dim<DIM;++dim)
@@ -49,7 +49,7 @@ namespace yocto
             {
                 FIELD                     *F = new FIELD( field_name, this->outer );
                 const field_info::pointer  pF( F );
-                if(!fields.insert(pF))
+                if(!this->insert(pF))
                 {
                     throw exception("workspace%uD: multiple '%s'", unsigned(DIM), *field_name);
                 }
@@ -62,20 +62,17 @@ namespace yocto
                 const string id(field_name);
                 return create<FIELD>(id);
             }
-
-
+            
 
             inline bool owns( const field_info &F ) const throw()
             {
-                for( field_db::const_iterator i=fields.begin();i!=fields.end();++i)
+                for( field_db::const_iterator i=this->begin();i!=this->end();++i)
                 {
                     const field_info &f = **i;
                     if( &f == &F ) return true;
                 }
                 return false;
             }
-
-
 
             //! initialize all the exchange buffers
             inline void sync_store_begin() throw()
@@ -110,6 +107,15 @@ namespace yocto
                 }
             }
 
+            //! store all data from fields to be sync
+            inline void sync_store( fields &fvar ) throw()
+            {
+                for(size_t i=fvar.size();i>0;--i)
+                {
+                    sync_store( *fvar[i] );
+                }
+            }
+
             //! prepare recv buffers once all the send buffers are filled
             inline void sync_store_end() throw()
             {
@@ -139,7 +145,14 @@ namespace yocto
                     }
                 }
             }
-            
+
+            inline void sync_query( fields &fvar ) throw()
+            {
+                for(size_t i=fvar.size();i>0;--i)
+                {
+                    sync_query( *fvar[i] );
+                }
+            }
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(workspace);

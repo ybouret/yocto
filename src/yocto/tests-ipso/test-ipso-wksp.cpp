@@ -19,8 +19,8 @@ void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
     {
         workspace<COORD> &W = *workspaces[rank+1];
         W.sync_store_begin();
-        W.sync_store( W.fields["A"] );
-        W.sync_store( W.fields["B"] );
+        W.sync_store( W["A"] );
+        W.sync_store( W["B"] );
 
     }
     for(size_t rank=0;rank<cores;++rank)
@@ -36,8 +36,8 @@ void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
     for(size_t rank=0;rank<cores;++rank)
     {
         workspace<COORD> &W = *workspaces[rank+1];
-        W.sync_query( W.fields["A"] );
-        W.sync_query( W.fields["B"] );
+        W.sync_query( W["A"] );
+        W.sync_query( W["B"] );
     }
     std::cerr << "---> done" << std::endl;
 }
@@ -77,13 +77,19 @@ YOCTO_UNIT_TEST_IMPL(wksp)
         const size_t        cores    = __coord_prod(sizes);
         const divide::in1D  full(sizes,region);
         vector<wPtr>        workspaces(cores,as_capacity);
+        fields              fvar;
         for(size_t rank=0;rank<cores;++rank)
         {
             std::cerr << "---> rank=" << rank << std::endl;
             wPtr pW(new workspace<coord1D>(full,rank,ng,pbcs.x,32) );
             workspaces.push_back(pW);
-            pW->create< field1D<float>  >("A");
-            pW->create< field1D<double> >("B");
+            field1D<float>  &A = pW->create< field1D<float>  >("A");
+            field1D<double> &B = pW->create< field1D<double> >("B");
+            if(0==rank)
+            {
+                fvar.append(A);
+                fvar.append(B);
+            }
         }
 
         mimic_exchange(workspaces);
