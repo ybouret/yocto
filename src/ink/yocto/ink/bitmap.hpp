@@ -11,7 +11,7 @@ namespace yocto
 
 
         //! memory handling
-        class Bitmap : public counted_object, public patch_t
+        class Bitmap : public counted_object, public Patch
         {
         public:
             enum MemoryType

@@ -92,7 +92,7 @@ namespace yocto
         Bitmap:: Bitmap(const unit_t W,
                         const unit_t H,
                         const unit_t D) :
-        patch_t(coord_t(0,0),coord_t(__check_width(W),__check_height(H))),
+        Patch(coord_t(0,0),coord_t(__check_width(W),__check_height(H))),
         addr(0),
         d(__check_depth(D)),
         w(W),
