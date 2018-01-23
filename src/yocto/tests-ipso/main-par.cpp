@@ -33,7 +33,7 @@ void mpi_xch( mpi_workspace<COORD> &W )
 
     }
     MPI.Printf(stderr, "topology %s \n", *topology);
-
+    MPI.Printf0(stderr,"perform exchange...\n");
     for(size_t dim=0;dim<W.DIM;++dim)
     {
         const ghosts::list     &gl = W.async[dim];
@@ -50,7 +50,14 @@ void mpi_xch( mpi_workspace<COORD> &W )
             } break;
 
             case 2:{
-                
+                const ghosts     &g_lo = *(gl.head);
+                const ghosts     &g_up = *(gl.tail);
+                exchange_buffers &b_lo = *(bl.head);
+                exchange_buffers &b_up = *(bl.tail);
+                // up to lo
+                W.sendrecv(MPI,b_up.send,g_up.target,b_lo.recv,g_lo.target);
+                // to to up
+                W.sendrecv(MPI,b_lo.send,g_lo.target,b_up.recv,g_up.target);
             } break;
 
             default:
@@ -78,6 +85,7 @@ YOCTO_PROGRAM_START()
 
     if(0==rank)
     {
+        fprintf(stderr,"\n-------- parameters --------\n");
         fprintf(stderr,"dims="); __coord_printf(stderr,dims); fprintf(stderr,"\n");
         fprintf(stderr,"pbcs="); __coord_printf(stderr,pbcs); fprintf(stderr,"\n");
         fprintf(stderr,"ng  ="); __coord_printf(stderr,ng);   fprintf(stderr,"\n");
@@ -161,7 +169,7 @@ YOCTO_PROGRAM_START()
 
     }
 
-    if(true)
+    if(false)
     {
         MPI.Printf0(stderr, "\nin 3D\n" );
         // setup from MPI
