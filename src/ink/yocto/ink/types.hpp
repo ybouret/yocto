@@ -7,8 +7,8 @@ namespace yocto
 {
     namespace Ink
     {
-        typedef ipso::coord2D         coord_t;
-        typedef ipso::patch<coord_t>  Patch;
+        typedef ipso::coord2D         Coord;
+        typedef ipso::patch<Coord>    Patch;
     }
 }
 

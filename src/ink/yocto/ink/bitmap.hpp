@@ -22,24 +22,33 @@ namespace yocto
             };
             typedef void * (*xShiftProc)(void *,const unit_t dx);
 
-            void            *addr;     //!< (0,0) address
+            void            *entry;    //!< (0,0) address
             const unit_t     d;        //!< depth
             const unit_t     w;        //!< width>0
             const unit_t     h;        //!< height>0
             const xShiftProc xshift;   //!< fast addr shifting
             const unit_t     scanline; //!< w*d
             const unit_t     stride;   //!< stide>=scanline
-            const MemoryType type;     //!< kind of Bitmap
+            const MemoryType model;    //!< kind of Bitmap
             
             //! create a global bitmap
-            explicit Bitmap(const unit_t W,
-                            const unit_t H,
-                            const unit_t D);
+            explicit Bitmap(const unit_t D,
+                            const unit_t W,
+                            const unit_t H);
+
+            //! copy with same memory model
+            Bitmap(const Bitmap &other);
+
             virtual ~Bitmap() throw();
+
+            void       *getLine(const unit_t y) throw();
+            const void *getLine(const unit_t y) const throw();
+
 
         private:
             YOCTO_DISABLE_ASSIGN(Bitmap);
-            size_t allocated;
+            size_t  allocated;
+            Bitmap *sharedBMP;
         };
     }
 }

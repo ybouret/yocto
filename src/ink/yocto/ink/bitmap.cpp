@@ -5,12 +5,12 @@ namespace yocto
     {
         Bitmap:: ~Bitmap() throw()
         {
-            switch(type)
+            switch(model)
             {
                 case MemoryIsGlobal:
-                    assert(addr);
+                    assert(entry);
                     assert(allocated>0);
-                    memory::kind<memory::global>::release(addr,allocated);
+                    memory::kind<memory::global>::release(entry,allocated);
                     break;
             }
         }
@@ -69,6 +69,11 @@ namespace yocto
                 return static_cast<uint64_t *>(addr)+dx;
             }
 
+            static inline
+            void * shift16(void *addr, const unit_t dx ) throw()
+            {
+                return static_cast<point2d<uint64_t> *>(addr)+dx;
+            }
 
         }
 
@@ -83,27 +88,64 @@ namespace yocto
                     Y_INK_SHIFT(3);
                     Y_INK_SHIFT(4);
                     Y_INK_SHIFT(8);
+                    Y_INK_SHIFT(16);
                 default:
                     break;
             }
             throw exception("Bitmap Depth=%d not supported", int(D));
         }
 
-        Bitmap:: Bitmap(const unit_t W,
-                        const unit_t H,
-                        const unit_t D) :
-        Patch(coord_t(0,0),coord_t(__check_width(W),__check_height(H))),
-        addr(0),
+        Bitmap:: Bitmap(const unit_t D,
+                        const unit_t W,
+                        const unit_t H) :
+        Patch(Coord(0,0),Coord(__check_width(W),__check_height(H))),
+        entry(0),
         d(__check_depth(D)),
         w(W),
         h(H),
         xshift( __get_xshift(d) ),
         scanline(w*d),
         stride(scanline),
-        type(MemoryIsGlobal),
-        allocated(scanline*w)
+        model(MemoryIsGlobal),
+        allocated(scanline*w),
+        sharedBMP(0)
         {
-            addr = memory::kind<memory::global>::acquire(allocated);
+            entry = memory::kind<memory::global>::acquire(allocated);
+        }
+
+        Bitmap:: Bitmap(const Bitmap &other) :
+        Patch(other),
+        entry(0),
+        d(other.d),
+        w(other.w),
+        h(other.h),
+        xshift(other.xshift),
+        scanline(other.scanline),
+        stride(other.stride),
+        model(other.model),
+        allocated(0),
+        sharedBMP(0)
+        {
+            switch(model)
+            {
+                case MemoryIsGlobal:
+                    allocated = items;
+                    entry = memory::kind<memory::global>::acquire(allocated);
+                    break;
+            }
+        }
+
+
+        void * Bitmap:: getLine(const unit_t y) throw()
+        {
+            assert(y>=0); assert(y<h);
+            return static_cast<uint8_t*>(entry) + (y*stride);
+        }
+
+        const void * Bitmap:: getLine(const unit_t y) const throw()
+        {
+            assert(y>=0); assert(y<h);
+            return static_cast<const uint8_t*>(entry) + (y*stride);
         }
 
 
