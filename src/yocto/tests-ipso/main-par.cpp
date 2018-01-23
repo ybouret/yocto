@@ -9,7 +9,7 @@ template <typename COORD>
 static inline
 void mpi_xch( mpi_workspace<COORD> &W )
 {
-    const mpi &MPI = mpi::instance();
+    YOCTO_MPI_GET();
 
     field_info &A = W.fields["A"];
     field_info &B = W.fields["B"];
@@ -71,7 +71,7 @@ void mpi_xch( mpi_workspace<COORD> &W )
 
 YOCTO_PROGRAM_START()
 {
-    YOCTO_MPI_ENV();
+    YOCTO_MPI(MPI_THREAD_SINGLE);
     const int size = MPI.CommWorldSize;
     const int rank = MPI.CommWorldRank;
     MPI.Printf(stderr, "%s ready...\n",program);
@@ -169,7 +169,7 @@ YOCTO_PROGRAM_START()
 
     }
 
-    if(false)
+    if(true)
     {
         MPI.Printf0(stderr, "\nin 3D\n" );
         // setup from MPI
