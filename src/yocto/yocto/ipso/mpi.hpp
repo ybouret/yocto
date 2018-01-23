@@ -28,11 +28,11 @@ namespace yocto
             }
 
             //! wraps a send/recv operation
-            inline void sendrecv(const mpi             &MPI,
-                                 const exchange_buffer &snd,
-                                 const int              snd_peer,
-                                 exchange_buffer       &rcv,
-                                 const int              rcv_peer) const
+            inline void __sendrecv(const mpi             &MPI,
+                                   const exchange_buffer &snd,
+                                   const int              snd_peer,
+                                   exchange_buffer       &rcv,
+                                   const int              rcv_peer) const
 
             {
                 MPI_Status status;
@@ -43,7 +43,7 @@ namespace yocto
 
 
             //! perform MPI data exchange
-            inline void exchange_dim(const ghosts::list     &gl,
+            inline void __exchange1D(const ghosts::list     &gl,
                                      exchange_buffers::list &bl)
             {
                 assert(gl.size==bl.size);
@@ -53,7 +53,7 @@ namespace yocto
                         const ghosts     &g = *(gl.head);
                         exchange_buffers &b = *(bl.head);
                         assert( b.send.load() == b.recv.load() );
-                        sendrecv(MPI,b.send,g.target,b.recv,g.target);
+                        __sendrecv(MPI,b.send,g.target,b.recv,g.target);
                     } break;
 
                     case 2:{
@@ -62,9 +62,9 @@ namespace yocto
                         exchange_buffers &b_lo = *(bl.head);
                         exchange_buffers &b_up = *(bl.tail);
                         // up to lo
-                        sendrecv(MPI,b_up.send,g_up.target,b_lo.recv,g_lo.target);
+                        __sendrecv(MPI,b_up.send,g_up.target,b_lo.recv,g_lo.target);
                         // lo to up
-                        sendrecv(MPI,b_lo.send,g_lo.target,b_up.recv,g_up.target);
+                        __sendrecv(MPI,b_lo.send,g_lo.target,b_up.recv,g_up.target);
                     } break;
 
                     default:
@@ -99,7 +99,7 @@ namespace yocto
             {
                 for(size_t dim=0;dim<workspace<COORD>::DIM;++dim)
                 {
-                    exchange_dim(this->async[dim],this->iobuf[dim]);
+                    __exchange1D(this->async[dim],this->iobuf[dim]);
                 }
             }
 

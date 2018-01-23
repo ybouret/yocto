@@ -213,7 +213,7 @@ YOCTO_PROGRAM_START()
 
         MPI.Printf0(stderr,"sync fields\n");
         W.synchronize(fvar);
-        
+
     }
 
 
