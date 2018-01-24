@@ -1,7 +1,7 @@
 #ifndef YOCTO_INK_TYPES_INCLUDED
 #define YOCTO_INK_TYPES_INCLUDED 1
 
-#include "yocto/ipso/field2d.hpp"
+#include "yocto/ipso/patch.hpp"
 
 namespace yocto
 {

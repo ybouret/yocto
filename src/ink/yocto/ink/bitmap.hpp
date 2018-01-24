@@ -9,47 +9,38 @@ namespace yocto
     namespace Ink
     {
 
-
-        //! memory handling
-        class Bitmap : public counted_object, public Patch
+        class Bitmap : public counted_object
         {
         public:
-            enum MemoryType
+            enum MemoryModel
             {
-                MemoryIsGlobal, //!< standalone
-                MemoryIsShared, //!< sub bitmap
-                MemoryFromUser  //!< based on user's data
+                MemoryIsGlobal,
+                MemoryIsShared,
+                MemoryFromUser
             };
-            typedef void * (*xShiftProc)(void *,const unit_t dx);
 
-            void            *entry;    //!< (0,0) address
-            const unit_t     d;        //!< depth
-            const unit_t     w;        //!< width>0
-            const unit_t     h;        //!< height>0
-            const xShiftProc xshift;   //!< fast addr shifting
-            const unit_t     scanline; //!< w*d
-            const unit_t     stride;   //!< stide>=scanline
-            const MemoryType model;    //!< kind of Bitmap
-            
-            //! create a global bitmap
-            explicit Bitmap(const unit_t D,
-                            const unit_t W,
-                            const unit_t H);
+            struct __Row { void *p; Coord w; };
 
-            //! copy with same memory model
-            Bitmap(const Bitmap &other);
+            typedef void * (*XShift)(void *,const Coord);
 
+            void        *entry; //!< address of (0,0)
+            const Coord  depth;
+            const Coord  w;
+            const Coord  h;
+            const Coord  pitch;  //!< w*depth bytes for one line
+            const Coord  stride; //!< stride>=picth, bytes to change line
+            const XShift xshift;
+
+            explicit Bitmap();
             virtual ~Bitmap() throw();
 
-            void       *getLine(const unit_t y) throw();
-            const void *getLine(const unit_t y) const throw();
-
+        protected:
+            void *__rows; //!< memory for rows
 
         private:
             YOCTO_DISABLE_ASSIGN(Bitmap);
-            size_t  allocated;
-            Bitmap *sharedBMP;
         };
+        
     }
 }
 
