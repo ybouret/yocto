@@ -26,6 +26,7 @@ namespace yocto
 
                 inline const_type & operator[](const unit_t i) const throw()
                 { assert(entry); assert(i>=0);assert(i<w); return entry[i]; }
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Row);
                 Row(); ~Row();
