@@ -122,6 +122,7 @@ namespace yocto
                         case Y_INK_IS_BMP:
                             if(in_color)
                             {
+                                std::cerr << "r=" << int(r) << std::endl;
                                 fp.write(b); fp.write(g); fp.write(r);
                             }
                             else

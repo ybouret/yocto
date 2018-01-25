@@ -74,18 +74,19 @@ YOCTO_UNIT_TEST_IMPL(bitmap)
     Ink::Pixmap<color3> pxm(__ALEA_SIZE);
     for(unit_t j=0;j<pxm.h;++j)
     {
-        uint8_t r( alea.leq(255) ), g( 0*alea.leq(255) ), b( 0*alea.leq(255) );
+        uint8_t r( alea.leq(255) );
         for(unit_t i=0;i<pxm.w;++i)
         {
             color3 &C = pxm[j][i];
             C.r = r;
-            C.b = b;
-            C.g = g;
+            //C.b = uint8_t(alea.leq(C.r));
+            //C.g = uint8_t(alea.leq(C.b));
         }
     }
-    pxm.save("pxm.bmp");
-    pxm.save("pxm.ppm");
-    pxm.save("pxm.eps");
+    
+    pxm.save("pxm.bmp");  pxm.save("pxm_gs.bmp",false);
+    pxm.save("pxm.ppm");  pxm.save("pxm_gs.ppm",false);
+    pxm.save("pxm.eps");  pxm.save("pxm_gs.eps",false);
     
 }
 YOCTO_UNIT_TEST_DONE()

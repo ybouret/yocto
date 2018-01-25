@@ -256,5 +256,25 @@ namespace yocto
             assert(xshift);
             return xshift( (static_cast<__Row   *>(_rows)+y)->p,x);
         }
+
+
+        void Bitmap:: flip_vertical()   throw()
+        {
+            const unit_t jmax = h/2;
+            __Row   *r = static_cast<__Row   *>(_rows);
+            for(unit_t j=0,k=h;j<jmax;++j)
+            {
+                --k;
+                uint8_t *rk = static_cast<uint8_t *>( (r+k)->p );
+                uint8_t *rj = static_cast<uint8_t *>( (r+j)->p );
+
+                for(unit_t i=0;i<pitch;++i)
+                {
+                    cswap(rk[i],rj[i]);
+                }
+            }
+        }
+
+
     }
 }
