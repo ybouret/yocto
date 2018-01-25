@@ -121,7 +121,7 @@ namespace yocto
             assert(entry);
             __Row   *r = static_cast<__Row   *>(_rows);
             uint8_t *p = static_cast<uint8_t *>(entry);
-            for(size_t j=0;j<h;++j,p+=stride,++r)
+            for(unit_t j=0;j<h;++j,p+=stride,++r)
             {
                 r->p = p;
                 r->w = w;
