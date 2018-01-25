@@ -20,6 +20,8 @@ void fill_pxm( Ink::Pixmap<T> &pxm ) throw()
     }
 }
 
+#define __SHOW(TYPE) std::cerr << "sizeof(" << #TYPE << ")=" << sizeof(TYPE) << std::endl
+
 YOCTO_UNIT_TEST_IMPL(bitmap)
 {
     Ink::Bitmap bmp1(1,__ALEA_SIZE);
@@ -42,6 +44,13 @@ YOCTO_UNIT_TEST_IMPL(bitmap)
     fill_pxm(pxm_short);
     fill_pxm(pxmf);
     fill_pxm(pxmd);
+
+    __SHOW(Ink::Bitmap);
+    __SHOW(Ink::Pixmap<char>   );
+    __SHOW(Ink::Pixmap<short>  );
+    __SHOW(Ink::Pixmap<float>  );
+    __SHOW(Ink::Pixmap<double> );
+
 }
 YOCTO_UNIT_TEST_DONE()
 

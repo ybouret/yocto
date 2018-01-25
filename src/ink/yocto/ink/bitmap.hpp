@@ -29,7 +29,7 @@ namespace yocto
             const unit_t  w;
             const unit_t  h;
             const unit_t  pitch;  //!< w*depth bytes for one line
-            const unit_t  stride; //!< stride>=picth, bytes to change line
+            const unit_t  stride; //!< stride>=pitch, bytes to change line
             const XShift  xshift;
 
             explicit Bitmap(const unit_t D,
@@ -45,9 +45,10 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Bitmap);
-            void  *prv_data;
-            size_t prv_size;
-            void   link_rows() throw();
+            Bitmap *shBitmap;
+            void   *prv_data;
+            size_t  prv_size;
+            void    link_rows() throw();
             
         public:
             const MemoryModel model;

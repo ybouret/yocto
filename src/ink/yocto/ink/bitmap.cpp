@@ -90,6 +90,7 @@ namespace yocto
         stride(pitch),
         xshift( __xshift(depth) ),
         _rows(0),
+        shBitmap(0),
         prv_data(0),
         prv_size(0),
         model( MemoryIsGlobal )
@@ -132,7 +133,7 @@ namespace yocto
             assert(_rows);
             __Row   *r = static_cast<__Row   *>(_rows);
             const size_t nz = pitch;
-            for(size_t j=0;j<h;++j)
+            for(unit_t j=0;j<h;++j)
             {
                 assert(r->p);
                 memset(r->p,0,nz);
