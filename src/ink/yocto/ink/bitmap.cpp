@@ -141,6 +141,30 @@ namespace yocto
             }
         }
 
+
+        static inline Bitmap *__check_shared(Bitmap *shared)
+        {
+            if(!shared) throw exception("Bitmap(shared=NULL)");
+            return shared;
+        }
+
+        Bitmap:: Bitmap( Bitmap *shared ) :
+        entry( __check_shared(shared)->entry ),
+        depth( shared->depth ),
+        w( shared->w ),
+        h( shared->h ),
+        pitch(  shared->pitch ),
+        stride( shared->stride ),
+        xshift( shared->xshift ),
+        _rows(  shared->_rows ),
+        shBitmap(shared),
+        prv_data(0),
+        prv_size(0),
+        model( MemoryIsShared )
+        {
+            shared->withhold();
+        }
+
         void Bitmap:: allocate()
         {
             const size_t data_offset = 0;

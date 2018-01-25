@@ -32,9 +32,14 @@ namespace yocto
             const unit_t  stride; //!< stride>=pitch, bytes to change line
             const XShift  xshift;
 
+            //! create an allocated bitmap
             explicit Bitmap(const unit_t D,
                             const unit_t W,
                             const unit_t H);
+
+
+            //! create a shared bitmap
+            explicit Bitmap( Bitmap *shared );
 
             //! copy with the same memory model
             Bitmap(const Bitmap &other);
@@ -45,6 +50,7 @@ namespace yocto
             void copy(const Bitmap &other) throw();
             void flip_vertical() throw();   //!< inverse rows
             void flip_horizontal() throw(); //!< inverse columns
+
         protected:
             void *_rows; //!< memory for rows
 

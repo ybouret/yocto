@@ -33,12 +33,20 @@ void fill_pxm( Ink::Pixmap<T> &pxm ) throw()
 
 YOCTO_UNIT_TEST_IMPL(bitmap)
 {
+    __SHOW(Ink::Bitmap);
+    __SHOW(Ink::Pixmap<char>   );
+    __SHOW(Ink::Pixmap<short>  );
+    __SHOW(Ink::Pixmap<float>  );
+    __SHOW(Ink::Pixmap<double> );
+
+    std::cerr << "----> testing bitmaps" << std::endl;
     Ink::Bitmap bmp1(1,__ALEA_SIZE);
     Ink::Bitmap bmp2(2,__ALEA_SIZE);
     Ink::Bitmap bmp3(3,__ALEA_SIZE);
     Ink::Bitmap bmp4(4,__ALEA_SIZE);
     Ink::Bitmap bmp8(8,__ALEA_SIZE);
 
+    std::cerr << "----> testing pixmaps" << std::endl;
     Ink::Pixmap<char>   pxm_char(__ALEA_SIZE);
     Ink::Pixmap<short>  pxm_short(__ALEA_SIZE);
     Ink::Pixmap<float>  pxmf(__ALEA_SIZE);
@@ -54,12 +62,11 @@ YOCTO_UNIT_TEST_IMPL(bitmap)
     fill_pxm(pxmf);
     fill_pxm(pxmd);
 
-    __SHOW(Ink::Bitmap);
-    __SHOW(Ink::Pixmap<char>   );
-    __SHOW(Ink::Pixmap<short>  );
-    __SHOW(Ink::Pixmap<float>  );
-    __SHOW(Ink::Pixmap<double> );
 
+    std::cerr << "----> testing shared" << std::endl;
+    Ink::Bitmap sh( new Ink::Bitmap(1,__ALEA_SIZE) );
+    Ink::Bitmap sc( sh );
+    sh.ldz();
 }
 YOCTO_UNIT_TEST_DONE()
 
