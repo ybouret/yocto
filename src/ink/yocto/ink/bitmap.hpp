@@ -47,10 +47,24 @@ namespace yocto
 
             virtual ~Bitmap() throw();
 
+
+            void *      get(const unit_t x, const unit_t y) throw();
+            const void *get(const unit_t x, const unit_t y) const throw();
+            
             void ldz() throw();
             void copy(const Bitmap &other) throw();
-            void flip_vertical() throw();   //!< inverse rows
+            void flip_vertical()   throw();   //!< inverse rows
             void flip_horizontal() throw(); //!< inverse columns
+
+            //! save as uncompressed bitmap
+            /**
+             assuming RGB or RGBA !!!
+             - .bmp
+             - .ppm
+             - .eps
+             */
+            void save(const string &filename,
+                      const bool    in_color = true ) const;
 
         protected:
             void *_rows; //!< memory for rows

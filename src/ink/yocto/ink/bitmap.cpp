@@ -239,5 +239,22 @@ namespace yocto
             }
         }
 
+        void * Bitmap:: get(const unit_t x, const unit_t y) throw()
+        {
+            assert(x>=0);assert(x<w);
+            assert(y>=0);assert(y<h);
+            assert(_rows);
+            assert(xshift);
+            return xshift((static_cast<__Row   *>(_rows)+y)->p,x);
+        }
+
+        const void * Bitmap:: get(const unit_t x, const unit_t y) const throw()
+        {
+            assert(x>=0);assert(x<w);
+            assert(y>=0);assert(y<h);
+            assert(_rows);
+            assert(xshift);
+            return xshift( (static_cast<__Row   *>(_rows)+y)->p,x);
+        }
     }
 }

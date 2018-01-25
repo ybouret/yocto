@@ -31,6 +31,8 @@ void fill_pxm( Ink::Pixmap<T> &pxm ) throw()
 
 #define __SHOW(TYPE) std::cerr << "sizeof(" << #TYPE << ")\t= " << sizeof(TYPE) << std::endl
 
+struct color3 { uint8_t r,g,b; };
+
 YOCTO_UNIT_TEST_IMPL(bitmap)
 {
     __SHOW(Ink::Bitmap);
@@ -67,6 +69,24 @@ YOCTO_UNIT_TEST_IMPL(bitmap)
     Ink::Bitmap sh( new Ink::Bitmap(1,__ALEA_SIZE) );
     Ink::Bitmap sc( sh );
     sh.ldz();
+
+    std::cerr << "----> testing save" << std::endl;
+    Ink::Pixmap<color3> pxm(__ALEA_SIZE);
+    for(unit_t j=0;j<pxm.h;++j)
+    {
+        uint8_t r( alea.leq(255) ), g( 0*alea.leq(255) ), b( 0*alea.leq(255) );
+        for(unit_t i=0;i<pxm.w;++i)
+        {
+            color3 &C = pxm[j][i];
+            C.r = r;
+            C.b = b;
+            C.g = g;
+        }
+    }
+    pxm.save("pxm.bmp");
+    pxm.save("pxm.ppm");
+    pxm.save("pxm.eps");
+    
 }
 YOCTO_UNIT_TEST_DONE()
 
