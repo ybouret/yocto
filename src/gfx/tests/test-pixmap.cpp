@@ -38,10 +38,12 @@ YOCTO_UNIT_TEST_IMPL(pixmap)
         {
             const unit_t b = gist::float2byte(channels[0][j][i]);
             img[j][i] = RGB(b,b,b);
+            img[j][i] = RGB(255,0,0);
         }
     }
 
     img.save("img.bmp");
+    img.save("img.ppm");
 
 }
 YOCTO_UNIT_TEST_DONE()

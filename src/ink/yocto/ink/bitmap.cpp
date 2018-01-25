@@ -210,6 +210,8 @@ namespace yocto
             const size_t ncpy = pitch;
             for(unit_t j=0;j<h;++j)
             {
+                assert(self[j].p);
+                assert(peer[j].p);
                 memcpy(self[j].p,peer[j].p,ncpy);
             }
         }
@@ -220,10 +222,10 @@ namespace yocto
             assert(entry);
             __Row   *r = static_cast<__Row   *>(_rows);
             uint8_t *p = static_cast<uint8_t *>(entry);
-            for(unit_t j=0;j<h;++j,p+=stride,++r)
+            for(unit_t j=0;j<h;++j,p+=stride)
             {
-                r->p = p;
-                r->w = w;
+                r[j].p = p;
+                r[j].w = w;
             }
         }
 
@@ -234,8 +236,8 @@ namespace yocto
             const size_t nz = pitch;
             for(unit_t j=0;j<h;++j)
             {
-                assert(r->p);
-                memset(r->p,0,nz);
+                assert(r[j].p);
+                memset(r[j].p,0,nz);
             }
         }
 

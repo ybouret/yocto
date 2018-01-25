@@ -79,6 +79,7 @@ YOCTO_UNIT_TEST_IMPL(bitmap)
         {
             color3 &C = pxm[j][i];
             C.r = r;
+            C.r = j%256;
             //C.b = uint8_t(alea.leq(C.r));
             //C.g = uint8_t(alea.leq(C.b));
         }
