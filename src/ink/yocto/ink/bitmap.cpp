@@ -117,13 +117,27 @@ namespace yocto
         void Bitmap:: link_rows() throw()
         {
             assert(_rows);
+            assert(entry);
             __Row   *r = static_cast<__Row   *>(_rows);
             uint8_t *p = static_cast<uint8_t *>(entry);
-            for(size_t j=0;j<h;++j,p+=stride)
+            for(size_t j=0;j<h;++j,p+=stride,++r)
             {
                 r->p = p;
                 r->w = w;
             }
         }
+
+        void Bitmap:: ldz() throw()
+        {
+            assert(_rows);
+            __Row   *r = static_cast<__Row   *>(_rows);
+            const size_t nz = pitch;
+            for(size_t j=0;j<h;++j)
+            {
+                assert(r->p);
+                memset(r->p,0,nz);
+            }
+        }
+
     }
 }
