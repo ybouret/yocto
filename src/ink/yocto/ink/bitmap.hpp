@@ -19,26 +19,35 @@ namespace yocto
                 MemoryFromUser
             };
 
-            struct __Row { void *p; Coord w; };
+            struct __Row { void *p; unit_t w; };
 
-            typedef void * (*XShift)(void *,const Coord);
+            typedef void * (*XShift)(void *,const unit_t);
 
-            void        *entry; //!< address of (0,0)
-            const Coord  depth;
-            const Coord  w;
-            const Coord  h;
-            const Coord  pitch;  //!< w*depth bytes for one line
-            const Coord  stride; //!< stride>=picth, bytes to change line
-            const XShift xshift;
+            void         *entry; //!< address of (0,0)
+            const unit_t  depth;
+            const unit_t  w;
+            const unit_t  h;
+            const unit_t  pitch;  //!< w*depth bytes for one line
+            const unit_t  stride; //!< stride>=picth, bytes to change line
+            const XShift  xshift;
 
-            explicit Bitmap();
+            explicit Bitmap(const unit_t D,
+                            const unit_t W,
+                            const unit_t H);
+            
             virtual ~Bitmap() throw();
 
         protected:
-            void *__rows; //!< memory for rows
+            void *_rows; //!< memory for rows
 
         private:
             YOCTO_DISABLE_ASSIGN(Bitmap);
+            void  *prv_data;
+            size_t prv_size;
+            void   link_rows() throw();
+            
+        public:
+            const MemoryModel model;
         };
         
     }
