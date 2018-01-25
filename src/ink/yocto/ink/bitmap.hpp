@@ -37,6 +37,7 @@ namespace yocto
                             const unit_t W,
                             const unit_t H);
 
+            
 
             //! create a shared bitmap
             explicit Bitmap( Bitmap *shared );
