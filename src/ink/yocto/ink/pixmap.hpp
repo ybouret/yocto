@@ -49,9 +49,14 @@ namespace yocto
             {
             }
             
+            inline Pixmap(const Pixmap &pxm) :
+            Bitmap(pxm)
+            {
+            }
+            
 
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(Pixmap);
+            YOCTO_DISABLE_ASSIGN(Pixmap);
         };
     }
 }

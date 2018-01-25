@@ -6,7 +6,14 @@ namespace yocto
         Bitmap:: ~Bitmap() throw()
         {
             memory::kind<memory::global>::release(prv_data,prv_size);
-            
+            if(MemoryIsShared == model )
+            {
+                assert(shBitmap);
+                if(shBitmap->liberate())
+                {
+                    delete shBitmap;
+                }
+            }
         }
 
 
@@ -83,6 +90,7 @@ namespace yocto
         Bitmap:: Bitmap(const unit_t D,
                         const unit_t W,
                         const unit_t H) :
+        entry(0),
         depth( __check_d(D) ),
         w(     __check_w(W) ),
         h(     __check_h(H) ),
@@ -94,6 +102,46 @@ namespace yocto
         prv_data(0),
         prv_size(0),
         model( MemoryIsGlobal )
+        {
+            allocate();
+        }
+
+        Bitmap:: Bitmap(const Bitmap &other) :
+        entry(0),
+        depth( other.depth ),
+        w( other.w ),
+        h( other.h ),
+        pitch(other.pitch),
+        stride(other.stride),
+        xshift(other.xshift),
+        _rows(0),
+        shBitmap(other.shBitmap),
+        prv_data(0),
+        prv_size(0),
+        model(other.model)
+        {
+            switch(model)
+            {
+                case MemoryIsGlobal:
+                    allocate();
+                    copy(other);
+                    break;
+
+                case MemoryIsShared:
+                    assert(shBitmap);
+                    shBitmap->withhold();
+                    entry = shBitmap->entry;
+                    _rows = shBitmap->_rows;
+                    break;
+
+                case MemoryFromUser:
+                    entry = other.entry;
+                    allocate_rows_only();
+                    break;
+            }
+        }
+
+        void Bitmap:: allocate()
         {
             const size_t data_offset = 0;
             const size_t data_length = pitch * h;
@@ -113,6 +161,33 @@ namespace yocto
             _rows = &p[rows_offset];
 
             link_rows();
+        }
+
+
+        void Bitmap:: allocate_rows_only()
+        {
+            prv_size = sizeof(__Row) * h;
+            prv_data = memory::kind<memory::global>::acquire(prv_size);
+            _rows    = prv_data;
+            link_rows();
+        }
+
+        void Bitmap:: copy(const Bitmap &other) throw()
+        {
+            assert(depth==other.depth);
+            assert(w==other.w);
+            assert(h==other.h);
+            assert(pitch==other.pitch);
+            assert(_rows);
+            assert(other._rows);
+
+             __Row      *self = static_cast<__Row       *>(_rows);
+            const __Row *peer = static_cast<const __Row *>(other._rows);
+            const size_t ncpy = pitch;
+            for(unit_t j=0;j<h;++j)
+            {
+                memcpy(self[j].p,peer[j].p,ncpy);
+            }
         }
 
         void Bitmap:: link_rows() throw()

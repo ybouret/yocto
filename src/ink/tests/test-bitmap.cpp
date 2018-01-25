@@ -18,9 +18,18 @@ void fill_pxm( Ink::Pixmap<T> &pxm ) throw()
             pxm[j][i] = tmp;
         }
     }
+
+    Ink::Pixmap<T> cpy( pxm );
+    for(unit_t j=0;j<pxm.h;++j)
+    {
+        for(unit_t i=0;i<pxm.w;++i)
+        {
+            cpy[j][i] = 0;
+        }
+    }
 }
 
-#define __SHOW(TYPE) std::cerr << "sizeof(" << #TYPE << ")=" << sizeof(TYPE) << std::endl
+#define __SHOW(TYPE) std::cerr << "sizeof(" << #TYPE << ")\t= " << sizeof(TYPE) << std::endl
 
 YOCTO_UNIT_TEST_IMPL(bitmap)
 {
