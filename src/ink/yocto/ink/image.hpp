@@ -9,13 +9,44 @@ namespace yocto
 {
     namespace Ink
     {
+
+        class ImageIO : public counted_object
+        {
+        public:
+            virtual ~ImageIO() throw();
+            const string name;
+            //==============================================================
+            //
+            // virtual interface
+            //
+            //==============================================================
+            virtual bool     lossless() const throw() = 0;
+            virtual Bitmap  *load(const string          &filename,
+                                  unit_t                 depth,
+                                  rgba2data             &proc,
+                                  const void            *options) const = 0;
+
+            virtual void     save(const string        &filename,
+                                  const Bitmap        &bmp,
+                                  data2rgba           &proc,
+                                  const void          *options) const = 0;
+
+        protected:
+            ImageIO(const char *id);
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(ImageIO);
+        };
+
         struct Image
         {
-            class Format : public counted_object
+            class Format : public ImageIO
             {
             public:
-                const string name;
                 virtual ~Format() throw();
+
+
+                virtual const char **extensions() const throw() = 0;
 
             protected:
                 explicit Format(const char *id);
