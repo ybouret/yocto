@@ -2,6 +2,7 @@
 #define YOCTO_INK_COLOR_RGB_INCLUDED 1
 
 #include "yocto/ink/color/pixel.hpp"
+#undef RGB
 
 namespace yocto
 {
