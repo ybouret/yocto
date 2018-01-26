@@ -11,6 +11,19 @@ namespace yocto
 #define Y_INK_IS_PPM    2
 #define Y_INK_IS_EPS    3
 
+        static inline void __write4( ios::ocstream &fp, const uint32_t v )
+        {
+            const uint8_t b0(  v     &0xff );
+            const uint8_t b1( (v>> 8)&0xff );
+            const uint8_t b2( (v>>16)&0xff );
+            const uint8_t b3( (v>>24)&0xff );
+            fp.write(b0);
+            fp.write(b1);
+            fp.write(b2);
+            fp.write(b3);
+
+        }
+
         void Bitmap:: save( const string &filename, const bool in_color ) const
         {
             if(depth<3) throw exception("Bitmap::save(depth<3)");
@@ -67,38 +80,26 @@ namespace yocto
                     fp.write('B');
                     fp.write('M');
                     size = nx * ny * 3 + 14 + 40;
-                    fp.write(size%256);
-                    fp.write((size/256)%256);
-                    fp.write((size / 65536) % 256);
-                    fp.write((size / 16777216));
-                    fp.write(0); fp.write(0); fp.write(0); fp.write(0);
+                    __write4(fp,size);
+                    __write4(fp,0);
 
-                    /* Offset to image data */
-                    fp.write(14+40); fp.write(0); fp.write(0); fp.write(0);
+                    /* Offset to image data : 4 bytes*/
+                    __write4(fp,14+40);
 
                     /* Information header 40 bytes */
-                    fp.write(0x28); fp.write(0); fp.write(0); fp.write(0);
-                    fp.write((nx) % 256);
-                    fp.write((nx / 256) % 256);
-                    fp.write((nx / 65536) % 256);
-                    fp.write((nx / 16777216));
-                    fp.write((ny) % 256);
-                    fp.write((ny / 256) % 256);
-                    fp.write((ny / 65536) % 256);
-                    fp.write((ny / 16777216));
-                    fp.write(1); fp.write(0); /* One plane */
+                    __write4(fp,0x28);
+                    __write4(fp,nx);
+                    __write4(fp,ny);
+                    fp.write(1);  fp.write(0); /* One plane */
                     fp.write(24); fp.write(0); /* 24 bits */
                     /* Compression type == 0 */
-                    fp.write(0); fp.write(0); fp.write(0); fp.write(0);
+                    __write4(fp,0);
                     size = nx * ny * 3;
-                    fp.write((size) % 256);
-                    fp.write((size / 256) % 256);
-                    fp.write((size / 65536) % 256);
-                    fp.write((size / 16777216));
-                    fp.write(1); fp.write(0); fp.write(0); fp.write(0);
-                    fp.write(1); fp.write(0); fp.write(0); fp.write(0);
-                    fp.write(0); fp.write(0); fp.write(0); fp.write(0); /* No palette */
-                    fp.write(0); fp.write(0); fp.write(0); fp.write(0);
+                    __write4(fp,size);
+                    __write4(fp,1);
+                    __write4(fp,1);
+                    __write4(fp,0);
+                    __write4(fp,0);
                     break;
 
                 default:
