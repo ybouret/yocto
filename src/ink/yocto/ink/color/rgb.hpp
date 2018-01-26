@@ -1,5 +1,5 @@
-#ifndef YOCTO_INK_COLOR_INCLUDED
-#define YOCTO_INK_COLOR_INCLUDED 1
+#ifndef YOCTO_INK_COLOR_RGB_INCLUDED
+#define YOCTO_INK_COLOR_RGB_INCLUDED 1
 
 #include "yocto/ink/color/pixel.hpp"
 
@@ -57,9 +57,9 @@ namespace yocto
         };
 
 
-        typedef rgb<uint8_t> RGB;
-        typedef rgb<uint8_t> RGBA;
-        
+        typedef rgb<uint8_t>  RGB;
+        typedef rgba<uint8_t> RGBA;
+
     }
 }
 

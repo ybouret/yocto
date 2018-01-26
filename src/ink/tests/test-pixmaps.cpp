@@ -11,6 +11,8 @@ YOCTO_UNIT_TEST_IMPL(pixmaps)
     Ink::Pixmap3 pxm3(__ALEA_SIZE);
     Ink::Pixmap4 pxm4(__ALEA_SIZE);
 
+    Ink::PixmapF pxmf2( pxm3, Ink::Convert::RGB2F );
+
 }
 YOCTO_UNIT_TEST_DONE()
 

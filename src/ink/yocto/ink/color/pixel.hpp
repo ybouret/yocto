@@ -1,5 +1,5 @@
-#ifndef YOCTO_INK_PIXEL_INCLUDED
-#define YOCTO_INK_PIXEL_INCLUDED 1
+#ifndef YOCTO_INK_COLOR_PIXEL_INCLUDED
+#define YOCTO_INK_COLOR_PIXEL_INCLUDED 1
 
 #include "yocto/ink/types.hpp"
 

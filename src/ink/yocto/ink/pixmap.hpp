@@ -44,16 +44,35 @@ namespace yocto
 
             inline virtual ~Pixmap() throw() {}
 
-            inline explicit Pixmap(const unit_t W,
-                                   const unit_t H) :
-            Bitmap(sizeof(T),W,H)
+            //! default ctor
+            inline explicit Pixmap(const unit_t W,const unit_t H) :
+            Bitmap(sizeof(T),W,H) {}
+
+            //! default copy
+            inline Pixmap(const Pixmap &pxm) : Bitmap(pxm) {}
+
+            //! ctor for shared pixmap
+            inline Pixmap(Pixmap       *pxm) : Bitmap(pxm) {}
+
+            //! ctor for  sub-pixmap
+            inline Pixmap(const Pixmap &pxm, const Rectangle &rect) : Bitmap(pxm,rect) {}
+
+            template <typename U, typename FUNC>
+            inline explicit Pixmap(const Pixmap<U> &pxm, FUNC &func ) :
+            Bitmap(sizeof(T),pxm.w,pxm.h)
             {
+                for(unit_t j=0;j<h;++j)
+                {
+                    Pixmap<T>::Row                &self = (*this)[j];
+                    const typename Pixmap<U>::Row &peer = pxm[j];
+                    for(unit_t i=0;i<w;++i)
+                    {
+                        self[i] = func(peer[i]);
+                    }
+                }
+
             }
-            
-            inline Pixmap(const Pixmap &pxm) :
-            Bitmap(pxm)
-            {
-            }
+
             
 
         private:
