@@ -37,35 +37,49 @@ namespace yocto
         namespace
         {
 
+            // 1 byte | 8 bits
             static inline void * shift1(void *addr,const unit_t dx) throw()
             {
                 return static_cast<uint8_t *>(addr)+dx;
             }
 
+            // 2 bytes | 16 bits
             static inline void * shift2(void *addr,const unit_t dx) throw()
             {
                 return static_cast<uint16_t *>(addr)+dx;
             }
 
+            // 3 bytes | 24 bits
             static inline void * shift3(void *addr,const unit_t dx) throw()
             {
                 return static_cast<uint8_t *>(addr)+(dx*3);
             }
 
+            // 4 bytes | 32 bits
             static inline void * shift4(void *addr,const unit_t dx) throw()
             {
                 return static_cast<uint32_t *>(addr)+dx;
             }
 
+            // 8 bytes | 64 bits
             static inline void * shift8(void *addr,const unit_t dx) throw()
             {
                 return static_cast<uint64_t *>(addr)+dx;
             }
 
+            // 12 bytes | 96 bits
+            static inline void * shift12(void *addr,const unit_t dx) throw()
+            {
+                return static_cast< point3d<uint32_t> *>(addr)+dx;
+            }
+
+            // 16 bytes | 128 bits
             static inline void * shift16(void *addr,const unit_t dx) throw()
             {
                 return static_cast< point2d<int64_t> *>(addr)+dx;
             }
+
+
 
 #define Y_INK_BITMAP_XSHIFT(DEPTH) case DEPTH: return shift##DEPTH
 
@@ -78,6 +92,7 @@ namespace yocto
                         Y_INK_BITMAP_XSHIFT(3);
                         Y_INK_BITMAP_XSHIFT(4);
                         Y_INK_BITMAP_XSHIFT(8);
+                        Y_INK_BITMAP_XSHIFT(12);
                         Y_INK_BITMAP_XSHIFT(16);
                     default:
                         break;
