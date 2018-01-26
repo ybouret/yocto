@@ -58,7 +58,8 @@ namespace yocto
 
             void *      get(const unit_t x, const unit_t y) throw();
             const void *get(const unit_t x, const unit_t y) const throw();
-            
+            void       * get_line(const unit_t y) throw();
+            const void * get_line(const unit_t y) const throw();
             void ldz() throw();
             void fill_with(const void *data) throw(); //!< assume depth bytes@data
             void copy(const Bitmap &other) throw();

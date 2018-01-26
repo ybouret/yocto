@@ -333,6 +333,21 @@ namespace yocto
             return xshift((static_cast<__Row   *>(_rows)+y)->p,x);
         }
 
+        void *Bitmap:: get_line(const unit_t y) throw()
+        {
+            assert(y>=0);assert(y<h);
+            assert(_rows);
+            return (static_cast<__Row   *>(_rows)+y)->p;
+        }
+
+        const void *Bitmap:: get_line(const unit_t y) const throw()
+        {
+            assert(y>=0);assert(y<h);
+            assert(_rows);
+            return (static_cast<__Row   *>(_rows)+y)->p;
+        }
+
+
         const void * Bitmap:: get(const unit_t x, const unit_t y) const throw()
         {
             assert(x>=0);assert(x<w);

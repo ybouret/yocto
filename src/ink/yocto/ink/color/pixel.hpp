@@ -17,5 +17,12 @@ namespace yocto
     }
 }
 
+#define YOCTO_INK_PIXEL_EXTERN_(TYPE) extern template const TYPE yocto::Ink::Pixel<TYPE>::opaque
+
+#define YOCTO_INK_PIXEL_EXTERN()  \
+YOCTO_INK_PIXEL_EXTERN_(uint8_t); \
+YOCTO_INK_PIXEL_EXTERN_(float);   \
+YOCTO_INK_PIXEL_EXTERN_(double)
+
 #endif
 

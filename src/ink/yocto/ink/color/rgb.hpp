@@ -2,7 +2,16 @@
 #define YOCTO_INK_COLOR_RGB_INCLUDED 1
 
 #include "yocto/ink/color/pixel.hpp"
+
+#if defined(RGB)
 #undef RGB
+#endif
+
+#if defined(RGBA)
+#undef RGBA
+#endif
+
+YOCTO_INK_PIXEL_EXTERN();
 
 namespace yocto
 {
