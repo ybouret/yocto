@@ -335,7 +335,7 @@ namespace yocto
             {
                 assert(r[j].p);
                 uint8_t *p = static_cast<uint8_t *>(r[j].p);
-                for(size_t i=0;i<w;++i,p+=depth)
+                for(unit_t i=0;i<w;++i,p+=depth)
                 {
                     memcpy(p,data,depth);
                 }
