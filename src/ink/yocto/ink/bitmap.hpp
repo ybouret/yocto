@@ -1,7 +1,7 @@
 #ifndef YOCTO_INK_BITMAP_INCLUDED
 #define YOCTO_INK_BITMAP_INCLUDED 1
 
-#include "yocto/ink/types.hpp"
+#include "yocto/ink/rectangle.hpp"
 #include "yocto/counted-object.hpp"
 
 namespace yocto
@@ -37,13 +37,21 @@ namespace yocto
                             const unit_t W,
                             const unit_t H);
 
-            
+            //! create a Bitmap from user's data
+            explicit Bitmap(void *user_data,
+                            const unit_t D,
+                            const unit_t W,
+                            const unit_t H,
+                            const unit_t Stride);
 
             //! create a shared bitmap
             explicit Bitmap( Bitmap *shared );
 
             //! copy with the same memory model
             Bitmap(const Bitmap &other);
+
+            //! create a sub bitmap with the same memory model
+            explicit Bitmap( const Bitmap &other, const Rectangle &rect);
 
             virtual ~Bitmap() throw();
 
@@ -52,6 +60,7 @@ namespace yocto
             const void *get(const unit_t x, const unit_t y) const throw();
             
             void ldz() throw();
+            void fill_with(const void *data) throw(); //!< assume depth bytes@data
             void copy(const Bitmap &other) throw();
             void flip_vertical()   throw();   //!< inverse rows
             void flip_horizontal() throw(); //!< inverse columns
@@ -65,6 +74,9 @@ namespace yocto
              */
             void save(const string &filename,
                       const bool    in_color = true ) const;
+
+            bool contains(const unit_t x, const unit_t y) const throw();
+            bool contains(const Rectangle &rect) const throw();
 
         protected:
             void *_rows; //!< memory for rows

@@ -106,6 +106,29 @@ namespace yocto
             allocate();
         }
 
+        Bitmap:: Bitmap(void   *user_data,
+                        const   unit_t D,
+                        const   unit_t W,
+                        const   unit_t H,
+                        const   unit_t Stride) :
+        entry(user_data),
+        depth( __check_d(D) ),
+        w(     __check_w(W) ),
+        h(     __check_h(H) ),
+        pitch(w*depth),
+        stride(Stride),
+        xshift( __xshift(depth) ),
+        _rows(0),
+        shBitmap(0),
+        prv_data(0),
+        prv_size(0),
+        model( MemoryFromUser )
+        {
+            if(Stride<pitch) throw exception("Bitmap(invalid Stride=%d/Pitch=%d)",int(Stride), int(pitch));
+            if(!entry)       throw exception("Bitmap(no user data)");
+            allocate_rows_only();
+        }
+
         Bitmap:: Bitmap(const Bitmap &other) :
         entry(0),
         depth( other.depth ),
@@ -141,6 +164,48 @@ namespace yocto
             }
         }
 
+        static inline void *__entry_for(const Bitmap &other, const Rectangle &rect)
+        {
+            if(!other.contains(rect))
+                throw exception("Bitmap does not contain rectangle");
+            return (void*)other.get(rect.x,rect.y);
+        }
+
+        Bitmap::Bitmap( const Bitmap &other, const Rectangle &rect) :
+        entry( __entry_for(other,rect) ),
+        depth(other.depth),
+        w(rect.w),
+        h(rect.h),
+        pitch(w*depth),
+        stride(other.stride),
+        xshift(other.xshift),
+        _rows(0),
+        shBitmap(other.shBitmap),
+        prv_data(0),
+        prv_size(0),
+        model(other.model)
+        {
+            switch(model)
+            {
+                case MemoryIsGlobal:
+                    allocate();
+                    for(unit_t j=0;j<h;++j)
+                    {
+                        const void *src = other.get(rect.x,rect.y+j);
+                        void       *tgt = this->get(0,j);
+                        memcpy(tgt,src,pitch);
+                    }
+                    break;
+
+                case MemoryIsShared:
+                    assert(shBitmap);
+                    shBitmap->withhold();
+                case MemoryFromUser:
+                    allocate_rows_only();
+                    break;
+            }
+        }
+
 
         static inline Bitmap *__check_shared(Bitmap *shared)
         {
@@ -164,6 +229,9 @@ namespace yocto
         {
             shared->withhold();
         }
+
+
+
 
         void Bitmap:: allocate()
         {
@@ -259,6 +327,20 @@ namespace yocto
             return xshift( (static_cast<__Row   *>(_rows)+y)->p,x);
         }
 
+        void Bitmap:: fill_with(const void *data) throw()
+        {
+            assert(data);
+            __Row   *r = static_cast<__Row   *>(_rows);
+            for(unit_t j=0;j<h;++j)
+            {
+                assert(r[j].p);
+                uint8_t *p = static_cast<uint8_t *>(r[j].p);
+                for(size_t i=0;i<w;++i,p+=depth)
+                {
+                    memcpy(p,data,depth);
+                }
+            }
+        }
 
         void Bitmap:: flip_vertical()   throw()
         {
@@ -277,6 +359,14 @@ namespace yocto
             }
         }
 
+        bool Bitmap:: contains(const unit_t x, const unit_t y) const throw()
+        {
+            return (x>=0) && (y>=0) && (x<w) && (y<h);
+        }
 
+        bool Bitmap:: contains(const Rectangle &rect) const throw()
+        {
+            return contains(rect.x,rect.y) && contains(rect.x_end,rect.y_end);
+        }
     }
 }
