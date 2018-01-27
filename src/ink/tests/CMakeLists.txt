@@ -1,7 +1,7 @@
 FILE(GLOB test_srcs test-*.cpp)
 
 ADD_EXECUTABLE(test-ink main.cpp ${test_srcs})
-TARGET_LINK_YOCTO(test-ink ink)
+TARGET_LINK_YOCTO(test-ink ink png z jpeg tiff)
 
 ENABLE_TESTING()
 ADD_TEST(Types  test-ink types)

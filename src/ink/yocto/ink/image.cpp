@@ -15,6 +15,8 @@ namespace yocto
         {
         }
 
+        const string & ImageIO:: key() const throw() { return name; }
+        
 
         Image::Format::Format(const char *id) : ImageIO(id)
         {
@@ -24,5 +26,25 @@ namespace yocto
         {
         }
         
+        Image:: ~Image() throw()
+        {
+        }
+        
+        Image:: Image() : formats(4,as_capacity)
+        {
+        }
+        
+        
+        void Image:: enroll( const Format::Pointer &format)
+        {
+            std::cerr << format->name << std::endl;
+            if(!formats.insert(format))
+            {
+                throw exception("Image: multiple '%s'", *(format->name) );
+            }
+           
+           
+        }
+
     }
 }

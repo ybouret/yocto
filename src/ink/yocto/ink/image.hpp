@@ -12,7 +12,7 @@ namespace yocto
     namespace Ink
     {
 
-        //! todo: base class without lossless
+        //! Interface to an Image Input/Output
         class ImageIO : public counted_object
         {
         public:
@@ -25,7 +25,6 @@ namespace yocto
             // virtual interface
             //
             //==============================================================
-            virtual bool     lossless() const throw() = 0;
             virtual Bitmap  *load(const string          &filename,
                                   unit_t                 depth,
                                   rgba2data             &proc,
@@ -43,9 +42,13 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(ImageIO);
         };
 
+        
+        
         class Image
         {
         public:
+            explicit Image();
+            virtual ~Image() throw();
             class Format : public ImageIO
             {
             public:
@@ -54,7 +57,7 @@ namespace yocto
                 
                 virtual ~Format() throw();
 
-
+                virtual bool         lossless() const throw() = 0;
                 virtual const char **extensions() const throw() = 0;
 
             protected:
@@ -64,11 +67,20 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Format);
             };
             
+            template <typename  FMT>
+            FMT & create()
+            {
+                FMT *fmt = new FMT();
+                const Format::Pointer format(fmt);
+                enroll(fmt);
+                return  *fmt;
+            }
+            
+            void enroll( const Format::Pointer &format);
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Image);
-            Format::DataBase formats;
-            Format::DataBase extfmts;
-            
+            Format::DataBase formats;            
         };
 
     }
