@@ -4,17 +4,22 @@
 #include "yocto/ink/bitmap.hpp"
 #include "yocto/ink/color/rgba2data.hpp"
 #include "yocto/ink/color/data2rgba.hpp"
+#include "yocto/ptr/intr.hpp"
+#include "yocto/associative/set.hpp"
 
 namespace yocto
 {
     namespace Ink
     {
 
+        //! todo: base class without lossless
         class ImageIO : public counted_object
         {
         public:
             virtual ~ImageIO() throw();
             const string name;
+            const string & key() const throw();
+            
             //==============================================================
             //
             // virtual interface
@@ -38,11 +43,15 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(ImageIO);
         };
 
-        struct Image
+        class Image
         {
+        public:
             class Format : public ImageIO
             {
             public:
+                typedef intr_ptr<string,Format> Pointer;
+                typedef set<string,Pointer>     DataBase;
+                
                 virtual ~Format() throw();
 
 
@@ -54,6 +63,12 @@ namespace yocto
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Format);
             };
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Image);
+            Format::DataBase formats;
+            Format::DataBase extfmts;
+            
         };
 
     }
