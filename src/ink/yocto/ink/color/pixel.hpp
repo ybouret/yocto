@@ -11,8 +11,8 @@ namespace yocto
         template <typename T>
         struct Pixel
         {
-            static T zero;
-            static T opaque;
+            static const T zero;
+            static const T opaque;
         };
     }
 }
