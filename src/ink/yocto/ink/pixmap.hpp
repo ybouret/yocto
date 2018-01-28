@@ -57,6 +57,7 @@ namespace yocto
             //! ctor for  sub-pixmap
             inline Pixmap(const Pixmap &pxm, const Rectangle &rect) : Bitmap(pxm,rect) {}
 
+            //! inline conversion
             template <typename U, typename FUNC>
             inline explicit Pixmap(const Pixmap<U> &pxm, FUNC &func ) :
             Bitmap(sizeof(T),pxm.w,pxm.h)
@@ -70,10 +71,15 @@ namespace yocto
                         self[i] = func(peer[i]);
                     }
                 }
-
             }
 
-            
+            //! shared bitmap
+            inline Pixmap( Bitmap *shared ) :
+            Bitmap(shared)
+            {
+                if(shared->depth!=sizeof(T)) throw exception("Pixmap: shared bitmap depth=%d != %d", int(shared->depth), int(sizeof(T)));
+            }
+
 
         private:
             YOCTO_DISABLE_ASSIGN(Pixmap);

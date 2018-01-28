@@ -1,5 +1,6 @@
 
-#include "yocto/ink/images.hpp"
+#include "yocto/ink/image.hpp"
+#include "yocto/ink/pixmaps.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
@@ -8,16 +9,19 @@ using namespace yocto;
 YOCTO_UNIT_TEST_IMPL(fmt)
 {
     Ink::Image       &IMG = Ink::Image::instance();
-    Ink::png_format  &PNG = IMG.create<Ink::png_format>();
-    Ink::jpeg_format &JPG = IMG.create<Ink::jpeg_format>();
-    Ink::tiff_format &TIF = IMG.create<Ink::tiff_format>();
-    (void)PNG;
-    (void)JPG;
-    (void)TIF;
-   // std::cerr << PNG.name << std::endl;
-   // std::cerr << JPG.name << std::endl;
-   // std::cerr << TIF.name << std::endl;
-
+    IMG.Init();
+    IMG.display();
+    
+    for(int iarg=1;iarg<argc;++iarg)
+    {
+        const string fn = argv[iarg];
+        Ink::PixmapRGBA pxm4(   IMG.loadRGBA(fn,NULL) );
+        Ink::PixmapRGB  pxm3(   IMG.loadRGB(fn,NULL) );
+        Ink::PixmapF    pxmf(   IMG.loadGSF(fn,NULL) );
+        Ink::PixmapU    pxmu(   IMG.loadGSU(fn,NULL) );
+        Ink::PixmapYUV  pxmyuv( IMG.loadYUV(fn,NULL) );
+    }
+    
 }
 YOCTO_UNIT_TEST_DONE()
 

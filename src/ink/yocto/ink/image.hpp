@@ -37,6 +37,17 @@ namespace yocto
                                   data2rgba           &proc,
                                   const void          *options) const = 0;
 
+            //==============================================================
+            //
+            // Non-virtual interface
+            //
+            //==============================================================
+            Bitmap *loadRGBA(const string &filename, const void *options) const;
+            Bitmap *loadRGB( const string &filename, const void *options) const;
+            Bitmap *loadGSF( const string &filename, const void *options) const;
+            Bitmap *loadGSU( const string &filename, const void *options) const;
+            Bitmap *loadYUV( const string &filename, const void *options) const;
+            
         protected:
             ImageIO(const char *id);
 
@@ -91,6 +102,9 @@ namespace yocto
                                   const Bitmap        &bmp,
                                   data2rgba           &proc,
                                   const void          *options) const;
+
+            void Init(); //!< initialize with JPG/PNG/TIF
+            void display() const;
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Image);

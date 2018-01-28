@@ -18,6 +18,36 @@ namespace yocto
 
         const string & ImageIO:: key() const throw() { return name; }
 
+        Bitmap * ImageIO:: loadRGBA(const string &filename, const void *options) const
+        {
+            PutRGBA proc;
+            return load(filename,4,proc,options);
+        }
+
+        Bitmap * ImageIO:: loadRGB(const string &filename, const void *options) const
+        {
+            PutRGB proc;
+            return load(filename,3,proc,options);
+        }
+
+        Bitmap * ImageIO:: loadGSF(const string &filename, const void *options) const
+        {
+            PutGSF proc;
+            return load(filename,sizeof(float),proc,options);
+        }
+
+        Bitmap * ImageIO:: loadGSU(const string &filename, const void *options) const
+        {
+            PutGSU proc;
+            return load(filename,sizeof(uint8_t),proc,options);
+        }
+
+        Bitmap * ImageIO:: loadYUV(const string &filename, const void *options) const
+        {
+            PutYUV proc;
+            return load(filename,sizeof(YUV),proc,options);
+        }
+
     }
 
 }
@@ -55,7 +85,6 @@ namespace yocto
         
         void Image:: enroll( const Format::Pointer &format)
         {
-            std::cerr << format->name << std::endl;
             if(!formats.insert(format))
             {
                 throw exception("%s: multiple '%s'", name, *(format->name) );
@@ -65,7 +94,6 @@ namespace yocto
             {
                 string ext( *pExt );
                 ext.to_lower();
-                std::cerr << "taking " << ext << std::endl;
                 if(!extfmts.insert(ext,format))
                 {
                     throw exception("%s: multiple extension '%s' from format '%s'", name, *ext, *(format->name) );
@@ -105,5 +133,37 @@ namespace yocto
             return & (**ppFmt);
         }
 
+        void Image:: display() const
+        {
+            std::cerr << name << " extensions/formats" << std::endl;
+            for( Format::Register::const_iterator i=extfmts.begin();i!=extfmts.end();++i)
+            {
+                const string          &ext = i->key;
+                const Format::Pointer &fmt = *i;
+                std::cerr << "extension '" << ext << "'@format='" << fmt->name << std::endl;
+            }
+        }
+
+    }
+}
+
+
+
+
+
+#include "yocto/ink/image/jpeg.hpp"
+#include "yocto/ink/image/png.hpp"
+#include "yocto/ink/image/tiff.hpp"
+
+namespace yocto
+{
+    namespace Ink
+    {
+        void Image:: Init()
+        {
+            (void) create<png_format>();
+            (void) create<jpeg_format>();
+            (void) create<tiff_format>();
+        }
     }
 }

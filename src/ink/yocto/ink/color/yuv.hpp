@@ -47,6 +47,13 @@ namespace yocto
                 return YUV(Y,U,V);
             }
 
+            static inline
+            YUV fromRGBA(const RGBA &C ) throw()
+            {
+                const RGB tmp(C.r,C.g,C.b);
+                return fromRGB(tmp);
+            }
+
         };
     }
 }
