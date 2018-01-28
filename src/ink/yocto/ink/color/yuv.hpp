@@ -26,9 +26,9 @@ namespace yocto
             static inline
             RGB toRGB(const YUV &C) throw()
             {
-                const float rf = C.y                + 1.140f*C.v;
-                const float gf = C.y - 0.314f * C.u - 0.581f*C.v;
-                const float bf = C.y - 2.028f * C.u;
+                const float rf = C.y                  + 1.13983f*C.v;
+                const float gf = C.y - 0.39465f * C.u - 0.58060f*C.v;
+                const float bf = C.y + 2.03211f * C.u;
                 return RGB(YOCTO_INK_F2B(clamp<float>(0,rf,1)),
                            YOCTO_INK_F2B(clamp<float>(0,gf,1)),
                            YOCTO_INK_F2B(clamp<float>(0,bf,1))
@@ -41,9 +41,9 @@ namespace yocto
                 const float rf = Core::uFloat[C.r];
                 const float gf = Core::uFloat[C.g];
                 const float bf = Core::uFloat[C.b];
-                const float Y  =  0.299f*rf+0.587f*gf+0.114f*bf;
-                const float U  = -0.147f*rf-0.289f*rf+0.437f*bf;
-                const float V  =  0.615f*rf-0.515f*gf-0.100f*bf;
+                const float Y  =  0.29900f*rf+0.58700f*gf+0.11400f*bf;
+                const float U  = -0.14713f*rf-0.28886f*gf+0.43600f*bf;
+                const float V  =  0.61500f*rf-0.51499f*gf-0.10001f*bf;
                 return YUV(Y,U,V);
             }
 
