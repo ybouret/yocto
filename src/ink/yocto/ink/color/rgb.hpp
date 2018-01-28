@@ -26,7 +26,7 @@ namespace yocto
             T r,g,b;
             inline  rgb() throw() : r(pixel_type::zero), g(pixel_type::zero), b(pixel_type::zero) {}
             inline ~rgb() throw() {}
-            inline  rgb(const rgb &other) throw() : r(other.r), g(other.b), b(other.b) {}
+            inline  rgb(const rgb &other) throw() : r(other.r), g(other.g), b(other.b) {}
             inline  rgb & operator=(const rgb &other) throw()
             {
                 r=other.r;
@@ -46,7 +46,7 @@ namespace yocto
             T r,g,b,a;
             inline  rgba() throw() : r(pixel_type::zero), g(pixel_type::zero), b(pixel_type::zero), a(pixel_type::opaque) {}
             inline ~rgba() throw() {}
-            inline  rgba(const rgba &other) throw() : r(other.r), g(other.b), b(other.b), a(other.a) {}
+            inline  rgba(const rgba &other) throw() : r(other.r), g(other.g), b(other.b), a(other.a) {}
             inline  rgba & operator=(const rgba &other) throw()
             {
                 r=other.r;
@@ -56,7 +56,7 @@ namespace yocto
                 return *this;
             }
             inline rgba(T R, T G, T B, T A=pixel_type::opaque) throw() : r(R), g(G), b(B), a(A) {}
-            inline rgba( const rgb<T> &other ) throw() : r(other.r), g(other.b), b(other.b), a(pixel_type::opaque) {}
+            inline rgba( const rgb<T> &other ) throw() : r(other.r), g(other.g), b(other.b), a(pixel_type::opaque) {}
             inline rgba & operator=(const rgb<T> &other) throw()
             {
                 r=other.r;

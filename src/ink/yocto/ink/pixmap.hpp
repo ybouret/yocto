@@ -64,7 +64,7 @@ namespace yocto
             {
                 for(unit_t j=0;j<h;++j)
                 {
-                    Pixmap<T>::Row                &self = (*this)[j];
+                    typename Pixmap<T>::Row       &self = (*this)[j];
                     const typename Pixmap<U>::Row &peer = pxm[j];
                     for(unit_t i=0;i<w;++i)
                     {
