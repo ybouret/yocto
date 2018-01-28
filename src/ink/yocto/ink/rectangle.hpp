@@ -8,7 +8,7 @@ namespace yocto
     namespace Ink
     {
 
-        class Rectangle
+        class Rectangle : public object
         {
         public:
             const unit_t x;
@@ -17,9 +17,9 @@ namespace yocto
             const unit_t h;
             const unit_t x_end;
             const unit_t y_end;
-            Rectangle( const unit_t X, const unit_t Y, const unit_t W, const unit_t H) throw();
+            explicit Rectangle( const unit_t X, const unit_t Y, const unit_t W, const unit_t H) throw();
+            virtual ~Rectangle() throw();
             Rectangle(const Rectangle &rect) throw();
-            ~Rectangle() throw();
 
         private:
             YOCTO_DISABLE_ASSIGN(Rectangle);
