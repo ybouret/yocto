@@ -1,6 +1,5 @@
 
 #include "yocto/ink/image.hpp"
-#include "yocto/ink/pixmaps.hpp"
 #include "yocto/utest/run.hpp"
 
 using namespace yocto;
@@ -14,7 +13,7 @@ YOCTO_UNIT_TEST_IMPL(fmt)
     
     for(int iarg=1;iarg<argc;++iarg)
     {
-        const string fn = argv[iarg];
+        const string    fn = argv[iarg];
         Ink::PixmapRGBA pxm4(   IMG.loadRGBA(fn,NULL) );
         Ink::PixmapRGB  pxm3(   IMG.loadRGB(fn,NULL) );
         Ink::PixmapF    pxmf(   IMG.loadGSF(fn,NULL) );

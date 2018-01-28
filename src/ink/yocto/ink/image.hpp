@@ -1,7 +1,7 @@
 #ifndef YOCTO_INK_IMAGE_INCLUDED
 #define YOCTO_INK_IMAGE_INCLUDED 1
 
-#include "yocto/ink/bitmap.hpp"
+#include "yocto/ink/pixmaps.hpp"
 #include "yocto/ink/color/rgba2data.hpp"
 #include "yocto/ink/color/data2rgba.hpp"
 #include "yocto/ptr/intr.hpp"
@@ -47,7 +47,13 @@ namespace yocto
             Bitmap *loadGSF( const string &filename, const void *options) const;
             Bitmap *loadGSU( const string &filename, const void *options) const;
             Bitmap *loadYUV( const string &filename, const void *options) const;
-            
+
+            void    save(const PixmapRGBA &pxm, const string &filename, const void *options) const;
+            void    save(const PixmapRGB  &pxm, const string &filename, const void *options) const;
+            void    save(const PixmapF    &pxm, const string &filename, const void *options) const;
+            void    save(const PixmapU    &pxm, const string &filename, const void *options) const;
+            void    save(const PixmapYUV  &pxm, const string &filename, const void *options) const;
+
         protected:
             ImageIO(const char *id);
 

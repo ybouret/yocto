@@ -18,6 +18,8 @@ namespace yocto
 
         const string & ImageIO:: key() const throw() { return name; }
 
+
+        // Loading
         Bitmap * ImageIO:: loadRGBA(const string &filename, const void *options) const
         {
             PutRGBA proc;
@@ -48,6 +50,36 @@ namespace yocto
             return load(filename,sizeof(YUV),proc,options);
         }
 
+
+        void   ImageIO:: save(const PixmapRGBA &pxm, const string &filename, const void *options) const
+        {
+            rgba2rgba proc;
+            save(filename,pxm,proc,options);
+        }
+
+        void   ImageIO:: save(const PixmapRGB  &pxm, const string &filename, const void *options) const
+        {
+            rgb2rgba proc;
+            save(filename,pxm,proc,options);
+        }
+
+        void   ImageIO:: save(const PixmapF  &pxm, const string &filename, const void *options) const
+        {
+            float2rgba proc;
+            save(filename,pxm,proc,options);
+        }
+
+        void   ImageIO:: save(const PixmapU  &pxm, const string &filename, const void *options) const
+        {
+            byte2rgba proc;
+            save(filename,pxm,proc,options);
+        }
+
+        void   ImageIO:: save(const PixmapYUV  &pxm, const string &filename, const void *options) const
+        {
+            yuv2rgba proc;
+            save(filename,pxm,proc,options);
+        }
     }
 
 }
