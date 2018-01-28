@@ -1,4 +1,7 @@
 #include "yocto/ink/bitmap.hpp"
+#include "yocto/math/point3d.hpp"
+#include "yocto/code/bswap.hpp"
+
 namespace yocto
 {
     namespace Ink

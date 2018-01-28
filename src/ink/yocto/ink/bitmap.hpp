@@ -3,6 +3,8 @@
 
 #include "yocto/ink/rectangle.hpp"
 #include "yocto/counted-object.hpp"
+#include "yocto/string.hpp"
+#include "yocto/exception.hpp"
 
 namespace yocto
 {
