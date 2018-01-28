@@ -11,7 +11,7 @@ using namespace yocto;
 
 YOCTO_UNIT_TEST_IMPL(fmt)
 {
-    Ink::Image       IMG;
+    Ink::Image       &IMG = Ink::Image::instance();
     Ink::png_format  &PNG = IMG.create<Ink::png_format>();
     Ink::jpeg_format &JPG = IMG.create<Ink::jpeg_format>();
     Ink::tiff_format &TIF = IMG.create<Ink::tiff_format>();
