@@ -4,11 +4,6 @@
 #include "yocto/ipso/domain.hpp"
 #include "yocto/sequence/addr-list.hpp"
 #include "yocto/container/tuple.hpp"
-#if 0
-#include "yocto/counted-object.hpp"
-#include "yocto/associative/set.hpp"
-#include "yocto/ptr/intr.hpp"
-#endif
 
 namespace yocto
 {

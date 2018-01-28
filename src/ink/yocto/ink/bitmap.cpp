@@ -398,5 +398,12 @@ namespace yocto
         {
             return contains(rect.x,rect.y) && contains(rect.x_end,rect.y_end);
         }
+
+        Rectangle Bitmap:: getRectangle() const throw()
+        {
+            return Rectangle(0,0,w,h);
+        }
+
+
     }
 }

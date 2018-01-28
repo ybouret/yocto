@@ -79,6 +79,8 @@ namespace yocto
             bool contains(const unit_t x, const unit_t y) const throw();
             bool contains(const Rectangle &rect) const throw();
 
+            Rectangle getRectangle() const throw();
+
         protected:
             void *_rows; //!< memory for rows
 
