@@ -65,23 +65,31 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(Partition);
         };
 
+        typedef threading::server      ThreadServer;
+        typedef ThreadServer::pointer  SharedServer;
+
         class Domains : public Domain::List
         {
         public:
-            explicit Domains() throw();
-            explicit Domains(const Bitmap &bmp, const size_t max_cpus);
+            mutable SharedServer srv;
+
+            explicit Domains(const Bitmap       &bmp,
+                             const SharedServer &user_srv);
+            explicit Domains(const Area         &area,
+                             const SharedServer &user_src);
+            
             virtual ~Domains() throw();
 
             //! enqueue #jobs=size, METHOD(const Rectangle &, threading::context &ctx)
             template <typename OBJECT_POINTER,typename METHOD_POINTER> inline
-            void enqueue(threading::server  &srv,
-                         OBJECT_POINTER      host,
+            void enqueue(OBJECT_POINTER      host,
                          METHOD_POINTER      method ) const
             {
                 for(const Domain *dom = head;dom;dom=dom->next)
                 {
-                    dom->jid = srv.enqueue_shared(*dom,host,method);
+                    dom->jid = srv->enqueue_shared(*dom,host,method);
                 }
+                srv->flush();
             }
 
         private:

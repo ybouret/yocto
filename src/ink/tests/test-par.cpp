@@ -30,34 +30,31 @@ namespace
 
 YOCTO_UNIT_TEST_IMPL(par)
 {
-    threading::seq_server seq;
-    threading::par_server par(true);
-    std::cerr << "seq.threads=" << seq.num_threads() << std::endl;
-    std::cerr << "par.threads=" << par.num_threads() << std::endl;
+
+    SharedServer seq( new threading::seq_server()     );
+    SharedServer par( new threading::par_server(true) );
+
+    std::cerr << "seq.threads=" << seq->cpu.num_threads() << std::endl;
+    std::cerr << "par.threads=" << par->cpu.num_threads() << std::endl;
 
     if(argc<=1) throw exception("usage: %s W,H",argv[0]);
     const coord  area = ipso::__coord_parser::get<coord>(argv[1],"area");
     Area         full(0,0,area.x,area.y);
 
 
-    const coord  seq_sizes = Partition::Optimal(full,seq.num_threads());
-    const coord  par_sizes = Partition::Optimal(full,par.num_threads());
+    const coord  seq_sizes = Partition::Optimal(full,seq->cpu.num_threads());
+    const coord  par_sizes = Partition::Optimal(full,par->cpu.num_threads());
     std::cerr << "seq_size=" << seq_sizes << std::endl;
     std::cerr << "par_size=" << par_sizes << std::endl;
-    const Partition seq_part(seq_sizes,full);
-    const Partition par_part(par_sizes,full);
-    Domains seq_doms;
-    Domains par_doms;
-    seq_part.compute(&seq_doms);
-    par_part.compute(&par_doms);
-    std::cerr << "#seq_doms=" << seq_doms.size << "\t@score=" << seq_part.score << std::endl;
-    std::cerr << "#par_doms=" << par_doms.size << "\t@score=" << par_part.score << std::endl;
+
+    Domains seq_doms(full,seq);
+    Domains par_doms(full,seq);
+
+    
 
     DoSomething host;
-    seq_doms.enqueue(seq, &host, & DoSomething::run );
-    seq.flush();
-    par_doms.enqueue(par, &host, & DoSomething::run );
-    par.flush();
+    seq_doms.enqueue(&host, & DoSomething::run );
+    par_doms.enqueue(&host, & DoSomething::run );
 
 }
 YOCTO_UNIT_TEST_DONE()

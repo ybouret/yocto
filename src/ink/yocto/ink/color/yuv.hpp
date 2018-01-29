@@ -36,7 +36,7 @@ namespace yocto
             }
 
             static inline
-            YUV fromRGB(const RGB &C ) throw()
+            YUV fromRGB(const RGB &C) throw()
             {
                 const float rf = Core::uFloat[C.r];
                 const float gf = Core::uFloat[C.g];
@@ -48,7 +48,7 @@ namespace yocto
             }
 
             static inline
-            YUV fromRGBA(const RGBA &C ) throw()
+            YUV fromRGBA(const RGBA &C) throw()
             {
                 const RGB tmp(C.r,C.g,C.b);
                 return fromRGB(tmp);

@@ -5,6 +5,7 @@
 #include "yocto/threading/condition.hpp"
 #include "yocto/sequence/array.hpp"
 #include "yocto/counted-object.hpp"
+#include "yocto/ptr/arc.hpp"
 
 namespace yocto
 {
@@ -19,6 +20,7 @@ namespace yocto
         class server : public counted_object
         {
         public:
+            typedef arc_ptr<server> pointer;
             executor &cpu;
 
             virtual ~server() throw();
