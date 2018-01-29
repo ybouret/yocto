@@ -1,7 +1,7 @@
 #ifndef YOCTO_THREADING_CONTEXT_INCLUDED
 #define YOCTO_THREADING_CONTEXT_INCLUDED 1
 
-#include "yocto/parallel/basic.hpp"
+#include "yocto/ipso/utils.hpp"
 #include "yocto/container/vslot.hpp"
 #include "yocto/sequence/slots.hpp"
 #include "yocto/container/tuple.hpp"
@@ -48,7 +48,7 @@ namespace yocto
             template <typename T> inline
             void split(T &offset,T &length) const throw()
             {
-                parallel::basic_split<T>(rank, size, offset, length);
+                ipso::basic_split<T>(rank, size, offset, length);
             }
 
             //! example of data

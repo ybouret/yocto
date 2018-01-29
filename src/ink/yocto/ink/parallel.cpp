@@ -10,16 +10,28 @@ namespace yocto
 
         Domain:: ~Domain() throw() {}
         Domain:: Domain(const Rectangle &user_rect,
-                        const coord     &user_ranks) :
+                        const coord     &user_ranks,
+                        const size_t     user_rank) :
         Rectangle(user_rect),
         ranks(user_ranks),
         items(w*h),
+        rank(user_rank),
         next(0),
-        prev(0)
+        prev(0),
+        jid(-1)
         {
         }
 
         
+    }
+
+}
+
+
+namespace yocto
+{
+    namespace Ink
+    {
 
         Partition:: ~Partition() throw() {}
         
@@ -40,10 +52,11 @@ namespace yocto
             assert(sizes.y<=h);
         }
 
-        void Partition:: computeScore( Domain::List *domains ) const
+        void Partition:: compute( Domain::List *domains ) const
         {
             size_t    &smax = (size_t &)score;
             smax = 0;
+            if(domains) domains->clear();
             for(size_t rank = 0;rank<cores;++rank)
             {
                 coord           ranks;
@@ -51,7 +64,7 @@ namespace yocto
                 size_t          count = 0;
                 if(domains)
                 {
-                    Domain *dom = new Domain(sub,ranks);
+                    Domain *dom = new Domain(sub,ranks,rank);
                     domains->push_back(dom);
                     count = dom->items;
                 }
@@ -159,7 +172,7 @@ namespace yocto
                     const unit_t nn = sizes.__prod();
                     if(nn>n) continue;
                     parts.push_back( new Partition(sizes,full) );
-                    parts.tail->computeScore(NULL);
+                    parts.tail->compute(NULL);
                 }
             }
 
@@ -183,5 +196,21 @@ namespace yocto
 
 
     }
+}
+
+namespace yocto
+{
+    namespace Ink
+    {
+        Domains:: ~Domains() throw()
+        {
+        }
+
+        Domains:: Domains() throw() : Domain::List()
+        {
+        }
+        
+    }
+
 }
 

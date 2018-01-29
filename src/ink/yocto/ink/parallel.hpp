@@ -2,9 +2,9 @@
 #define YOCTO_INK_PARALLEL_INCLUDED 1
 
 #include "yocto/ink/bitmap.hpp"
-#include "yocto/ipso/utils.hpp"
 #include "yocto/math/point2d.hpp"
 #include "yocto/core/list.hpp"
+#include "yocto/threading/scheme/server.hpp"
 
 namespace yocto
 {
@@ -19,11 +19,16 @@ namespace yocto
 
             const coord  ranks;
             const size_t items;
+            const size_t rank;
             Domain      *next;
             Domain      *prev;
-            
-            explicit Domain(const Rectangle &user_rect, const coord &user_ranks);
+            mutable  threading::job_id jid;
+            explicit Domain(const Rectangle &user_rect,
+                            const coord     &user_ranks,
+                            const size_t     user_rank);
+
             virtual ~Domain() throw();
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Domain);
@@ -48,7 +53,8 @@ namespace yocto
             size_t     getRank(const coord  ranks) const throw();
             Rectangle  operator()(const size_t rank, coord *pRanks) const throw();
 
-            void          computeScore( Domain::List *domains ) const;
+            //! (re)compute score, build domains if not null
+            void          compute( Domain::List *domains ) const;
             static void   Build(List            &parts,
                                 const Rectangle &full,
                                 const size_t     max_cpus );
@@ -58,7 +64,28 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Partition);
         };
-        
+
+        class Domains : public Domain::List
+        {
+        public:
+            explicit Domains() throw();
+            virtual ~Domains() throw();
+
+            //! enqueue #jobs=size, METHOD(const Rectangle &, threading::context &ctx)
+            template <typename OBJECT_POINTER,typename METHOD_POINTER> inline
+            void enqueue(threading::server  &srv,
+                         OBJECT_POINTER      host,
+                         METHOD_POINTER      method ) const
+            {
+                for(const Domain *dom = head;dom;dom=dom->next)
+                {
+                    dom->jid = srv.enqueue_shared(*dom,host,method);
+                }
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Domains);
+        };
         
 
         

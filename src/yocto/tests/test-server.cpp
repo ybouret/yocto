@@ -76,7 +76,7 @@ YOCTO_UNIT_TEST_IMPL(server)
     std::cerr << "par_time=" << par_time * 1000.0 << std::endl;
 
     std::cerr << std::endl;
-    std::cerr << "efficiency: " << parallel::efficiency(seq_time/par_time,parsrv.size) << "%" << std::endl;
+    std::cerr << "efficiency: " << ipso::efficiency(seq_time/par_time,parsrv.size) << "%" << std::endl;
 
     std::cerr << std::endl;
     std::cerr << "using batch..." << std::endl;
@@ -99,7 +99,7 @@ YOCTO_UNIT_TEST_IMPL(server)
     std::cerr << "par_time=" << par_time * 1000.0 << std::endl;
 
     std::cerr << std::endl;
-    std::cerr << "efficiency: " << parallel::efficiency(seq_time/par_time,parsrv.size) << "%" << std::endl;
+    std::cerr << "efficiency: " << ipso::efficiency(seq_time/par_time,parsrv.size) << "%" << std::endl;
     
 }
 YOCTO_UNIT_TEST_DONE()
