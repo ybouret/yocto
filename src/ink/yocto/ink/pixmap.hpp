@@ -57,7 +57,7 @@ namespace yocto
             inline Pixmap(Pixmap       *pxm) : Bitmap(pxm) {}
 
             //! ctor for  sub-pixmap
-            inline Pixmap(const Pixmap &pxm, const Rectangle &rect) : Bitmap(pxm,rect) {}
+            inline Pixmap(const Pixmap &pxm, const Area &rect) : Bitmap(pxm,rect) {}
 
             //! inline conversion
             template <typename U, typename FUNC>

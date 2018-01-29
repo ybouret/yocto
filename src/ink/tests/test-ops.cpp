@@ -2,6 +2,7 @@
 #include "yocto/ink/image.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
+#include "yocto/sys/wtime.hpp"
 
 using namespace yocto;
 using namespace Ink;
@@ -14,7 +15,8 @@ YOCTO_UNIT_TEST_IMPL(ops)
     threading::par_server par;
 
     Channels channels;
-
+    wtime chrono;
+    chrono.start();
     for(int iarg=1;iarg<argc;++iarg)
     {
         const string     filename = argv[iarg];
@@ -36,14 +38,19 @@ YOCTO_UNIT_TEST_IMPL(ops)
         IMG.save( img4, vformat("a%d.png",iarg), NULL );
 
         chan.ldz();
-        channels.split(img4,chan,seq_doms,seq);
+
+        double ell_seq = 0;
+        YOCTO_WTIME(ell_seq,channels.split(img4,chan,seq_doms,seq));
 
         IMG.save( vformat("r%d-seq.png",iarg),rr,toRed,NULL);
         IMG.save( vformat("g%d-seq.png",iarg),gg,toGreen,NULL);
         IMG.save( vformat("b%d-seq.png",iarg),bb,toBlue,NULL);
 
         chan.ldz();
-        channels.split(img4,chan,par_doms,par);
+        double ell_par = 0;
+        YOCTO_WTIME(ell_par,channels.split(img4,chan,par_doms,par));
+        std::cerr << "ell_par=" << ell_par << "/" << "ell_seq=" << ell_seq << std::endl;
+        
         IMG.save( vformat("r%d-par.png",iarg),rr,toRed,NULL);
         IMG.save( vformat("g%d-par.png",iarg),gg,toGreen,NULL);
         IMG.save( vformat("b%d-par.png",iarg),bb,toBlue,NULL);

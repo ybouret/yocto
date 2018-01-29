@@ -9,10 +9,10 @@ namespace yocto
     {
 
         Domain:: ~Domain() throw() {}
-        Domain:: Domain(const Rectangle &user_rect,
+        Domain:: Domain(const Area      &user_rect,
                         const coord     &user_ranks,
                         const size_t     user_rank) :
-        Rectangle(user_rect),
+        Area(user_rect),
         ranks(user_ranks),
         items(w*h),
         rank(user_rank),
@@ -36,8 +36,8 @@ namespace yocto
         Partition:: ~Partition() throw() {}
         
         Partition:: Partition(const coord      user_sizes,
-                              const Rectangle &rect) throw():
-        Rectangle(rect),
+                              const Area      &rect) throw():
+        Area(rect),
         sizes(user_sizes),
         cores( sizes.__prod() ),
         score(0),
@@ -60,7 +60,7 @@ namespace yocto
             for(size_t rank = 0;rank<cores;++rank)
             {
                 coord           ranks;
-                const Rectangle sub   = (*this)(rank,&ranks);
+                const Area      sub   = (*this)(rank,&ranks);
                 size_t          count = 0;
                 if(domains)
                 {
@@ -96,7 +96,7 @@ namespace yocto
             return ranks.y * sizes.x + ranks.x;
         }
         
-        Rectangle Partition:: operator()(const size_t rank, coord *pRanks) const throw()
+        Area  Partition:: operator()(const size_t rank, coord *pRanks) const throw()
         {
             unit_t X = x; assert(0==X);
             unit_t Y = y; assert(0==Y);
@@ -106,7 +106,7 @@ namespace yocto
             if(pRanks) *pRanks  = ranks;
             ipso::basic_split(ranks.x,sizes.x,X,W); assert(W>0);
             ipso::basic_split(ranks.y,sizes.y,Y,H); assert(H>0);
-            return Rectangle(X,Y,W,H);
+            return Area(X,Y,W,H);
         }
 
         static inline
@@ -157,7 +157,7 @@ namespace yocto
         }
 
         void Partition:: Build(List            &parts,
-                               const Rectangle &full,
+                               const Area      &full,
                                const size_t     max_cpus )
         {
             const unit_t n         = max_of<size_t>(1,max_cpus);
@@ -180,7 +180,7 @@ namespace yocto
             
         }
 
-        coord  Partition:: Optimal(const Rectangle &full, const size_t max_cpus)
+        coord  Partition:: Optimal(const Area &full, const size_t max_cpus)
         {
             List parts;
             Build(parts,full,max_cpus);
@@ -213,7 +213,7 @@ namespace yocto
         Domains:: Domains(const Bitmap &bmp, const size_t max_cpus) :
         Domain::List()
         {
-            const Rectangle full  = bmp.getRectangle();
+            const Area      full  = bmp.getArea();
             const coord     sizes = Partition::Optimal(full,max_cpus);
             const Partition part(sizes,full);
             part.compute(this);

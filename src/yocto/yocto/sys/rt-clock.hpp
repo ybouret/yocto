@@ -29,6 +29,7 @@ namespace yocto
         freq_type freq;
     };
 
+
 }
 
 #endif

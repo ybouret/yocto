@@ -182,14 +182,14 @@ namespace yocto
             }
         }
 
-        static inline void *__entry_for(const Bitmap &other, const Rectangle &rect)
+        static inline void *__entry_for(const Bitmap &other, const Area &rect)
         {
             if(!other.contains(rect))
                 throw exception("Bitmap does not contain rectangle");
             return (void*)other.get(rect.x,rect.y);
         }
 
-        Bitmap::Bitmap( const Bitmap &other, const Rectangle &rect) :
+        Bitmap::Bitmap( const Bitmap &other, const Area &rect) :
         entry( __entry_for(other,rect) ),
         depth(other.depth),
         w(rect.w),
@@ -399,14 +399,14 @@ namespace yocto
             return (x>=0) && (y>=0) && (x<w) && (y<h);
         }
 
-        bool Bitmap:: contains(const Rectangle &rect) const throw()
+        bool Bitmap:: contains(const Area &rect) const throw()
         {
             return contains(rect.x,rect.y) && contains(rect.x_end,rect.y_end);
         }
 
-        Rectangle Bitmap:: getRectangle() const throw()
+        Area Bitmap:: getArea() const throw()
         {
-            return Rectangle(0,0,w,h);
+            return Area(0,0,w,h);
         }
 
 

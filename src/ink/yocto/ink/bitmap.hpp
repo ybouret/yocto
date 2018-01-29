@@ -1,7 +1,7 @@
 #ifndef YOCTO_INK_BITMAP_INCLUDED
 #define YOCTO_INK_BITMAP_INCLUDED 1
 
-#include "yocto/ink/rectangle.hpp"
+#include "yocto/ink/area.hpp"
 #include "yocto/counted-object.hpp"
 #include "yocto/string.hpp"
 #include "yocto/exception.hpp"
@@ -53,7 +53,7 @@ namespace yocto
             Bitmap(const Bitmap &other);
 
             //! create a sub bitmap with the same memory model
-            explicit Bitmap( const Bitmap &other, const Rectangle &rect);
+            explicit Bitmap( const Bitmap &other, const Area &rect);
 
             virtual ~Bitmap() throw();
 
@@ -79,9 +79,9 @@ namespace yocto
                       const bool    in_color = true ) const;
 
             bool contains(const unit_t x, const unit_t y) const throw();
-            bool contains(const Rectangle &rect) const throw();
+            bool contains(const Area &rect) const throw();
 
-            Rectangle getRectangle() const throw();
+            Area getArea() const throw();
 
         protected:
             void *_rows; //!< memory for rows

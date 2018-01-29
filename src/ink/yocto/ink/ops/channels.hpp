@@ -25,7 +25,7 @@ namespace yocto
                        threading::server  &srv,
                        const    size_t     shift=0)
             {
-                std::cerr << "splitting " << tgt.size() << " channels, using " << srv.cpu.num_threads() << " threads" << std::endl;
+                std::cerr << "splitting " << tgt.size() << " channels, using " << srv.cpu.num_threads() << " threads/#dom=" << doms.size << std::endl;
                 assert( (shift+tgt.size()) * sizeof(UNIT) <= sizeof(TYPE) );
                 source = &src;
                 target = &tgt;
@@ -43,7 +43,7 @@ namespace yocto
             template <
             typename TYPE,
             typename UNIT>
-            void splitThread( const Rectangle &r, threading::context &ctx)
+            void splitThread( const Area &r, threading::context &ctx)
             {
                 assert(source);
                 assert(target);
@@ -56,20 +56,18 @@ namespace yocto
                 const unit_t ymax = r.y_end;
                 const size_t nch  = tgt.size();
 
-                // YOCTO_LOCK(ctx.access);
-                // std::cerr << "nch=" << nch << " rect: (" << r.x << "+" << r.w << "," << r.y << "+" << r.h << ")" << std::endl;
-
 
                 for(unit_t y=ymax;y>=ymin;--y)
                 {
                     const typename Pixmap<TYPE>::Row &Sy = src[y];
                     for(unit_t x=xmax;x>=xmin;--x)
                     {
-                        const UNIT *Syx = (const UNIT *) &Sy[x];
+                        const UNIT *Syx = ((const UNIT *) &Sy[x]);
+                        --Syx;
                         Syx+=shift;
                         for(size_t ch=nch;ch>0;--ch)
                         {
-                            (*(tgt[ch]))[y][x] = *(Syx++);
+                            (*(tgt[ch]))[y][x] = Syx[ch];
                         }
                     }
                 }

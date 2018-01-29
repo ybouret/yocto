@@ -24,6 +24,14 @@ namespace yocto
 		uint64_t last;
 	};
 
+#define YOCTO_WTIME(VALUE,CODE) do {\
+yocto::wtime __chrono; __chrono.start();\
+const uint64_t __ini = rt_clock::ticks();\
+CODE; \
+const uint64_t __ell = rt_clock::ticks() - __ini;\
+VALUE = __chrono(__ell);\
+} while(false)
+
 }
 
 #endif

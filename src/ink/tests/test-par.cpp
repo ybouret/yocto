@@ -37,7 +37,7 @@ YOCTO_UNIT_TEST_IMPL(par)
 
     if(argc<=1) throw exception("usage: %s W,H",argv[0]);
     const coord  area = ipso::__coord_parser::get<coord>(argv[1],"area");
-    Rectangle    full(0,0,area.x,area.y);
+    Area         full(0,0,area.x,area.y);
 
 
     const coord  seq_sizes = Partition::Optimal(full,seq.num_threads());

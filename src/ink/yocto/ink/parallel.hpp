@@ -12,7 +12,7 @@ namespace yocto
     {
         typedef point2d<unit_t> coord;
 
-        class Domain : public Rectangle
+        class Domain : public Area
         {
         public:
             typedef core::list_of_cpp<Domain> List;
@@ -23,7 +23,7 @@ namespace yocto
             Domain      *next;
             Domain      *prev;
             mutable  threading::job_id jid;
-            explicit Domain(const Rectangle &user_rect,
+            explicit Domain(const Area      &user_rect,
                             const coord     &user_ranks,
                             const size_t     user_rank);
 
@@ -35,7 +35,7 @@ namespace yocto
         };
 
 
-        class Partition : public Rectangle
+        class Partition : public Area
         {
         public:
             typedef core::list_of_cpp<Partition> List;
@@ -46,20 +46,20 @@ namespace yocto
             Partition    *next;
             Partition    *prev;
             
-            explicit Partition(const coord user_sizes, const Rectangle &rect) throw();
+            explicit Partition(const coord user_sizes, const Area &rect) throw();
             virtual ~Partition() throw();
             
             coord      getRanks(const size_t rank) const throw();
             size_t     getRank(const coord  ranks) const throw();
-            Rectangle  operator()(const size_t rank, coord *pRanks) const throw();
+            Area       operator()(const size_t rank, coord *pRanks) const throw();
 
             //! (re)compute score, build domains if not null
             void          compute( Domain::List *domains ) const;
             static void   Build(List            &parts,
-                                const Rectangle &full,
+                                const Area      &full,
                                 const size_t     max_cpus );
 
-            static coord  Optimal(const Rectangle &full, const size_t max_cpus);
+            static coord  Optimal(const Area &full, const size_t max_cpus);
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Partition);
