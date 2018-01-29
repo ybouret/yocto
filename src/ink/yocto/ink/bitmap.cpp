@@ -262,10 +262,12 @@ namespace yocto
             prv_size = memory::align(rows_offset+rows_length);
             prv_data = memory::kind<memory::global>::acquire(prv_size);
 
+#if 0
             std::cerr <<  w << "x" << h << ":" << depth << std::endl;
             std::cerr << "data.bytes=" << data_length << std::endl;
             std::cerr << "rows.bytes=" << rows_length << std::endl;
             std::cerr << "priv.bytes=" << prv_size    << std::endl;
+#endif
             uint8_t *p = static_cast<uint8_t *>(prv_data);
             entry = &p[data_offset];
             _rows = &p[rows_offset];

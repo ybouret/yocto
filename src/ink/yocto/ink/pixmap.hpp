@@ -2,6 +2,7 @@
 #define YOCTO_INK_PIXMAP_INCLUDED 1
 
 #include "yocto/ink/bitmap.hpp"
+#include "yocto/ptr/arc.hpp"
 
 namespace yocto
 {
@@ -12,6 +13,7 @@ namespace yocto
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
+            typedef arc_ptr< Pixmap<T> > Pointer;
 
             //! shadow Row class
             class Row
@@ -84,6 +86,10 @@ namespace yocto
         private:
             YOCTO_DISABLE_ASSIGN(Pixmap);
         };
+
+
+     
+
     }
 }
 

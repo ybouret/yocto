@@ -9,10 +9,8 @@ YOCTO_UNIT_TEST_IMPL(fmt)
 {
     static const char *exts[] = { "jpg", "png", "tif" };
     
-    Ink::Image       &IMAGE = Ink::Image::instance();
-    IMAGE.Init();
-    IMAGE.display();
-    Ink::ImageIO &IMG = IMAGE;
+    YOCTO_IMG();
+    IMAGES.display();
 
     for(int iarg=1;iarg<argc;++iarg)
     {

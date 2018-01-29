@@ -18,6 +18,13 @@ SET(image_srcs ${image_impl} ${image_decl})
 INSTALL( FILES ${image_decl} DESTINATION include/yocto/ink/image )
 SOURCE_GROUP( ink/image FILES ${image_srcs} )
 
+FILE(GLOB ops_decl yocto/ink/ops/*.hpp)
+FILE(GLOB ops_impl yocto/ink/ops/*.cpp)
+SET(ops_srcs ${ops_impl} ${ops_decl})
+INSTALL( FILES ${ops_decl} DESTINATION include/yocto/ink/ops )
+SOURCE_GROUP( ink/ops FILES ${ops_srcs} )
+
+
 INCLUDE_DIRECTORIES(
 .
 ..
@@ -28,7 +35,7 @@ ${CMAKE_CURRENT_BINARY_DIR}/../yocto/zlib
 )
 
 
-ADD_LIBRARY(y-ink STATIC ${srcs} ${color_srcs} ${image_srcs})
+ADD_LIBRARY(y-ink STATIC ${srcs} ${color_srcs} ${image_srcs} ${ops_srcs}) 
 TARGET_LINK_LIBRARIES(y-ink y-tiff)
 
 INSTALL( TARGETS y-ink ARCHIVE DESTINATION lib)

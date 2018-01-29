@@ -69,6 +69,7 @@ namespace yocto
         {
         public:
             explicit Domains() throw();
+            explicit Domains(const Bitmap &bmp, const size_t max_cpus);
             virtual ~Domains() throw();
 
             //! enqueue #jobs=size, METHOD(const Rectangle &, threading::context &ctx)

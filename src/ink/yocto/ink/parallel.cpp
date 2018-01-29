@@ -209,7 +209,15 @@ namespace yocto
         Domains:: Domains() throw() : Domain::List()
         {
         }
-        
+
+        Domains:: Domains(const Bitmap &bmp, const size_t max_cpus) :
+        Domain::List()
+        {
+            const Rectangle full  = bmp.getRectangle();
+            const coord     sizes = Partition::Optimal(full,max_cpus);
+            const Partition part(sizes,full);
+            part.compute(this);
+        }
     }
 
 }
