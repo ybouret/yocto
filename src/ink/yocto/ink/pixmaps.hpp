@@ -52,6 +52,11 @@ namespace yocto
                 append( new Pixmap<T>(w,h) );
             }
 
+            inline void ldz() throw()
+            {
+                ArrayType &self = *this;
+                for(size_t i=self.size();i>0;--i) self[i]->ldz();
+            }
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Pixmaps);
         };

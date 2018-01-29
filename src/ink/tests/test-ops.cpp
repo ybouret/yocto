@@ -26,9 +26,31 @@ YOCTO_UNIT_TEST_IMPL(ops)
         Pixmaps<uint8_t> chan(4);
         for(size_t i=0;i<3;++i) chan.append(w,h);
 
+        PixmapU &rr = *chan[1];
+        red2rgba toRed;
+        PixmapU &gg = *chan[2];
+        green2rgba toGreen;
+        PixmapU &bb = *chan[3];
+        blue2rgba toBlue;
 
+        IMG.save( img4, vformat("a%d.png",iarg), NULL );
+
+        chan.ldz();
         channels.split(img4,chan,seq_doms,seq);
+
+        IMG.save( vformat("r%d-seq.png",iarg),rr,toRed,NULL);
+        IMG.save( vformat("g%d-seq.png",iarg),gg,toGreen,NULL);
+        IMG.save( vformat("b%d-seq.png",iarg),bb,toBlue,NULL);
+
+        chan.ldz();
         channels.split(img4,chan,par_doms,par);
+        IMG.save( vformat("r%d-par.png",iarg),rr,toRed,NULL);
+        IMG.save( vformat("g%d-par.png",iarg),gg,toGreen,NULL);
+        IMG.save( vformat("b%d-par.png",iarg),bb,toBlue,NULL);
+
+        PixmapRGB img3(w,h);
+        
+
     }
 }
 YOCTO_UNIT_TEST_DONE()
