@@ -1,4 +1,6 @@
 #include "yocto/ink/ops/channels.hpp"
+#include "yocto/ink/ops/map.hpp"
+
 #include "yocto/ink/image.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
@@ -21,8 +23,8 @@ YOCTO_UNIT_TEST_IMPL(ops)
     {
         const string     filename = argv[iarg];
         const PixmapRGBA img4( IMG.loadRGBA(filename,NULL) );
-        Domains          seq_doms(img4,seq);
-        Domains          par_doms(img4,par);
+        const Domains    seq_doms(img4,seq);
+        const Domains    par_doms(img4,par);
         const unit_t     w = img4.w;
         const unit_t     h = img4.h;
         Pixmaps<uint8_t> chan(4);
@@ -69,6 +71,15 @@ YOCTO_UNIT_TEST_IMPL(ops)
         PixmapYUV      yuv(img4, YUV::fromRGBA);
         Pixmaps<float> fch(3,w,h);
         channels.split(yuv,fch,par_doms);
+        IMG.save( *fch[1], vformat("y%d.png",iarg), NULL);
+        IMG.save( *fch[2], vformat("u%d.png",iarg), NULL);
+        IMG.save( *fch[3], vformat("v%d.png",iarg), NULL);
+
+        Map mapper;
+        PixmapRGB img3b(w,h);
+        mapper(img3b,img3,Map::Copy<RGB,RGB>,par_doms);
+        mapper(yuv,img3,YUV::fromRGB,par_doms);
+
     }
 }
 YOCTO_UNIT_TEST_DONE()

@@ -206,24 +206,26 @@ namespace yocto
         {
         }
 
+        void Domains:: setup(const Area &full)
+        {
+            const coord     sizes = Partition::Optimal(full,srv->cpu.num_threads());
+            const Partition part(sizes,full);
+            part.compute(this);
+        }
 
         Domains:: Domains(const Bitmap &bmp, const SharedServer &user_srv) :
         Domain::List(),
         srv(user_srv)
         {
-            const Area      full  = bmp.getArea();
-            const coord     sizes = Partition::Optimal(full,srv->cpu.num_threads());
-            const Partition part(sizes,full);
-            part.compute(this);
+            const Area full = bmp.getArea();
+            setup(full);
         }
 
         Domains:: Domains(const Area &full, const SharedServer &user_srv) :
         Domain::List(),
         srv(user_srv)
         {
-            const coord     sizes = Partition::Optimal(full,srv->cpu.num_threads());
-            const Partition part(sizes,full);
-            part.compute(this);
+            setup(full);
         }
     }
 

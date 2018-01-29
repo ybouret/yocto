@@ -57,7 +57,7 @@ namespace yocto
             template <
             typename TYPE,
             typename UNIT>
-            void splitThread( const Area &r, threading::context &)
+            void splitThread( const Area &r, threading::context &) throw()
             {
                 assert(source);
                 assert(target);
@@ -90,7 +90,7 @@ namespace yocto
             template <
             typename TYPE,
             typename UNIT>
-            void mergeThread( const Area &r, threading::context &)
+            void mergeThread( const Area &r, threading::context &) throw()
             {
                 assert(source);
                 assert(target);
