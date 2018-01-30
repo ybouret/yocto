@@ -39,7 +39,7 @@ namespace yocto
                                exchange_buffer &xbuff) throw() = 0;
 
             //! exchange data locally
-            virtual void local(const ghosts::list &G) throw() = 0;
+            virtual void local_exchange(const ghosts::list &G) throw() = 0;
             
         protected:
             explicit field_info(const char   *id);
@@ -114,7 +114,7 @@ namespace yocto
             }
             
 
-            virtual void local(const ghosts::list &G) throw()
+            virtual void local_exchange(const ghosts::list &G) throw()
             {
                 assert(2==G.size||0==G.size);
                 if(G.size>0)

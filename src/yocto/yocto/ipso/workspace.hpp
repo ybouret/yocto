@@ -96,7 +96,7 @@ namespace yocto
                 assert(owns(F));
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    F.local( this->local[dim] );
+                    F.local_exchange( this->local[dim] );
                     const ghosts      *G = this->async[dim].head;
                     exchange_buffers  *B = this->iobuf[dim].head;
                     for(;G;G=G->next,B=B->next)

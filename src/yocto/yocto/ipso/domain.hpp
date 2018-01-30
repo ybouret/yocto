@@ -239,7 +239,7 @@ namespace yocto
                     {
                         std::cerr << "copyLocal[" << dim << "] #=" << G.head->count << std::endl;
                     }
-                    F.local(G);
+                    F.local_exchange(G);
                 }
             }
 
