@@ -151,7 +151,7 @@ namespace yocto
         {
             const coord1D          cpus = max_of<coord1D>(max_cpu,1);
             const coord1D          nx   = min_of<coord1D>(cpus,p.width.x);
-            const coord1D          ny   = min_of<coord1D>(cpus,p.width.x);
+            const coord1D          ny   = min_of<coord1D>(cpus,p.width.y);
             subdivisions<coord2D>  subs;
 
             // build all possible subdivisions
@@ -178,7 +178,7 @@ namespace yocto
         {
             const coord1D          cpus = max_of<coord1D>(max_cpu,1);
             const coord1D          nx   = min_of<coord1D>(cpus,p.width.x);
-            const coord1D          ny   = min_of<coord1D>(cpus,p.width.x);
+            const coord1D          ny   = min_of<coord1D>(cpus,p.width.y);
             const coord1D          nz   = min_of<coord1D>(cpus,p.width.z);
             subdivisions<coord3D>  subs;
 
