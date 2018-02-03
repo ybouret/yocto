@@ -34,6 +34,22 @@ YOCTO_UNIT_TEST_IMPL(opt)
         std::cerr << "opt_sizes=" << sizes << ", fallback=" << fallback << std::endl;
     }
 
+    if(true)
+    {
+        const patch2D zone( coord2D(1,1), dims.xy() );
+        coord2D fallback;
+        coord2D sizes = divider<coord2D>::optimal_for(zone,cpus,&fallback);
+        std::cerr << "opt_sizes=" << sizes << ", fallback=" << fallback << std::endl;
+    }
+
+    if(true)
+    {
+        const patch3D zone( coord3D(1,1,1), dims );
+        coord3D fallback;
+        coord3D sizes = divider<coord3D>::optimal_for(zone,cpus,&fallback);
+        std::cerr << "opt_sizes=" << sizes << ", fallback=" << fallback << std::endl;
+    }
+
 #if 0
     FILE *fp = NULL;
     if(true)
