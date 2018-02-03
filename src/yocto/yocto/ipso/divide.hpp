@@ -3,9 +3,7 @@
 
 #include "yocto/ipso/patch.hpp"
 #include "yocto/ipso/utils.hpp"
-
 #include "yocto/exceptions.hpp"
-
 #include <cerrno>
 #include <cstdlib>
 
@@ -79,9 +77,29 @@ namespace yocto
                 return get_rank_from(ranks);
             }
 
+            //! return max items of any patches
+            inline size_t max_items_per_patch() const throw()
+            {
+                const divider &self = *this;
+                size_t         max_items = 0;
+                for(size_t rank=0;rank<size;++rank)
+                {
+                    const patch<COORD> sub( self(rank,NULL) );
+                    if(sub.items>max_items)
+                    {
+                        max_items = sub.items;
+                    }
+                }
+                return max_items;
+            }
+
+          
+
+             static  COORD optimal_for(const patch<COORD> &p, const size_t max_cpu, COORD *fallback);
+
         protected:
             explicit divider(const COORD         s,
-                              const patch<COORD> &p) :
+                             const patch<COORD> &p) :
             patch<COORD>(p),
             sizes(s),
             size( __coord_prod(sizes) ),
@@ -90,7 +108,7 @@ namespace yocto
                 if(size<=0) throw libc::exception(EDOM,"__divide<%uD>: no cores", unsigned(patch<COORD>::DIM));
                 __coord_dec( (COORD &)lasts );
             }
-            
+
 
 
         private:
@@ -153,6 +171,8 @@ namespace yocto
                     --up;
                     return patch1D(lo,up);
                 }
+
+
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(in1D);
@@ -220,6 +240,7 @@ namespace yocto
                     __coord_dec(up);
                     return patch2D(lo,up);
                 }
+
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(in2D);
@@ -291,6 +312,7 @@ namespace yocto
                     __coord_dec(up);
                     return patch3D(lo,up);
                 }
+
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(in3D);
