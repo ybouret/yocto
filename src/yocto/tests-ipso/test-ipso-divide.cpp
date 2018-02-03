@@ -98,11 +98,6 @@ void display( const partition<COORD> &L )
                 std::cerr << "\t\trecv: " << g->source << "<-" << g->target << "@" << g->recv << std::endl;
             }
         }
-        std::cerr << "\tmetrics: #items=" << d-> load.items << std::endl;
-        std::cerr << "\t         #async=" << d-> load.async << std::endl;
-        std::cerr << "\t         #local=" << d-> load.local << std::endl;
-
-
     }
 }
 

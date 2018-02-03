@@ -24,7 +24,6 @@ namespace yocto
             const COORD        sizes; //!< keep track of global sizes
             partition         *next;
             partition         *prev;
-            cycle_rates        rates;
 
 
             explicit partition(const divider<COORD>  &full,
@@ -34,8 +33,7 @@ namespace yocto
             domains(),
             sizes(full.sizes),
             next(0),
-            prev(0),
-            rates()
+            prev(0)
             {
                 for(size_t rank=0;rank<full.size;++rank)
                 {

@@ -1,7 +1,6 @@
 #ifndef YOCTO_IPSO_DOMAIN_INCLUDED
 #define YOCTO_IPSO_DOMAIN_INCLUDED 1
 
-#include "yocto/ipso/metrics.hpp"
 #include "yocto/ipso/divide.hpp"
 #include "yocto/ipso/ghosts.hpp"
 #include "yocto/counted-object.hpp"
@@ -26,10 +25,9 @@ namespace yocto
 
             ghosts::list     async[DIM]; //!< async ghosts, by dimension: 0, 1 or 2
             ghosts::list     local[DIM]; //!< local ghosts, by dimension: 0 or 2
-            metrics          load;       //!< the data and communication metrics
             domain          *next;       //!< for domain::list
             domain          *prev;       //!< for domain::list
-            const COORD      asyncs;
+            const COORD      asyncs;     //!< max async by dimension
 
             inline virtual ~domain() throw() {}
 
@@ -55,7 +53,6 @@ namespace yocto
             outer( inner ),
             async(),
             local(),
-            load( inner.items ),
             next(0),
             prev(0),
             asyncs()
@@ -198,14 +195,17 @@ namespace yocto
                 size_t       num_local  = 0;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    coord1D &ma = __coord( (COORD &)asyncs,dim);
-                    ma = 0;
+                    coord1D &max_async = __coord( (COORD &)asyncs, dim );
+                    max_async = 0;
                     for(ghosts *g = async[dim].head; g; g=g->next)
                     {
                         assert(rank==g->source);
                         g->load(inner,outer,build);
                         num_async += g->count;
-                        ma = max_of<coord1D>(ma,g->count);
+                        if(g->count>max_async)
+                        {
+                            max_async = g->count;
+                        }
                     }
 
                     for(ghosts *g = local[dim].head; g; g=g->next)
@@ -214,13 +214,7 @@ namespace yocto
                         num_local += g->count;
                     }
                 }
-
-                //______________________________________________________________
-                //
-                // and update metrics
-                //______________________________________________________________
-                (metrics::type &)(load.async) = metrics::type(num_async);
-                (metrics::type &)(load.local) = metrics::type(num_local);
+                
             }
 
 
