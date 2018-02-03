@@ -50,33 +50,7 @@ YOCTO_UNIT_TEST_IMPL(opt)
         std::cerr << "opt_sizes=" << sizes << ", fallback=" << fallback << std::endl;
     }
 
-#if 0
-    FILE *fp = NULL;
-    if(true)
-    {
-        const patch1D zone(1,dims.x);
-        coord1D fallback = 0;
-        coord1D sizes = partition<coord1D>::optimal(cpus,ng,zone,pbcs.x,&fallback,fp);
-        std::cerr << "opt_sizes=" << sizes << ", fallback=" << fallback << std::endl;
-    }
 
-
-    if(true)
-    {
-        const patch2D zone( coord2D(1,1), coord2D(dims.x,dims.y) );
-        coord2D fallback;
-        coord2D sizes = partition<coord2D>::optimal(cpus,ng,zone,coord2D(pbcs.x,pbcs.y),&fallback,fp);
-        std::cerr << "opt_sizes=" << sizes << ", fallback=" << fallback << std::endl;
-    }
-
-    if(true)
-    {
-        const patch3D zone( coord3D(1,1,1), coord3D(dims.x,dims.y,dims.z) );
-        coord3D fallback;
-        coord3D sizes = partition<coord3D>::optimal(cpus,ng,zone,pbcs,&fallback,fp);
-        std::cerr << "opt_sizes=" << sizes << ", fallback=" << fallback << std::endl;
-    }
-#endif
 }
 YOCTO_UNIT_TEST_DONE()
 

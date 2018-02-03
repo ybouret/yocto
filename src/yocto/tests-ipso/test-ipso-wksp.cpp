@@ -72,7 +72,7 @@ YOCTO_UNIT_TEST_IMPL(wksp)
         typedef arc_ptr< workspace<coord1D> > wPtr;
         const patch1D       region(1,dims.x);
         coord1D             fallback =0;
-        coord1D             sizes    = partition<coord1D>::optimal(cpus,ng,region,pbcs.x,&fallback,NULL);
+        const coord1D       sizes = divider<coord1D>::optimal_for(region,cpus,&fallback);
         std::cerr << "sizes=" << sizes << std::endl;
         const size_t        cores    = __coord_prod(sizes);
         const divide::in1D  full(sizes,region);
@@ -103,7 +103,7 @@ YOCTO_UNIT_TEST_IMPL(wksp)
         typedef arc_ptr< workspace<coord2D> > wPtr;
         const patch2D       region(coord2D(1,1),dims.xy());
         coord2D             fallback;
-        coord2D             sizes    = partition<coord2D>::optimal(cpus,ng,region,pbcs.xy(),&fallback,NULL);
+        const coord2D       sizes = divider<coord2D>::optimal_for(region,cpus,&fallback);
         std::cerr << "sizes=" << sizes << std::endl;
         const size_t        cores    = __coord_prod(sizes);
         const divide::in2D  full(sizes,region);
@@ -128,7 +128,7 @@ YOCTO_UNIT_TEST_IMPL(wksp)
         typedef arc_ptr< workspace<coord3D> > wPtr;
         const patch3D       region(coord3D(1,1,1),dims);
         coord3D             fallback;
-        coord3D             sizes    = partition<coord3D>::optimal(cpus,ng,region,pbcs,&fallback,NULL);
+        const coord3D       sizes = divider<coord3D>::optimal_for(region,cpus,&fallback);
         std::cerr << "sizes=" << sizes << std::endl;
         const size_t        cores    = __coord_prod(sizes);
         const divide::in3D  full(sizes,region);

@@ -20,7 +20,7 @@ void test1D(const coord3D dims,
     const patch1D      region(1,dims.x);
     const coord1D      PBC(pbcs.x);
     coord1D            fallback=0;
-    const coord1D sizes = partition1D::optimal(cpus,ng,region,PBC, &fallback,NULL);
+    const coord1D sizes = divider<coord1D>::optimal_for(region,cpus,&fallback);
     std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
     const divide::in1D full(sizes,region);
     const partition1D  parts(full,ng,PBC,true);
@@ -56,7 +56,8 @@ void test2D(const coord3D dims,
     const patch2D      region( coord2D(1,1),coord2D(dims.x,dims.y));
     const coord2D      PBC(pbcs.x,pbcs.y);
     coord2D            fallback;
-    const coord2D sizes = partition2D::optimal(cpus,ng,region,PBC, &fallback,NULL);
+    const coord2D      sizes = divider<coord2D>::optimal_for(region,cpus,&fallback);
+
     std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
     const divide::in2D full(sizes,region);
     const partition2D  parts(full,ng,PBC,true);
@@ -91,7 +92,7 @@ void test3D(const coord3D dims,
     std::cerr << "######## 3D/cpus=" << cpus << std::endl;
     const patch3D      region( coord3D(1,1,1),dims);
     coord3D            fallback;
-    const coord3D sizes = partition3D::optimal(cpus,ng,region,pbcs, &fallback,NULL);
+    const coord3D      sizes = divider<coord3D>::optimal_for(region,cpus,&fallback);
     std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
     const divide::in3D full(sizes,region);
     const partition3D  parts(full,ng,pbcs,true);
