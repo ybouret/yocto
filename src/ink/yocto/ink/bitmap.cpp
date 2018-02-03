@@ -112,8 +112,8 @@ namespace yocto
         depth( __check_d(D) ),
         w(     __check_w(W) ),
         h(     __check_h(H) ),
-        pitch(w*depth),
-        stride(pitch),
+        scanline(w*depth),
+        stride(scanline),
         xshift( __xshift(depth) ),
         _rows(0),
         shBitmap(0),
@@ -133,7 +133,7 @@ namespace yocto
         depth( __check_d(D) ),
         w(     __check_w(W) ),
         h(     __check_h(H) ),
-        pitch(w*depth),
+        scanline(w*depth),
         stride(Stride),
         xshift( __xshift(depth) ),
         _rows(0),
@@ -142,8 +142,8 @@ namespace yocto
         prv_size(0),
         model( MemoryFromUser )
         {
-            if(Stride<pitch) throw exception("Bitmap(invalid Stride=%d/Pitch=%d)",int(Stride), int(pitch));
-            if(!entry)       throw exception("Bitmap(no user data)");
+            if(Stride<scanline) throw exception("Bitmap(invalid Stride=%d/scanline=%d)",int(Stride), int(scanline));
+            if(!entry)         throw exception("Bitmap(no user data)");
             allocate_rows_only();
         }
 
@@ -152,7 +152,7 @@ namespace yocto
         depth( other.depth ),
         w( other.w ),
         h( other.h ),
-        pitch(other.pitch),
+        scanline(other.scanline),
         stride(other.stride),
         xshift(other.xshift),
         _rows(0),
@@ -194,7 +194,7 @@ namespace yocto
         depth(other.depth),
         w(rect.w),
         h(rect.h),
-        pitch(w*depth),
+        scanline(w*depth),
         stride(other.stride),
         xshift(other.xshift),
         _rows(0),
@@ -211,7 +211,7 @@ namespace yocto
                     {
                         const void *src = other.get(rect.x,rect.y+j);
                         void       *tgt = this->get(0,j);
-                        memcpy(tgt,src,pitch);
+                        memcpy(tgt,src,scanline);
                     }
                     break;
 
@@ -236,7 +236,7 @@ namespace yocto
         depth( shared->depth ),
         w( shared->w ),
         h( shared->h ),
-        pitch(  shared->pitch ),
+        scanline(  shared->scanline ),
         stride( shared->stride ),
         xshift( shared->xshift ),
         _rows(  shared->_rows ),
@@ -254,7 +254,7 @@ namespace yocto
         void Bitmap:: allocate()
         {
             const size_t data_offset = 0;
-            const size_t data_length = pitch * h;
+            const size_t data_length = scanline * h;
             const size_t rows_offset = memory::align(data_offset+data_length);
             const size_t rows_length = sizeof(__Row) * h;
 
@@ -289,13 +289,13 @@ namespace yocto
             assert(depth==other.depth);
             assert(w==other.w);
             assert(h==other.h);
-            assert(pitch==other.pitch);
+            assert(scanline==other.scanline);
             assert(_rows);
             assert(other._rows);
 
              __Row      *self = static_cast<__Row       *>(_rows);
             const __Row *peer = static_cast<const __Row *>(other._rows);
-            const size_t ncpy = pitch;
+            const size_t ncpy = scanline;
             for(unit_t j=0;j<h;++j)
             {
                 assert(self[j].p);
@@ -321,7 +321,7 @@ namespace yocto
         {
             assert(_rows);
             __Row   *r = static_cast<__Row   *>(_rows);
-            const size_t nz = pitch;
+            const size_t nz = scanline;
             for(unit_t j=0;j<h;++j)
             {
                 assert(r[j].p);
@@ -387,7 +387,7 @@ namespace yocto
                 uint8_t *rk = static_cast<uint8_t *>( (r+k)->p );
                 uint8_t *rj = static_cast<uint8_t *>( (r+j)->p );
 
-                for(unit_t i=0;i<pitch;++i)
+                for(unit_t i=0;i<scanline;++i)
                 {
                     cswap(rk[i],rj[i]);
                 }

@@ -30,8 +30,8 @@ namespace yocto
             const unit_t  depth;
             const unit_t  w;
             const unit_t  h;
-            const unit_t  pitch;  //!< w*depth bytes for one line
-            const unit_t  stride; //!< stride>=pitch, bytes to change line
+            const unit_t  scanline;  //!< w*depth bytes for one line
+            const unit_t  stride;    //!< stride>=pitch, bytes to change line
             const XShift  xshift;
 
             //! create an allocated bitmap

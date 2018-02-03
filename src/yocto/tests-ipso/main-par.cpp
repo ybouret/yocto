@@ -72,7 +72,7 @@ YOCTO_PROGRAM_START()
         // setup from MPI
         const patch1D region(1,dims.x);
         coord1D       fallback=0;
-        coord1D       sizes = partition1D::optimal(size,ng,region,pbcs.x, &fallback, NULL);
+        coord1D       sizes = divider<coord1D>::optimal_for(region,size,&fallback);
         if( __coord_prod(sizes) < size )
         {
             MPI.Printf0(stderr,"switching to fallback\n");
@@ -124,7 +124,7 @@ YOCTO_PROGRAM_START()
         // setup from MPI
         const patch2D region(coord2D(1,1),dims.xy());
         coord2D       fallback;
-        coord2D       sizes = partition2D::optimal(size,ng,region,pbcs.xy(), &fallback, NULL);
+        coord2D       sizes = divider<coord2D>::optimal_for(region,size,&fallback);
         if( __coord_prod(sizes) < size )
         {
             MPI.Printf0(stderr,"switching to fallback\n");
@@ -173,7 +173,7 @@ YOCTO_PROGRAM_START()
         // setup from MPI
         const patch3D region(coord3D(1,1,1),dims);
         coord3D       fallback;
-        coord3D       sizes = partition3D::optimal(size,ng,region,pbcs, &fallback, NULL);
+        coord3D       sizes = divider<coord3D>::optimal_for(region,size,&fallback);
         if( __coord_prod(sizes) < size )
         {
             MPI.Printf0(stderr,"switching to fallback\n");
