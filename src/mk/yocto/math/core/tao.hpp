@@ -284,10 +284,10 @@ namespace yocto
             template <typename ARR>
             static inline ptrdiff_t simplify( ARR &w ) throw()
             {
-                register ptrdiff_t     g = 0;
-                const register size_t  n = w.size();
+                register ptrdiff_t g = 0;
+                const  size_t      n = w.size();
                 
-                for(register size_t i=n;i>0;--i)
+                for(size_t i=n;i>0;--i)
                 {
                     w[i] = RInt(w[i]);
                     const ptrdiff_t wi = static_cast<ptrdiff_t>(w[i]);
@@ -295,7 +295,7 @@ namespace yocto
                     if(!ai)
                         continue;
                     
-                    for(register size_t j=i;j>0;--j)
+                    for( size_t j=i;j>0;--j)
                     {
                         w[j] = RInt(w[j]);
                         const ptrdiff_t wj = static_cast<ptrdiff_t>(w[j]);
@@ -326,9 +326,9 @@ namespace yocto
             static inline
             ptrdiff_t i_simplify( array<ptrdiff_t> &w ) throw()
             {
-                register ptrdiff_t    g = 0;
-                const register size_t n = w.size();
-                for(register size_t i=n;i>0;--i)
+                register ptrdiff_t g = 0;
+                const    size_t    n = w.size();
+                for(size_t i=n;i>0;--i)
                 {
                     const ptrdiff_t wi = w[i];
                     const ptrdiff_t ai = wi < 0 ? -wi : wi;
@@ -337,7 +337,7 @@ namespace yocto
                         continue;
                     }
                     
-                    for(register size_t j=i;j>0;--j)
+                    for(size_t j=i;j>0;--j)
                     {
                         const ptrdiff_t wj = w[j];
                         const ptrdiff_t aj = wj < 0 ? -wj : wj;
@@ -359,7 +359,7 @@ namespace yocto
                 
                 if(g>1)
                 {
-                    for(register size_t i=n;i>0;--i)
+                    for(size_t i=n;i>0;--i)
                     {
                         w[i] /= g;
                     }
@@ -566,7 +566,7 @@ __sum += static_cast<typename ARR::type>(M[j][I]) * static_cast<typename ARR::ty
                 const size_t nr = a.rows;
                 const size_t nc = a.cols;
                 const size_t ns = b.rows;
-                for(register size_t i=nr;i>0;--i)
+                for(size_t i=nr;i>0;--i)
                 {
                     array<typename AMAT::type>       &ai = a[i];
                     for(size_t j=nc;j>0;--j)
@@ -590,11 +590,11 @@ __sum += static_cast<typename ARR::type>(M[j][I]) * static_cast<typename ARR::ty
                 assert(a.rows==a.cols);
                 const size_t nr = a.rows;
                 const size_t nc = b.cols;
-                for(register size_t i=nr;i>0;--i)
+                for(size_t i=nr;i>0;--i)
                 {
                     const typename BMAT::row &b_i = b[i];
                     typename       AMAT::row &a_i = a[i];
-                    for(register size_t j=nr;j>=i;--j)
+                    for(size_t j=nr;j>=i;--j)
                     {
                         const typename BMAT::row &b_j = b[j];
                         typename AMAT::type       __sum(0);
