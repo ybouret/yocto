@@ -112,8 +112,7 @@ namespace yocto
             {
                 assert(this->size>0);
                 sort();
-                std::cerr << "full" << std::endl;
-                show();
+                //std::cerr << "full" << std::endl; show();
                 {
                     list_type stk;
                     stk.push_back(this->pop_front());
@@ -133,8 +132,7 @@ namespace yocto
                     this->swap_with(stk);
                 }
                 assert(this->size>0);
-                std::cerr << "kept" << std::endl;
-                show();
+                // std::cerr << "kept" << std::endl; show();
                 const COORD sz = this->head->sizes;
                 const COORD fb = this->tail->sizes;
                 if(fallback) *fallback = fb;

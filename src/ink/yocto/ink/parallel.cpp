@@ -27,7 +27,7 @@ namespace yocto
 
 }
 
-
+#if 0
 namespace yocto
 {
     namespace Ink
@@ -197,20 +197,40 @@ namespace yocto
 
     }
 }
+#endif
+
+#include "yocto/ipso/divide.hpp"
 
 namespace yocto
 {
     namespace Ink
     {
+        typedef ipso::divide::in2D Divider;
+
         Domains:: ~Domains() throw()
         {
         }
 
+        coord Domains:: GetPartitionFor(const Area &area, const SharedServer &srv) throw()
+        {
+            const Patch  p = area.getPatch();
+            const size_t n = srv->cpu.num_threads();
+            return Divider::optimal_for(p,n,NULL);
+        }
+
         void Domains:: setup(const Area &full)
         {
-            const coord     sizes = Partition::Optimal(full,srv->cpu.num_threads());
-            const Partition part(sizes,full);
-            part.compute(this);
+            const Patch     p     = full.getPatch();
+            const size_t    n     = srv->cpu.num_threads();
+            (coord &)sizes        = Divider::optimal_for(p,n,NULL);
+            Divider         part(sizes,p);
+            
+            for(size_t rank=0;rank<part.size;++rank)
+            {
+                coord      ranks;
+                const Area rect( part(rank,&ranks) );
+                this->push_back( new Domain(rect,ranks,rank) );
+            }
         }
 
         Domains:: Domains(const Bitmap &bmp, const SharedServer &user_srv) :

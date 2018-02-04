@@ -41,21 +41,19 @@ YOCTO_UNIT_TEST_IMPL(par)
     const coord  area = ipso::__coord_parser::get<coord>(argv[1],"area");
     Area         full(0,0,area.x,area.y);
 
-
-    const coord  seq_sizes = Partition::Optimal(full,seq->cpu.num_threads());
-    const coord  par_sizes = Partition::Optimal(full,par->cpu.num_threads());
+    const coord  seq_sizes = Domains::GetPartitionFor(full,seq);
+    const coord  par_sizes = Domains::GetPartitionFor(full,par);
     std::cerr << "seq_size=" << seq_sizes << std::endl;
     std::cerr << "par_size=" << par_sizes << std::endl;
 
     Domains seq_doms(full,seq);
-    Domains par_doms(full,seq);
+    Domains par_doms(full,par);
 
     
 
     DoSomething host;
     seq_doms.enqueue(&host, & DoSomething::run );
     par_doms.enqueue(&host, & DoSomething::run );
-
 }
 YOCTO_UNIT_TEST_DONE()
 

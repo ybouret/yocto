@@ -56,8 +56,8 @@ namespace yocto
             virtual ~Bitmap() throw();
 
 
-            void *      get(const unit_t x, const unit_t y) throw();
-            const void *get(const unit_t x, const unit_t y) const throw();
+            void *       get(const unit_t x, const unit_t y) throw();
+            const void * get(const unit_t x, const unit_t y) const throw();
             void       * get_line(const unit_t y) throw();
             const void * get_line(const unit_t y) const throw();
             void ldz() throw();

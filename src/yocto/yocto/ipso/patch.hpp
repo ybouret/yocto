@@ -25,7 +25,7 @@ namespace yocto
             const_coord   upper; //!< upper coordinate
             const_coord   width; //!< coordinate width
             const_coord   pitch; //!< coordinate pitch: (1,nx,nx*ny)
-            const size_t  items; //!< number of linear items within the layout
+            const size_t  items; //!< number of linear items within the patch
 
             inline virtual ~patch() throw() {}
 

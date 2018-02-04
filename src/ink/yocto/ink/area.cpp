@@ -39,8 +39,22 @@ namespace yocto
         y_end(rect.y_end)
         {
         }
+
+        Area:: Area( const Patch &p ) throw() :
+        x(p.lower.x),
+        y(p.lower.y),
+        w(p.width.x),
+        h(p.width.y),
+        x_end(p.upper.x),
+        y_end(p.upper.y)
+        {
+        }
         
 
+        Patch Area:: getPatch() const throw()
+        {
+            return Patch( coord(x,y), coord(x_end,y_end) );
+        }
     }
 
 }
