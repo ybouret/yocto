@@ -22,7 +22,7 @@ namespace yocto
                        const    Domains   &doms,
                        const    size_t     shift=0)
             {
-                std::cerr << "split " << tgt.size() << " channels, using " << doms.srv->cpu.num_threads() << " threads/#dom=" << doms.size << std::endl;
+                std::cerr << "split " << tgt.size() << " channels, using " << doms.engine->cpu.num_threads() << " threads/#dom=" << doms.size << std::endl;
                 assert( (shift+tgt.size()) * sizeof(UNIT) <= sizeof(TYPE) );
                 source = &src;
                 target = &tgt;
@@ -38,7 +38,7 @@ namespace yocto
                        const    Domains   &doms,
                        const    size_t     shift=0)
             {
-                std::cerr << "merge " << src.size() << " channels, using " << doms.srv->cpu.num_threads() << " threads/#dom=" << doms.size << std::endl;
+                std::cerr << "merge " << src.size() << " channels, using " << doms.engine->cpu.num_threads() << " threads/#dom=" << doms.size << std::endl;
                 assert( (shift+src.size()) * sizeof(UNIT) <= sizeof(TYPE) );
                 source = &src;
                 target = &tgt;

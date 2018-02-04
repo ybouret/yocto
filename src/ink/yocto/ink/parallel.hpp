@@ -10,20 +10,24 @@ namespace yocto
     namespace Ink
     {
 
+        //! a Domain is compute for computation on a sub are
         class Domain : public Area
         {
         public:
             typedef core::list_of_cpp<Domain> List;
 
-            const coord  ranks;
-            const size_t items;
-            const size_t rank;
-            Domain      *next;
-            Domain      *prev;
-            mutable  threading::job_id jid;
+            const coord  ranks; //!< 2D ranks in the Domains sizes
+            const size_t items; //!< number of local items
+            const size_t rank;  //!< global rank in Domain::List
+            Domain      *next;  //!< for Domain::List
+            Domain      *prev;  //!< for Domain::List
+
+            mutable  threading::job_id jid; //!< to store job_id during parallel code
+
+            //! constructor
             explicit Domain(const Area      &user_rect,
                             const coord     &user_ranks,
-                            const size_t     user_rank);
+                            const size_t     user_rank) throw();
 
             virtual ~Domain() throw();
 
@@ -34,20 +38,22 @@ namespace yocto
 
 
 
-        typedef threading::server      ThreadServer;
-        typedef ThreadServer::pointer  SharedServer;
+        typedef threading::server      ThreadServer; //!< alias for Ink usage
+        typedef ThreadServer::pointer  SharedServer; //!< alias for Ink usage
 
         class Domains : public Domain::List
         {
         public:
-            mutable SharedServer srv;
+            mutable SharedServer engine;
             const   coord        sizes; //!< keep track of paritions
 
-            explicit Domains(const Bitmap       &bmp,
-                             const SharedServer &user_srv);
+
             explicit Domains(const Area         &area,
-                             const SharedServer &user_src);
+                             const SharedServer &sharedServer);
             
+            explicit Domains(const Area         &area,
+                             ThreadServer       *threadServer);
+
             virtual ~Domains() throw();
 
             //! enqueue #jobs=size, METHOD(const Rectangle &, threading::context &ctx)
@@ -57,9 +63,9 @@ namespace yocto
             {
                 for(const Domain *dom = head;dom;dom=dom->next)
                 {
-                    dom->jid = srv->enqueue_shared(*dom,host,method);
+                    dom->jid = engine->enqueue_shared(*dom,host,method);
                 }
-                srv->flush();
+                engine->flush();
             }
 
             static coord GetPartitionFor(const Area &area, const SharedServer &srv) throw();
@@ -69,6 +75,7 @@ namespace yocto
             void setup(const Area &full);
         };
 
+        
         
     }
 }

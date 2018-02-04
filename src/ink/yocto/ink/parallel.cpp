@@ -11,7 +11,7 @@ namespace yocto
         Domain:: ~Domain() throw() {}
         Domain:: Domain(const Area      &user_rect,
                         const coord     &user_ranks,
-                        const size_t     user_rank) :
+                        const size_t     user_rank) throw():
         Area(user_rect),
         ranks(user_ranks),
         items(w*h),
@@ -221,7 +221,7 @@ namespace yocto
         void Domains:: setup(const Area &full)
         {
             const Patch     p     = full.getPatch();
-            const size_t    n     = srv->cpu.num_threads();
+            const size_t    n     = engine->cpu.num_threads();
             (coord &)sizes        = Divider::optimal_for(p,n,NULL);
             Divider         part(sizes,p);
             
@@ -233,17 +233,18 @@ namespace yocto
             }
         }
 
-        Domains:: Domains(const Bitmap &bmp, const SharedServer &user_srv) :
+
+
+        Domains:: Domains(const Area &full, const SharedServer &user_engine) :
         Domain::List(),
-        srv(user_srv)
+        engine(user_engine)
         {
-            const Area full = bmp;
             setup(full);
         }
 
-        Domains:: Domains(const Area &full, const SharedServer &user_srv) :
+        Domains:: Domains(const Area &full, ThreadServer *user_engine) :
         Domain::List(),
-        srv(user_srv)
+        engine(user_engine)
         {
             setup(full);
         }
