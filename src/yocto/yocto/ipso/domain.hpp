@@ -61,7 +61,7 @@ namespace yocto
                 //
                 // checking ghosts availability
                 //______________________________________________________________
-                ng = __coord_abs(ng);
+                ng = abs_of(ng);
                 const bool has_ghosts = (ng>0);
                 if(has_ghosts)
                 {

@@ -10,6 +10,7 @@ namespace yocto
     namespace ipso
     {
 
+        //! a generic patch
         template <typename COORD>
         class patch
         {

@@ -5,6 +5,53 @@
 using namespace yocto;
 using namespace ipso;
 
+template <size_t DIM>
+struct __vecops
+{
+    template <typename T>
+    static bool eq(const T *lhs, const T *rhs) throw();
+};
+
+template <>
+struct __vecops<1>
+{
+    template <typename T>
+    static bool eq(const T *lhs, const T *rhs) throw()
+    {
+        return lhs[0] == rhs[0];
+    }
+};
+
+
+template <>
+struct __vecops<2>
+{
+    template <typename T>
+    static bool eq(const T *lhs, const T *rhs) throw()
+    {
+        return (lhs[0] == rhs[0]) && (lhs[1]==rhs[1]);
+    }
+};
+
+template <>
+struct __vecops<3>
+{
+    template <typename T>
+    static bool eq(const T *lhs, const T *rhs) throw()
+    {
+        return (lhs[0] == rhs[0]) && (lhs[1]==rhs[1]) && (lhs[2]==rhs[2]);
+    }
+};
+
+
+
+
+template <typename COORD>
+bool __coord_are_equal(const COORD &lhs, const COORD &rhs) throw()
+{
+    return __vecops<sizeof(COORD)/sizeof(coord1D)>::eq( (const coord1D *)&lhs, (const coord1D *)&rhs );
+}
+
 template <typename COORD>
 static inline void display_coords(COORD &C)
 {
@@ -30,9 +77,36 @@ YOCTO_UNIT_TEST_IMPL(ipso)
 {
     std::cerr << "COORD" << std::endl;
 
+    {
+        coord1D u=0;
+        coord1D v=1;
+        if(__coord_are_equal(u,v))
+        {
+        }
+    }
+
+    {
+        coord2D u;
+        coord2D v;
+        if(__coord_are_equal(u,v))
+        {
+
+        }
+    }
+
+    {
+        coord3D u;
+        coord3D v;
+        if(__coord_are_equal(u,v))
+        {
+
+        }
+    }
+
+
     coord1D a = 0;
     std::cerr << "a=" << a << std::endl;
-    display_coords<unit_t>(a);
+    display_coords(a);
 
     coord2D b(1,2);
     std::cerr << "b=" << b << std::endl;
