@@ -1,5 +1,6 @@
 #include "yocto/ink/area.hpp"
-#include "yocto/code/utils.hpp"
+#include "yocto/exceptions.hpp"
+#include <cerrno>
 
 namespace yocto
 {
@@ -10,11 +11,20 @@ namespace yocto
         {
         }
 
-        Area:: Area( const unit_t X, const unit_t Y, const unit_t W, const unit_t H) throw() :
+        static inline
+        unit_t __check(const char *name, const unit_t value)
+        {
+            assert(name);
+            if(value<=0) throw libc::exception(ERANGE,"invalid %s=%d", name, int(value));
+            assert(value>0);
+            return value;
+        }
+
+        Area:: Area( const unit_t X, const unit_t Y, const unit_t W, const unit_t H)  :
         x(X),
         y(Y),
-        w( max_of<unit_t>(0,W) ),
-        h( max_of<unit_t>(0,H) ),
+        w( __check("width", W) ),
+        h( __check("height",H) ),
         x_end(x+w-1),
         y_end(y+h-1)
         {

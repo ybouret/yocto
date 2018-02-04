@@ -10,7 +10,7 @@ namespace yocto
 
         coord1D __coord_parser:: string2coord(const string &word, const string &label)
         {
-            return strconv::to_int(word,*label);
+            return coord1D(strconv::to_int(word,*label));
         }
 
         bool __coord_parser:: is_sep(char C) throw() { return ',' == C; }

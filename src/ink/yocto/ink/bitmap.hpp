@@ -11,7 +11,7 @@ namespace yocto
     namespace Ink
     {
 
-        class Bitmap : public counted_object
+        class Bitmap : public Area, public counted
         {
         public:
             enum MemoryModel
@@ -28,8 +28,6 @@ namespace yocto
 
             void         *entry; //!< address of (0,0)
             const unit_t  depth;
-            const unit_t  w;
-            const unit_t  h;
             const unit_t  scanline;  //!< w*depth bytes for one line
             const unit_t  stride;    //!< stride>=pitch, bytes to change line
             const XShift  xshift;
@@ -81,7 +79,7 @@ namespace yocto
             bool contains(const unit_t x, const unit_t y) const throw();
             bool contains(const Area &rect) const throw();
 
-            Area getArea() const throw();
+            //Area getArea() const throw();
 
         protected:
             void *_rows; //!< memory for rows

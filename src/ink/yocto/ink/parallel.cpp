@@ -217,7 +217,7 @@ namespace yocto
         Domain::List(),
         srv(user_srv)
         {
-            const Area full = bmp.getArea();
+            const Area full = bmp;
             setup(full);
         }
 

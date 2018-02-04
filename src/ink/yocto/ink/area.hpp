@@ -17,7 +17,7 @@ namespace yocto
             const unit_t h;
             const unit_t x_end;
             const unit_t y_end;
-            explicit Area( const unit_t X, const unit_t Y, const unit_t W, const unit_t H) throw();
+            explicit Area( const unit_t X, const unit_t Y, const unit_t W, const unit_t H);
             virtual ~Area() throw();
             Area(const Area &rect) throw();
 

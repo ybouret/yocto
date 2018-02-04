@@ -25,17 +25,6 @@ namespace yocto
             if(d<=0) throw exception("Bitmap depth=%d", int(d));
             return d;
         }
-        static inline unit_t __check_w( const unit_t w )
-        {
-            if(w<=0) throw exception("Bitmap width=%d", int(w));
-            return w;
-        }
-
-        static inline unit_t __check_h( const unit_t h )
-        {
-            if(h<=0) throw exception("Bitmap height=%d", int(h));
-            return h;
-        }
 
         namespace
         {
@@ -108,10 +97,9 @@ namespace yocto
         Bitmap:: Bitmap(const unit_t D,
                         const unit_t W,
                         const unit_t H) :
+        Area(0,0,W,H),
         entry(0),
         depth( __check_d(D) ),
-        w(     __check_w(W) ),
-        h(     __check_h(H) ),
         scanline(w*depth),
         stride(scanline),
         xshift( __xshift(depth) ),
@@ -129,10 +117,9 @@ namespace yocto
                         const   unit_t W,
                         const   unit_t H,
                         const   unit_t Stride) :
+        Area(0,0,W,H),
         entry(user_data),
         depth( __check_d(D) ),
-        w(     __check_w(W) ),
-        h(     __check_h(H) ),
         scanline(w*depth),
         stride(Stride),
         xshift( __xshift(depth) ),
@@ -148,10 +135,9 @@ namespace yocto
         }
 
         Bitmap:: Bitmap(const Bitmap &other) :
+        Area(other),
         entry(0),
         depth( other.depth ),
-        w( other.w ),
-        h( other.h ),
         scanline(other.scanline),
         stride(other.stride),
         xshift(other.xshift),
@@ -189,11 +175,11 @@ namespace yocto
             return (void*)other.get(rect.x,rect.y);
         }
 
-        Bitmap::Bitmap( const Bitmap &other, const Area &rect) :
+        Bitmap::Bitmap(const Bitmap &other,
+                       const Area   &rect) :
+        Area(rect),
         entry( __entry_for(other,rect) ),
         depth(other.depth),
-        w(rect.w),
-        h(rect.h),
         scanline(w*depth),
         stride(other.stride),
         xshift(other.xshift),
@@ -225,17 +211,16 @@ namespace yocto
         }
 
 
-        static inline Bitmap *__check_shared(Bitmap *shared)
+        static inline const Area &__check_shared_area(Bitmap *shared)
         {
             if(!shared) throw exception("Bitmap(shared=NULL)");
-            return shared;
+            return *shared;
         }
 
         Bitmap:: Bitmap( Bitmap *shared ) :
-        entry( __check_shared(shared)->entry ),
+        Area( __check_shared_area(shared) ),
+        entry( shared->entry ),
         depth( shared->depth ),
-        w( shared->w ),
-        h( shared->h ),
         scanline(  shared->scanline ),
         stride( shared->stride ),
         xshift( shared->xshift ),
@@ -404,11 +389,12 @@ namespace yocto
             return contains(rect.x,rect.y) && contains(rect.x_end,rect.y_end);
         }
 
+#if 0
         Area Bitmap:: getArea() const throw()
         {
             return Area(0,0,w,h);
         }
-
+#endif
 
     }
 }
