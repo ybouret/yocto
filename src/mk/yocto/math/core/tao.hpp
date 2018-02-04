@@ -284,7 +284,7 @@ namespace yocto
             template <typename ARR>
             static inline ptrdiff_t simplify( ARR &w ) throw()
             {
-                register ptrdiff_t g = 0;
+                ptrdiff_t g = 0;
                 const  size_t      n = w.size();
                 
                 for(size_t i=n;i>0;--i)
@@ -326,7 +326,7 @@ namespace yocto
             static inline
             ptrdiff_t i_simplify( array<ptrdiff_t> &w ) throw()
             {
-                register ptrdiff_t g = 0;
+                ptrdiff_t g = 0;
                 const    size_t    n = w.size();
                 for(size_t i=n;i>0;--i)
                 {
@@ -437,10 +437,10 @@ namespace yocto
             {
                 assert(a.size()>=M.cols);
                 assert(b.size()>=M.rows);
-                const register size_t nr = M.rows;
+                const size_t nr = M.rows;
 #define Y_TAO_MULTRN_CORE(I)             \
 typename ARR::type __sum(0);             \
-for(register size_t j=nr;j>0;--j)        \
+for(size_t j=nr;j>0;--j)        \
 __sum += static_cast<typename ARR::type>(M[j][I]) * static_cast<typename ARR::type>(b[j])
                 
 #define Y_TAO_MULTRN(I) Y_TAO_MULTRN_CORE(I); a[I] = __sum
@@ -454,7 +454,7 @@ __sum += static_cast<typename ARR::type>(M[j][I]) * static_cast<typename ARR::ty
             {
                 assert(a.size()>=M.cols);
                 assert(b.size()>=M.rows);
-                const register size_t nr = M.rows;
+                const size_t nr = M.rows;
 #define Y_TAO_MULADDTRN(I) Y_TAO_MULTRN_CORE(I); a[I] += __sum
                 YOCTO_TAO_LOOP(M.cols,MULADDTRN);
 #undef  Y_TAO_MULADDTRN
