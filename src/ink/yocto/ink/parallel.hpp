@@ -52,8 +52,8 @@ namespace yocto
 
             //! enqueue #jobs=size, METHOD(const Rectangle &, threading::context &ctx)
             template <typename OBJECT_POINTER,typename METHOD_POINTER> inline
-            void enqueue(OBJECT_POINTER      host,
-                         METHOD_POINTER      method ) const
+            void submit(OBJECT_POINTER      host,
+                        METHOD_POINTER      method ) const
             {
                 for(const Domain *dom = head;dom;dom=dom->next)
                 {

@@ -24,7 +24,7 @@ namespace yocto
                 target = &tgt;
                 source = &src;
                 proc   = (void*)&func;
-                doms.enqueue(this, & Map::call<T,U,FUNC> );
+                doms.submit(this, & Map::call<T,U,FUNC> );
             }
 
             Map() throw();

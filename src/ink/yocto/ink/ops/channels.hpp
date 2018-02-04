@@ -27,7 +27,7 @@ namespace yocto
                 source = &src;
                 target = &tgt;
                 cshift = shift;
-                doms.enqueue(this, & Channels::splitThread<TYPE,UNIT> );
+                doms.submit(this, & Channels::splitThread<TYPE,UNIT> );
             }
 
             template <
@@ -43,7 +43,7 @@ namespace yocto
                 source = &src;
                 target = &tgt;
                 cshift = shift;
-                doms.enqueue(this, & Channels::mergeThread<TYPE,UNIT> );
+                doms.submit(this, & Channels::mergeThread<TYPE,UNIT> );
             }
 
 

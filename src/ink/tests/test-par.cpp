@@ -52,8 +52,8 @@ YOCTO_UNIT_TEST_IMPL(par)
     
 
     DoSomething host;
-    seq_doms.enqueue(&host, & DoSomething::run );
-    par_doms.enqueue(&host, & DoSomething::run );
+    seq_doms.submit(&host, & DoSomething::run );
+    par_doms.submit(&host, & DoSomething::run );
 }
 YOCTO_UNIT_TEST_DONE()
 
