@@ -1,5 +1,5 @@
-#ifndef YOCTO_INK_OPS_MAP_INCLUDED
-#define YOCTO_INK_OPS_MAP_INCLUDED 1
+#ifndef YOCTO_INK_OPS_MAPPER_INCLUDED
+#define YOCTO_INK_OPS_MAPPER_INCLUDED 1
 
 #include "yocto/ink/parallel.hpp"
 #include "yocto/ink/pixmap.hpp"

@@ -1,5 +1,5 @@
 #include "yocto/ink/ops/channels.hpp"
-#include "yocto/ink/ops/map.hpp"
+#include "yocto/ink/ops/mapper.hpp"
 
 #include "yocto/ink/image.hpp"
 #include "yocto/utest/run.hpp"
@@ -75,9 +75,9 @@ YOCTO_UNIT_TEST_IMPL(ops)
         IMG.save( *fch[2], vformat("u%d.png",iarg), NULL);
         IMG.save( *fch[3], vformat("v%d.png",iarg), NULL);
 
-        Map mapper;
+        Mapper mapper;
         PixmapRGB img3b(w,h);
-        mapper(img3b,img3,Map::Copy<RGB,RGB>,par);
+        mapper(img3b,img3,Mapper::Copy<RGB,RGB>,par);
         mapper(yuv,img3,YUV::fromRGB,par);
 
     }
