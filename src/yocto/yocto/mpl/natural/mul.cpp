@@ -54,9 +54,9 @@ namespace yocto
                     real_t wr          = 1.0;
                     real_t wi          = 0.0;
 
-                    for(register size_t m=1; m<mmax; m+=2)
+                    for(size_t m=1; m<mmax; m+=2)
                     {
-                        for(register size_t i=m; i<=n; i+=istep)
+                        for(size_t i=m; i<=n; i+=istep)
                         {
                             const size_t       j     = i+mmax;
                             {
