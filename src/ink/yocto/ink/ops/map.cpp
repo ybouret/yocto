@@ -1,11 +1,11 @@
-#include "yocto/ink/ops/map.hpp"
+#include "yocto/ink/ops/mapper.hpp"
 
 namespace yocto
 {
     namespace Ink
     {
-        Map::  Map() throw() : target(0), source(0), proc(0) {}
-        Map:: ~Map() throw() {}
+        Mapper::  Mapper() throw() : target(0), source(0), proc(0) {}
+        Mapper:: ~Mapper() throw() {}
         
     }
 }

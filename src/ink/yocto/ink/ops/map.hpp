@@ -9,7 +9,7 @@ namespace yocto
     namespace Ink
     {
         //! one to one pixel mapping functions
-        class Map
+        class Mapper
         {
         public:
             template <typename T,typename U>
@@ -24,13 +24,14 @@ namespace yocto
                 target = &tgt;
                 source = &src;
                 proc   = (void*)&func;
-                engine.submit(this, & Map::callThread<T,U,FUNC> );
+                engine.submit(this, & Mapper::callThread<T,U,FUNC> );
             }
 
-            Map() throw();
-            virtual ~Map() throw();
+            Mapper() throw();
+            virtual ~Mapper() throw();
 
         private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Mapper);
             void       *target;
             const void *source;
             void       *proc;
