@@ -75,6 +75,7 @@ namespace yocto
                 }
             }
 
+
             //! shared bitmap
             inline Pixmap( Bitmap *shared ) :
             Bitmap(shared)

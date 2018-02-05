@@ -12,8 +12,8 @@ using namespace Ink;
 YOCTO_UNIT_TEST_IMPL(ops)
 {
     YOCTO_IMG();
-    SharedServer seq( new threading::seq_server() );
-    SharedServer par( new threading::par_server() );
+    Engine::SharedServer seqSrv( new threading::seq_server() );
+    Engine::SharedServer parSrv( new threading::par_server() );
 
 
     Channels channels;
@@ -23,8 +23,8 @@ YOCTO_UNIT_TEST_IMPL(ops)
     {
         const string     filename = argv[iarg];
         const PixmapRGBA img4( IMG.loadRGBA(filename,NULL) );
-        const Domains    seq_doms(img4,seq);
-        const Domains    par_doms(img4,par);
+        Engine           seq(img4,seqSrv);
+        Engine           par(img4,parSrv);
         const unit_t     w = img4.w;
         const unit_t     h = img4.h;
         Pixmaps<uint8_t> chan(4);
@@ -42,7 +42,7 @@ YOCTO_UNIT_TEST_IMPL(ops)
         chan.ldz();
 
         double ell_seq = 0;
-        YOCTO_WTIME(ell_seq,channels.split(img4,chan,seq_doms));
+        YOCTO_WTIME(ell_seq,channels.split(img4,chan,seq));
 
         IMG.save( vformat("r%d-seq.png",iarg),rr,toRed,NULL);
         IMG.save( vformat("g%d-seq.png",iarg),gg,toGreen,NULL);
@@ -50,7 +50,7 @@ YOCTO_UNIT_TEST_IMPL(ops)
 
         chan.ldz();
         double ell_par = 0;
-        YOCTO_WTIME(ell_par,channels.split(img4,chan,par_doms));
+        YOCTO_WTIME(ell_par,channels.split(img4,chan,par));
         std::cerr << "ell_par=" << ell_par << "/" << "ell_seq=" << ell_seq << std::endl;
 
         IMG.save( vformat("r%d-par.png",iarg),rr,toRed,NULL);
@@ -60,25 +60,25 @@ YOCTO_UNIT_TEST_IMPL(ops)
         PixmapRGB img3(w,h);
         img3.ldz();
         double merge_seq = 0;
-        YOCTO_WTIME(merge_seq,channels.merge(img3,chan,seq_doms));
+        YOCTO_WTIME(merge_seq,channels.merge(img3,chan,seq));
         IMG.save( img3, vformat("merge%d-seq.png",iarg), NULL);
 
         img3.ldz();
         double merge_par = 0;
-        YOCTO_WTIME(merge_par,channels.merge(img3,chan,par_doms));
+        YOCTO_WTIME(merge_par,channels.merge(img3,chan,par));
         IMG.save( img3, vformat("merge%d-par.png",iarg), NULL);
 
         PixmapYUV      yuv(img4, YUV::fromRGBA);
         Pixmaps<float> fch(3,w,h);
-        channels.split(yuv,fch,par_doms);
+        channels.split(yuv,fch,par);
         IMG.save( *fch[1], vformat("y%d.png",iarg), NULL);
         IMG.save( *fch[2], vformat("u%d.png",iarg), NULL);
         IMG.save( *fch[3], vformat("v%d.png",iarg), NULL);
 
         Map mapper;
         PixmapRGB img3b(w,h);
-        mapper(img3b,img3,Map::Copy<RGB,RGB>,par_doms);
-        mapper(yuv,img3,YUV::fromRGB,par_doms);
+        mapper(img3b,img3,Map::Copy<RGB,RGB>,par);
+        mapper(yuv,img3,YUV::fromRGB,par);
 
     }
 }

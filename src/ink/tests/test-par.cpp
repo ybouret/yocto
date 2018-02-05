@@ -31,8 +31,8 @@ namespace
 YOCTO_UNIT_TEST_IMPL(par)
 {
 
-    SharedServer seq( new threading::seq_server()     );
-    SharedServer par( new threading::par_server(true) );
+    Engine::SharedServer seq( new threading::seq_server()     );
+    Engine::SharedServer par( new threading::par_server(true) );
 
     std::cerr << "seq.threads=" << seq->cpu.num_threads() << std::endl;
     std::cerr << "par.threads=" << par->cpu.num_threads() << std::endl;
@@ -41,13 +41,10 @@ YOCTO_UNIT_TEST_IMPL(par)
     const coord  area = ipso::__coord_parser::get<coord>(argv[1],"area");
     Area         full(0,0,area.x,area.y);
 
-    const coord  seq_sizes = Domains::GetPartitionFor(full,seq);
-    const coord  par_sizes = Domains::GetPartitionFor(full,par);
-    std::cerr << "seq_size=" << seq_sizes << std::endl;
-    std::cerr << "par_size=" << par_sizes << std::endl;
 
-    Domains seq_doms(full,seq);
-    Domains par_doms(full,par);
+
+    Engine seq_doms(full,seq);
+    Engine par_doms(full,par);
 
     
 

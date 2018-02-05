@@ -21,7 +21,9 @@ namespace yocto
         {
         public:
             typedef arc_ptr<server> pointer;
-            executor &cpu;
+            executor               &cpu;
+
+            inline size_t num_threads() const throw() { return cpu.num_threads(); }
 
             virtual ~server() throw();
 

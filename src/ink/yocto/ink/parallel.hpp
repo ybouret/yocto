@@ -35,47 +35,40 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Domain);
         };
+        
 
-
-
-        typedef threading::server      ThreadServer; //!< alias for Ink usage
-        typedef ThreadServer::pointer  SharedServer; //!< alias for Ink usage
-
-        class Domains : public Domain::List
+        class Engine : public Area
         {
         public:
-            mutable SharedServer engine;
-            const   coord        sizes; //!< keep track of paritions
+            typedef threading::server::pointer SharedServer;
+            const coord  sizes; //!< how this engine is partitioned on the area
+            SharedServer queue; //!< threads to enqueue jobs
 
-
-            explicit Domains(const Area         &area,
-                             const SharedServer &sharedServer);
-            
-            explicit Domains(const Area         &area,
-                             ThreadServer       *threadServer);
-
-            virtual ~Domains() throw();
+            explicit Engine(const Area &area, const SharedServer &sharedServer);
+            virtual ~Engine() throw();
 
             //! enqueue #jobs=size, METHOD(const Rectangle &, threading::context &ctx)
             template <typename OBJECT_POINTER,typename METHOD_POINTER> inline
             void submit(OBJECT_POINTER      host,
-                        METHOD_POINTER      method ) const
+                        METHOD_POINTER      method)
             {
-                for(const Domain *dom = head;dom;dom=dom->next)
+                threading::server &Q  =  *queue;
+                for(const Domain *dom = domains.head;dom;dom=dom->next)
                 {
-                    dom->jid = engine->enqueue_shared(*dom,host,method);
+                    dom->jid = Q.enqueue_shared(*dom,host,method);
                 }
-                engine->flush();
+                Q.flush();
             }
 
-            static coord GetPartitionFor(const Area &area, const SharedServer &srv) throw();
+            const Domain *head() const throw();
+            size_t        size() const throw();
 
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(Domains);
-            void setup(const Area &full);
+            Domain::List domains;
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Engine);
+
         };
 
-        
         
     }
 }

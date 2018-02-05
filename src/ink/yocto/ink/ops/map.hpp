@@ -19,12 +19,12 @@ namespace yocto
             void operator()(Pixmap<T>       &tgt,
                             const Pixmap<U> &src,
                             FUNC            &func,
-                            const Domains   &doms)
+                            Engine          &engine)
             {
                 target = &tgt;
                 source = &src;
                 proc   = (void*)&func;
-                doms.submit(this, & Map::callThread<T,U,FUNC> );
+                engine.submit(this, & Map::callThread<T,U,FUNC> );
             }
 
             Map() throw();

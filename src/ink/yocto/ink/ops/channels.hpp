@@ -19,15 +19,15 @@ namespace yocto
             typename UNIT>
             void split(const Pixmap<TYPE> &src,
                        Pixmaps<UNIT>      &tgt,
-                       const    Domains   &doms,
+                       Engine             &engine,
                        const    size_t     shift=0)
             {
-                std::cerr << "split " << tgt.size() << " channels, using " << doms.engine->cpu.num_threads() << " threads/#dom=" << doms.size << std::endl;
+                std::cerr << "split " << tgt.size() << " channels, using " << engine.queue->num_threads() << " threads/#dom=" << engine.size() << std::endl;
                 assert( (shift+tgt.size()) * sizeof(UNIT) <= sizeof(TYPE) );
                 source = &src;
                 target = &tgt;
                 cshift = shift;
-                doms.submit(this, & Channels::splitThread<TYPE,UNIT> );
+                engine.submit(this, & Channels::splitThread<TYPE,UNIT> );
             }
 
             template <
@@ -35,15 +35,15 @@ namespace yocto
             typename UNIT>
             void merge(Pixmap<TYPE>        &tgt,
                        const Pixmaps<UNIT> &src,
-                       const    Domains   &doms,
+                       Engine             &engine,
                        const    size_t     shift=0)
             {
-                std::cerr << "merge " << src.size() << " channels, using " << doms.engine->cpu.num_threads() << " threads/#dom=" << doms.size << std::endl;
+                std::cerr << "merge " << src.size() << " channels, using " << engine.queue->num_threads() << " threads/#dom=" << engine.size() << std::endl;
                 assert( (shift+src.size()) * sizeof(UNIT) <= sizeof(TYPE) );
                 source = &src;
                 target = &tgt;
                 cshift = shift;
-                doms.submit(this, & Channels::mergeThread<TYPE,UNIT> );
+                engine.submit(this, & Channels::mergeThread<TYPE,UNIT> );
             }
 
 
