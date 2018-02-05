@@ -8,7 +8,7 @@ namespace yocto
 {
     namespace Ink
     {
-        //! one to one map
+        //! one to one pixel mapping functions
         class Map
         {
         public:
@@ -24,7 +24,7 @@ namespace yocto
                 target = &tgt;
                 source = &src;
                 proc   = (void*)&func;
-                doms.submit(this, & Map::call<T,U,FUNC> );
+                doms.submit(this, & Map::callThread<T,U,FUNC> );
             }
 
             Map() throw();
@@ -36,15 +36,18 @@ namespace yocto
             void       *proc;
 
             template <typename T,typename U,typename FUNC> inline
-            void call( const Area &a, threading::context & ) throw()
+            void callThread( const Area &a, threading::context & ) throw()
             {
                 const unit_t xmin = a.x;
                 const unit_t xmax = a.x_end;
                 const unit_t ymin = a.y;
                 const unit_t ymax = a.y_end;
+
                 Pixmap<T>       &tgt = *static_cast< Pixmap<T>       *>(target);
                 const Pixmap<U> &src = *static_cast< const Pixmap<U> *>(source);
+
                 FUNC            &func = *(FUNC *)proc;
+                
                 for(unit_t y=ymax;y>=ymin;--y)
                 {
                     typename Pixmap<T>::Row       &Ty = tgt[y];

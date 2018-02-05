@@ -9,7 +9,7 @@ namespace yocto
 {
     namespace Ink
     {
-
+        
         //! a Domain is compute for computation on a sub are
         class Domain : public Area
         {

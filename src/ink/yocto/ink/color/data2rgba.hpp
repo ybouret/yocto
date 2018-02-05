@@ -67,7 +67,7 @@ virtual RGBA get(const void *addr) { CODE; } \
 
         //! for complex to greyscale
         YOCTO_INK_DATA2RGBA(cplx2rgba,
-                                const Complex  c = *(const Complex *)addr;
+                                const cplx_t   c = *(const cplx_t *)addr;
                                 const uint8_t  u = YOCTO_INK_F2B(c.mod());
                                 return RGBA(u,u,u)
                                 );

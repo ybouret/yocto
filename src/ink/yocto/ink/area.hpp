@@ -20,8 +20,7 @@ namespace yocto
             explicit Area( const unit_t X, const unit_t Y, const unit_t W, const unit_t H);
             virtual ~Area() throw();
             Area(const Area  &rect) throw();
-            Area(const Patch &p) throw();
-            Patch getPatch() const throw();
+            
 
         private:
             YOCTO_DISABLE_ASSIGN(Area);

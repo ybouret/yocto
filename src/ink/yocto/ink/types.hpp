@@ -2,16 +2,15 @@
 #define YOCTO_INK_TYPES_INCLUDED 1
 
 #include "yocto/math/types.hpp"
-#include "yocto/ipso/patch.hpp"
+#include "yocto/ipso/coord.hpp"
 
 namespace yocto
 {
     namespace Ink
     {
-        typedef float               Real;
-        typedef math::complex<Real> Complex;
-        typedef ipso::coord2D       coord;
-        typedef ipso::patch2D       Patch;
+        typedef float                 real_t;
+        typedef math::complex<real_t> cplx_t;
+        typedef ipso::coord2D         coord;
 
 #define YOCTO_INK_R2GS 0.2126f
 #define YOCTO_INK_G2GS 0.7152f
