@@ -41,17 +41,17 @@ YOCTO_UNIT_TEST_IMPL(ops)
 
         chan.ldz();
 
-        double ell_seq = 0;
-        YOCTO_WTIME(ell_seq,channels.split(img4,chan,seq));
+        double split_seq = 0;
+        YOCTO_WTIME(split_seq,channels.split(img4,chan,seq));
 
         IMG.save( vformat("r%d-seq.png",iarg),rr,toRed,NULL);
         IMG.save( vformat("g%d-seq.png",iarg),gg,toGreen,NULL);
         IMG.save( vformat("b%d-seq.png",iarg),bb,toBlue,NULL);
 
         chan.ldz();
-        double ell_par = 0;
-        YOCTO_WTIME(ell_par,channels.split(img4,chan,par));
-        std::cerr << "ell_par=" << ell_par << "/" << "ell_seq=" << ell_seq << std::endl;
+        double split_par = 0;
+        YOCTO_WTIME(split_par,channels.split(img4,chan,par));
+        std::cerr << "split_par=" << split_par << "/" << "split_seq=" << split_seq << std::endl;
 
         IMG.save( vformat("r%d-par.png",iarg),rr,toRed,NULL);
         IMG.save( vformat("g%d-par.png",iarg),gg,toGreen,NULL);
@@ -67,6 +67,8 @@ YOCTO_UNIT_TEST_IMPL(ops)
         double merge_par = 0;
         YOCTO_WTIME(merge_par,channels.merge(img3,chan,par));
         IMG.save( img3, vformat("merge%d-par.png",iarg), NULL);
+        std::cerr << "merge_par=" << merge_par << "/" << "merge_seq=" << merge_seq << std::endl;
+
 
         PixmapYUV      yuv(img4, YUV::fromRGBA);
         Pixmaps<float> fch(3,w,h);
