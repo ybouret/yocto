@@ -52,7 +52,8 @@ YOCTO_UNIT_TEST_IMPL(ops)
         double split_par = 0;
         YOCTO_WTIME(split_par,channels.split(img4,chan,par));
         std::cerr << "split_par=" << split_par << "/" << "split_seq=" << split_seq << std::endl;
-
+        std::cerr << "Efficiency: " << ipso::efficiency(split_seq/split_par,par.size()) << std::endl;
+        
         IMG.save( vformat("r%d-par.png",iarg),rr,toRed,NULL);
         IMG.save( vformat("g%d-par.png",iarg),gg,toGreen,NULL);
         IMG.save( vformat("b%d-par.png",iarg),bb,toBlue,NULL);
@@ -68,6 +69,7 @@ YOCTO_UNIT_TEST_IMPL(ops)
         YOCTO_WTIME(merge_par,channels.merge(img3,chan,par));
         IMG.save( img3, vformat("merge%d-par.png",iarg), NULL);
         std::cerr << "merge_par=" << merge_par << "/" << "merge_seq=" << merge_seq << std::endl;
+        std::cerr << "Efficiency: " << ipso::efficiency(merge_seq/merge_par,par.size()) << std::endl;
 
 
         PixmapYUV      yuv(img4, YUV::fromRGBA);
@@ -78,8 +80,6 @@ YOCTO_UNIT_TEST_IMPL(ops)
         IMG.save( *fch[1], vformat("y%d.png",iarg), NULL);
         IMG.save(vformat("u%d.png",iarg), *fch[2], U2RGBA, NULL);
         IMG.save(vformat("v%d.png",iarg), *fch[3], V2RGBA, NULL);
-        //IMG.save( *fch[2], vformat("u%d.png",iarg), NULL);
-        //IMG.save( *fch[3], vformat("v%d.png",iarg), NULL);
 
         Mapper mapper;
         PixmapRGB img3b(w,h);

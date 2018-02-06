@@ -4,11 +4,13 @@
 #include "yocto/ink/bitmap.hpp"
 #include "yocto/core/list.hpp"
 #include "yocto/threading/scheme/server.hpp"
+#include "yocto/container/cslot.hpp"
 
 namespace yocto
 {
     namespace Ink
     {
+        typedef threading::job_id JobID;
         
         //! a Domain is compute for computation on a sub are
         class Domain : public Area
@@ -16,13 +18,13 @@ namespace yocto
         public:
             typedef core::list_of_cpp<Domain> List;
 
-            const coord  ranks; //!< 2D ranks in the Domains sizes
-            const size_t items; //!< number of local items
-            const size_t rank;  //!< global rank in Domain::List
-            Domain      *next;  //!< for Domain::List
-            Domain      *prev;  //!< for Domain::List
-
-            mutable  threading::job_id jid; //!< to store job_id during parallel code
+            const coord   ranks; //!< 2D ranks in the Domains sizes
+            const size_t  items; //!< number of local items
+            const size_t  rank;  //!< global rank in Domain::List
+            Domain       *next;  //!< for Domain::List
+            Domain       *prev;  //!< for Domain::List
+            mutable JobID jid;   //!< to store job_id during parallel code
+            mutable cslot cache; //!< for thread specific memory
 
             //! constructor
             explicit Domain(const Area      &user_rect,
@@ -47,7 +49,7 @@ namespace yocto
             explicit Engine(const Area &area, const SharedServer &sharedServer);
             virtual ~Engine() throw();
 
-            //! enqueue #jobs=size, METHOD(const Rectangle &, threading::context &ctx)
+            //! enqueue #jobs=size, METHOD(const Domain &, threading::context &ctx)
             template <typename OBJECT_POINTER,typename METHOD_POINTER> inline
             void submit(OBJECT_POINTER      host,
                         METHOD_POINTER      method)
