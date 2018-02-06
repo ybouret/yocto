@@ -75,6 +75,39 @@ virtual RGBA get(const void *addr) { CODE; } \
         //! for YUV
         YOCTO_INK_DATA2RGBA(yuv2rgba,return YUV::toRGB(*(const YUV*)addr) );
 
+        //! for scaling
+        class scale2rgba : public data2rgba
+        {
+        public:
+            explicit scale2rgba(const float vmin, const float vmax) throw();
+            virtual ~scale2rgba() throw();
+            const float smin;
+            const float smax;
+            const float delta;
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(scale2rgba);
+            virtual RGBA get(const void *addr);
+        };
+
+        class yuv_u2rgba : public scale2rgba
+        {
+        public:
+            inline explicit yuv_u2rgba() throw() : scale2rgba(-0.436f,0.436f) {}
+            inline virtual ~yuv_u2rgba() throw() {}
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(yuv_u2rgba);
+        };
+
+        class yuv_v2rgba : public scale2rgba
+        {
+        public:
+            inline explicit yuv_v2rgba() throw() : scale2rgba(-0.615f,0.615f) {}
+            inline virtual ~yuv_v2rgba() throw() {}
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(yuv_v2rgba);
+        };
     }
 
 }

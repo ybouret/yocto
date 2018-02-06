@@ -43,3 +43,8 @@ INSTALL( TARGETS y-ink ARCHIVE DESTINATION lib)
 IF(YOCTO_BUILD_TESTS)
 	ADD_SUBDIRECTORY(tests)
 ENDIF()
+
+ADD_EXECUTABLE(make_ramp ramps/make_ramp.cpp)
+TARGET_LINK_YOCTO(make_ramp)
+
+

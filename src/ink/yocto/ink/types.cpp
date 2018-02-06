@@ -56,5 +56,18 @@ U(240),U(241),U(242),U(243),U(244),U(245),U(246),U(247),U(248),U(249),U(250),U(2
         {
             UTABLE
         };
+
+        const coord Core:: Shift[8] =
+        {
+            coord( 1, 0),
+            coord( -1,0),
+            coord( 0, 1),
+            coord( 0,-1),
+
+            coord(1,  1),
+            coord(1, -1),
+            coord(-1,-1),
+            coord(-1, 1)
+        };
     }
 }

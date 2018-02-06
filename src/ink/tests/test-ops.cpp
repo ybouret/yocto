@@ -72,10 +72,14 @@ YOCTO_UNIT_TEST_IMPL(ops)
 
         PixmapYUV      yuv(img4, YUV::fromRGBA);
         Pixmaps<float> fch(3,w,h);
+        yuv_u2rgba U2RGBA;
+        yuv_v2rgba V2RGBA;
         channels.split(yuv,fch,par);
         IMG.save( *fch[1], vformat("y%d.png",iarg), NULL);
-        IMG.save( *fch[2], vformat("u%d.png",iarg), NULL);
-        IMG.save( *fch[3], vformat("v%d.png",iarg), NULL);
+        IMG.save(vformat("u%d.png",iarg), *fch[2], U2RGBA, NULL);
+        IMG.save(vformat("v%d.png",iarg), *fch[3], V2RGBA, NULL);
+        //IMG.save( *fch[2], vformat("u%d.png",iarg), NULL);
+        //IMG.save( *fch[3], vformat("v%d.png",iarg), NULL);
 
         Mapper mapper;
         PixmapRGB img3b(w,h);

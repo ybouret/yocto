@@ -33,6 +33,9 @@ namespace yocto
             {
                 return YOCTO_INK_F2B(GreyScaleF(R,G,B));
             }
+
+            //! 4+4 neighbors offset
+            static const coord Shift[8];
         };
     }
 }
