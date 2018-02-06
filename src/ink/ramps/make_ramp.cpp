@@ -3,6 +3,8 @@
 #include "yocto/string/tokenizer.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/string/conv.hpp"
+#include "yocto/fs/local-fs.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 #include <cstring>
 
@@ -27,9 +29,11 @@ static inline int get_byte(const string &word, const char *name, const unsigned 
     return value;
 }
 
+
+
+
 YOCTO_PROGRAM_START()
 {
-
     for(size_t i=0;i<256;++i)
     {
         color[i].indx = -1;
@@ -38,7 +42,7 @@ YOCTO_PROGRAM_START()
 
     if(argc<=2) throw exception("usage: %s ramp.dat output_dir",program);
     const string ramp_file  = argv[1];
-    const string output_dir = argv[2];
+    const string output_dir = vfs::to_directory(argv[2]);
 
     // loading file
     {
@@ -75,7 +79,34 @@ YOCTO_PROGRAM_START()
     }
 
     // preparing files
-    
+    string       root_name   = vfs::get_base_name(ramp_file); vfs::remove_extension(root_name);
+    const string source_name = output_dir + root_name + ".cpp";
+    const string header_name = output_dir + root_name + ".hpp";
+    string       iclass      = vfs::class_name_for(root_name);
+    const string hguard      = "YOCTO_INK" + vfs::cpp_label_from( root_name );
+
+    std::cerr << "header: " << header_name << std::endl;
+    std::cerr << "source: " << source_name << std::endl;
+    std::cerr << "hguard: " << hguard << std::endl;
+    std::cerr << "iclass: " << iclass << std::endl;
+
+    ios::wcstream header(header_name);
+    ios::wcstream source(source_name);
+    header << "#ifndef " << hguard << "\n";
+    header << "#define " << hguard << " 1\n";
+    header << "#include \"yocto/ink/ramp.hpp\"\n";
+    header << "namespace yocto { namespace Ink {\n\n";
+
+    header << "\tclass " << iclass << " : public ramp {\n";
+    header << "\t\tpublic:\n";
+    header << "\t\tinline virtual ~" << iclass << "() throw() {}\n";
+    header << "\t\tinline explicit " << iclass << "(const float vmin,const float vmax) throw():\n";
+    header << "\t\t\tramp(vmin,vmax,__colors) {}\n";
+    header << "\t\tYOCTO_DISABLE_COPY_AND_ASSIGN(" << iclass << ");\n";
+    header << "\t\tstatic const RGBA __colors[256];\n";
+    header << "\t};\n\n";
+    header << "} }\n";
+    header << "#endif\n";
 
 }
 YOCTO_PROGRAM_END()
