@@ -82,7 +82,7 @@ YOCTO_PROGRAM_START()
     string       root_name   = vfs::get_base_name(ramp_file); vfs::remove_extension(root_name);
     const string source_name = output_dir + root_name + ".cpp";
     const string header_name = output_dir + root_name + ".hpp";
-    string       iclass      = vfs::class_name_for(root_name);
+    string       iclass      = "ramp_" + vfs::class_name_for(root_name);
     const string hguard      = "YOCTO_INK" + vfs::cpp_label_from( root_name );
 
     std::cerr << "header: " << header_name << std::endl;
@@ -100,7 +100,7 @@ YOCTO_PROGRAM_START()
     header << "\tclass " << iclass << " : public ramp {\n";
     header << "\t\tpublic:\n";
     header << "\t\tinline virtual ~" << iclass << "() throw() {}\n";
-    header << "\t\tinline explicit " << iclass << "(const float vmin,const float vmax) throw():\n";
+    header << "\t\tinline explicit " << iclass << "(const float vmin=0.0f,const float vmax=1.0f) throw():\n";
     header << "\t\t\tramp(vmin,vmax,__colors) {}\n";
     header << "\t\tYOCTO_DISABLE_COPY_AND_ASSIGN(" << iclass << ");\n";
     header << "\t\tstatic const RGBA __colors[256];\n";
