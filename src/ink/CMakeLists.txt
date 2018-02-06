@@ -12,6 +12,12 @@ SET(color_srcs ${color_impl} ${color_decl})
 INSTALL( FILES ${color_decl} DESTINATION include/yocto/ink/color )
 SOURCE_GROUP( ink/color FILES ${color_srcs} )
 
+FILE(GLOB ramp_decl yocto/ink/color/ramp/*.hpp)
+FILE(GLOB ramp_impl yocto/ink/color/ramp/*.cpp)
+SET(ramp_srcs ${ramp_impl} ${ramp_decl})
+INSTALL( FILES ${ramp_decl} DESTINATION include/yocto/ink/color/ramp )
+SOURCE_GROUP( ink/color/ramp FILES ${ramp_srcs} )
+
 FILE(GLOB image_decl yocto/ink/image/*.hpp)
 FILE(GLOB image_impl yocto/ink/image/*.cpp)
 SET(image_srcs ${image_impl} ${image_decl})
@@ -35,7 +41,7 @@ ${CMAKE_CURRENT_BINARY_DIR}/../yocto/zlib
 )
 
 
-ADD_LIBRARY(y-ink STATIC ${srcs} ${color_srcs} ${image_srcs} ${ops_srcs}) 
+ADD_LIBRARY(y-ink STATIC ${srcs} ${color_srcs} ${image_srcs} ${ops_srcs} ${ramp_srcs}) 
 TARGET_LINK_LIBRARIES(y-ink y-tiff)
 
 INSTALL( TARGETS y-ink ARCHIVE DESTINATION lib)
@@ -44,7 +50,9 @@ IF(YOCTO_BUILD_TESTS)
 	ADD_SUBDIRECTORY(tests)
 ENDIF()
 
-ADD_EXECUTABLE(make_ramp ramps/make_ramp.cpp)
-TARGET_LINK_YOCTO(make_ramp)
+IF(TRUE)
+ ADD_EXECUTABLE(make_ramp ramps/make_ramp.cpp)
+ TARGET_LINK_YOCTO(make_ramp)
+ENDIF()
 
 

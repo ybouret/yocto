@@ -90,11 +90,11 @@ YOCTO_PROGRAM_START()
     std::cerr << "hguard: " << hguard << std::endl;
     std::cerr << "iclass: " << iclass << std::endl;
 
+    {
     ios::wcstream header(header_name);
-    ios::wcstream source(source_name);
     header << "#ifndef " << hguard << "\n";
     header << "#define " << hguard << " 1\n";
-    header << "#include \"yocto/ink/ramp.hpp\"\n";
+    header << "#include \"yocto/ink/color/ramp.hpp\"\n";
     header << "namespace yocto { namespace Ink {\n\n";
 
     header << "\tclass " << iclass << " : public ramp {\n";
@@ -107,6 +107,24 @@ YOCTO_PROGRAM_START()
     header << "\t};\n\n";
     header << "} }\n";
     header << "#endif\n";
+    }
+
+    ios::wcstream source(source_name);
+    source << "#include \"yocto/ink/color/ramp/" << vfs::get_base_name(header_name) << "\"\n\n";
+    source << "namespace yocto { namespace Ink {\n\n";
+    source << "const RGBA " << iclass << ":: __colors[256]= {\n";
+    for(size_t i=0;i<256;++i)
+    {
+        const RGB &C = color[i];
+        source << vformat("RGBA(0x%02x,0x%02x,0x%02x)",C.r,C.g,C.b);
+        if(i<255) source << ',';
+        if( 0 == ( (i+1) % 8 ))
+        {
+            source << '\n';
+        }
+    }
+    source << "};\n";
+    source << "} }\n";
 
 }
 YOCTO_PROGRAM_END()
