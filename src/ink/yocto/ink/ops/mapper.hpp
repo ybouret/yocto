@@ -12,8 +12,7 @@ namespace yocto
         class Mapper
         {
         public:
-            template <typename T,typename U>
-            static inline T Copy(const U &u) throw() { return T(u); }
+           
 
             template <typename T,typename U,typename FUNC> inline
             void operator()(Pixmap<T>       &tgt,

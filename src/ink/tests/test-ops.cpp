@@ -83,7 +83,7 @@ YOCTO_UNIT_TEST_IMPL(ops)
 
         Mapper mapper;
         PixmapRGB img3b(w,h);
-        mapper(img3b,img3,Mapper::Copy<RGB,RGB>,par);
+        mapper(img3b,img3,Convert::Copy<RGB,RGB>,par);
         mapper(yuv,img3,YUV::fromRGB,par);
 
     }

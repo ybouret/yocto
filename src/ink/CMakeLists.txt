@@ -50,7 +50,7 @@ IF(YOCTO_BUILD_TESTS)
 	ADD_SUBDIRECTORY(tests)
 ENDIF()
 
-IF(TRUE)
+IF(FALSE)
  ADD_EXECUTABLE(make_ramp ramps/make_ramp.cpp)
  TARGET_LINK_YOCTO(make_ramp)
 ENDIF()

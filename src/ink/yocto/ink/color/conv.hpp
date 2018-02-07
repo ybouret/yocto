@@ -21,7 +21,8 @@ namespace yocto
                 return Core::GreyScaleF(col.r, col.g, col.b)*Core::uFloat[col.a];
             }
             
-
+            template <typename T,typename U>
+            static inline T Copy(const U &u) throw() { return T(u); }
         };
     }
 }
