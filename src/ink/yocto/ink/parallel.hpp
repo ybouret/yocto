@@ -49,22 +49,33 @@ namespace yocto
             explicit Engine(const Area &area, const SharedServer &sharedServer);
             virtual ~Engine() throw();
 
+
+
             //! enqueue #jobs=size, METHOD(const Domain &, threading::context &ctx)
             template <typename OBJECT_POINTER,typename METHOD_POINTER> inline
-            void submit(OBJECT_POINTER      host,
-                        METHOD_POINTER      method)
+            void submit_no_flush(OBJECT_POINTER      host,
+                                 METHOD_POINTER      method)
             {
                 threading::server &Q  =  *queue;
                 for(const Domain *dom = domains.head;dom;dom=dom->next)
                 {
                     dom->jid = Q.enqueue_shared(*dom,host,method);
                 }
-                Q.flush();
+            }
+
+            //! enqueue #jobs=size, METHOD(const Domain &, threading::context &ctx)
+            template <typename OBJECT_POINTER,typename METHOD_POINTER> inline
+            void submit(OBJECT_POINTER      host,
+                        METHOD_POINTER      method)
+            {
+                submit_no_flush(host,method);
+                flush();
             }
 
             const Domain *head() const throw();
             size_t        size() const throw();
-
+            void          flush() throw();
+            
             void prepare(const size_t bytes_per_domain);
 
         private:

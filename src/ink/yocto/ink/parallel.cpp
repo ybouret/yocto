@@ -133,6 +133,7 @@ namespace yocto
             }
         }
 
+        void Engine:: flush() throw() { queue->flush(); }
 
     }
 

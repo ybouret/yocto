@@ -26,7 +26,7 @@ namespace yocto
             static inline uint8_t Float2Byte(const float x) throw() { return YOCTO_INK_F2B(x); }
             static inline float   GreyScaleF(const uint8_t R,const uint8_t G,const uint8_t B) throw()
             {
-                return uFloatR[R] + uFloatG[R] + uFloatB[B];
+                return uFloatR[R] + uFloatG[G] + uFloatB[B];
             }
 
             static inline uint8_t GreyScale1(const uint8_t R,const uint8_t G,const uint8_t B) throw()

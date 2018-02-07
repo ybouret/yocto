@@ -2,7 +2,6 @@
 #define YOCTO_MK_STAT_IHIST_INCLUDED 1
 
 #include "yocto/container/sequence.hpp"
-//#include <iostream>
 
 namespace yocto
 {

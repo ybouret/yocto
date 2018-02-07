@@ -23,6 +23,38 @@ namespace yocto
             
             template <typename T,typename U>
             static inline T Copy(const U &u) throw() { return T(u); }
+
+            static inline uint8_t RGB2Byte(const RGB &C) throw()
+            {
+                return YOCTO_INK_F2B(Core::uFloatR[C.r] + Core::uFloatG[C.g] + Core::uFloatB[C.b]);
+            }
+
+            static inline uint8_t RGB2BW(const RGB &C) throw()
+            {
+                const size_t sum = size_t(C.r) + size_t(C.g) + size_t(C.b);
+                return uint8_t(sum/3);
+            }
+
+            static inline uint8_t Float2Byte(const float f) throw()
+            {
+                if(f<=0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    if(f>=1)
+                    {
+                        return 255;
+                    }
+                    else
+                    {
+                        return YOCTO_INK_F2B(f);
+                    }
+
+                }
+            }
+
         };
     }
 }

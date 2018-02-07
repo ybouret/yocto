@@ -38,6 +38,7 @@ INCLUDE_DIRECTORIES(
 ../yocto/tiff/libtiff
 ${CMAKE_CURRENT_BINARY_DIR}/../yocto/tiff/libtiff
 ${CMAKE_CURRENT_BINARY_DIR}/../yocto/zlib
+../mk
 )
 
 
