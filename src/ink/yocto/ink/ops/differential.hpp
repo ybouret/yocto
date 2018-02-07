@@ -4,90 +4,103 @@
 
 #include "yocto/ink/parallel.hpp"
 #include "yocto/ink/pixmaps.hpp"
+#include "yocto/math/types.hpp"
 
 namespace yocto
 {
     namespace Ink
     {
-        
-        class Differential : public PixmapF
+
+        class Gradient : public Area
         {
         public:
-            //! uses only size
-            explicit Differential(const Bitmap &bmp);
-            virtual ~Differential() throw();
-            
-            template <typename T, typename FUNC>
-            void apply(const Pixmap<T> &pxm,
-                       FUNC            &func,
-                       Engine          &engine)
+            typedef float        type;
+            typedef Pixmap<type> pixmap;
+            typedef pixmap::Row  row;
+            static const size_t  BytesPerDomain = 2*sizeof(type);
+        protected:
+            Pixmaps<type> fields;
+
+        public:
+            pixmap &gx;
+            pixmap &gy;
+            pixmap &gn;
+
+            explicit Gradient(const Bitmap &bmp);
+            virtual ~Gradient() throw();
+
+            template <typename T,typename FUNC>
+            void compute(const Pixmap<T> &pxm,
+                         FUNC            &func,
+                         Engine          &engine)
             {
-                start(engine);
+                std::cerr << "Computing with " << engine.size() << " max threads" << std::endl;
                 source = &pxm;
                 proc   = (void *) &func;
-                engine.submit(this, & Differential::gradThread<T,FUNC>);
+                engine.prepare(BytesPerDomain);
+                engine.submit(this, & Gradient::computeThread<T,FUNC>);
             }
-            
-            void start( Engine &engine )
-            {
-                for(const Domain *dom=engine.head();dom;dom=dom->next)
-                {
-                    dom->cache.prepare(2*sizeof(type));
-                }
-            }
-            
+
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(Differential);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Gradient);
             const void *source;
             void       *proc;
 
+            
+
             template <typename T,typename FUNC>
-            void gradThread(const Domain &dom, threading::context &) throw()
+            void computeThread(const Domain &dom, threading::context &) throw()
             {
                 assert(source);
                 assert(proc);
-                assert(dom.cache.data);
-                assert(dom.cache.size>=2*sizeof(type));
-                const Pixmap<T> &pxm  = *(const Pixmap<T> *)source;
+
+                const Pixmap<T> &S    = *(const Pixmap<T> *)source;
                 FUNC            &func = *(FUNC *)proc;
-                type             vmin = 0;
-                type             vmax = 0;
 
                 const unit_t xmin = dom.x;
                 const unit_t xmax = dom.x_end;
-                const unit_t xtop = x_end;
 
                 const unit_t ymin = dom.y;
                 const unit_t ymax = dom.y_end;
-                const unit_t ytop = y_end;
 
-                for(unit_t y=ymax;y>=ymin;--y)
+                type vmax=0;
+
+                for(unit_t j=ymax;j>=ymin;--j)
                 {
-                    const bool at_ytop = (y>=ytop);
-                    const bool at_ybot = (y<=0);
-                    const typename Pixmap<T>::Row &S_y = pxm[y];
-                    PixmapF::Row                  &V_y = (*this)[y];
-                    for(unit_t x=xmax;x>=xmin;--x)
+                    const unsigned                 jpos = this->ypos(j);
+                    const typename Pixmap<T>::Row &Sj   = S[j];
+                    row &gy_j = gy[j];
+                    row &gx_j = gx[j];
+                    row &gn_j = gn[j];
+                    for(unit_t i=xmax;i>=xmin;--i)
                     {
-                        type gy = 0;
-                        if(at_ybot)
+                        const unsigned pos = jpos | this->xpos(i);
+                        type           Gx  = 0;
+                        type           Gy  = 0;
+                        switch(pos)
                         {
-                            
-                        }
-                        else
-                        {
+                            case 0: // core
+                                assert(i>0&&i<x_end);
+                                assert(j>0&&j<y_end);
+                                Gx = func(Sj[i+1])   - func(Sj[i-1]);
+                                Gy = func(S[j+1][i]) - func(S[j-1][i]);
+                                break;
 
+                            default:
+                                break;
                         }
-                        const bool at_xtop = (x>=xtop);
-                        const bool at_ytop = (y>=ytop);
+                        gx_j[i] = Gx;
+                        gy_j[i] = Gy;
+                        const type nrm = math::Hypotenuse(Gx,Gy);
+                        gn_j[i] = nrm;
+                        if(nrm>vmax) vmax=nrm;
                     }
                 }
 
-                float *val = static_cast<float *>(dom.cache.data);
-                val[0] = vmin;
-                val[1] = vmax;
+
             }
         };
+
         
     }
 }

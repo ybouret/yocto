@@ -11,6 +11,11 @@ namespace yocto
         class Area : public object
         {
         public:
+            static const unsigned AtLowerX = 0x01;
+            static const unsigned AtUpperX = 0x02;
+            static const unsigned AtLowerY = 0x04;
+            static const unsigned AtUpperY = 0x08;
+
             const unit_t x;
             const unit_t y;
             const unit_t w;
@@ -20,8 +25,46 @@ namespace yocto
             explicit Area( const unit_t X, const unit_t Y, const unit_t W, const unit_t H);
             virtual ~Area() throw();
             Area(const Area  &rect) throw();
-            
 
+            inline unsigned xpos(const unit_t X) const throw()
+            {
+                if(X<=x)
+                {
+                    return AtLowerX;
+                }
+                else
+                {
+                    if(X>=x_end)
+                    {
+                        return AtUpperX;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+
+            inline unsigned ypos(const unit_t Y) const throw()
+            {
+                if(Y<=y)
+                {
+                    return AtLowerY;
+                }
+                else
+                {
+                    if(Y>=y_end)
+                    {
+                        return AtUpperY;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+
+            
         private:
             YOCTO_DISABLE_ASSIGN(Area);
         };

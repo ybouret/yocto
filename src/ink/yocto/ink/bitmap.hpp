@@ -14,6 +14,8 @@ namespace yocto
         class Bitmap : public Area, public counted
         {
         public:
+
+
             enum MemoryModel
             {
                 MemoryIsGlobal,
@@ -79,7 +81,6 @@ namespace yocto
             bool contains(const unit_t x, const unit_t y) const throw();
             bool contains(const Area &rect) const throw();
 
-            //Area getArea() const throw();
 
         protected:
             void *_rows; //!< memory for rows

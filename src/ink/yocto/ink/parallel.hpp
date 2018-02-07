@@ -65,6 +65,8 @@ namespace yocto
             const Domain *head() const throw();
             size_t        size() const throw();
 
+            void prepare(const size_t bytes_per_domain);
+
         private:
             Domain::List domains;
             YOCTO_DISABLE_COPY_AND_ASSIGN(Engine);

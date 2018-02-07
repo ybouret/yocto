@@ -125,6 +125,15 @@ namespace yocto
 
         const Domain * Engine::head() const throw() { return domains.head; }
 
+        void Engine:: prepare(const size_t bytes_per_domain)
+        {
+            for(Domain *dom = domains.head; dom; dom=dom->next)
+            {
+                dom->cache.prepare(bytes_per_domain);
+            }
+        }
+
+
     }
 
 }

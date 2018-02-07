@@ -158,9 +158,9 @@ namespace yocto
             const float absa=Fabs(a);
             const float absb=Fabs(b);
             if (absa > absb)
-                return absa*Sqrt(1.0f+Square(absb/absa));
+                return absa*sqrtf(1.0f+Square(absb/absa));
             else
-                return (absb <= 0.0f ? 0.0f : absb*Sqrt(1.0f+Square(absa/absb)));
+                return (absb <= 0.0f ? 0.0f : absb*sqrtf(1.0f+Square(absa/absb)));
         }
         
         inline double Hypotenuse( double a, double b) throw()
@@ -168,9 +168,9 @@ namespace yocto
             const double absa=Fabs(a);
             const double absb=Fabs(b);
             if (absa > absb)
-                return absa*Sqrt(1.0+Square(absb/absa));
+                return absa*sqrt(1.0+Square(absb/absa));
             else
-                return (absb <= 0.0 ? 0.0 : absb*Sqrt(1.0+Square(absa/absb)));
+                return (absb <= 0.0 ? 0.0 : absb*sqrt(1.0+Square(absa/absb)));
         }
         
         template <typename T>

@@ -23,9 +23,10 @@ YOCTO_UNIT_TEST_IMPL(diff)
         Engine          par(pxm3,parSrv);
         Engine          seq(pxm3,seqSrv);
 
-        Differential    diff(pxm3);
+        Gradient    grad(pxm3);
 
-        diff.apply(pxm3,Convert::Copy<float,float>,par);
+        grad.compute(pxm3,Convert::RGB2F,seq);
+        grad.compute(pxm3,Convert::RGB2F,par);
     }
     
 }
