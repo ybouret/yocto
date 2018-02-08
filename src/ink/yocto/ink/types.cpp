@@ -69,5 +69,9 @@ U(240),U(241),U(242),U(243),U(244),U(245),U(246),U(247),U(248),U(249),U(250),U(2
             coord(-1,-1),
             coord(-1, 1)
         };
+        
+        Vertex::Vertex() throw() : next(0), prev(0), pos() {}
+        Vertex::~Vertex() throw() {}
+        
     }
 }

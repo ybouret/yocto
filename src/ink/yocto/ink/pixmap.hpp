@@ -44,6 +44,16 @@ namespace yocto
                 assert(_rows); assert(j>=0); assert(j<h); return *(static_cast<Row *>(_rows)+j);
             }
 
+            inline type & operator[](const coord c) throw()
+            {
+                return (*this)[c.y][c.x];
+            }
+            
+            inline const_type & operator[](const coord c) const throw()
+            {
+                return (*this)[c.y][c.x];
+            }
+            
             inline virtual ~Pixmap() throw() {}
 
             //! default ctor

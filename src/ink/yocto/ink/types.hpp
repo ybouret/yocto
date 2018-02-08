@@ -3,6 +3,7 @@
 
 #include "yocto/math/types.hpp"
 #include "yocto/ipso/coord.hpp"
+#include "yocto/core/list.hpp"
 
 namespace yocto
 {
@@ -37,6 +38,22 @@ namespace yocto
             //! 4+4 neighbors offset
             static const coord Shift[8];
         };
+        
+        class Vertex
+        {
+        public:
+            typedef core::list_of_cpp<Vertex> List;
+            YOCTO_MAKE_OBJECT;
+            Vertex *next;
+            Vertex *prev;
+            coord   pos;
+            
+            Vertex() throw();
+            ~Vertex() throw();
+            Vertex(const Vertex &) throw();
+            YOCTO_DISABLE_ASSIGN(Vertex);
+        };
+        
     }
 }
 
