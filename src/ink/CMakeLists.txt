@@ -52,8 +52,11 @@ IF(YOCTO_BUILD_TESTS)
 ENDIF()
 
 IF(TRUE)
- ADD_EXECUTABLE(make_ink_ramp ramps/make_ramp.cpp)
- TARGET_LINK_YOCTO(make_ink_ramp)
+ ADD_EXECUTABLE(ink_make_ramp ramps/make_ramp.cpp)
+ TARGET_LINK_YOCTO(ink_make_ramp)
+ 
+ ADD_EXECUTABLE(make_named_colors named_colors/make_named_colors.cpp)
+ TARGET_LINK_YOCTO(make_named_colors)
 ENDIF()
 
 

@@ -33,8 +33,8 @@ namespace yocto
             explicit Particles(const Bitmap &bmp);
             virtual ~Particles() throw();
             
-            template <typename T,typename ZTEST>
-            inline void build( const Pixmap<T> &src, ZTEST &ztest)
+            template <typename T>
+            inline void build( const Pixmap<T> &src )
             {
                 
             }
