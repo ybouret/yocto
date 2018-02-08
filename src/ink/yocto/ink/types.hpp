@@ -43,6 +43,8 @@ namespace yocto
         {
         public:
             typedef core::list_of_cpp<Vertex> List;
+            typedef core::pool_of_cpp<Vertex> Pool;
+
             YOCTO_MAKE_OBJECT;
             Vertex *next;
             Vertex *prev;
