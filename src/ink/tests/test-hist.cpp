@@ -46,10 +46,11 @@ YOCTO_UNIT_TEST_IMPL(hist)
         std::cerr << "threshold=" << thr << std::endl;
 
         PixmapRGB tgt(pxm3.w,pxm3.h);
-        H.keep(thr,Histogram::KeepLT,  tgt, pxm3,Convert::RGB2Byte,par);
+        H.keep(thr,Histogram::KeepLT,  tgt, pxm3,Convert::RGB2Byte,par,true);
         IMG.save(tgt,"hlt.png",NULL);
-        H.keep(thr,Histogram::KeepLEQ, tgt, pxm3,Convert::RGB2Byte,par);
+        H.keep(thr,Histogram::KeepLEQ, tgt, pxm3,Convert::RGB2Byte,par,true);
         IMG.save(tgt,"hleq.png",NULL);
+
         H.keep(thr,Histogram::KeepGT,  tgt, pxm3,Convert::RGB2Byte,par);
         IMG.save(tgt,"hgt.png",NULL);
         H.keep(thr,Histogram::KeepGEQ, tgt, pxm3,Convert::RGB2Byte,par);

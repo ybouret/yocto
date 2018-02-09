@@ -21,10 +21,10 @@ namespace yocto
         class rgb
         {
         public:
-            typedef Pixel<T> pixel_type;
+            typedef Pixel<T> PixelType;
 
             T r,g,b;
-            inline  rgb() throw() : r(pixel_type::zero), g(pixel_type::zero), b(pixel_type::zero) {}
+            inline  rgb() throw() : r(PixelType::Zero), g(PixelType::Zero), b(PixelType::Zero) {}
             inline ~rgb() throw() {}
             inline  rgb(const rgb &other) throw() : r(other.r), g(other.g), b(other.b) {}
             inline  rgb & operator=(const rgb &other) throw()
@@ -41,10 +41,10 @@ namespace yocto
         class rgba
         {
         public:
-            typedef Pixel<T> pixel_type;
+            typedef Pixel<T> PixelType;
 
             T r,g,b,a;
-            inline  rgba() throw() : r(pixel_type::zero), g(pixel_type::zero), b(pixel_type::zero), a(pixel_type::opaque) {}
+            inline  rgba() throw() : r(PixelType::Zero), g(PixelType::Zero), b(PixelType::Zero), a(PixelType::Opaque) {}
             inline ~rgba() throw() {}
             inline  rgba(const rgba &other) throw() : r(other.r), g(other.g), b(other.b), a(other.a) {}
             inline  rgba & operator=(const rgba &other) throw()
@@ -55,8 +55,9 @@ namespace yocto
                 a=other.a;
                 return *this;
             }
-            inline rgba(T R, T G, T B, T A=pixel_type::opaque) throw() : r(R), g(G), b(B), a(A) {}
-            inline rgba( const rgb<T> &other ) throw() : r(other.r), g(other.g), b(other.b), a(pixel_type::opaque) {}
+            
+            inline rgba(T R, T G, T B, T A=PixelType::Opaque) throw() : r(R), g(G), b(B), a(A) {}
+            inline rgba( const rgb<T> &other ) throw() : r(other.r), g(other.g), b(other.b), a(PixelType::Opaque) {}
             inline rgba & operator=(const rgb<T> &other) throw()
             {
                 r=other.r;

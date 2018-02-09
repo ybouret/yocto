@@ -4,6 +4,7 @@
 
 #include "yocto/ink/parallel.hpp"
 #include "yocto/ink/pixmap.hpp"
+#include "yocto/ink/color/pixel.hpp"
 #include "yocto/code/bzset.hpp"
 
 namespace yocto
@@ -66,15 +67,20 @@ namespace yocto
                              Pixmap<T>          &tgt,
                              const Pixmap<T>    &src,
                              FUNC               &pixel2byte,
-                             Engine             &engine)
+                             Engine             &engine,
+                             const bool          inverse_pixel = false)
             {
                 source = &src;
                 target = &tgt;
                 proc   = (void *)&pixel2byte;
                 _level = level;
                 _kmode = kmode;
+                _invpx = inverse_pixel;
                 engine.submit(this, &Histogram::keepThread<T,FUNC>);
             }
+
+
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Histogram);
@@ -83,6 +89,7 @@ namespace yocto
             void       *proc;
             size_t      _level;
             KeepMode    _kmode;
+            bool        _invpx;
 
             template <typename T,typename FUNC>
             inline void buildThread( const Domain &dom, threading::context &) throw()
@@ -125,12 +132,9 @@ namespace yocto
                 const Pixmap<T> &src      = *(const Pixmap<T> *)source;
                 Pixmap<T>       &tgt      = *(Pixmap<T>       *)target;
                 FUNC            &pix2byte = *(FUNC*)proc;
+                const bool       invpx    = _invpx;
 
-                const unit_t xmin = dom.x;
-                const unit_t xmax = dom.x_end;
-
-                const unit_t ymin = dom.y;
-                const unit_t ymax = dom.y_end;
+                YOCTO_INK_AREA_LIMITS(dom);
 
                 for(unit_t j=ymax;j>=ymin;--j)
                 {
@@ -151,7 +155,14 @@ namespace yocto
                         }
                         if(res)
                         {
-                            T_j[i] = v;
+                            if(invpx)
+                            {
+                                T_j[i] = Pixel<T>::Inverse(v);
+                            }
+                            else
+                            {
+                                T_j[i] = v;
+                            }
                         }
                         else
                         {

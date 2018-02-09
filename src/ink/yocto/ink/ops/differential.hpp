@@ -72,12 +72,7 @@ namespace yocto
 
                 const Pixmap<T> &S    = *(const Pixmap<T> *)source;
                 FUNC            &func = *(FUNC *)proc;
-
-                const unit_t xmin = dom.x;
-                const unit_t xmax = dom.x_end;
-
-                const unit_t ymin = dom.y;
-                const unit_t ymax = dom.y_end;
+                YOCTO_INK_AREA_LIMITS(dom);
 
                 type vmax=0;
 

@@ -14,7 +14,13 @@ namespace yocto
 
         Histogram:: Histogram() throw() :
         bins(),
-        hist()
+        hist(),
+        source(0),
+        target(0),
+        proc(0),
+        _level(0),
+        _kmode(KeepGEQ),
+        _invpx(false)
         {
             uint8_t *b = (uint8_t *)&bins[0];
             for(size_t i=0;i<BINS;++i) b[i] = uint8_t(i);

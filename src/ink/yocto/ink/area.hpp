@@ -8,6 +8,12 @@ namespace yocto
     namespace Ink
     {
 
+#define YOCTO_INK_AREA_LIMITS(AREA) \
+const unit_t xmin = (AREA).x;       \
+const unit_t xmax = (AREA).x_end;   \
+const unit_t ymin = (AREA).y;       \
+const unit_t ymax = (AREA).y_end;   
+
         class Area : public object
         {
         public:

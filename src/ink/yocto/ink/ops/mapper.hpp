@@ -38,11 +38,8 @@ namespace yocto
             template <typename T,typename U,typename FUNC> inline
             void callThread( const Area &a, threading::context & ) throw()
             {
-                const unit_t xmin = a.x;
-                const unit_t xmax = a.x_end;
-                const unit_t ymin = a.y;
-                const unit_t ymax = a.y_end;
-
+                YOCTO_INK_AREA_LIMITS(a);
+                
                 Pixmap<T>       &tgt = *static_cast< Pixmap<T>       *>(target);
                 const Pixmap<U> &src = *static_cast< const Pixmap<U> *>(source);
 
