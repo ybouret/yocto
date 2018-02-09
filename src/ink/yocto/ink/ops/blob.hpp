@@ -15,8 +15,6 @@ namespace yocto
         class Blob : public Pixmap<size_t>
         {
         public:
-
-
             explicit Blob( const Bitmap &bmp );
             virtual ~Blob() throw();
 
