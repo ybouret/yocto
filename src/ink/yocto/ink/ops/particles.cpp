@@ -1,5 +1,5 @@
 #include "yocto/ink/ops/particles.hpp"
-
+#include "yocto/sort/merge.hpp"
 
 namespace yocto
 {
@@ -17,7 +17,13 @@ namespace yocto
         Particle:: ~Particle() throw()
         {
         }
-        
+
+
+        int Particle:: CompareBySize(const Particle *lhs, const Particle *rhs,void*) throw()
+        {
+            return __compare_decreasing(lhs->size,rhs->size);
+        }
+
     }
 
 }
@@ -37,6 +43,11 @@ namespace yocto
         {
         }
 
+        void Particles:: sortBySize()
+        {
+            Particle::List &self = *this;
+            core::merging<Particle>::sort(self, Particle::CompareBySize, NULL);
+        }
 
     }
 }

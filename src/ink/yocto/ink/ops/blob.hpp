@@ -1,11 +1,11 @@
 #ifndef YOCTO_INK_BLOB_INCLUDED
 #define YOCTO_INK_BLOB_INCLUDED 1
 
-#include "yocto/ink/pixmap.hpp"
+#include "yocto/ink/ops/particles.hpp"
 #include "yocto/ink/color/named.hpp"
 #include "yocto/ink/color/pixel.hpp"
 #include "yocto/ink/parallel.hpp"
-#include "yocto/ink/ops/particles.hpp"
+#include "yocto/ink/color/conv.hpp"
 
 namespace yocto
 {
@@ -22,7 +22,7 @@ namespace yocto
 
             template <typename T>
             inline void build(const Pixmap<T> &src,
-                              Particle::List  &particles,
+                              Particles       &particles,
                               const bool       connectFull)
             {
                 //______________________________________________________________
@@ -121,11 +121,17 @@ namespace yocto
                     }
                 }
                 std::cerr << "cache.size=" << cache.size << std::endl;
+                particles.sortBySize();
             }
-            
+
+            //! rewrite numbering
+            void rewrite(Particles &particles);
+
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Blob);
+
 
 
         };

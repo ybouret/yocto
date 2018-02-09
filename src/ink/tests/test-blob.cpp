@@ -28,6 +28,7 @@ YOCTO_UNIT_TEST_IMPL(blob)
         Engine          par(pxm3,parSrv);
         const size_t    level = H.build(pxm3,Convert::RGB2Byte,par).threshold();
         PixmapRGB       pxm(pxm3.w,pxm3.h);
+        PixmapRGB       tgt(pxm3.w,pxm3.h);
         H.keep(level, Histogram::KeepGEQ, pxm, pxm3, Convert::RGB2Byte,par);
         IMG.save(pxm,"fg.png",NULL);
 
@@ -37,22 +38,38 @@ YOCTO_UNIT_TEST_IMPL(blob)
 
         {
             blobs.build(pxm,particles,false);
+            blobs.rewrite(particles);
             IMG.save("blob_fg4.png", blobs, blobColors, NULL);
             std::cerr << "#blob_fg4=" << particles.size << std::endl;
+            tgt.ldz();
+            if(particles.size)
+            {
+                particles.head->transfer(tgt,pxm3,Convert::Copy<RGB,RGB>);
+            }
+            IMG.save(tgt, "main_fg4.png", NULL);
 
             blobs.build(pxm,particles,true);
+            blobs.rewrite(particles);
             IMG.save("blob_fg8.png", blobs, blobColors, NULL);
             std::cerr << "#blob_fg8=" << particles.size << std::endl;
+            tgt.ldz();
+            if(particles.size)
+            {
+                particles.head->transfer(tgt,pxm3,Convert::Copy<RGB,RGB>);
+            }
+            IMG.save(tgt, "main_fg8.png", NULL);
         }
 
         H.keep(level, Histogram::KeepLEQ, pxm, pxm3, Convert::RGB2Byte,par, true);
         IMG.save(pxm,"bg.png",NULL);
         {
             blobs.build(pxm,particles,false);
+            blobs.rewrite(particles);
             IMG.save("blob_bg4.png", blobs, blobColors, NULL);
             std::cerr << "#blob_bg4=" << particles.size << std::endl;
 
             blobs.build(pxm,particles,true);
+            blobs.rewrite(particles);
             IMG.save("blob_bg8.png", blobs, blobColors, NULL);
             std::cerr << "#blob_bg8=" << particles.size << std::endl;
         }
