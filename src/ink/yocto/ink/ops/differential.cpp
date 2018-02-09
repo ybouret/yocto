@@ -11,7 +11,10 @@ namespace yocto
         gx( *fields[1] ),
         gy( *fields[2] ),
         gn( *fields[3] ),
-        ga( *fields[4] )
+        ga( *fields[4] ),
+        gn_max(0),
+        source(0),
+        proc(0)
         {
             if(bmp.w<3||bmp.h<3) throw exception("Gradient: area is too small (%dx%d)", int(bmp.w), int(bmp.h));
         }

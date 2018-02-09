@@ -5,7 +5,8 @@
 #include "yocto/ink/color/named.hpp"
 #include "yocto/ink/color/pixel.hpp"
 #include "yocto/ink/parallel.hpp"
-#include "yocto/core/node.hpp"
+#include "yocto/ink/ops/particles.hpp"
+
 namespace yocto
 {
     namespace Ink
@@ -14,16 +15,15 @@ namespace yocto
         class Blob : public Pixmap<size_t>
         {
         public:
-            typedef core::dnode_of<size_t>   BNode;
-            typedef core::list_of_cpp<BNode> BList;
+
 
             explicit Blob( const Bitmap &bmp );
             virtual ~Blob() throw();
 
             template <typename T>
-            inline size_t build(const Pixmap<T> &src,
-                                const bool       connectFull,
-                                Engine          &engine)
+            inline void build(const Pixmap<T> &src,
+                              Particle::List  &particles,
+                              const bool       connectFull)
             {
                 //______________________________________________________________
                 //
@@ -33,10 +33,15 @@ namespace yocto
                 const size_t     nconn  = connectFull ? 8 : 4;
                 Vertex::Provider cache;
                 Vertex::List     vList;
-                BList            bList;
 
                 YOCTO_INK_AREA_LIMITS(self);
                 self.ldz();
+                particles.clear();
+
+                //______________________________________________________________
+                //
+                // loop on every pixel
+                //______________________________________________________________
                 for(unit_t j=ymax;j>=ymin;--j)
                 {
                     Row                           &B_j = self[j];
@@ -65,51 +70,57 @@ namespace yocto
 
                         //______________________________________________________
                         //
-                        //! start a new blob!
+                        // start a new blob!
                         //______________________________________________________
                         assert(0==vList.size);
-                        BNode *node = new BNode(0);
-                        bList.push_back(node);
-                        const size_t iBlob = bList.size;
+                        const size_t iBlob    = particles.size + 1;
+                        Particle *   particle = new Particle(iBlob);
+                        particles.push_back(particle);
+
+                        //______________________________________________________
+                        //
+                        // initialize algorithm
+                        //______________________________________________________
                         vList.push_back( cache.create(i,j) );
                         while(vList.size>0)
                         {
                             Vertex     *pV = vList.pop_back();
-                            const coord p0 = pV->pos; assert(self.has(p0));
+                            const coord p0 = pV->pos;
                             cache.store(pV);
-                            // test boundary
+
+                            // test if we are on a boundary
                             if(Pixel<T>::IsZero( src[p0] ))
                             {
                                 continue;
                             }
-                            // not visited or already in blob
-                            assert(0==self[p0]||iBlob==self[p0]);
+
+                            //! check if the point was visited
                             size_t &B = self[p0];
                             if(B<=0)
                             {
                                 // add to this
                                 self[p0] = iBlob;
-                                ++(node->data);
-                            }
-
-                            // populate list of not visited neighbours
-                            for(size_t k=0;k<nconn;++k)
-                            {
-                                const coord p=p0+Core::Shift[k];
-                                if(self.has(p)&&(0==self[p]))
+                                particle->push_back( new Vertex(p0) );
+                                
+                                // populate list of not visited neighbours
+                                for(size_t k=0;k<nconn;++k)
                                 {
-                                    vList.push_back( cache.create(p) );
+                                    const coord p=p0+Core::Shift[k];
+                                    if(self.has(p)&&(0==self[p]))
+                                    {
+                                        vList.push_back( cache.create(p) );
+                                    }
                                 }
                             }
+                            else
+                            {
+                                assert(iBlob==B);
+                            }
+
                         }
                     }
                 }
                 std::cerr << "cache.size=" << cache.size << std::endl;
-                for(const BNode *node=bList.head;node;node=node->next)
-                {
-                    std::cerr << "#pixels=" << node->data << std::endl;
-                }
-                return bList.size;
             }
             
 

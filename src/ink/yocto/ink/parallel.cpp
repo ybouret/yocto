@@ -18,7 +18,8 @@ namespace yocto
         rank(user_rank),
         next(0),
         prev(0),
-        jid(-1)
+        jid(-1),
+        cache()
         {
         }
 

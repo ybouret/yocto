@@ -19,7 +19,8 @@ YOCTO_UNIT_TEST_IMPL(blob)
 
     Histogram H;
     std::cerr << "sizeof(Vertex)     =" << sizeof(Vertex)      << std::endl;
-    std::cerr << "sizeof(Blob::BNode)=" << sizeof(Blob::BNode) << std::endl;
+    std::cerr << "sizeof(Particle)   =" << sizeof(Particle)    << std::endl;
+
     if(argc>1)
     {
         const PixmapRGB pxm3( IMG.loadRGB(argv[1],NULL) );
@@ -32,26 +33,28 @@ YOCTO_UNIT_TEST_IMPL(blob)
 
         indx2rgba blobColors(10);
         Blob      blobs(pxm);
-        {
-            const size_t n4 = blobs.build(pxm,false,par);
-            IMG.save("blob_fg4.png", blobs, blobColors, NULL);
-            std::cerr << "#blob_fg4=" << n4 << std::endl;
+        Particles particles;
 
-            const size_t n8 = blobs.build(pxm,true,par);
+        {
+            blobs.build(pxm,particles,false);
+            IMG.save("blob_fg4.png", blobs, blobColors, NULL);
+            std::cerr << "#blob_fg4=" << particles.size << std::endl;
+
+            blobs.build(pxm,particles,true);
             IMG.save("blob_fg8.png", blobs, blobColors, NULL);
-            std::cerr << "#blob_fg8=" << n8 << std::endl;
+            std::cerr << "#blob_fg8=" << particles.size << std::endl;
         }
 
         H.keep(level, Histogram::KeepLEQ, pxm, pxm3, Convert::RGB2Byte,par, true);
         IMG.save(pxm,"bg.png",NULL);
         {
-            const size_t n4 = blobs.build(pxm,false,par);
+            blobs.build(pxm,particles,false);
             IMG.save("blob_bg4.png", blobs, blobColors, NULL);
-            std::cerr << "#blob_bg4=" << n4 << std::endl;
+            std::cerr << "#blob_bg4=" << particles.size << std::endl;
 
-            const size_t n8 = blobs.build(pxm,true,par);
+            blobs.build(pxm,particles,true);
             IMG.save("blob_bg8.png", blobs, blobColors, NULL);
-            std::cerr << "#blob_bg8=" << n8 << std::endl;
+            std::cerr << "#blob_bg8=" << particles.size << std::endl;
         }
     }
 
