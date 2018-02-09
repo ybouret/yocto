@@ -35,6 +35,13 @@ namespace yocto
                 return *this;
             }
             inline rgb(T R, T G, T B) throw() : r(R), g(G), b(B) {}
+
+            inline float intensity() const throw() { return Core::GreyScaleF(r,g,b); }
+            inline friend bool operator<( const rgb &lhs, const rgb &rhs) throw()
+            {
+                return lhs.intensity() < rhs.intensity();
+            }
+
         };
 
         template <typename T>

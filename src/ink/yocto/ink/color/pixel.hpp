@@ -15,6 +15,7 @@ namespace yocto
             static const T Opaque;
             static bool    IsZero(const T&) throw();
             static T       Inverse(const T&) throw();
+            static T       Average(const T *,const size_t) throw();
         };
     }
 }

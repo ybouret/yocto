@@ -1,5 +1,7 @@
 
 #include "yocto/ink/ops/local.hpp"
+#include "yocto/ink/ops/mapper.hpp"
+
 #include "yocto/ink/image.hpp"
 #include "yocto/utest/run.hpp"
 
@@ -21,13 +23,39 @@ YOCTO_UNIT_TEST_IMPL(local)
         if(ipos!=i) throw exception("Local Internal Corruption");
     }
 
+    Filter filter;
+
     if(argc>1)
     {
         const PixmapRGB img( IMG.loadRGB(argv[1],NULL) );
-        IMG.save(img,"img.png",NULL);
+        const PixmapF   imgF( img, Convert::RGB2F);
+        IMG.save(img, "img.png", NULL);
+        IMG.save(imgF,"imgf.png",NULL);
+
         Engine          par(img,parSrv);
         Engine          seq(img,seqSrv);
 
+        PixmapRGB tgt1(img.w,img.h);
+        PixmapF   tgt1F(img.w,img.h);
+
+        filter.run(tgt1,img,Filter::Erode<RGB>,par);
+        IMG.save(tgt1,"erode.png",NULL);
+
+        filter.run(tgt1F,imgF,Filter::Erode<float>,par);
+        IMG.save(tgt1F,"erodef.png",NULL);
+
+        filter.run(tgt1,img,Filter::Dilate<RGB>,par);
+        IMG.save(tgt1,"dilate.png",NULL);
+
+        filter.run(tgt1F,imgF,Filter::Dilate<float>,par);
+        IMG.save(tgt1F,"dilatef.png",NULL);
+
+
+        filter.run(tgt1,img,Filter::Average<RGB>,par);
+        IMG.save(tgt1,"average.png",NULL);
+
+        filter.run(tgt1F,imgF,Filter::Average<float>,par);
+        IMG.save(tgt1F,"averagef.png",NULL);
     }
 }
 YOCTO_UNIT_TEST_DONE()
