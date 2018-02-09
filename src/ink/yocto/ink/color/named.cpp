@@ -21,7 +21,14 @@ namespace yocto
         RGBA indx2rgba:: get(const void *addr)
         {
             const size_t indx = *(const size_t *)addr;
-            return NamedColor::FetchRGB(indx+shift);
+            if(indx<=0)
+            {
+                return RGBA(0,0,0);
+            }
+            else
+            {
+                return NamedColor::FetchRGB(indx+shift);
+            }
         }
     
         indx2rgba:: ~indx2rgba() throw() {}

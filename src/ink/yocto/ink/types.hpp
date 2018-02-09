@@ -51,9 +51,25 @@ namespace yocto
             coord   pos;
             
             Vertex() throw();
+            Vertex( const unit_t x, const unit_t y ) throw();
+            Vertex( const coord p ) throw();
             ~Vertex() throw();
             Vertex(const Vertex &) throw();
             YOCTO_DISABLE_ASSIGN(Vertex);
+
+        public:
+            class Provider : public Pool
+            {
+            public:
+                explicit Provider() throw();
+                virtual ~Provider() throw();
+                Vertex *create();
+                Vertex *create(const unit_t x, const unit_t y );
+                Vertex *create(const coord p);
+                
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Provider);
+            };
         };
         
     }

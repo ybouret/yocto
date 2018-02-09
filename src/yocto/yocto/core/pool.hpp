@@ -111,7 +111,15 @@ namespace yocto
                     delete this->query();
                 }
             }
+
+            inline void pop() throw()
+            {
+                assert(this->top);
+                assert(this->size>0);
+                delete this->query();
+            }
             
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(pool_of_cpp);
         };

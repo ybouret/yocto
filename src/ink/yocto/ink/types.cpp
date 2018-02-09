@@ -1,4 +1,5 @@
 #include "yocto/ink/types.hpp"
+#include "yocto/code/bzset.hpp"
 
 namespace yocto
 {
@@ -69,9 +70,69 @@ U(240),U(241),U(242),U(243),U(244),U(245),U(246),U(247),U(248),U(249),U(250),U(2
             coord(-1,-1),
             coord(-1, 1)
         };
-        
-        Vertex::Vertex() throw() : next(0), prev(0), pos() {}
+
+        Vertex:: Vertex(const coord  p) throw() :
+        next(0), prev(0), pos(p) {}
+
+        Vertex:: Vertex(const unit_t i,
+                        const unit_t j) throw() :
+        next(0), prev(0), pos(i,j) {}
+
+        Vertex:: Vertex() throw() :
+        next(0), prev(0), pos() {}
         Vertex::~Vertex() throw() {}
-        
+
+        Vertex:: Provider:: Provider() throw() : Pool()
+        {
+        }
+
+        Vertex:: Provider:: ~Provider() throw()
+        {
+        }
+
+        Vertex * Vertex:: Provider:: create()
+        {
+            if(size)
+            {
+                Vertex *v = query();
+                bzset(v->pos);
+                return v;
+            }
+            else
+            {
+                return new Vertex();
+            }
+        }
+
+        Vertex * Vertex:: Provider:: create(const unit_t X, const unit_t Y)
+        {
+            if(size)
+            {
+                Vertex *v = query();
+                v->pos.x = X;
+                v->pos.y = Y;
+                return v;
+            }
+            else
+            {
+                return new Vertex(X,Y);
+            }
+        }
+
+        Vertex * Vertex:: Provider:: create(const coord p)
+        {
+            if(size)
+            {
+                Vertex *v = query();
+                v->pos = p;
+                return v;
+            }
+            else
+            {
+                return new Vertex(p);
+            }
+        }
+
+
     }
 }

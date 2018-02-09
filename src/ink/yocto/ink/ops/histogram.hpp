@@ -34,9 +34,9 @@ namespace yocto
             void     clear() throw();
 
             template <typename T,typename FUNC>
-            inline void build(const Pixmap<T> &pxm,
-                              FUNC            &pixel2byte,
-                              Engine          &engine)
+            inline Histogram &build(const Pixmap<T> &pxm,
+                                    FUNC            &pixel2byte,
+                                    Engine          &engine)
             {
                 source = &pxm;
                 proc   = (void *)&pixel2byte;
@@ -57,6 +57,7 @@ namespace yocto
                         hist[i] += h[i];
                     }
                 }
+                return *this;
             }
 
             size_t threshold() const throw();

@@ -441,6 +441,9 @@ namespace yocto
                 }
             }
 
+            inline void delete_back()  throw() { assert(this->tail); delete this->pop_back();  }
+            inline void delete_front() throw() { assert(this->head); delete this->pop_front(); }
+
         private:
             YOCTO_DISABLE_ASSIGN(list_of_cpp);
             
