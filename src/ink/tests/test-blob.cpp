@@ -26,10 +26,10 @@ YOCTO_UNIT_TEST_IMPL(blob)
         const PixmapRGB pxm3( IMG.loadRGB(argv[1],NULL) );
         IMG.save(pxm3,"img.png",NULL);
         Engine          par(pxm3,parSrv);
-        const size_t    level = H.build(pxm3,Convert::RGB2Byte,par).threshold();
+        const size_t    level = H.build(pxm3,Convert::RGB2U,par).threshold();
         PixmapRGB       pxm(pxm3.w,pxm3.h);
         PixmapRGB       tgt(pxm3.w,pxm3.h);
-        H.keep(level, Histogram::KeepGEQ, pxm, pxm3, Convert::RGB2Byte,par);
+        H.keep(level, Histogram::KeepGEQ, pxm, pxm3, Convert::RGB2U,par);
         IMG.save(pxm,"fg.png",NULL);
 
         indx2rgba blobColors(10);
@@ -60,7 +60,7 @@ YOCTO_UNIT_TEST_IMPL(blob)
             IMG.save(tgt, "main_fg8.png", NULL);
         }
 
-        H.keep(level, Histogram::KeepLEQ, pxm, pxm3, Convert::RGB2Byte,par, true);
+        H.keep(level, Histogram::KeepLEQ, pxm, pxm3, Convert::RGB2U,par, true);
         IMG.save(pxm,"bg.png",NULL);
         {
             blobs.build(pxm,particles,false);
@@ -78,4 +78,44 @@ YOCTO_UNIT_TEST_IMPL(blob)
 }
 YOCTO_UNIT_TEST_DONE()
 
+#include "yocto/ink/ops/filter.hpp"
+YOCTO_UNIT_TEST_IMPL(fg)
+{
+    YOCTO_IMG();
+    Engine::SharedServer parSrv( new threading::par_server() );
+    Histogram            H;
+
+    if(argc>1)
+    {
+        // load image
+        PixmapRGB img( IMG.loadRGB(argv[1],NULL) );
+        Engine    par(img,parSrv);
+        IMG.save(img,"img.png",NULL);
+
+        // keep foreground
+        const size_t level = H.build(img,Convert::RGB2U,par).threshold();
+        PixmapRGB    fg(img.w,img.h);
+        H.keep(level, Histogram::KeepGEQ, fg, img, Convert::RGB2U,par);
+        IMG.save(fg,"fg0.png",NULL);
+
+        // process a little bit
+#if 0
+        AutoFilter<RGB> F(fg);
+        F.Open(fg,par);
+        IMG.save(fg,"fg1.png",NULL);
+#endif
+
+        indx2rgba blobColors(0);
+        Blob      blobs(fg);
+        Particles particles;
+        blobs.build(fg,particles,true);
+        blobs.rewrite(particles);
+        IMG.save("blobs0.png", blobs, blobColors, NULL);
+        particles.discardSmallerThan(2);
+        blobs.rewrite(particles);
+        IMG.save("blobs1.png", blobs, blobColors, NULL);
+
+    }
+}
+YOCTO_UNIT_TEST_DONE()
 

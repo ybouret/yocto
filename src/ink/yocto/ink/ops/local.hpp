@@ -5,6 +5,8 @@
 #include "yocto/ink/color/pixel.hpp"
 #include "yocto/ink/parallel.hpp"
 #include "yocto/code/bmove.hpp"
+#include "yocto/sort/ysort.hpp"
+#include "yocto/sequence/lw-array.hpp"
 
 namespace yocto
 {
@@ -49,27 +51,6 @@ namespace yocto
                 }
             }
 
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(Local);
-        };
-
-        class Filter
-        {
-        public:
-            explicit Filter() : tgt(0), src(0), pfn(0) {}
-            virtual ~Filter() throw() {}
-
-            template <typename T, typename FUNC>
-            void run( Pixmap<T> &target, const Pixmap<T> &source, FUNC &func, Engine &engine )
-            {
-                static const size_t BytesPerDomain = memory::align(sizeof(Local)) + memory::align( Local::SIZE * sizeof(T) );
-                engine.prepare(BytesPerDomain);
-                tgt = &target;
-                src = &source;
-                pfn = (void *)&func;
-                engine.submit(this, &Filter::runThread<T,FUNC>);
-            }
-
             template <typename T> static inline
             T Erode( const T *value, const size_t *flags, const size_t count ) throw()
             {
@@ -86,6 +67,7 @@ namespace yocto
             T Dilate( const T *value, const size_t *flags, const size_t count ) throw()
             {
                 assert(count>0);
+                assert(value);
                 T ans = value[0];
                 for(size_t k=1;k<count;++k)
                 {
@@ -98,6 +80,7 @@ namespace yocto
             T Average( const T *value, const size_t *flags, const size_t count ) throw()
             {
                 assert(count>0);
+                assert(value);
                 T ans = value[0];
                 for(size_t k=1;k<count;++k)
                 {
@@ -106,64 +89,32 @@ namespace yocto
                 return ans;
             }
 
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(Filter);
-
-            void       *tgt;
-            const void *src;
-            void       *pfn;
-
-            template <typename T,typename FUNC>
-            void runThread( const Domain &dom, threading::context &) throw()
+            template <typename T> static inline
+            T Median(const T *value, const size_t *flags, const size_t count ) throw()
             {
-                static const size_t valueOffset = memory::align(sizeof(Local));
-
-                assert(tgt); assert(src); assert(pfn); assert(dom.cache.data);
-                Pixmap<T>        &target = *(Pixmap<T>*)tgt;
-                const Pixmap<T>  &source = *(const Pixmap<T>*)src;
-                FUNC             &func   = *(FUNC *)pfn;
-                uint8_t          *wksp   = static_cast<uint8_t*>(dom.cache.data);
-                Local            &agent  = *(Local *)&wksp[0];
-                T                *value  =  (T     *)&wksp[valueOffset];
-
-                YOCTO_INK_AREA_LIMITS(dom);
-                for(unit_t j=ymax;j>=ymin;--j)
+                assert(count>0);
+                assert(value);
+                lw_array<T> arr( (T*)value, count);
+                ySort(arr, __compare<T> );
+                if(0!=(count&1))
                 {
-                    typename Pixmap<T>::Row &target_j = target[j];
-                    for(unit_t i=xmax;i>=xmin;--i)
-                    {
-                        agent.collect(value,source,coord(i,j));
-                        target_j[i] = func(value,agent.flags,agent.count);
-                    }
+                    // odd
+                    return value[count>>1];
                 }
+                else
+                {
+                    // even
+                    assert(count>=2);
+                    return Pixel<T>::Average(&value[(count>>1)-1],2);
+                }
+                return T();
             }
-
-        };
-
-        template <typename T>
-        class AutoFilter : public Filter, public Pixmap<T>
-        {
-        public:
-            explicit AutoFilter(const Bitmap &bmp) : Filter(), Pixmap<T>(bmp.w,bmp.h)
-            {
-            }
-
-            virtual ~AutoFilter() throw()
-            {
-            }
-
-            template <typename FUNC>
-            void operator()( Pixmap<T> &source, FUNC &func, Engine &engine )
-            {
-                Pixmap<T> &target = *this;
-                run(target,source,func,engine);
-                source.copy(target);
-            }
-
 
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(AutoFilter);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Local);
         };
+
+        
 
     }
 }

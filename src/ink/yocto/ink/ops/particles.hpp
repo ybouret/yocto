@@ -41,7 +41,8 @@ namespace yocto
             explicit Particles() throw();
             virtual ~Particles() throw();
             void     sortBySize();
-            
+            void     discardSmallerThan(const size_t count) throw();
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Particles);
         };

@@ -23,9 +23,9 @@ MACRO(23); MACRO(24)
     {
         if(debut>=fin) return;
 
-        register int       gauche = debut;
-        register int       droite = fin;
-        register const int objets = fin - (--gauche);
+        int       gauche = debut;
+        int       droite = fin;
+        const int objets = fin - (--gauche);
 
         switch(objets)
         {

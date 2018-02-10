@@ -72,6 +72,8 @@ YOCTO_UNIT_TEST_IMPL(ops)
         std::cerr << "Efficiency: " << ipso::efficiency(merge_seq/merge_par,par.size()) << std::endl;
 
 
+
+
         PixmapYUV      yuv(img4, YUV::fromRGBA);
         Pixmaps<float> fch(3,w,h);
         yuv_u2rgba U2RGBA;
@@ -85,6 +87,12 @@ YOCTO_UNIT_TEST_IMPL(ops)
         PixmapRGB img3b(w,h);
         mapper(img3b,img3,Convert::Copy<RGB,RGB>,par);
         mapper(yuv,img3,YUV::fromRGB,par);
+
+        float vMin=0,vMax=0;
+        mapper.getMinMax(vMin,vMax,img3,Convert::RGB2F,seq);
+        std::cerr << "seqMinMax: " << vMin << " : " << vMax << std::endl;
+        mapper.getMinMax(vMin,vMax,img3,Convert::RGB2F,par);
+        std::cerr << "parMinMax: " << vMin << " : " << vMax << std::endl;
 
     }
 }

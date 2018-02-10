@@ -124,10 +124,13 @@ namespace yocto
             Format::Register extfmts;
             const Format * get_format_for( const string &filename) const;
         };
+
 #define YOCTO_IMG() \
 yocto::Ink::Image &IMAGES = yocto::Ink::Image::instance(); \
 IMAGES.Init(); \
 const yocto::Ink::ImageIO &IMG  = IMAGES
+
+#define YOCTO_IMG_IO() const yocto::Ink::ImageIO &IMG = yocto::Ink::Image::instance()
     }
 }
 

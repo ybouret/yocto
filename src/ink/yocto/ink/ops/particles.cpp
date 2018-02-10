@@ -49,6 +49,32 @@ namespace yocto
             core::merging<Particle>::sort(self, Particle::CompareBySize, NULL);
         }
 
+        void   Particles::  discardSmallerThan(const size_t count) throw()
+        {
+            Particle::List tmp;
+            while(size>0)
+            {
+                Particle *pt = pop_front();
+                if(pt->size<=count)
+                {
+                    delete pt;
+                }
+                else
+                {
+                    tmp.push_back(pt);
+                }
+            }
+
+            size_t indx = 0;
+            while(tmp.size>0)
+            {
+                Particle *pt = tmp.pop_front();
+                (size_t &)(pt->indx) = ++indx;
+                push_back(pt);
+            }
+        }
+
+
     }
 }
 

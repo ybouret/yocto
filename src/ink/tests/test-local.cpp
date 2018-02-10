@@ -1,5 +1,5 @@
 
-#include "yocto/ink/ops/local.hpp"
+#include "yocto/ink/ops/filter.hpp"
 #include "yocto/ink/ops/mapper.hpp"
 
 #include "yocto/ink/image.hpp"
@@ -7,6 +7,35 @@
 
 using namespace yocto;
 using namespace Ink;
+
+template <typename T>
+static inline void do_filter(AutoFilter<T>   &F,
+                             const Pixmap<T> &src,
+                             const char      *txt,
+                             Engine          &engine)
+{
+    string ID = "op";
+    ID += txt;
+    YOCTO_IMG_IO();
+    std::cerr << "Filtering on  " << ID << std::endl;
+    IMG.save(src, ID + "_img.png",NULL);
+    Pixmap<T> tgt(F.w,F.h);
+
+#define _DO(OPS) do { \
+std::cerr << "\t" #OPS << "..." << std::endl;\
+tgt.copy(src); \
+F.OPS(tgt,engine);\
+IMG.save(tgt, ID + "_" #OPS ".png",NULL);\
+} while(false)
+
+    _DO(Erode);
+    _DO(Dilate);
+    _DO(Average);
+    _DO(Median);
+    _DO(Open);
+    _DO(Close);
+    std::cerr << std::endl;
+}
 
 YOCTO_UNIT_TEST_IMPL(local)
 {
@@ -27,35 +56,21 @@ YOCTO_UNIT_TEST_IMPL(local)
 
     if(argc>1)
     {
-        const PixmapRGB img( IMG.loadRGB(argv[1],NULL) );
-        const PixmapF   imgF( img, Convert::RGB2F);
-        IMG.save(img, "img.png", NULL);
-        IMG.save(imgF,"imgf.png",NULL);
+        const PixmapRGB imgC( IMG.loadRGB(argv[1],NULL) );
+        const PixmapF   imgF( imgC, Convert::RGB2F);
+        const PixmapU   imgU( imgC, Convert::RGB2U);
+        Engine          par(imgC,parSrv);
+        Engine          seq(imgC,seqSrv);
 
-        Engine          par(img,parSrv);
-        Engine          seq(img,seqSrv);
+        AutoFilter<RGB>     FC(imgC);
+        AutoFilter<float>   FF(imgC);
+        AutoFilter<uint8_t> FU(imgC);
 
-        PixmapRGB tgt1(img.w,img.h);
-        PixmapF   tgt1F(img.w,img.h);
-
-        filter.run(tgt1,img,Filter::Erode<RGB>,par);
-        IMG.save(tgt1,"erode.png",NULL);
-
-        filter.run(tgt1F,imgF,Filter::Erode<float>,par);
-        IMG.save(tgt1F,"erodef.png",NULL);
-
-        filter.run(tgt1,img,Filter::Dilate<RGB>,par);
-        IMG.save(tgt1,"dilate.png",NULL);
-
-        filter.run(tgt1F,imgF,Filter::Dilate<float>,par);
-        IMG.save(tgt1F,"dilatef.png",NULL);
+        do_filter(FC,imgC, "3", par);
+        do_filter(FF,imgF, "f", par);
+        do_filter(FU,imgU, "u", par);
 
 
-        filter.run(tgt1,img,Filter::Average<RGB>,par);
-        IMG.save(tgt1,"average.png",NULL);
-
-        filter.run(tgt1F,imgF,Filter::Average<float>,par);
-        IMG.save(tgt1F,"averagef.png",NULL);
     }
 }
 YOCTO_UNIT_TEST_DONE()

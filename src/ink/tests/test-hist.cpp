@@ -25,7 +25,7 @@ YOCTO_UNIT_TEST_IMPL(hist)
         Engine          par(pxm3,parSrv);
         Engine          seq(pxm3,seqSrv);
 
-        H.build(pxm3,Convert::RGB2Byte,seq);
+        H.build(pxm3,Convert::RGB2U,seq);
         {
             ios::wcstream fp("hseq.dat");
             for(size_t i=0;i<Histogram::BINS;++i)
@@ -33,7 +33,7 @@ YOCTO_UNIT_TEST_IMPL(hist)
                 fp("%u %u\n", unsigned( H.bins[i] ), unsigned( H.hist[i] ) );
             }
         }
-        H.build(pxm3,Convert::RGB2Byte,par);
+        H.build(pxm3,Convert::RGB2U,par);
         {
             ios::wcstream fp("hpar.dat");
             for(size_t i=0;i<Histogram::BINS;++i)
@@ -46,14 +46,14 @@ YOCTO_UNIT_TEST_IMPL(hist)
         std::cerr << "threshold=" << thr << std::endl;
 
         PixmapRGB tgt(pxm3.w,pxm3.h);
-        H.keep(thr,Histogram::KeepLT,  tgt, pxm3,Convert::RGB2Byte,par,true);
+        H.keep(thr,Histogram::KeepLT,  tgt, pxm3,Convert::RGB2U,par,true);
         IMG.save(tgt,"hlt.png",NULL);
-        H.keep(thr,Histogram::KeepLEQ, tgt, pxm3,Convert::RGB2Byte,par,true);
+        H.keep(thr,Histogram::KeepLEQ, tgt, pxm3,Convert::RGB2U,par,true);
         IMG.save(tgt,"hleq.png",NULL);
 
-        H.keep(thr,Histogram::KeepGT,  tgt, pxm3,Convert::RGB2Byte,par);
+        H.keep(thr,Histogram::KeepGT,  tgt, pxm3,Convert::RGB2U,par);
         IMG.save(tgt,"hgt.png",NULL);
-        H.keep(thr,Histogram::KeepGEQ, tgt, pxm3,Convert::RGB2Byte,par);
+        H.keep(thr,Histogram::KeepGEQ, tgt, pxm3,Convert::RGB2U,par);
         IMG.save(tgt,"hgeq.png",NULL);
     }
 

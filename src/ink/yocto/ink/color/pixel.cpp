@@ -9,7 +9,7 @@ namespace yocto
         template <> const float Pixel<float>::Opaque = 1.0f;
         template <> bool        Pixel<float>::IsZero(const float &x) throw() { return (x<=0.0f); }
         template <> float       Pixel<float>::Inverse(const float &x) throw() { return 1.0f-x; }
-
+        
         template <> float Pixel<float>::Average(const float *value, const size_t count) throw()
         {
             assert(value);
@@ -17,7 +17,7 @@ namespace yocto
             float sum = value[0];
             for(size_t i=1;i<count;++i)
             {
-                sum = value[i];
+                sum += value[i];
             }
             return sum/count;
         }
@@ -34,7 +34,7 @@ namespace yocto
             double sum = value[0];
             for(size_t i=1;i<count;++i)
             {
-                sum = value[i];
+                sum += value[i];
             }
             return sum/count;
         }
