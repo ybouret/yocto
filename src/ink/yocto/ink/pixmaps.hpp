@@ -15,6 +15,7 @@ namespace yocto
         typedef Pixmap<RGB>     PixmapRGB;
         typedef Pixmap<RGBA>    PixmapRGBA;
         typedef Pixmap<YUV>     PixmapYUV;
+        typedef Pixmap<cplx_t>  PixmapZ;
 
         template <typename T>
         class Pixmaps : public vector< typename Pixmap<T>::Pointer >

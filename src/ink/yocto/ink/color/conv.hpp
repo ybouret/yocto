@@ -20,6 +20,16 @@ namespace yocto
             {
                 return Core::GreyScaleF(col.r, col.g, col.b)*Core::uFloat[col.a];
             }
+
+            static inline float CPLX2MOD(const cplx_t &z) throw()
+            {
+                return z.mod();
+            }
+
+            static inline float CPLX2RE(const cplx_t &z) throw()
+            {
+                return z.re;
+            }
             
             template <typename T,typename U>
             static inline T Copy(const U &u) throw() { return T(u); }
