@@ -12,6 +12,9 @@ namespace yocto
     {
         namespace Draw
         {
+
+#define YOCTO_INK_DRAW_ARGS void  (*proc)( T &bg, void *args), void   *args
+
 #define YOCTO_INK_PUTPIXEL(I) proc( p[I], args)
 
             template <typename T>
@@ -19,8 +22,7 @@ namespace yocto
                                const unit_t  x,
                                const unit_t  y,
                                const size_t  w,
-                               void  (*proc)( T &bg, void *args),
-                               void   *args)
+                               YOCTO_INK_DRAW_ARGS)
             {
                 assert(proc);
                 assert( pxm.has(x,y)     );
@@ -37,8 +39,7 @@ namespace yocto
                               unit_t        x,
                               const unit_t  y,
                               size_t        w,
-                              void  (*proc)( T &bg, void *args),
-                              void   *args)
+                              YOCTO_INK_DRAW_ARGS)
             {
                 // check
                 unit_t x_end = (x+w)-1;
@@ -88,8 +89,7 @@ namespace yocto
                                const unit_t  x,
                                const unit_t  y,
                                const size_t  h,
-                               void  (*proc)( T &bg, void *args),
-                               void   *args)
+                               YOCTO_INK_DRAW_ARGS)
             {
                 assert(proc);
                 assert( pxm.has(x,y)     );
@@ -107,8 +107,7 @@ namespace yocto
                               const unit_t  x,
                               unit_t        y,
                               size_t        h,
-                              void  (*proc)( T &bg, void *args),
-                              void   *args)
+                              YOCTO_INK_DRAW_ARGS)
             {
                 //check
                 unit_t y_end=y+h-1;
@@ -164,8 +163,7 @@ namespace yocto
                               unit_t        y0,
                               unit_t        x1,
                               unit_t        y1,
-                              void  (*proc)( T &bg, void *args),
-                              void   *args)
+                              YOCTO_INK_DRAW_ARGS)
             {
                 unit_t dx =  abs_of(x1-x0), sx = (x0<x1) ? 1 : -1;
                 unit_t dy = -abs_of(y1-y0), sy = (y0<y1) ? 1 : -1;
@@ -194,8 +192,7 @@ namespace yocto
                              unit_t        y0,
                              unit_t        x1,
                              unit_t        y1,
-                             void  (*proc)( T &bg, void *args),
-                             void   *args)
+                             YOCTO_INK_DRAW_ARGS)
             {
                 if( Clip::Accept(x0,y0,x1,y1,img) )
                 {
@@ -227,6 +224,22 @@ namespace yocto
                 Line(img,x0,y0,x1,y1,PutPixel::Blend<T>,(void*)&blend);
             }
 
+        }
+    }
+}
+
+
+namespace yocto
+{
+    namespace Ink
+    {
+        namespace Draw
+        {
+            template <typename T>
+            void _Outline(Pixmap<T> &pxm, const Area &area,YOCTO_INK_DRAW_ARGS)
+            {
+                assert(pxm.contains(area));
+            }
         }
     }
 }
