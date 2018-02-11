@@ -14,8 +14,8 @@ YOCTO_UNIT_TEST_IMPL(draw)
 {
     YOCTO_IMG();
 
-    const unit_t w = 200 + alea.leq(200);
-    const unit_t h = 200 + alea.leq(200);
+    const unit_t w = 400 + alea.leq(400);
+    const unit_t h = 400 + alea.leq(400);
 
     const unit_t x0 = -w/2;
     const size_t w0 = 2*w;
@@ -29,19 +29,35 @@ YOCTO_UNIT_TEST_IMPL(draw)
 
 
 
-    for(size_t k=0;k<1000;++k)
+    for(size_t k=0;k<100;++k)
     {
         const unit_t  X = x0 + alea.leq(w0);
         const unit_t  Y = y0 + alea.leq(h0);
         const size_t  W = alea.leq(w0);
+        const size_t  H = alea.leq(w0);
         const RGB     C = NamedColor::FetchRGB(k);
         const float   F = Convert::RGB2F(C);
         const uint8_t U = Convert::RGB2U(C);
+
+        const unit_t X0 = x0 + alea.leq(w0);
+        const unit_t X1 = x0 + alea.leq(w0);
+        const unit_t Y0 = y0 + alea.leq(h0);
+        const unit_t Y1 = y0 + alea.leq(h0);
+
         if( alea.get<float>() > 0.5f )
         {
             Draw::HLine(img3,X,Y,W,C);
             Draw::HLine(imgf,X,Y,W,F);
             Draw::HLine(img1,X,Y,W,U);
+
+            Draw::VLine(img3,X,Y,H,C);
+            Draw::VLine(imgf,X,Y,H,F);
+            Draw::VLine(img1,X,Y,H,U);
+
+            Draw::Line(img3,X0,Y0,X1,Y1,C);
+            Draw::Line(imgf,X0,Y0,X1,Y1,F);
+            Draw::Line(img1,X0,Y0,X1,Y1,U);
+
         }
         else
         {
@@ -49,8 +65,17 @@ YOCTO_UNIT_TEST_IMPL(draw)
             Draw::HLine(img3,X,Y,W,C,alpha);
             Draw::HLine(imgf,X,Y,W,F,alpha);
             Draw::HLine(img1,X,Y,W,U,alpha);
+            Draw::VLine(img3,X,Y,H,C,alpha);
+            Draw::VLine(imgf,X,Y,H,F,alpha);
+            Draw::VLine(img1,X,Y,H,U,alpha);
+            
+            Draw::Line(img3,X0,Y0,X1,Y1,C,alpha);
+            Draw::Line(imgf,X0,Y0,X1,Y1,F,alpha);
+            Draw::Line(img1,X0,Y0,X1,Y1,U,alpha);
         }
     }
+
+
 
     IMG.save(img3, "img3.png", NULL);
     IMG.save(imgf, "imgf.png", NULL);

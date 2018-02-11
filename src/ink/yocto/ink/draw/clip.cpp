@@ -31,13 +31,16 @@ namespace yocto
             }
 
 
-            bool Clip:: Accept( unit_t &x0, unit_t &y0, unit_t &x1, unit_t &y1, const Area &area ) throw()
+            bool Clip:: Accept(unit_t     &x0,
+                               unit_t     &y0,
+                               unit_t     &x1,
+                               unit_t     &y1,
+                               const Area &area ) throw()
             {
                 YOCTO_INK_AREA_LIMITS(area);
 
                 size_t code0 = StatusOf(x0,y0,area);
                 size_t code1 = StatusOf(x1,y1,area);
-
                 while(true)
                 {
                     // bitwise OR is 0: both points inside window
@@ -76,7 +79,7 @@ namespace yocto
                         y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0);
                         x = xmin;
                     }
-                    if(0==code0)
+                    if(code==code0)
                     {
                         x0 = x;
                         y0 = y;

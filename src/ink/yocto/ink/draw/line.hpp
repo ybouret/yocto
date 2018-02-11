@@ -25,16 +25,17 @@ namespace yocto
                 assert(proc);
                 assert( pxm.has(x,y)     );
                 assert( pxm.has(x+w-1,y) );
+                assert(w>0);
 
                 typename Pixmap<T>::Row &r = pxm[y];
                 T                       *p = &r[x];
-                YOCTO_LOOP_FUNC(w,YOCTO_INK_PUTPIXEL,0);
+                YOCTO_LOOP_FUNC_(w,YOCTO_INK_PUTPIXEL,0);
             }
 
             template <typename T>
             inline void HLine(Pixmap<T>    &pxm,
                               unit_t        x,
-                              unit_t        y,
+                              const unit_t  y,
                               size_t        w,
                               void  (*proc)( T &bg, void *args),
                               void   *args)
@@ -52,26 +53,180 @@ namespace yocto
             }
 
             template <typename T>
-            inline void HLine(Pixmap<T>    &pxm,
-                              unit_t        x,
-                              unit_t        y,
-                              size_t        w,
-                              const T       C)
+            inline void HLine(Pixmap<T>   &pxm,
+                              const unit_t x,
+                              const unit_t y,
+                              const size_t w,
+                              const T      C)
             {
                 HLine(pxm,x,y,w,PutPixel::Copy<T>,(void*)&C);
             }
 
             template <typename T>
-            inline void HLine(Pixmap<T>    &pxm,
-                              unit_t        x,
-                              unit_t        y,
-                              size_t        w,
+            inline void HLine(Pixmap<T>   & pxm,
+                              const unit_t  x,
+                              const unit_t  y,
+                              const size_t  w,
                               const T       C,
                               const uint8_t alpha)
             {
                 PutPixel::BlendInfo<T> blend(C,alpha);
                 HLine(pxm,x,y,w,PutPixel::Blend<T>,(void*)&blend);
             }
+        }
+    }
+}
+
+namespace yocto
+{
+    namespace Ink
+    {
+        namespace Draw
+        {
+            template <typename T>
+            inline void _VLine(Pixmap<T>    &pxm,
+                               const unit_t  x,
+                               const unit_t  y,
+                               const size_t  h,
+                               void  (*proc)( T &bg, void *args),
+                               void   *args)
+            {
+                assert(proc);
+                assert( pxm.has(x,y)     );
+                assert( pxm.has(x,y+h-1) );
+                assert(h>0);
+
+                for(size_t j=0;j<h;++j)
+                {
+                    proc(pxm[j+y][x],args);
+                }
+            }
+
+            template <typename T>
+            inline void VLine(Pixmap<T>    &pxm,
+                              const unit_t  x,
+                              unit_t        y,
+                              size_t        h,
+                              void  (*proc)( T &bg, void *args),
+                              void   *args)
+            {
+                //check
+                unit_t y_end=y+h-1;
+                if(h<=0||x<pxm.x||x>pxm.x_end||y>pxm.y_end||y_end<pxm.x) return;
+
+                //clip
+                if(y<pxm.y)         y    =pxm.y;
+                if(y_end>pxm.y_end) y_end=pxm.y_end;
+                h = (y_end-y) + 1; assert(h>0);
+
+                //draw
+                _VLine(pxm, x, y, h, proc, args);
+            }
+
+            template <typename T>
+            inline void VLine(Pixmap<T>    &pxm,
+                              const unit_t  x,
+                              const unit_t  y,
+                              const size_t  h,
+                              const T       C)
+            {
+                VLine(pxm,x,y,h,PutPixel::Copy<T>,(void*)&C);
+            }
+
+            template <typename T>
+            inline void VLine(Pixmap<T>    &pxm,
+                              const unit_t  x,
+                              const unit_t  y,
+                              const size_t  h,
+                              const T       C,
+                              const unit_t  alpha)
+            {
+                PutPixel::BlendInfo<T> blend(C,alpha);
+                VLine(pxm,x,y,h,PutPixel::Blend<T>,(void*)&blend);
+            }
+
+        }
+
+    }
+}
+
+
+namespace yocto
+{
+    namespace Ink
+    {
+        namespace Draw
+        {
+            //! draw a line on an image
+            template <typename T>
+            inline void _Line(Pixmap<T>    &img,
+                              unit_t        x0,
+                              unit_t        y0,
+                              unit_t        x1,
+                              unit_t        y1,
+                              void  (*proc)( T &bg, void *args),
+                              void   *args)
+            {
+                unit_t dx =  abs_of(x1-x0), sx = (x0<x1) ? 1 : -1;
+                unit_t dy = -abs_of(y1-y0), sy = (y0<y1) ? 1 : -1;
+                unit_t err = dx+dy, e2;                                   /* error value e_xy */
+                assert(img.has(x0,y0));
+                assert(img.has(x1,y1));
+                for (;;){
+                    /* loop */
+                    const coord p(x0,y0);
+                    proc( img[p], args);
+                    e2 = 2*err;
+                    if (e2 >= dy) {                                         /* e_xy+e_x > 0 */
+                        if (x0 == x1) break;
+                        err += dy; x0 += sx;
+                    }
+                    if (e2 <= dx) {                                         /* e_xy+e_y < 0 */
+                        if (y0 == y1) break;
+                        err += dx; y0 += sy;
+                    }
+                }
+            }
+
+            template <typename T>
+            inline void Line(Pixmap<T>    &img,
+                             unit_t        x0,
+                             unit_t        y0,
+                             unit_t        x1,
+                             unit_t        y1,
+                             void  (*proc)( T &bg, void *args),
+                             void   *args)
+            {
+                if( Clip::Accept(x0,y0,x1,y1,img) )
+                {
+                    _Line(img,x0,y0,x1,y1,proc,args);
+                }
+            }
+
+            template <typename T>
+            inline void Line(Pixmap<T>    &img,
+                             const unit_t  x0,
+                             const unit_t  y0,
+                             const unit_t  x1,
+                             const unit_t  y1,
+                             const T       C)
+            {
+                Line(img,x0,y0,x1,y1,PutPixel::Copy<T>,(void*)&C);
+            }
+
+            template <typename T>
+            inline void Line(Pixmap<T>    &img,
+                             const unit_t  x0,
+                             const unit_t  y0,
+                             const unit_t  x1,
+                             const unit_t  y1,
+                             const T       C,
+                             const uint8_t alpha)
+            {
+                PutPixel::BlendInfo<T> blend(C,alpha);
+                Line(img,x0,y0,x1,y1,PutPixel::Blend<T>,(void*)&blend);
+            }
+
         }
     }
 }
