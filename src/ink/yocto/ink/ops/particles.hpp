@@ -31,6 +31,12 @@ namespace yocto
                 }
             }
 
+            // real number barycenter
+            point barycenter() const throw();
+
+            // axis aligned bounding box
+            Area  aabb() const throw();
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Particle);
         };

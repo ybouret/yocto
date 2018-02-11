@@ -12,6 +12,8 @@ namespace yocto
         typedef float                 real_t;
         typedef math::complex<real_t> cplx_t;
         typedef ipso::coord2D         coord;
+        typedef point2d<real_t>       point;
+        
 
 #define YOCTO_INK_R2GS 0.2126f
 #define YOCTO_INK_G2GS 0.7152f

@@ -16,7 +16,7 @@ namespace yocto
             static bool    IsZero(const T&) throw();
             static T       Inverse(const T&) throw();
             static T       Average(const T *,const size_t) throw();
-            
+            static T       Blend( const T &fg, const T &bg, const uint8_t alpha) throw();
 
         };
     }

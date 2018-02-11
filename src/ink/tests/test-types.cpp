@@ -17,6 +17,13 @@ YOCTO_UNIT_TEST_IMPL(types)
             }
         }
     }
+
+    for(unsigned alpha=0;alpha<256;++alpha)
+    {
+        const float a = Ink::Core::uFloat[alpha];
+        const float b = Ink::Core::uFloat[0xff-alpha];
+        std::cerr << "a=" << a << ", b=" << b << ", a+b=" << a+b << std::endl;
+    }
 }
 
 YOCTO_UNIT_TEST_DONE()

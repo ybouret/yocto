@@ -93,17 +93,13 @@ YOCTO_UNIT_TEST_IMPL(fg)
         IMG.save(img,"img.png",NULL);
 
         // keep foreground
-        const size_t level = H.build(img,Convert::RGB2U,par).threshold();
+        //const size_t level = H.build(img,Convert::RGB2U,par).threshold();
+        //H.keep(level, Histogram::KeepGEQ, fg, img, Convert::RGB2U,par);
         PixmapRGB    fg(img.w,img.h);
-        H.keep(level, Histogram::KeepGEQ, fg, img, Convert::RGB2U,par);
+        H.foreground(fg,img,Convert::RGB2U,par);
         IMG.save(fg,"fg0.png",NULL);
 
-        // process a little bit
-#if 0
-        AutoFilter<RGB> F(fg);
-        F.Open(fg,par);
-        IMG.save(fg,"fg1.png",NULL);
-#endif
+
 
         indx2rgba blobColors(0);
         Blob      blobs(fg);

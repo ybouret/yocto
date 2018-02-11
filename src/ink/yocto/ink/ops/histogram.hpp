@@ -80,6 +80,36 @@ namespace yocto
                 engine.submit(this, &Histogram::keepThread<T,FUNC>);
             }
 
+            template <typename T, typename FUNC>
+            inline void foreground(Pixmap<T>       &tgt,
+                                   const Pixmap<T> &src,
+                                   FUNC            &pixel2byte,
+                                   Engine          &engine)
+            {
+                keep<T,FUNC>(build(src,pixel2byte,engine).threshold(),
+                             KeepGEQ,
+                             tgt,
+                             src,
+                             pixel2byte,
+                             engine,
+                             false);
+            }
+
+            template <typename T, typename FUNC>
+            inline void background(Pixmap<T>       &tgt,
+                                   const Pixmap<T> &src,
+                                   FUNC            &pixel2byte,
+                                   Engine          &engine,
+                                   bool             inverse_pixel=true)
+            {
+                keep<T,FUNC>(build(src,pixel2byte,engine).threshold(),
+                             KeepLEQ,
+                             tgt,
+                             src,
+                             pixel2byte,
+                             engine,
+                             inverse_pixel);
+            }
 
 
 

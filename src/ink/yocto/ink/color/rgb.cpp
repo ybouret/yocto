@@ -25,6 +25,26 @@ namespace yocto
             }
             return RGB(uint8_t(R/count),uint8_t(G/count),uint8_t(B/count));
         }
+
+#define _FG(X)  (fgw*unsigned((fg).X))
+#define _BG(X)  (bgw*unsigned((bg).X))
+#define _MIX(X) ( (_FG(X)+_BG(X))>>8 )
+
+        template <> RGB Pixel<RGB>:: Blend(const RGB &fg, const RGB &bg, const uint8_t alpha) throw()
+        {
+            switch(alpha)
+            {
+                case 0xff: return fg;
+                case 0x00: return bg;
+                default:
+                    break;
+            }
+
+            const unsigned fgw = alpha;
+            const unsigned bgw = 0xff-alpha;
+            return RGB( _MIX(r), _MIX(g), _MIX(b) );
+        }
+
     }
 }
 
