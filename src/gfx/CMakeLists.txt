@@ -57,5 +57,8 @@ IF(YOCTO_BUILD_TESTS)
 	ADD_SUBDIRECTORY(tests)
 ENDIF()
 
+IF(FALSE)
 ADD_EXECUTABLE(yocto-to-jpg yocto-to-jpg.cpp)
 TARGET_LINK_YOCTO(yocto-to-jpg gfx tiff png)
+ENDIF()
+

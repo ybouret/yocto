@@ -30,6 +30,12 @@ SET(ops_srcs ${ops_impl} ${ops_decl})
 INSTALL( FILES ${ops_decl} DESTINATION include/yocto/ink/ops )
 SOURCE_GROUP( ink/ops FILES ${ops_srcs} )
 
+FILE(GLOB draw_decl yocto/ink/draw/*.hpp)
+FILE(GLOB draw_impl yocto/ink/draw/*.cpp)
+SET(draw_srcs ${draw_impl} ${draw_decl})
+INSTALL( FILES ${draw_decl} DESTINATION include/yocto/ink/draw )
+SOURCE_GROUP( ink/draw FILES ${draw_srcs} )
+
 
 INCLUDE_DIRECTORIES(
 .
@@ -42,7 +48,7 @@ ${CMAKE_CURRENT_BINARY_DIR}/../yocto/zlib
 )
 
 
-ADD_LIBRARY(y-ink STATIC ${srcs} ${color_srcs} ${image_srcs} ${ops_srcs} ${ramp_srcs}) 
+ADD_LIBRARY(y-ink STATIC ${srcs} ${color_srcs} ${image_srcs} ${ops_srcs} ${ramp_srcs} ${draw_srcs}) 
 TARGET_LINK_LIBRARIES(y-ink y-tiff)
 
 INSTALL( TARGETS y-ink ARCHIVE DESTINATION lib)
@@ -51,7 +57,7 @@ IF(YOCTO_BUILD_TESTS)
 	ADD_SUBDIRECTORY(tests)
 ENDIF()
 
-IF(TRUE)
+IF(FALSE)
  ADD_EXECUTABLE(ink_make_ramp ramps/make_ramp.cpp)
  TARGET_LINK_YOCTO(ink_make_ramp)
  
