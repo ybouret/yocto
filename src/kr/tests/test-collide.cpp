@@ -16,28 +16,83 @@
 #include "yocto/hashing/hash64.hpp"
 #include "yocto/hashing/sfh.hpp"
 
+#include "yocto/hashing/factory.hpp"
+#include "yocto/ios/icstream.hpp"
+#include "yocto/sequence/vector.hpp"
+#include "yocto/sys/wtime.hpp"
+
 using namespace yocto;
 
+#define _HASH(NAME) F.append( new hashing::NAME() )
+
+static inline void test_words( hashing::function &F, const array<string> &words )
+{
+    std::cerr << F.name() << std::endl;
+    wtime chrono;
+    chrono.start();
+    const uint64_t mark = wtime::ticks();
+    for(size_t i=words.size();i>0;--i)
+    {
+        (void)F.key<size_t>(words[i]);
+    }
+    const double ell = chrono(wtime::ticks() - mark);
+    std::cerr << "\t --> ellapsed  = " << ell*1000 << "ms" << std::endl;
+
+    map<uint64_t,bool> keys(words.size(),as_capacity);
+    size_t count = 0;
+    for(size_t i=words.size();i>0;--i)
+    {
+        uint64_t k32 = F.key<uint32_t>(words[i]);
+        if(!keys.insert(k32,true))
+        {
+            ++count;
+        }
+    }
+    std::cerr << "\t --> collide32 = " << count << std::endl;
+
+    std::cerr << std::endl;
+}
 
 YOCTO_UNIT_TEST_IMPL(collide)
 {
-    hashing::adler32 h_adler32;
-    hashing::bjh32   h_bjh32;
-    hashing::crc16   h_crc16;
-    hashing::crc32   h_crc32;
-    hashing::elf     h_elf;
-    hashing::fnv     h_fnv;
-    hashing::sfh     h_sfh;
-    hashing::md2     h_md2;
-    hashing::md4     h_md4;
-    hashing::md5     h_md5;
-    hashing::sha1    h_sha1;
-    hashing::sha224  h_sha224;
-    hashing::sha256  h_sha256;
-    hashing::sha384  h_sha384;
-    hashing::sha512  h_sha512;
-    hashing::rmd160  h_rmd160;
-    hashing::rmd128  h_rmd128;
+    hashing::factory F(32);
+    _HASH(adler32);
+    _HASH(bjh32);
+    _HASH(crc16);
+    _HASH(crc32);
+    _HASH(elf);
+    _HASH(fnv);
+    _HASH(sfh);
+    _HASH(md2);
+    _HASH(md4);
+    _HASH(md5);
+    _HASH(sha1);
+    _HASH(sha224);
+    _HASH(sha256);
+    _HASH(sha384);
+    _HASH(sha512);
+    _HASH(rmd160);
+    _HASH(rmd128);
+
+    if(argc>1)
+    {
+        vector<string> words(500000,as_capacity);
+        {
+            ios::icstream fp(argv[1]);
+            string line;
+            while(fp.gets(line))
+            {
+                words.push_back(line);
+            }
+            std::cerr << "testing " << words.size() << " words" << std::endl;
+            for( hashing::factory::iterator i=F.begin(); i!=F.end();++i)
+            {
+                test_words( **i, words );
+            }
+
+        }
+    }
+
 }
 YOCTO_UNIT_TEST_DONE()
 
