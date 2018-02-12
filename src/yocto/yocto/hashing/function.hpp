@@ -2,7 +2,8 @@
 #define YOCTO_HASHING_FUNCTION_INCLUDED 1
 
 
-#include "yocto/object.hpp"
+#include "yocto/counted-object.hpp"
+#include "yocto/ptr/arc.hpp"
 
 namespace yocto
 {
@@ -17,9 +18,10 @@ namespace yocto
 	{
 		
         //! base class for hashing function
-		class function : public object
+		class function : public counted_object
 		{
 		public:
+            typedef arc_ptr<function> pointer;
 			virtual ~function() throw();
 			
 			const size_t length; //!< output generation
@@ -72,6 +74,8 @@ virtual const char *name()   const throw();\
 virtual void set() throw();\
 virtual void run( const void *buf, size_t len ) throw();\
 virtual void get( void *output, size_t outlen ) throw()
+
+        
 	}
 	
 	
