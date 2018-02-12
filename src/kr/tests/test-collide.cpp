@@ -38,11 +38,11 @@ static inline void test_words( hashing::function &F, const array<string> &words 
     const double ell = chrono(wtime::ticks() - mark);
     std::cerr << "\t --> ellapsed  = " << ell*1000 << "ms" << std::endl;
 
-    map<uint64_t,bool> keys(words.size(),as_capacity);
+    map<uint32_t,bool> keys(words.size(),as_capacity);
     size_t count = 0;
     for(size_t i=words.size();i>0;--i)
     {
-        uint64_t k32 = F.key<uint32_t>(words[i]);
+        uint32_t k32 = F.key<uint32_t>(words[i]);
         if(!keys.insert(k32,true))
         {
             ++count;
