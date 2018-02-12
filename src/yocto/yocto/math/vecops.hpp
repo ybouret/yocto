@@ -48,7 +48,19 @@ namespace yocto
         {
             --lhs[0];
         }
-        
+
+        template <typename T>
+        static inline void mul(T *v, const T fac) throw()
+        {
+            v[0] *= fac;
+        }
+
+        template <typename T,typename U>
+        static inline void muladd(T *v, const T fac, const U *u) throw()
+        {
+            v[0] += fac * T(u[0]);
+        }
+
     };
 
     template <>
@@ -91,6 +103,19 @@ namespace yocto
             --lhs[1];
         }
 
+        template <typename T>
+        static inline void mul(T *v, const T fac) throw()
+        {
+            v[0] *= fac;
+            v[1] *= fac;
+        }
+
+        template <typename T,typename U>
+        static inline void muladd(T *v, const T fac, const U *u) throw()
+        {
+            v[0] += fac * T(u[0]);
+            v[1] += fac * T(u[1]);
+        }
     };
 
 
@@ -133,6 +158,22 @@ namespace yocto
             --lhs[0];
             --lhs[1];
             --lhs[2];
+        }
+
+        template <typename T>
+        static inline void mul(T *v, const T fac) throw()
+        {
+            v[0] *= fac;
+            v[1] *= fac;
+            v[2] *= fac;
+        }
+
+        template <typename T,typename U>
+        static inline void muladd(T *v, const T fac, const U *u) throw()
+        {
+            v[0] += fac * T(u[0]);
+            v[1] += fac * T(u[1]);
+            v[2] += fac * T(u[2]);
         }
     };
 
