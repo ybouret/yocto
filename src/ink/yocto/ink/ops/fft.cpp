@@ -7,7 +7,8 @@ namespace yocto
     namespace Ink
     {
 
-        FFT::  FFT() throw() {}
+        FFT::  FFT() throw() : zpx(0), pfn(0), tpx(0)
+        {}
         FFT:: ~FFT() throw() {}
 
         unit_t FFT::LengthFor(const unit_t L)

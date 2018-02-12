@@ -23,7 +23,9 @@ namespace yocto
         wpatch( -length, length  ),
         weight( "weight", wpatch ),
         dpatch( coord(-length,-length), coord(length,length) ),
-        dfield( "dfield", dpatch )
+        dfield( "dfield", dpatch ),
+        tgt(0),
+        src(0)
         {
             Blur &self = *this;
             weight[0]=1.0f;
