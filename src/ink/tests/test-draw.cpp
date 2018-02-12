@@ -35,7 +35,7 @@ YOCTO_UNIT_TEST_IMPL(draw)
         const unit_t  Y = y0 + alea.leq(h0);
         const size_t  W = alea.leq(w0);
         const size_t  H = alea.leq(w0);
-        const RGB     C = NamedColor::FetchRGB(k);
+        const RGB     C = NamedColor::FetchRGB(alea.leq(1000));
         const float   F = Convert::RGB2F(C);
         const uint8_t U = Convert::RGB2U(C);
 
@@ -72,6 +72,32 @@ YOCTO_UNIT_TEST_IMPL(draw)
             Draw::Line(img3,X0,Y0,X1,Y1,C,alpha);
             Draw::Line(imgf,X0,Y0,X1,Y1,F,alpha);
             Draw::Line(img1,X0,Y0,X1,Y1,U,alpha);
+        }
+    }
+
+    for(size_t k=0;k<10;++k)
+    {
+        const unit_t X0 = x0 + alea.leq(w0);
+        const unit_t X1 = x0 + alea.leq(w0);
+        const unit_t Y0 = y0 + alea.leq(h0);
+        const unit_t Y1 = y0 + alea.leq(h0);
+        const RGB     C = NamedColor::FetchRGB(alea.leq(1000));
+        const float   F = Convert::RGB2F(C);
+        const uint8_t U = Convert::RGB2U(C);
+        if( alea.get<float>() > 0.99f )
+        {
+            Draw::Fill(img3, X0, Y0, X1, Y1, C);
+            Draw::Fill(imgf, X0, Y0, X1, Y1, F);
+            Draw::Fill(img1, X0, Y0, X1, Y1, U);
+
+        }
+        else
+        {
+            const uint8_t alpha = alea.leq(255);
+            Draw::Fill(img3, X0, Y0, X1, Y1, C, alpha);
+            Draw::Fill(imgf, X0, Y0, X1, Y1, F, alpha);
+            Draw::Fill(img1, X0, Y0, X1, Y1, U, alpha);
+
         }
     }
 

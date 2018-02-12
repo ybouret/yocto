@@ -236,9 +236,52 @@ namespace yocto
         namespace Draw
         {
             template <typename T>
-            void _Outline(Pixmap<T> &pxm, const Area &area,YOCTO_INK_DRAW_ARGS)
+            void Fill(Pixmap<T> &pxm,
+                      unit_t x0,
+                      unit_t y0,
+                      unit_t x1,
+                      unit_t y1,
+                      YOCTO_INK_DRAW_ARGS)
             {
-                assert(pxm.contains(area));
+                //std::cerr << "Fill (" << x0 << "," << y0 << ") => ("<< x0 << "," << y0 << ")" << std::endl;
+                if(x0>x1) cswap(x0,x1);
+                if(y0>y1) cswap(y0,y1);
+                if( !Clip::Accept(x0, y0, x1, y1, pxm) )
+                    return;
+                assert(x0<=x1);
+                assert(y0<=y1);
+                for(unit_t j=y1;j>=y0;--j)
+                {
+                    typename Pixmap<T>::Row &r = pxm[j];
+                    for(unit_t i=x1;i>=x0;--i)
+                    {
+                        proc(r[i],args);
+                    }
+                }
+            }
+
+            template <typename T>
+            inline void Fill(Pixmap<T>    &img,
+                             const unit_t  x0,
+                             const unit_t  y0,
+                             const unit_t  x1,
+                             const unit_t  y1,
+                             const T       C)
+            {
+                Fill(img,x0,y0,x1,y1,PutPixel::Copy<T>,(void*)&C);
+            }
+
+            template <typename T>
+            inline void Fill(Pixmap<T>    &img,
+                             const unit_t  x0,
+                             const unit_t  y0,
+                             const unit_t  x1,
+                             const unit_t  y1,
+                             const T       C,
+                             const uint8_t alpha)
+            {
+                PutPixel::BlendInfo<T> blend(C,alpha);
+                Fill(img,x0,y0,x1,y1,PutPixel::Blend<T>,(void*)&blend);
             }
         }
     }
