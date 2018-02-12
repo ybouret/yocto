@@ -130,7 +130,7 @@ namespace yocto
         void FFT:: apply(PixmapZ &zmap, const int isign) throw()
         {
             assert(zmap.model==Bitmap::MemoryIsGlobal);
-            const size_t  nn[4] = { 0, zmap.h, zmap.w, 0 };
+            const size_t  nn[4] = { 0, size_t(zmap.h), size_t(zmap.w), 0 };
             real_t       *data  = static_cast<real_t *>(zmap.entry)-1;
             run_fft(data,nn,isign);
         }
