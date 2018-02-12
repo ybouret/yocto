@@ -202,7 +202,7 @@ namespace yocto
                         assert(rank==g->source);
                         g->load(inner,outer,build);
                         num_async += g->count;
-                        if(g->count>max_async)
+                        if(g->count>size_t(max_async))
                         {
                             max_async = g->count;
                         }
