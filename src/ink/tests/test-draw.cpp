@@ -84,7 +84,7 @@ YOCTO_UNIT_TEST_IMPL(draw)
         const RGB     C = NamedColor::FetchRGB(alea.leq(1000));
         const float   F = Convert::RGB2F(C);
         const uint8_t U = Convert::RGB2U(C);
-        if( alea.get<float>() > 0.99f )
+        if( alea.get<float>() > 0.9f )
         {
             Draw::Fill(img3, X0, Y0, X1, Y1, C);
             Draw::Fill(imgf, X0, Y0, X1, Y1, F);
