@@ -35,12 +35,9 @@ namespace yocto
 
         CommonDCT:: CommonDCT(const unit_t W, const unit_t H) :
         DCT(W,H),
-        XP( coord(0,0), coord(x_end,x_end) ),
-        XCOS( "XCOS",    XP),
-        YP( coord(0,0), coord(y_end,y_end) ),
-        YCOS( "YCOS",    YP),
-        LP( coord(0,0), coord(x_end,y_end) ),
-        LAMBDA("LAMBDA", LP)
+        XCOS(   "XCOS",   coord(0,0), coord(x_end,x_end) ),
+        YCOS(   "YCOS",   coord(0,0), coord(y_end,y_end) ),
+        LAMBDA( "LAMBDA", coord(0,0), coord(x_end,y_end) )
         {
 
             const size_t N  = size_t(w);
@@ -132,9 +129,8 @@ namespace yocto
 
         SquareDCT:: SquareDCT(const unit_t W) :
         DCT(W,W),
-        layout( coord(0,0), coord(W-1,W-1) ),
-        COS( "COS", layout),
-        LAMBDA( "LAMBDA", layout)
+        COS(    "COS",    coord(0,0), coord(W-1,W-1)),
+        LAMBDA( "LAMBDA", COS)
         {
             const size_t N  = size_t(w);
             const size_t NN = N<<1;

@@ -82,11 +82,8 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(CommonDCT);
-            const Patch  XP;
             Table        XCOS;
-            const Patch  YP;
             Table        YCOS;
-            const Patch  LP;
             Table        LAMBDA; //! warning: Lambda[j][i] !!!
         };
         
@@ -135,7 +132,6 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(SquareDCT);
-            const Patch layout;
             Table       COS;
             Table       LAMBDA;
         };

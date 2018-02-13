@@ -3,7 +3,6 @@
 
 #include "yocto/ink/parallel.hpp"
 #include "yocto/ink/pixmap.hpp"
-#include "yocto/code/bzset.hpp"
 #include "yocto/ink/color/rgb.hpp"
 #include "yocto/ipso/field2d.hpp"
 

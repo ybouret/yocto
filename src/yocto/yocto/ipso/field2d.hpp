@@ -40,6 +40,32 @@ wlen(0)
                 build_with(usr_data,usr_rows);
             }
 
+            inline explicit field2D(const string &id,
+                                    const coord2D lo,
+                                    const coord2D up) :
+            field<T>(*id),
+            patch2D(lo,up),
+            row_patch(lower.x,upper.x),
+            rows(0),
+            wksp(0),
+            wlen(0)
+            {
+                build_with(NULL,NULL);
+            }
+
+            inline explicit field2D(const char   *id,
+                                    const coord2D lo,
+                                    const coord2D up) :
+            field<T>(id),
+            patch2D(lo,up),
+            row_patch(lower.x,upper.x),
+            rows(0),
+            wksp(0),
+            wlen(0)
+            {
+                build_with(NULL,NULL);
+            }
+
 
             inline virtual ~field2D() throw()
             {
