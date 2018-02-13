@@ -26,6 +26,26 @@ namespace yocto
                 engine.submit(this, & Mapper::callThread<T,U,FUNC> );
             }
 
+            template <
+            typename T,
+            typename U,
+            typename V,
+            typename FUNC> inline
+            void operator()(Pixmap<T>       &tgt,
+                            const Pixmap<U> &L,
+                            const Pixmap<V> &R,
+                            FUNC            &func,
+                            Engine          &engine)
+            {
+                target = &tgt;
+                lhs    = &L;
+                rhs    = &R;
+                proc   = (void *)&func;
+                engine.submit(this, & Mapper::call2Thread<T,U,V,FUNC> );
+            }
+
+
+
             Mapper() throw();
             virtual ~Mapper() throw();
 
@@ -54,6 +74,8 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(Mapper);
             void       *target;
             const void *source;
+            const void *lhs;
+            const void *rhs;
             void       *proc;
 
             template <typename T,typename U,typename FUNC> inline
@@ -61,9 +83,8 @@ namespace yocto
             {
                 YOCTO_INK_AREA_LIMITS(a);
                 
-                Pixmap<T>       &tgt = *static_cast< Pixmap<T>       *>(target);
-                const Pixmap<U> &src = *static_cast< const Pixmap<U> *>(source);
-
+                Pixmap<T>       &tgt  = *static_cast< Pixmap<T>       *>(target);
+                const Pixmap<U> &src  = *static_cast< const Pixmap<U> *>(source);
                 FUNC            &func = *(FUNC *)proc;
                 
                 for(unit_t j=ymax;j>=ymin;--j)
@@ -73,6 +94,28 @@ namespace yocto
                     for(unit_t i=xmax;i>=xmin;--i)
                     {
                         Ty[i] = func(Sy[i]);
+                    }
+                }
+            }
+
+            template <typename T,typename U,typename V,typename FUNC> inline
+            void call2Thread( const Area &a, threading::context & ) throw()
+            {
+                YOCTO_INK_AREA_LIMITS(a);
+                assert(target);assert(lhs);assert(rhs);assert(proc);
+                Pixmap<T>       &tgt  = *static_cast< Pixmap<T>       *>(target);
+                const Pixmap<U> &L    = *static_cast< const Pixmap<U> *>(lhs);
+                const Pixmap<V> &R    = *static_cast< const Pixmap<V> *>(rhs);
+                FUNC            &func = *(FUNC *)proc;
+
+                for(unit_t j=ymax;j>=ymin;--j)
+                {
+                    typename Pixmap<T>::Row       &Ty = tgt[j];
+                    const typename Pixmap<U>::Row &Ly = L[j];
+                    const typename Pixmap<V>::Row &Ry = R[j];
+                    for(unit_t i=xmax;i>=xmin;--i)
+                    {
+                        Ty[i] = func(Ly[i],Ry[i]);
                     }
                 }
             }

@@ -18,9 +18,8 @@ namespace yocto
             
         }
 
-        RGBA ramp:: get(const void *addr)
+        RGBA ramp:: toRGBA(const float v) const throw()
         {
-            const float v = *(const float *)addr;
             if(v<=vMin)
             {
                 return colors[0];
@@ -36,7 +35,17 @@ namespace yocto
                     return colors[ uint8_t( floorf( factor * (v-vMin) + 0.5f ) ) ];
                 }
             }
+        }
 
+        RGB ramp:: toRGB( const float v) const throw()
+        {
+            const RGBA C = toRGBA(v);
+            return RGB(C.r,C.g,C.b);
+        }
+
+        RGBA ramp:: get(const void *addr)
+        {
+            return toRGBA( *(const float *)addr );
         }
 
     }

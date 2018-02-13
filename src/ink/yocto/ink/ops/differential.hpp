@@ -137,7 +137,7 @@ namespace yocto
                         const type nrm = math::Hypotenuse(Gx,Gy);
                         gn_j[i] = nrm;
                         if(nrm>vmax) vmax=nrm;
-                        ga_j[i] = math::Atan2(Gx,Gy);
+                        ga_j[i] = math::Atan2(Gy,Gx);
                     }
                 }
 

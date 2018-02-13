@@ -15,8 +15,7 @@ namespace yocto
             virtual ~data2rgba() throw();
 
             RGBA operator()(const void *addr);
-
-
+            
         protected:
             explicit data2rgba() throw();
 

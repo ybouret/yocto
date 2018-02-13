@@ -65,6 +65,18 @@ namespace yocto
                 }
             }
 
+            static inline float Mul(const float lhs, const float rhs) throw()
+            {
+                return lhs*rhs;
+            }
+
+            static inline RGB scaleRGB(const float f, const RGB &C) throw()
+            {
+                return RGB(uint8_t(floorf(f*float(C.r)+0.5f)),
+                           uint8_t(floorf(f*float(C.g)+0.5f)),
+                           uint8_t(floorf(f*float(C.b)+0.5f)));
+            }
+
         };
     }
 }
