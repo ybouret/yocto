@@ -14,6 +14,7 @@ static inline void do_blur(Pixmap<T>       &tgt,
                            Engine          &engine,
                            const string    &id)
 {
+    std::cerr << "Apply Blur(" << blr.length << ")\ton a " << tgt.x << "x" << tgt.y << "x" << tgt.depth << " pixmap" << std::endl;
     YOCTO_IMG_IO();
     blr.apply(tgt,src,engine);
     IMG.save(tgt, id, NULL);
@@ -21,6 +22,7 @@ static inline void do_blur(Pixmap<T>       &tgt,
 
 YOCTO_UNIT_TEST_IMPL(blur)
 {
+    if(false)
     {
         ios::wcstream fp("blur.dat");
         for(float sig=0.01f;sig<=10;sig+=0.01f)

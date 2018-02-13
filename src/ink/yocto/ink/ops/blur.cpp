@@ -42,7 +42,7 @@ namespace yocto
                     {
                         sum += weight[k];
                     }
-                    dfield[ini][fin] = sum;
+                    dfield[ini][fin] = 1.0f/sum;
                 }
             }
         }

@@ -92,7 +92,7 @@ namespace yocto
                 {
                     const unit_t imin = max_of<unit_t>(0,i-delta);
                     const unit_t imax = min_of<unit_t>(x_end,i+delta);
-                    const float  wden = dfield[imin-i][imax-i];
+                    const float  wmul = dfield[imin-i][imax-i];
                     for(unit_t j=ymax;j>=ymin;--j)
                     {
                         const typename Pixmap<VECTOR>::Row &S_j = source[j];
@@ -106,7 +106,7 @@ namespace yocto
                         SCALAR *q = (SCALAR       *)&T_j[i];
                         for(size_t ch=0;ch<CHANNELS;++ch)
                         {
-                            q[ch] = SCALAR(num[ch]/wden);
+                            q[ch] = SCALAR(num[ch]*wmul);
                         }
 
                     }
@@ -129,7 +129,7 @@ namespace yocto
                 {
                     const unit_t jmin = max_of<unit_t>(0,j-delta);
                     const unit_t jmax = min_of<unit_t>(y_end,j+delta);
-                    const float  wden = dfield[jmin-j][jmax-j];
+                    const float  wmul = dfield[jmin-j][jmax-j];
 
                     typename Pixmap<VECTOR>::Row &T_j = target[j];
 
@@ -145,7 +145,7 @@ namespace yocto
                         SCALAR *q = (SCALAR       *)&T_j[i];
                         for(size_t ch=0;ch<CHANNELS;++ch)
                         {
-                            q[ch] = SCALAR(num[ch]/wden);
+                            q[ch] = SCALAR(num[ch]*wmul);
                         }
 
                     }
