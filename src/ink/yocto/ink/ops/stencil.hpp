@@ -83,7 +83,7 @@ namespace yocto
                         const unit_t xlo = ilo-i;
                         const unit_t xhi = ihi-i;
 
-                        float csum = 0.0f;
+                        float csum    = 0.0f;
                         float wsum[4] = { 0,0,0,0 };
                         for(unit_t yy=yhi;yy>=ylo;--yy)
                         {

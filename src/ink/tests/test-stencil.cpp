@@ -9,6 +9,7 @@ using namespace Ink;
 
 
 
+
 YOCTO_UNIT_TEST_IMPL(stencil)
 {
 
@@ -20,12 +21,12 @@ YOCTO_UNIT_TEST_IMPL(stencil)
     Stencil sten1x1("1x1",0,0);
     Stencil sten3x1("3x1",1,0);
     Stencil sten1x3("1x3",0,1);
-
+    
     if(argc>1)
     {
         const Pixmap<RGB> img3( IMG.loadRGB(argv[1],NULL) );
-        Engine par(img3,parSrv);
-        Engine seq(img3,seqSrv);
+        Engine            par(img3,parSrv);
+        Engine            seq(img3,seqSrv);
 
 
 
