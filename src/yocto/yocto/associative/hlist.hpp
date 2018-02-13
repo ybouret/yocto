@@ -69,7 +69,7 @@ namespace yocto
 
             // ok
             l->push_front( new kNode(key,h,node) );
-            guard.forget();
+            nodes.push_back( guard.yield() );
             return true;
         }
 
@@ -77,7 +77,6 @@ namespace yocto
 
         inline void free() throw()
         {
-            std::cerr << "[hlist free]" << std::endl;
             nodes.clear(); assert(0==nodes.size);
             for(size_t i=0;i<ksize;++i) { klist[i].clear(); assert(0==klist[i].size); }
         }
@@ -85,7 +84,6 @@ namespace yocto
         inline void release() throw()
         {
             free();
-            std::cerr << "[hlist release]" << std::endl;
             memory::kind<memory::global>::release_as(klist,nlist);
             kmask = 0;
         }
@@ -93,6 +91,50 @@ namespace yocto
         virtual ~hlist() throw()
         {
             release();
+        }
+
+        inline NODE *search(param_key key) const throw()
+        {
+            if(ksize>0)
+            {
+                const size_t h = hash(key);
+                const kList &l = klist[h&kmask];
+                for(const kNode *kn = l.head;kn;kn=kn->next)
+                {
+                    if(kn->key==key)
+                    {
+                        return kn->node;
+                    }
+                }
+                return NULL;
+            }
+            else
+            {
+                return NULL;
+            }
+        }
+
+        bool remove( param_key key ) throw()
+        {
+            if(ksize)
+            {
+                const size_t h = hash(key);
+                kList       &l = klist[h&kmask];
+                for(kNode *kn = l.head;kn;kn=kn->next)
+                {
+                    if( kn->key == key )
+                    {
+                        delete nodes.unlink(kn->node);
+                        delete l.unlink(kn);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            else
+            {
+                return NULL;
+            }
         }
 
     private:
@@ -122,13 +164,14 @@ namespace yocto
                     while(src.size>0)
                     {
                         kNode *knode = src.pop_front(); assert(i==(knode->hkey&kmask));
-                        klist_req[i&kmask_req].push_back(knode);
+                        klist_req[knode->hkey&kmask_req].push_back(knode);
                     }
                 }
 
                 // update
                 memory::kind<memory::global>::release_as(klist,nlist);
                 klist = klist_req;
+                ksize = ksize_req;
                 nlist = nlist_req;
                 kmask = kmask_req;
 
@@ -146,9 +189,10 @@ namespace yocto
         inline void check_load_factor()
         {
             const size_t new_size  = nodes.size+1;
-            if(new_size>=ksize*hlist_param::load_factor)
+            const size_t max_capa  = ksize*hlist_param::load_factor;
+            if(new_size>=max_capa)
             {
-                allocate_lists(max_of(new_size,hlist_param::mini_klists));
+                allocate_lists(max_of(max_capa,hlist_param::mini_klists));
             }
         }
 
