@@ -97,10 +97,7 @@ namespace yocto
                 Pixmap<TYPE>        &tgt   = *static_cast<Pixmap<TYPE>        *>(target);
                 const Pixmaps<UNIT> &src   = *static_cast<const Pixmaps<UNIT> *>(source);
                 const size_t         shift = cshift;
-                const unit_t xmin = r.x;
-                const unit_t xmax = r.x_end;
-                const unit_t ymin = r.y;
-                const unit_t ymax = r.y_end;
+                YOCTO_INK_AREA_LIMITS(r);
                 const size_t nch  = src.size();
 
 

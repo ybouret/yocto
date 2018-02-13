@@ -107,5 +107,6 @@ ADD_TEST(alea        test-main alea)
 ADD_TEST(gaussian    test-main gaussian)
 ADD_TEST(primality   test-main primality)
 ADD_TEST(vecops      test-main vecops)
+ADD_TEST(HList       test-main HList)
 
 #ADD_CUSTOM_TARGET(check-main COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS test-main)

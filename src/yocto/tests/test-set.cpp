@@ -2,6 +2,7 @@
 #include "yocto/associative/set.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/hashing/elf.hpp"
+#include "yocto/hashing/sfh.hpp"
 #include "yocto/hashing/sha1.hpp"
 #include "yocto/memory/pooled.hpp"
 #include "yocto/sequence/list.hpp"
