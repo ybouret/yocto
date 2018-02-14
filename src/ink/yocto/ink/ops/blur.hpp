@@ -23,6 +23,7 @@ namespace yocto
             const float  sigm2;
             const float  scale; //! 1.0f/(sig2+sig2)
             const unit_t length;
+            const unit_t width;  //!< 2*length+1
             explicit Blur(const float sig);
             explicit Blur(const float sig,const unit_t len);
             virtual ~Blur() throw();
@@ -151,6 +152,23 @@ namespace yocto
             }
 
         };
+
+        template <const size_t W>
+        class BlurOn : public Blur
+        {
+        public:
+            static const size_t LENGTH = ((W|1)-1)>>2;
+            inline explicit BlurOn( const float sig ) throw() :
+            Blur(sig,LENGTH)
+            {
+            }
+
+            inline virtual ~BlurOn() throw() {}
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(BlurOn);
+        };
+
     }
 }
 

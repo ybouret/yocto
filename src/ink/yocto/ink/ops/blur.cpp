@@ -15,28 +15,25 @@ namespace yocto
 
         }
 
+#define Y_BLUR_CTOR(LEN)                                          \
+sigma( fabsf(sig)  ),                                             \
+sigm2( sigma*sigma ),                                             \
+scale( (sigm2>0.0f) ? 1.0f/(sigm2+sigm2) : 0.0f ),                \
+length( LEN ),                                                    \
+width(1+2*length),                                                \
+weight( "weight", -length, length ),                              \
+dfield( "dfield", coord(-length,-length), coord(length,length) ), \
+tgt(0),                                                           \
+src(0)
+
         Blur:: Blur(const float sig) :
-        sigma( fabsf(sig)  ),
-        sigm2( sigma*sigma ),
-        scale( (sigm2>0.0f) ? 1.0f/(sigm2+sigm2) : 0.0f ),
-        length( GetLength(sigma) ),
-        weight( "weight", -length, length ),
-        dfield( "dfield", coord(-length,-length), coord(length,length) ),
-        tgt(0),
-        src(0)
+        Y_BLUR_CTOR( GetLength(sigma) )
         {
             setup();
         }
 
         Blur:: Blur(const float sig, const unit_t len) :
-        sigma( fabsf(sig)  ),
-        sigm2( sigma*sigma ),
-        scale( (sigm2>0.0f) ? 1.0f/(sigm2+sigm2) : 0.0f ),
-        length( abs_of(len) ),
-        weight( "weight", -length, length ),
-        dfield( "dfield", coord(-length,-length), coord(length,length) ),
-        tgt(0),
-        src(0)
+        Y_BLUR_CTOR( abs_of(len) )
         {
             setup();
         }
