@@ -58,8 +58,26 @@ YOCTO_UNIT_TEST_IMPL(edges)
         IMG.save("gradA.png", edges.A, armp, NULL);
 
         edges.keepLocalMaxima(par);
+        std::cerr << "strong=" << edges.strong << std::endl;
+        std::cerr << "weak="   << edges.weak   << std::endl;
+        
         IMG.save(edges.M,"gradM.png",NULL);
 
+        PixmapRGB g3(pxm3.w,pxm3.h);
+        mapper(g3,edges.M,pxm3,Convert::dimRGB,par);
+        IMG.save(g3,"edgesM.png",NULL);
+        
+        Particles particles;
+        edges.connect(particles,par);
+        indx2rgba blobColors(10);
+        IMG.save("blob.png", edges.B, blobColors, NULL);
+        IMG.save(edges,"edgesC.png",NULL);
+        mapper(g3,edges,pxm3,Convert::dimRGB,par);
+        IMG.save(g3,"img3E.png",NULL);
+        
+        
+        
+        
     }
 
 }

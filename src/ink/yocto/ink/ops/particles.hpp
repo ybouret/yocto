@@ -1,4 +1,4 @@
-#ifndef YOCTO_INK_PARTICLES_INLCUDED
+#ifndef YOCTO_INK_PARTICLES_INCLUDED
 #define YOCTO_INK_PARTICLES_INCLUDED 1
 
 #include "yocto/ink/types.hpp"

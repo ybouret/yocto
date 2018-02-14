@@ -17,12 +17,27 @@ namespace yocto
         S(W,H),
         G(W,H),
         A(W,H),
-        M(W,H)
+        M(W,H),
+        B(*this),
+        Gmax(0),
+        strong(0),
+        weak(0)
         {
 
         }
 
 
+       
+
+       
+
+       
+
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // Gradient
+        //
+        ////////////////////////////////////////////////////////////////////////
         void Edges:: computeGradient(Engine &engine)
         {
             engine.prepare( max_of<size_t>(sizeof(Gmax), Histogram::BytesPerDomain ) );
@@ -37,32 +52,6 @@ namespace yocto
         }
 
 
-        void Edges:: keepLocalMaxima(Engine &engine)
-        {
-            engine.prepare( Histogram::BytesPerDomain );
-            if(Gmax>0)
-            {
-                engine.submit_no_flush(this, &Edges::keepThread );
-                H.clear();
-                engine.flush();
-                for(const Domain *dom = engine.head(); dom; dom=dom->next)
-                {
-                    Histogram::count_t *bins = static_cast<Histogram::count_t *>(dom->cache.data);
-                    for(size_t i=0;i<Histogram::BINS;++i)
-                    {
-                        H.hist[i] += bins[i];
-                    }
-                }
-            }
-            else
-            {
-                M.ldz();
-            }
-        }
-
-
-
-
         void Edges:: gradThread( const Domain &dom, threading::context & ) throw()
         {
 
@@ -75,10 +64,19 @@ namespace yocto
                 const Pixmap<float>::Row &Sj   = S[j];
                 for(unit_t i=xmax;i>=xmin;--i)
                 {
-                    const float f0  = Sj[i];
-                    float       Gx  = 0;
-                    float       Gy  = 0;
-
+                    float          Gx  = 0;
+                    float          Gy  = 0;
+                    const unsigned ipos = S.xpos(i);
+                    if(0==ipos)
+                    {
+                         Gx = Sj[i+1]   - Sj[i-1];
+                    }
+                    if(0==jpos)
+                    {
+                         Gy = S[j+1][i]-S[j-1][i];
+                    }
+#if 0
+                    const float    f0  = Sj[i];
                     // X component
                     switch(S.xpos(i))
                     {
@@ -116,7 +114,8 @@ namespace yocto
                             Gy = S[j+1][i]-S[j-1][i];
                             break;
                     }
-
+#endif
+                    
                     // storing component
                     const float gnorm = math::Hypotenuse(Gx,Gy);
                     const float angle = math::Atan2(Gy,Gx);
@@ -128,6 +127,40 @@ namespace yocto
                 }
             }
             dom.get<float>(0) = vmax;
+        }
+        
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // local Maxima
+        //
+        ////////////////////////////////////////////////////////////////////////
+        void Edges:: keepLocalMaxima(Engine &engine)
+        {
+            engine.prepare( Histogram::BytesPerDomain );
+            if(Gmax>0)
+            {
+                engine.submit_no_flush(this, &Edges::keepThread );
+                Histogram H;
+                engine.flush();
+                for(const Domain *dom = engine.head(); dom; dom=dom->next)
+                {
+                    Histogram::count_t *bins = static_cast<Histogram::count_t *>(dom->cache.data);
+                    for(size_t i=0;i<Histogram::BINS;++i)
+                    {
+                        H.hist[i] += bins[i];
+                    }
+                }
+                
+                strong = H.threshold();
+                weak   = (strong>>1);
+                
+            }
+            else
+            {
+                M.ldz();
+                this->ldz();
+                strong=weak=0;
+            }
         }
 
         static inline float __probe(const Pixmap<float> &I,
@@ -179,8 +212,83 @@ namespace yocto
                 }
 
             }
-
-
         }
+        
+        void Edges:: connect(Particles &particles, Engine &engine)
+        {
+            // find who's who's according to weak and strong
+            engine.submit(this, & Edges::connThread );
+            B.build(*this,particles,true);
+            std::cerr << "detected "  << particles.size << " edges" << std::endl;
+            
+            //return;
+           
+            Pixmap<uint8_t> &E = *this;
+            Particles        tmp;
+            while( particles.size )
+            {
+                Particle *p = particles.pop_front();
+                bool is_strong = false;
+                for(const Vertex *v = p->head;v;v=v->next)
+                {
+                    if( STRONG == E[v->pos] )
+                    {
+                        is_strong = true;
+                        break;
+                    }
+                }
+                
+                if(is_strong)
+                {
+                    for(const Vertex *v = p->head;v;v=v->next)
+                    {
+                        E[v->pos] = STRONG;
+                    }
+                    tmp.push_back(p);
+                }
+                else
+                {
+                    for(const Vertex *v = p->head;v;v=v->next)
+                    {
+                        E[v->pos] = WEAK;
+                    }
+                    tmp.push_back(p);
+                    //delete p;
+                }
+            }
+            particles.swap_with(tmp);
+            std::cerr << "remaining "  << particles.size << " edges" << std::endl;
+            B.rewrite(particles);
+            
+        }
+        
+        void Edges:: connThread(const Domain &dom, threading::context &) throw()
+        {
+            YOCTO_INK_AREA_LIMITS(dom);
+            for(unit_t j=ymax;j>=ymin;--j)
+            {
+                const Pixmap<uint8_t>::Row     &Mj   = M[j];
+                Pixmap<uint8_t>::Row           &Ej   = (*this)[j];
+                for(unit_t i=xmax;i>=xmin;--i)
+                {
+                    const uint8_t m = Mj[i];
+                    if(m<=weak)
+                    {
+                        Ej[i] = 0;
+                        continue;
+                    }
+                    
+                    if(m<strong)
+                    {
+                        Ej[i] = WEAK;
+                        continue;
+                    }
+                    
+                    Ej[i] = STRONG;
+                }
+                
+            }
+        }
+        
     }
 }

@@ -76,6 +76,15 @@ namespace yocto
                            uint8_t(floorf(f*float(C.g)+0.5f)),
                            uint8_t(floorf(f*float(C.b)+0.5f)));
             }
+            
+            static inline RGB dimRGB(const uint8_t f, const RGB &C) throw()
+            {
+                const unsigned R = unsigned(f) * unsigned(C.r);
+                const unsigned G = unsigned(f) * unsigned(C.g);
+                const unsigned B = unsigned(f) * unsigned(C.b);
+
+                return RGB(R/255,G/255,B/255);
+            }
 
         };
     }

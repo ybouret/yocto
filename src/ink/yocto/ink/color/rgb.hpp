@@ -36,7 +36,7 @@ namespace yocto
             }
             inline rgb(T R, T G, T B) throw() : r(R), g(G), b(B) {}
 
-            inline float intensity() const throw() { return Core::GreyScaleF(r,g,b); }
+            inline float intensity() const throw() { return float(r)+float(g)+float(b); }
             inline friend bool operator<( const rgb &lhs, const rgb &rhs) throw()
             {
                 return lhs.intensity() < rhs.intensity();
