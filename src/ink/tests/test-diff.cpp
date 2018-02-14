@@ -17,7 +17,7 @@ YOCTO_UNIT_TEST_IMPL(diff)
 
     Engine::SharedServer seqSrv( new threading::seq_server() );
     Engine::SharedServer parSrv( new threading::par_server() );
-    ramp_cold_to_cold rmp(0,math::numeric<float>::pi);
+    ramp_cold_to_cold    rmp(-math::numeric<float>::pi,math::numeric<float>::pi);
     Mapper mapper;
     if(argc>1)
     {
@@ -41,7 +41,7 @@ YOCTO_UNIT_TEST_IMPL(diff)
         mapper(angles,grad.ga,a2rgb,par);
         IMG.save(angles, "angle.png", NULL);
 
-
+        
         mapper(angles,grad.gn,angles,Convert::scaleRGB,par);
         IMG.save(angles, "angles.png", NULL);
 

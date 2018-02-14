@@ -33,6 +33,13 @@ namespace yocto
 
             virtual ~Domain() throw();
 
+            template <typename T> inline T &get(const size_t indx) const throw()
+            {
+                assert(cache.data); assert(cache.size>=(indx+1)*sizeof(T));
+                return *(static_cast<T *>(cache.data)+indx);
+            }
+
+            
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Domain);

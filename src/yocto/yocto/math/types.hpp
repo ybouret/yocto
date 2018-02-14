@@ -126,8 +126,8 @@ namespace yocto
         inline float  Atan( float  x ) throw()  { return atanf( x ); }
 		inline double Atan( double x ) throw()  { return atan(  x );  }
         
-        float  Atan2( float x, float y ) throw();    //! in ]-\pi,\pi]
-        double Atan2( double x, double y ) throw();  //! in ]-\pi,\pi]
+        float  Atan2( float y, float x ) throw();    //! in ]-\pi,\pi]
+        double Atan2( double y, double x ) throw();  //! in ]-\pi,\pi]
         
         
 		inline float  Pow( float  x, float  y ) throw() { return powf(x,y); }

@@ -33,6 +33,7 @@ namespace yocto
             virtual ~Histogram() throw();
             void     clear() throw();
 
+            //! append data count, need to be cleared for one pxm
             template <typename T,typename FUNC>
             inline Histogram &build(const Pixmap<T> &pxm,
                                     FUNC            &pixel2byte,
