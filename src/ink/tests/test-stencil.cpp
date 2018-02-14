@@ -21,6 +21,10 @@ YOCTO_UNIT_TEST_IMPL(stencil)
     Stencil sten1x1("1x1",0,0);
     Stencil sten3x1("3x1",1,0);
     Stencil sten1x3("1x3",0,1);
+
+    sten1x1.ld(1);
+    sten3x1.ld(1);
+    sten1x3.ld(1);
     
     if(argc>1)
     {
@@ -35,7 +39,7 @@ YOCTO_UNIT_TEST_IMPL(stencil)
         sten1x1._apply<RGB,uint8_t,3>(pxm,img3,seq);
         sten3x1._apply<RGB,uint8_t,3>(pxm,img3,seq);
         sten1x3._apply<RGB,uint8_t,3>(pxm,img3,seq);
-
+        
     }
 
 }

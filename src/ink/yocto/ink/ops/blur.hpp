@@ -24,6 +24,7 @@ namespace yocto
             const float  scale; //! 1.0f/(sig2+sig2)
             const unit_t length;
             explicit Blur(const float sig);
+            explicit Blur(const float sig,const unit_t len);
             virtual ~Blur() throw();
 
             float operator()(const float dx) const throw();
@@ -65,13 +66,11 @@ namespace yocto
 
 
         private:
-            const ipso::patch1D wpatch;
-            Data1D              weight;
-            const ipso::patch2D dpatch;
-            Data2D              dfield;
-            
+            Data1D      weight;
+            Data2D      dfield;
             void       *tgt;
             const void *src;
+            void setup() throw();
 
             YOCTO_DISABLE_COPY_AND_ASSIGN(Blur);
 
@@ -96,7 +95,8 @@ namespace yocto
                     {
                         const typename Pixmap<VECTOR>::Row &S_j = source[j];
                         typename       Pixmap<VECTOR>::Row &T_j = target[j];
-                        float        num[4] = {0,0,0,0};
+
+                        float num[4] = {0,0,0,0};
                         for(unit_t k=imax;k>=imin;--k)
                         {
                             const SCALAR *p  = (const SCALAR *)&S_j[k];
@@ -107,7 +107,6 @@ namespace yocto
                         {
                             q[ch] = SCALAR(num[ch]*wmul);
                         }
-
                     }
                 }
             }
@@ -134,7 +133,7 @@ namespace yocto
 
                     for(unit_t i=xmax;i>=xmin;--i)
                     {
-                        float        num[4] = {0,0,0,0};
+                        float num[4] = {0,0,0,0};
                         for(unit_t k=jmax;k>=jmin;--k)
                         {
                             const SCALAR *p  = (const SCALAR *)&source[k][i];

@@ -22,7 +22,7 @@ static inline void do_blur(Pixmap<T>       &tgt,
 
 YOCTO_UNIT_TEST_IMPL(blur)
 {
-    if(false)
+    if(true)
     {
         ios::wcstream fp("blur.dat");
         for(float sig=0.01f;sig<=10;sig+=0.01f)

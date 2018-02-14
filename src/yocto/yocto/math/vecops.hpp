@@ -55,6 +55,12 @@ namespace yocto
             v[0] *= fac;
         }
 
+        template <typename T, typename U>
+        static inline void mulset(T *v, const T fac, const U *u) throw()
+        {
+            v[0] = fac * T(u[0]);
+        }
+
         template <typename T,typename U>
         static inline void muladd(T *v, const T fac, const U *u) throw()
         {
@@ -116,6 +122,13 @@ namespace yocto
             v[0] += fac * T(u[0]);
             v[1] += fac * T(u[1]);
         }
+
+        template <typename T, typename U>
+        static inline void mulset(T *v, const T fac, const U *u) throw()
+        {
+            v[0] = fac * T(u[0]);
+            v[1] = fac * T(u[1]);
+        }
     };
 
 
@@ -174,6 +187,14 @@ namespace yocto
             v[0] += fac * T(u[0]);
             v[1] += fac * T(u[1]);
             v[2] += fac * T(u[2]);
+        }
+
+        template <typename T, typename U>
+        static inline void mulset(T *v, const T fac, const U *u) throw()
+        {
+            v[0] = fac * T(u[0]);
+            v[1] = fac * T(u[1]);
+            v[2] = fac * T(u[2]);
         }
     };
 

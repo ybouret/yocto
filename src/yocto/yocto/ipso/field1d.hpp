@@ -27,7 +27,7 @@ wlen(0)
                                     void          *usr=NULL) :
             YOCTO_IPSO_FIELD1D_CTOR(id)
             {
-                build_with(p,usr);
+                build_with(*this,usr);
             }
 
             inline explicit field1D(const string &id,
@@ -35,8 +35,30 @@ wlen(0)
                                     void          *usr = NULL ) :
             YOCTO_IPSO_FIELD1D_CTOR(*id)
             {
-                build_with(p,usr);
+                build_with(*this,usr);
             }
+
+            inline explicit field1D(const char  *id,
+                                    const unit_t lo,
+                                    const unit_t up) :
+            field<T>(id),
+            patch1D(lo,up),
+            item(0),wksp(0),wlen(0)
+            {
+                build_with( *this, NULL);
+            }
+
+            inline explicit field1D(const string &id,
+                                    const unit_t  lo,
+                                    const unit_t  up) :
+            field<T>(*id),
+            patch1D(lo,up),
+            item(0),wksp(0),wlen(0)
+            {
+                build_with( *this, NULL);
+            }
+
+
 
             inline virtual ~field1D() throw()
             {

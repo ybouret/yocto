@@ -20,12 +20,28 @@ namespace yocto
         sigm2( sigma*sigma ),
         scale( (sigm2>0.0f) ? 1.0f/(sigm2+sigm2) : 0.0f ),
         length( GetLength(sigma) ),
-        wpatch( -length, length  ),
-        weight( "weight", wpatch ),
-        dpatch( coord(-length,-length), coord(length,length) ),
-        dfield( "dfield", dpatch ),
+        weight( "weight", -length, length ),
+        dfield( "dfield", coord(-length,-length), coord(length,length) ),
         tgt(0),
         src(0)
+        {
+            setup();
+        }
+
+        Blur:: Blur(const float sig, const unit_t len) :
+        sigma( fabsf(sig)  ),
+        sigm2( sigma*sigma ),
+        scale( (sigm2>0.0f) ? 1.0f/(sigm2+sigm2) : 0.0f ),
+        length( abs_of(len) ),
+        weight( "weight", -length, length ),
+        dfield( "dfield", coord(-length,-length), coord(length,length) ),
+        tgt(0),
+        src(0)
+        {
+            setup();
+        }
+
+        void Blur:: setup() throw()
         {
             Blur &self = *this;
             weight[0]=1.0f;
@@ -46,7 +62,6 @@ namespace yocto
                 }
             }
         }
-
 
 
         float Blur:: operator()(const float dx) const throw()
