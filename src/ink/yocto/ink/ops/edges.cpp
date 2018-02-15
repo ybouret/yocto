@@ -241,9 +241,21 @@ namespace yocto
                 }
             }
             particles.swap_with(tmp);
+            //particles.discardSmallerThan(1);
             std::cerr << "remaining "  << particles.size << " edges" << std::endl;
+            for(Particle *p=particles.tail;p;p=p->prev)
+            {
+                const uint8_t flag = E[p->head->pos]; assert(WEAK==flag||STRONG==flag);
+                if(STRONG==flag)
+                {
+                    std::cerr << "\tsmallest strong has " << p->size << " pixels" << std::endl;
+                    break;
+                }
+            }
+
             tags.rewrite(particles);
-            
+
+
         }
         
         void Edges:: gradeThread(const Domain &dom, threading::context &) throw()

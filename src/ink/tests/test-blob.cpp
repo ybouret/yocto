@@ -32,7 +32,7 @@ YOCTO_UNIT_TEST_IMPL(blob)
         H.keep(level, Histogram::KeepGEQ, pxm, pxm3, Convert::RGB2U,par);
         IMG.save(pxm,"fg.png",NULL);
 
-        indx2rgba blobColors(10);
+        indx2rgba<size_t> blobColors(10);
         Blob      blobs(pxm);
         Particles particles;
 
@@ -101,7 +101,7 @@ YOCTO_UNIT_TEST_IMPL(fg)
 
 
 
-        indx2rgba blobColors(0);
+        indx2rgba<size_t> blobColors(0);
         Blob      blobs(fg);
         Particles particles;
         blobs.build(fg,particles,true);

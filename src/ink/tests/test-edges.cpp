@@ -70,14 +70,16 @@ YOCTO_UNIT_TEST_IMPL(edges)
         IMG.save(g3,"edges_maxima3.png",NULL);
 
         edges.grade(par);
-        IMG.save(edges,"edges_grade.png",NULL);
+        indx2rgba<uint8_t> edgeColors(0);
+        IMG.save("edges_grade.png",edges,edgeColors,NULL);
 
 
         Particles particles;
         edges.connect(particles,par);
-        indx2rgba blobColors(alea.leq(NamedColor::DB_SIZE));
+        indx2rgba<size_t> blobColors(alea.leq(NamedColor::DB_SIZE));
         IMG.save("edges_tags.png", edges.tags, blobColors, NULL);
-        IMG.save(edges,"edges_map.png",NULL);
+
+        IMG.save("edges_map.png",edges,edgeColors,NULL);
         
         mapper(g3,edges,pxm3,Convert::dimRGB,par);
         IMG.save(g3,"edges_rgb.png",NULL);
@@ -85,8 +87,9 @@ YOCTO_UNIT_TEST_IMPL(edges)
         AutoFilter<uint8_t> F(edges);
         F.Close(edges,par);
         //F.Average(edges,par);
-        IMG.save(edges,"edges_map_filter.png",NULL);
-        
+        // IMG.save(edges,"edges_map_filter.png",NULL);
+        IMG.save("edges_map_filter.png",edges,edgeColors,NULL);
+
         
         
     }
