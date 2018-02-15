@@ -32,13 +32,13 @@ namespace yocto
         }
 
         template <typename T>
-        static inline T max(const T *lhs) throw()
+        static inline T get_max(const T *lhs) throw()
         {
             return lhs[0];
         }
 
         template <typename T>
-        static inline T min(const T *lhs) throw()
+        static inline T get_min(const T *lhs) throw()
         {
             return lhs[0];
         }
@@ -91,13 +91,13 @@ namespace yocto
         }
 
         template <typename T>
-        static inline T max(const T *lhs) throw()
+        static inline T get_max(const T *lhs) throw()
         {
             return max_of<T>(lhs[0],lhs[1]);
         }
 
         template <typename T>
-        static inline T min(const T *lhs) throw()
+        static inline T get_min(const T *lhs) throw()
         {
             return min_of<T>(lhs[0],lhs[1]);
         }
@@ -154,13 +154,13 @@ namespace yocto
         }
 
         template <typename T>
-        static inline T max(const T *lhs) throw()
+        static inline T get_max(const T *lhs) throw()
         {
             return max_of<T>( max_of<T>(lhs[0],lhs[1]), lhs[2]);
         }
 
         template <typename T>
-        static inline T min(const T *lhs) throw()
+        static inline T get_min(const T *lhs) throw()
         {
             return min_of<T>( min_of<T>(lhs[0],lhs[1]), lhs[2]);
         }
@@ -219,10 +219,10 @@ template <typename VECTOR> inline SCALAR PREFIX##_prod(const VECTOR &lhs) throw(
 { return YOCTO_VECOPS_OP(prod,SCALAR,VECTOR)((const SCALAR *)&lhs); }\
 \
 template <typename VECTOR> inline SCALAR PREFIX##_max(const VECTOR &lhs) throw()\
-{ return YOCTO_VECOPS_OP(max,SCALAR,VECTOR)((const SCALAR *)&lhs); }\
+{ return YOCTO_VECOPS_OP(get_max,SCALAR,VECTOR)((const SCALAR *)&lhs); }\
 \
 template <typename VECTOR> inline SCALAR PREFIX##_min(const VECTOR &lhs) throw()\
-{ return YOCTO_VECOPS_OP(min,SCALAR,VECTOR)((const SCALAR *)&lhs); }\
+{ return YOCTO_VECOPS_OP(get_min,SCALAR,VECTOR)((const SCALAR *)&lhs); }\
 \
 template <typename VECTOR> inline void PREFIX##_dec(VECTOR &lhs) throw()\
 {  YOCTO_VECOPS_OP(dec,SCALAR,VECTOR)( ( SCALAR *)&lhs ); }

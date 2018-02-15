@@ -100,7 +100,7 @@ namespace yocto
                         SCALAR *q = (SCALAR *) &target[j][i];
                         for(size_t ch=0;ch<CHANNELS;++ch)
                         {
-                            q[ch] = wsum[ch];
+                            q[ch] = SCALAR(wsum[ch]);
                         }
                     }
 

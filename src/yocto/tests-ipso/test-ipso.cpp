@@ -183,7 +183,7 @@ YOCTO_UNIT_TEST_IMPL(ipso)
                 field2D<float>::row &Rj = f2f[j];
                 for(coord1D i=P2.lower.x;i<=P2.upper.x;++i)
                 {
-                    Rj[i] = i*j;
+                    Rj[i] = float(i*j);
                     f2p[j][i].z = alea.to<double>();
                 }
             }

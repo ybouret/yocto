@@ -74,7 +74,7 @@ YOCTO_UNIT_TEST_IMPL(bitmap)
     Ink::Pixmap<color3> pxm(__ALEA_SIZE);
     for(unit_t j=0;j<pxm.h;++j)
     {
-        uint8_t r( alea.leq(255) );
+        uint8_t r = uint8_t( alea.leq(255) );
         for(unit_t i=0;i<pxm.w;++i)
         {
             color3 &C = pxm[j][i];
