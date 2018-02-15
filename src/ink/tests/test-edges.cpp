@@ -5,6 +5,8 @@
 #include "yocto/ink/color/ramp/cold_to_cold.hpp"
 #include "yocto/ink/color/ramp/grey.hpp"
 #include "yocto/ink/ops/mapper.hpp"
+#include "yocto/ink/ops/filter.hpp"
+
 #include "yocto/ink/image.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/ocstream.hpp"
@@ -66,15 +68,24 @@ YOCTO_UNIT_TEST_IMPL(edges)
         PixmapRGB g3(pxm3.w,pxm3.h);
         mapper(g3,edges.maxima,pxm3,Convert::dimRGB,par);
         IMG.save(g3,"edges_maxima3.png",NULL);
-        
+
+        edges.grade(par);
+        IMG.save(edges,"edges_grade.png",NULL);
+
+
         Particles particles;
         edges.connect(particles,par);
-        indx2rgba blobColors(0);
+        indx2rgba blobColors(alea.leq(NamedColor::DB_SIZE));
         IMG.save("edges_tags.png", edges.tags, blobColors, NULL);
         IMG.save(edges,"edges_map.png",NULL);
+        
         mapper(g3,edges,pxm3,Convert::dimRGB,par);
         IMG.save(g3,"edges_rgb.png",NULL);
-        
+
+        AutoFilter<uint8_t> F(edges);
+        F.Close(edges,par);
+        //F.Average(edges,par);
+        IMG.save(edges,"edges_map_filter.png",NULL);
         
         
         

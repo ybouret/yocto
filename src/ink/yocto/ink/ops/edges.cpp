@@ -1,6 +1,7 @@
 
 #include "yocto/ink/ops/edges.hpp"
 #include "yocto/ink/ops/histogram.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 namespace yocto
 {
@@ -26,13 +27,6 @@ namespace yocto
 
         }
 
-
-       
-
-       
-
-       
-
         ////////////////////////////////////////////////////////////////////////
         //
         // Gradient
@@ -41,7 +35,7 @@ namespace yocto
         void Edges:: computeGradient(Engine &engine)
         {
             engine.prepare( max_of<size_t>(sizeof(Gmax), Histogram::BytesPerDomain ) );
-            engine.submit(this, &Edges::gradThread);
+            engine.submit(this, &Edges::gradientThread);
             const Domain *dom = engine.head();
             Gmax = dom->get<float>(0);
             for(dom=dom->next;dom;dom=dom->next)
@@ -52,7 +46,7 @@ namespace yocto
         }
 
 
-        void Edges:: gradThread( const Domain &dom, threading::context & ) throw()
+        void Edges:: gradientThread( const Domain &dom, threading::context & ) throw()
         {
 
             YOCTO_INK_AREA_LIMITS(dom);
@@ -97,16 +91,24 @@ namespace yocto
         ////////////////////////////////////////////////////////////////////////
         void Edges:: keepLocalMaxima(Engine &engine)
         {
+
             if(Gmax>0)
             {
                 engine.prepare( Histogram::BytesPerDomain );
-                engine.submit_no_flush(this, &Edges::keepThread );
+                engine.submit_no_flush(this, &Edges::maximaThread );
                 Histogram H;
                 engine.flush();
                 H.collectFrom(engine);
                 strong = H.threshold();
                 weak   = (strong>>1);
-                
+                {
+                    ios::wcstream fp("edges_hist.dat");
+                    for(size_t i=0;i<Histogram::BINS;++i)
+                    {
+                        fp("%g %g\n", double(H.Bins[i]), double(H.counts[i]));
+                    }
+
+                }
             }
             else
             {
@@ -153,7 +155,7 @@ namespace yocto
 
 
 
-        void Edges:: keepThread( const Domain &dom, threading::context & ) throw()
+        void Edges:: maximaThread( const Domain &dom, threading::context & ) throw()
         {
             //static const float __pi = math::numeric<float>::pi;
             YOCTO_INK_AREA_LIMITS(dom);
@@ -181,11 +183,25 @@ namespace yocto
 
             }
         }
-        
+
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // grading from maxima, weak and strong values
+        //
+        ////////////////////////////////////////////////////////////////////////
+        void Edges:: grade( Engine &engine )
+        {
+            engine.submit(this, & Edges::gradeThread );
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // particle connections
+        //
+        ////////////////////////////////////////////////////////////////////////
         void Edges:: connect(Particles &particles, Engine &engine)
         {
-            // find who's who's according to weak and strong
-            engine.submit(this, & Edges::connThread );
             tags.build(*this,particles,true);
             std::cerr << "detected "  << particles.size << " edges" << std::endl;
             
@@ -230,7 +246,7 @@ namespace yocto
             
         }
         
-        void Edges:: connThread(const Domain &dom, threading::context &) throw()
+        void Edges:: gradeThread(const Domain &dom, threading::context &) throw()
         {
             YOCTO_INK_AREA_LIMITS(dom);
             for(unit_t j=ymax;j>=ymin;--j)

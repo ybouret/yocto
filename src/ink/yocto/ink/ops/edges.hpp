@@ -38,13 +38,17 @@ namespace yocto
              */
             void keepLocalMaxima(Engine &engine);
 
+            //! grade maxima into edges according to weak and strong
+            void grade( Engine &engine );
+
+            //!
             void connect(Particles &particles, Engine &engine);
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Edges);
-            void  gradThread( const Domain &dom, threading::context & ) throw();
-            void  keepThread( const Domain &dom, threading::context & ) throw();
-            void  connThread( const Domain &dom, threading::context & ) throw();
+            void  gradientThread( const Domain &dom, threading::context & ) throw();
+            void  maximaThread( const Domain &dom, threading::context & ) throw();
+            void  gradeThread( const Domain &dom, threading::context & ) throw();
             
         public:
             float     Gmax;
