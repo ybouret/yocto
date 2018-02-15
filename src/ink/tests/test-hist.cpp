@@ -30,7 +30,7 @@ YOCTO_UNIT_TEST_IMPL(hist)
             ios::wcstream fp("hseq.dat");
             for(size_t i=0;i<Histogram::BINS;++i)
             {
-                fp("%u %u\n", unsigned( H.bins[i] ), unsigned( H.hist[i] ) );
+                fp("%u %u\n", unsigned( H.Bins[i] ), unsigned( H.counts[i] ) );
             }
         }
         H.build(pxm3,Convert::RGB2U,par);
@@ -38,7 +38,7 @@ YOCTO_UNIT_TEST_IMPL(hist)
             ios::wcstream fp("hpar.dat");
             for(size_t i=0;i<Histogram::BINS;++i)
             {
-                fp("%u %u\n", unsigned( H.bins[i] ), unsigned( H.hist[i] ) );
+                fp("%u %u\n", unsigned( H.Bins[i] ), unsigned( H.counts[i] ) );
             }
         }
 

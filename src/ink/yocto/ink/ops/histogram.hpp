@@ -24,16 +24,26 @@ namespace yocto
 
             typedef size_t count_t;
 
-            static const size_t BINS           = 256;
-            static const size_t BytesPerDomain = BINS * sizeof(count_t);
-            const uint8_t       bins[BINS];
-            count_t             hist[BINS];
+            static const size_t  BINS           = 256;
+            static const size_t  BytesPerDomain = BINS * sizeof(count_t);
+            static const uint8_t Bins[BINS];
+            count_t              counts[BINS];
 
             explicit Histogram() throw();
             virtual ~Histogram() throw();
             void     clear() throw();
 
+
+            //! collect from another BINS hist
+            void collect( const count_t *other ) throw();
+
+            //! collect from domains
+            void collectFrom( const Engine &engine) throw();
+
+            //__________________________________________________________________
+            //
             //! append data count, need to be cleared for one pxm
+            //__________________________________________________________________
             template <typename T,typename FUNC>
             inline Histogram &build(const Pixmap<T> &pxm,
                                     FUNC            &pixel2byte,
@@ -41,26 +51,35 @@ namespace yocto
             {
                 source = &pxm;
                 proc   = (void *)&pixel2byte;
+                //______________________________________________________________
+                //
                 // allocate/clear memory for histograms
+                //______________________________________________________________
                 engine.prepare(BytesPerDomain);
                 // start building local histograms
                 engine.submit_no_flush(this, & Histogram::buildThread<T,FUNC> );
+                //______________________________________________________________
+                //
                 // clean during this time
+                //______________________________________________________________
                 clear();
+                //______________________________________________________________
+                //
                 // wait for histograms to be built
+                //______________________________________________________________
                 engine.flush();
+                //______________________________________________________________
+                //
                 // reduction
-                for( const Domain *dom=engine.head();dom;dom=dom->next)
-                {
-                    const count_t *h = static_cast<const count_t *>(dom->cache.data);
-                    for(size_t i=0;i<BINS;++i)
-                    {
-                        hist[i] += h[i];
-                    }
-                }
+                //______________________________________________________________
+                collectFrom(engine);
                 return *this;
             }
 
+            //______________________________________________________________
+            //
+            // compute Ostu's threshold
+            //______________________________________________________________
             size_t threshold() const throw();
 
             template <typename T,typename FUNC>

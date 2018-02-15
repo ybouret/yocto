@@ -14,11 +14,11 @@ namespace yocto
 
         Edges:: Edges(const unit_t W, const unit_t H) :
         Pixmap<uint8_t>(W,H),
-        S(W,H),
-        G(W,H),
-        A(W,H),
-        M(W,H),
-        B(*this),
+        intensity(W,H),
+        gradient(W,H),
+        direction(W,H),
+        maxima(W,H),
+        tags(*this),
         Gmax(0),
         strong(0),
         weak(0)
@@ -58,72 +58,33 @@ namespace yocto
             YOCTO_INK_AREA_LIMITS(dom);
             float vmax=0;
 
+
             for(unit_t j=ymax;j>=ymin;--j)
             {
-                const unsigned            jpos = this->ypos(j);
-                const Pixmap<float>::Row &Sj   = S[j];
+                const bool                compute_y = (0 == ypos(j));
+                const Pixmap<float>::Row &Ij        = intensity[j];
+                Pixmap<float>::Row       &Gj        = gradient[j];
+                Pixmap<float>::Row       &Aj        = direction[j];
                 for(unit_t i=xmax;i>=xmin;--i)
                 {
                     float          Gx  = 0;
                     float          Gy  = 0;
-                    const unsigned ipos = S.xpos(i);
+                    const unsigned ipos = intensity.xpos(i);
                     if(0==ipos)
                     {
-                         Gx = Sj[i+1]   - Sj[i-1];
+                         Gx = Ij[i+1]   - Ij[i-1];
                     }
-                    if(0==jpos)
+                    if(compute_y)
                     {
-                         Gy = S[j+1][i]-S[j-1][i];
-                    }
-#if 0
-                    const float    f0  = Sj[i];
-                    // X component
-                    switch(S.xpos(i))
-                    {
-                        case AtLowerX: {
-                            const type f1 = Sj[i+1];
-                            const type f2 = Sj[i+2];
-                            Gx = 4*f1-(3*f0+f2);
-                        } break;
-                        case AtUpperX: {
-                            const type f1 = Sj[i-1];
-                            const type f2 = Sj[i-2];
-                            Gx = (3*f0+f2)-4*f1;
-                        } break;
-                        default:
-                            assert(0==xpos(i));
-                            Gx = Sj[i+1]   - Sj[i-1];
-                            break;
+                         Gy = intensity[j+1][i]-intensity[j-1][i];
                     }
 
-                    // Y component
-                    switch(jpos)
-                    {
-                        case AtLowerY: {
-                            const type f1 = S[j+1][i];
-                            const type f2 = S[j+2][i];
-                            Gy = 4*f1-(3*f0+f2);
-                        } break;
-                        case AtUpperY : {
-                            const type f1 = S[j-1][i];
-                            const type f2 = S[j-2][i];
-                            Gy = (3*f0+f2)-4*f1;
-                        } break;
-                        default:
-                            assert(0==jpos);
-                            Gy = S[j+1][i]-S[j-1][i];
-                            break;
-                    }
-#endif
-                    
                     // storing component
                     const float gnorm = math::Hypotenuse(Gx,Gy);
                     const float angle = math::Atan2(Gy,Gx);
-                    G[j][i] = gnorm;
-                    A[j][i] = angle;
+                    Gj[i] = gnorm;
+                    Aj[i] = angle;
                     if(gnorm>vmax) vmax=gnorm;
-                    
-
                 }
             }
             dom.get<float>(0) = vmax;
@@ -136,70 +97,77 @@ namespace yocto
         ////////////////////////////////////////////////////////////////////////
         void Edges:: keepLocalMaxima(Engine &engine)
         {
-            engine.prepare( Histogram::BytesPerDomain );
             if(Gmax>0)
             {
+                engine.prepare( Histogram::BytesPerDomain );
                 engine.submit_no_flush(this, &Edges::keepThread );
                 Histogram H;
                 engine.flush();
-                for(const Domain *dom = engine.head(); dom; dom=dom->next)
-                {
-                    Histogram::count_t *bins = static_cast<Histogram::count_t *>(dom->cache.data);
-                    for(size_t i=0;i<Histogram::BINS;++i)
-                    {
-                        H.hist[i] += bins[i];
-                    }
-                }
-                
+                H.collectFrom(engine);
                 strong = H.threshold();
                 weak   = (strong>>1);
                 
             }
             else
             {
-                M.ldz();
+                maxima.ldz();
                 this->ldz();
                 strong=weak=0;
             }
         }
 
-        static inline float __probe(const Pixmap<float> &I,
-                                    const unit_t         x,
-                                    const unit_t         y,
-                                    const float          angle) throw()
+        
+        static inline bool __is_local_max(const float          I0,
+                                          const Pixmap<float> &I,
+                                          const unit_t         x,
+                                          const unit_t         y,
+                                          const float          angle) throw()
         {
             assert(I.has(x,y));
-            const unit_t dx = unit_t(floorf(cosf(angle)+0.5f));
-            const unit_t dy = unit_t(floorf(sinf(angle)+0.5f));
-            assert(1==max_of( abs_of(dx), abs_of(dy) ));
-            const coord p(x+dx,y+dy);
-            if(I.has(p))
+            assert( *(uint32_t *)&I0 == *(uint32_t *)&I[y][x]);
+            const float c   = cosf(angle);
+            const float s   = sinf(angle);
+            const float mid = I0;
+            float       fwd = mid;
+            float       rev = mid;
+            // check fwd
             {
-                return I[p];
+                const unit_t dx = unit_t(floorf(c+0.5f));
+                const unit_t dy = unit_t(floorf(s+0.5f));
+                assert(1==max_of( abs_of(dx), abs_of(dy) ));
+                const coord p(x+dx,y+dy);
+                if(I.has(p)) fwd = I[p];
             }
-            else
+
+            // check rev
             {
-                return I[y][x];
+                const unit_t dx = unit_t(floorf(0.5f-c));
+                const unit_t dy = unit_t(floorf(0.5f-s));
+                assert(1==max_of( abs_of(dx), abs_of(dy) ));
+                const coord p(x+dx,y+dy);
+                if(I.has(p)) rev = I[p];
             }
+
+            return (fwd<=mid)&&(rev<=mid);
         }
+
+
 
         void Edges:: keepThread( const Domain &dom, threading::context & ) throw()
         {
-            static const float __pi = math::numeric<float>::pi;
+            //static const float __pi = math::numeric<float>::pi;
             YOCTO_INK_AREA_LIMITS(dom);
             const float         scal = 255.0f / Gmax;
             Histogram::count_t *bins = static_cast<Histogram::count_t *>(dom.cache.data);
             for(unit_t j=ymax;j>=ymin;--j)
             {
-                const Pixmap<float>::Row &Gj   = G[j];
-                const Pixmap<float>::Row &Aj   = A[j];
-                Pixmap<uint8_t>::Row     &Mj   = M[j];
+                const Pixmap<float>::Row &Gj   = gradient[j];
+                const Pixmap<float>::Row &Aj   = direction[j];
+                Pixmap<uint8_t>::Row     &Mj   = maxima[j];
                 for(unit_t i=xmax;i>=xmin;--i)
                 {
                     const float g0      = Gj[i];
-                    const float g_front = __probe(G,i,j,Aj[i]);
-                    const float g_back  = __probe(G,i,j,Aj[i]+__pi);
-                    if(g_front<=g0&&g_back<=g0)
+                    if(__is_local_max(g0,gradient, i, j, Aj[i]))
                     {
                         const uint8_t b = uint8_t(floorf(scal*g0+0.5f));
                         Mj[i] = b;
@@ -218,7 +186,7 @@ namespace yocto
         {
             // find who's who's according to weak and strong
             engine.submit(this, & Edges::connThread );
-            B.build(*this,particles,true);
+            tags.build(*this,particles,true);
             std::cerr << "detected "  << particles.size << " edges" << std::endl;
             
             //return;
@@ -258,7 +226,7 @@ namespace yocto
             }
             particles.swap_with(tmp);
             std::cerr << "remaining "  << particles.size << " edges" << std::endl;
-            B.rewrite(particles);
+            tags.rewrite(particles);
             
         }
         
@@ -267,7 +235,7 @@ namespace yocto
             YOCTO_INK_AREA_LIMITS(dom);
             for(unit_t j=ymax;j>=ymin;--j)
             {
-                const Pixmap<uint8_t>::Row     &Mj   = M[j];
+                const Pixmap<uint8_t>::Row     &Mj   = maxima[j];
                 Pixmap<uint8_t>::Row           &Ej   = (*this)[j];
                 for(unit_t i=xmax;i>=xmin;--i)
                 {

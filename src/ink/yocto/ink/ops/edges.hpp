@@ -3,6 +3,7 @@
 
 #include "yocto/ink/ops/blob.hpp"
 #include "yocto/ink/ops/blur.hpp"
+#include "yocto/ink/ops/histogram.hpp"
 
 namespace yocto
 {
@@ -18,11 +19,12 @@ namespace yocto
             explicit Edges(const unit_t W, const unit_t H);
             virtual ~Edges() throw();
 
-            Pixmap<float>   S; //!< source intensity
-            Pixmap<float>   G; //!< gradient
-            Pixmap<float>   A; //!< angle
-            Pixmap<uint8_t> M; //!< local maximum only
-            Blob            B;
+            Pixmap<float>   intensity; //!< source intensity
+            Pixmap<float>   gradient;  //!< gradient
+            Pixmap<float>   direction; //!< gradient direction
+            Pixmap<uint8_t> maxima;    //!< local maximum only
+            Blob            tags;      //!< edges tags
+            
             //! compute G from S, and angle
             /**
              The maximal gradient Gmax is computed as well

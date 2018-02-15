@@ -47,33 +47,33 @@ YOCTO_UNIT_TEST_IMPL(edges)
         IMG.save(pxmf, "imgf.png", NULL);
         Engine par(pxm3,parSrv);
         Edges  edges(pxm3.w,pxm3.h);
-        g5x5.apply(edges.S,pxmf,par);
-        IMG.save(edges.S, "edgesS.png", NULL);
+        g5x5.apply(edges.intensity,pxmf,par);
+        IMG.save(edges.intensity, "edges_intensity.png", NULL);
         edges.computeGradient(par);
 
         //ramp_cold_to_very_hot grmp(0.0f, edges.Gmax );
         ramp_grey  grmp(0.0f, edges.Gmax );
 
-        IMG.save("gradI.png", edges.G, grmp, NULL);
-        IMG.save("gradA.png", edges.A, armp, NULL);
+        IMG.save("edges_gradient.png",  edges.gradient,  grmp, NULL);
+        IMG.save("edges_direction.png", edges.direction, armp, NULL);
 
         edges.keepLocalMaxima(par);
         std::cerr << "strong=" << edges.strong << std::endl;
         std::cerr << "weak="   << edges.weak   << std::endl;
         
-        IMG.save(edges.M,"gradM.png",NULL);
+        IMG.save(edges.maxima,"edges_maxima.png",NULL);
 
         PixmapRGB g3(pxm3.w,pxm3.h);
-        mapper(g3,edges.M,pxm3,Convert::dimRGB,par);
-        IMG.save(g3,"edgesM.png",NULL);
+        mapper(g3,edges.maxima,pxm3,Convert::dimRGB,par);
+        IMG.save(g3,"edges_maxima3.png",NULL);
         
         Particles particles;
         edges.connect(particles,par);
-        indx2rgba blobColors(10);
-        IMG.save("blob.png", edges.B, blobColors, NULL);
-        IMG.save(edges,"edgesC.png",NULL);
+        indx2rgba blobColors(0);
+        IMG.save("edges_tags.png", edges.tags, blobColors, NULL);
+        IMG.save(edges,"edges_map.png",NULL);
         mapper(g3,edges,pxm3,Convert::dimRGB,par);
-        IMG.save(g3,"img3E.png",NULL);
+        IMG.save(g3,"edges_rgb.png",NULL);
         
         
         
