@@ -21,7 +21,7 @@ namespace yocto
         {
             if( shared.refcount() <= 0 )
             {
-                throw exception("fields: '%s' is not a pointer", * shared.name );
+                throw exception("fields: '%s' is not shared", * shared.name );
             }
             const field_info::pointer p( &shared );
             push_back(p);

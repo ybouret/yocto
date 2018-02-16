@@ -9,7 +9,7 @@ namespace yocto
 {
     namespace ipso
     {
-        
+        //! a workspace is a set of fields on a domain
         template <typename COORD>
         class workspace : public domain<COORD>, public field_db, public counted
         {
@@ -17,8 +17,7 @@ namespace yocto
 
             static const size_t    DIM = domain<COORD>::DIM;
             exchange_buffers::list iobuf[DIM];
-            //field_db               fields;
-
+            
             //! create a domain with its ghosts
             /**
              \param block_size maximum block_size per coordinate for I/O
@@ -42,10 +41,12 @@ namespace yocto
                 }
             }
             
+            //! destructor, nothing special to do
             inline virtual ~workspace() throw() {}
 
+            //! helper to create a field
             template <typename FIELD> inline
-            FIELD & create( const string &field_name )
+            inline FIELD & create( const string &field_name )
             {
                 FIELD                     *F = new FIELD( field_name, this->outer );
                 const field_info::pointer  pF( F );
@@ -56,8 +57,9 @@ namespace yocto
                 return *F;
             }
 
+            //! wrapper
             template <typename FIELD> inline
-            FIELD & create( const char *field_name )
+            inline FIELD & create( const char *field_name )
             {
                 const string id(field_name);
                 return create<FIELD>(id);
@@ -86,7 +88,7 @@ namespace yocto
                 }
             }
 
-            //! store all data, them ready for I/O
+            //! store all data from ONE field, then ready for I/O
             /**
              - perform local exchange
              - store data to be sent in exchange buffers
@@ -107,7 +109,7 @@ namespace yocto
                 }
             }
 
-            //! store all data from fields to be sync
+            //! store all data from fields
             inline void sync_store( fields &fvar ) throw()
             {
                 for(size_t i=fvar.size();i>0;--i)
@@ -130,7 +132,7 @@ namespace yocto
             
             
 
-            //! query all data from exchange buffers after I/O
+            //! query all data for ONE field from exchange buffers after I/O
             inline void sync_query( field_info &F ) throw()
             {
                 assert(owns(F));

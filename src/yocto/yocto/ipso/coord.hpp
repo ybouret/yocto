@@ -19,21 +19,21 @@ namespace yocto
     namespace ipso
     {
 
-        typedef unit_t           coord1D;
-        typedef point2d<coord1D> coord2D;
-        typedef point3d<coord1D> coord3D;
-
+        typedef unit_t           coord1D; //!< system integral unit
+        typedef point2d<coord1D> coord2D; //!< in 2D...
+        typedef point3d<coord1D> coord3D; //!< in 3D
+#define YOCTO_IPSO_DIM_OF(COORDINATE) (sizeof(COORDINATE)/sizeof(coord1D))
         YOCTO_VECOPS(__coord,coord1D,COORD)
         
         
-
+        //! x,y,z
         const char * __coord_name(const size_t dim) throw();
 
         template <typename COORD>
         inline void __coord_printf(FILE *fp, const COORD C)
         {
             fprintf(fp,"[%g",double(__coord(C,0)));
-            for(size_t i=1;i<sizeof(COORD)/sizeof(coord1D);++i)
+            for(size_t i=1;i<YOCTO_IPSO_DIM_OF(COORD);++i)
             {
                 fprintf(fp," %g",double(__coord(C,i)));
             }
@@ -46,7 +46,7 @@ namespace yocto
             template <typename COORD>
             static inline COORD get(const char *text, const char *name)
             {
-                static const size_t DIM = sizeof(COORD)/sizeof(coord1D);
+                static const size_t DIM = YOCTO_IPSO_DIM_OF(COORD);
                 const string id   = name;
                 const string data = text;
                 strings      words(DIM,as_capacity);

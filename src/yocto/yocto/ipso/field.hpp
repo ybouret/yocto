@@ -22,7 +22,7 @@ namespace yocto
             typedef intr_ptr<string,field_info> pointer;
             typedef set<string,pointer>         set_type;
 
-            const string name;  //!< unique identifier for database
+            const string name;  //!< unique identifier for set
             const size_t count; //!< items count, set by field after setup
             const size_t bytes; //!< bytes count, set by field after setup
             
@@ -48,7 +48,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_info);
         };
 
-        //! a field database is a set with access by key
+        //! a field database is a set of field with access by their name
         class field_db : public field_info::set_type
         {
         public:
@@ -89,7 +89,7 @@ namespace yocto
 
             }
             
-            
+            //! store data with offsets in G.send into xbuff
             inline virtual void store(const ghosts    &G,
                                       exchange_buffer &xbuff ) const throw()
             {
@@ -102,6 +102,7 @@ namespace yocto
                 }
             }
 
+            //! query data with offsets in G.recv from xbuff
             inline virtual void query(const ghosts    &G,
                                       exchange_buffer &xbuff) throw()
             {

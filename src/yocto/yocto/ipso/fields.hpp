@@ -8,9 +8,10 @@ namespace yocto
     namespace ipso
     {
 
+        //! a container of field_info
         typedef vector<field_info::pointer> fields_type;
 
-        
+        //! simple wrapper
         class fields : public fields_type
         {
         public:

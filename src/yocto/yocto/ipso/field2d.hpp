@@ -14,13 +14,12 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
             typedef field1D<T> row;
 
+#define YOCTO_IPSO_FIELD2D_CTOR0() rows(0), wksp(0), wlen(0)
 #define YOCTO_IPSO_FIELD2D_CTOR(ID) \
 field<T>(ID),                        \
 patch2D(p),                           \
 row_patch(p.lower.x,p.upper.x),        \
-rows(0),                                \
-wksp(0),                                 \
-wlen(0)
+YOCTO_IPSO_FIELD2D_CTOR0()
 
             inline explicit field2D(const char    *id,
                                     const patch2D &p,
@@ -46,9 +45,7 @@ wlen(0)
             field<T>(*id),
             patch2D(lo,up),
             row_patch(lower.x,upper.x),
-            rows(0),
-            wksp(0),
-            wlen(0)
+            YOCTO_IPSO_FIELD2D_CTOR0()
             {
                 build_with(NULL,NULL);
             }
@@ -59,9 +56,7 @@ wlen(0)
             field<T>(id),
             patch2D(lo,up),
             row_patch(lower.x,upper.x),
-            rows(0),
-            wksp(0),
-            wlen(0)
+            YOCTO_IPSO_FIELD2D_CTOR0()
             {
                 build_with(NULL,NULL);
             }

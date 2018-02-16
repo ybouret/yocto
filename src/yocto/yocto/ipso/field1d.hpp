@@ -14,12 +14,11 @@ namespace yocto
         public:
             YOCTO_ARGUMENTS_DECL_T;
 
+#define YOCTO_IPSO_FIELD1D_CTOR0() item(0),wksp(0),wlen(0)
 #define YOCTO_IPSO_FIELD1D_CTOR(ID) \
 field<T>(ID),                        \
 patch1D(p),                           \
-item(0),                               \
-wksp(0),                                \
-wlen(0)
+YOCTO_IPSO_FIELD1D_CTOR0()
 
             //! construct a field or link it is usr!=NULL
             inline explicit field1D(const char    *id,
@@ -43,7 +42,7 @@ wlen(0)
                                     const unit_t up) :
             field<T>(id),
             patch1D(lo,up),
-            item(0),wksp(0),wlen(0)
+            YOCTO_IPSO_FIELD1D_CTOR0()
             {
                 build_with( *this, NULL);
             }
@@ -53,7 +52,7 @@ wlen(0)
                                     const unit_t  up) :
             field<T>(*id),
             patch1D(lo,up),
-            item(0),wksp(0),wlen(0)
+            YOCTO_IPSO_FIELD1D_CTOR0()
             {
                 build_with( *this, NULL);
             }

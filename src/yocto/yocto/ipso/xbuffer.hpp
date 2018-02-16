@@ -8,6 +8,8 @@ namespace yocto
 {
     namespace ipso
     {
+        
+        //! exchange I/O buffer for ghosts
         class exchange_buffer
         {
         public:
@@ -16,10 +18,11 @@ namespace yocto
             ~exchange_buffer() throw();
             
             void   reset() throw();
-            size_t load() const throw(); //!< wptr-rptr, #active bytes
-            size_t left() const throw(); //!< last-wptr, #available bytes
+            size_t load() const throw(); //!< wptr-rptr, current #active bytes
+            size_t left() const throw(); //!< last-wptr, current #available bytes
 
 
+            //! store data, update status
             template <typename T>
             inline void store( const T &data ) throw()
             {
@@ -28,6 +31,7 @@ namespace yocto
                 wptr += sizeof(T);
             }
             
+            //! query data, update status
             template <typename T>
             inline T query() throw()
             {
@@ -38,6 +42,7 @@ namespace yocto
                 return ans;
             }
             
+            //! in place data query, update status
             template <typename T>
             inline void query( T &ans ) throw()
             {
@@ -49,9 +54,9 @@ namespace yocto
             //! artificial load, for I/O
             void load(const size_t input_bytes) throw();
 
-            //! current read only area, with length=load
-            const void *addr() const throw(); //!< first read only byte=rptr
-            void       *addr() throw();       //!< first read/write byte=rptr
+            const void *addr() const throw(); //!< current r/o memory, first read only byte@rptr+load()
+            void       *addr() throw();       //!< current r/w memory, first read only byte@rptr+load()
+           
             //! mimic memory exchange
             void copy(const exchange_buffer &from) throw();
 

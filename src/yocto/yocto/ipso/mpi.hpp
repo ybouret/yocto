@@ -103,7 +103,7 @@ namespace yocto
                 }
             }
 
-            //! for one field of some fields
+            //! for one field of some fields, using overloaded sync_store
             template <typename FIELD_TYPE>
             inline void synchronize( FIELD_TYPE &F )
             {

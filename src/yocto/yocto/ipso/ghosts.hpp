@@ -3,14 +3,13 @@
 
 #include "yocto/ipso/patch.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/core/list.hpp"
 
 namespace yocto
 {
     namespace ipso
     {
 
-        //! list of offsets
+        //! a ghost is basically a list of offsets
         typedef vector<coord1D> ghost;
 
 
@@ -33,7 +32,7 @@ namespace yocto
 
             const ghost     send;         //!< built by load if the 'build' flag is set
             const ghost     recv;         //!< built by load if the 'build' flag is set
-            const size_t    count;        //!< built by load, ALWAYS
+            const size_t    count;        //!< computed by load, ALWAYS
             const size_t    source;       //!< MPI style source
             const size_t    target;       //!< MPI style target
             const size_t    source_index; //!< source+1, C++ style
@@ -43,20 +42,30 @@ namespace yocto
             const position  pos;
             const coord1D   ng;
             
+            //! build ghosts
+            /**
+             \param the_pos    ghosts' position
+             \param the_ng     number of linear ghosts to add
+             \param the_source MPI style rank of source
+             \param the_target MPI style rank of target
+             */
             explicit ghosts(const position the_pos,
                             const coord1D  the_ng,
                             const size_t   the_source,
                             const size_t   the_target) throw();
             virtual ~ghosts() throw();
 
+            //! compute the coordinates in 1D, according to settings
             void load(const patch1D &inner,
                       const patch1D &outer,
                       const bool     build);
 
+            //! compute the coordinates in 2D, according to settings
             void load(const patch2D &inner,
                       const patch2D &outer,
                       const bool     build);
 
+            //! compute the coordinates in 3D, according to settings
             void load(const patch3D &inner,
                       const patch3D &outer,
                       const bool     build);
