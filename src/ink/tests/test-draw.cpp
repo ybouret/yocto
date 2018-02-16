@@ -101,6 +101,7 @@ YOCTO_UNIT_TEST_IMPL(draw)
 
         }
     }
+    
     for(size_t k=0;k<100;++k)
     {
         const unit_t  X = x0 + alea.leq(w0);
@@ -109,12 +110,44 @@ YOCTO_UNIT_TEST_IMPL(draw)
         const RGB     C = NamedColor::FetchRGB(alea.leq(1000));
         const float   F = Convert::RGB2F(C);
         const uint8_t U = Convert::RGB2U(C);
-        Draw::Circle(img3, X, Y, R, C);
-        Draw::Circle(imgf, X, Y, R, F);
-        Draw::Circle(img1, X, Y, R, U);
+        if( alea.get<float>() > 0.8f )
+        {
+            Draw::Circle(img3, X, Y, R, C);
+            Draw::Circle(imgf, X, Y, R, F);
+            Draw::Circle(img1, X, Y, R, U);
+        }
+        else
+        {
+            const uint8_t alpha = alea.leq(255);
+            Draw::Circle(img3, X, Y, R, C, alpha);
+            Draw::Circle(imgf, X, Y, R, F, alpha);
+            Draw::Circle(img1, X, Y, R, U, alpha);
+        }
         
     }
-
+    
+    for(size_t k=0;k<50;++k)
+    {
+        const unit_t  X = x0 + alea.leq(w0);
+        const unit_t  Y = y0 + alea.leq(h0);
+        const size_t  R = alea.leq(100);
+        const RGB     C = NamedColor::FetchRGB(alea.leq(1000));
+        const float   F = Convert::RGB2F(C);
+        const uint8_t U = Convert::RGB2U(C);
+        if( alea.get<float>() > 0.9f )
+        {
+            Draw::Disk(img3, X, Y, R, C);
+            Draw::Disk(imgf, X, Y, R, F);
+            Draw::Disk(img1, X, Y, R, U);
+        }
+        else
+        {
+            const uint8_t alpha = alea.leq(255);
+            Draw::Disk(img3, X, Y, R, C, alpha);
+            Draw::Disk(imgf, X, Y, R, F, alpha);
+            Draw::Disk(img1, X, Y, R, U, alpha);
+        }
+    }
 
     IMG.save(img3, "img3.png", NULL);
     IMG.save(imgf, "imgf.png", NULL);

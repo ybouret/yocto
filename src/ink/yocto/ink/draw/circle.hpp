@@ -9,6 +9,12 @@ namespace yocto
     {
         namespace Draw
         {
+            ////////////////////////////////////////////////////////////////////
+            //
+            // Circle(s)
+            //
+            ////////////////////////////////////////////////////////////////////
+            
             //! draw a circle on an image
             template <typename T>
             inline void Circle(Pixmap<T>    &img,
@@ -81,6 +87,92 @@ namespace yocto
                 Circle(img,xm,ym,r,PutPixel::Blend<T>,(void*)&blend);
             }
             
+            ////////////////////////////////////////////////////////////////////
+            //
+            // Disk(s)
+            //
+            ////////////////////////////////////////////////////////////////////
+            template <typename T>
+            inline void __HSeg(Pixmap<T>    &img,
+                               const unit_t  y,
+                               const unit_t  xlo,
+                               const unit_t  xhi,
+                               YOCTO_INK_DRAW_ARGS) throw()
+            {
+                assert(xlo<=xhi);
+                coord p(xlo,y);
+                for(;p.x<=xhi;++p.x)
+                {
+                    if(img.has(p))
+                    {
+                        proc(img[p],args);
+                    }
+                }
+            }
+            
+            template <typename T>
+            inline void Disk(Pixmap<T>    &img,
+                             const unit_t  xm,
+                             const unit_t  ym,
+                             unit_t        r,
+                             YOCTO_INK_DRAW_ARGS) throw()
+            {
+                if(r<=0)
+                {
+                    if(img.has(xm,ym))
+                    {
+                        proc(img[ym][xm],args);
+                    }
+                }
+                else
+                {
+                    unit_t x = -r, y = 0, err = 2-2*r; /* bottom left to top right */
+                    bool new_y = true;
+                    do {
+                        if(new_y)
+                        {
+                            __HSeg(img,ym-y,xm+x,xm-x,proc,args);
+                            if(y>0)
+                            {
+                                __HSeg(img,ym+y,xm+x,xm-x,proc,args);
+                            }
+                            new_y = false;
+                        }
+                        r = err;
+                        if (r <= y)
+                        {
+                            err += ++y*2+1;            /* e_xy+e_y < 0 */
+                            new_y = true;
+                        }
+                        if (r > x || err > y)
+                        {/* e_xy+e_x > 0 or no 2nd y-step */
+                            err += ++x*2+1;                    /* -> x-step now */
+                        }
+                    } while (x < 0);
+                }
+            }
+            
+            template <typename T>
+            inline void Disk(Pixmap<T>    &img,
+                             const unit_t  xm,
+                             const unit_t  ym,
+                             const unit_t  r,
+                             const T       C)
+            {
+                Disk(img,xm,ym,r,PutPixel::Copy<T>,(void*)&C);
+            }
+            
+            template <typename T>
+            inline void Disk(Pixmap<T>    &img,
+                             const unit_t  xm,
+                             const unit_t  ym,
+                             const unit_t  r,
+                             const T       C,
+                             const uint8_t alpha)
+            {
+                PutPixel::BlendInfo<T> blend(C,alpha);
+                Disk(img,xm,ym,r,PutPixel::Blend<T>,(void*)&blend);
+            }
         }
     }
 }
