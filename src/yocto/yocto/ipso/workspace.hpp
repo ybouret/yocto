@@ -45,7 +45,7 @@ namespace yocto
             inline virtual ~workspace() throw() {}
 
             //! helper to create a field
-            template <typename FIELD> inline
+            template <typename FIELD>
             inline FIELD & create( const string &field_name )
             {
                 FIELD                     *F = new FIELD( field_name, this->outer );
@@ -58,7 +58,7 @@ namespace yocto
             }
 
             //! wrapper
-            template <typename FIELD> inline
+            template <typename FIELD>
             inline FIELD & create( const char *field_name )
             {
                 const string id(field_name);

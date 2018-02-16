@@ -88,27 +88,25 @@ namespace yocto
             
             template <typename T,template <typename> class FIELD> static inline
             void SaveScalars(ios::ostream                        &fp,
-                             const string                        &label,
                              const FIELD<T>                      &f,
                              const typename FIELD<T>::patch_type &p)
             {
-                fp << "SCALARS " << label << ' ';
+                fp << "SCALARS " << f.name << ' ';
                 OutputType<T>(fp);
                 fp << "\n";
-                fp << "LOOKUP_TABLE " << label << "\n";
+                fp << "LOOKUP_TABLE " << f.name << "\n";
                 OutputScalars<T,FIELD>::Write(fp,f,p);
             }
             
             template <typename T,template <typename> class FIELD> static inline
             void InitSaveScalars(ios::ostream                        &fp,
                                  const string                        &title,
-                                 const string                        &label,
                                  const FIELD<T>                      &f,
                                  const typename FIELD<T>::patch_type &p )
             {
                 Header(fp,title);
                 StructuredPoints(fp,p);
-                SaveScalars(fp,label,f,p);
+                SaveScalars(fp,f,p);
             }
             
             

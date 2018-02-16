@@ -65,6 +65,7 @@ namespace yocto
             fp << "POINT_DATA "; fp(" %u\n", unsigned(items) );
         }
         
+        // float
         template <>
         void VTK:: OutputType<float>(ios::ostream &fp)
         {
@@ -77,6 +78,7 @@ namespace yocto
             fp << "double 1";
         }
         
+        // double
         template <>
         void VTK:: OutputValue<float>(ios::ostream &fp,const float &f)
         {
@@ -88,6 +90,59 @@ namespace yocto
         {
             fp("%g",f);
         }
+        
+        // point2d<float>
+        template <>
+        void VTK:: OutputType< point2d<float> >(ios::ostream &fp)
+        {
+            fp << "float 2";
+        }
+        
+        template <>
+        void VTK:: OutputValue< point2d<float> >(ios::ostream &fp,const point2d<float> &f)
+        {
+            fp("%g %g",f.x,f.y);
+        }
+        
+        // point2d<double>
+        template <>
+        void VTK:: OutputType< point2d<double> >(ios::ostream &fp)
+        {
+            fp << "double 2";
+        }
+        
+        template <>
+        void VTK:: OutputValue< point2d<double> >(ios::ostream &fp,const point2d<double> &f)
+        {
+            fp("%g %g",f.x,f.y);
+        }
+        
+        // point3d<float>
+        template <>
+        void VTK:: OutputType< point3d<float> >(ios::ostream &fp)
+        {
+            fp << "float 3";
+        }
+        
+        template <>
+        void VTK:: OutputValue< point3d<float> >(ios::ostream &fp,const point3d<float> &f)
+        {
+            fp("%g %g %g",f.x,f.y,f.z);
+        }
+        
+        // point3d<double>
+        template <>
+        void VTK:: OutputType< point3d<double> >(ios::ostream &fp)
+        {
+            fp << "float 3";
+        }
+        
+        template <>
+        void VTK:: OutputValue< point3d<double> >(ios::ostream &fp,const point3d<double> &f)
+        {
+            fp("%g %g %g",f.x,f.y,f.z);
+        }
+        
         
     }
 }
