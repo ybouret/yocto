@@ -1,5 +1,6 @@
 
 #include "yocto/ink/draw/line.hpp"
+#include "yocto/ink/draw/circle.hpp"
 #include "yocto/ink/color/conv.hpp"
 #include "yocto/ink/image.hpp"
 #include "yocto/utest/run.hpp"
@@ -100,7 +101,19 @@ YOCTO_UNIT_TEST_IMPL(draw)
 
         }
     }
-
+    for(size_t k=0;k<100;++k)
+    {
+        const unit_t  X = x0 + alea.leq(w0);
+        const unit_t  Y = y0 + alea.leq(h0);
+        const size_t  R = alea.leq(w0);
+        const RGB     C = NamedColor::FetchRGB(alea.leq(1000));
+        const float   F = Convert::RGB2F(C);
+        const uint8_t U = Convert::RGB2U(C);
+        Draw::Circle(img3, X, Y, R, C);
+        Draw::Circle(imgf, X, Y, R, F);
+        Draw::Circle(img1, X, Y, R, U);
+        
+    }
 
 
     IMG.save(img3, "img3.png", NULL);
