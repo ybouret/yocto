@@ -15,10 +15,20 @@ namespace yocto
         {
         public:
             explicit Mask() throw();
+            Mask(const Mask &other);
             virtual ~Mask() throw();
             
+            void add(const coord p)
+            {
+                if(!search(p))
+                {
+                    if(!insert(p, new Vertex(p) ))
+                        throw exception("unexpected mask add failure");
+                }
+            }
+            
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(Mask);
+            YOCTO_DISABLE_ASSIGN(Mask);
         };
     }
 }
