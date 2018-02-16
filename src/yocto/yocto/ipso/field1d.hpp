@@ -12,6 +12,8 @@ namespace yocto
         class field1D : public field<T>, public patch1D
         {
         public:
+            typedef patch1D patch_type;
+            
             YOCTO_ARGUMENTS_DECL_T;
 
 #define YOCTO_IPSO_FIELD1D_CTOR0() item(0),wksp(0),wlen(0)

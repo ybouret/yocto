@@ -11,6 +11,7 @@ namespace yocto
         class field3D : public field<T>, public patch3D
         {
         public:
+            typedef patch3D patch_type;
             YOCTO_ARGUMENTS_DECL_T;
             typedef field1D<T> row;
             typedef field2D<T> slice;

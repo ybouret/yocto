@@ -11,6 +11,7 @@ namespace yocto
         class field2D : public field<T>, public patch2D
         {
         public:
+            typedef patch2D patch_type;
             YOCTO_ARGUMENTS_DECL_T;
             typedef field1D<T> row;
 
