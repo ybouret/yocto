@@ -3,6 +3,7 @@
 
 #include "yocto/ink/color/pixel.hpp"
 #include "yocto/container/tuple.hpp"
+#include "yocto/ink/pixmap.hpp"
 
 namespace yocto
 {
@@ -10,14 +11,17 @@ namespace yocto
     {
         namespace Draw
         {
+            
+#define YOCTO_INK_DRAW_ARGS void  (*proc)( Pixmap<T> &bg, const coord &q, void *args), void   *args
+
             struct PutPixel
             {
 
 
                 template <typename T> static inline
-                void Copy( T &bg, void *args) throw()
+                void Copy( Pixmap<T> &pxm, const coord &q, void *args) throw()
                 {
-                    assert(args); bg = *static_cast<T*>(args);
+                    assert(args); pxm[q] = *static_cast<T*>(args);
                 }
 
                 template <typename T>
@@ -27,11 +31,12 @@ namespace yocto
                 YOCTO_PAIR_END();
                 
                 template <typename T> static inline
-                void Blend( T &bg, void *args) throw()
+                void Blend( Pixmap<T> &pxm, const coord &q, void *args) throw()
                 {
                     assert(args);
                     const BlendInfo<T> &blend = *static_cast<BlendInfo<T> *>(args);
-                    bg = Pixel<T>::Blend(blend.C, bg, blend.alpha);
+                    T &bg = pxm[q];
+                    bg  = Pixel<T>::Blend(blend.C, bg, blend.alpha);
                 }
             };
         }

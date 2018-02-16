@@ -27,9 +27,10 @@ namespace yocto
                 if(r<=0)
                 {
                     assert(0==r);
-                    if(img.has(xm,ym))
+                    const coord q(xm,ym);
+                    if(img.has(q))
                     {
-                        proc(img[ym][xm],args);
+                        proc(img,q,args);
                     }
                 }
                 else
@@ -48,8 +49,7 @@ namespace yocto
                             const coord p = v[i];
                             if(img.has(p))
                             {
-                                proc( img[p], args );
-                                // img[p] = pixel<T>::blend(img[p],C,alpha);
+                                proc( img, p, args );
                             }
                         }
                         r = err;
@@ -105,7 +105,7 @@ namespace yocto
                 {
                     if(img.has(p))
                     {
-                        proc(img[p],args);
+                        proc(img,p,args);
                     }
                 }
             }
@@ -119,9 +119,10 @@ namespace yocto
             {
                 if(r<=0)
                 {
-                    if(img.has(xm,ym))
+                    const coord q(xm,ym);
+                    if(img.has(q))
                     {
-                        proc(img[ym][xm],args);
+                        proc(img,q,args);
                     }
                 }
                 else

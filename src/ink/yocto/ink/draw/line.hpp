@@ -3,8 +3,6 @@
 
 #include "yocto/ink/draw/clip.hpp"
 #include "yocto/ink/draw/putpixel.hpp"
-#include "yocto/ink/pixmap.hpp"
-#include "yocto/code/unroll.hpp"
 
 namespace yocto
 {
@@ -13,10 +11,8 @@ namespace yocto
         namespace Draw
         {
 
-#define YOCTO_INK_DRAW_ARGS void  (*proc)( T &bg, void *args), void   *args
 
-#define YOCTO_INK_PUTPIXEL(I) proc( p[I], args)
-
+            
             template <typename T>
             inline void _HLine(Pixmap<T>    &pxm,
                                const unit_t  x,
@@ -25,13 +21,15 @@ namespace yocto
                                YOCTO_INK_DRAW_ARGS)
             {
                 assert(proc);
-                assert( pxm.has(x,y)     );
-                assert( pxm.has(x+w-1,y) );
                 assert(w>0);
-
-                typename Pixmap<T>::Row &r = pxm[y];
-                T                       *p = &r[x];
-                YOCTO_LOOP_FUNC_(w,YOCTO_INK_PUTPIXEL,0);
+                coord q(x,y);
+                assert( pxm.has(q)     );
+                assert( pxm.has(q.x+w-1,q.y) );
+                
+                for(unit_t i=w;i>0;--i,++q.x)
+                {
+                    proc(pxm,q,args);
+                }
             }
 
             template <typename T>
@@ -92,13 +90,14 @@ namespace yocto
                                YOCTO_INK_DRAW_ARGS)
             {
                 assert(proc);
+                assert(h>0);
                 assert( pxm.has(x,y)     );
                 assert( pxm.has(x,y+h-1) );
-                assert(h>0);
 
-                for(size_t j=0;j<h;++j)
+                coord q(x,y);
+                for(size_t j=0;j<h;++j,++q.y)
                 {
-                    proc(pxm[j+y][x],args);
+                    proc(pxm,q,args);
                 }
             }
 
@@ -173,7 +172,7 @@ namespace yocto
                 for (;;){
                     /* loop */
                     const coord p(x0,y0);
-                    proc( img[p], args);
+                    proc( img, p, args);
                     e2 = 2*err;
                     if (e2 >= dy) {                                         /* e_xy+e_x > 0 */
                         if (x0 == x1) break;
@@ -250,12 +249,13 @@ namespace yocto
                     return;
                 assert(x0<=x1);
                 assert(y0<=y1);
+                
                 for(unit_t j=y1;j>=y0;--j)
                 {
-                    typename Pixmap<T>::Row &r = pxm[j];
                     for(unit_t i=x1;i>=x0;--i)
                     {
-                        proc(r[i],args);
+                        const coord q(i,j);
+                        proc(pxm,q,args);
                     }
                 }
             }

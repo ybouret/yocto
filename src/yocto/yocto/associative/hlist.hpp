@@ -175,7 +175,7 @@ namespace yocto
         }
 
     private:
-        KEY_HASHER  hash;
+        mutable KEY_HASHER hash;
         list_type   nodes;
         kList      *klist; //!< slots for hashing
         size_t      ksize; //!< a power of 2
