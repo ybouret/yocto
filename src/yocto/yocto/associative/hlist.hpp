@@ -47,11 +47,48 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(kNode);
         };
         typedef core::list_of_cpp<kNode> kList;
-
-        explicit hlist() throw() :
-        hash(), nodes(), klist(0), ksize(0), kmask(0),  nlist(0)
+        typedef core::list_of_cpp<NODE>  list_type;
+        
+#define YOCTO_HLIST_CTOR() hash(), nodes(), klist(0), ksize(0), kmask(0),  nlist(0)
+        inline explicit hlist() throw() :
+        YOCTO_HLIST_CTOR()
         {
         }
+        
+        //! possible if NODE has a copy constructor
+        inline hlist(const hlist &other) :
+        YOCTO_HLIST_CTOR()
+        {
+            const size_t n = other.size();
+            if(n>0)
+            {
+                try
+                {
+                    allocate_lists(n/hlist_param::load_factor);
+                    assert(ksize>0);
+                    for(size_t i=0;i<other.ksize;++i)
+                    {
+                        const kList &l = other.klist[i];
+                        for(const kNode *kn=l.head;kn;kn=kn->next)
+                        {
+                            const_key   &k   = kn->key;
+                            const size_t h   = kn->hkey;
+                            NODE        *node = new NODE( *(kn->node) );
+                            auto_ptr<NODE> guard(node);
+                            klist[h&kmask].push_back( new kNode(k,h,node) );
+                            nodes.push_back( guard.yield() );
+                        }
+                    }
+                    assert( this->size() == other.size() );
+                }
+                catch(...)
+                {
+                    release();
+                    throw;
+                }
+            }
+        }
+        
 
         inline bool insert(param_key key,NODE *node)
         {
@@ -138,14 +175,14 @@ namespace yocto
         }
 
     private:
-        KEY_HASHER              hash;
-        core::list_of_cpp<NODE> nodes;
-        kList                  *klist; //!< slots for hashing
-        size_t                  ksize; //!< a power of 2
-        size_t                  kmask; //!< ksize-1
-        size_t                  nlist; //!< in memory, nlist>=ksize
+        KEY_HASHER  hash;
+        list_type   nodes;
+        kList      *klist; //!< slots for hashing
+        size_t      ksize; //!< a power of 2
+        size_t      kmask; //!< ksize-1
+        size_t      nlist; //!< in memory, nlist>=ksize
 
-        YOCTO_DISABLE_COPY_AND_ASSIGN(hlist);
+        YOCTO_DISABLE_ASSIGN(hlist);
 
         inline void allocate_lists(const size_t n)
         {
