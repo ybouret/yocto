@@ -10,8 +10,8 @@ namespace yocto
         {
         }
 
-        ghosts:: ghosts(const position  the_pos,
-                        const coord1D   the_ng,
+        ghosts:: ghosts(const unsigned  where,
+                        const coord1D   extent,
                         const size_t    the_source,
                         const size_t    the_target) throw() :
         send(),
@@ -23,52 +23,53 @@ namespace yocto
         target_index(target+1),
         next(0),
         prev(0),
-        pos(the_pos),
-        ng(the_ng)
+        location(where),
+        ng(extent)
         {
             assert(ng>0);
         }
 
-        ghosts::position ghosts::dim2pos(const size_t dim, const int s)
+#if 1
+        unsigned ghosts::dim2pos(const size_t dim, const int s)
         {
 
             if(dim==0)
             {
-                if(s==-1) return x_lower;
-                if(s== 1) return x_upper;
+                if(s==-1) return at_lower_x;
+                if(s== 1) return at_upper_x;
             }
 
             if(dim==1)
             {
-                if(s==-1) return y_lower;
-                if(s== 1) return y_upper;
+                if(s==-1) return at_lower_y;
+                if(s== 1) return at_upper_y;
             }
 
             if(dim==2)
             {
-                if(s==-1) return z_lower;
-                if(s== 1) return z_upper;
+                if(s==-1) return at_lower_z;
+                if(s== 1) return at_upper_z;
             }
 
             throw exception("ghosts::dim2pos: invalid dim=%u and sign=%d", unsigned(dim), int(s));
         }
+#endif
 
 #define POS2TXT(ID) case ID: return #ID
-        const char * ghosts:: pos2txt(const position p) throw()
+        const char * ghosts:: pos2txt(const unsigned p) throw()
         {
             switch(p)
             {
-                    POS2TXT(x_lower);
-                    POS2TXT(x_upper);
-                    POS2TXT(y_lower);
-                    POS2TXT(y_upper);
-                    POS2TXT(z_lower);
-                    POS2TXT(z_upper);
+                    POS2TXT(at_lower_x);
+                    POS2TXT(at_upper_x);
+                    POS2TXT(at_lower_y);
+                    POS2TXT(at_upper_y);
+                    POS2TXT(at_lower_z);
+                    POS2TXT(at_upper_z);
             }
             return "unknown";
         }
-
-
+        
         static inline int __compare_coord1D(const coord1D lhs, const coord1D rhs) throw()
         {
             return lhs-rhs;
@@ -100,9 +101,9 @@ _recv.make(_count)
                            const bool     build)
         {
             __LOAD_PROLOG();
-            switch(pos)
+            switch(location)
             {
-                case x_lower: {
+                case at_lower_x: {
                     _count = ng;
                     if(build)
                     {
@@ -119,7 +120,7 @@ _recv.make(_count)
                     }
                 }  break;
 
-                case x_upper: {
+                case at_upper_x: {
                     _count = ng;
                     if(build)
                     {
@@ -137,7 +138,7 @@ _recv.make(_count)
                 } break;
 
                 default:
-                    throw exception("unexpected 1D ghosts %s", pos2txt(pos));
+                    throw exception("unexpected 1D ghosts %s", pos2txt(location));
             }
 
             __LOAD_EPILOG();
@@ -155,9 +156,9 @@ _recv.make(_count)
                            const bool     build)
         {
             __LOAD_PROLOG();
-            switch(pos)
+            switch(location)
             {
-                case x_lower :
+                case at_lower_x :
                 {
                     _count = ng * outer.width.y;
                     if(build)
@@ -181,7 +182,7 @@ _recv.make(_count)
                     }
                 } break;
 
-                case x_upper :
+                case at_upper_x :
                 {
                     _count = ng * outer.width.y;
                     if(build)
@@ -207,7 +208,7 @@ _recv.make(_count)
                     }
                 } break;
 
-                case y_lower :
+                case at_lower_y :
                 {
                     _count = ng * outer.width.x;
                     if(build)
@@ -231,7 +232,7 @@ _recv.make(_count)
                     }
                 } break;
 
-                case y_upper :
+                case at_upper_y :
                 {
                     _count = ng * outer.width.x;
                     if(build)
@@ -259,7 +260,7 @@ _recv.make(_count)
 
 
                 default:
-                    throw exception("unexpected 2D ghosts %s", pos2txt(pos));
+                    throw exception("unexpected 2D ghosts %s", pos2txt(location));
             }
             __LOAD_EPILOG();
         }
@@ -276,9 +277,9 @@ _recv.make(_count)
                            const bool     build)
         {
             __LOAD_PROLOG();
-            switch(pos)
+            switch(location)
             {
-                case x_lower :
+                case at_lower_x:
                 {
                     _count = ng * outer.width.y*outer.width.z;
                     if(build)
@@ -305,7 +306,7 @@ _recv.make(_count)
                     }
                 } break;
 
-                case x_upper :
+                case at_upper_x:
                 {
                     _count = ng * outer.width.y*outer.width.z;
                     if(build)
@@ -334,7 +335,7 @@ _recv.make(_count)
                     }
                 } break;
 
-                case y_lower :
+                case at_lower_y :
                 {
                     _count = ng * outer.width.x*outer.width.z;
                     if(build)
@@ -361,7 +362,7 @@ _recv.make(_count)
                     }
                 } break;
 
-                case y_upper :
+                case at_upper_y :
                 {
                     _count = ng * outer.width.x*outer.width.z;
                     if(build)
@@ -391,7 +392,7 @@ _recv.make(_count)
                 } break;
 
 
-                case z_lower :
+                case at_lower_z :
                 {
                     _count = ng * outer.width.x*outer.width.y;
                     if(build)
@@ -418,7 +419,7 @@ _recv.make(_count)
                     }
                 } break;
 
-                case z_upper :
+                case at_upper_z :
                 {
                     _count = ng * outer.width.x*outer.width.y;
                     if(build)
@@ -448,7 +449,7 @@ _recv.make(_count)
                 } break;
 
                 default:
-                    throw exception("unexpected 3D ghosts %s", pos2txt(pos));
+                    throw exception("unexpected 3D ghosts %s", pos2txt(location));
             }
             __LOAD_EPILOG();
         }
