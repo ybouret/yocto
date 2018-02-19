@@ -31,8 +31,8 @@ namespace yocto
 
             inline virtual ~domain() throw() {}
 
-#define YOCTO_IPSO_LOWER_GHOSTS new ghosts( ghosts::dim2pos(dim,-1), ng, rank, full.prev_rank(ranks,dim) )
-#define YOCTO_IPSO_UPPER_GHOSTS new ghosts( ghosts::dim2pos(dim, 1), ng, rank, full.next_rank(ranks,dim) )
+#define YOCTO_IPSO_LOWER_GHOSTS new ghosts( ghosts::edge2location(dim,-1), ng, rank, full.prev_rank(ranks,dim) )
+#define YOCTO_IPSO_UPPER_GHOSTS new ghosts( ghosts::edge2location(dim, 1), ng, rank, full.next_rank(ranks,dim) )
 
             //! build the outer layout and ghosts
             /**

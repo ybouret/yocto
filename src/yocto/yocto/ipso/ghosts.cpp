@@ -30,7 +30,7 @@ namespace yocto
         }
 
 #if 1
-        unsigned ghosts::dim2pos(const size_t dim, const int s)
+        unsigned ghosts:: edge2location(const size_t dim, const int s)
         {
 
             if(dim==0)
@@ -51,12 +51,12 @@ namespace yocto
                 if(s== 1) return at_upper_z;
             }
 
-            throw exception("ghosts::dim2pos: invalid dim=%u and sign=%d", unsigned(dim), int(s));
+            throw exception("ghosts::edge2location: invalid dim=%u and sign=%d", unsigned(dim), int(s));
         }
 #endif
 
 #define POS2TXT(ID) case ID: return #ID
-        const char * ghosts:: pos2txt(const unsigned p) throw()
+        const char * ghosts:: location2text(const unsigned p) throw()
         {
             switch(p)
             {
@@ -138,7 +138,7 @@ _recv.make(_count)
                 } break;
 
                 default:
-                    throw exception("unexpected 1D ghosts %s", pos2txt(location));
+                    throw exception("unexpected 1D ghosts %s", location2text(location));
             }
 
             __LOAD_EPILOG();
@@ -260,7 +260,7 @@ _recv.make(_count)
 
 
                 default:
-                    throw exception("unexpected 2D ghosts %s", pos2txt(location));
+                    throw exception("unexpected 2D ghosts %s", location2text(location));
             }
             __LOAD_EPILOG();
         }
@@ -449,7 +449,7 @@ _recv.make(_count)
                 } break;
 
                 default:
-                    throw exception("unexpected 3D ghosts %s", pos2txt(location));
+                    throw exception("unexpected 3D ghosts %s", location2text(location));
             }
             __LOAD_EPILOG();
         }

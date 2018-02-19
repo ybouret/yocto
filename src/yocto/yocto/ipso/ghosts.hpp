@@ -79,8 +79,9 @@ namespace yocto
                       const bool     build);
 
 
-            static  unsigned    dim2pos(const size_t dim, const int s);
-            static  const char *pos2txt(const unsigned p) throw();
+
+            static  unsigned    edge2location(const size_t dim, const int s);
+            static  const char *location2text(const unsigned p) throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(ghosts);
