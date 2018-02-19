@@ -242,11 +242,32 @@ YOCTO_PROGRAM_START()
         field3D<float>  &B = W.create< field3D<float>  >("B");
 
         // initialize fields
-        A.ld(rank+1);
+        A.ldz();
+        for(unit_t k=W.inner.lower.z;k<=W.inner.upper.z;++k)
+        {
+            for(unit_t j=W.inner.lower.y;j<=W.inner.upper.y;++j)
+            {
+                for(unit_t i=W.inner.lower.x;i<=W.inner.upper.x;++i)
+                {
+                    A[k][j][i] = double(1+rank); //double(i*j);
+                }
+            }
+        }
         B.ldz();
+        {
+            const string  vtk = MPI.VTK_FileName("in3D_init");
+            ios::wcstream fp(vtk);
+            VTK::InitSaveScalars(fp, "in2D", A, W.outer);
+        }
 
         // perform exchange
         mpi_xch(W);
+        {
+            const string  vtk = MPI.VTK_FileName("in3D_sync");
+            ios::wcstream fp(vtk);
+            VTK::InitSaveScalars(fp, "in3D", A, W.outer);
+        }
+
 
         fields fvar(2);
         fvar.append(A);
