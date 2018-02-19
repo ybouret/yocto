@@ -1,9 +1,63 @@
 #include "yocto/ipso/vtk.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/ocstream.hpp"
+#include "yocto/math/types.hpp"
 
 using namespace yocto;
 using namespace ipso;
+using namespace math;
+
+template <typename T> static inline
+void fill1D( field1D<T> &F )
+{
+    const T omega_x = T(2*3.14159265359) / (F.upper-F.lower);
+
+    for(unit_t i=F.lower; i<=F.upper;++i)
+    {
+        F[i] = Sin( T(i-F.lower) * omega_x );
+    }
+}
+
+template <typename T> static inline
+void fill2D( field2D<T> &F )
+{
+    const T omega_x = T(2*3.14159265359) / (F.upper.x-F.lower.x);
+    const T omega_y = T(2*3.14159265359) / (F.upper.y-F.lower.y);
+
+    for(unit_t j=F.lower.y; j<=F.upper.y;++j)
+    {
+        const T fy = Sin( T(j-F.lower.y) * omega_y );
+        for(unit_t i=F.lower.x; i<=F.upper.x;++i)
+        {
+            F[j][i] = Sin( T(i-F.lower.x) * omega_x ) * fy;
+        }
+    }
+}
+
+
+template <typename T> static inline
+void fill2D( field2D< point2d<T> > &F )
+{
+    const T omega_x = T(2*3.14159265359) / (F.upper.x-F.lower.x);
+    const T omega_y = T(2*3.14159265359) / (F.upper.y-F.lower.y);
+
+    for(unit_t j=F.lower.y; j<=F.upper.y;++j)
+    {
+        const T phi_y = T(j-F.lower.y) * omega_y;
+        const T sy = Sin(phi_y);
+        const T cy = Cos(phi_y);
+        for(unit_t i=F.lower.x; i<=F.upper.x;++i)
+        {
+            const T phi_x = T(i-F.lower.x) * omega_x;
+            const T sx    = Sin(phi_x);
+            const T cx    =  Cos(phi_x);
+            F[j][i].x = sx*cy;
+            F[j][i].y = sy*cx;
+        }
+    }
+}
+
+
 
 YOCTO_UNIT_TEST_IMPL(vtk)
 {
@@ -15,8 +69,8 @@ YOCTO_UNIT_TEST_IMPL(vtk)
     
     {
         const patch1D p(1,dims.x);
-        const field1D<float>  A("A",p);
-        const field1D<double> B("B",p);
+        field1D<float>  A("A",p); fill1D(A);
+        field1D<double> B("B",p); fill1D(B);
         ios::wcstream fp("f1d.vtk");
         VTK::InitSaveScalars(fp, "in 1D", A, p);
         VTK::SaveScalars(fp, B, B);
@@ -24,10 +78,10 @@ YOCTO_UNIT_TEST_IMPL(vtk)
     
     {
         const patch2D p(coord2D(1,1),dims.xy());
-        const field2D<float>             A("A",p);
-        const field2D<double>            B("B",p);
-        const field2D< point2d<float> >  C("C",p);
-        const field2D< point2d<double> > D("D",p);
+        field2D<float>             A("A",p); fill2D(A);
+        field2D<double>            B("B",p); fill2D(B);
+        field2D< point2d<float>  > C("C",p); fill2D(C);
+        field2D< point2d<double> > D("D",p); fill2D(D);
 
         ios::wcstream fp("f2d.vtk");
         VTK::InitSaveScalars(fp, "in 2D", A, p);
@@ -37,7 +91,7 @@ YOCTO_UNIT_TEST_IMPL(vtk)
     }
     
     {
-        const patch3D p(coord3D(1,1,1),dims);
+        const patch3D                    p(coord3D(1,1,1),dims);
         const field3D<float>             A("A",p);
         const field3D<double>            B("B",p);
         const field3D< point3d<float> >  C("C",p);
