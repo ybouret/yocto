@@ -31,12 +31,9 @@ namespace yocto
                                          const field1D<T> &f,
                                          const patch1D    &p)
                 {
-                    for(size_t count=0;count<2;++count)
+                    for(coord1D x=p.lower;x<=p.upper;++x)
                     {
-                        for(coord1D x=p.lower;x<=p.upper;++x)
-                        {
-                            OutputValue(fp,f[x]); fp << '\n';
-                        }
+                        OutputValue(fp,f[x]); fp << '\n';
                     }
                 }
             };

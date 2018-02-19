@@ -55,9 +55,9 @@ namespace yocto
                                             const patch<coord1D> &p)
         {
             __SP_prolog(fp);
-            fp("%u 2 1\n", unsigned(p.width) );
+            fp("%u 1 1\n", unsigned(p.width) );
             __SP_origin(fp,& p.lower,1);
-            __SP_epilog(fp,p.items*2);
+            __SP_epilog(fp,p.items);
         }
 
         template <>

@@ -1,6 +1,9 @@
 #include "yocto/ipso/mpi.hpp"
 #include "yocto/program.hpp"
 #include "yocto/string/conv.hpp"
+#include "yocto/ipso/vtk.hpp"
+#include "yocto/ios/ocstream.hpp"
+#include "yocto/fs/local-fs.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -49,6 +52,11 @@ YOCTO_PROGRAM_START()
     const int size = MPI.CommWorldSize;
     const int rank = MPI.CommWorldRank;
     MPI.Printf(stderr, "%s ready...\n",program);
+    if(0==rank)
+    {
+        local_fs & fs = local_fs::instance();
+        fs.remove_files_with_extension_in("./", "vtk");
+    }
     if(argc<=3)
     {
         throw exception("usage: %s DIMS PBCS GHOSTS", argv[0]);
@@ -98,11 +106,28 @@ YOCTO_PROGRAM_START()
 
 
         // initialize fields
-        A.ld(rank+1);
-        B.ldz();
+        for(unit_t i=W.inner.lower;i<=W.inner.upper;++i)
+        {
+            A[i] = double(i);
+            B[i] = -float(i);
+        }
+
+        {
+            const string  vtk = MPI.VTK_FileName("in1D_init");
+            ios::wcstream fp(vtk);
+            VTK::InitSaveScalars(fp, "in1D", A, W.outer);
+            VTK::SaveScalars(fp, B, W.outer);
+        }
 
         // perform exchange
         mpi_xch(W);
+
+        {
+            const string  vtk = MPI.VTK_FileName("in1D_sync");
+            ios::wcstream fp(vtk);
+            VTK::InitSaveScalars(fp, "in1D", A, W.outer);
+            VTK::SaveScalars(fp, B, W.outer);
+        }
 
         fields fvar(2);
         fvar.append(A);
@@ -148,11 +173,31 @@ YOCTO_PROGRAM_START()
         field2D<float>  &B = W.create< field2D<float>  >("B");
 
         // initialize fields
-        A.ld(rank+1);
+        A.ldz();
+        for(unit_t j=W.inner.lower.y;j<=W.inner.upper.y;++j)
+        {
+            for(unit_t i=W.inner.lower.x;i<=W.inner.upper.x;++i)
+            {
+                A[j][i] = double(1+rank); //double(i*j);
+            }
+        }
+
         B.ldz();
+
+        {
+            const string  vtk = MPI.VTK_FileName("in2D_init");
+            ios::wcstream fp(vtk);
+            VTK::InitSaveScalars(fp, "in2D", A, W.outer);
+        }
 
         // perform exchange
         mpi_xch(W);
+
+        {
+            const string  vtk = MPI.VTK_FileName("in2D_sync");
+            ios::wcstream fp(vtk);
+            VTK::InitSaveScalars(fp, "in2D", A, W.outer);
+        }
 
         fields fvar(2);
         fvar.append(A);
