@@ -44,7 +44,7 @@ namespace yocto
                 {
                     for(coord1D x=p.lower;x<=p.upper;++x)
                     {
-                        OutputValue(fp,f[x]); fp << "\n";
+                        OutputValue(fp,f[x]); fp << '\n';
                     }
                 }
             };
@@ -60,7 +60,7 @@ namespace yocto
                     {
                         for(coord1D x=p.lower.x;x<=p.upper.x;++x)
                         {
-                            OutputValue(fp,f[y][x]); fp << "\n";
+                            OutputValue(fp,f[y][x]); fp << '\n';
                         }
                     }
                 }
@@ -79,7 +79,7 @@ namespace yocto
                         {
                             for(coord1D x=p.lower.x;x<=p.upper.x;++x)
                             {
-                                OutputValue(fp,f[z][y][x]); fp << "\n";
+                                OutputValue(fp,f[z][y][x]); fp << '\n';
                             }
                         }
                     }
@@ -94,7 +94,7 @@ namespace yocto
                 fp << "SCALARS " << f.name << ' ';
                 OutputType<T>(fp);
                 fp << "\n";
-                fp << "LOOKUP_TABLE " << f.name << "\n";
+                fp << "LOOKUP_TABLE " << f.name << '\n';
                 OutputScalars<T,FIELD>::Write(fp,f,p);
             }
             

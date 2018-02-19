@@ -58,6 +58,28 @@ void fill2D( field2D< point2d<T> > &F )
 }
 
 
+template <typename T> static inline
+void fill3D( field3D<T> &F )
+{
+    const T omega_x = T(2*3.14159265359) / (F.upper.x-F.lower.x);
+    const T omega_y = T(2*3.14159265359) / (F.upper.y-F.lower.y);
+    const T omega_z = T(1) / (F.upper.z-F.lower.z);
+
+    for(unit_t k=F.lower.z; k<=F.upper.z;++k)
+    {
+        const T dz = ( T(k-F.lower.z) * omega_z )-T(0.5);
+        const T fz = exp( (-dz*dz)*T(4) );
+        for(unit_t j=F.lower.y; j<=F.upper.y;++j)
+        {
+            const T fy = Sin( T(j-F.lower.y) * omega_y );
+            for(unit_t i=F.lower.x; i<=F.upper.x;++i)
+            {
+                F[k][j][i] = fz * Sin( T(i-F.lower.x) * omega_x ) * fy;
+            }
+        }
+    }
+}
+
 
 YOCTO_UNIT_TEST_IMPL(vtk)
 {
@@ -68,7 +90,7 @@ YOCTO_UNIT_TEST_IMPL(vtk)
     const coord3D dims = __coord_parser::get<coord3D>(argv[1],"dims");
     
     {
-        const patch1D p(1,dims.x);
+        const patch1D   p(1,dims.x);
         field1D<float>  A("A",p); fill1D(A);
         field1D<double> B("B",p); fill1D(B);
         ios::wcstream fp("f1d.vtk");
@@ -77,7 +99,7 @@ YOCTO_UNIT_TEST_IMPL(vtk)
     }
     
     {
-        const patch2D p(coord2D(1,1),dims.xy());
+        const patch2D              p(coord2D(1,1),dims.xy());
         field2D<float>             A("A",p); fill2D(A);
         field2D<double>            B("B",p); fill2D(B);
         field2D< point2d<float>  > C("C",p); fill2D(C);
@@ -91,11 +113,11 @@ YOCTO_UNIT_TEST_IMPL(vtk)
     }
     
     {
-        const patch3D                    p(coord3D(1,1,1),dims);
-        const field3D<float>             A("A",p);
-        const field3D<double>            B("B",p);
-        const field3D< point3d<float> >  C("C",p);
-        const field3D< point3d<double> > D("D",p);
+        const patch3D              p(coord3D(1,1,1),dims);
+        field3D<float>             A("A",p); fill3D(A);
+        field3D<double>            B("B",p); fill3D(B);
+        field3D< point3d<float> >  C("C",p);
+        field3D< point3d<double> > D("D",p);
         
         ios::wcstream fp("f3d.vtk");
         VTK::InitSaveScalars(fp, "in 2D", A, p);
