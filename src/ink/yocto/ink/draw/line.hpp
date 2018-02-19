@@ -223,6 +223,17 @@ namespace yocto
                 Line(img,x0,y0,x1,y1,PutPixel::Blend<T>,(void*)&blend);
             }
 
+            template <typename T>
+            inline void Line(Pixmap<T>    &img,
+                             const unit_t  x0,
+                             const unit_t  y0,
+                             const unit_t  x1,
+                             const unit_t  y1,
+                             Mask         &mask)
+            {
+                Line(img,x0,y0,x1,y1,PutPixel::Load<T>,&mask);
+            }
+
         }
     }
 }

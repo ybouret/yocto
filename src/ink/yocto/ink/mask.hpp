@@ -2,7 +2,7 @@
 #define YOCTO_INK_MASK_INCLUDED 1
 
 #include "yocto/associative/hlist.hpp"
-#include "yocto/ink/types.hpp"
+#include "yocto/ink/pixmap.hpp"
 
 namespace yocto
 {
@@ -26,7 +26,10 @@ namespace yocto
                         throw exception("unexpected mask add failure");
                 }
             }
-            
+
+            void OR( const Mask &other);
+            void AND(const Mask &other);
+
         private:
             YOCTO_DISABLE_ASSIGN(Mask);
         };

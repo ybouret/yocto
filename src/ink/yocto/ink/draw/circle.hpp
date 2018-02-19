@@ -86,6 +86,16 @@ namespace yocto
                 PutPixel::BlendInfo<T> blend(C,alpha);
                 Circle(img,xm,ym,r,PutPixel::Blend<T>,(void*)&blend);
             }
+
+            template <typename T>
+            inline void Circle(Pixmap<T>    &img,
+                               const unit_t  xm,
+                               const unit_t  ym,
+                               const unit_t  r,
+                               Mask         &mask)
+            {
+                 Circle(img,xm,ym,r,PutPixel::Load<T>,&mask);
+            }
             
             ////////////////////////////////////////////////////////////////////
             //
@@ -173,6 +183,16 @@ namespace yocto
             {
                 PutPixel::BlendInfo<T> blend(C,alpha);
                 Disk(img,xm,ym,r,PutPixel::Blend<T>,(void*)&blend);
+            }
+
+            template <typename T>
+            inline void Disk(Pixmap<T>    &img,
+                             const unit_t  xm,
+                             const unit_t  ym,
+                             const unit_t  r,
+                             Mask         &mask)
+            {
+                Disk(img,xm,ym,r,PutPixel::Load<T>,&mask);
             }
         }
     }

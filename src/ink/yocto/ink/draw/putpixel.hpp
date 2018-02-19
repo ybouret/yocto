@@ -4,6 +4,7 @@
 #include "yocto/ink/color/pixel.hpp"
 #include "yocto/container/tuple.hpp"
 #include "yocto/ink/pixmap.hpp"
+#include "yocto/ink/mask.hpp"
 
 namespace yocto
 {
@@ -37,6 +38,14 @@ namespace yocto
                     const BlendInfo<T> &blend = *static_cast<BlendInfo<T> *>(args);
                     T &bg = pxm[q];
                     bg  = Pixel<T>::Blend(blend.C, bg, blend.alpha);
+                }
+
+                template <typename T>
+                static inline void Load( Pixmap<T> &, const coord &q, void *args)
+                {
+                    assert(args);
+                    Mask &mask = *(Mask *)args;
+                    mask.add(q);
                 }
             };
         }

@@ -110,7 +110,6 @@ namespace yocto
             return true;
         }
 
-        inline size_t size() const throw() { return nodes.size; }
 
         inline void free() throw()
         {
@@ -174,6 +173,18 @@ namespace yocto
             }
         }
 
+        inline const  NODE *head() const throw() { return nodes.head; }
+        inline const  NODE *tail() const throw() { return nodes.tail; }
+        inline size_t       size() const throw() { return nodes.size; }
+
+        inline void swap_with( hlist &other ) throw()
+        {
+            bswap(nodes,other.nodes);
+            bswap(klist,other.klist);
+            bswap(kmask,other.kmask);
+            bswap(nlist,other.nlist);
+        }
+        
     private:
         mutable KEY_HASHER hash;
         list_type   nodes;
@@ -229,10 +240,21 @@ namespace yocto
             const size_t max_capa  = ksize*hlist_param::load_factor;
             if(new_size>=max_capa)
             {
-                allocate_lists(max_of(max_capa,hlist_param::mini_klists));
+                allocate_lists(max_of(max_capa/hlist_param::load_factor,hlist_param::mini_klists));
             }
         }
 
+        inline void __merge(const hlist &other)
+        {
+            assert(this != &other);
+            for(size_t i=0;i<other.ksize;++i)
+            {
+                for(const kNode *kn=other.klist[i].head;kn;kn=kn->next)
+                {
+                    (void) insert(kn->hkey,new NODE( *(kn->node) ) );
+                }
+            }
+        }
 
     };
 }
