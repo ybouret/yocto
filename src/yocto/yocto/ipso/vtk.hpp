@@ -12,24 +12,13 @@ namespace yocto
         {
             static void Header(ios::ostream &fp,
                                const string &title);
-            
-            static void StructuredPoints(ios::ostream &fp,
-                                         const size_t  DIM,
-                                         const unit_t *width,
-                                         const unit_t *lower,
-                                         const size_t  items);
+
             
             template <typename COORD>
-            static inline void StructuredPoints(ios::ostream       &fp,
-                                                const patch<COORD> &p)
-            {
-                StructuredPoints(fp,
-                                 YOCTO_IPSO_DIM_OF(COORD),
-                                 &__coord(p.width,0),
-                                 &__coord(p.lower,0),
-                                 p.items);
-            }
-            
+            static  void StructuredPoints(ios::ostream       &fp,
+                                          const patch<COORD> &p);
+
+
             template <typename T> static void OutputType(ios::ostream &fp);
             template <typename T> static void OutputValue(ios::ostream &fp, const T &);
             
@@ -42,9 +31,12 @@ namespace yocto
                                          const field1D<T> &f,
                                          const patch1D    &p)
                 {
-                    for(coord1D x=p.lower;x<=p.upper;++x)
+                    for(size_t count=0;count<2;++count)
                     {
-                        OutputValue(fp,f[x]); fp << '\n';
+                        for(coord1D x=p.lower;x<=p.upper;++x)
+                        {
+                            OutputValue(fp,f[x]); fp << '\n';
+                        }
                     }
                 }
             };

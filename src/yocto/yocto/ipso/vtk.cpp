@@ -18,7 +18,70 @@ namespace yocto
             fp << "\n";
             fp << "ASCII\n";
         }
-        
+
+        static inline void __SP_prolog(ios::ostream &fp )
+        {
+            fp << "DATASET STRUCTURED_POINTS\n";
+            fp << "DIMENSIONS ";
+        }
+
+        static inline void __SP_origin(ios::ostream &fp, const unit_t *lower, const size_t DIM)
+        {
+            fp << "ORIGIN";
+            for(size_t i=0;i<DIM;++i)
+            {
+                fp(" %d", int(lower[i]) );
+            }
+            for(size_t i=DIM;i<3;++i)
+            {
+                fp << ' ' << '0';
+            }
+            fp << '\n';
+        }
+
+        static inline void __SP_epilog(ios::ostream &fp, const size_t items )
+        {
+            fp << "SPACING";
+            for(size_t i=0;i<3;++i)
+            {
+                fp << " 1";
+            }
+            fp << "\n";
+            fp << "POINT_DATA "; fp(" %u\n", unsigned(items) );
+        }
+
+        template <>
+        void VTK::StructuredPoints<coord1D>(ios::ostream         &fp,
+                                            const patch<coord1D> &p)
+        {
+            __SP_prolog(fp);
+            fp("%u 2 1\n", unsigned(p.width) );
+            __SP_origin(fp,& p.lower,1);
+            __SP_epilog(fp,p.items*2);
+        }
+
+        template <>
+        void VTK::StructuredPoints<coord2D>(ios::ostream         &fp,
+                                            const patch<coord2D> &p)
+        {
+            __SP_prolog(fp);
+            fp("%u %u 1\n", unsigned(p.width.x), unsigned(p.width.y) );
+            __SP_origin(fp,&p.lower.x,2);
+            __SP_epilog(fp,p.items);
+        }
+
+
+        template <>
+        void VTK::StructuredPoints<coord3D>(ios::ostream         &fp,
+                                            const patch<coord3D> &p)
+        {
+            __SP_prolog(fp);
+            fp("%u %u %u\n", unsigned(p.width.x), unsigned(p.width.y), unsigned(p.width.z) );
+            __SP_origin(fp,&p.lower.x,3);
+            __SP_epilog(fp,p.items);
+        }
+
+#if 0
         void VTK:: StructuredPoints(ios::ostream &fp,
                                     const size_t  DIM,
                                     const unit_t *width,
@@ -64,6 +127,7 @@ namespace yocto
             fp << "\n";
             fp << "POINT_DATA "; fp(" %u\n", unsigned(items) );
         }
+#endif
         
         // float
         template <>
