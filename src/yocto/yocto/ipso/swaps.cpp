@@ -1,4 +1,5 @@
 #include "yocto/ipso/swaps.hpp"
+#include "yocto/sort/heap.hpp"
 
 namespace yocto
 {
@@ -33,13 +34,7 @@ namespace yocto
             return unsigned(1) << unsigned((dim<<1)+(unsigned(1+side)>>1));
         }
 
-        void swaps:: allocate()
-        {
-            swap    & _recv = (swap &)recv;
-            swap    & _send = (swap &)send;
-            _send.make(count, 0);
-            _recv.make(count, 0);
-        }
+
 
 #define __POS2TXT(FLAG) case FLAG: return #FLAG
 
@@ -68,10 +63,28 @@ namespace yocto
             return "?";
         }
 
+        void swaps:: allocate()
+        {
+            swap    & _recv = (swap &)recv;
+            swap    & _send = (swap &)send;
+            _send.make(count, 0);
+            _recv.make(count, 0);
+        }
+
+        void swaps:: io_check() throw()
+        {
+            swap    & _recv = (swap &)recv;
+            swap    & _send = (swap &)send;
+            hsort(_recv, _send, __compare_decreasing<coord1D> );
+        }
     }
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
+//
+// 1D
+//
+////////////////////////////////////////////////////////////////////////////////
 namespace yocto
 {
     namespace ipso
@@ -98,6 +111,7 @@ namespace yocto
                             _recv[i] = outer.offset_of(rx);
                             _send[i] = outer.offset_of(sx);
                         }
+                        io_check();
                     }
                     break;
 
@@ -112,11 +126,11 @@ namespace yocto
                             _recv[i] = outer.offset_of(rx);
                             _send[i] = outer.offset_of(sx);
                         }
+                        io_check();
                     }
                     break;
             }
         }
-
 
     }
 

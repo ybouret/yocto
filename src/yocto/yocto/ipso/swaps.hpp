@@ -36,8 +36,8 @@ namespace yocto
             const size_t   target;    //!< rank of target
             const coord1D  layers;    //!< number of extra layers
             const unsigned pos;       //!< where it is
-            swaps        *next;
-            swaps        *prev;
+            swaps         *next;
+            swaps         *prev;
 
             explicit swaps(const size_t   source_rank,
                            const size_t   target_rank,
@@ -52,11 +52,17 @@ namespace yocto
             void load(const patch1D &inner,
                       const patch1D &outer,
                       const bool     build);
-            
+
+            //! compute the coordinates in 2D, according to settings
+            void load(const patch2D &inner,
+                      const patch2D &outer,
+                      const bool     build);
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps);
             void allocate();
+            void io_check() throw();
         };
 
 
