@@ -18,6 +18,7 @@ namespace yocto
                                       const patch3D &inner,
                                       const patch3D &outer)
         {
+            assert(outer.contains(inner));
             size_t indx = 0;
             for(coord1D z=inner.upper.z;z>=inner.lower.z;--z)
             {
@@ -37,6 +38,7 @@ namespace yocto
                                       const patch3D &inner,
                                       const patch3D &outer)
         {
+            assert(outer.contains(inner));
             size_t indx = 0;
             for(coord1D z=inner.upper.z;z>=inner.lower.z;--z)
             {
@@ -56,6 +58,7 @@ namespace yocto
                                       const patch3D &inner,
                                       const patch3D &outer)
         {
+            assert(outer.contains(inner));
             size_t indx = 0;
             for(coord1D y=inner.upper.y;y>=inner.lower.y;--y)
             {
@@ -63,7 +66,7 @@ namespace yocto
                 {
                     ++indx;
                     { const coord3D r(x,y,rz); _recv[indx] = outer.offset_of(r); }
-                    { const coord3D s(x,y,rz); _send[indx] = outer.offset_of(s); }
+                    { const coord3D s(x,y,sz); _send[indx] = outer.offset_of(s); }
                 }
             }
         }

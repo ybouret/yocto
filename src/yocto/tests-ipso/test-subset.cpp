@@ -19,9 +19,9 @@ static inline void show_subs( const subsets<COORD> &subs )
     std::cerr << "#subset=" << subs.size << " as " << subs.sizes << std::endl;
     for(const subset<COORD> *sub = subs.head; sub; sub=sub->next )
     {
-        std::cerr << "ranks=" << sub->ranks << std::endl;
-        std::cerr << "\tinner=" << sub->inner << std::endl;
-        std::cerr << "\touter=" << sub->outer << std::endl;
+        std::cerr << "ranks="    << sub->ranks << std::endl;
+        std::cerr << "\tinner="  << sub->inner << std::endl;
+        std::cerr << "\touter="  << sub->outer << std::endl;
         std::cerr << "\t#local=" << sub->local.size << std::endl;
         for(const swaps *swp = sub->local.head; swp;swp=swp->next)
         {
@@ -86,6 +86,19 @@ YOCTO_UNIT_TEST_IMPL(subset)
         std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
         const divide::in2D full(sizes,region);
         subsets<coord2D>   subs(full,layers,PBCS,true);
+        show_subs(subs);
+    }
+
+    
+    {
+        std::cerr << std::endl << "-------- 3D --------" << std::endl;
+        const patch3D      region(coord3D(1,1,1),dims);
+        const coord3D      PBCS(pbcs);
+        coord3D            fallback;
+        const coord3D sizes = divider<coord3D>::optimal_for(region,cpus,&fallback);
+        std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
+        const divide::in3D full(sizes,region);
+        subsets<coord3D>   subs(full,layers,PBCS,true);
         show_subs(subs);
     }
 
