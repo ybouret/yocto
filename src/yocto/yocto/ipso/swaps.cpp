@@ -90,6 +90,13 @@ namespace yocto
     namespace ipso
     {
 
+#define _LOAD_PROLOG()          \
+allocate();                     \
+swap    & _recv = (swap &)recv; \
+swap    & _send = (swap &)send;
+
+#define _LOAD_EPILOG() assert(count==send.size()); assert(count==recv.size()); io_check()
+
         void swaps:: load(const patch1D &inner,
                           const patch1D &outer,
                           const bool     build)
@@ -103,32 +110,31 @@ namespace yocto
                 case swaps::lower_x:
                     if(build)
                     {
-                        allocate();
-                        swap    & _recv = (swap &)recv;
-                        swap    & _send = (swap &)send;
+                        _LOAD_PROLOG();
                         for(coord1D rx=outer.lower,sx=inner.lower,i=layers;i>0;--i,++rx,++sx)
                         {
                             _recv[i] = outer.offset_of(rx);
                             _send[i] = outer.offset_of(sx);
                         }
-                        io_check();
+                        _LOAD_EPILOG();
                     }
                     break;
 
                 case swaps::upper_x:
                     if(build)
                     {
-                        allocate();
-                        swap    & _recv = (swap &)recv;
-                        swap    & _send = (swap &)send;
+                        _LOAD_PROLOG();
                         for(coord1D rx=outer.upper,sx=inner.upper,i=layers;i>0;--i,--rx,--sx)
                         {
                             _recv[i] = outer.offset_of(rx);
                             _send[i] = outer.offset_of(sx);
                         }
-                        io_check();
+                        _LOAD_EPILOG();
                     }
                     break;
+
+                default:
+                    throw exception("swaps::load1D: unexpected swaps position '%s'", pos2txt(pos));
             }
         }
 
@@ -146,12 +152,53 @@ namespace yocto
     namespace ipso
     {
 
+#define _LOAD2D_Y() do {                               \
+for(coord1D y=inner.upper.y;y>=inner.lower.y;--y)      \
+{                                                      \
+{ coord2D r(rx,y); _recv[indx] = outer.offset_of(r); } \
+{ coord2D s(sx,y); _send[indx] = outer.offset_of(s); } \
+++indx;                                                \
+} } while(false)
+
         void swaps:: load(const patch2D &inner,
                           const patch2D &outer,
                           const bool     build)
         {
             assert(layers>0);
-            
+            switch(pos)
+            {
+                case swaps::lower_x:
+                    (size_t &)count = layers * inner.width.y;
+                    if(build)
+                    {
+                        _LOAD_PROLOG();
+                        size_t indx = 1;
+                        for(coord1D rx=outer.lower.x,sx=inner.lower.x,i=layers;i>0;--i,++rx,++sx)
+                        {
+                            _LOAD2D_Y();
+                        }
+                        _LOAD_EPILOG();
+                    }
+                    break;
+
+                case swaps::upper_x:
+                    (size_t &)count = layers * inner.width.y;
+                    if(build)
+                    {
+                        _LOAD_PROLOG();
+                        size_t indx = 1;
+                        for(coord1D rx=outer.upper.x,sx=inner.upper.x,i=layers;i>0;--i,--rx,--sx)
+                        {
+                            _LOAD2D_Y();
+                        }
+                        _LOAD_EPILOG();
+                    }
+                    break;
+
+
+                default:
+                    ;
+            }
         }
 
     }

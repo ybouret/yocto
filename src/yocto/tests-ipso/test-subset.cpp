@@ -66,6 +66,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
     std::cerr << "layers = " << layers << std::endl;
 
     {
+        std::cerr << std::endl << "-------- 1D --------" << std::endl;
         const patch1D      region(1,dims.x);
         const coord1D      PBCS(pbcs.x);
         coord1D            fallback=0;
@@ -75,6 +76,21 @@ YOCTO_UNIT_TEST_IMPL(subset)
         subsets<coord1D>   subs(full,layers,PBCS,true);
         show_subs(subs);
     }
+
+    {
+        std::cerr << std::endl << "-------- 2D --------" << std::endl;
+        const patch2D      region(coord2D(1,1),dims.xy());
+        const coord2D      PBCS(pbcs.xy());
+        coord2D            fallback;
+        const coord2D sizes = divider<coord2D>::optimal_for(region,cpus,&fallback);
+        std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
+        const divide::in2D full(sizes,region);
+        subsets<coord2D>   subs(full,layers,PBCS,true);
+        show_subs(subs);
+    }
+
+
+
 
 }
 YOCTO_UNIT_TEST_DONE()
