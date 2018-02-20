@@ -33,7 +33,7 @@ void mpi_xch( mpi_workspace<COORD> &W )
         topology << vformat(" #async=%u", unsigned(gl.size) );
         for(const ghosts *G=gl.head;G;G=G->next)
         {
-            topology << vformat(" (%2u<->%2u@%s: %4u)", unsigned(G->source), unsigned(G->target), ghosts::pos2txt(G->pos), unsigned(G->count));
+            topology << vformat(" (%2u<->%2u@%s: %4u)", unsigned(G->source), unsigned(G->target), ghosts::location2text(G->location), unsigned(G->count));
         }
         topology << " ";
 
