@@ -28,7 +28,9 @@ namespace yocto
 
         unsigned swaps:: dim2pos( const size_t dim, const int side ) throw()
         {
-            return unsigned(1) << unsigned((dim<<1)+(1+side)/2);
+            assert(dim<3);
+            assert(1==side||-1==side);
+            return unsigned(1) << unsigned((dim<<1)+(unsigned(1+side)>>1));
         }
 
         void swaps:: allocate()
