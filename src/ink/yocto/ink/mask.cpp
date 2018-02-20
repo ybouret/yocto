@@ -16,8 +16,7 @@ namespace yocto
 
         void Mask:: OR( const Mask &other )
         {
-            const hlist &self = *this; // for Intel Compilers
-            hlist ans(self);
+            MaskType ans(*this);
             for(const Vertex *v=other.head();v;v=v->next)
             {
                 (void) insert(v->pos, new Vertex(*v) );
@@ -27,8 +26,7 @@ namespace yocto
 
         void Mask:: AND( const Mask &other )
         {
-            const hlist &self = *this; // for Intel Compilers
-            hlist ans(self);
+            MaskType ans(*this);
             for(const Vertex *lhs = head(); lhs; lhs=lhs->next)
             {
                 for(const Vertex *rhs = head(); rhs; rhs=rhs->next)
