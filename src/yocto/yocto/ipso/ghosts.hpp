@@ -24,6 +24,7 @@ namespace yocto
             static const unsigned at_lower_z = 0x10;
             static const unsigned at_upper_z = 0x20;
 
+
 #if 0
             //! the position
             enum position
