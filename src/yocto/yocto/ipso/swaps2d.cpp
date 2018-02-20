@@ -10,7 +10,7 @@ namespace yocto
     namespace ipso
     {
         
-#define _LOAD2D_Y() do {                               \
+#define _LOAD2D_X() do {                               \
 for(coord1D y=inner.upper.y;y>=inner.lower.y;--y)      \
 {                                                      \
 { coord2D r(rx,y); _recv[indx] = outer.offset_of(r); } \
@@ -18,7 +18,7 @@ for(coord1D y=inner.upper.y;y>=inner.lower.y;--y)      \
 ++indx;                                                \
 } } while(false)
         
-#define _LOAD2D_X() do {                                    \
+#define _LOAD2D_Y() do {                                    \
 for(coord1D x=inner.upper.x;x>=inner.lower.x;--x)           \
 {                                                           \
 { const coord2D r(x,ry); _recv[indx] = outer.offset_of(r); }\
@@ -33,7 +33,7 @@ for(coord1D x=inner.upper.x;x>=inner.lower.x;--x)           \
             assert(layers>0);
             switch(pos)
             {
-                case swaps::lower_x:
+                case lower_x:
                     (size_t &)count = layers * inner.width.y;
                     if(build)
                     {
@@ -41,13 +41,13 @@ for(coord1D x=inner.upper.x;x>=inner.lower.x;--x)           \
                         size_t indx = 1;
                         for(coord1D rx=outer.lower.x,sx=inner.lower.x,i=layers;i>0;--i,++rx,++sx)
                         {
-                            _LOAD2D_Y();
+                            _LOAD2D_X();
                         }
                         io_check();
                     }
                     break;
                     
-                case swaps::upper_x:
+                case upper_x:
                     (size_t &)count = layers * inner.width.y;
                     if(build)
                     {
@@ -55,14 +55,14 @@ for(coord1D x=inner.upper.x;x>=inner.lower.x;--x)           \
                         size_t indx = 1;
                         for(coord1D rx=outer.upper.x,sx=inner.upper.x,i=layers;i>0;--i,--rx,--sx)
                         {
-                            _LOAD2D_Y();
+                            _LOAD2D_X();
                         }
                         io_check();
                     }
                     break;
                     
                     
-                case swaps::lower_y:
+                case lower_y:
                     (size_t &)count = layers * inner.width.x;
                     if(build)
                     {
@@ -70,13 +70,13 @@ for(coord1D x=inner.upper.x;x>=inner.lower.x;--x)           \
                         size_t indx = 1;
                         for(coord1D ry=outer.lower.y,sy=inner.lower.y,j=layers;j>0;--j,++ry,++sy)
                         {
-                            _LOAD2D_X();
+                            _LOAD2D_Y();
                         }
                         io_check();
                     }
                     break;
                     
-                case swaps::upper_y:
+                case upper_y:
                     (size_t &)count = layers * inner.width.x;
                     if(build)
                     {
@@ -84,7 +84,7 @@ for(coord1D x=inner.upper.x;x>=inner.lower.x;--x)           \
                         size_t indx = 1;
                         for(coord1D ry=outer.upper.y,sy=inner.upper.y,j=layers;j>0;--j,--ry,--sy)
                         {
-                            _LOAD2D_X();
+                            _LOAD2D_Y();
                         }
                         io_check();
                     }
