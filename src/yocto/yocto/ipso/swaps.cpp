@@ -136,4 +136,28 @@ namespace yocto
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// 1D
+//
+////////////////////////////////////////////////////////////////////////////////
+namespace yocto
+{
+    namespace ipso
+    {
+
+        void swaps:: load(const patch2D &inner,
+                          const patch2D &outer,
+                          const bool     build)
+        {
+            assert(layers>0);
+            
+        }
+
+    }
+
+}
+
+
+
 
