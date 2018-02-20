@@ -58,6 +58,10 @@ namespace yocto
                       const patch2D &outer,
                       const bool     build);
 
+            //! compute the coordinates in 3D, according to settings
+            void load(const patch3D &inner,
+                      const patch3D &outer,
+                      const bool     build);
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps);
@@ -65,6 +69,10 @@ namespace yocto
             void io_check() throw();
         };
 
+#define YOCTO_IPSO_SWAP_LOAD()  \
+allocate();                     \
+swap    & _recv = (swap &)recv; \
+swap    & _send = (swap &)send;
 
     }
 }
