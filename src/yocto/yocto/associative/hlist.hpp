@@ -169,7 +169,7 @@ namespace yocto
             }
             else
             {
-                return NULL;
+                return false;
             }
         }
 

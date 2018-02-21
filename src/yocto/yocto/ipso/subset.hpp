@@ -48,6 +48,8 @@ namespace yocto
             ranks(),
             inner( full(rank, (COORD *)&ranks) ),
             outer( inner ),
+	    local(),
+	    async(),
             next(0),
             prev(0)
             {
@@ -64,7 +66,7 @@ namespace yocto
                 //______________________________________________________________
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    const coord1D ww = __coord(inner.width,dim);
+                    const size_t ww = __coord(inner.width,dim);
                     if(layers>ww)
                     {
                         throw libc::exception(EDOM,"subset%uD: layers=%d>width.%s=%d", unsigned(DIM), int(layers), __coord_name(dim),int(ww));
