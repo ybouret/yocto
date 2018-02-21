@@ -114,6 +114,23 @@ wlen(0)
                 save<T>(F,F);
             }
 
+            inline void ld_on( const patch_type &p, param_type value ) throw()
+            {
+                assert(this->contains(p));
+                for(coord1D z=p.upper.z;z>=p.lower.z;--z)
+                {
+                    slice &s = (*this)[z];
+                    for(coord1D y=p.upper.y;y>=p.lower.y;--y)
+                    {
+                        row &r = s[y];
+                        for(coord1D x=p.upper.x;x>=p.lower.x;--x)
+                        {
+                            memcpy(&r[x],&value,sizeof(T));
+                        }
+                    }
+                }
+            }
+
         private:
             slice *slices;
             row   *rows;
@@ -155,7 +172,7 @@ wlen(0)
                     data += data_per_slice;
                     r    += rows_per_slice;
                 }
-
+                
                 this->set_bytes(this->items);
             }
         };

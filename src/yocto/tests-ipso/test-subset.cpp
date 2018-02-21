@@ -1,6 +1,7 @@
 #include "yocto/ipso/subset.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/string/conv.hpp"
+#include "yocto/ipso/vtk.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -75,6 +76,13 @@ YOCTO_UNIT_TEST_IMPL(subset)
         const divide::in1D full(sizes,region);
         subsets<coord1D>   subs(full,layers,PBCS,true);
         show_subs(subs);
+        for(const subset<coord1D> *sub = subs.head; sub; sub=sub->next )
+        {
+            field1D<float> Local("local", sub->outer);
+            Local.ldz();
+            Local.ld_on(sub->inner,1);
+            
+        }
     }
 
     {

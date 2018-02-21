@@ -127,6 +127,18 @@ YOCTO_IPSO_FIELD2D_CTOR0()
                 save<T>(F,F);
             }
 
+            inline void ld_on( const patch_type &p, param_type value ) throw()
+            {
+                assert(this->contains(p));
+                for(coord1D y=p.upper.y;y>=p.lower.y;--y)
+                {
+                    row &r = (*this)[y];
+                    for(coord1D x=p.upper.x;x>=p.lower.x;--x)
+                    {
+                        memcpy(&r[x],&value,sizeof(T));
+                    }
+                }
+            }
 
         private:
             row   *rows; //!< allocated rows

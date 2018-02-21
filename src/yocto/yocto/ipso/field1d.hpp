@@ -112,6 +112,16 @@ YOCTO_IPSO_FIELD1D_CTOR0()
                 save<T>(F,F);
             }
 
+            inline void ld_on( const patch_type &p, param_type value ) throw()
+            {
+                assert(this->contains(p));
+                T *       self = this->item;
+                for(coord1D x=p.upper;x>=p.lower;--x)
+                {
+                    memcpy(&self[x],&value,sizeof(T));
+                }
+            }
+            
 
         private:
             type  *item;
