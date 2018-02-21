@@ -6,7 +6,7 @@
 #include "yocto/counted-object.hpp"
 #include "yocto/ptr/intr.hpp"
 #include "yocto/associative/set.hpp"
-
+#include "yocto/ipso/swaps.hpp"
 
 #include <cstring>
 
@@ -63,6 +63,13 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_db);
         };
 
+        enum field_ops
+        {
+            field_set,
+            field_add,
+            field_mul
+        };
+
         //! With type, but dimension agnostic field
         template <typename T>
         class field : public field_info
@@ -86,9 +93,25 @@ namespace yocto
                 {
                     memcpy(&entry[i],&arg,sizeof(T));
                 }
-
             }
-            
+
+            //! debug by loading value into swap zone
+            inline void swap_ops( const swap &swp, param_type value, field_ops op) throw()
+            {
+                assert(entry);
+                for(size_t i=swp.size();i>0;--i)
+                {
+                    const coord1D j = swp[i]; assert(j>=0); assert(j<coord1D(count));
+                    T &f = entry[j];
+                    switch(op)
+                    {
+                        case field_set: f  = value; break;
+                        case field_add: f += value; break;
+                        case field_mul: f *= value; break;
+                    }
+                }
+            }
+
             //! store data with offsets in G.send into xbuff
             inline virtual void store(const ghosts    &G,
                                       exchange_buffer &xbuff ) const throw()

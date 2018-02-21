@@ -20,6 +20,7 @@ namespace yocto
             typedef patch<COORD>              patch_type;
             static const size_t               DIM = YOCTO_IPSO_DIM_OF(COORD);
 
+            const size_t     rank;
             const COORD      ranks;
             const patch_type inner;
             const patch_type outer;
@@ -32,10 +33,11 @@ namespace yocto
 
             //! build the outer layout
             inline explicit subset(const divider<COORD> &full,
-                                   const size_t          rank,
+                                   const size_t          r_id,
                                    const size_t          layers,
                                    const COORD           pbcs,
                                    const bool            build) :
+            rank(r_id),
             ranks(),
             inner( full(rank, (COORD *)&ranks) ),
             outer( inner ),
