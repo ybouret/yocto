@@ -37,14 +37,16 @@ static inline void show_subs( const subsets<COORD> &subs )
     }
 }
 
+#define BULK 5
+
 template <typename FIELD, typename SWAP>
-static inline void mark( FIELD &F, const SWAP *sub )
+static inline void mark( FIELD &F, const SWAP *sub, const int s, const int r)
 {
     std::cerr << "\t\tmarking field" << std::endl;
     for(;sub;sub=sub->next)
     {
-        F.swap_ops(sub->send,  0.5f,  field_add);
-        F.swap_ops(sub->recv, -0.5f,  field_add);
+        F.swap_ops(sub->send,  s,  field_set);
+        F.swap_ops(sub->recv,  r,  field_set);
     }
 }
 
@@ -91,22 +93,16 @@ YOCTO_UNIT_TEST_IMPL(subset)
         show_subs(subs);
         for(const subset<coord1D> *sub = subs.head; sub; sub=sub->next )
         {
-            field1D<float> Local("local", sub->outer);
-            Local.ldz();                 //!< outer to zero by default
-            Local.ld_on(sub->inner,1);   //!< inner to 1
-            mark(Local,sub->local.head);
 
+            field1D<float> Field("coms",sub->outer);
+            Field.ldz();
+            Field.ld_on(sub->inner,BULK);
+            mark(Field,sub->local.head,1,2);
+            mark(Field,sub->async.head,3,4);
 
-            field1D<float> Async("async", sub->outer);
-            Async.ldz();
-            Async.ld_on(sub->inner,1);
-            mark(Async,sub->async.head);
-
-
-            const string  fn = vformat("f1d_%u.vtk",unsigned(sub->ranks));
+            const string  fn = vformat("f1d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
-            VTK::InitSaveScalars(fp, "in1D", Local, sub->outer);
-            VTK::SaveScalars(fp, Async, sub->outer);
+            VTK::InitSaveScalars(fp, "in1D", Field, sub->outer);
         }
     }
 
@@ -124,27 +120,20 @@ YOCTO_UNIT_TEST_IMPL(subset)
 
         for(const subset<coord2D> *sub = subs.head; sub; sub=sub->next )
         {
-            field2D<float> Local("local", sub->outer);
-            Local.ldz();                 //!< outer to zero by default
-            Local.ld_on(sub->inner,1);   //!< inner to 1
-            mark(Local,sub->local.head);
-
-
-            field2D<float> Async("async", sub->outer);
-            Async.ldz();
-            Async.ld_on(sub->inner,1);
-            mark(Async,sub->async.head);
-
+            field2D<float> Field("coms",sub->outer);
+            Field.ldz();
+            Field.ld_on(sub->inner,BULK);
+            mark(Field,sub->local.head,1,2);
+            mark(Field,sub->async.head,3,4);
 
             const string  fn = vformat("f2d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
-            VTK::InitSaveScalars(fp, "in2D", Local, sub->outer);
-            VTK::SaveScalars(fp, Async, sub->outer);
+            VTK::InitSaveScalars(fp, "in2D", Field, sub->outer);
         }
 
     }
 
-    if(false)
+    if(true)
     {
         std::cerr << std::endl << "-------- 3D --------" << std::endl;
         const patch3D      region(coord3D(1,1,1),dims);
@@ -155,6 +144,19 @@ YOCTO_UNIT_TEST_IMPL(subset)
         const divide::in3D full(sizes,region);
         subsets<coord3D>   subs(full,layers,PBCS,true);
         show_subs(subs);
+
+        for(const subset<coord3D> *sub = subs.head; sub; sub=sub->next )
+        {
+            field3D<float> Field("coms",sub->outer);
+            Field.ldz();
+            Field.ld_on(sub->inner,BULK);
+            mark(Field,sub->local.head,1,2);
+            mark(Field,sub->async.head,3,4);
+
+            const string  fn = vformat("f3d_%u.vtk",unsigned(sub->rank));
+            ios::wcstream fp(fn);
+            VTK::InitSaveScalars(fp, "in3D", Field, sub->outer);
+        }
     }
 
 
