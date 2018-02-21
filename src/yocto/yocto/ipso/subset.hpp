@@ -31,7 +31,14 @@ namespace yocto
 
             inline virtual ~subset() throw() {}
 
-            //! build the outer layout
+            //! build the outer layout and the straight swaps
+            /**
+             \param full   the full patch divider
+             \param r_id   the subset global rank
+             \param layers the number of extra layers
+             \param pbcs   the periodic boundary conditions
+             \param build  if the send/recv offsets are to be built
+             */
             inline explicit subset(const divider<COORD> &full,
                                    const size_t          r_id,
                                    const size_t          layers,
@@ -66,7 +73,7 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // build outer patch and order 0 ghosts
+                // build outer patch and straight swaps
                 //______________________________________________________________
 #define         YOCTO_IPSO_LOWER_SWAPS new swaps(rank, full.prev_rank(ranks,dim), layers, swaps::dim2pos(dim,-1) )
 #define         YOCTO_IPSO_UPPER_SWAPS new swaps(rank, full.next_rank(ranks,dim), layers, swaps::dim2pos(dim, 1) )
@@ -75,11 +82,9 @@ namespace yocto
                 COORD upper = inner.upper;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    //assert(0==local[dim].size);
-                    //assert(0==async[dim].size);
                     //__________________________________________________________
                     //
-                    // Pass 1: computing outer
+                    // Pass 1: computing outer patch
                     //__________________________________________________________
                     const bool    periodic = (0!=__coord(pbcs,dim));
                     coord1D      &lo       = __coord(lower,dim);
@@ -180,6 +185,10 @@ namespace yocto
                 }
                 new ((void*)&outer) patch_type(lower,upper);
 
+                //______________________________________________________________
+                //
+                // Pass 2: loading straight swaps
+                //______________________________________________________________
                 for(swaps *swp = async.tail; swp; swp=swp->prev )
                 {
                     swp->load(inner,outer,build);
@@ -189,15 +198,20 @@ namespace yocto
                 {
                     swp->load(inner,outer,build);
                 }
+
+                //______________________________________________________________
+                //
+                // Pass 3: loading cross swaps
+                //______________________________________________________________
             }
 
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(subset);
-            void setup(const divider<COORD> &full,
-                       const size_t          rank,
-                       const size_t          layers,
-                       const COORD           pbcs);
+            void load_cross_swaps(const divider<COORD> &full,
+                                  const size_t          layers,
+                                  const COORD           pbcs,
+                                  const bool            build);
         };
 
 
