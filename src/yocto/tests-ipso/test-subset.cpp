@@ -37,6 +37,19 @@ static inline void show_subs( const subsets<COORD> &subs )
     }
 }
 
+template <typename COORD>
+static inline void show_flags( const subsets<COORD> &subs )
+{
+    std::cerr << "flags for sizes=" << subs.sizes << std::endl;
+    for(const subset<COORD> *sub = subs.head; sub; sub=sub->next )
+    {
+        std::cerr << "\t@" << sub->ranks << std::endl;
+        std::cerr << "\t|_local_flags=" << swaps::flg2str(sub->local_flags) << std::endl;
+        std::cerr << "\t|_async_flags=" << swaps::flg2str(sub->async_flags) << std::endl;
+    }
+}
+
+
 #define BULK 5
 
 template <typename FIELD, typename SWAP>
@@ -104,6 +117,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
             ios::wcstream fp(fn);
             VTK::InitSaveScalars(fp, "in1D", Field, sub->outer);
         }
+        show_flags(subs);
     }
 
     if(true)
@@ -130,10 +144,10 @@ YOCTO_UNIT_TEST_IMPL(subset)
             ios::wcstream fp(fn);
             VTK::InitSaveScalars(fp, "in2D", Field, sub->outer);
         }
-
+        show_flags(subs);
     }
 
-    if(true)
+    if(false)
     {
         std::cerr << std::endl << "-------- 3D --------" << std::endl;
         const patch3D      region(coord3D(1,1,1),dims);

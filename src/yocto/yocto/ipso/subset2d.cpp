@@ -10,14 +10,16 @@ namespace yocto
                                                const coord2D           pbcs,
                                                const bool              build)
         {
+            assert(layers>0);
             //------------------------------------------------------------------
             // gather information
             //------------------------------------------------------------------
-            const bool2D  periodic = __coord2bool(pbcs);
             const coord2D sizes    = full.sizes;
             const coord2D lasts    = full.lasts;
-            //unsigned      flag     = 0;
+            const bool2D  periodic = __coord2bool(pbcs);
+            const bool2D  parallel(sizes.x>1,sizes.y>1);
 
+            
 
         }
 

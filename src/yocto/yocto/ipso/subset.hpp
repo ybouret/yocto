@@ -14,20 +14,22 @@ namespace yocto
         class subset : public object
         {
         public:
-           
+
 
             typedef core::list_of_cpp<subset> list;
             typedef patch<COORD>              patch_type;
             static const size_t               DIM = YOCTO_IPSO_DIM_OF(COORD);
 
-            const size_t     rank;
-            const COORD      ranks;
-            const patch_type inner;
-            const patch_type outer;
-            swaps::list      local; //!< local swaps
-            swaps::list      async; //!< async swaps
-            subset          *next;  //!< for subset::list
-            subset          *prev;  //!< for subset::list
+            const size_t      rank;
+            const COORD       ranks;
+            const patch_type  inner;
+            const patch_type  outer;
+            const swaps::list local; //!< local swaps
+            const swaps::list async; //!< async swaps
+            const unsigned    local_flags;
+            const unsigned    async_flags;
+            subset           *next;  //!< for subset::list
+            subset           *prev;  //!< for subset::list
 
             inline virtual ~subset() throw() {}
 
@@ -48,8 +50,10 @@ namespace yocto
             ranks(),
             inner( full(rank, (COORD *)&ranks) ),
             outer( inner ),
-	    local(),
-	    async(),
+            local(),
+            async(),
+            local_flags(0),
+            async_flags(0),
             next(0),
             prev(0)
             {
@@ -73,15 +77,25 @@ namespace yocto
                     }
                 }
 
+                swaps::list & _local = (swaps::list &)local;
+                swaps::list & _async = (swaps::list &)async;
+
                 //______________________________________________________________
                 //
                 // build outer patch and straight swaps
                 //______________________________________________________________
-#define         YOCTO_IPSO_LOWER_SWAPS new swaps(rank, full.prev_rank(ranks,dim), layers, swaps::dim2pos(dim,-1) )
-#define         YOCTO_IPSO_UPPER_SWAPS new swaps(rank, full.next_rank(ranks,dim), layers, swaps::dim2pos(dim, 1) )
+//#define         YOCTO_IPSO_LOWER_SWAPS new swaps(rank, full.prev_rank(ranks,dim), layers, swaps::dim2pos(dim,-1) )
+//#define         YOCTO_IPSO_UPPER_SWAPS new swaps(rank, full.next_rank(ranks,dim), layers, swaps::dim2pos(dim, 1) )
+#define         YOCTO_IPSO_LOWER_SWAPS(KIND) \
+do { const unsigned flag = swaps::dim2pos(dim,-1); _##KIND##_flags |= flag; _##KIND.push_back( new swaps(rank, full.prev_rank(ranks,dim), layers, flag) ); } while(false)
+#define         YOCTO_IPSO_UPPER_SWAPS(KIND) \
+do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND##_flags |= flag; _##KIND.push_back( new swaps(rank, full.next_rank(ranks,dim), layers, flag) ); } while(false)
+
 
                 COORD lower = inner.lower;
                 COORD upper = inner.upper;
+                unsigned & _local_flags = (unsigned &)local_flags;
+                unsigned & _async_flags = (unsigned &)async_flags;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     //__________________________________________________________
@@ -112,8 +126,10 @@ namespace yocto
                             //__________________________________________________
                             if(has_swaps)
                             {
-                                async.push_back( YOCTO_IPSO_LOWER_SWAPS );
-                                async.push_back( YOCTO_IPSO_UPPER_SWAPS );
+                                YOCTO_IPSO_LOWER_SWAPS(async);
+                                YOCTO_IPSO_UPPER_SWAPS(async);
+                                //async.push_back( YOCTO_IPSO_LOWER_SWAPS );
+                                //async.push_back( YOCTO_IPSO_UPPER_SWAPS );
                             }
                         }
                         else
@@ -123,11 +139,11 @@ namespace yocto
                             // SEQUENTIAL in that dimension: always local
                             //__________________________________________________
                             assert(1==sz);
-                            if(has_swaps)
-                            {
-                                local.push_back( YOCTO_IPSO_LOWER_SWAPS );
-                                local.push_back( YOCTO_IPSO_UPPER_SWAPS );
-                            }
+
+                            YOCTO_IPSO_LOWER_SWAPS(local);
+                            YOCTO_IPSO_UPPER_SWAPS(local);
+                            //local.push_back( YOCTO_IPSO_LOWER_SWAPS );
+                            //local.push_back( YOCTO_IPSO_UPPER_SWAPS );
                         }
                     }
                     else
@@ -146,10 +162,7 @@ namespace yocto
                                 // not periodic @first
                                 //______________________________________________
                                 up += layers;
-                                if(has_swaps)
-                                {
-                                    async.push_back( YOCTO_IPSO_UPPER_SWAPS );
-                                }
+                                YOCTO_IPSO_UPPER_SWAPS(async);
                             }
                             else
                             {
@@ -160,21 +173,15 @@ namespace yocto
                                     // not periodic @last
                                     //__________________________________________
                                     lo -= layers;
-                                    if(has_swaps)
-                                    {
-                                        async.push_back( YOCTO_IPSO_LOWER_SWAPS );
-                                    }
+                                    YOCTO_IPSO_LOWER_SWAPS(async);
                                 }
                                 else
                                 {
                                     // in bulk
                                     lo -= layers;
                                     up += layers;
-                                    if(has_swaps)
-                                    {
-                                        async.push_back( YOCTO_IPSO_LOWER_SWAPS );
-                                        async.push_back( YOCTO_IPSO_UPPER_SWAPS );
-                                    }
+                                    YOCTO_IPSO_LOWER_SWAPS(async);
+                                    YOCTO_IPSO_UPPER_SWAPS(async);
                                 }
                             }
                         }

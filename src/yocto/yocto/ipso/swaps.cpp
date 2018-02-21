@@ -51,16 +51,27 @@ namespace yocto
                     
                     __POS2TXT(lower_z); // 3D
                     __POS2TXT(upper_z); // 3D
-                    
-                    // 2D corner ghosts, 3D edge ghosts
-                    __POS2TXT(lower_x|lower_y);
-                    __POS2TXT(lower_x|upper_y);
-                    
-                    __POS2TXT(upper_x|lower_y);
-                    __POS2TXT(upper_x|upper_y);
+
+                default: break;
                     
             }
             return "?";
+        }
+
+        string swaps:: flg2str( const unsigned flags)
+        {
+            string ans;
+            ans << '[';
+            for(int i=0;i<6;++i)
+            {
+                const unsigned p = flags & (1 << i);
+                if(p)
+                {
+                    ans << ' ' << pos2txt(p);
+                }
+            }
+            ans << ' ' << ']';
+            return ans;
         }
         
         void swaps:: allocate()

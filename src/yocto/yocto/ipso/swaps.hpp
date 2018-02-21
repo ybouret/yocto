@@ -47,6 +47,7 @@ namespace yocto
 
             static  unsigned    dim2pos( const size_t dim, const int side ) throw();
             static  const char *pos2txt( const unsigned flag ) throw();
+            static  string      flg2str( const unsigned flags);
 
             //! compute the coordinates in 1D, according to settings
             void load(const patch1D &inner,
