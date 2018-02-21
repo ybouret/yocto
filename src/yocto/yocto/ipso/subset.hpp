@@ -203,6 +203,7 @@ namespace yocto
                 //
                 // Pass 3: loading cross swaps
                 //______________________________________________________________
+                load_cross_swaps(full,layers,pbcs,build);
             }
 
 
