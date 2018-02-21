@@ -38,9 +38,9 @@ static inline void show_subs( const subsets<COORD> &subs )
 }
 
 template <typename COORD>
-static inline void show_flags( const subsets<COORD> &subs )
+static inline void show_flags( const subsets<COORD> &subs, const COORD &PBCS)
 {
-    std::cerr << "flags for sizes=" << subs.sizes << std::endl;
+    std::cerr << "flags for sizes=" << subs.sizes << " and PBCS=" << __coord2bool(PBCS) << std::endl;
     for(const subset<COORD> *sub = subs.head; sub; sub=sub->next )
     {
         std::cerr << "\t@" << sub->ranks << std::endl;
@@ -117,7 +117,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
             ios::wcstream fp(fn);
             VTK::InitSaveScalars(fp, "in1D", Field, sub->outer);
         }
-        show_flags(subs);
+        show_flags(subs,PBCS);
     }
 
     if(true)
@@ -144,7 +144,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
             ios::wcstream fp(fn);
             VTK::InitSaveScalars(fp, "in2D", Field, sub->outer);
         }
-        show_flags(subs);
+        show_flags(subs,PBCS);
     }
 
     if(false)
