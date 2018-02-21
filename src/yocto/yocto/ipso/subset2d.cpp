@@ -13,7 +13,12 @@ namespace yocto
             //------------------------------------------------------------------
             // gather information
             //------------------------------------------------------------------
-            
+            const bool2D  periodic = __coord2bool(pbcs);
+            const coord2D sizes    = full.sizes;
+            const coord2D lasts    = full.lasts;
+            //unsigned      flag     = 0;
+
+
         }
 
     }
