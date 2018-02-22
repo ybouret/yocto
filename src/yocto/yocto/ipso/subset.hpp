@@ -26,8 +26,8 @@ namespace yocto
             const patch_type  outer;
             const swaps::list local; //!< local swaps
             const swaps::list async; //!< async swaps
-            const unsigned    local_flags;
-            const unsigned    async_flags;
+            //const unsigned    local_flags;
+            //const unsigned    async_flags;
             subset           *next;  //!< for subset::list
             subset           *prev;  //!< for subset::list
 
@@ -52,8 +52,8 @@ namespace yocto
             outer( inner ),
             local(),
             async(),
-            local_flags(0),
-            async_flags(0),
+            //local_flags(0),
+            //async_flags(0),
             next(0),
             prev(0)
             {
@@ -87,15 +87,15 @@ namespace yocto
 //#define         YOCTO_IPSO_LOWER_SWAPS new swaps(rank, full.prev_rank(ranks,dim), layers, swaps::dim2pos(dim,-1) )
 //#define         YOCTO_IPSO_UPPER_SWAPS new swaps(rank, full.next_rank(ranks,dim), layers, swaps::dim2pos(dim, 1) )
 #define         YOCTO_IPSO_LOWER_SWAPS(KIND) \
-do { const unsigned flag = swaps::dim2pos(dim,-1); _##KIND##_flags |= flag; _##KIND.push_back( new swaps(rank, full.prev_rank(ranks,dim), layers, flag) ); } while(false)
+do { const unsigned flag = swaps::dim2pos(dim,-1); /*_##KIND##_flags |= flag;*/ _##KIND.push_back( new swaps(rank, full.prev_rank(ranks,dim), layers, flag) ); } while(false)
 #define         YOCTO_IPSO_UPPER_SWAPS(KIND) \
-do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND##_flags |= flag; _##KIND.push_back( new swaps(rank, full.next_rank(ranks,dim), layers, flag) ); } while(false)
+do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ _##KIND.push_back( new swaps(rank, full.next_rank(ranks,dim), layers, flag) ); } while(false)
 
 
                 COORD lower = inner.lower;
                 COORD upper = inner.upper;
-                unsigned & _local_flags = (unsigned &)local_flags;
-                unsigned & _async_flags = (unsigned &)async_flags;
+                //unsigned & _local_flags = (unsigned &)local_flags;
+                //unsigned & _async_flags = (unsigned &)async_flags;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     //__________________________________________________________

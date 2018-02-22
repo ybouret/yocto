@@ -44,8 +44,8 @@ static inline void show_flags( const subsets<COORD> &subs, const COORD &PBCS)
     for(const subset<COORD> *sub = subs.head; sub; sub=sub->next )
     {
         std::cerr << "\t@" << sub->ranks << std::endl;
-        std::cerr << "\t|_local_flags=" << swaps::flg2str(sub->local_flags) << std::endl;
-        std::cerr << "\t|_async_flags=" << swaps::flg2str(sub->async_flags) << std::endl;
+        //std::cerr << "\t|_local_flags=" << swaps::flg2str(sub->local_flags) << std::endl;
+        //std::cerr << "\t|_async_flags=" << swaps::flg2str(sub->async_flags) << std::endl;
     }
 }
 
