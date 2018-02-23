@@ -145,8 +145,8 @@ namespace yocto
         template <>
         real_t derivative<real_t>:: operator()(  numeric<real_t>::function &F, real_t x, real_t h )
         {
-            volatile real_t temp = 0;
-            h = Fabs(h);
+            volatile real_t temp = 0; //! to avoid compiler simplification
+            h    = Fabs(h);
             temp = x+h;
             h    = temp-x;
             if(h<=0)

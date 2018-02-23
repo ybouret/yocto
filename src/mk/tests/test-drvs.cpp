@@ -72,9 +72,30 @@ namespace {
 }
 
 #include "yocto/math/fcn/drvs.hpp"
+#include "yocto/math/fcn/derivatives.hpp"
+#include "yocto/math/types.hxx"
+
+template <typename T>
+static inline void show_der( const derivatives<T> &diff )
+{
+    std::cerr << "derivatives<" << typeid(T).name() << ">" << std::endl;
+    std::cerr << "epsilon : " << numeric<T>::epsilon << std::endl;
+    std::cerr << "max_ftol: " << diff.max_ftol << std::endl;
+    std::cerr << "opt_step: " << diff.opt_step << std::endl;
+    std::cerr << std::endl;
+}
 
 YOCTO_UNIT_TEST_IMPL(drvs)
 {
+
+
+    derivatives<float>  diff_f;
+    derivatives<double> diff_d;
+    show_der(diff_f);
+    show_der(diff_d);
+
+    return 0;
+
 	//test_drvs<float>();
     //test_drvs<double>();
     

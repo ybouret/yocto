@@ -74,12 +74,7 @@ namespace yocto
             static const T gold;     //!< 0.5*(sqrt(5.0)+1.0)
             static const T gold_inv; //!< 1.0/gold = gold-1.0 =0.5*(sqrt(5.0)-1.0)
 		};
-
-//#define YOCTO_MATH_DECL_(TYPE,NAME) extern template const TYPE math::numeric<TYPE>::NAME
-//#define YOCTO_MATH_DECL(NAME) YOCTO_MATH_DECL_(float,NAME); YOCTO_MATH_DECL_(double,NAME)
-//#define YOCTO_MATH_ZDECL_(TYPE,NAME) extern template const TYPE math::numeric< math::complex<TYPE> >::NAME
-//#define YOCTO_MATH_ZDECL(NAME) YOCTO_MATH_ZDECL_(float,NAME); YOCTO_MATH_ZDECL_(double,NAME)
-
+        
 		inline float     Fabs( float x  ) throw() { return fabsf( x ); }
 		inline double    Fabs( double x ) throw() { return fabs( x );  }
         inline ptrdiff_t Fabs( ptrdiff_t x) throw() { return (x < 0) ? -x : x; }
