@@ -9,7 +9,7 @@ namespace yocto
     {
 
         template <typename T>
-        class cgrad : public gradient<T>
+        class cgrad : public _gradient<T>
         {
         public:
             typedef functor<bool,TL1(const array<T>)> callback;

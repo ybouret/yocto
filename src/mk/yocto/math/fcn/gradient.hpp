@@ -11,14 +11,14 @@ namespace yocto
     {
         
         template <typename T>
-        class gradient : public derivative<T>
+        class _gradient : public derivative<T>
         {
         public:
             typedef typename numeric<T>::scalar_field scalar_field;
             
-            explicit gradient();
+            explicit _gradient();
             
-            virtual ~gradient() throw();
+            virtual ~_gradient() throw();
             
             //! one evaluation per component
             static void compute1(scalar_field    &F,
@@ -50,7 +50,7 @@ namespace yocto
                            const array<T> &dx);
             
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(gradient);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(_gradient);
             typedef typename numeric<T>::function scalar_function;
             size_t          ix; //used by compute
             array<T>       *px; //used by compute

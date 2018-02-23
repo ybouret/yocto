@@ -191,7 +191,7 @@ namespace yocto
 #endif
         template <>
         cgrad<real_t>:: cgrad() :
-        gradient<real_t>(),
+        _gradient<real_t>(),
         G( this, & cgrad<real_t>::compute_gradient),
         pdp(0)
         {
