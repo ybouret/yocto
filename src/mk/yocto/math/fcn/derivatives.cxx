@@ -29,13 +29,12 @@ namespace yocto
         {
             assert(call);
             assert(aptr);
-
             scalar_field        & f = *static_cast<scalar_field *>(call);
             const array<real_t> &_x = *aptr;
             array<real_t>       & x = (array<real_t> &)_x;
             assert(ivar>0); assert(ivar<=x.size());
 
-            const real_t xsav = X;
+            const real_t xsav = x[ivar];
             x[ivar] = X;
             const real_t ans = f(x);
             x[ivar] = xsav;
@@ -66,7 +65,7 @@ namespace yocto
             array<real_t>       & x = (array<real_t> &)_x;
             assert(ivar>0); assert(ivar<=x.size());
 
-            const real_t xsav = X;
+            const real_t xsav = x[ivar];
             x[ivar] = X;
             const real_t ans = f(vpar,x);
             x[ivar] = xsav;
@@ -143,7 +142,6 @@ namespace yocto
                     break;
                 }
             }
-
             return ans;
         }
 
