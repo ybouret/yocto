@@ -56,7 +56,8 @@ namespace yocto
             
 			typedef functor<T,TL1(T)>                            function;
             typedef functor<T,TL2(T,T)>                          function2;
-
+            typedef functor<T,TL2(T,const array<T>&)>            parametric_function;
+            
 			typedef functor<T,TL1(const array<T>&)>              scalar_field;
 			typedef functor<void,TL2(array<T>&,const array<T>&)> vector_field;
             typedef T                                           (*CFunction)(T);

@@ -2,6 +2,7 @@
 #define YOCTO_MATH_DERIVATIVES_INCLUDED 1
 
 #include "yocto/math/types.hpp"
+#include "yocto/container/matrix.hpp"
 
 namespace yocto
 {
@@ -9,10 +10,12 @@ namespace yocto
     {
 
         template <typename T>
-        class derivatives
+        class derivatives : public object
         {
         public:
-            typedef typename numeric<T>::function scalar_function;
+            typedef typename numeric<T>::function                function;
+            typedef typename numeric<T>::scalar_field            field;
+            typedef typename numeric<T>::parametric_function     parametric_function;
 
             explicit derivatives();
             virtual ~derivatives() throw();
@@ -28,14 +31,36 @@ namespace yocto
              \param err estimate of the error
              */
 
-            T diff( scalar_function &f, const T x, const T h, T &err);
+            T diff(  function &f, const T x, const T h, T &err);
 
             //! best effort
-            T compute( scalar_function &f, const T x, const T h);
+            T compute( function &f, const T x, const T h);
+
+            //! derivative of f w.r.t x for a given set of parameters
+            T compute( parametric_function &f, const T x, const array<T> &param, const T h );
+
+            //! gradient. NOT thread safe, uses x as local memory...
+            void gradient( array<T> &grad, field &f, const array<T> &x, const array<T> &h );
+
+            //! gradient. NOT thread safe, uses x as local memory...
+            void gradient( array<T> &grad, parametric_function &f, const T u, const array<T> &x, const array<T> &h );
+
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(derivatives);
-            void *impl;
+            matrix<T>            a;
+            size_t               ivar;
+            field               *fptr;
+            parametric_function *pptr;
+            const array<T>      *vptr;
+            function             fdir; //!< field     direction, for gradient
+            function             fpar; //!< parameter direction, for derivative w.r.t parameter
+            function             ffit; //!< uses parametric_field as fit function
+            T                    vpar; //!< value of  parameter
+            T                    eval_field( T xx); //!< (*fptr)( (*vptr)@ivar=x )
+            T                    eval_pfunc( T xx); //!< (*pptr)(xx, (*vptr) )
+            T                    eval_fitfn( T xx); //!< (*pptr)(vpar,(*vptr)@ivar=x )
             
         public:
             const T max_ftol;   //!< maximum possible fractional accuracy: sqrt(epsilon)

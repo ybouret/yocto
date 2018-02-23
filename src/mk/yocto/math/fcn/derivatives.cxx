@@ -21,17 +21,71 @@ namespace yocto
         template <>
         derivatives<real_t>:: ~derivatives() throw()
         {
-            assert(impl);
-            delete static_cast<MATRIX *>(impl);
+
         }
 
+        template <>
+        real_t derivatives<real_t>:: eval_field(real_t X)
+        {
+            assert(fptr);
+            assert(vptr);
 
+            field               & f = *fptr;
+            const array<real_t> &_x = *vptr;
+            array<real_t>       & x = (array<real_t> &)_x;
+            assert(ivar>0); assert(ivar<=x.size());
+
+            const real_t xsav = X;
+            x[ivar] = X;
+            const real_t ans = f(x);
+            x[ivar] = xsav;
+            return ans;
+
+        }
+
+        template <>
+        real_t derivatives<real_t>:: eval_pfunc(real_t value)
+        {
+            assert(pptr);
+            assert(vptr);
+
+            parametric_function & f = *pptr;
+            const array<real_t> & x = *vptr;
+            
+            return f(value,x);
+        }
+
+        template <>
+        real_t derivatives<real_t>:: eval_fitfn(real_t X)
+        {
+            assert(pptr);
+            assert(vptr);
+
+            parametric_function & f = *pptr;
+            const array<real_t> &_x = *vptr;
+            array<real_t>       & x = (array<real_t> &)_x;
+            assert(ivar>0); assert(ivar<=x.size());
+
+            const real_t xsav = X;
+            x[ivar] = X;
+            const real_t ans = f(vpar,x);
+            x[ivar] = xsav;
+            return ans;
+
+        }
 
 #define MACHINE_PRECISION numeric<real_t>::epsilon
 
         template <>
         derivatives<real_t>:: derivatives() :
-        impl( new MATRIX(NTAB,NTAB) ),
+        a(NTAB,NTAB),
+        ivar(0),
+        fptr(0),
+        vptr(0),
+        fdir(this, & derivatives<real_t>::eval_field ),
+        fpar(this, & derivatives<real_t>::eval_pfunc ),
+        ffit(this, & derivatives<real_t>::eval_fitfn ),
+        vpar(0),
         max_ftol( log_round_ceil( Sqrt(MACHINE_PRECISION) ) ),
         opt_step( log_round_ceil( Pow(MACHINE_PRECISION,REAL(1.0)/REAL(3.0)) ) )
         {
@@ -58,13 +112,12 @@ namespace yocto
 #define EVAL() __eval(f,x,hh)
 
         template <>
-        real_t derivatives<real_t>:: diff(scalar_function &f,
-                                          const real_t     x,
-                                          const real_t     h,
-                                          real_t          &err)
+        real_t derivatives<real_t>:: diff(function     &f,
+                                          const real_t  x,
+                                          const real_t  h,
+                                          real_t       &err)
         {
-            MATRIX &a = *static_cast<MATRIX *>(impl);
-
+            
             real_t hh  = Fabs(h);
             real_t ans = (a[1][1]=EVAL());
             err=BIG;
@@ -95,7 +148,7 @@ namespace yocto
         }
 
         template <>
-        real_t derivatives<real_t>:: compute( scalar_function &f, const real_t x, real_t h)
+        real_t derivatives<real_t>:: compute(function &f, const real_t x, real_t h)
         {
             // initialize
             real_t err  = 0;
@@ -112,6 +165,51 @@ namespace yocto
             }
 
             return dFdx;
+        }
+
+        template <>
+        real_t  derivatives<real_t>::compute(parametric_function &f,
+                                             const real_t         x,
+                                             const array<real_t> &param,
+                                             const real_t         h )
+        {
+            pptr = &f;
+            vptr = &param;
+            return compute(fpar,x,h);
+        }
+
+
+
+        template <>
+        void derivatives<real_t>::gradient(array<real_t>      &grad,
+                                           field               &f,
+                                           const array<real_t> &x,
+                                           const array<real_t> &h )
+        {
+            const size_t nvar = x.size(); assert(h.size()==x.size()); assert(grad.size()==x.size());
+            fptr = & f;
+            vptr = & x;
+            for(ivar=nvar;ivar>0;--ivar)
+            {
+                grad[ivar] = compute( fdir, x[ivar], h[ivar] );
+            }
+        }
+
+        template <>
+        void derivatives<real_t>:: gradient(array<real_t>       &grad,
+                                            parametric_function &f,
+                                            const real_t         u,
+                                            const array<real_t> &x,
+                                            const array<real_t> &h )
+        {
+            const size_t nvar = x.size(); assert(h.size()==x.size()); assert(grad.size()==x.size());
+            pptr = & f;
+            vptr = & x;
+            vpar = u;
+            for(ivar=nvar;ivar>0;--ivar)
+            {
+                grad[ivar] = compute( ffit, x[ivar], h[ivar] );
+            }
         }
 
 
