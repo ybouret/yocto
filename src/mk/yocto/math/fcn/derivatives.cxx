@@ -58,22 +58,23 @@ namespace yocto
 #define EVAL() __eval(f,x,hh)
 
         template <>
-        real_t derivatives<real_t>:: compute( numeric<real_t>::function &f, const real_t x, const real_t h, real_t &err)
+        real_t derivatives<real_t>:: diff(scalar_function &f,
+                                          const real_t     x,
+                                          const real_t     h,
+                                          real_t          &err)
         {
             MATRIX &a = *static_cast<MATRIX *>(impl);
 
             real_t hh  = Fabs(h);
             real_t ans = (a[1][1]=EVAL());
             err=BIG;
-            for(size_t i=2;i<=NTAB;i++)
+            for(size_t i=2,im=i-1;i<=NTAB;++i,++im)
             {
                 hh /= CON;
                 a[1][i]=EVAL();
-                real_t       fac=CON2;
-                const size_t im = i-1;
-                for (size_t j=2;j<=i;j++)
+                real_t fac=CON2;
+                for (size_t j=2,jm=j-1;j<=i;++j,++jm)
                 {
-                    const size_t jm = j-1;
                     a[j][i]=(a[jm][i]*fac-a[jm][im])/(fac-REAL(1.0));
                     fac=CON2*fac;
                     const real_t errt=max_of(Fabs(a[j][i]-a[jm][i]),Fabs(a[j][i]-a[jm][im]));
@@ -91,6 +92,26 @@ namespace yocto
             }
 
             return ans;
+        }
+
+        template <>
+        real_t derivatives<real_t>:: compute( scalar_function &f, const real_t x, real_t h)
+        {
+            // initialize
+            real_t err  = 0;
+            real_t dFdx = diff(f, x, h, err);
+            while( err > max_ftol * Fabs(dFdx) )
+            {
+                real_t new_err = 0;
+                h /= CON;
+                const real_t new_dFdx = diff(f,x,h,new_err);
+                if(new_err>=err)
+                    break;
+                err  = new_err;
+                dFdx = new_dFdx;
+            }
+
+            return dFdx;
         }
 
 

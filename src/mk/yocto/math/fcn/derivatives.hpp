@@ -12,6 +12,8 @@ namespace yocto
         class derivatives
         {
         public:
+            typedef typename numeric<T>::function scalar_function;
+
             explicit derivatives();
             virtual ~derivatives() throw();
 
@@ -26,8 +28,10 @@ namespace yocto
              \param err estimate of the error
              */
 
-            T compute( typename numeric<T>::function &f, const T x, const T h, T &err);
-            
+            T diff( scalar_function &f, const T x, const T h, T &err);
+
+            //! best effort
+            T compute( scalar_function &f, const T x, const T h);
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(derivatives);

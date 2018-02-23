@@ -94,6 +94,31 @@ YOCTO_UNIT_TEST_IMPL(drvs)
     show_der(diff_f);
     show_der(diff_d);
 
+    numeric<double>::function F  = cfunctor( Cos2<double> );
+    numeric<double>::function F3 = composition<double>::build(fabs, F);
+    const double xmax = 10;
+    const double step = 0.02;
+    {
+        double err = 0;
+        ios::ocstream fp("diff0.dat",false);
+        for( double x=0; x <= xmax; x += step)
+        {
+            Counts = 0;
+            const double dFdx = diff_d.diff(F, x, 0.001, err);
+            fp("%g %g %g %u %g\n", x, F(x), dFdx, Counts, err);
+        }
+    }
+
+    {
+        ios::ocstream fp("diff1.dat",false);
+        for( double x=0; x <= xmax; x += step)
+        {
+            Counts = 0;
+            const double dFdx = diff_d.compute(F, x, 0.001);
+            fp("%g %g %g %u\n", x, F(x), dFdx, Counts);
+        }
+    }
+
     return 0;
 
 	//test_drvs<float>();
@@ -101,11 +126,7 @@ YOCTO_UNIT_TEST_IMPL(drvs)
     
     derivative<double> drvs;
     
-    const double xmax = 10;
-    const double step = 0.02;
-    numeric<double>::function F  = cfunctor( Cos2<double> );
-    //numeric<double>::function F2 = cfunctor(fabs);
-    numeric<double>::function F3 = composition<double>::build(fabs, F);
+
 
     {
         double err = 0;
