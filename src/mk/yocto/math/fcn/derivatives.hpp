@@ -52,7 +52,7 @@ namespace yocto
             matrix<T>            a;
             size_t               ivar;
             void                *call;
-            const array<T>      *vptr;
+            const array<T>      *aptr;
             function             fdir; //!< field     direction, for gradient
             function             fpar; //!< parameter direction, for derivative w.r.t parameter
             function             ffit; //!< uses parametric_field as fit function

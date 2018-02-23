@@ -28,10 +28,10 @@ namespace yocto
         real_t derivatives<real_t>:: eval_field(real_t X)
         {
             assert(call);
-            assert(vptr);
+            assert(aptr);
 
             scalar_field        & f = *static_cast<scalar_field *>(call);
-            const array<real_t> &_x = *vptr;
+            const array<real_t> &_x = *aptr;
             array<real_t>       & x = (array<real_t> &)_x;
             assert(ivar>0); assert(ivar<=x.size());
 
@@ -47,10 +47,10 @@ namespace yocto
         real_t derivatives<real_t>:: eval_pfunc(real_t value)
         {
             assert(call);
-            assert(vptr);
+            assert(aptr);
 
             parametric_function & f = *static_cast<parametric_function*>(call);
-            const array<real_t> & x = *vptr;
+            const array<real_t> & x = *aptr;
             
             return f(value,x);
         }
@@ -59,10 +59,10 @@ namespace yocto
         real_t derivatives<real_t>:: eval_fitfn(real_t X)
         {
             assert(call);
-            assert(vptr);
+            assert(aptr);
 
             parametric_function & f = *static_cast<parametric_function*>(call);
-            const array<real_t> &_x = *vptr;
+            const array<real_t> &_x = *aptr;
             array<real_t>       & x = (array<real_t> &)_x;
             assert(ivar>0); assert(ivar<=x.size());
 
@@ -81,7 +81,7 @@ namespace yocto
         a(NTAB,NTAB),
         ivar(0),
         call(0),
-        vptr(0),
+        aptr(0),
         fdir(this, & derivatives<real_t>::eval_field ),
         fpar(this, & derivatives<real_t>::eval_pfunc ),
         ffit(this, & derivatives<real_t>::eval_fitfn ),
@@ -174,7 +174,7 @@ namespace yocto
                                              const real_t         h )
         {
             call = &f;
-            vptr = &param;
+            aptr = &param;
             return compute(fpar,x,h);
         }
 
@@ -188,7 +188,7 @@ namespace yocto
         {
             const size_t nvar = x.size(); assert(h.size()==x.size()); assert(grad.size()==x.size());
             call = & f;
-            vptr = & x;
+            aptr = & x;
             for(ivar=nvar;ivar>0;--ivar)
             {
                 grad[ivar] = compute( fdir, x[ivar], h[ivar] );
@@ -204,7 +204,7 @@ namespace yocto
         {
             const size_t nvar = x.size(); assert(h.size()==x.size()); assert(grad.size()==x.size());
             call = & f;
-            vptr = & x;
+            aptr = & x;
             vpar = u;
             for(ivar=nvar;ivar>0;--ivar)
             {

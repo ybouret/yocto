@@ -114,6 +114,7 @@ static inline void show_der( const derivatives<T> &diff )
     std::cerr << "epsilon : " << numeric<T>::epsilon << std::endl;
     std::cerr << "max_ftol: " << diff.max_ftol << std::endl;
     std::cerr << "opt_step: " << diff.opt_step << std::endl;
+    std::cerr << "sizeof(matrix)=" << sizeof(matrix<T>) << std::endl;
     std::cerr << std::endl;
 }
 
