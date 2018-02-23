@@ -27,10 +27,10 @@ namespace yocto
         template <>
         real_t derivatives<real_t>:: eval_field(real_t X)
         {
-            assert(fptr);
+            assert(call);
             assert(vptr);
 
-            field               & f = *fptr;
+            scalar_field        & f = *static_cast<scalar_field *>(call);
             const array<real_t> &_x = *vptr;
             array<real_t>       & x = (array<real_t> &)_x;
             assert(ivar>0); assert(ivar<=x.size());
@@ -46,10 +46,10 @@ namespace yocto
         template <>
         real_t derivatives<real_t>:: eval_pfunc(real_t value)
         {
-            assert(pptr);
+            assert(call);
             assert(vptr);
 
-            parametric_function & f = *pptr;
+            parametric_function & f = *static_cast<parametric_function*>(call);
             const array<real_t> & x = *vptr;
             
             return f(value,x);
@@ -58,10 +58,10 @@ namespace yocto
         template <>
         real_t derivatives<real_t>:: eval_fitfn(real_t X)
         {
-            assert(pptr);
+            assert(call);
             assert(vptr);
 
-            parametric_function & f = *pptr;
+            parametric_function & f = *static_cast<parametric_function*>(call);
             const array<real_t> &_x = *vptr;
             array<real_t>       & x = (array<real_t> &)_x;
             assert(ivar>0); assert(ivar<=x.size());
@@ -80,7 +80,7 @@ namespace yocto
         derivatives<real_t>:: derivatives() :
         a(NTAB,NTAB),
         ivar(0),
-        fptr(0),
+        call(0),
         vptr(0),
         fdir(this, & derivatives<real_t>::eval_field ),
         fpar(this, & derivatives<real_t>::eval_pfunc ),
@@ -173,7 +173,7 @@ namespace yocto
                                              const array<real_t> &param,
                                              const real_t         h )
         {
-            pptr = &f;
+            call = &f;
             vptr = &param;
             return compute(fpar,x,h);
         }
@@ -182,12 +182,12 @@ namespace yocto
 
         template <>
         void derivatives<real_t>::gradient(array<real_t>      &grad,
-                                           field               &f,
+                                           scalar_field       &f,
                                            const array<real_t> &x,
                                            const array<real_t> &h )
         {
             const size_t nvar = x.size(); assert(h.size()==x.size()); assert(grad.size()==x.size());
-            fptr = & f;
+            call = & f;
             vptr = & x;
             for(ivar=nvar;ivar>0;--ivar)
             {
@@ -203,7 +203,7 @@ namespace yocto
                                             const array<real_t> &h )
         {
             const size_t nvar = x.size(); assert(h.size()==x.size()); assert(grad.size()==x.size());
-            pptr = & f;
+            call = & f;
             vptr = & x;
             vpar = u;
             for(ivar=nvar;ivar>0;--ivar)

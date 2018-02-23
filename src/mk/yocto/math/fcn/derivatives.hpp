@@ -14,7 +14,7 @@ namespace yocto
         {
         public:
             typedef typename numeric<T>::function                function;
-            typedef typename numeric<T>::scalar_field            field;
+            typedef typename numeric<T>::scalar_field            scalar_field;
             typedef typename numeric<T>::parametric_function     parametric_function;
 
             explicit derivatives();
@@ -40,7 +40,7 @@ namespace yocto
             T compute( parametric_function &f, const T x, const array<T> &param, const T h );
 
             //! gradient. NOT thread safe, uses x as local memory...
-            void gradient( array<T> &grad, field &f, const array<T> &x, const array<T> &h );
+            void gradient( array<T> &grad, scalar_field &f, const array<T> &x, const array<T> &h );
 
             //! gradient. NOT thread safe, uses x as local memory...
             void gradient( array<T> &grad, parametric_function &f, const T u, const array<T> &x, const array<T> &h );
@@ -51,8 +51,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(derivatives);
             matrix<T>            a;
             size_t               ivar;
-            field               *fptr;
-            parametric_function *pptr;
+            void                *call;
             const array<T>      *vptr;
             function             fdir; //!< field     direction, for gradient
             function             fpar; //!< parameter direction, for derivative w.r.t parameter
