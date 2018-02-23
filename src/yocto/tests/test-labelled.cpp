@@ -4,36 +4,13 @@
 #include "yocto/associative/map.hpp"
 #include "yocto/associative/dictionary.hpp"
 #include "yocto/associative/set.hpp"
+#include "yocto/associative/db-entry.hpp"
 
 using namespace yocto;
 
 namespace  {
     
-    class dummy
-    {
-    public:
-        
-        explicit dummy( const char *id ) :
-        name(id)
-        {
-        }
-        
-        const string name;
-        
-        const string & key() const throw() { return name; }
-        
-        virtual ~dummy() throw()
-        {
-        }
-        
-        dummy( const dummy &other ) : name(other.name)
-        {
-            
-        }
-        
-    private:
-        YOCTO_DISABLE_ASSIGN(dummy);
-    };
+    typedef db_entry<double> dummy;
     
 }
 
@@ -50,7 +27,7 @@ YOCTO_UNIT_TEST_IMPL(labelled)
     
     labelled<set,dummy> S;
     {
-        const dummy d("hello");
+        const dummy d("hello",0);
         S.store( d );
     }
     S.query( "hello" );

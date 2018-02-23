@@ -58,7 +58,7 @@ namespace yocto
         
         bool erase( const char *id )
         {
-            const string key=id; return this->erase(key);
+            const string key=id; return this->remove(key);
         }
         
     
