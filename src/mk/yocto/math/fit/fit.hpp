@@ -13,6 +13,19 @@ namespace yocto
     namespace math
     {
 
+        class FitVariable
+        {
+        public:
+            const string name;
+            const string link;
+            const size_t indx;
+            FitVariable(const string &n, const string &l, const size_t i);
+            FitVariable(const FitVariable &);
+            ~FitVariable() throw();
+        private:
+            YOCTO_DISABLE_ASSIGN(FitVariable);
+        };
+
         typedef sorted_vector<string> FitVariablesType;
         class FitVariables : public FitVariablesType
         {
