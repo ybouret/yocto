@@ -3,6 +3,7 @@
 
 
 #include "yocto/type/key.hpp"
+#include <iostream>
 
 namespace yocto
 {
@@ -77,7 +78,13 @@ namespace yocto
             other.pointee_    = pointee_;
             pointee_          = tmp;
         }
-        
+
+        inline friend
+        std::ostream & operator<<( std::ostream &os, const intr_ptr &p )
+        {
+            os << *p;
+            return os;
+        }
 	private:
 		mutable_type *pointee_;
 		YOCTO_DISABLE_ASSIGN(intr_ptr);

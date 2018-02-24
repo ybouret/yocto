@@ -3,7 +3,6 @@
 
 #include "yocto/string.hpp"
 #include "yocto/counted-object.hpp"
-#include "yocto/ptr/intr.hpp"
 
 namespace yocto
 {
@@ -30,13 +29,18 @@ namespace yocto
     {
     public:
         YOCTO_ARGUMENTS_DECL_T;
-        typedef intr_ptr<string,T> pointer;
-        
+
         type value;
 
         inline virtual ~db_entry() throw() {}
         inline explicit db_entry(const string &id, param_type arg) : db_label(id), value(arg) {}
         inline db_entry(const db_entry &other) : db_label(other), value(other.value) {}
+
+        inline db_entry & operator=( param_type x )
+        {
+            value = x;
+            return *this;
+        }
 
     private:
         YOCTO_DISABLE_ASSIGN(db_entry);

@@ -89,7 +89,20 @@ namespace yocto
 			size_t indx=0;
 			return core::locate<const_type,const_type,COMPARATOR&>( &args, addr_, size_, indx, comp_);
 		}
-		
+
+        inline size_t index_of(param_type args) const throw()
+        {
+            size_t indx=0;
+            if( core::locate<const_type,const_type,COMPARATOR&>( &args, addr_, size_, indx, comp_) )
+            {
+                return ++indx;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
 		virtual bool insert( param_type args )               
 		{
 			size_t indx=0;

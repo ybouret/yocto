@@ -72,7 +72,7 @@ namespace yocto
 		 \param o an object pointer
 		 \param m an object method, like &OBJECT_POINTER::DoSomething(...)
 		 Since only the pointer is copied, this strategy can be used
-		 for building one functor whose context can be change by tweaking the
+		 for building one functor whose context can be changed by tweaking the
 		 original object.
 		 */
 		template <typename OBJECT_POINTER, typename METHOD_POINTER>

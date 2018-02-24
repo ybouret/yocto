@@ -8,14 +8,27 @@
 #include <typeinfo>
 
 using namespace yocto;
+template <typename T>
+static inline void check_indices( const sorted_vector<T> &sv )
+{
+    std::cerr << "check indices..." << std::endl;
+    for(size_t i=sv.size();i>0;--i)
+    {
+        const T &key = sv[i];
+        if( sv.index_of(key) != i )
+        {
+            throw exception("mismatch key index#%u", unsigned(i));
+        }
+    }
+}
 
 YOCTO_UNIT_TEST_IMPL(sorted_vec)
 {
-	
+
+    const size_t nmax = 10000;
 	{
 		sorted_vector<size_t> sv;
 		size_t count = 0;
-		const size_t nmax = 1000;
 		for( size_t i=0; i < nmax; ++i)
 		{
 			if( sv.insert( alea.lt(nmax) ) )
@@ -25,6 +38,8 @@ YOCTO_UNIT_TEST_IMPL(sorted_vec)
 		}
 		std::cerr << "inserted " << count << "/" << nmax << std::endl;
 		assert( sv.size() == count );
+        check_indices(sv);
+
 		const size_t step = max_of<size_t>(1,count/10);
 		for( size_t i=1; i <= count; i += step )
 		{
@@ -37,7 +52,6 @@ YOCTO_UNIT_TEST_IMPL(sorted_vec)
 	{
 		sorted_vector<string> sv;
 		size_t count = 0;
-		const size_t nmax = 1000;
 		for( size_t i=0; i < nmax; ++i)
 		{
 			const string tmp = gen<string>::get();
@@ -48,6 +62,7 @@ YOCTO_UNIT_TEST_IMPL(sorted_vec)
 		}
 		std::cerr << "inserted " << count << "/" << nmax << std::endl;
 		assert( sv.size() == count );
+        check_indices(sv);
 		const size_t step = max_of<size_t>(1,count/10);
 		for( size_t i=1; i <= count; i += step )
 		{
