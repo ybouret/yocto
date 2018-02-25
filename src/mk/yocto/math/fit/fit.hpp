@@ -3,29 +3,63 @@
 
 #include "yocto/math/fcn/derivatives.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/ordered/sorted-vector.hpp"
 #include "yocto/string.hpp"
 #include "yocto/counted-object.hpp"
 #include "yocto/ptr/arc.hpp"
+#include "yocto/associative/set.hpp"
 
 namespace yocto
 {
     namespace math
     {
 
-        class FitVariable
+        typedef vector<size_t> FitIndices;
+
+        //! a Fit varialble, name=local, link=global
+        class FitVariable 
         {
         public:
             const string name;
             const string link;
             const size_t indx;
-            FitVariable(const string &n, const string &l, const size_t i);
+            const string & key() const throw();
+            FitVariable(const string &n, const string &l, const size_t idx);
             FitVariable(const FitVariable &);
             ~FitVariable() throw();
+            friend std::ostream & operator<<( std::ostream &os, const FitVariable &fv )
+            {
+                os << "@" << fv.indx << ":'" << fv.name << "'";
+                if(fv.name!=fv.link) os << "->'" << fv.link << "'";
+                return os;
+            }
         private:
             YOCTO_DISABLE_ASSIGN(FitVariable);
         };
 
+        typedef set<string,FitVariable> FitVariablesType;
+
+        class FitVariables : public FitVariablesType
+        {
+        public:
+            explicit FitVariables(const size_t capa=0);
+            virtual ~FitVariables() throw();
+
+            FitVariables & operator()(const string &var_name, const string &var_link);
+            FitVariables & operator()(const string &var_name);
+            FitVariables & operator<<(const string &var_name);
+
+
+            static void LocalToGlobal(FitIndices         &indices,
+                                      const FitVariables &local,
+                                      const FitVariables &global);
+
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(FitVariables);
+            void check_no_multiple_link(const string &link) const;
+        };
+
+#if 0
         typedef sorted_vector<string> FitVariablesType;
         class FitVariables : public FitVariablesType
         {
@@ -57,7 +91,8 @@ namespace yocto
             size_t operator[]( const char   *key) const;
             
         };
-
+#endif
+        
         template <typename T>
         class Fit
         {
@@ -65,6 +100,7 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
             typedef array<T>                                 Array;
             typedef vector<T>                                Vector;
+            typedef matrix<T>                                Matrix;
             typedef typename numeric<T>::parametric_function Function;
 
             ////////////////////////////////////////////////////////////////////
@@ -75,9 +111,9 @@ namespace yocto
             class SampleType : public counted_object
             {
             public:
-                FitVariables   local; //!< local names
-                mutable Vector u;     //!< local variables
-
+                FitVariables   variables; //!< 'local' variables
+                FitIndices     indices;   //!< global to local indidces
+                
                 virtual ~SampleType() throw();
                 explicit SampleType();
                 virtual T computeD2(Function           &F,
@@ -113,7 +149,7 @@ namespace yocto
             typedef arc_ptr<Sample>        SamplePointer;
             typedef vector<SamplePointer>  SamplesType;
 
-            class Samples : public SamplesType
+            class Samples : public SampleType, public SamplesType
             {
             public:
                 explicit Samples(const size_t n=0);

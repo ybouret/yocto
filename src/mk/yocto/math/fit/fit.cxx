@@ -6,6 +6,7 @@ namespace yocto
 {
     namespace math
     {
+#if 0
         template <>
         void FitVariables:: build_matrix<real_t>(matrix<real_t>     &J,
                                                  const FitVariables &local,
@@ -35,13 +36,13 @@ namespace yocto
                 lvec[l] = gvec[ global[local[l]] ];
             }
         }
-        
+#endif
 
         template <> Fit<real_t>::SampleType:: ~SampleType() throw() {}
 
         template <> Fit<real_t>::SampleType:: SampleType() :
-        local(),
-        u()
+        variables(),
+        indices()
         {
         }
         
@@ -70,6 +71,7 @@ namespace yocto
                                               const Array        &params,
                                               const FitVariables &global) const
         {
+#if 0
             FitVariables::build_vector(u,params,local,global);
             const size_t N = X.size();
             assert(Y.size()==N);
@@ -81,6 +83,7 @@ namespace yocto
                 D2 += del*del;
             }
             return D2;
+#endif
         }
 
     }

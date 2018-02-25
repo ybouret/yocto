@@ -57,15 +57,16 @@ YOCTO_UNIT_TEST_IMPL(fit)
     Fit<double>::Sample &sample1 = samples.add(t1,x1,z1);
     Fit<double>::Sample &sample2 = samples.add(t2,x2,z2);
 
-    FitVariables global; global << "t0" << "slope1" << "slope2";
-    sample1.local << "t0" << "slope1";
-    sample2.local << "t0" << "slope2";
+    FitVariables &global = samples.variables;
+    global << "t0" << "slope1" << "slope2";
+    sample1.variables("t0")("slope","slope1");
+    sample2.variables("t0")("slope","slope2");
 
-    std::cerr << "global=" << global << std::endl;
-    std::cerr << "local1=" << sample1.local << std::endl;
-    std::cerr << "local2=" << sample2.local << std::endl;
+    std::cerr << "global =" << global << std::endl;
+    std::cerr << "sample1=" << sample1.variables << std::endl;
+    std::cerr << "sample2=" << sample2.variables << std::endl;
 
-    
+
 
 
 }
