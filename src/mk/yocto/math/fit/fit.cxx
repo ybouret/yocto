@@ -37,7 +37,7 @@ namespace yocto
                 const size_t nvar = variables.size();
                 assert(aorg.size()==nvar);
                 assert(aerr.size()==nvar);
-                const size_t max_len = variables.getMaxLength();
+                const size_t max_len = variables.getMaxNameLength();
                 vector<string> vorg(nvar,as_capacity);
                 vector<string> verr(nvar,as_capacity);
                 size_t i=1;
@@ -251,7 +251,7 @@ namespace yocto
             }
 
             template <>
-            size_t Sample<real_t>:: count() const throw()
+            size_t Sample<real_t>:: items() const throw()
             {
                 assert( X.size() == Y.size() );
                 assert( Y.size() == Z.size() );
@@ -378,14 +378,14 @@ namespace yocto
             }
 
             template <>
-            size_t Samples<real_t>:: count() const throw()
+            size_t Samples<real_t>:: items() const throw()
             {
                 const array< Sample<real_t>::Pointer > &self = *this;
                 size_t ans = 0;
                 for(size_t i=size();i>0;--i)
                 {
                     const Sample<real_t> &sample = *self[i];
-                    ans += sample.count();
+                    ans += sample.items();
                 }
                 return ans;
             }
@@ -437,10 +437,11 @@ namespace yocto
             lambda(0),
             min_p10( Floor(Log10(numeric<real_t>::epsilon)) ),
             max_p10( Floor(Log10(numeric<real_t>::maximum))/2 ),
-            Rsq(0)
+            Rsq(0),
+            cycle(0)
             {
-                std::cerr << "min_p10=" << min_p10 << std::endl;
-                std::cerr << "max_p10=" << max_p10 << std::endl;
+                //std::cerr << "min_p10=" << min_p10 << std::endl;
+                //std::cerr << "max_p10=" << max_p10 << std::endl;
             }
 
             template <>
@@ -494,13 +495,17 @@ namespace yocto
                     }
                     if( LU<real_t>::build(cinv) )
                     {
-                        //std::cerr << "cinv@lambda=" << lambda << std::endl;
                         return true;
                     }
                 }
                 return false;
             }
 
+#define CALLBACK() do \
+{\
+if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
+} while(false)
+            
             template <>
             bool LS<real_t>:: run(SampleType<real_t>   &sample,
                                   Function             &F,
@@ -523,19 +528,30 @@ namespace yocto
                 {
                     return true;
                 }
+                
                 sample.link();
                 atry.make(nvar);
                 cinv.make(nvar);
                 tao::ld(aerr,0);
                 Matrix &curv = sample.curv;
                 Array  &beta = sample.beta;
-                p10 = min_p10;
-                Rsq = 0;
-
+                p10          = min_p10;
+                Rsq          = 0;
+                cycle        = 0;
+                
+                //______________________________________________________________
+                //
+                // start cycle
+                //______________________________________________________________
             CYCLE:
                 {
-                    real_t D2_org = sample.computeD2(F,aorg,*this);
-
+                    //__________________________________________________________
+                    //
+                    // computation of D2, beta and curv
+                    //__________________________________________________________
+                    const real_t D2_org = sample.computeD2(F,aorg,*this);
+                    CALLBACK();
+                    
                     //__________________________________________________________
                     //
                     // regularize curvature
@@ -553,11 +569,7 @@ namespace yocto
                         }
                     }
 
-
-                    if( tao::norm_sq(beta) <= 0 )
-                    {
-                        goto EXTREMUM;
-                    }
+                    
                     //__________________________________________________________
                     //
                     // compute inverse curvature from current p10
@@ -575,7 +587,7 @@ namespace yocto
                         //______________________________________________________
                         tao::set(atry,beta);
                         LU<real_t>::solve(cinv,atry);
-                        if( tao::norm_sq(atry) <= 0 )
+                        if( tao::norm_sq(atry) <= REAL(0.0) )
                         {
                             goto EXTREMUM;
                         }
@@ -604,7 +616,7 @@ namespace yocto
                         //
                         // forward and check
                         //______________________________________________________
-                        real_t D2_try = sample.computeD2(F,atry);
+                        const real_t D2_try = sample.computeD2(F,atry);
                         if(D2_try<D2_org)
                         {
                             tao::set(aorg,atry);
@@ -631,12 +643,11 @@ namespace yocto
                         // singular matrix at extremum
                         return false;
                     }
-                    
+                    CALLBACK();
                     Matrix &alpha = cinv;
                     alpha.ld1();
                     LU<real_t>::solve(curv,alpha);
-                    std::cerr << "alpha=" << alpha << std::endl;
-
+                    
                     //__________________________________________________________
                     //
                     // counting variables
@@ -651,9 +662,7 @@ namespace yocto
                     //
                     // counting data
                     //__________________________________________________________
-                    const size_t user_ndat = sample.count();
-                    std::cerr << "#data=" << user_ndat << std::endl;
-                    std::cerr << "#nvar=" << user_nvar << std::endl;
+                    const size_t user_ndat = sample.items();
                     if(user_nvar>=user_ndat)
                     {
                         return false;

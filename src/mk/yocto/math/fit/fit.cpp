@@ -121,7 +121,7 @@ namespace yocto
                 return fv->indx;
             }
 
-            size_t Variables:: getMaxLength() const throw()
+            size_t Variables:: getMaxNameLength() const throw()
             {
                 size_t ans = 0;
                 for( const_iterator i=begin();i!=end();++i)

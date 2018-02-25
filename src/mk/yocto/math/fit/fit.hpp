@@ -66,7 +66,8 @@ namespace yocto
                 //! indice of variable name
                 size_t operator[](const string &var_name) const;
 
-                size_t getMaxLength() const throw();
+                //! max length of name
+                size_t getMaxNameLength() const throw();
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Variables);
@@ -169,9 +170,10 @@ namespace yocto
                                     const Array        &a,
                                     Gradient<T>        &grad) const  = 0;
 
-                virtual size_t count() const throw() = 0; //!< number of data
+                virtual size_t items() const throw() = 0; //!< number of data
                 virtual T      SStot() const throw() = 0; //!< total sum of squares
-
+                //virtual size_t count() const throw() = 0; //!< number of sub-samples
+                
                 void display(std::ostream &os,
                              const Array  &aorg,
                              const Array  &aerr) const;
@@ -211,8 +213,13 @@ namespace yocto
                                     const Array        &a,
                                     Gradient<T>        &grad) const;
 
-                virtual size_t count() const throw();
+                //! number of data
+                virtual size_t items() const throw();
+                
+                //! total sum of squares
                 virtual T      SStot() const throw();
+                
+                
                 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Sample);
@@ -247,7 +254,7 @@ namespace yocto
                                     const Array        &a,
                                     Gradient<T>        &grad) const;
 
-                virtual size_t count() const throw();
+                virtual size_t items() const throw();
                 virtual T      SStot() const throw();
 
             private:
@@ -257,7 +264,7 @@ namespace yocto
 
             ////////////////////////////////////////////////////////////////////
             //
-            // Fit algorithm
+            // Least Squares
             //
             ////////////////////////////////////////////////////////////////////
             template <typename T>
@@ -269,12 +276,12 @@ namespace yocto
                 typedef typename Type<T>::Vector   Vector;
                 typedef typename Type<T>::Matrix   Matrix;
                 
-                typedef functor<bool,TL2(const Sample<T> &,const Array&)> Callback;
+                typedef functor<bool,TL2(const SampleType<T> &,const Array&)> Callback;
 
                 explicit LS();
                 virtual ~LS() throw();
 
-                
+                //! error if curvature is too singular
                 bool run(SampleType<T>    &sample,
                          Function          &F,
                          Array             &aorg,
@@ -296,7 +303,8 @@ namespace yocto
             public:
                 const int min_p10;
                 const int max_p10;
-                T         Rsq; //!< determination coefficient R^2
+                T         Rsq;   //!< determination coefficient R^2
+                size_t    cycle; //!< current cycle
             };
 
         }
