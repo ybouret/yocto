@@ -66,6 +66,8 @@ namespace yocto
                 //! indice of variable name
                 size_t operator[](const string &var_name) const;
 
+                size_t getMaxLength() const throw();
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Variables);
                 void check_no_multiple_link(const string &link) const;
@@ -152,7 +154,7 @@ namespace yocto
                 mutable Vector dFdu; //!< for gradient
                 mutable Vector beta; //!< descent direction
                 mutable Matrix curv; //!< pseudo curvature
-
+                mutable T      D2;   //!< last D2
                 void allocate(const size_t nvar);
 
                 explicit SampleType(const size_t capa=0);
@@ -167,6 +169,12 @@ namespace yocto
                                     const Array        &a,
                                     Gradient<T>        &grad) const  = 0;
 
+                virtual size_t count() const throw() = 0; //!< number of data
+                virtual T      SStot() const throw() = 0; //!< total sum of squares
+
+                void display(std::ostream &os,
+                             const Array  &aorg,
+                             const Array  &aerr) const;
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(SampleType);
@@ -203,6 +211,9 @@ namespace yocto
                                     const Array        &a,
                                     Gradient<T>        &grad) const;
 
+                virtual size_t count() const throw();
+                virtual T      SStot() const throw();
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Sample);
                 void assign(const Array &a) const;
@@ -236,6 +247,9 @@ namespace yocto
                                     const Array        &a,
                                     Gradient<T>        &grad) const;
 
+                virtual size_t count() const throw();
+                virtual T      SStot() const throw();
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Samples);
             };
@@ -253,24 +267,36 @@ namespace yocto
                 typedef typename Type<T>::Array    Array;
                 typedef typename Type<T>::Function Function;
                 typedef typename Type<T>::Vector   Vector;
+                typedef typename Type<T>::Matrix   Matrix;
+                
                 typedef functor<bool,TL2(const Sample<T> &,const Array&)> Callback;
 
                 explicit LS();
                 virtual ~LS() throw();
 
                 
-                bool operator()(Sample<T>         &sample,
-                                Function          &F,
-                                Array             &aorg,
-                                const array<bool> &used,
-                                Array             &aerr,
-                                Callback          *cb = 0);
+                bool run(SampleType<T>    &sample,
+                         Function          &F,
+                         Array             &aorg,
+                         const array<bool> &used,
+                         Array             &aerr,
+                         Callback          *cb = 0);
                 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(LS);
                 size_t     nvar;
                 Sample<T> *psm;
-                Vector     atry;
+                Vector     atry;   //!< trial value
+                Matrix     cinv;   //!< inverse curvature
+                int        p10;    //!< lambda  = 10^p10
+                T          lambda; //!< lambda value for inversion
+                void       compute_lambda();
+                bool       compute_cinv(const Matrix &curv);
+                
+            public:
+                const int min_p10;
+                const int max_p10;
+                T         Rsq; //!< determination coefficient R^2
             };
 
         }

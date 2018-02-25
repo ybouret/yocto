@@ -24,8 +24,8 @@ namespace
         double compute( double t, const array<double> &a, const Fit::Variables &var)
         {
             ++ncall;
-            const double t0    = a[1];
-            const double slope = a[2];
+            const double t0    = a[ var["t0"]    ];
+            const double slope = a[ var["slope"] ];
             return sqrt( slope*Fabs((t-t0)) );
         }
 
@@ -59,11 +59,12 @@ YOCTO_UNIT_TEST_IMPL(fit)
 
 
 
-    samples.variables << "t0" << "slope1" << "slope2";
-    sample1.variables("t0")("slope","slope1");
-    sample2.variables("t0")("slope","slope2");
+    samples.variables << "slope1" << "slope2" << "t0";
+    sample1.variables("slope","slope1")("t0");
+    sample2.variables("slope","slope2")("t0");
 
     samples.link();
+
     std::cerr << "samples=" << samples.variables << std::endl;
     std::cerr << "       |_indices=" << samples.indices << std::endl;
     std::cerr << "sample1=" << sample1.variables << std::endl;
@@ -84,7 +85,7 @@ YOCTO_UNIT_TEST_IMPL(fit)
     slope2 = 0.01;
 
     diffusion diff = { 0 };
-    Fit::Sample<double>::Function F( &diff, & diffusion::compute );
+    Fit::Type<double>::Function F( &diff, & diffusion::compute );
 
     const double Ds = samples.computeD2(F,aorg);
     const double D1 = sample1.computeD2(F,aorg);
@@ -109,6 +110,21 @@ YOCTO_UNIT_TEST_IMPL(fit)
     std::cerr << "Dsb  =" << Dsb << std::endl;
     std::cerr << "betaS=" << samples.beta  << std::endl;
     std::cerr << "curvS=" << samples.curv  << std::endl;
+
+    Fit::LS<double> lsf;
+    vector<bool>    used(nvar,true);
+    vector<double>  aerr(nvar);
+    lsf.run(samples, F, aorg, used, aerr);
+    std::cerr << "ncall=" << diff.ncall << std::endl;
+    std::cerr << "aorg=" << aorg << std::endl;
+    std::cerr << "aerr=" << aerr << std::endl;
+    save("f1.dat",t1,z1);
+    save("f2.dat",t2,z2);
+
+    std::cerr << "Rsq=" << lsf.Rsq << std::endl;
+
+    samples.display(std::cerr, aorg, aerr);
+    
 
 }
 YOCTO_UNIT_TEST_DONE()

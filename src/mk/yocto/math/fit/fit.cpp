@@ -34,6 +34,8 @@ namespace yocto
     }
 }
 
+#include "yocto/code/utils.hpp"
+
 namespace yocto
 {
     namespace math
@@ -118,6 +120,17 @@ namespace yocto
                 }
                 return fv->indx;
             }
+
+            size_t Variables:: getMaxLength() const throw()
+            {
+                size_t ans = 0;
+                for( const_iterator i=begin();i!=end();++i)
+                {
+                    ans = max_of(ans,(*i).name.size());
+                }
+                return ans;
+            }
+
 
         }
     }

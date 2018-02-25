@@ -87,7 +87,7 @@ YOCTO_UNIT_TEST_IMPL(glsf)
 
     //samples.computeD2(F,aorg,used);
 
-    used[3] = false;
+    used[3] = true;
 
 
     if( samples.fit_with(F,aorg,used,aerr) )

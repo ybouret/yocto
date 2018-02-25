@@ -499,6 +499,7 @@ namespace yocto
             {
                 return false;
             }
+            //std::cerr << "curv=" << curv << std::endl;
             //__________________________________________________________________
             //
             // At this point, beta and curv are computed @aorg
@@ -523,6 +524,13 @@ namespace yocto
                 goto EXTREMUM;
             }
 
+#if 0
+            std::cerr << "D2=" << Horg << " @" << aorg << std::endl;
+            std::cerr << "curv  =" << curv << std::endl;
+            std::cerr << "beta  =" << beta << ", step=" << step << std::endl;
+            exit(1);
+#endif
+            
             //__________________________________________________________________
             //
             // |beta|>0, |step|>0, try full Newton's step
