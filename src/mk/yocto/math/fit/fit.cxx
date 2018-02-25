@@ -259,6 +259,12 @@ namespace yocto
             }
 
             template <>
+            size_t Sample<real_t>:: count() const throw()
+            {
+                return 1;
+            }
+            
+            template <>
             real_t Sample<real_t>:: SStot() const throw()
             {
                 const size_t N = Y.size();
@@ -401,6 +407,12 @@ namespace yocto
                     ans += sample.SStot();
                 }
                 return ans;
+            }
+            
+            template <>
+            size_t Samples<real_t>:: count() const throw()
+            {
+                return size();
             }
         }
 

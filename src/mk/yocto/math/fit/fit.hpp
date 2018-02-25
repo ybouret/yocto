@@ -53,7 +53,9 @@ namespace yocto
             public:
                 explicit Variables(const size_t capa=0);
                 virtual ~Variables() throw();
-
+                Variables(const Variables &other);
+                Variables & operator=( const Variables &other);
+                
                 Variables & operator()(const string &var_name, const string &var_link);
                 Variables & operator()(const string &var_name);
                 Variables & operator<<(const string &var_name);
@@ -70,7 +72,6 @@ namespace yocto
                 size_t getMaxNameLength() const throw();
 
             private:
-                YOCTO_DISABLE_COPY_AND_ASSIGN(Variables);
                 void check_no_multiple_link(const string &link) const;
             };
 
@@ -172,7 +173,7 @@ namespace yocto
 
                 virtual size_t items() const throw() = 0; //!< number of data
                 virtual T      SStot() const throw() = 0; //!< total sum of squares
-                //virtual size_t count() const throw() = 0; //!< number of sub-samples
+                virtual size_t count() const throw() = 0; //!< number of sub-samples
                 
                 void display(std::ostream &os,
                              const Array  &aorg,
@@ -219,7 +220,8 @@ namespace yocto
                 //! total sum of squares
                 virtual T      SStot() const throw();
                 
-                
+                //! returns 1
+                virtual size_t count() const throw();
                 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Sample);
@@ -256,7 +258,8 @@ namespace yocto
 
                 virtual size_t items() const throw();
                 virtual T      SStot() const throw();
-
+                virtual size_t count() const throw(); //!< size()
+                
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Samples);
             };

@@ -46,7 +46,20 @@ namespace yocto
             Variables:: ~Variables() throw() {}
             Variables::  Variables(const size_t n) : VariablesType(n,as_capacity) {}
 
-
+            Variables:: Variables(const Variables &other) :
+            VariablesType(other)
+            {
+                
+            }
+            
+            
+            Variables & Variables:: operator=( const Variables &other)
+            {
+                Variables tmp(other);
+                swap_with(tmp);
+                return *this;
+            }
+            
             Variables & Variables:: operator()(const string &vname, const string &vlink)
             {
 
