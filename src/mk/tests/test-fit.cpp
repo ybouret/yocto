@@ -70,6 +70,7 @@ YOCTO_UNIT_TEST_IMPL(fit)
     std::cerr << "       |_indices=" << sample1.indices << std::endl;
     std::cerr << "sample2=" << sample2.variables << std::endl;
     std::cerr << "       |_indices=" << sample2.indices << std::endl;
+    std::cerr << std::endl;;
 
     const Fit::Variables &var = samples.variables;
     const size_t nvar = var.size();
@@ -91,6 +92,23 @@ YOCTO_UNIT_TEST_IMPL(fit)
     std::cerr << "Ds=" << Ds << std::endl;
     std::cerr << "D1=" << D1 << std::endl;
     std::cerr << "D2=" << D2 << std::endl;
+    std::cerr << std::endl;;
+
+    Fit::Gradient<double> grad;
+    const double D1b = sample1.computeD2(F,aorg,grad);
+    std::cerr << "D1b  =" << D1b << std::endl;
+    std::cerr << "beta1=" << sample1.beta  << std::endl;
+    std::cerr << "curv1=" << sample1.curv  << std::endl;
+
+    const double D2b = sample2.computeD2(F,aorg,grad);
+    std::cerr << "D2b  =" << D2b << std::endl;
+    std::cerr << "beta2=" << sample2.beta  << std::endl;
+    std::cerr << "curv2=" << sample2.curv  << std::endl;
+
+    const double Dsb = samples.computeD2(F,aorg,grad);
+    std::cerr << "Dsb  =" << Dsb << std::endl;
+    std::cerr << "betaS=" << samples.beta  << std::endl;
+    std::cerr << "curvS=" << samples.curv  << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()

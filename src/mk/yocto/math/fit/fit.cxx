@@ -21,6 +21,7 @@ namespace yocto
             void SampleType<real_t>:: allocate(const size_t nvar)
             {
                 u.   make(nvar);
+                dFdu.make(nvar);
                 beta.make(nvar);
                 curv.make(nvar); //! large model
             }
@@ -137,6 +138,58 @@ namespace yocto
                 }
                 return D2;
             }
+
+            template <>
+            real_t Sample<real_t>::computeD2(Function           &F,
+                                             const Array        &a,
+                                             Gradient<real_t>   &grad) const
+            {
+                assign(a);
+                const size_t N = X.size();
+                assert(Y.size()==N);
+                assert(Z.size()==N);
+                const size_t nvar = u.size();
+
+                for(size_t k=nvar;k>0;--k)
+                {
+                    beta[k] = 0;
+                    Matrix::row  &curv_k = curv[k];
+                    for(size_t l=nvar;l>0;--l)
+                    {
+                        curv_k[l] = 0;
+                    }
+                }
+
+                real_t D2 = 0;
+                for(size_t j=N;j>0;--j)
+                {
+                    const real_t Xj  = X[j];
+                    const real_t del = Y[j] - (Z[j]=F(Xj,u,variables));
+                    grad.compute(dFdu,F,Xj,u,variables);
+                    for(size_t k=nvar;k>0;--k)
+                    {
+                        const real_t  dFdu_k = dFdu[k];
+                        Matrix::row  &curv_k = curv[k];
+                        beta[k] += dFdu_k;
+                        for(size_t l=k;l>0;--l)
+                        {
+                            curv_k[l] += dFdu_k * dFdu[l];
+                        }
+                    }
+                    D2 += del*del;
+                }
+
+                // symetrizing
+                for(size_t k=nvar;k>0;--k)
+                {
+                    for(size_t l=k-1;l>0;--l)
+                    {
+                        curv[l][k] = curv[k][l];
+                    }
+                }
+                return D2;
+            }
+
         }
     }
 }
@@ -189,6 +242,46 @@ namespace yocto
                     ans += self[i]->computeD2(F,a);
                 }
                 return ans;
+            }
+
+            template <>
+            real_t Samples<real_t>::computeD2(Function          &F,
+                                              const Array        &a,
+                                              Gradient<real_t>   &grad) const
+            {
+                const array< Sample<real_t>::Pointer > &self = *this;
+                const size_t nvar = u.size();
+
+                for(size_t k=nvar;k>0;--k)
+                {
+                    beta[k] = 0;
+                    for(size_t l=nvar;l>0;--l)
+                    {
+                        curv[k][l] = 0;
+                    }
+                }
+
+                real_t ans = 0;
+                for(size_t i=size();i>0;--i)
+                {
+                    const Sample<real_t> &sample = *self[i];
+                    ans += sample.computeD2(F,a,grad);
+
+                    // dispatch values
+                    const size_t svar = sample.indices.size();
+                    for(size_t j=svar;j>0;--j)
+                    {
+                        const size_t jsub = sample.indices[j];
+                        beta[ jsub ] += sample.beta[j];
+                        for(size_t k=svar;k>0;--k)
+                        {
+                            const size_t ksub = sample.indices[k];
+                            curv[jsub][ksub] += sample.curv[j][k];
+                        }
+                    }
+                }
+                return ans;
+
             }
 
         }

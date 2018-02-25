@@ -149,6 +149,7 @@ namespace yocto
                 typedef typename Type<T>::Matrix   Matrix;
 
                 mutable Vector u;    //!< variables values
+                mutable Vector dFdu; //!< for gradient
                 mutable Vector beta; //!< descent direction
                 mutable Matrix curv; //!< pseudo curvature
 
@@ -159,9 +160,13 @@ namespace yocto
 
                 //! compute only D2, no gradient, no curvature
                 virtual T computeD2(Function           &F,
-                                     const Array        &a) const  = 0;
+                                    const Array       &a) const  = 0;
 
-                
+                //! compute D2, gradient and curvatures
+                virtual T computeD2(Function           &F,
+                                    const Array        &a,
+                                    Gradient<T>        &grad) const  = 0;
+
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(SampleType);
@@ -192,6 +197,12 @@ namespace yocto
                 //! compute D2, assuming indices are computed by link()
                 virtual T    computeD2(Function           &F,
                                        const Array        &a) const ;
+
+                //! compute D2, assuming indices are computed and memory allocated by link()
+                virtual T computeD2(Function           &F,
+                                    const Array        &a,
+                                    Gradient<T>        &grad) const;
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Sample);
                 void assign(const Array &a) const;
@@ -219,6 +230,11 @@ namespace yocto
                 //! compute D2, assuming indices are computed by link()
                 virtual T    computeD2(Function           &F,
                                        const Array        &a) const ;
+
+                //! compute D2, assuming indices are computed and memory allocated by link()
+                virtual T computeD2(Function           &F,
+                                    const Array        &a,
+                                    Gradient<T>        &grad) const;
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Samples);
