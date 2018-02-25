@@ -108,6 +108,17 @@ namespace yocto
                     indices[indx] = jndx;
                 }
             }
+
+            size_t Variables:: operator[](const string &var_name) const
+            {
+                const Variable *fv = search(var_name);
+                if(!fv)
+                {
+                    throw exception("no Variables['%s']",*var_name);
+                }
+                return fv->indx;
+            }
+
         }
     }
 

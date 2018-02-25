@@ -21,12 +21,12 @@ namespace
     {
 
         size_t ncall;
-        double compute( double t, const array<double> &a )
+        double compute( double t, const array<double> &a, const Fit::Variables &var)
         {
             ++ncall;
             const double t0    = a[1];
             const double slope = a[2];
-            return sqrt( slope*(t-t0) );
+            return sqrt( slope*Fabs((t-t0)) );
         }
 
     };
@@ -58,6 +58,7 @@ YOCTO_UNIT_TEST_IMPL(fit)
     Fit::Sample<double> &sample2 = samples.add(t2,x2,z2,2);
 
 
+
     samples.variables << "t0" << "slope1" << "slope2";
     sample1.variables("t0")("slope","slope1");
     sample2.variables("t0")("slope","slope2");
@@ -70,24 +71,26 @@ YOCTO_UNIT_TEST_IMPL(fit)
     std::cerr << "sample2=" << sample2.variables << std::endl;
     std::cerr << "       |_indices=" << sample2.indices << std::endl;
 
+    const Fit::Variables &var = samples.variables;
+    const size_t nvar = var.size();
+    vector<double> aorg(nvar);
+    double &t0     = aorg[ var["t0"] ];
+    double &slope1 = aorg[ var["slope1"] ];
+    double &slope2 = aorg[ var["slope2"] ];
 
+    t0     = -100;
+    slope1 = 0.02;
+    slope2 = 0.01;
 
-#if 0
-    Fit<double>::Samples samples(2);
-    Fit<double>::Sample &sample1 = samples.add(t1,x1,z1);
-    Fit<double>::Sample &sample2 = samples.add(t2,x2,z2);
+    diffusion diff = { 0 };
+    Fit::Sample<double>::Function F( &diff, & diffusion::compute );
 
-    FitVariables &global = samples.variables;
-    global << "t0" << "slope1" << "slope2";
-    sample1.variables("t0")("slope","slope1");
-    sample2.variables("t0")("slope","slope2");
-
-    std::cerr << "global =" << global << std::endl;
-    std::cerr << "sample1=" << sample1.variables << std::endl;
-    std::cerr << "sample2=" << sample2.variables << std::endl;
-#endif
-
-
+    const double Ds = samples.computeD2(F,aorg);
+    const double D1 = sample1.computeD2(F,aorg);
+    const double D2 = sample2.computeD2(F,aorg);
+    std::cerr << "Ds=" << Ds << std::endl;
+    std::cerr << "D1=" << D1 << std::endl;
+    std::cerr << "D2=" << D2 << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()
