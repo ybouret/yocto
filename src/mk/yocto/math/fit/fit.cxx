@@ -6,86 +6,18 @@ namespace yocto
 {
     namespace math
     {
-#if 0
-        template <>
-        void FitVariables:: build_matrix<real_t>(matrix<real_t>     &J,
-                                                 const FitVariables &local,
-                                                 const FitVariables &global)
+        namespace Fit
         {
-            assert(local.size() >0);
-            assert(global.size()>0);
-            const size_t M = local.size();
-            const size_t N = global.size();
-            if(J.make(M,N)) J.ldz();
-            for(size_t r=M;r>0;--r)
+            template <> SampleType<real_t>:: ~SampleType() throw() {}
+            template <> SampleType<real_t>::  SampleType(const size_t n) :
+            SampleInfo(n),
+            u(n,as_capacity)
             {
-                J[r][global[local[r]]] = 1;
             }
+
+
+            
         }
-
-        template <>
-        void FitVariables:: build_vector(vector<real_t>       &lvec,
-                                         const array<real_t>  &gvec,
-                                         const FitVariables   &local,
-                                         const FitVariables   &global)
-        {
-            assert(gvec.size()==global.size());
-            lvec.make(local.size());
-            for(size_t l=local.size();l>0;--l)
-            {
-                lvec[l] = gvec[ global[local[l]] ];
-            }
-        }
-#endif
-
-        template <> Fit<real_t>::SampleType:: ~SampleType() throw() {}
-
-        template <> Fit<real_t>::SampleType:: SampleType() :
-        variables(),
-        indices()
-        {
-        }
-        
-    }
-}
-
-
-namespace yocto
-{
-    namespace math
-    {
-        template <> Fit<real_t>::Sample:: ~Sample() throw() {}
-
-
-        template <> Fit<real_t>::Sample:: Sample(const Array &userX,
-                                                 const Array &userY,
-                                                 Array       &userZ) :
-        SampleType(),
-        X(userX), Y(userY), Z(userZ)
-        {
-
-        }
-
-        template <>
-        real_t Fit<real_t>::Sample::computeD2(Function           &F,
-                                              const Array        &params,
-                                              const FitVariables &global) const
-        {
-#if 0
-            FitVariables::build_vector(u,params,local,global);
-            const size_t N = X.size();
-            assert(Y.size()==N);
-            assert(Z.size()==N);
-            real_t D2 = 0;
-            for(size_t j=N;j>0;--j)
-            {
-                const real_t del = Y[j] - (Z[j]=F(X[j],u));
-                D2 += del*del;
-            }
-            return D2;
-#endif
-        }
-
     }
 }
 
@@ -93,37 +25,116 @@ namespace yocto
 {
     namespace math
     {
-        template <> Fit<real_t>::Samples:: ~Samples() throw() {}
-        template <> Fit<real_t>::Samples::  Samples(const size_t n) :
-        SamplesType(n,as_capacity)
+        namespace Fit
         {
-        }
 
-        template <>
-        real_t Fit<real_t>::Samples::computeD2(Function           &F,
-                                              const Array        &params,
-                                              const FitVariables &global) const
-        {
-            const SamplesType &self = *this;
-            real_t ans = 0;
-            for(size_t i=size();i>0;--i)
+            template <> Sample<real_t>:: ~Sample() throw() {}
+
+
+            template <> Sample<real_t>:: Sample(const Array &userX,
+                                                const Array &userY,
+                                                Array       &userZ,
+                                                const size_t capa) :
+            SampleType<real_t>(capa),
+            X(userX), Y(userY), Z(userZ)
             {
-                ans += self[i]->computeD2(F,params,global);
+
             }
-            return ans;
-        }
 
-        template <>
-        Fit<real_t>::Sample & Fit<real_t>:: Samples:: add(const Array &userX, const Array &userY, Array &userZ)
+            template <>
+            void Sample<real_t>:: link()
+            {
+                link_to(variables);
+            }
+
+            template <>
+            void Sample<real_t>:: assign(const Array &a) const
+            {
+                assert(u.size()==variables.size()       || die("not linked") );
+                assert(indices.size()==variables.size() || die("not linked") );
+                for(size_t i=u.size();i>0;--i)
+                {
+                    const size_t j=indices[i];
+                    assert(j>0        ||die("corrupted indices"));
+                    assert(j<=a.size()||die("corrupted link")   );
+                    u[i] = a[j];
+                }
+            }
+
+
+            template <>
+            real_t Sample<real_t>::computeD2(Function           &F,
+                                             const Array        &a) const
+            {
+                assign(a);
+                const size_t N = X.size();
+                assert(Y.size()==N);
+                assert(Z.size()==N);
+                real_t D2 = 0;
+                for(size_t j=N;j>0;--j)
+                {
+                    const real_t del = Y[j] - (Z[j]=F(X[j],u));
+                    D2 += del*del;
+                }
+                return D2;
+            }
+        }
+    }
+}
+
+namespace yocto
+{
+    namespace math
+    {
+        namespace Fit
         {
-            SamplePointer pS( new Sample(userX,userY,userZ) );
-            push_back(pS);
-            return *pS;
-        }
 
+            template <> Samples<real_t>:: ~Samples() throw() {}
+            template <> Samples<real_t>::  Samples(const size_t capa_samples, const size_t capa_variables) :
+            SampleType<real_t>(capa_variables),
+            Sample<real_t>::Collection(capa_samples,as_capacity)
+            {
+            }
+
+            template <>
+            Sample<real_t> & Samples<real_t>::add(const Array &userX, const Array &userY, Array &userZ, const size_t capa_local)
+            {
+                Sample<real_t>::Pointer pS( new Sample<real_t>(userX,userY,userZ,capa_local) );
+                push_back(pS);
+                return *pS;
+            }
+
+            template <>
+            void Samples<real_t>:: link()
+            {
+                array< Sample<real_t>::Pointer > &self = *this;
+                link_to(variables);
+                for(size_t i=size();i>0;--i)
+                {
+                    Sample<real_t> &S = *self[i];
+                    S.link_to(variables);
+                }
+            }
+
+
+            template <>
+            real_t Samples<real_t>::computeD2(Function           &F,
+                                              const Array        &a) const
+            {
+                const array< Sample<real_t>::Pointer > &self = *this;
+                real_t ans = 0;
+                for(size_t i=size();i>0;--i)
+                {
+                    ans += self[i]->computeD2(F,a);
+                }
+                return ans;
+            }
+
+        }
 
     }
-
 }
+
+
 
 

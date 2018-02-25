@@ -53,6 +53,26 @@ YOCTO_UNIT_TEST_IMPL(fit)
     vector<double> z1(t1.size(),0);
     vector<double> z2(t2.size(),0);
 
+    Fit::Samples<double> samples(2,3);
+    Fit::Sample<double> &sample1 = samples.add(t1,x1,z1,2);
+    Fit::Sample<double> &sample2 = samples.add(t2,x2,z2,2);
+
+
+    samples.variables << "t0" << "slope1" << "slope2";
+    sample1.variables("t0")("slope","slope1");
+    sample2.variables("t0")("slope","slope2");
+
+    samples.link();
+    std::cerr << "samples=" << samples.variables << std::endl;
+    std::cerr << "       |_indices=" << samples.indices << std::endl;
+    std::cerr << "sample1=" << sample1.variables << std::endl;
+    std::cerr << "       |_indices=" << sample1.indices << std::endl;
+    std::cerr << "sample2=" << sample2.variables << std::endl;
+    std::cerr << "       |_indices=" << sample2.indices << std::endl;
+
+
+
+#if 0
     Fit<double>::Samples samples(2);
     Fit<double>::Sample &sample1 = samples.add(t1,x1,z1);
     Fit<double>::Sample &sample2 = samples.add(t2,x2,z2);
@@ -65,7 +85,7 @@ YOCTO_UNIT_TEST_IMPL(fit)
     std::cerr << "global =" << global << std::endl;
     std::cerr << "sample1=" << sample1.variables << std::endl;
     std::cerr << "sample2=" << sample2.variables << std::endl;
-
+#endif
 
 
 

@@ -8,25 +8,27 @@ namespace yocto
     namespace math
     {
         
-
-        
-        FitVariable:: FitVariable(const string &n, const string &l, const size_t idx) :
-        name(n), link(l), indx(idx)
+        namespace Fit
         {
-        }
 
-        FitVariable:: ~FitVariable() throw()
-        {
-        }
+            Variable:: Variable(const string &n, const string &l, const size_t idx) :
+            name(n), link(l), indx(idx)
+            {
+            }
 
-        FitVariable:: FitVariable(const FitVariable &other) :
-        name(other.name), link(other.link), indx(other.indx)
-        {
-        }
+            Variable:: ~Variable() throw()
+            {
+            }
 
-        const string & FitVariable:: key() const throw()
-        {
-            return name;
+            Variable:: Variable(const Variable &other) :
+            name(other.name), link(other.link), indx(other.indx)
+            {
+            }
+
+            const string & Variable:: key() const throw()
+            {
+                return name;
+            }
         }
 
     }
@@ -37,122 +39,109 @@ namespace yocto
     namespace math
     {
 
-        FitVariables:: ~FitVariables() throw() {}
-        FitVariables::  FitVariables(const size_t n) : FitVariablesType(n,as_capacity) {}
-
-
-        FitVariables & FitVariables:: operator()(const string &vname, const string &vlink)
+        namespace Fit
         {
+            Variables:: ~Variables() throw() {}
+            Variables::  Variables(const size_t n) : VariablesType(n,as_capacity) {}
 
-            check_no_multiple_link(vlink);
-            const size_t      vindx = 1+size();
-            const FitVariable fv(vname,vlink,vindx);
-            if(!insert(fv))
+
+            Variables & Variables:: operator()(const string &vname, const string &vlink)
             {
-                throw exception("%s: multiple variable name '%s'", this->name(),  *vname);
+
+                check_no_multiple_link(vlink);
+                const size_t      vindx = 1+size();
+                const Variable    fv(vname,vlink,vindx);
+                if(!insert(fv))
+                {
+                    throw exception("%s: multiple variable name '%s'", this->name(),  *vname);
+                }
+                return *this;
             }
-            return *this;
-        }
 
-        void FitVariables:: check_no_multiple_link(const string &link) const
-        {
-            for(const_iterator i=begin(); i!=end();++i)
+            void Variables:: check_no_multiple_link(const string &link) const
             {
-                if(link==(*i).link)
+                for(const_iterator i=begin(); i!=end();++i)
                 {
-                    throw exception("%s: multiple variable link '%s'", this->name(), *link);
+                    if(link==(*i).link)
+                    {
+                        throw exception("%s: multiple variable link '%s'", this->name(), *link);
+                    }
                 }
             }
-        }
 
-        FitVariables & FitVariables:: operator()(const string &vname)
-        {
-            return (*this)(vname,vname);
-        }
-
-        FitVariables & FitVariables:: operator<<(const string &vname)
-        {
-            return (*this)(vname,vname);
-        }
-
-        void FitVariables:: LocalToGlobal(FitIndices         &indices,
-                                          const FitVariables &local,
-                                          const FitVariables &global)
-        {
-            const size_t num_local  = local.size();
-            const size_t num_global = global.size();
-            indices.make(num_local);
-            size_t indx=1;
-            for(FitVariables::const_iterator i=local.begin();indx<=num_local;++i,++indx)
+            Variables & Variables:: operator()(const string &vname)
             {
-                const FitVariable &lfv = *i;
-                if(indx!=lfv.indx)
-                {
-                    throw exception("%s: corrupted local fit variable index!!!", local.name());
-                }
+                return (*this)(vname,vname);
+            }
 
-                const FitVariable *gfv_p = global.search(lfv.link);
-                if(!gfv_p)
+            Variables & Variables:: operator<<(const string &vname)
+            {
+                return (*this)(vname,vname);
+            }
+
+            void Variables:: LocalToGlobal(Indices         &indices,
+                                           const Variables &local,
+                                           const Variables &global)
+            {
+                const size_t num_local  = local.size();
+                const size_t num_global = global.size();
+                indices.make(num_local);
+                size_t indx=1;
+                for(Variables::const_iterator i=local.begin();indx<=num_local;++i,++indx)
                 {
-                    throw exception("%s: no link to global variable '%s'", global.name(), *lfv.link);
+                    const Variable &lfv = *i;
+                    if(indx!=lfv.indx)
+                    {
+                        throw exception("%s: corrupted local fit variable index!!!", local.name());
+                    }
+
+                    const Variable *gfv_p = global.search(lfv.link);
+                    if(!gfv_p)
+                    {
+                        throw exception("%s: no link to global variable '%s'", global.name(), *lfv.link);
+                    }
+                    const size_t jndx = gfv_p->indx;
+                    if(jndx<=0||jndx>num_global)
+                    {
+                        throw exception("%s: corrupted global fit variable index!!!", global.name());
+                    }
+                    indices[indx] = jndx;
                 }
-                const size_t jndx = gfv_p->indx;
-                if(jndx<=0||jndx>num_global)
-                {
-                    throw exception("%s: corrupted global fit variable index!!!", global.name());
-                }
-                indices[indx] = jndx;
             }
         }
     }
 
 }
 
-
-#if 0
 namespace yocto
 {
     namespace math
     {
-        
-        FitVariables:: ~FitVariables() throw() {}
-        FitVariables::  FitVariables(const size_t n) : FitVariablesType(n,as_capacity) {}
-        FitVariables::  FitVariables(const FitVariables &other) : FitVariablesType(other) {}
 
-        FitVariables & FitVariables:: operator<<(const string varname)
+        namespace Fit
         {
-            if(!insert(varname)) throw exception("FitVariables: no '%s'", *varname);
-            return *this;
-        }
 
-        FitVariables & FitVariables:: operator<<(const char *varname)
-        {
-            const string id(varname);
-            return ( (*this) << id );
-        }
+            SampleInfo:: SampleInfo(const size_t n) :
+            variables(n),
+            indices(n,as_capacity)
+            {
+            }
 
-        size_t FitVariables:: find( const string &key, const char *ctx) const
-        {
-            assert(ctx);
-            const size_t ans = index_of(key);
-            if(ans<=0) throw exception("FitVariable, in %s: no '%s'", ctx, *key);
-            return ans;
-        }
+            SampleInfo:: ~SampleInfo() throw()
+            {
+            }
 
-        size_t FitVariables:: operator[](const string &key) const
-        {
-            const size_t ans = index_of(key);
-            if(ans<=0) throw exception("not fit variable '%s'", *key);
-            return ans;
-        }
+            void SampleInfo:: link_to(const Variables &global)
+            {
+                Variables::LocalToGlobal(indices,variables,global);
+            }
 
-        size_t FitVariables:: operator[](const char *id) const
-        {
-            const string key(id);
-            return (*this)[key];
+
         }
 
     }
+
 }
-#endif
+
+
 
