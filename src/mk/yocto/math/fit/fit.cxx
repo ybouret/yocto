@@ -472,6 +472,7 @@ namespace yocto
 #include "yocto/code/ipower.hpp"
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/core/tao.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 namespace yocto
 {
@@ -484,13 +485,23 @@ namespace yocto
             {
             }
 
-
+            template <>
+            real_t LS<real_t>:: eval1d(const real_t u)
+            {
+                assert(psm);
+                assert(pfn);
+                assert(pa0);
+                tao::setprobe(atmp,*pa0,u,step);
+                return psm->computeD2(*pfn,atmp);
+            }
 
             template <>
             LS<real_t>:: LS() :
             Gradient<real_t>(),
             nvar(0),
             psm(0),
+            pfn(0),
+            pa0(0),
             atry(),
             step(),
             p10(0),
@@ -587,6 +598,8 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                 }
             }
 
+
+
             template <>
             bool LS<real_t>:: run(SampleType<real_t>   &sample,
                                   Function             &F,
@@ -614,6 +627,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                 step.make(nvar);
                 atry.make(nvar);
                 cinv.make(nvar);
+                atmp.make(nvar);
                 tao::ld(aerr,0);
                 Matrix &curv = sample.curv;
                 Array  &beta = sample.beta;
@@ -621,7 +635,9 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                 Rsq          = 0;
                 cycle        = 0;
                 psm          = &sample;
-
+                pfn          = &F;
+                pa0         = &aorg;
+                
                 //______________________________________________________________
                 //
                 // start cycle
@@ -697,6 +713,30 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         const real_t D2_try = sample.computeD2(F,atry);
                         if(D2_try<D2_org)
                         {
+                            if(true)
+                            {
+                                const real_t sig =  2.0*tao::dot(step,beta);
+                                std::cerr << "sig=" << sig << std::endl;
+                                {
+                                    ios::wcstream fp("H.dat");
+                                    for(double xx=0;xx<=2*numeric<real_t>::gold;xx+=0.02)
+                                    {
+                                        fp("%g %g\n",xx,eval1d(xx));
+                                    }
+                                }
+                                if(cycle>=2)
+                                exit(1);
+#if 0
+                                real_t u  = numeric<real_t>::gold;
+                                real_t D2_fwd = eval1d(u);
+                                if(D2_fwd < D2_try)
+                                {
+                                    std::cerr << "going forward..." << std::endl;
+                                    tao::set(atry,atmp);
+                                }
+#endif
+                            }
+
                             tao::set(aorg,atry);
                             --p10;
                             goto CYCLE;

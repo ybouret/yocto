@@ -301,9 +301,12 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(LS);
                 size_t         nvar;
                 SampleType<T> *psm;
+                Function      *pfn;
+                Array         *pa0;
                 Vector         atry;   //!< trial value
                 Vector         step;   //!< the step
                 Matrix         cinv;   //!< inverse curvature
+                Vector         atmp;   //!< probe value
                 int            p10;    //!< lambda  = 10^p10
                 T              lambda; //!< lambda value for inversion
 
@@ -316,6 +319,9 @@ namespace yocto
                 T         Rsq;   //!< determination coefficient R^2
                 size_t    cycle; //!< current cycle
                 bool      verbose;
+
+            private:
+                T eval1d(const T u);
             };
 
         }

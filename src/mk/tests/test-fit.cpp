@@ -113,9 +113,11 @@ YOCTO_UNIT_TEST_IMPL(fit)
 
     std::cerr << std::endl;
     std::cerr << "full fit..." << std::endl;
+
     Fit::LS<double> lsf;
     vector<bool>    used(nvar,true);
     vector<double>  aerr(nvar);
+    lsf.verbose = 1;
     if( !lsf.run(samples, F, aorg, used, aerr) )
     {
         throw exception("couldn't fit");
