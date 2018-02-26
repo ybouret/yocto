@@ -25,7 +25,7 @@ namespace yocto
             assert(patches.is_empty());
             typename split_for<PATCH_TYPE::DIM>::type splitter(cpus,zone);
             patches.resize_empty_to(splitter.cores);
-            for(register size_t rank=0;rank<splitter.cores;++rank)
+            for(size_t rank=0;rank<splitter.cores;++rank)
             {
                 const PATCH_TYPE sub = splitter(rank);
                 patches.template append<PATCH_TYPE>(sub);

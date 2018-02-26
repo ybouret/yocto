@@ -37,7 +37,7 @@ namespace yocto {
 			real_t  ds = Fabs( x - xa[1] );
 			size_t  ns = 1;
             
-			for( register size_t i = n; i>0; --i ) {
+			for(size_t i = n; i>0; --i ) {
 				const real_t l = Fabs( x - xa[i] );
 				if( l < ds ) {
 					ds = l;
@@ -49,8 +49,8 @@ namespace yocto {
             
 			real_t y = ( dy = ya[ns--] );
             
-			for(register size_t m=1;m<n;++m) {
-				for(register size_t i=1;i<=n-m;++i) {
+			for(size_t m=1;m<n;++m) {
+				for(size_t i=1;i<=n-m;++i) {
 					const real_t ho  = xa[i]  -x;
 					const real_t hp  = xa[i+m]-x;
 					const real_t w   = c[i+1]-d[i];
@@ -99,8 +99,8 @@ namespace yocto {
             
 			real_t y = ( dy = ya[ns--] );
             
-			for(register size_t m=1;m<n;m++) {
-				for(register size_t i=1;i<=n-m;i++) {
+			for(size_t m=1;m<n;m++) {
+				for(size_t i=1;i<=n-m;i++) {
 					const real_t w  = c[i+1]-d[i];
 					const real_t h  = xa[i+m]-x;
 					const real_t t  = (xa[i]-x) * d[i]/h;

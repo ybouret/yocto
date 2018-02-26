@@ -80,7 +80,7 @@ namespace yocto {
 				{
 					const size_t n1 = n-1;
 					uint32_t     mx,e;
-					register size_t p;
+					size_t p;
 					sum += tea_delta;
 					e = (sum>>2) & 3;
 					for( p = 0; p < n1; p++ )
@@ -112,7 +112,7 @@ namespace yocto {
 				while (sum != 0){
 					const size_t n1 = n-1;
 					uint32_t  mx;
-					register size_t p;
+					size_t p;
 					uint32_t e = (sum>>2) & 3;
 					for( p = n1; p > 0; p-- )
 					{

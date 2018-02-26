@@ -90,7 +90,7 @@ namespace yocto
         };
 
 #define YGFX_SUBMIT(HOST,METHOD,XPS,CODE) do         {  \
-for(register size_t ixp=XPS.size();ixp>0;--ixp)      {  \
+for(size_t ixp=XPS.size();ixp>0;--ixp)      {  \
 xpatch &xp = XPS[ixp]; do { CODE; } while(false);       \
 xp.enqueue(HOST,METHOD,XPS.server);                  }  \
 xps.server->flush(); } while(false)

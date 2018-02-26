@@ -147,7 +147,7 @@ namespace yocto
             assert(C.size()>=size());
             const size_t    n  = size();
             double          zC = 0;
-            for(register size_t i=1;i<=n;++i)
+            for(size_t i=1;i<=n;++i)
             {
                 zC += C[i];
             }
@@ -160,7 +160,7 @@ namespace yocto
             const size_t    n  = size();
             const_iterator  it = begin();
             double          zC = 0;
-            for(register size_t i=1;i<=n;++i,++it)
+            for(size_t i=1;i<=n;++i,++it)
             {
                 zC += (*it)->z * C[i];
             }
@@ -173,7 +173,7 @@ namespace yocto
             const size_t    n  = size();
             const_iterator  it = begin();
             double          z2C = 0;
-            for(register size_t i=1;i<=n;++i,++it)
+            for(size_t i=1;i<=n;++i,++it)
             {
                 z2C += (*it)->zsq * C[i];
             }

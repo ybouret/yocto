@@ -260,7 +260,7 @@ void arc4::init( const uint8_t *key, size_t len ) throw()
     
 	if (!len) return;
     
-	register unsigned j=0;
+	unsigned j=0;
 	j = ( j + unsigned(S[0x00]) + unsigned( key[ 0x00 % len ] ) ) & 0xff;
 	{ const uint8_t tmp = S[0x00]; S[0x00] = S[j]; S[j] = tmp; }
 	j = ( j + unsigned(S[0x01]) + unsigned( key[ 0x01 % len ] ) ) & 0xff;

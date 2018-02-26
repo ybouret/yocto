@@ -40,9 +40,9 @@ namespace yocto {
 			size_t ns = n;
 			real_t y  = ya[ns--];
 			
-			for(register size_t m=1;m<n;++m) 
+			for(size_t m=1;m<n;++m) 
 			{
-				for(register size_t i=1;i<=n-m;++i)
+				for(size_t i=1;i<=n-m;++i)
 				{
 					const real_t ho  = xa[i]  ;
 					const real_t hp  = xa[i+m];
@@ -110,9 +110,9 @@ namespace yocto {
 			}
 			--ns;
 			
-			for(register size_t m=1;m<n;++m) 
+			for(size_t m=1;m<n;++m) 
 			{
-				for(register size_t i=1;i<=n-m;++i) 
+				for(size_t i=1;i<=n-m;++i) 
 				{
 					const real_t ho  = xa[i]  ;
 					const real_t hp  = xa[i+m];
