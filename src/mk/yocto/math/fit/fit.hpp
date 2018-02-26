@@ -323,6 +323,7 @@ namespace yocto
                 
             private:
                 T eval1d(const T u);
+                typename numeric<T>::function H;
             };
 
         }

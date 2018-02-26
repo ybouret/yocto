@@ -57,7 +57,23 @@ namespace yocto {
                 return (a <= b && b <= c) || (a >= b && b >= c);
                 
             }
-            
+
+            inline const_type  get_min() const throw() { return min_of(a,min_of(b,c)); }
+            inline const_type  get_max() const throw() { return max_of(a,max_of(b,c)); }
+            inline void get_minmax( type &tmin, type &tmax ) const throw()
+            {
+                tmin = tmax = a;
+                if(b<tmin)
+                {
+                    tmin = b;
+                }
+                else if(b>tmax) tmax=b;
+                if(c<tmin)
+                {
+                    tmin = c;
+                }
+                else if(c>tmax) tmax=c;
+            }
         };
         
     }

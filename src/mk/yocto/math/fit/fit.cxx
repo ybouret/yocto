@@ -473,6 +473,8 @@ namespace yocto
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/ios/ocstream.hpp"
+#include "yocto/math/opt/bracket.hpp"
+#include "yocto/math/opt/minimize.hpp"
 
 namespace yocto
 {
@@ -511,7 +513,8 @@ namespace yocto
             Rsq(0),
             cycle(0),
             verbose(false),
-            optimize(false)
+            optimize(false),
+            H(this, & LS<real_t>::eval1d )
             {
                 //std::cerr << "min_p10=" << min_p10 << std::endl;
                 //std::cerr << "max_p10=" << max_p10 << std::endl;
@@ -721,56 +724,34 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         {
                             if(optimize)
                             {
-                                static const real_t phi  = numeric<real_t>::gold;
-                                static const real_t phi2 = REAL(1.0)+phi;
-
-                                static const real_t up   = phi;
-                                static const real_t lo   = phi-1;
-
-                                const real_t H1  = D2_try; // @1
-                                const real_t Hp  = eval1d(phi);
-                                if(Hp<H1)
+                                static const real_t ctrl = 1e-4;
+                                triplet<real_t> UU = { 0,      1,      1      };
+                                triplet<real_t> HH = { D2_org, D2_try, D2_try };
+                                bracket<real_t>::expand(H, UU, HH);
+                                if(verbose)
                                 {
-                                    // take it directly
-                                    std::cerr << "early new min @" << phi << std::endl;
-                                    tao::set(atry,atmp);
-                                    D2_try = Hp;
+                                    std::cerr << "fit.expand: " << UU << std::endl;
+                                    std::cerr << "            " << HH << std::endl;
                                 }
-                                else
+
+                                for(size_t j=0;;++j)
                                 {
+                                    const real_t hmin = HH.b;
+                                    const real_t hmax = max_of(HH.a,HH.c);
 
-                                    const real_t H0  = D2_org; 
-                                    const real_t D1  = (H1-H0);
-                                    const real_t Dp  = (Hp-H0);
-                                    const real_t a   = (phi2* D1 -  Dp);
-                                    const real_t b   = (Dp - phi * D1);
-
-#if 0
-                                    ios::wcstream fp("H.dat");
-                                    for(double u=0;u<=phi;u+=0.02)
+                                    if( (hmax-hmin) <= ctrl * hmax )
                                     {
-                                        fp("%g %g %g\n", u, eval1d(u), H0 +a*u+b*u*u);
+                                        if(verbose)
+                                        {std::cerr << "#min=" << j << std::endl;}
+                                        break;
                                     }
-#endif
 
-                                    if(a<0&&b>0)
-                                    {
-                                        const real_t num    = -a;
-                                        const real_t den    = b+b;
-                                        const real_t opt    = (num <= den*lo) ? lo : ( (num>=den*up) ? up : num/den );
-                                        assert(opt>=lo);assert(opt<=up);
-                                        const real_t D2_opt = eval1d(opt);
-                                        if(D2_opt<D2_try)
-                                        {
-                                            std::cerr << "take new min @" << opt << std::endl;
-                                            tao::set(atry,atmp);
-                                            D2_try = D2_opt;
-                                            //if(cycle>=2) exit(1);
-                                        }
-                                    }
+                                    kernel::minimize(H, UU, HH);
                                 }
+
+                                D2_try = H(UU.b);
+                                tao::set(atry,atmp);
                             }
-
 
                             // set aorg to trial value
                             tao::set(aorg,atry);

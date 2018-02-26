@@ -125,6 +125,7 @@ YOCTO_UNIT_TEST_IMPL(fit)
     lsf.verbose = 1;
 
     lsf.optimize = false;
+    diff.ncall = 0;
     if( !lsf.run(samples, F, aorg, used, aerr) )
     {
         throw exception("couldn't fit, standard");
@@ -217,14 +218,32 @@ YOCTO_UNIT_TEST_IMPL(fit_poly)
     Fit::LS<double> lsf;
     lsf.verbose = true;
 
+    std::cerr << std::endl;
     Fit::Poly<double>::Start(aorg,X,Y);
-    std::cerr << "Start=" << aorg << std::endl;
-    
+    lsf.optimize = false;
+    poly.calls   = 0;
+    std::cerr << "start=" << aorg << std::endl;
     if( !lsf.run(sample, F, aorg, used, aerr) )
     {
         throw exception("couldn't fit poly");
     }
+    std::cerr << "#calls=" << poly.calls << std::endl;
     sample.display(std::cerr, aorg, aerr, "\t");
+
+    
+    std::cerr << std::endl;
+    Fit::Poly<double>::Start(aorg,X,Y);
+    lsf.optimize = true;
+    poly.calls   = 0;
+    std::cerr << "start=" << aorg << std::endl;
+    if( !lsf.run(sample, F, aorg, used, aerr) )
+    {
+        throw exception("couldn't fit poly");
+    }
+    std::cerr << "#calls=" << poly.calls << std::endl;
+    sample.display(std::cerr, aorg, aerr, "\t");
+
+
 
     {
         ios::wcstream fp("poly.dat");

@@ -18,7 +18,8 @@ namespace yocto
             class Poly
             {
             public:
-                inline explicit Poly() throw() {}
+                size_t calls;
+                inline explicit Poly() throw() : calls(0) {}
                 inline virtual ~Poly() throw() {}
 
                 static inline
@@ -36,6 +37,7 @@ namespace yocto
                 inline T compute( const T x, const array<T> &a, const Variables &v) throw()
                 {
                     assert(a.size()==v.size());
+                    ++calls;
                     return Eval(x,a);
                 }
 
@@ -69,6 +71,7 @@ namespace yocto
                     matrix<T>    mat(nvar);
                     for(size_t k=nvar;k>0;--k)
                     {
+                        a[k] = 0;
                         T                        &rhs = a[k];
                         typename matrix<T>::row  &m_k = mat[k];
                         for(size_t i=N;i>0;--i)
