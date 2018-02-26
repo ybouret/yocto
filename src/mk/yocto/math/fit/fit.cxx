@@ -514,8 +514,6 @@ namespace yocto
             cycle(0),
             verbose(false)
             {
-                //std::cerr << "min_p10=" << min_p10 << std::endl;
-                //std::cerr << "max_p10=" << max_p10 << std::endl;
             }
 
             template <>
@@ -663,7 +661,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                     {
                         std::cerr << "fit.cycle = " << cycle  << std::endl;
                         std::cerr << "fit.D2    = " << D2_org << std::endl;
-                        std::cerr << "curv      = " << curv   << std::endl;
+                        std::cerr << "fit.curv  = " << curv   << std::endl;
                     }
                     //__________________________________________________________
                     //
@@ -673,6 +671,11 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                     {
                         if(!compute_cinv(curv))
                         {
+                            // there is something bad with the curvature
+                            if(verbose)
+                            {
+                                std::cerr << "fit.singular curvature..." << std::endl;
+                            }
                             return false;
                         }
 
