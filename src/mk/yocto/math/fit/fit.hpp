@@ -315,6 +315,7 @@ namespace yocto
                 const int max_p10;
                 T         Rsq;   //!< determination coefficient R^2
                 size_t    cycle; //!< current cycle
+                bool      verbose;
             };
 
         }

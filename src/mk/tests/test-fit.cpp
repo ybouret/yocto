@@ -185,6 +185,7 @@ YOCTO_UNIT_TEST_IMPL(fit_poly)
     vector<double>  aerr(nvar);
     vector<bool>    used(nvar,true);
     Fit::LS<double> lsf;
+    lsf.verbose = true;
 
     Fit::Poly<double>::Start(aorg,X,Y);
     std::cerr << "Start=" << aorg << std::endl;

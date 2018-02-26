@@ -498,7 +498,8 @@ namespace yocto
             min_p10( Floor(Log10(numeric<real_t>::epsilon)) ),
             max_p10( Floor(Log10(numeric<real_t>::maximum))/2 ),
             Rsq(0),
-            cycle(0)
+            cycle(0),
+            verbose(false)
             {
                 //std::cerr << "min_p10=" << min_p10 << std::endl;
                 //std::cerr << "max_p10=" << max_p10 << std::endl;
@@ -565,7 +566,27 @@ namespace yocto
 {\
 if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
 } while(false)
-            
+
+            static inline
+            void __regularize(matrix<real_t>    &curv,
+                              array<real_t>     &beta,
+                              const array<bool> &used ) throw()
+            {
+                const size_t nvar = beta.size();
+                for(size_t k=nvar;k>0;--k)
+                {
+                    if(!used[k])
+                    {
+                        beta[k] = 0.0;
+                        for(size_t l=nvar;l>0;--l)
+                        {
+                            curv[k][l] = curv[l][k] = 0;
+                        }
+                        curv[k][k] = 1;
+                    }
+                }
+            }
+
             template <>
             bool LS<real_t>:: run(SampleType<real_t>   &sample,
                                   Function             &F,
@@ -607,31 +628,26 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                 //______________________________________________________________
             CYCLE:
                 {
+                    ++cycle;
                     //__________________________________________________________
                     //
                     // computation of D2, beta and curv
                     //__________________________________________________________
                     const real_t D2_org = sample.computeD2(F,aorg,*this);
+
                     CALLBACK();
                     
                     //__________________________________________________________
                     //
                     // regularize curvature
                     //__________________________________________________________
-                    for(size_t k=nvar;k>0;--k)
+                    __regularize(curv,beta,used);
+                    if(verbose)
                     {
-                        if(!used[k])
-                        {
-                            beta[k] = 0.0;
-                            for(size_t l=nvar;l>0;--l)
-                            {
-                                curv[k][l] = curv[l][k] = 0;
-                            }
-                            curv[k][k] = 1;
-                        }
+                        std::cerr << "fit.cycle = " << cycle  << std::endl;
+                        std::cerr << "fit.D2    = " << D2_org << std::endl;
+                        std::cerr << "curv      = " << curv   << std::endl;
                     }
-
-                    
                     //__________________________________________________________
                     //
                     // compute inverse curvature from current p10
@@ -700,6 +716,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                     // compute covariance matrix
                     //__________________________________________________________
                     const real_t D2 = sample.computeD2(F,aorg,*this);
+                    __regularize(curv, beta, used);
                     if( !LU<real_t>::build(curv) )
                     {
                         // singular matrix at extremum
