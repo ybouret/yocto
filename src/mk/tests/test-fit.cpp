@@ -80,9 +80,13 @@ YOCTO_UNIT_TEST_IMPL(fit)
     double &slope1 = aorg[ var["slope1"] ];
     double &slope2 = aorg[ var["slope2"] ];
 
-    t0     = -100;
-    slope1 = 0.02;
-    slope2 = 0.01;
+#define INI_T0 -100
+#define INI_S1 0.02
+#define INI_S2 0.01
+
+    t0     = INI_T0;
+    slope1 = INI_S1;
+    slope2 = INI_S2;
 
     diffusion diff = { 0 };
     Fit::Type<double>::Function F( &diff, & diffusion::compute );
@@ -111,45 +115,69 @@ YOCTO_UNIT_TEST_IMPL(fit)
     std::cerr << "betaS=" << samples.beta  << std::endl;
     std::cerr << "curvS=" << samples.curv  << std::endl;
 
+    // fitting
     std::cerr << std::endl;
-    std::cerr << "full fit..." << std::endl;
+    std::cerr << "full fit, standard" << std::endl;
 
     Fit::LS<double> lsf;
     vector<bool>    used(nvar,true);
     vector<double>  aerr(nvar);
     lsf.verbose = 1;
+
+    lsf.correct = false;
     if( !lsf.run(samples, F, aorg, used, aerr) )
     {
-        throw exception("couldn't fit");
+        throw exception("couldn't fit, standard");
     }
     std::cerr << "ncall=" << diff.ncall << std::endl;
-    std::cerr << "aorg =" << aorg << std::endl;
-    std::cerr << "aerr =" << aerr << std::endl;
+    samples.display(std::cerr, aorg, aerr, "\t");
     save("f1.dat",t1,z1);
     save("f2.dat",t2,z2);
 
     std::cerr << "Rsq=" << lsf.Rsq << std::endl;
 
+    std::cerr << std::endl;
+    std::cerr << "full fit, correct" << std::endl;
+    lsf.correct = true;
+    t0     = INI_T0;
+    slope1 = INI_S1;
+    slope2 = INI_S2;
+
+
+    diff.ncall = 0;
+    if( !lsf.run(samples, F, aorg, used, aerr) )
+    {
+        throw exception("couldn't fit, corrected");
+    }
+    std::cerr << "ncall=" << diff.ncall << std::endl;
     samples.display(std::cerr, aorg, aerr, "\t");
+
     std::cerr << "sample1.D2  =" << sample1.D2 << std::endl;
     std::cerr << "sample2.D2  =" << sample2.D2 << std::endl;
     std::cerr << "sample1.corr=" << sample1.correlation() << std::endl;
     std::cerr << "sample2.corr=" << sample2.correlation() << std::endl;
 
-    std::cerr << std::endl;
-    std::cerr << "partial fit" << std::endl;
-    t0     = -100;
-    slope1 *= 1 + 0.1 * alea.symm<double>();
-    slope2 *= 1 + 0.1 * alea.symm<double>();
-    used[var["slope1"]] = false;
-    used[var["slope2"]] = false;
-    if( !lsf.run(samples, F, aorg, used, aerr) )
+    diff.ncall  = 0;
+    samples.computeD2(F,aorg);
+    std::cerr << "calls/D2=" << diff.ncall << std::endl;
+    
+    if(false)
     {
-        throw exception("couldn't fit");
+        lsf.correct = false;
+        std::cerr << std::endl;
+        std::cerr << "partial fit" << std::endl;
+        t0     = INI_T0;
+        slope1 *= 1 + 0.1 * alea.symm<double>();
+        slope2 *= 1 + 0.1 * alea.symm<double>();
+        used[var["slope1"]] = false;
+        used[var["slope2"]] = false;
+        if( !lsf.run(samples, F, aorg, used, aerr) )
+        {
+            throw exception("couldn't fit");
+        }
+        samples.display(std::cerr, aorg, aerr, "\t");
     }
-    samples.display(std::cerr, aorg, aerr, "\t");
-
-
+    
 }
 YOCTO_UNIT_TEST_DONE()
 

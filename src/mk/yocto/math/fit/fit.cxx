@@ -510,7 +510,8 @@ namespace yocto
             max_p10( Floor(Log10(numeric<real_t>::maximum))/2 ),
             Rsq(0),
             cycle(0),
-            verbose(false)
+            verbose(false),
+            correct(false)
             {
                 //std::cerr << "min_p10=" << min_p10 << std::endl;
                 //std::cerr << "max_p10=" << max_p10 << std::endl;
@@ -713,30 +714,46 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         const real_t D2_try = sample.computeD2(F,atry);
                         if(D2_try<D2_org)
                         {
-                            if(true)
+                            if(correct)
                             {
-                                const real_t sig =  2.0*tao::dot(step,beta);
-                                std::cerr << "sig=" << sig << std::endl;
+                                static const real_t phi  = numeric<real_t>::gold;
+                                static const real_t phi2 = REAL(1.0)+phi;
+
+                                static const real_t up   = phi;
+                                static const real_t lo   = phi-1;
+
+                                const real_t H0  = D2_org; // @0
+                                const real_t H1  = D2_try; // @1
+                                const real_t Hp  = eval1d(phi);
+                                const real_t D1  = (H1-H0);
+                                const real_t Dp  = (Hp-H0);
+                                const real_t a   = (phi2* D1 -  Dp);
+                                const real_t b   = (Dp - phi * D1);
+
+                                ios::wcstream fp("H.dat");
+                                for(double u=0;u<=phi;u+=0.02)
                                 {
-                                    ios::wcstream fp("H.dat");
-                                    for(double xx=0;xx<=2*numeric<real_t>::gold;xx+=0.02)
+                                    fp("%g %g %g\n", u, eval1d(u), H0 +a*u+b*u*u);
+                                }
+
+                                if(a<0&&b>0)
+                                {
+                                    const real_t num    = -a;
+                                    const real_t den    = b+b;
+                                    const real_t opt    = (num <= den*lo) ? lo : ( (num>=den*up) ? up : num/den );
+                                    assert(opt>=lo);assert(opt<=up);
+                                    const real_t D2_opt = eval1d(opt);
+                                    if(D2_opt<D2_try)
                                     {
-                                        fp("%g %g\n",xx,eval1d(xx));
+                                        std::cerr << "take new min @" << opt << std::endl;
+                                        tao::set(atry,atmp);
+                                        //if(cycle>=2) exit(1);
                                     }
                                 }
-                                if(cycle>=2)
-                                exit(1);
-#if 0
-                                real_t u  = numeric<real_t>::gold;
-                                real_t D2_fwd = eval1d(u);
-                                if(D2_fwd < D2_try)
-                                {
-                                    std::cerr << "going forward..." << std::endl;
-                                    tao::set(atry,atmp);
-                                }
-#endif
                             }
 
+
+                            // set aorg to trial value
                             tao::set(aorg,atry);
                             --p10;
                             goto CYCLE;
@@ -760,6 +777,10 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                     if( !LU<real_t>::build(curv) )
                     {
                         // singular matrix at extremum
+                        if(verbose)
+                        {
+                            std::cerr << "fit.singular curvature" << std::endl;
+                        }
                         return false;
                     }
                     CALLBACK();
@@ -784,6 +805,10 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                     const size_t user_ndat = sample.items();
                     if(user_nvar>=user_ndat)
                     {
+                        if(verbose)
+                        {
+                            std::cerr << "fit.not enough degrees of freedon" << std::endl;
+                        }
                         return false;
                     }
 
