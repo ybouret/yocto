@@ -186,6 +186,9 @@ YOCTO_UNIT_TEST_IMPL(fit_poly)
     vector<bool>    used(nvar,true);
     Fit::LS<double> lsf;
 
+    Fit::Poly<double>::Start(aorg,X,Y);
+    std::cerr << "Start=" << aorg << std::endl;
+    
     if( !lsf.run(sample, F, aorg, used, aerr) )
     {
         throw exception("couldn't fit poly");

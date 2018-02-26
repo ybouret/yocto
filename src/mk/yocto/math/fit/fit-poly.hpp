@@ -3,6 +3,8 @@
 #define YOCTO_MATH_FIT_POLY_INCLUDED 1
 
 #include "yocto/math/fit/fit.hpp"
+#include "yocto/math/core/lu.hpp"
+#include "yocto/code/ipower.hpp"
 
 namespace yocto
 {
@@ -56,6 +58,41 @@ namespace yocto
                     }
                 }
 
+                static inline bool Start(array<T>       &a,
+                                         const array<T> &X,
+                                         const array<T> &Y)
+                {
+                    const size_t nvar = a.size();
+                    assert(X.size()==Y.size());
+                    if(nvar<=0) return false;
+                    const size_t N      = X.size();
+                    matrix<T>    mat(nvar);
+                    for(size_t k=nvar;k>0;--k)
+                    {
+                        T                        &rhs = a[k];
+                        typename matrix<T>::row  &m_k = mat[k];
+                        for(size_t i=N;i>0;--i)
+                        {
+                            const T Xi  = X[i];
+                            const T Xik = ipower<T>(Xi,k-1);
+                            rhs  += Xik * Y[i];
+                            for(size_t l=k;l>0;--l)
+                            {
+                                m_k[l] += Xik * ipower<T>(Xi,l-1);
+                            }
+                        }
+                    }
+                    for(size_t k=nvar;k>0;--k)
+                    {
+                        for(size_t l=k-1;l>0;--l)
+                        {
+                            mat[l][k] = mat[k][l];
+                        }
+                    }
+                    if(!LU<T>::build(mat)) return false;
+                    LU<T>::solve(mat,a);
+                    return true;
+                }
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Poly);
