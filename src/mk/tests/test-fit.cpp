@@ -111,13 +111,18 @@ YOCTO_UNIT_TEST_IMPL(fit)
     std::cerr << "betaS=" << samples.beta  << std::endl;
     std::cerr << "curvS=" << samples.curv  << std::endl;
 
+    std::cerr << std::endl;
+    std::cerr << "full fit..." << std::endl;
     Fit::LS<double> lsf;
     vector<bool>    used(nvar,true);
     vector<double>  aerr(nvar);
-    lsf.run(samples, F, aorg, used, aerr);
+    if( !lsf.run(samples, F, aorg, used, aerr) )
+    {
+        throw exception("couldn't fit");
+    }
     std::cerr << "ncall=" << diff.ncall << std::endl;
-    std::cerr << "aorg=" << aorg << std::endl;
-    std::cerr << "aerr=" << aerr << std::endl;
+    std::cerr << "aorg =" << aorg << std::endl;
+    std::cerr << "aerr =" << aerr << std::endl;
     save("f1.dat",t1,z1);
     save("f2.dat",t2,z2);
 
@@ -129,7 +134,72 @@ YOCTO_UNIT_TEST_IMPL(fit)
     std::cerr << "sample1.corr=" << sample1.correlation() << std::endl;
     std::cerr << "sample2.corr=" << sample2.correlation() << std::endl;
 
+    std::cerr << std::endl;
+    std::cerr << "partial fit" << std::endl;
+    t0     = -100;
+    slope1 *= 1 + 0.1 * alea.symm<double>();
+    slope2 *= 1 + 0.1 * alea.symm<double>();
+    used[var["slope1"]] = false;
+    used[var["slope2"]] = false;
+    if( !lsf.run(samples, F, aorg, used, aerr) )
+    {
+        throw exception("couldn't fit");
+    }
+    samples.display(std::cerr, aorg, aerr, "\t");
+
+
 }
 YOCTO_UNIT_TEST_DONE()
 
+#include "yocto/math/fit/fit-poly.hpp"
+#include "yocto/sort/ysort.hpp"
+#include "yocto/string/conv.hpp"
+
+YOCTO_UNIT_TEST_IMPL(fit_poly)
+{
+    size_t degree = 2;
+    if(argc>1)
+    {
+        degree = strconv::to<size_t>(argv[1],"degree");
+    }
+    Fit::Poly<double>           poly;
+    Fit::Type<double>::Function F( &poly, & Fit::Poly<double>::compute );
+
+    const size_t   N = 10 + alea.leq(50);
+    vector<double> X(N);
+    vector<double> Y(N);
+    vector<double> Z(N);
+    for(size_t i=1;i<=N;++i)
+    {
+        X[i] = 1.6 * alea.get<double>();
+        Y[i] = sin(X[i]) + 0.1 * (alea.get<double>()-0.5);
+    }
+    yCoSort(X,Y,__compare<double>);
+
+    Fit::Sample<double> sample(X,Y,Z);
+    Fit::Poly<double>::Create(sample.variables,degree, "a");
+    std::cerr << "var=" << sample.variables << std::endl;
+
+    const size_t    nvar = sample.variables.size();
+    vector<double>  aorg(nvar);
+    vector<double>  aerr(nvar);
+    vector<bool>    used(nvar,true);
+    Fit::LS<double> lsf;
+
+    if( !lsf.run(sample, F, aorg, used, aerr) )
+    {
+        throw exception("couldn't fit poly");
+    }
+    sample.display(std::cerr, aorg, aerr, "\t");
+
+    {
+        ios::wcstream fp("poly.dat");
+        for(size_t i=1;i<=N;++i)
+        {
+            fp("%g %g %g\n", X[i], Y[i], Z[i] );
+        }
+    }
+
+}
+YOCTO_UNIT_TEST_DONE()
 

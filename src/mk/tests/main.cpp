@@ -90,7 +90,8 @@ YOCTO_UNIT_TEST_INIT(64)
 
     YOCTO_UNIT_TEST_DECL(newton);
     YOCTO_UNIT_TEST_DECL(fit);
-    
+    YOCTO_UNIT_TEST_DECL(fit_poly);
+
 }
 YOCTO_UNIT_TEST_EXEC()
 
