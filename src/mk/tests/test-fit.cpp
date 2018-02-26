@@ -124,7 +124,7 @@ YOCTO_UNIT_TEST_IMPL(fit)
     vector<double>  aerr(nvar);
     lsf.verbose = 1;
 
-    lsf.correct = false;
+    lsf.optimize = false;
     if( !lsf.run(samples, F, aorg, used, aerr) )
     {
         throw exception("couldn't fit, standard");
@@ -138,7 +138,7 @@ YOCTO_UNIT_TEST_IMPL(fit)
 
     std::cerr << std::endl;
     std::cerr << "full fit, correct" << std::endl;
-    lsf.correct = true;
+    lsf.optimize = true;
     t0     = INI_T0;
     slope1 = INI_S1;
     slope2 = INI_S2;
@@ -161,9 +161,9 @@ YOCTO_UNIT_TEST_IMPL(fit)
     samples.computeD2(F,aorg);
     std::cerr << "calls/D2=" << diff.ncall << std::endl;
     
-    if(false)
+    if(true)
     {
-        lsf.correct = false;
+        lsf.optimize = false;
         std::cerr << std::endl;
         std::cerr << "partial fit" << std::endl;
         t0     = INI_T0;

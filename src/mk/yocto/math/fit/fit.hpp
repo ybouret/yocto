@@ -316,10 +316,10 @@ namespace yocto
             public:
                 const int min_p10;
                 const int max_p10;
-                T         Rsq;     //!< determination coefficient R^2
-                size_t    cycle;   //!< current cycle
-                bool      verbose; //!< for some debugging
-                bool      correct; //!< for minium corrrection, default=false
+                T         Rsq;      //!< determination coefficient R^2
+                size_t    cycle;    //!< current cycle
+                bool      verbose;  //!< for some debugging
+                bool      optimize; //!< for minium correction, default=false
                 
             private:
                 T eval1d(const T u);

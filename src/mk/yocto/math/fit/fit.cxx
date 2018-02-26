@@ -511,7 +511,7 @@ namespace yocto
             Rsq(0),
             cycle(0),
             verbose(false),
-            correct(false)
+            optimize(false)
             {
                 //std::cerr << "min_p10=" << min_p10 << std::endl;
                 //std::cerr << "max_p10=" << max_p10 << std::endl;
@@ -609,7 +609,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                                   Array                &aerr,
                                   Callback             *cb)
             {
-
+                static const real_t ftol = numeric<real_t>::ftol;
                 //______________________________________________________________
                 //
                 // Initialize
@@ -678,7 +678,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
 
                         //______________________________________________________
                         //
-                        // compute step => ATRY
+                        // compute step
                         //______________________________________________________
                         tao::set(step,beta);
                         LU<real_t>::solve(cinv,step);
@@ -686,6 +686,11 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         {
                             goto EXTREMUM;
                         }
+
+                        //______________________________________________________
+                        //
+                        // new position at full step in atry
+                        //______________________________________________________
                         tao::setsum(atry,aorg,step);
 
                         //______________________________________________________
@@ -695,7 +700,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         bool cvg = true;
                         for(size_t i=nvar;i>0;--i)
                         {
-                            if( Fabs(atry[i]-aorg[i])>0 )
+                            if( Fabs(atry[i]-aorg[i]) > ftol * max_of( Fabs(atry[i]), Fabs(aorg[i]) ) )
                             {
                                 cvg = false;
                                 break;
@@ -711,10 +716,10 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         //
                         // forward and check
                         //______________________________________________________
-                        const real_t D2_try = sample.computeD2(F,atry);
+                        real_t D2_try = sample.computeD2(F,atry);
                         if(D2_try<D2_org)
                         {
-                            if(correct)
+                            if(optimize)
                             {
                                 static const real_t phi  = numeric<real_t>::gold;
                                 static const real_t phi2 = REAL(1.0)+phi;
@@ -722,32 +727,46 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                                 static const real_t up   = phi;
                                 static const real_t lo   = phi-1;
 
-                                const real_t H0  = D2_org; // @0
                                 const real_t H1  = D2_try; // @1
                                 const real_t Hp  = eval1d(phi);
-                                const real_t D1  = (H1-H0);
-                                const real_t Dp  = (Hp-H0);
-                                const real_t a   = (phi2* D1 -  Dp);
-                                const real_t b   = (Dp - phi * D1);
-
-                                ios::wcstream fp("H.dat");
-                                for(double u=0;u<=phi;u+=0.02)
+                                if(Hp<H1)
                                 {
-                                    fp("%g %g %g\n", u, eval1d(u), H0 +a*u+b*u*u);
+                                    // take it directly
+                                    std::cerr << "early new min @" << phi << std::endl;
+                                    tao::set(atry,atmp);
+                                    D2_try = Hp;
                                 }
-
-                                if(a<0&&b>0)
+                                else
                                 {
-                                    const real_t num    = -a;
-                                    const real_t den    = b+b;
-                                    const real_t opt    = (num <= den*lo) ? lo : ( (num>=den*up) ? up : num/den );
-                                    assert(opt>=lo);assert(opt<=up);
-                                    const real_t D2_opt = eval1d(opt);
-                                    if(D2_opt<D2_try)
+
+                                    const real_t H0  = D2_org; 
+                                    const real_t D1  = (H1-H0);
+                                    const real_t Dp  = (Hp-H0);
+                                    const real_t a   = (phi2* D1 -  Dp);
+                                    const real_t b   = (Dp - phi * D1);
+
+#if 0
+                                    ios::wcstream fp("H.dat");
+                                    for(double u=0;u<=phi;u+=0.02)
                                     {
-                                        std::cerr << "take new min @" << opt << std::endl;
-                                        tao::set(atry,atmp);
-                                        //if(cycle>=2) exit(1);
+                                        fp("%g %g %g\n", u, eval1d(u), H0 +a*u+b*u*u);
+                                    }
+#endif
+
+                                    if(a<0&&b>0)
+                                    {
+                                        const real_t num    = -a;
+                                        const real_t den    = b+b;
+                                        const real_t opt    = (num <= den*lo) ? lo : ( (num>=den*up) ? up : num/den );
+                                        assert(opt>=lo);assert(opt<=up);
+                                        const real_t D2_opt = eval1d(opt);
+                                        if(D2_opt<D2_try)
+                                        {
+                                            std::cerr << "take new min @" << opt << std::endl;
+                                            tao::set(atry,atmp);
+                                            D2_try = D2_opt;
+                                            //if(cycle>=2) exit(1);
+                                        }
                                     }
                                 }
                             }
@@ -756,6 +775,13 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                             // set aorg to trial value
                             tao::set(aorg,atry);
                             --p10;
+
+                            // check D2 convergence
+                            assert(D2_try<D2_org);
+                            if( (D2_org-D2_try) <= ftol * D2_org )
+                            {
+                                goto EXTREMUM;
+                            }
                             goto CYCLE;
                         }
                         else
