@@ -33,7 +33,7 @@ a = (a^(mix)) + *(m2++); \
 		template <>
 		void isaac<RANDSIZL>::call( randctx *ctx ) throw()
 		{
-			register uint32_t a,b,x,y,*m,*mm,*m2,*r,*mend;
+			uint32_t a,b,x,y,*m,*mm,*m2,*r,*mend;
 			mm=ctx->randmem; r=ctx->randrsl;
 			a = ctx->randa; b = ctx->randb + (++ctx->randc);
 			for (m = mm, mend = m2 = m+(RANDSIZ/2); m<mend; )

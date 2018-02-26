@@ -35,7 +35,7 @@ namespace yocto
 	inline size_t ceilLn2( const T &x ) throw()
 	{
 		const typename unsigned_int< sizeof(T) >::type I(x);
-		for( register size_t i = sizeof(T); i >0; )
+		for(size_t i = sizeof(T); i >0; )
 		{
 
 			const size_t nsh = (--i) << 3;

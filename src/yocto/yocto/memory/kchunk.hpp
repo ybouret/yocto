@@ -70,7 +70,7 @@ namespace yocto
                 --stillAvailable;
 
                 word_type *q = p;
-                for(register size_t i=blockIncrement;i>0;--i)
+                for(size_t i=blockIncrement;i>0;--i)
                 {
                     *(q++) = 0;
                 }

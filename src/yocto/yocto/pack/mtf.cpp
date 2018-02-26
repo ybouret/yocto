@@ -62,7 +62,7 @@ namespace yocto {
 		{
 			assert(list_.size == 256 );
 			node_t *node = list_.head;
-			for(register size_t i=x;i>0;--i) {
+			for(size_t i=x;i>0;--i) {
 				node=node->next;
 				assert(NULL!=node);
 			}
