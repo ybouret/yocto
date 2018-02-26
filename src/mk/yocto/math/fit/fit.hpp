@@ -306,7 +306,6 @@ namespace yocto
                 Vector         atry;   //!< trial value
                 Vector         step;   //!< the step
                 Matrix         cinv;   //!< inverse curvature
-                Vector         atmp;   //!< probe value
                 int            p10;    //!< lambda  = 10^p10
                 T              lambda; //!< lambda value for inversion
 
@@ -319,11 +318,8 @@ namespace yocto
                 T         Rsq;      //!< determination coefficient R^2
                 size_t    cycle;    //!< current cycle
                 bool      verbose;  //!< for some debugging
-                bool      optimize; //!< for minium correction, default=false
                 
-            private:
-                T eval1d(const T u);
-                typename numeric<T>::function H;
+
             };
 
         }

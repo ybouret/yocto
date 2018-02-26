@@ -124,7 +124,6 @@ YOCTO_UNIT_TEST_IMPL(fit)
     vector<double>  aerr(nvar);
     lsf.verbose = 1;
 
-    lsf.optimize = false;
     diff.ncall = 0;
     if( !lsf.run(samples, F, aorg, used, aerr) )
     {
@@ -135,24 +134,7 @@ YOCTO_UNIT_TEST_IMPL(fit)
     save("f1.dat",t1,z1);
     save("f2.dat",t2,z2);
 
-    std::cerr << "Rsq=" << lsf.Rsq << std::endl;
-
-    std::cerr << std::endl;
-    std::cerr << "full fit, correct" << std::endl;
-    lsf.optimize = true;
-    t0     = INI_T0;
-    slope1 = INI_S1;
-    slope2 = INI_S2;
-
-
-    diff.ncall = 0;
-    if( !lsf.run(samples, F, aorg, used, aerr) )
-    {
-        throw exception("couldn't fit, corrected");
-    }
-    std::cerr << "ncall=" << diff.ncall << std::endl;
-    samples.display(std::cerr, aorg, aerr, "\t");
-
+    std::cerr << "Rsq         =" << lsf.Rsq << std::endl;
     std::cerr << "sample1.D2  =" << sample1.D2 << std::endl;
     std::cerr << "sample2.D2  =" << sample2.D2 << std::endl;
     std::cerr << "sample1.corr=" << sample1.correlation() << std::endl;
@@ -164,7 +146,6 @@ YOCTO_UNIT_TEST_IMPL(fit)
     
     if(true)
     {
-        lsf.optimize = false;
         std::cerr << std::endl;
         std::cerr << "partial fit" << std::endl;
         t0     = INI_T0;
@@ -218,22 +199,10 @@ YOCTO_UNIT_TEST_IMPL(fit_poly)
     Fit::LS<double> lsf;
     lsf.verbose = true;
 
-    std::cerr << std::endl;
-    Fit::Poly<double>::Start(aorg,X,Y);
-    lsf.optimize = false;
-    poly.calls   = 0;
-    std::cerr << "start=" << aorg << std::endl;
-    if( !lsf.run(sample, F, aorg, used, aerr) )
-    {
-        throw exception("couldn't fit poly");
-    }
-    std::cerr << "#calls=" << poly.calls << std::endl;
-    sample.display(std::cerr, aorg, aerr, "\t");
 
     
     std::cerr << std::endl;
     Fit::Poly<double>::Start(aorg,X,Y);
-    lsf.optimize = true;
     poly.calls   = 0;
     std::cerr << "start=" << aorg << std::endl;
     if( !lsf.run(sample, F, aorg, used, aerr) )

@@ -473,8 +473,6 @@ namespace yocto
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/ios/ocstream.hpp"
-#include "yocto/math/opt/bracket.hpp"
-#include "yocto/math/opt/minimize.hpp"
 
 namespace yocto
 {
@@ -487,6 +485,7 @@ namespace yocto
             {
             }
 
+#if 0
             template <>
             real_t LS<real_t>:: eval1d(const real_t u)
             {
@@ -496,7 +495,8 @@ namespace yocto
                 tao::setprobe(atmp,*pa0,u,step);
                 return psm->computeD2(*pfn,atmp);
             }
-
+#endif
+            
             template <>
             LS<real_t>:: LS() :
             Gradient<real_t>(),
@@ -512,9 +512,7 @@ namespace yocto
             max_p10( Floor(Log10(numeric<real_t>::maximum))/2 ),
             Rsq(0),
             cycle(0),
-            verbose(false),
-            optimize(false),
-            H(this, & LS<real_t>::eval1d )
+            verbose(false)
             {
                 //std::cerr << "min_p10=" << min_p10 << std::endl;
                 //std::cerr << "max_p10=" << max_p10 << std::endl;
@@ -631,7 +629,6 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                 step.make(nvar);
                 atry.make(nvar);
                 cinv.make(nvar);
-                atmp.make(nvar);
                 tao::ld(aerr,0);
                 Matrix &curv = sample.curv;
                 Array  &beta = sample.beta;
@@ -719,39 +716,9 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         //
                         // forward and check
                         //______________________________________________________
-                        real_t D2_try = sample.computeD2(F,atry);
+                        const real_t D2_try = sample.computeD2(F,atry);
                         if(D2_try<D2_org)
                         {
-                            if(optimize)
-                            {
-                                static const real_t ctrl = 1e-4;
-                                triplet<real_t> UU = { 0,      1,      1      };
-                                triplet<real_t> HH = { D2_org, D2_try, D2_try };
-                                bracket<real_t>::expand(H, UU, HH);
-                                if(verbose)
-                                {
-                                    std::cerr << "fit.expand: " << UU << std::endl;
-                                    std::cerr << "            " << HH << std::endl;
-                                }
-
-                                for(size_t j=0;;++j)
-                                {
-                                    const real_t hmin = HH.b;
-                                    const real_t hmax = max_of(HH.a,HH.c);
-
-                                    if( (hmax-hmin) <= ctrl * hmax )
-                                    {
-                                        if(verbose)
-                                        {std::cerr << "#min=" << j << std::endl;}
-                                        break;
-                                    }
-
-                                    kernel::minimize(H, UU, HH);
-                                }
-
-                                D2_try = H(UU.b);
-                                tao::set(atry,atmp);
-                            }
 
                             // set aorg to trial value
                             tao::set(aorg,atry);
