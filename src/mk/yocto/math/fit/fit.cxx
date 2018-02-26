@@ -32,7 +32,8 @@ namespace yocto
             template <>
             void SampleType<real_t>:: display(std::ostream &os,
                                               const Array  &aorg,
-                                              const Array  &aerr) const
+                                              const Array  &aerr,
+                                              const char   *prefix) const
             {
                 const size_t nvar = variables.size();
                 assert(aorg.size()==nvar);
@@ -67,8 +68,10 @@ namespace yocto
                     }
                 }
 
+                const string pfx = prefix;
                 for(i=1;i<=nvar;++i)
                 {
+                    os << pfx;
                     os << vorg[i]; for(size_t j=vorg[i].size();j<=pad_org;++j) os << ' ';
                     os << verr[i]; for(size_t j=verr[i].size();j<=pad_err;++j) os << ' ';
                     os << '(';
@@ -289,6 +292,44 @@ namespace yocto
                     return 0;
                 }
             }
+
+            template <>
+            real_t Sample<real_t>:: correlation() const throw()
+            {
+                assert(Y.size()==Z.size());
+                const size_t N = Y.size();
+                if(N>1)
+                {
+                    real_t ay=0;
+                    real_t az=0;
+                    for(size_t i=N;i>0;--i)
+                    {
+                        ay += Y[i];
+                        az += Z[i];
+                    }
+                    ay /= N;
+                    az /= N;
+
+                    real_t sum_yy = 0;
+                    real_t sum_zz = 0;
+                    real_t sum_yz = 0;
+                    for(size_t i=N;i>0;--i)
+                    {
+                        const real_t dy = Y[i] - ay;
+                        const real_t dz = Z[i] - az;
+                        sum_yy += dy*dy;
+                        sum_zz += dz*dz;
+                        sum_yz += dy*dz;
+                    }
+
+                    return sum_yz / ( Sqrt(sum_yy*sum_zz) + numeric<real_t>::tiny );
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+
         }
     }
 }
@@ -414,6 +455,12 @@ namespace yocto
             {
                 return size();
             }
+
+            template <>
+            real_t Samples<real_t>:: correlation() const throw()
+            {
+                return 0;
+            }
         }
 
     }
@@ -445,6 +492,7 @@ namespace yocto
             nvar(0),
             psm(0),
             atry(),
+            step(),
             p10(0),
             lambda(0),
             min_p10( Floor(Log10(numeric<real_t>::epsilon)) ),
@@ -457,7 +505,7 @@ namespace yocto
             }
 
             template <>
-            void LS<real_t>:: compute_lambda()
+            void LS<real_t>:: compute_lambda() throw()
             {
                 p10 = clamp(min_p10,p10,max_p10);
                 if(p10<=min_p10)
@@ -542,6 +590,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                 }
                 
                 sample.link();
+                step.make(nvar);
                 atry.make(nvar);
                 cinv.make(nvar);
                 tao::ld(aerr,0);
@@ -550,7 +599,8 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                 p10          = min_p10;
                 Rsq          = 0;
                 cycle        = 0;
-                
+                psm          = &sample;
+
                 //______________________________________________________________
                 //
                 // start cycle
@@ -597,13 +647,13 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         //
                         // compute step => ATRY
                         //______________________________________________________
-                        tao::set(atry,beta);
-                        LU<real_t>::solve(cinv,atry);
-                        if( tao::norm_sq(atry) <= REAL(0.0) )
+                        tao::set(step,beta);
+                        LU<real_t>::solve(cinv,step);
+                        if( tao::norm_sq(step) <= REAL(0.0) )
                         {
                             goto EXTREMUM;
                         }
-                        tao::add(atry,aorg);
+                        tao::setsum(atry,aorg,step);
 
                         //______________________________________________________
                         //

@@ -123,8 +123,11 @@ YOCTO_UNIT_TEST_IMPL(fit)
 
     std::cerr << "Rsq=" << lsf.Rsq << std::endl;
 
-    samples.display(std::cerr, aorg, aerr);
-    
+    samples.display(std::cerr, aorg, aerr, "\t");
+    std::cerr << "sample1.D2  =" << sample1.D2 << std::endl;
+    std::cerr << "sample2.D2  =" << sample2.D2 << std::endl;
+    std::cerr << "sample1.corr=" << sample1.correlation() << std::endl;
+    std::cerr << "sample2.corr=" << sample2.correlation() << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()

@@ -174,10 +174,12 @@ namespace yocto
                 virtual size_t items() const throw() = 0; //!< number of data
                 virtual T      SStot() const throw() = 0; //!< total sum of squares
                 virtual size_t count() const throw() = 0; //!< number of sub-samples
-                
+                virtual T      correlation() const throw() = 0;
+
                 void display(std::ostream &os,
                              const Array  &aorg,
-                             const Array  &aerr) const;
+                             const Array  &aerr,
+                             const char   *prefix=0) const;
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(SampleType);
@@ -222,7 +224,10 @@ namespace yocto
                 
                 //! returns 1
                 virtual size_t count() const throw();
-                
+
+                //! coefficient correlation
+                virtual T      correlation() const throw();
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Sample);
                 void assign(const Array &a) const;
@@ -256,10 +261,10 @@ namespace yocto
                                     const Array        &a,
                                     Gradient<T>        &grad) const;
 
-                virtual size_t items() const throw();
-                virtual T      SStot() const throw();
-                virtual size_t count() const throw(); //!< size()
-                
+                virtual size_t items() const throw();       //!< sum of items()
+                virtual T      SStot() const throw();       //!< sum of squares
+                virtual size_t count() const throw();       //!< size()
+                virtual T      correlation() const throw(); //!< 0
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Samples);
             };
@@ -294,14 +299,16 @@ namespace yocto
                 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(LS);
-                size_t     nvar;
-                Sample<T> *psm;
-                Vector     atry;   //!< trial value
-                Matrix     cinv;   //!< inverse curvature
-                int        p10;    //!< lambda  = 10^p10
-                T          lambda; //!< lambda value for inversion
-                void       compute_lambda();
-                bool       compute_cinv(const Matrix &curv);
+                size_t         nvar;
+                SampleType<T> *psm;
+                Vector         atry;   //!< trial value
+                Vector         step;   //!< the step
+                Matrix         cinv;   //!< inverse curvature
+                int            p10;    //!< lambda  = 10^p10
+                T              lambda; //!< lambda value for inversion
+
+                void compute_lambda() throw();
+                bool compute_cinv(const Matrix &curv);
                 
             public:
                 const int min_p10;

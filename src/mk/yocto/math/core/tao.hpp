@@ -85,7 +85,16 @@ namespace yocto
 #undef Y_TAO_ADD
             }
 
-
+            //! a = b + c
+            template <typename ARR, typename BRR, typename CRR>
+            static inline void setsum( ARR &a, const BRR &b, const CRR &c) throw()
+            {
+                assert(a.size()<=b.size());
+                assert(a.size()<=c.size());
+#define Y_TAO_SETSUM(I) a[I] = static_cast<typename ARR::type>(b[I]) + static_cast<typename ARR::type>(c[I])
+                YOCTO_TAO_LOOP(a.size(),SETSUM);
+#undef  Y_TAO_SETSUM
+            }
             
             //! a -= b, a.size() <= b.size()
             template <typename ARR, typename BRR>
@@ -178,6 +187,7 @@ namespace yocto
                 YOCTO_TAO_LOOP(a.size(),MULSUB);
 #undef  Y_TAO_MULSUB
             }
+
 
             //! a = b + x * c
             template <typename ARR, typename BRR, typename CRR>
