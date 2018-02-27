@@ -14,11 +14,13 @@ namespace yocto
         {
 
         }
+#define Y_BLUR_TWO_PI math::numeric<float>::two_pi
 
 #define Y_BLUR_CTOR(LEN)                                          \
 sigma( fabsf(sig)  ),                                             \
 sigm2( sigma*sigma ),                                             \
 scale( (sigm2>0.0f) ? 1.0f/(sigm2+sigm2) : 0.0f ),                \
+ampli( (sigm2>0.0f) ? 1.0f/sqrt(Y_BLUR_TWO_PI*sigm2) : 0),        \
 length( LEN ),                                                    \
 width(1+2*length),                                                \
 weight( "weight", -length, length ),                              \

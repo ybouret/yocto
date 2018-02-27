@@ -124,7 +124,10 @@ namespace yocto
         
         float  Atan2( float y, float x ) throw();    //! in ]-\pi,\pi]
         double Atan2( double y, double x ) throw();  //! in ]-\pi,\pi]
-        
+
+        float  Gaussian( float  x, float  mu, float  sig ) throw();
+        double Gaussian( double x, double mu, double sig ) throw();
+
         
 		inline float  Pow( float  x, float  y ) throw() { return powf(x,y); }
 		inline double Pow( double x, double y ) throw() { return pow(x,y);  }

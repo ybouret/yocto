@@ -7,6 +7,7 @@ namespace yocto {
 
 	namespace math {
 
+       
 		float  qerfc( float  X ) throw();
 		double qerfc( double X ) throw();
 

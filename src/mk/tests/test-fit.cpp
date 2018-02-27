@@ -222,6 +222,14 @@ YOCTO_UNIT_TEST_IMPL(fit_poly)
         }
     }
 
-}
-YOCTO_UNIT_TEST_DONE()
+    }
+    YOCTO_UNIT_TEST_DONE()
 
+
+#include "yocto/math/fit/fit-gauss.hpp"
+
+    YOCTO_UNIT_TEST_IMPL(fit_gauss)
+    {
+
+    }
+    YOCTO_UNIT_TEST_DONE()

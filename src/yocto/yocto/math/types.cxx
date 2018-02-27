@@ -25,11 +25,19 @@ namespace yocto {
                     return y > 0 ? half_pi : ( y < 0 ? -half_pi : 0 );
                 }
             }
-            
-            
         }
         
-        
+
+        real_t Gaussian( real_t x, real_t mu, real_t sig ) throw()
+        {
+            assert(sig>0);
+            static const real_t two_pi = numeric<real_t>::two_pi;
+            const real_t        sig2   = sig*sig;
+            const real_t        den    = Sqrt(two_pi*sig2);
+            const real_t        dx     = (x-mu);
+            return Exp( -(dx*dx)/(sig2+sig2) )/den;
+        }
+
         template <>
         void numeric<real_t>:: round_error(real_t &x) throw()
         {
