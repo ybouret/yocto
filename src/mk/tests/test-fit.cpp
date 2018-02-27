@@ -230,6 +230,7 @@ YOCTO_UNIT_TEST_IMPL(fit_poly)
 
     YOCTO_UNIT_TEST_IMPL(fit_gauss)
     {
-
+        Fit::Gauss<double>           gauss;
+        Fit::Type<double>::Function F( &gauss, & Fit::Gauss<double>::compute );
     }
     YOCTO_UNIT_TEST_DONE()

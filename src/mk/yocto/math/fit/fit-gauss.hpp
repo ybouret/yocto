@@ -48,7 +48,9 @@ namespace yocto
                         const T coef = a[++j];
                         const T mu   = a[++j];
                         const T sig  = a[++j];
-                        ans += coef * Gaussian(x,mu,sig);
+                        const T dx   = x-mu;
+                        const T sig2 = sig*sig;
+                        ans += coef * Exp( - (dx*dx)/(sig2+sig2) );
                     }
                     return ans;
                 }
