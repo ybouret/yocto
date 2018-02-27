@@ -227,9 +227,7 @@ YOCTO_UNIT_TEST_IMPL(fit_poly)
 
 
 #include "yocto/math/fit/fit-gauss.hpp"
-#include "yocto/math/alg/spike.hpp"
-#include "yocto/sort/quick.hpp"
-    
+
     static inline double make_gauss( const double t, const double a, const double mu, const double sig)
     {
         const double arg = (t-mu)/sig;
@@ -258,7 +256,7 @@ YOCTO_UNIT_TEST_IMPL(fit_poly)
         {
             const double t = (i*Tmx)/N;
             X[i] = t;
-            Y[i] = make_gauss(t,a1, mu1, sig1) + make_gauss(t, a2, mu2, sig2) + 1*(0.5-alea.to<double>());
+            Y[i] = make_gauss(t,a1, mu1, sig1) + make_gauss(t, a2, mu2, sig2) + 0.5*alea.symm<double>();
         }
         
         {
@@ -270,33 +268,6 @@ YOCTO_UNIT_TEST_IMPL(fit_poly)
         }
         
         
-        std::cerr << "dectecting spikes" << std::endl;
-        vector<spike::pointer> spikes;
-        spike::detect(spikes,Y);
-        std::cerr << "#spikes=" << spikes.size() << std::endl;
-        quicksort(spikes,spike::compare_by_value);
-        
-        if(spikes.size()<2)
-            throw exception("Not enough spikes!");
-        
-        const spike &s1 = *spikes[1];
-        const spike &s2 = *spikes[2];
-        
-        {
-            ios::wcstream fp("spike1.dat");
-            for(size_t i=s1.lower;i<=s1.upper;++i)
-            {
-                fp("%g %g\n", X[i], Y[i]);
-            }
-        }
-        
-        {
-            ios::wcstream fp("spike2.dat");
-            for(size_t i=s2.lower;i<=s2.upper;++i)
-            {
-                fp("%g %g\n", X[i], Y[i]);
-            }
-        }
         
         Fit::Sample<double> sample(X,Y,Z);
         Fit::Gauss<double>::Create(sample.variables,2,"");

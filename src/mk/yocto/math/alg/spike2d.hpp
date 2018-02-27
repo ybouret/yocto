@@ -22,8 +22,7 @@ namespace yocto
         {
         public:
             typedef arc_ptr<spike2d> pointer;
-
-            typedef point2d<unit_t> vtx;
+            typedef point2d<unit_t>  vtx;
 
             class coord
             {
