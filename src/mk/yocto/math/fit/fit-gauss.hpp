@@ -32,16 +32,25 @@ namespace yocto
                     }
                 }
 
-                inline T Eval(const T x, const T mu, const T sigma)
-                {
-                    const T sig2 = sigma * sigma;
-                }
+
 
                 inline T compute( const T x, const array<T> &a, const Variables &v) throw()
                 {
                     assert(a.size()==v.size());
                     ++calls;
-                    return Eval(x,a);
+                    const size_t nvar = a.size();
+                    assert(0==(nvar%3));
+                    const size_t ng   = a.size()/3;
+                    size_t j=0;
+                    T ans(0);
+                    for(size_t i=1;i<=ng;++i)
+                    {
+                        const T coef = a[++j];
+                        const T mu   = a[++j];
+                        const T sig  = a[++j];
+                        ans += coef * Gaussian(x,mu,sig);
+                    }
+                    return ans;
                 }
 
 
