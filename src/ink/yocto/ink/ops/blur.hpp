@@ -22,7 +22,6 @@ namespace yocto
             const float  sigma;
             const float  sigm2;
             const float  scale; //! 1.0f/(sig2+sig2)
-            const float  ampli; //!< 1.0f/sqrt(two_pi*sig2)
             const unit_t length;
             const unit_t width;  //!< 2*length+1
             explicit Blur(const float sig);
