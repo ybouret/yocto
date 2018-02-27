@@ -21,14 +21,16 @@ namespace yocto
                 inline virtual ~Gauss() throw() {}
 
                 static inline
-                void Create(Variables &v, const size_t degree, const string &pfx )
+                void Create(Variables &v, const size_t ng, const string &pfx )
                 {
                     v.free();
-                    v.ensure(degree+1);
-                    for(size_t d=0;d<=degree;++d)
+                    v.ensure(ng*3);
+                    for(size_t g=1;g<=ng;++g)
                     {
-                        const string id = pfx + vformat("%u",unsigned(d));
-                        v(id);
+                        const string sfx = vformat("%u",unsigned(g));
+                        const string coef = pfx + "coef" + sfx; v(coef);
+                        const string mu   = pfx + "mu"   + sfx; v(mu);
+                        const string sig  = pfx + "sig"  + sfx; v(sig);
                     }
                 }
 
