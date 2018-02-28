@@ -15,7 +15,9 @@ struct Expand
 };
 
 template <typename T>
-static inline void save_xp( const Expand &ctx, const array<T> &X, const array<T> &Y )
+static inline void save_xp(const Expand   &ctx,
+                           const array<T> &X,
+                           const array<T> &Y )
 {
     const unit_t  n   = X.size();
     const string  sfx = ".dat";
@@ -28,11 +30,36 @@ static inline void save_xp( const Expand &ctx, const array<T> &X, const array<T>
     }
 }
 
+template <typename T>
+static inline void run_smooth(const Expand &ctx,
+                              smooth<T>    &sm,
+                              const array<T> &X,
+                              const array<T> &Y )
+{
+    const unit_t  n   = X.size();
+    const string  sfx = "_sm.dat";
+    const string  fn  = ctx.id + sfx;
+    ios::wcstream fp(fn);
+
+    sm.set_delta();
+    for(unit_t i=1;i<=n;++i)
+    {
+        sm.collect(i,*(ctx.xp), X, Y);
+        const T ans = sm.compute();
+        fp("%g %g\n", X[i], ans);
+        //std::cerr << "points=" << sm.points << std::endl;
+        //break;
+    }
+
+}
+
+
+
 YOCTO_UNIT_TEST_IMPL(expand)
 {
 
     double       NOISE  = 0.2;
-    double       dt     = 0.4;
+    double       dt     = 0.1;
     size_t       degree = 2;
 
     if(argc>1)
@@ -91,43 +118,20 @@ YOCTO_UNIT_TEST_IMPL(expand)
     };
     const size_t num = sizeof(xps)/sizeof(xps[0]);
 
+    smooth<double> sm;
+    sm.degree      = degree;
+    sm.upper_delta = sm.lower_delta= dt/2;
+    sm.set_delta();
+    
     for(size_t j=0;j<num;++j)
     {
         save_xp(xps[j],x,z);
+        run_smooth(xps[j],sm,x,z);
     }
+
 
 
 #if 0
-    expand<double> xp_constant(expand_constant);
-    expand<double> xp_cyclic(expand_cyclic);
-    expand<double> xp_odd(expand_odd);
-    expand<double> xp_even(expand_even);
-
-
-    {
-        ios::wcstream fp("xdata.dat");
-        for(size_t i=1;i<=n;++i)
-        {
-            fp("%g %g %g\n", x[i], z[i], y[i]);
-        }
-    }
-
-    const unit_t  nn = n;
-    {
-        ios::wcstream fp_cst("xpand_cst.dat");
-        ios::wcstream fp_cyc("xpand_cyc.dat");
-        ios::wcstream fp_odd("xpand_odd.dat");
-        ios::wcstream fp_evn("xpand_evn.dat");
-
-        for(unit_t i=-nn;i<=nn+nn;++i)
-        {
-            fp_cst("%g %g\n", xp_constant.get_x(i, x, nn), xp_constant.get_y(i, y, nn) );
-            fp_cyc("%g %g\n", xp_cyclic.get_x(i, x, nn),   xp_cyclic.get_y(i, y, nn) );
-            fp_odd("%g %g\n", xp_odd.get_x(i, x, nn),      xp_odd.get_y(i, y, nn) );
-            fp_evn("%g %g\n", xp_even.get_x(i, x, nn),     xp_even.get_y(i, y, nn) );
-        }
-    }
-
 
     smooth<double> sm;
     sm.upper_range = sm.lower_range = dt/2;

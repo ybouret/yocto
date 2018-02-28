@@ -225,6 +225,8 @@ namespace yocto
             list_.swap_with(tmp);
         }
 
+        inline node_type       *head()  throw()      { return list_.head; }
+        inline const node_type *head() const throw() { return list_.head; }
         
 	protected:
         typedef core::list_of<node_type> list_type;
