@@ -45,10 +45,18 @@ static inline void run_smooth(const Expand &ctx,
     for(unit_t i=1;i<=n;++i)
     {
         sm.collect(i,*(ctx.xp), X, Y);
-        const T ans = sm.compute();
-        fp("%g %g\n", X[i], ans);
-        //std::cerr << "points=" << sm.points << std::endl;
-        //break;
+        T dYdX = 9;
+        const T ans = sm.compute(&dYdX);
+#if 1
+        fp("%g %g %g\n", X[i], ans, dYdX);
+#endif
+#if 0
+        for( typename smooth<T>::points_type::iterator j = sm.points.begin(); j != sm.points.end(); ++j)
+        {
+            fp("%g %g\n", (*j).x + X[i], (*j).y );
+        }
+        break;
+#endif
     }
 
 }

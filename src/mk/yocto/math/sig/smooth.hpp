@@ -47,8 +47,8 @@ namespace yocto
             inline void set_delta() throw()
             {
                 upper_delta = max_of<T>(upper_delta,0);
-                lower_delta = min_of<T>(lower_delta,0);
-                total_delta = upper_delta - lower_delta;
+                lower_delta = max_of<T>(lower_delta,0);
+                total_delta = upper_delta + lower_delta;
             }
 
             //! assume that x is increasing
@@ -59,7 +59,7 @@ namespace yocto
             {
                 assert(upper_delta>=0);
                 assert(lower_delta>=0);
-                assert(total_delta>=upper_delta-lower_delta);
+                assert(total_delta>=upper_delta+lower_delta);
                 points.free();
                 assert(x.size()==y.size());
                 assert(x.size()>0);
@@ -134,14 +134,25 @@ namespace yocto
                     }
 
                 }
-                std::cerr << "degree=" << degree << " => " << d << ", nvar=" << nvar << std::endl;
-                std::cerr << "mu=" << mu << std::endl;
-                std::cerr << "rhs=" << a << std::endl;
+                // std::cerr << "degree=" << degree << " => " << d << ", nvar=" << nvar << std::endl;
+                // std::cerr << "mu=" << mu << std::endl;
+                // std::cerr << "rhs=" << a << std::endl;
                 if( !LU<T>::build(mu) )
                 {
                     throw libc::exception( EDOM, "smooth: singular data" );
                 }
                 LU<T>::solve(mu,a);
+                if(dYdX)
+                {
+                    if(nvar>=2)
+                    {
+                        *dYdX = a[2];
+                    }
+                    else
+                    {
+                        * dYdX = 0;
+                    }
+                }
                 return a[1];
             }
 
