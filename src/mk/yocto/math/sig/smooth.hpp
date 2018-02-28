@@ -19,6 +19,7 @@ namespace yocto
     namespace math
     {
 
+#if 0
         template <typename T>
         class smooth
         {
@@ -268,6 +269,7 @@ namespace yocto
             }
             
         };
+#endif
     }
 }
 

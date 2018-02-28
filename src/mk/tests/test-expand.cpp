@@ -8,9 +8,29 @@
 using namespace yocto;
 using namespace math;
 
+struct Expand
+{
+    const expand *xp;
+    const char   *id;
+};
+
+template <typename T>
+static inline void save_xp( const Expand &ctx, const array<T> &X, const array<T> &Y )
+{
+    const unit_t  n   = X.size();
+    const string  sfx = ".dat";
+    const string  fn  = ctx.id + sfx;
+    ios::wcstream fp(fn);
+    const unit_t delta = n+n/2;
+    for(unit_t i=-delta;i<=n+delta;++i)
+    {
+        fp("%g %g\n", ctx.xp->get_x(i, X), ctx.xp->get_y(i,Y) );
+    }
+}
 
 YOCTO_UNIT_TEST_IMPL(expand)
 {
+
     double       NOISE  = 0.2;
     double       dt     = 0.4;
     size_t       degree = 2;
@@ -26,7 +46,7 @@ YOCTO_UNIT_TEST_IMPL(expand)
     }
 
 
-    const size_t    n=50+alea.leq(100);
+    const unit_t    n=50+alea.leq(100);
     vector<double>  x(n,0.0);
     vector<double>  y(n,0.0);
     vector<double>  z(n,0.0);
@@ -41,12 +61,43 @@ YOCTO_UNIT_TEST_IMPL(expand)
     {
         x[i] *= fac;
         y[i] = 0.2+sin(x[i]) + sin(3*x[i]);
-        z[i] = y[i] + NOISE * ( 0.5 - alea.to<double>() );
+        z[i] = y[i] + NOISE * alea.symm<double>();
     }
     y[n] = y[1];
     z[1] = y[1];
     z[n] = y[n];
 
+    {
+        ios::wcstream fp("xdata.dat");
+        for(size_t i=1;i<=n;++i)
+        {
+            fp("%g %g %g\n", x[i], z[i], y[i]);
+        }
+    }
+
+    expand xp_nul(expand::zero);
+    expand xp_cst(expand::constant);
+    expand xp_cyc(expand::cyclic);
+    expand xp_odd(expand::odd);
+    expand xp_evn(expand::even);
+
+    const Expand xps[] =
+    {
+        { &xp_nul, "nul" },
+        { &xp_cst, "cst" },
+        { &xp_cyc, "cyc" },
+        { &xp_odd, "odd" },
+        { &xp_evn, "evn" }
+    };
+    const size_t num = sizeof(xps)/sizeof(xps[0]);
+
+    for(size_t j=0;j<num;++j)
+    {
+        save_xp(xps[j],x,z);
+    }
+
+
+#if 0
     expand<double> xp_constant(expand_constant);
     expand<double> xp_cyclic(expand_cyclic);
     expand<double> xp_odd(expand_odd);
@@ -63,16 +114,17 @@ YOCTO_UNIT_TEST_IMPL(expand)
 
     const unit_t  nn = n;
     {
-        ios::wcstream fp("xpand.dat");
+        ios::wcstream fp_cst("xpand_cst.dat");
+        ios::wcstream fp_cyc("xpand_cyc.dat");
+        ios::wcstream fp_odd("xpand_odd.dat");
+        ios::wcstream fp_evn("xpand_evn.dat");
+
         for(unit_t i=-nn;i<=nn+nn;++i)
         {
-            fp(" %g %g", xp_constant.get_x(i, x, nn), xp_constant.get_y(i, y, nn) );
-            fp(" %g %g", xp_cyclic.get_x(i, x, nn),   xp_cyclic.get_y(i, y, nn) );
-            fp(" %g %g", xp_odd.get_x(i, x, nn),      xp_odd.get_y(i, y, nn) );
-            fp(" %g %g", xp_even.get_x(i, x, nn),     xp_even.get_y(i, y, nn) );
-
-            fp("\n");
-
+            fp_cst("%g %g\n", xp_constant.get_x(i, x, nn), xp_constant.get_y(i, y, nn) );
+            fp_cyc("%g %g\n", xp_cyclic.get_x(i, x, nn),   xp_cyclic.get_y(i, y, nn) );
+            fp_odd("%g %g\n", xp_odd.get_x(i, x, nn),      xp_odd.get_y(i, y, nn) );
+            fp_evn("%g %g\n", xp_even.get_x(i, x, nn),     xp_even.get_y(i, y, nn) );
         }
     }
 
@@ -136,6 +188,7 @@ YOCTO_UNIT_TEST_IMPL(expand)
         }
     }
     
+#endif
     
 }
 YOCTO_UNIT_TEST_DONE()

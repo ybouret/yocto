@@ -3,6 +3,7 @@
 
 #include "yocto/math/types.hpp"
 #include "yocto/sequence/array.hpp"
+#include "yocto/math/point2d.hpp"
 
 namespace yocto
 {
@@ -10,70 +11,54 @@ namespace yocto
     namespace math
     {
 
-        enum expand_type
-        {
-            expand_zero,     //!< returns 0 out of the boundary
-            expand_constant, //!< return border value
-            expand_cyclic,   //!< assuming cyclic value
-            expand_odd,      //!< odd  behavior w.r.t the boundary
-            expand_even      //!< even behavior w.r.t the boundary
-        };
-
-        inline expand_type get_derivative_expand_type( const expand_type t ) throw()
-        {
-            switch(t)
-            {
-                case expand_cyclic: return expand_cyclic;
-                case expand_odd:    return expand_even;
-                case expand_even:   return expand_odd;
-                default:;
-            }
-            return expand_zero;
-        }
-
-        template <typename T>
         class expand
         {
         public:
-            const expand_type lower;
-            const expand_type upper;
+            enum boundary
+            {
+                zero,      //!< return 0
+                constant,  //!< return boundary value
+                cyclic,    //!< assuming cyclic behavior
+                odd,       //!< odd  behvior w.r.t the boundady
+                even       //!< even behavior w.r.t the boundary
+            };
+            const boundary lower;
+            const boundary upper;
+
+            inline explicit expand(const boundary lo, const boundary up) throw() :
+            lower(lo), upper(up) {}
+
+            inline explicit expand(const boundary both) throw() :
+            lower(both), upper(both) {}
 
             inline virtual ~expand() throw() {}
 
-            inline explicit expand(const expand_type lo, const expand_type up) throw() :
-            lower(lo),upper(up)
+            inline boundary derivative_boundary( const boundary t ) throw()
             {
-
+                switch(t)
+                {
+                    case cyclic: return cyclic;
+                    case odd:    return even;
+                    case even:   return odd;
+                    default: break;
+                }
+                return zero;
             }
 
-            inline explicit expand(const expand_type both) throw() :
-            lower(both), upper(both)
+            template <typename T> inline
+            T get_x(unit_t i, const array<T> &X) const
             {
-
-            }
-
-
-            inline explicit expand(const expand &other) throw() :
-            lower(other.lower),
-            upper(other.upper)
-            {
-            }
-
-            //! get a virtual X array
-            inline T get_x(unit_t i, const array<T> &X, const unit_t N) const throw()
-            {
-                assert(N==unit_t(X.size()));
-                assert(N>0);
+                const unit_t N( X.size() ); assert(N>0);
                 if(i<1)
                 {
                     switch(lower)
                     {
 
-                        case expand_cyclic:
-                            return get_x(--i+N,X,N) - (X[N]-X[1]);
+                        case cyclic:
+                            return get_x(--i+N,X) - (X[N]-X[1]);
 
                         default:
-                            return X[1]+(X[1] - get_x(2-i, X, N));
+                            return X[1]+(X[1] - get_x(2-i, X));
                     }
                 }
                 else
@@ -82,42 +67,45 @@ namespace yocto
                     {
                         switch(upper)
                         {
-                            case expand_cyclic:
-                                return get_x(++i-N,X,N)+(X[N]-X[1]);
+                            case cyclic:
+                                return get_x(++i-N,X)+(X[N]-X[1]);
 
                             default:
-                                return X[N] + (X[N] - get_x(N+N-i,X,N));
+                                return X[N] + (X[N] - get_x(N+N-i,X));
                         }
                     }
                     else
+                    {
                         return X[i];
+                    }
                 }
+                return X[i];
             }
 
-
-            //! get a virtual Y array
-            inline T get_y(unit_t i, const array<T> &Y, const unit_t N) const throw()
+            template <typename T> inline
+            T get_y(unit_t i, const array<T> &Y) const
             {
-                assert(N==unit_t(Y.size()));
-                assert(N>0);
+                const unit_t N( Y.size() ); assert(N>0);
                 if(i<1)
                 {
                     switch(lower)
                     {
-                        case expand_zero:
+                        case zero:
                             return 0;
 
-                        case expand_constant:
+                        case constant:
                             return Y[1];
 
-                        case expand_cyclic:
-                            return get_y(--i+N,Y,N);
+                        case cyclic:
+                            return get_y(--i+N,Y);
 
-                        case expand_odd:
-                            return Y[1] - (get_y(2-i,Y,N)-Y[1]);
+                        case odd:{
+                            const T Y1 = Y[1];
+                            return  Y1 - (get_y(2-i,Y)-Y1);
+                        }
 
-                        case expand_even:
-                            return get_y(2-i,Y,N);
+                        case even:
+                            return get_y(2-i,Y);
                     }
                 }
                 else
@@ -126,21 +114,23 @@ namespace yocto
                     {
                         switch(upper)
                         {
-                            case expand_zero:
+                            case zero:
                                 return 0;
 
-                            case expand_constant:
+                            case constant:
                                 return Y[N];
 
-                            case expand_cyclic:
-                                return get_y(++i-N,Y,N);
+                            case cyclic:
+                                return get_y(++i-N,Y);
 
-                            case expand_odd:
-                                return Y[N] - (get_y(N+N-i,Y,N)-Y[N]);
-                                
-                            case expand_even:
-                                return get_y(N+N-i,Y,N);
-                                
+                            case odd: {
+                                const T YN = Y[N];
+                                return  YN - (get_y(N+N-i,Y)-YN);
+                            }
+
+                            case even:
+                                return get_y(N+N-i,Y);
+
                         }
                     }
                     else
@@ -148,17 +138,19 @@ namespace yocto
                         return Y[i];
                     }
                 }
-                // never get here
-                return 0;
             }
-            
-            
-            
-        private:
-            YOCTO_DISABLE_ASSIGN(expand);
-            
+
+            template <typename T>
+            point2d<T> get( unit_t i, const array<T> &X, const array<T> &Y ) const
+            {
+                assert(X.size()==Y.size());
+                return point2d<T>( get_x(i,X), get_y(i,Y) );
+            }
+
+
         };
         
+
     }
 }
 
