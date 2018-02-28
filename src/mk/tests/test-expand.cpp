@@ -41,22 +41,14 @@ static inline void run_smooth(const Expand &ctx,
     const string  fn  = ctx.id + sfx;
     ios::wcstream fp(fn);
 
-    sm.set_delta();
-    for(unit_t i=1;i<=n;++i)
+    vector<T> YF(n);
+    vector<T> dYdX(n);
+
+    sm(*(ctx.xp),YF,X,Y,&dYdX);
+    
+    for(size_t i=1;i<=n;++i)
     {
-        sm.collect(i,*(ctx.xp), X, Y);
-        T dYdX = 9;
-        const T ans = sm.compute(&dYdX);
-#if 1
-        fp("%g %g %g\n", X[i], ans, dYdX);
-#endif
-#if 0
-        for( typename smooth<T>::points_type::iterator j = sm.points.begin(); j != sm.points.end(); ++j)
-        {
-            fp("%g %g\n", (*j).x + X[i], (*j).y );
-        }
-        break;
-#endif
+        fp("%g %g %g\n",X[i],YF[i],dYdX[i]);
     }
 
 }
