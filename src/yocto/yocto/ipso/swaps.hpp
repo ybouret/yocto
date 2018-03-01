@@ -75,6 +75,22 @@ allocate();                     \
 swap    & _recv = (swap &)recv; \
 swap    & _send = (swap &)send;
 
+        class swaps_list : public swaps::list
+        {
+        public:
+            inline explicit swaps_list() throw() : swaps::list() {}
+            inline virtual ~swaps_list() throw() {}
+            inline size_t   counts() const throw() {
+                size_t sum = 0;
+                for(const swaps *swp=head;swp;swp=swp->next)
+                {
+                    sum += swp->count;
+                }
+                return sum;
+            }
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(swaps_list);
+        };
     }
 }
 #endif

@@ -14,7 +14,7 @@ namespace yocto
         class subset : public object
         {
         public:
-
+            typedef point3d<size_t> score_t;
 
             typedef core::list_of_cpp<subset> list;
             typedef patch<COORD>              patch_type;
@@ -24,12 +24,12 @@ namespace yocto
             const COORD       ranks;
             const patch_type  inner;
             const patch_type  outer;
-            const swaps::list local; //!< local swaps
-            const swaps::list async; //!< async swaps
-            //const unsigned    local_flags;
-            //const unsigned    async_flags;
+            const swaps_list  local; //!< local swaps
+            const swaps_list  async; //!< async swaps
             subset           *next;  //!< for subset::list
             subset           *prev;  //!< for subset::list
+            const score_t     score; //!< (inner.items,num_async,num_local)
+
 
             inline virtual ~subset() throw() {}
 
@@ -52,10 +52,9 @@ namespace yocto
             outer( inner ),
             local(),
             async(),
-            //local_flags(0),
-            //async_flags(0),
             next(0),
-            prev(0)
+            prev(0),
+            score()
             {
                 //______________________________________________________________
                 //
@@ -213,6 +212,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 // Pass 3: loading cross swaps
                 //______________________________________________________________
                 load_cross_swaps(full,layers,pbcs,build);
+
+                new ((void*)&score) score_t( inner.items,async.counts(),local.counts());
             }
 
 
@@ -231,18 +232,26 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
         //
         ////////////////////////////////////////////////////////////////////////
         template <typename COORD>
-        class subsets : public subset<COORD>::list
+        class subsets : public object, public subset<COORD>::list
         {
         public:
-            inline virtual ~subsets() throw() {}
+            typedef core::list_of_cpp<subsets> list;
+
 
             const COORD sizes;
+            subsets    *next;
+            subsets    *prev;
+
+            inline virtual ~subsets() throw() {}
+
             inline explicit subsets(const divider<COORD> &full,
                                     const size_t          layers,
                                     const COORD           pbcs,
                                     const bool            build = false ) :
             subset<COORD>::list(),
-            sizes( full.sizes )
+            sizes( full.sizes ),
+            next(0),
+            prev(0)
             {
                 for(size_t rank=0;rank<full.size;++rank)
                 {
@@ -250,10 +259,24 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 }
             }
 
-
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(subsets);
         };
+
+        template <typename COORD>
+        class mapping : public subsets<COORD>::list
+        {
+        public:
+            inline virtual ~mapping() throw() {}
+            explicit mapping(const size_t        cpus,
+                             const patch<COORD> &full,
+                             const size_t        layers,
+                             const COORD         pbcs);
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(mapping);
+        };
+
     }
 }
 
