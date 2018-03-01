@@ -4,17 +4,18 @@
 
 #include "yocto/ipso/swaps.hpp"
 #include "yocto/ipso/divide.hpp"
-
+#include "yocto/sort/merge.hpp"
 
 namespace yocto
 {
     namespace ipso
     {
+        typedef point3d<size_t> score_t;
+        
         template <typename COORD>
         class subset : public object
         {
         public:
-            typedef point3d<size_t> score_t;
 
             typedef core::list_of_cpp<subset> list;
             typedef patch<COORD>              patch_type;
@@ -61,7 +62,11 @@ namespace yocto
                 // checking swaps availability
                 //______________________________________________________________
                 const bool has_swaps = (layers>0);
-                if(!has_swaps) return;
+                if(!has_swaps)
+                {
+                    set_score();
+                    return;
+                }
 
                 //______________________________________________________________
                 //
@@ -83,8 +88,6 @@ namespace yocto
                 //
                 // build outer patch and straight swaps
                 //______________________________________________________________
-//#define         YOCTO_IPSO_LOWER_SWAPS new swaps(rank, full.prev_rank(ranks,dim), layers, swaps::dim2pos(dim,-1) )
-//#define         YOCTO_IPSO_UPPER_SWAPS new swaps(rank, full.next_rank(ranks,dim), layers, swaps::dim2pos(dim, 1) )
 #define         YOCTO_IPSO_LOWER_SWAPS(KIND) \
 do { const unsigned flag = swaps::dim2pos(dim,-1); /*_##KIND##_flags |= flag;*/ _##KIND.push_back( new swaps(rank, full.prev_rank(ranks,dim), layers, flag) ); } while(false)
 #define         YOCTO_IPSO_UPPER_SWAPS(KIND) \
@@ -212,8 +215,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 // Pass 3: loading cross swaps
                 //______________________________________________________________
                 load_cross_swaps(full,layers,pbcs,build);
-
-                new ((void*)&score) score_t( inner.items,async.counts(),local.counts());
+                set_score();
             }
 
 
@@ -223,6 +225,11 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                                   const size_t          layers,
                                   const COORD           pbcs,
                                   const bool            build);
+
+            inline void set_score() throw()
+            {
+                new ((void*)&score) score_t( inner.items,async.counts(),local.counts());
+            }
         };
 
 
@@ -238,7 +245,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
             typedef core::list_of_cpp<subsets> list;
 
 
-            const COORD sizes;
+            const COORD   sizes;
+            const score_t score;
             subsets    *next;
             subsets    *prev;
 
@@ -250,12 +258,20 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                                     const bool            build = false ) :
             subset<COORD>::list(),
             sizes( full.sizes ),
+            score(),
             next(0),
             prev(0)
             {
+                score_t &max_score = (score_t &)score;
                 for(size_t rank=0;rank<full.size;++rank)
                 {
-                    this->push_back( new subset<COORD>(full,rank,layers,pbcs,build) );
+                    subset<COORD> *sub = new subset<COORD>(full,rank,layers,pbcs,build);
+                    this->push_back(sub);
+                    const score_t &sub_score = sub->score;
+                    if( __lexicographic_dec_fwd<size_t,3>(&sub_score,&max_score) < 0 )
+                    {
+                        max_score = sub_score;
+                    }
                 }
             }
 
@@ -268,12 +284,36 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
         {
         public:
             inline virtual ~mapping() throw() {}
-            explicit mapping(const size_t        cpus,
-                             const patch<COORD> &full,
-                             const size_t        layers,
-                             const COORD         pbcs);
+            inline explicit mapping(const size_t        cpus,
+                                    const patch<COORD> &full,
+                                    const size_t        layers,
+                                    const COORD         pbcs)
+            {
+                setup(cpus,full,layers,pbcs);
+                typename subsets<COORD>::list &self = *this;
+                core::merging< subsets<COORD> >::sort(self, compare_by_scores, NULL );
+            }
             
         private:
+            void setup(const size_t        cpus,
+                       const patch<COORD> &full,
+                       const size_t        layers,
+                       const COORD         pbcs);
+            static inline int compare_by_scores( const subsets<COORD> *lhs, const subsets<COORD> *rhs, void * ) throw()
+            {
+                const int ans = __lexicographic_inc_fwd<size_t,3>( &(lhs->score), &(rhs->score) );
+                {
+                    if(ans!=0)
+                    {
+                        return ans;
+                    }
+                    else
+                    {
+                        // same score
+                        return __coord_sum(lhs->sizes)-__coord_sum(rhs->sizes);
+                    }
+                }
+            }
             YOCTO_DISABLE_COPY_AND_ASSIGN(mapping);
         };
 

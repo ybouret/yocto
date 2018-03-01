@@ -12,10 +12,13 @@ static inline void display( const mapping<COORD> &maps )
     for( const subsets<COORD> *subs = maps.head; subs; subs=subs->next )
     {
         std::cerr << "sizes=" << subs->sizes << std::endl;
+#if 0
         for(const subset<COORD> *sub = subs->head; sub; sub=sub->next)
         {
             std::cerr << "\t" << sub->ranks << "\t: score=" << sub->score << std::endl;
         }
+#endif
+        std::cerr << "\t|_highest score=" << subs->score << std::endl;
     }
 }
 
