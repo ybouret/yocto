@@ -41,7 +41,9 @@ YOCTO_UNIT_TEST_IMPL(peaks)
         }
     }
     math::peaks::build_signal(X,Y);
-    
+
+
+
 }
 YOCTO_UNIT_TEST_DONE()
 
