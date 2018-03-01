@@ -11,14 +11,13 @@ static inline void display( const mapping<COORD> &maps )
     std::cerr << "#subsets=" << maps.size << std::endl;
     for( const subsets<COORD> *subs = maps.head; subs; subs=subs->next )
     {
-        std::cerr << "sizes=" << subs->sizes << std::endl;
+        std::cerr << "sizes=" << subs->sizes <<  " : score=" << subs->score << " \t|sizes|=" <<  __coord_sum(subs->sizes)  << std::endl;
 #if 0
         for(const subset<COORD> *sub = subs->head; sub; sub=sub->next)
         {
             std::cerr << "\t" << sub->ranks << "\t: score=" << sub->score << std::endl;
         }
 #endif
-        std::cerr << "\t|_highest score=" << subs->score << std::endl;
     }
 }
 
@@ -59,7 +58,7 @@ YOCTO_UNIT_TEST_IMPL(subopt)
         display(maps);
     }
 
-    if(false)
+    if(true)
     {
         std::cerr << std::endl << "-------- 3D --------" << std::endl;
         const patch3D      region(coord3D(1,1,1),dims);

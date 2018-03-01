@@ -247,8 +247,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
 
             const COORD   sizes;
             const score_t score;
-            subsets    *next;
-            subsets    *prev;
+            subsets      *next;
+            subsets      *prev;
 
             inline virtual ~subsets() throw() {}
 
@@ -279,15 +279,25 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
             YOCTO_DISABLE_COPY_AND_ASSIGN(subsets);
         };
 
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // used to find optimial
+        //
+        ////////////////////////////////////////////////////////////////////////
         template <typename COORD>
         class mapping : public subsets<COORD>::list
         {
         public:
+            static const size_t DIM = YOCTO_IPSO_DIM_OF(COORD);
+            const subset<COORD> *optimal;
+            const subset<COORD> *fallback;
+
             inline virtual ~mapping() throw() {}
             inline explicit mapping(const size_t        cpus,
                                     const patch<COORD> &full,
                                     const size_t        layers,
-                                    const COORD         pbcs)
+                                    const COORD         pbcs) :
+            optimal(0), fallback(0)
             {
                 setup(cpus,full,layers,pbcs);
                 typename subsets<COORD>::list &self = *this;
@@ -299,6 +309,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                        const patch<COORD> &full,
                        const size_t        layers,
                        const COORD         pbcs);
+            
             static inline int compare_by_scores( const subsets<COORD> *lhs, const subsets<COORD> *rhs, void * ) throw()
             {
                 const int ans = __lexicographic_inc_fwd<size_t,3>( &(lhs->score), &(rhs->score) );
@@ -309,8 +320,15 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                     }
                     else
                     {
-                        // same score
-                        return __coord_sum(lhs->sizes)-__coord_sum(rhs->sizes);
+                        // same score : compare by increasing sum+coords
+                        coord1D L[DIM+1] = { __coord_sum(lhs->sizes) };
+                        coord1D R[DIM+1] = { __coord_sum(rhs->sizes) };
+                        for(size_t i=0;i<DIM;++i)
+                        {
+                            L[i+1] = __coord(lhs->sizes,i);
+                            R[i+1] = __coord(rhs->sizes,i);
+                        }
+                        return __lexicographic_inc_fwd<coord1D,DIM+1>(L,R);
                     }
                 }
             }
