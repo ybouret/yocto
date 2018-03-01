@@ -19,6 +19,8 @@ static inline void display( const mapping<COORD> &maps )
         }
 #endif
     }
+    std::cerr << "|_optimal  = " << maps.optimal->sizes  << std::endl;
+    std::cerr << "|_fallback = " << maps.fallback->sizes << std::endl;
 }
 
 

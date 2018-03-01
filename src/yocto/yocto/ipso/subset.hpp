@@ -273,6 +273,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                         max_score = sub_score;
                     }
                 }
+                assert(this->size==__coord_prod(sizes));
             }
 
         private:
@@ -289,21 +290,33 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
         {
         public:
             static const size_t DIM = YOCTO_IPSO_DIM_OF(COORD);
-            const subset<COORD> *optimal;
-            const subset<COORD> *fallback;
+            const subsets<COORD> *optimal;
+            const subsets<COORD> *fallback;
 
             inline virtual ~mapping() throw() {}
             inline explicit mapping(const size_t        cpus,
                                     const patch<COORD> &full,
                                     const size_t        layers,
-                                    const COORD         pbcs) :
-            optimal(0), fallback(0)
+                                    const COORD         pbcs)
             {
                 setup(cpus,full,layers,pbcs);
                 typename subsets<COORD>::list &self = *this;
+                assert(self.size>0);
                 core::merging< subsets<COORD> >::sort(self, compare_by_scores, NULL );
+                optimal  = self.head;
+                fallback = self.tail;
+                for(const subsets<COORD> *subs=fallback;subs;subs=subs->prev)
+                {
+                    if(subs->size>=fallback->size)
+                    {
+                        fallback = subs;
+                    }
+                }
             }
-            
+
+
+
+
         private:
             void setup(const size_t        cpus,
                        const patch<COORD> &full,
@@ -316,6 +329,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 {
                     if(ans!=0)
                     {
+                        // score is winning
                         return ans;
                     }
                     else
