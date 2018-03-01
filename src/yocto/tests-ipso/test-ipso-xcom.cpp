@@ -8,7 +8,7 @@
 using namespace yocto;
 using namespace ipso;
 
-
+#if 0
 template <typename T>
 static inline
 void test1D(const coord3D dims,
@@ -119,11 +119,13 @@ void test3D(const coord3D dims,
 
 
 
+#endif
 
 #define __SHOW(TYPE) std::cerr << "sizeof(\t" << #TYPE << "\t) = " << sizeof(TYPE) << std::endl
 
 YOCTO_UNIT_TEST_IMPL(xcom)
 {
+#if 0
     if(argc<=4)
     {
         throw exception("usage: %s DIMS PBCS GHOSTS CPUS", argv[0]);
@@ -144,6 +146,7 @@ YOCTO_UNIT_TEST_IMPL(xcom)
     __SHOW(domain1D);
     __SHOW(domain2D);
     __SHOW(domain3D);
+#endif
     
 }
 YOCTO_UNIT_TEST_DONE()

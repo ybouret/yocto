@@ -99,7 +99,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
         const patch1D      region(1,dims.x);
         const coord1D      PBCS(pbcs.x);
         coord1D            fallback=0;
-        const coord1D sizes = divider<coord1D>::optimal_for(region,cpus,&fallback);
+        const coord1D sizes = mapping<coord1D>::optimal_sizes_for(cpus,region,layers,PBCS,fallback);
         std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
         const divide::in1D full(sizes,region);
         subsets<coord1D>   subs(full,layers,PBCS,true);
@@ -126,7 +126,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
         const patch2D      region(coord2D(1,1),dims.xy());
         const coord2D      PBCS(pbcs.xy());
         coord2D            fallback;
-        const coord2D sizes = divider<coord2D>::optimal_for(region,cpus,&fallback);
+        const coord2D sizes = mapping<coord2D>::optimal_sizes_for(cpus,region,layers,PBCS,fallback);
         std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
         const divide::in2D full(sizes,region);
         subsets<coord2D>   subs(full,layers,PBCS,true);
@@ -153,7 +153,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
         const patch3D      region(coord3D(1,1,1),dims);
         const coord3D      PBCS(pbcs);
         coord3D            fallback;
-        const coord3D sizes = divider<coord3D>::optimal_for(region,cpus,&fallback);
+        const coord3D sizes = mapping<coord3D>::optimal_sizes_for(cpus,region,layers,PBCS,fallback);
         std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
         const divide::in3D full(sizes,region);
         subsets<coord3D>   subs(full,layers,PBCS,true);

@@ -7,6 +7,7 @@
 using namespace yocto;
 using namespace ipso;
 
+#if 0
 #define __SHOW(TYPE) std::cerr << "sizeof(\t" << #TYPE << "\t)\t=\t" << sizeof(TYPE) << std::endl
 
 template <typename COORD>
@@ -41,9 +42,11 @@ void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
     }
     std::cerr << "---> done" << std::endl;
 }
+#endif
 
 YOCTO_UNIT_TEST_IMPL(wksp)
 {
+#if 0
     __SHOW(workspace<coord1D>);
     __SHOW(workspace<coord2D>);
     __SHOW(workspace<coord3D>);
@@ -146,7 +149,8 @@ YOCTO_UNIT_TEST_IMPL(wksp)
 
     }
 
-
+#endif
+    
 }
 YOCTO_UNIT_TEST_DONE()
 

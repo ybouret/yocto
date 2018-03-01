@@ -95,7 +95,7 @@ namespace yocto
 
           
 
-             static  COORD optimal_for(const patch<COORD> &p, const size_t max_cpu, COORD *fallback);
+             //static  COORD optimal_for(const patch<COORD> &p, const size_t max_cpu, COORD *fallback);
 
         protected:
             explicit divider(const COORD         s,

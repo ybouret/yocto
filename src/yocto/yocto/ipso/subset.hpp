@@ -290,8 +290,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
         {
         public:
             static const size_t DIM = YOCTO_IPSO_DIM_OF(COORD);
-            const subsets<COORD> *optimal;
-            const subsets<COORD> *fallback;
+            const subsets<COORD> * optimal;
+            const subsets<COORD> * fallback;
 
             inline virtual ~mapping() throw() {}
             inline explicit mapping(const size_t        cpus,
@@ -305,7 +305,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 core::merging< subsets<COORD> >::sort(self, compare_by_scores, NULL );
                 optimal  = self.head;
                 fallback = self.tail;
-                for(const subsets<COORD> *subs=fallback;subs;subs=subs->prev)
+                for(const subsets<COORD> *subs= fallback;subs;subs=subs->prev)
                 {
                     if(subs->size>=fallback->size)
                     {
@@ -314,7 +314,17 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 }
             }
 
-
+            static inline
+            COORD optimal_sizes_for(const size_t        cpus,
+                                    const patch<COORD> &full,
+                                    const size_t        layers,
+                                    const COORD        &pbcs,
+                                    COORD              &fallback)
+            {
+                const mapping maps(cpus,full,layers,pbcs);
+                fallback = maps.fallback->sizes;
+                return maps.optimal->sizes;
+            }
 
 
         private:

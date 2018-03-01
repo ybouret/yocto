@@ -5,6 +5,7 @@
 #include "yocto/string/tokenizer.hpp"
 #include "yocto/ipso/field3d.hpp"
 #include "yocto/ptr/arc.hpp"
+#include "yocto/ipso/subset.hpp"
 
 #include <cstdio>
 
@@ -17,6 +18,7 @@ using namespace ipso;
 
 YOCTO_UNIT_TEST_IMPL(opt)
 {
+#if 0
     if(argc<=2)
     {
         throw exception("usage: %s DIMS CPUS", argv[0]);
@@ -49,7 +51,7 @@ YOCTO_UNIT_TEST_IMPL(opt)
         coord3D sizes = divider<coord3D>::optimal_for(zone,cpus,&fallback);
         std::cerr << "opt_sizes=" << sizes << ", fallback=" << fallback << std::endl;
     }
-
+#endif
 
 }
 YOCTO_UNIT_TEST_DONE()
