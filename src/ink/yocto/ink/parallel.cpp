@@ -30,69 +30,16 @@ namespace yocto
 
 
 
-#include "yocto/ipso/divide.hpp"
-#if 0
-namespace yocto
-{
-    namespace Ink
-    {
-        typedef ipso::patch2D      Patch;
-        typedef ipso::divide::in2D Divider;
+#include "yocto/ipso/subset.hpp"
 
-        Domains:: ~Domains() throw()
-        {
-        }
-
-        coord Domains:: GetPartitionFor(const Area &area, const SharedServer &srv) throw()
-        {
-
-            const Patch  p( coord(area.x,area.y), coord(area.x_end,area.y_end) );
-            const size_t n = srv->cpu.num_threads();
-            return Divider::optimal_for(p,n,NULL);
-        }
-
-        void Domains:: setup(const Area &area)
-        {
-            const Patch     p( coord(area.x,area.y), coord(area.x_end,area.y_end) );
-            const size_t    n     = engine->cpu.num_threads();
-            (coord &)sizes        = Divider::optimal_for(p,n,NULL);
-            Divider         part(sizes,p);
-            
-            for(size_t rank=0;rank<part.size;++rank)
-            {
-                coord      ranks;
-                const      Patch sub( part(rank,&ranks) );
-                const Area rect( sub.lower.x, sub.lower.y, sub.width.x, sub.width.y );
-                this->push_back( new Domain(rect,ranks,rank) );
-            }
-        }
-
-
-
-        Domains:: Domains(const Area &full, const SharedServer &user_engine) :
-        Domain::List(),
-        engine(user_engine)
-        {
-            setup(full);
-        }
-
-        Domains:: Domains(const Area &full, ThreadServer *user_engine) :
-        Domain::List(),
-        engine(user_engine)
-        {
-            setup(full);
-        }
-    }
-
-}
-#endif
 
 namespace yocto
 {
     namespace Ink
     {
-        typedef ipso::patch2D      Patch;
-        typedef ipso::divide::in2D Divider;
+        typedef ipso::patch2D                Patch;
+        typedef ipso::mapping<ipso::coord2D> Mapping;
+        typedef ipso::divide::in2D           Divider;
 
         Engine:: ~Engine() throw()
         {
@@ -106,8 +53,8 @@ namespace yocto
         domains()
         {
             const Patch     p( coord(x,y), coord(x_end,y_end) );
-            const size_t    n     = queue->num_threads();
-            (coord &)sizes        = Divider::optimal_for(p,n,NULL);
+            const size_t        n     = queue->num_threads();
+            (coord &)sizes        = Mapping::optimal_sizes_for(n,p,0,ipso::coord2D(0,0),NULL);
             Divider         part(sizes,p);
 
             for(size_t rank=0;rank<part.size;++rank)

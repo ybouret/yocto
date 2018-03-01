@@ -52,6 +52,7 @@ YOCTO_PROGRAM_START()
     const int size = MPI.CommWorldSize;
     const int rank = MPI.CommWorldRank;
     MPI.Printf(stderr, "%s ready...\n",program);
+#if 0
     if(0==rank)
     {
         local_fs & fs = local_fs::instance();
@@ -283,7 +284,8 @@ YOCTO_PROGRAM_START()
     }
 
 
-
+#endif
+    
 }
 YOCTO_PROGRAM_END()
 

@@ -76,6 +76,12 @@ YOCTO_UNIT_TEST_IMPL(collide)
 
     if(argc>1)
     {
+        hashing::function &h = F[ argv[1] ];
+    }
+
+#if 0
+    if(argc>1)
+    {
         vector<string> words(500000,as_capacity);
         {
             ios::icstream fp(argv[1]);
@@ -92,6 +98,7 @@ YOCTO_UNIT_TEST_IMPL(collide)
 
         }
     }
+#endif
 
 }
 YOCTO_UNIT_TEST_DONE()

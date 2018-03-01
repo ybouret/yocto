@@ -319,10 +319,13 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                                     const patch<COORD> &full,
                                     const size_t        layers,
                                     const COORD        &pbcs,
-                                    COORD              &fallback)
+                                    COORD              *fallback)
             {
                 const mapping maps(cpus,full,layers,pbcs);
-                fallback = maps.fallback->sizes;
+                if(fallback)
+                {
+                    *fallback = maps.fallback->sizes;
+                }
                 return maps.optimal->sizes;
             }
 
