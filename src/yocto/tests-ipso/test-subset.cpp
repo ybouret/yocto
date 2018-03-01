@@ -44,7 +44,7 @@ static inline void show_subs( const subsets<COORD> &subs )
 template <typename FIELD, typename SWAP>
 static inline void mark( FIELD &F, const SWAP *sub, const int s, const int r)
 {
-    std::cerr << "\t\tmarking field" << std::endl;
+    //std::cerr << "\t\tmarking field" << std::endl;
     for(;sub;sub=sub->next)
     {
         F.swap_ops(sub->send,  s,  field_set);
@@ -111,10 +111,27 @@ YOCTO_UNIT_TEST_IMPL(subset)
 
             sub->allocate_swaps_for(Field.item_size+F2.item_size);
             Field.swap_local(sub->local);
+            F2.swap_local(sub->local);
+
+            for(const swaps *swp = sub->async.head; swp; swp=swp->next )
+            {
+                
+                swp->iobuf.reset();
+                Field.swap_store(*swp);
+                F2.swap_store(*swp);
+                swp->iobuf.prepare_recv();
+                Field.swap_query(*swp);
+                F2.swap_query(*swp);
+            }
+
+
+
+
+
         }
     }
 
-    if(false)
+    if(true)
     {
         std::cerr << std::endl << "-------- 2D --------" << std::endl;
         const patch2D      region(coord2D(1,1),dims.xy());
@@ -140,11 +157,23 @@ YOCTO_UNIT_TEST_IMPL(subset)
             VTK::InitSaveScalars(fp, "in2D", Field, sub->outer);
 
             sub->allocate_swaps_for(Field.item_size+F2.item_size);
+            Field.swap_local(sub->local);
+            F2.swap_local(sub->local);
 
+            for(const swaps *swp = sub->async.head; swp; swp=swp->next )
+            {
+
+                swp->iobuf.reset();
+                Field.swap_store(*swp);
+                F2.swap_store(*swp);
+                swp->iobuf.prepare_recv();
+                Field.swap_query(*swp);
+                F2.swap_query(*swp);
+            }
         }
     }
 
-    if(false)
+    if(true)
     {
         std::cerr << std::endl << "-------- 3D --------" << std::endl;
         const patch3D      region(coord3D(1,1,1),dims);
@@ -169,7 +198,21 @@ YOCTO_UNIT_TEST_IMPL(subset)
             const string  fn = vformat("f3d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
             VTK::InitSaveScalars(fp, "in3D", Field, sub->outer);
+
             sub->allocate_swaps_for(Field.item_size+F2.item_size);
+            Field.swap_local(sub->local);
+            F2.swap_local(sub->local);
+
+            for(const swaps *swp = sub->async.head; swp; swp=swp->next )
+            {
+
+                swp->iobuf.reset();
+                Field.swap_store(*swp);
+                F2.swap_store(*swp);
+                swp->iobuf.prepare_recv();
+                Field.swap_query(*swp);
+                F2.swap_query(*swp);
+            }
 
         }
     }

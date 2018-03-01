@@ -186,7 +186,7 @@ namespace yocto
             //! directly swap matching local swap pairs
             virtual void swap_local(const swaps_list &local) throw()
             {
-                assert(0==(local.size&0x1)); // even nimber of local swaps
+                assert(0==(local.size&0x1)); // even number of local swaps
                 if(local.size>0)
                 {
                     T           *data = entry;
@@ -195,6 +195,12 @@ namespace yocto
                     {
                         const swaps *b = a->next;    assert(b!=NULL);
                         assert(a->count==b->count);
+                        {
+                            const string a_pos = a->flg2str(a->pos);
+                            const string b_pos = b->flg2str(b->pos);
+                            std::cerr << "local swap " << a_pos << " <-> " << b_pos << std::endl;
+                        }
+
                         const array<coord1D> &a_send = a->send;
                         const array<coord1D> &a_recv = a->recv;
                         const array<coord1D> &b_send = b->send;
@@ -234,6 +240,7 @@ namespace yocto
                 }
             }
 
+            //! query data from recv region
             virtual void swap_query(const swaps &G) const throw()
             {
                 assert(G.recv.size()==G.count);
