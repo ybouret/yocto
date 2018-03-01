@@ -88,6 +88,12 @@ namespace yocto
             swap    & _send = (swap &)send;
             hsort(_recv, _send, __compare_decreasing<coord1D> );
         }
+
+        void swaps:: allocate_for(const size_t block_size)
+        {
+            iobuf.set_bytes( count * block_size );
+        }
+
     }
 }
 

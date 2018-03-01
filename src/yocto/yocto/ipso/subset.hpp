@@ -31,6 +31,15 @@ namespace yocto
             subset           *prev;  //!< for subset::list
             const score_t     score; //!< (inner.items,num_async,num_local)
 
+            inline void allocate_swaps_for( const size_t block_size )
+            {
+                swaps::list & _async = (swaps::list &)async;
+                for( swaps *swp = _async.head;swp;swp=swp->next)
+                {
+                    swp->allocate_for(block_size);
+                }
+            }
+
 
             inline virtual ~subset() throw() {}
 
@@ -138,7 +147,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                         {
                             //__________________________________________________
                             //
-                            // SEQUENTIAL in that dimension: always local
+                            // SEQUENTIAL in that dimension: always local PAIR
                             //__________________________________________________
                             assert(1==sz);
 
@@ -218,6 +227,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 set_score();
             }
 
+
+            
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(subset);
@@ -303,9 +314,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 typename subsets<COORD>::list &self = *this;
                 assert(self.size>0);
                 core::merging< subsets<COORD> >::sort(self, compare_by_scores, NULL );
-                optimal  = self.head;
-                fallback = self.tail;
-                for(const subsets<COORD> *subs= fallback;subs;subs=subs->prev)
+                optimal  = self.head; assert(optimal);
+                fallback = self.tail; assert(fallback);
+                for(const subsets<COORD> *subs=fallback;subs;subs=subs->prev)
                 {
                     if(subs->size>=fallback->size)
                     {

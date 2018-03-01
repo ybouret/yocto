@@ -8,10 +8,11 @@ namespace yocto
         {
         }
         
-        field_info:: field_info(const char *id) :
+        field_info:: field_info(const char *id, const size_t itmsz) :
         name(id),
         count(0),
-        bytes(0)
+        bytes(0),
+        item_size(itmsz)
         {
         }
 

@@ -25,7 +25,8 @@ namespace yocto
             const string name;  //!< unique identifier for set
             const size_t count; //!< items count, set by field after setup
             const size_t bytes; //!< bytes count, set by field after setup
-            
+            const size_t item_size; //!< one item size
+
             virtual ~field_info() throw();
 
             const string &key() const throw(); //!< name
@@ -40,9 +41,20 @@ namespace yocto
 
             //! exchange data locally
             virtual void local_exchange(const ghosts::list &G) throw() = 0;
-            
+
+
+            //! swap data locally
+            virtual void swap_local(const swaps_list &G) throw() = 0;
+
+            //! store data from send region
+            virtual void swap_store(const swaps &G) const throw() = 0;
+
+            //! query data from recv region
+            virtual void swap_query(const swaps &G) const throw() = 0;
+
+
         protected:
-            explicit field_info(const char   *id);
+            explicit field_info(const char   *id, const size_t itmsz);
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_info);
@@ -76,6 +88,7 @@ namespace yocto
         {
         public:
             YOCTO_ARGUMENTS_DECL_T;
+            static const size_t ITEM_SIZE = sizeof(T);
 
             inline virtual ~field() throw() {}
 
@@ -170,9 +183,74 @@ namespace yocto
                 }
             }
 
+            //! directly swap matching local swap pairs
+            virtual void swap_local(const swaps_list &local) throw()
+            {
+                assert(0==(local.size&0x1)); // even nimber of local swaps
+                if(local.size>0)
+                {
+                    T           *data = entry;
+                    const swaps *a    = local.head; assert(a!=NULL);
+                    for(size_t n=local.size>>1;n>0;--n)
+                    {
+                        const swaps *b = a->next;    assert(b!=NULL);
+                        assert(a->count==b->count);
+                        const array<coord1D> &a_send = a->send;
+                        const array<coord1D> &a_recv = a->recv;
+                        const array<coord1D> &b_send = b->send;
+                        const array<coord1D> &b_recv = b->recv;
+
+                        assert(a_send.size() == a->count );
+                        assert(a_recv.size() == a->count );
+                        assert(b_send.size() == b->count );
+                        assert(b_recv.size() == b->count );
+
+                        for(size_t g=a->count;g>0;--g)
+                        {
+                            assert(a_recv[g] < coord1D(this->count));
+                            assert(a_send[g] < coord1D(this->count));
+                            assert(b_recv[g] < coord1D(this->count));
+                            assert(b_send[g] < coord1D(this->count));
+
+                            data[ a_recv[g] ] = data[ b_send[g] ];
+                            data[ b_recv[g] ] = data[ a_send[g] ];
+                        }
+
+
+                        a = b->next;
+                    }
+                }
+            }
+
+            //! store data from send region
+            virtual void swap_store(const swaps &G) const throw()
+            {
+                assert(G.send.size()==G.count);
+                for(size_t i=G.count;i>0;--i)
+                {
+                    const coord1D j=G.send[i];
+                    assert(j<coord1D(count));
+                    G.iobuf.store(entry[j]);
+                }
+            }
+
+            virtual void swap_query(const swaps &G) const throw()
+            {
+                assert(G.recv.size()==G.count);
+                for(size_t i=G.count;i>0;--i)
+                {
+                    const coord1D j=G.recv[i];
+                    assert(j<coord1D(count));
+                    G.iobuf.query(entry[j]);
+                }
+            }
+
+            
+
+
         protected:
             inline explicit field(const char *id) :
-            field_info(id), entry(0) {}
+            field_info(id,ITEM_SIZE), entry(0) {}
             
             void set_bytes(const size_t items) throw()
             {

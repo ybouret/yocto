@@ -2,8 +2,8 @@
 #define YOCTO_IPSO_SWAPS_INCLUDED 1
 
 #include "yocto/ipso/patch.hpp"
+#include "yocto/ipso/swap-buffers.hpp"
 #include "yocto/sequence/vector.hpp"
-
 
 namespace yocto
 {
@@ -29,15 +29,16 @@ namespace yocto
 
             typedef core::list_of_cpp<swaps> list;
             
-            const swap     recv;      //!< outer indices
-            const swap     send;      //!< inner indices
-            const size_t   count;     //!< send.size() = recv.size() = count
-            const size_t   source;    //!< rank of source
-            const size_t   target;    //!< rank of target
-            const coord1D  layers;    //!< number of extra layers
-            const unsigned pos;       //!< where it is
-            swaps         *next;
-            swaps         *prev;
+            const swap           recv;      //!< outer indices
+            const swap           send;      //!< inner indices
+            const size_t         count;     //!< send.size() = recv.size() = count
+            mutable swap_buffers iobuf;     //!< local memory for send and recv
+            const size_t         source;    //!< rank of source
+            const size_t         target;    //!< rank of target
+            const coord1D        layers;    //!< number of extra layers
+            const unsigned       pos;       //!< where it is
+            swaps               *next;
+            swaps               *prev;
 
             explicit swaps(const size_t   source_rank,
                            const size_t   target_rank,
@@ -63,6 +64,9 @@ namespace yocto
             void load(const patch3D &inner,
                       const patch3D &outer,
                       const bool     build);
+
+            //! allocate I/O memory for block_size
+            void allocate_for( const size_t block_size );
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps);

@@ -37,17 +37,6 @@ static inline void show_subs( const subsets<COORD> &subs )
     }
 }
 
-template <typename COORD>
-static inline void show_flags( const subsets<COORD> &subs, const COORD &PBCS)
-{
-    std::cerr << "flags for sizes=" << subs.sizes << " and PBCS=" << __coord2bool(PBCS) << std::endl;
-    for(const subset<COORD> *sub = subs.head; sub; sub=sub->next )
-    {
-        std::cerr << "\t@" << sub->ranks << std::endl;
-        //std::cerr << "\t|_local_flags=" << swaps::flg2str(sub->local_flags) << std::endl;
-        //std::cerr << "\t|_async_flags=" << swaps::flg2str(sub->async_flags) << std::endl;
-    }
-}
 
 
 #define BULK 5
@@ -65,12 +54,14 @@ static inline void mark( FIELD &F, const SWAP *sub, const int s, const int r)
 
 YOCTO_UNIT_TEST_IMPL(subset)
 {
-    if(false)
+    if(true)
+    {
         for(size_t dim=0;dim<3;++dim)
         {
             std::cerr << "flag " << dim  << " -1 = " << swaps::dim2pos(dim,-1) << std::endl;
             std::cerr << "flag " << dim  << "  1 = " << swaps::dim2pos(dim,1)  << std::endl;
         }
+    }
     assert( swaps::lower_x == swaps::dim2pos(0, -1) );
     assert( swaps::upper_x == swaps::dim2pos(0,  1) );
     assert( swaps::lower_y == swaps::dim2pos(1, -1) );
@@ -100,14 +91,15 @@ YOCTO_UNIT_TEST_IMPL(subset)
         const coord1D      PBCS(pbcs.x);
         coord1D            fallback=0;
         const coord1D sizes = mapping<coord1D>::optimal_sizes_for(cpus,region,layers,PBCS,&fallback);
-        std::cerr << "sizes=" << sizes << " | fallback=" << &fallback << std::endl;
+        std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
         const divide::in1D full(sizes,region);
         subsets<coord1D>   subs(full,layers,PBCS,true);
         show_subs(subs);
-        for(const subset<coord1D> *sub = subs.head; sub; sub=sub->next )
+        for( subset<coord1D> *sub = subs.head; sub; sub=sub->next )
         {
 
-            field1D<float> Field("coms",sub->outer);
+            field1D<float>  Field("coms",sub->outer);
+            field1D<double> F2("f2",sub->outer);
             Field.ldz();
             Field.ld_on(sub->inner,BULK);
             mark(Field,sub->local.head,1,2);
@@ -116,11 +108,13 @@ YOCTO_UNIT_TEST_IMPL(subset)
             const string  fn = vformat("f1d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
             VTK::InitSaveScalars(fp, "in1D", Field, sub->outer);
+
+            sub->allocate_swaps_for(Field.item_size+F2.item_size);
+            Field.swap_local(sub->local);
         }
-        show_flags(subs,PBCS);
     }
 
-    if(true)
+    if(false)
     {
         std::cerr << std::endl << "-------- 2D --------" << std::endl;
         const patch2D      region(coord2D(1,1),dims.xy());
@@ -132,9 +126,10 @@ YOCTO_UNIT_TEST_IMPL(subset)
         subsets<coord2D>   subs(full,layers,PBCS,true);
         show_subs(subs);
 
-        for(const subset<coord2D> *sub = subs.head; sub; sub=sub->next )
+        for( subset<coord2D> *sub = subs.head; sub; sub=sub->next )
         {
-            field2D<float> Field("coms",sub->outer);
+            field2D<float>             Field("coms",sub->outer);
+            field2D< point2d<double> > F2("f2",sub->outer);
             Field.ldz();
             Field.ld_on(sub->inner,BULK);
             mark(Field,sub->local.head,1,2);
@@ -143,8 +138,10 @@ YOCTO_UNIT_TEST_IMPL(subset)
             const string  fn = vformat("f2d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
             VTK::InitSaveScalars(fp, "in2D", Field, sub->outer);
+
+            sub->allocate_swaps_for(Field.item_size+F2.item_size);
+
         }
-        show_flags(subs,PBCS);
     }
 
     if(false)
@@ -159,9 +156,11 @@ YOCTO_UNIT_TEST_IMPL(subset)
         subsets<coord3D>   subs(full,layers,PBCS,true);
         show_subs(subs);
 
-        for(const subset<coord3D> *sub = subs.head; sub; sub=sub->next )
+        for( subset<coord3D> *sub = subs.head; sub; sub=sub->next )
         {
             field3D<float> Field("coms",sub->outer);
+            field3D<short> F2("f2",sub->outer);
+
             Field.ldz();
             Field.ld_on(sub->inner,BULK);
             mark(Field,sub->local.head,1,2);
@@ -170,6 +169,8 @@ YOCTO_UNIT_TEST_IMPL(subset)
             const string  fn = vformat("f3d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
             VTK::InitSaveScalars(fp, "in3D", Field, sub->outer);
+            sub->allocate_swaps_for(Field.item_size+F2.item_size);
+
         }
     }
 
