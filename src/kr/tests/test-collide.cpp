@@ -20,11 +20,17 @@
 #include "yocto/ios/icstream.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/sys/wtime.hpp"
+#include "yocto/hashing/digest.hpp"
 
 using namespace yocto;
 
-#define _HASH(NAME) F.append( new hashing::NAME() )
+#define _HASH(NAME) do { \
+hashing::function *h = new hashing::NAME();\
+F.append( h );  \
+std::cerr << "|_" << h->name() << std::endl;\
+} while(false)
 
+#if 0
 static inline void test_words( hashing::function &F, const array<string> &words )
 {
     std::cerr << F.name() << std::endl;
@@ -52,6 +58,30 @@ static inline void test_words( hashing::function &F, const array<string> &words 
 
     std::cerr << std::endl;
 }
+#endif
+
+namespace
+{
+    class h_entry : public counted_object
+    {
+    public:
+        typedef arc_ptr<h_entry> ptr;
+
+        const string word;
+        const digest full;
+
+        explicit h_entry(hashing::function &h, const string &w) :
+        word(w),
+        full( digest::checksum(h,word) )
+        {
+
+        }
+
+    private:
+        YOCTO_DISABLE_COPY_AND_ASSIGN(h_entry);
+    };
+
+}
 
 YOCTO_UNIT_TEST_IMPL(collide)
 {
@@ -74,31 +104,31 @@ YOCTO_UNIT_TEST_IMPL(collide)
     _HASH(rmd160);
     _HASH(rmd128);
 
+
+
     if(argc>1)
     {
         hashing::function &h = F[ argv[1] ];
-    }
-
-#if 0
-    if(argc>1)
-    {
-        vector<string> words(500000,as_capacity);
+        std::cerr << "using " << h.name() << std::endl;
+        if(argc>2)
         {
-            ios::icstream fp(argv[1]);
-            string line;
-            while(fp.gets(line))
+            vector<h_entry::ptr> entries(500000,as_capacity);
             {
-                words.push_back(line);
+                ios::icstream fp(argv[2]);
+                string line;
+                while(fp.gets(line))
+                {
+                    const h_entry::ptr p( new h_entry(h,line) );
+                    entries.push_back(p);
+                    //std::cerr << p->full << " '" << p->word << "'" << std::endl;
+                }
             }
-            std::cerr << "testing " << words.size() << " words" << std::endl;
-            for( hashing::factory::iterator i=F.begin(); i!=F.end();++i)
-            {
-                test_words( **i, words );
-            }
-
+            std::cerr << "generated " << entries.size() << " entries" << std::endl;
         }
     }
-#endif
+
+
+
 
 }
 YOCTO_UNIT_TEST_DONE()
