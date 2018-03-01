@@ -13,6 +13,7 @@ namespace yocto
             template <> SampleType<real_t>::  SampleType(const size_t n) :
             SampleInfo(n),
             u(n,as_capacity),
+	    dFdu(n,as_capacity),
             beta(n,as_capacity),
             curv(),
             D2(0)
@@ -506,6 +507,7 @@ namespace yocto
             pa0(0),
             atry(),
             step(),
+	    cinv(),
             p10(0),
             lambda(0),
             min_p10( Floor(Log10(numeric<real_t>::epsilon)) ),

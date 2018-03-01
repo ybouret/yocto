@@ -46,7 +46,7 @@ static inline void run_smooth(const Expand &ctx,
 
     sm(*(ctx.xp),YF,X,Y,&dYdX);
     
-    for(size_t i=1;i<=n;++i)
+    for(unit_t i=1;i<=n;++i)
     {
         fp("%g %g %g\n",X[i],YF[i],dYdX[i]);
     }
@@ -77,14 +77,14 @@ YOCTO_UNIT_TEST_IMPL(expand)
     vector<double>  x(n,0.0);
     vector<double>  y(n,0.0);
     vector<double>  z(n,0.0);
-    for( size_t i=2; i <= n; ++i )
+    for( unit_t i=2; i <= n; ++i )
     {
         x[i] = x[i-1] + 0.5 + alea.to<double>();
     }
 
     const double fac   = (numeric<double>::two_pi / x[n]);
 
-    for( size_t i=1; i <= n; ++i )
+    for( unit_t i=1; i <= n; ++i )
     {
         x[i] *= fac;
         y[i] = 0.2+sin(x[i]) + sin(3*x[i]);
@@ -96,7 +96,7 @@ YOCTO_UNIT_TEST_IMPL(expand)
 
     {
         ios::wcstream fp("xdata.dat");
-        for(size_t i=1;i<=n;++i)
+        for(unit_t i=1;i<=n;++i)
         {
             fp("%g %g %g\n", x[i], z[i], y[i]);
         }

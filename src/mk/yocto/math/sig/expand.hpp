@@ -138,6 +138,8 @@ namespace yocto
                         return Y[i];
                     }
                 }
+		// never get here
+		return 0;	
             }
 
             template <typename T>
