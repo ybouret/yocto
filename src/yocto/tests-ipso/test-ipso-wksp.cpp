@@ -6,42 +6,6 @@
 using namespace yocto;
 using namespace ipso;
 
-#if 0
-#define __SHOW(TYPE) std::cerr << "sizeof(\t" << #TYPE << "\t)\t=\t" << sizeof(TYPE) << std::endl
-
-template <typename COORD>
-static inline
-void mimic_exchange( array<  arc_ptr<workspace<COORD> > > &workspaces)
-{
-    const size_t cores = workspaces.size();
-    std::cerr << "---> prepare sync..." << std::endl;
-    for(size_t rank=0;rank<cores;++rank)
-    {
-        workspace<COORD> &W = *workspaces[rank+1];
-        W.sync_store_begin();
-        W.sync_store( W["A"] );
-        W.sync_store( W["B"] );
-
-    }
-    for(size_t rank=0;rank<cores;++rank)
-    {
-        workspace<COORD> &W = *workspaces[rank+1];
-        W.sync_store_end();
-    }
-    
-    std::cerr << "---> do something with data" << std::endl;
-
-
-    std::cerr << "---> finalize sync" << std::endl;
-    for(size_t rank=0;rank<cores;++rank)
-    {
-        workspace<COORD> &W = *workspaces[rank+1];
-        W.sync_query( W["A"] );
-        W.sync_query( W["B"] );
-    }
-    std::cerr << "---> done" << std::endl;
-}
-#endif
 
 YOCTO_UNIT_TEST_IMPL(wksp)
 {
@@ -49,8 +13,7 @@ YOCTO_UNIT_TEST_IMPL(wksp)
     __SHOW(workspace<coord1D>);
     __SHOW(workspace<coord2D>);
     __SHOW(workspace<coord3D>);
-    __SHOW(exchange_buffer);
-    __SHOW(exchange_buffers);
+
     
     if(argc<=4)
     {

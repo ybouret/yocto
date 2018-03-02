@@ -75,6 +75,9 @@ namespace yocto
                 const string ID(id);
                 return build<FIELD>(ID,p);
             }
+
+            bool owns( const field_info &f ) const throw();
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_db);
         };

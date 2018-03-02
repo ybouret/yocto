@@ -310,6 +310,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 }
             }
 
+
+
             //__________________________________________________________________
             //
             //! sync_store procedure end: prepare all iobuf for I/O
@@ -320,6 +322,27 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 {
                     swp->iobuf.prepare_recv();
                 }
+            }
+
+            //__________________________________________________________________
+            //
+            //
+            //! wrapper for simpler operations
+            //
+            //__________________________________________________________________
+            inline void sync_start( field_info &F ) throw()
+            {
+                sync_store_begin();
+                sync_store(F);
+                sync_store_end();
+            }
+
+            //! wrapper for different fields
+            inline void sync_start( fields &fvar) throw()
+            {
+                sync_store_begin();
+                sync_store(fvar);
+                sync_store_end();
             }
 
             //__________________________________________________________________
@@ -348,6 +371,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                     }
                 }
             }
+
+
 
 
         private:

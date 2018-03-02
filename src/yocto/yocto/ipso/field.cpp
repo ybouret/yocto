@@ -51,5 +51,13 @@ namespace yocto
             const string ID(id); return (*this)[ID];
         }
 
+        bool field_db:: owns( const field_info &f ) const throw()
+        {
+            const field_info::pointer *p = search(f.name);
+            if(!p) return false;
+            const field_info &g = **p;
+            return ( &f == &g );
+        }
+
     }
 }

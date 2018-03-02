@@ -72,10 +72,7 @@ static inline void check_io( SUBSET *sub, fields &fvar )
     }
 
     std::cerr << "\t** fields I/O" << std::endl;
-    sub->sync_store_begin();
-    sub->sync_store(fvar);
-    sub->sync_store_end();
-
+    sub->sync_start(fvar);
     sub->sync_query(fvar);
     
 }
