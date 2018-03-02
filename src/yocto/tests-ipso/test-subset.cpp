@@ -149,7 +149,8 @@ YOCTO_UNIT_TEST_IMPL(subset)
             check_io(sub,fvar);
         }
     }
-    
+   // return 0;
+
     if(true)
     {
 
