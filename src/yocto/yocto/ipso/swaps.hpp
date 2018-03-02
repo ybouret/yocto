@@ -4,6 +4,9 @@
 #include "yocto/ipso/patch.hpp"
 #include "yocto/ipso/swap-buffers.hpp"
 #include "yocto/sequence/vector.hpp"
+#include "yocto/counted-object.hpp"
+#include "yocto/ptr/intr.hpp"
+#include "yocto/associative/set.hpp"
 
 namespace yocto
 {
@@ -84,7 +87,10 @@ swap    & _send = (swap &)send;
         public:
             inline explicit swaps_list() throw() : swaps::list() {}
             inline virtual ~swaps_list() throw() {}
-            inline size_t   counts() const throw() {
+
+            //! total list of counts for optimal partition
+            inline size_t   counts() const throw()
+            {
                 size_t sum = 0;
                 for(const swaps *swp=head;swp;swp=swp->next)
                 {
@@ -95,6 +101,82 @@ swap    & _send = (swap &)send;
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps_list);
         };
+
+        class meta_swaps : public object
+        {
+        public:
+            typedef core::list_of_cpp<meta_swaps> list;
+            const swaps * const handle;
+            meta_swaps  *next;
+            meta_swaps  *prev;
+
+            explicit meta_swaps( const swaps *swp ) throw() :
+            handle(swp), next(0), prev(0)
+            {
+            }
+
+            virtual ~meta_swaps() throw() {}
+
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(meta_swaps);
+        };
+
+        class meta_swaps_list : public counted_object, public meta_swaps::list
+        {
+        public:
+            typedef intr_ptr<size_t,meta_swaps_list> pointer;
+            typedef set<size_t,pointer>              table;
+
+            const size_t target;
+            explicit meta_swaps_list(const size_t tgt) throw() :
+            target(tgt)
+            {
+            }
+
+            virtual ~meta_swaps_list() throw()
+            {}
+
+            const size_t & key() const throw() { return target; }
+
+            void add( const swaps *swp )
+            {
+                assert(swp); assert(target==swp->target);
+                push_back( new meta_swaps(swp) );
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(meta_swaps_list);
+        };
+
+        class swaps_table : public meta_swaps_list::table
+        {
+        public:
+            explicit swaps_table() throw() : meta_swaps_list::table() {}
+            virtual ~swaps_table() throw() {}
+
+            void add( const swaps *swp )
+            {
+                assert(swp);
+                const size_t tgt = swp->target;
+                meta_swaps_list::pointer *ppL = search(tgt);
+                if(ppL)
+                {
+                    (*ppL)->add(swp);
+                }
+                else
+                {
+                    meta_swaps_list *pL = new meta_swaps_list(tgt);
+                    const meta_swaps_list::pointer q(pL);
+                    if(!insert(q)) throw exception("swaps_table unexpected failure");
+                    pL->add(swp);
+                }
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(swaps_table);
+        };
+
     }
 }
 #endif

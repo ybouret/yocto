@@ -28,6 +28,17 @@ namespace yocto
             {
             }
 
+            inline void __sendrecv(swap_buffers iobuf,
+                                   const int    send_peer,
+                                   const int    recv_peer) const
+            {
+                MPI_Status status;
+                assert(iobuf.in_recv()==iobuf.in_send());
+                MPI.Sendrecv(iobuf.send_addr(), iobuf.in_send(), MPI_BYTE, send_peer, tag,
+                             iobuf.recv_addr(), iobuf.in_recv(), MPI_BYTE, recv_peer, tag,
+                             MPI_COMM_WORLD,status);
+            }
+
 #if 0
             //! wraps a send/recv operation
             inline void __sendrecv(const mpi             &MPI,

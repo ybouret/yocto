@@ -22,6 +22,9 @@ namespace yocto
             size_t in_send() const throw(); //!< current #send
             size_t in_recv() const throw(); //!< current #recv
 
+            const void *send_addr() const throw(); //!< send_base
+            void       *recv_addr() throw();       //!< recv_curr
+
             void reset() throw();
 
             template <typename T>

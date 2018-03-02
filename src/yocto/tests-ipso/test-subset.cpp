@@ -34,6 +34,12 @@ static inline void show_subs( const subsets<COORD> &subs )
         {
             show_swaps(*swp);
         }
+        std::cerr << "\t#target=" << sub->links.size() << ": ";
+        for( swaps_table::const_iterator i=sub->links.begin(); i!= sub->links.end(); ++i)
+        {
+            std::cerr << ' ' << (*i)->target << '(' << (*i)->size << ')';
+        }
+        std::cerr << std::endl;
     }
 }
 
@@ -143,7 +149,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
             check_io(sub,fvar);
         }
     }
-
+    
     if(true)
     {
 

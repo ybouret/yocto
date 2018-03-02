@@ -29,6 +29,7 @@ namespace yocto
             const patch_type  outer;
             const swaps_list  local; //!< local swaps
             const swaps_list  async; //!< async swaps
+            const swaps_table links; //!< async, ranked by target
             subset           *next;  //!< for subset::list
             subset           *prev;  //!< for subset::list
             const score_t     score; //!< (inner.items,num_async,num_local)
@@ -219,7 +220,23 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 // Pass 3: loading cross swaps
                 //______________________________________________________________
                 load_cross_swaps(full,layers,pbcs,build);
+
+
+                //______________________________________________________________
+                //
+                // Pass 4: loading cross swaps
+                //______________________________________________________________
                 set_score();
+
+                //______________________________________________________________
+                //
+                // Pass 4: build links
+                //______________________________________________________________
+                swaps_table &_links = (swaps_table &)links;
+                for(const swaps *swp = async.head;swp;swp=swp->next)
+                {
+                    _links.add(swp);
+                }
             }
 
 
