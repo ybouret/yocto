@@ -1,5 +1,4 @@
 #include "yocto/ipso/workspace.hpp"
-#include "yocto/ipso/partition.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/string/conv.hpp"
 #include "yocto/ptr/arc.hpp"

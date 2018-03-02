@@ -1,14 +1,15 @@
 #ifndef YOCTO_IPSO_WORKSPACE_INCLUDED
 #define YOCTO_IPSO_WORKSPACE_INCLUDED 1
 
-#include "yocto/ipso/domain.hpp"
-#include "yocto/ipso/xbuffer.hpp"
 #include "yocto/ipso/fields.hpp"
+#include "yocto/ipso/subset.hpp"
 
 namespace yocto
 {
     namespace ipso
     {
+
+#if 0
         //! a workspace is a set of fields on a domain
         template <typename COORD>
         class workspace : public domain<COORD>, public field_db, public counted
@@ -159,6 +160,7 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(workspace);
         };
+#endif
     }
 }
 
