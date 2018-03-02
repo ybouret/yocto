@@ -30,7 +30,7 @@ namespace yocto
                 assert(bytes>0);
                 assert(send_base);
                 assert(send_curr>=send_base);
-                assert(bytes==send_last-send_base);
+                assert(bytes==static_cast<size_t>(send_last-send_base));
                 assert(send_curr+sizeof(T)<=send_last);
                 memcpy(send_curr,&data,sizeof(T));
                 send_curr += sizeof(T);
@@ -42,7 +42,7 @@ namespace yocto
                 assert(bytes>0);
                 assert(recv_base);
                 assert(recv_curr>=recv_base);
-                assert(bytes==recv_last-recv_base);
+                assert(bytes==static_cast<size_t>(recv_last-recv_base));
                 assert(recv_curr+sizeof(T)<=recv_last);
                 memcpy(&data,recv_curr,sizeof(T));
                 recv_curr += sizeof(T);

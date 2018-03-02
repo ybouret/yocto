@@ -429,7 +429,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                         max_score = sub_score;
                     }
                 }
-                assert(this->size==__coord_prod(sizes));
+                assert(this->size==size_t(__coord_prod(sizes)));
             }
 
         private:
@@ -453,7 +453,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
             inline explicit mapping(const size_t        cpus,
                                     const patch<COORD> &full,
                                     const size_t        layers,
-                                    const COORD         pbcs)
+                                    const COORD         pbcs) :
+		    subsets<COORD>::list(),
+		    optimal(0),
+		    fallback(0)
             {
                 setup(cpus,full,layers,pbcs);
                 typename subsets<COORD>::list &self = *this;

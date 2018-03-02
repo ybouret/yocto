@@ -17,6 +17,7 @@ namespace yocto
         recv(),
         send(),
         count(0),
+	iobuf(),
         source(source_rank),
         target(target_rank),
         layers(some_layers),

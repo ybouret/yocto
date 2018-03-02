@@ -61,12 +61,12 @@ namespace yocto
 
         size_t swap_buffers:: in_send() const throw()
         {
-            return send_curr-send_base;
+            return static_cast<size_t>(send_curr-send_base);
         }
 
         size_t swap_buffers:: in_recv() const throw()
         {
-            return recv_last - recv_curr;
+            return static_cast<size_t>(recv_last - recv_curr);
         }
 
         void swap_buffers:: reset() throw()
