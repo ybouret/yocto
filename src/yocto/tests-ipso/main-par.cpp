@@ -8,6 +8,7 @@
 using namespace yocto;
 using namespace ipso;
 
+#if 0
 template <typename COORD>
 static inline
 void mpi_xch( mpi_workspace<COORD> &W )
@@ -45,6 +46,7 @@ void mpi_xch( mpi_workspace<COORD> &W )
     W.sync_query(fvar);
 
 }
+#endif
 
 YOCTO_PROGRAM_START()
 {

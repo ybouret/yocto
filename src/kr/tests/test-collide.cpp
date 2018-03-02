@@ -21,6 +21,7 @@
 #include "yocto/sequence/vector.hpp"
 #include "yocto/sys/wtime.hpp"
 #include "yocto/hashing/digest.hpp"
+#include "yocto/sort/heap.hpp"
 
 using namespace yocto;
 
@@ -60,6 +61,8 @@ static inline void test_words( hashing::function &F, const array<string> &words 
 }
 #endif
 
+#include "yocto/code/utils.hpp"
+
 namespace
 {
     class h_entry : public counted_object
@@ -69,18 +72,37 @@ namespace
 
         const string word;
         const digest full;
+        const string hash;
 
         explicit h_entry(hashing::function &h, const string &w) :
         word(w),
-        full( digest::checksum(h,word) )
+        full( digest::checksum(h,word) ),
+        hash( d2s(full) )
         {
 
         }
 
+
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(h_entry);
+        static string d2s( const digest &d )
+        {
+            const size_t n = d.length();
+            string s(n<<1,as_capacity);
+            for(size_t i=0;i<n;++i)
+            {
+                s << hexa_text[d[i]];
+            }
+            return s;
+        }
     };
 
+}
+
+
+static inline int compare_hptr( const h_entry::ptr &lhs, const h_entry::ptr &rhs)
+{
+    return string::compare(lhs->hash,rhs->hash);
 }
 
 YOCTO_UNIT_TEST_IMPL(collide)
@@ -120,10 +142,17 @@ YOCTO_UNIT_TEST_IMPL(collide)
                 {
                     const h_entry::ptr p( new h_entry(h,line) );
                     entries.push_back(p);
-                    //std::cerr << p->full << " '" << p->word << "'" << std::endl;
+                    //std::cerr << p->full << " " << p->hash << " '" << p->word << "'" << std::endl;
                 }
             }
             std::cerr << "generated " << entries.size() << " entries" << std::endl;
+            std::cerr << "sorting..." << std::endl;
+            hsort(entries,compare_hptr);
+            for(size_t i=1;i<=entries.size();++i)
+            {
+                const h_entry::ptr &p = entries[i];
+                std::cerr << p->hash << " '" << p->word << "'" << std::endl;
+            }
         }
     }
 

@@ -2,7 +2,6 @@
 #define YOCTO_IPSO_MPI_INCLUDED 1
 
 #include "yocto/ipso/workspace.hpp"
-#include "yocto/ipso/partition.hpp"
 #include "yocto/ipso/field3d.hpp"
 
 #include "yocto/mpi/mpi.hpp"
@@ -11,6 +10,7 @@ namespace yocto
 {
     namespace ipso
     {
+#if 0
         //______________________________________________________________________
         //
         //! common MPI operations for one dimension
@@ -122,7 +122,7 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_workspace);
         };
-
+#endif
     }
 }
 
