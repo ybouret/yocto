@@ -20,6 +20,11 @@ namespace yocto
             virtual ~fields() throw();
 
             void append( field_info &shared );
+            inline fields & operator<<( field_info &shared )
+            {
+                append(shared);
+                return *this;
+            }
             size_t block_size() const throw();
 
         private:

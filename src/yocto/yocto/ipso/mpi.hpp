@@ -10,7 +10,8 @@ namespace yocto
 {
     namespace ipso
     {
-#if 0
+
+
         //______________________________________________________________________
         //
         //! common MPI operations for one dimension
@@ -21,12 +22,13 @@ namespace yocto
             static const int tag = 7;
             const mpi &MPI;
 
-            virtual ~async_ops() throw() {}
-            explicit async_ops(const mpi &__MPI) throw() :
+            inline virtual ~async_ops() throw() {}
+            inline explicit async_ops(const mpi &__MPI) throw() :
             MPI(__MPI)
             {
             }
 
+#if 0
             //! wraps a send/recv operation
             inline void __sendrecv(const mpi             &MPI,
                                    const exchange_buffer &snd,
@@ -40,7 +42,6 @@ namespace yocto
                              rcv.addr(), rcv.load(), MPI_BYTE, rcv_peer, tag,
                              MPI_COMM_WORLD,status);
             }
-
 
             //! perform MPI data exchange
             inline void __exchange1D(const ghosts::list     &gl,
@@ -71,6 +72,7 @@ namespace yocto
                         break;
                 }
             }
+#endif
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(async_ops);
@@ -86,14 +88,14 @@ namespace yocto
         public:
             inline explicit mpi_workspace(const mpi            &__MPI,
                                           const divider<COORD> &full,
-                                          coord1D               ng,
-                                          const COORD           pbcs,
-                                          const size_t          block_size) :
+                                          const size_t          layers,
+                                          const COORD           pbcs) :
             async_ops(__MPI),
-            workspace<COORD>(full,MPI.CommWorldRank,ng,pbcs,block_size)
+            workspace<COORD>(full,MPI.CommWorldRank,layers,pbcs)
             {
             }
 
+#if 0
             //! perform synchronization on loaded buffers
             inline void synchronize()
             {
@@ -113,6 +115,7 @@ namespace yocto
                 synchronize();
                 this->sync_query(F);
             }
+#endif
 
             inline virtual ~mpi_workspace() throw()
             {
@@ -122,7 +125,6 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(mpi_workspace);
         };
-#endif
     }
 }
 

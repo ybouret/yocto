@@ -61,7 +61,7 @@ YOCTO_UNIT_TEST_IMPL(wksp)
         const patch1D      region(1,dims.x);
         const coord1D      PBCS(pbcs.x);
         coord1D            fallback=0;
-        const coord1D sizes = mapping<coord1D>::optimal_sizes_for(cpus,region,layers,PBCS,&fallback);
+        const coord1D      sizes = mapping<coord1D>::optimal_sizes_for(cpus,region,layers,PBCS,&fallback);
         std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
         const divide::in1D full(sizes,region);
         const size_t cores = __coord_prod(sizes);

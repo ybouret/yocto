@@ -54,7 +54,6 @@ YOCTO_PROGRAM_START()
     const int size = MPI.CommWorldSize;
     const int rank = MPI.CommWorldRank;
     MPI.Printf(stderr, "%s ready...\n",program);
-#if 0
     if(0==rank)
     {
         local_fs & fs = local_fs::instance();
@@ -62,21 +61,63 @@ YOCTO_PROGRAM_START()
     }
     if(argc<=3)
     {
-        throw exception("usage: %s DIMS PBCS GHOSTS", argv[0]);
+        throw exception("usage: %s DIMS PBCS LAYERS", argv[0]);
     }
-    const coord3D dims = __coord_parser::get<coord3D>(argv[1],"dims");
-    const coord3D pbcs = __coord_parser::get<coord3D>(argv[2],"pbcs");
-    const coord1D ng   = strconv::to_size(argv[3],"ng");
+    const coord3D dims   = __coord_parser::get<coord3D>(argv[1],"dims");
+    const coord3D pbcs   = __coord_parser::get<coord3D>(argv[2],"pbcs");
+    const size_t  layers = strconv::to_size(argv[3],"layers");
 
     if(0==rank)
     {
         fprintf(stderr,"\n-------- parameters --------\n");
-        fprintf(stderr,"dims="); __coord_printf(stderr,dims); fprintf(stderr,"\n");
-        fprintf(stderr,"pbcs="); __coord_printf(stderr,pbcs); fprintf(stderr,"\n");
-        fprintf(stderr,"ng  ="); __coord_printf(stderr,ng);   fprintf(stderr,"\n");
+        fprintf(stderr,"cpus   = %d\n",size);
+        fprintf(stderr,"dims   = "); __coord_printf(stderr,dims);   fprintf(stderr,"\n");
+        fprintf(stderr,"pbcs   = "); __coord_printf(stderr,pbcs);   fprintf(stderr,"\n");
+        fprintf(stderr,"layers = %u\n", unsigned(layers));
     }
-    
 
+    if( true )
+    {
+        MPI.Printf0(stderr, "\nin 1D\n" );
+        const patch1D region(1,dims.x);
+        coord1D       fallback=0;
+        const coord1D PBCS(pbcs.x);
+        coord1D       sizes = mapping<coord1D>::optimal_sizes_for(size,region,layers,PBCS,&fallback);
+        if( __coord_prod(sizes) < size )
+        {
+            MPI.Printf0(stderr,"switching to fallback\n");
+            sizes = fallback;
+        }
+        if( __coord_prod(sizes) < size )
+        {
+            throw exception("unable to use %d cores", size);
+        }
+        if(0==rank)
+        {
+            fprintf(stderr,"sizes="); __coord_printf(stderr,sizes); fprintf(stderr,"\n");
+        }
+
+        divide::in1D           full(sizes,region);
+        mpi_workspace<coord1D> W(MPI,full,layers,PBCS);
+        MPI.Printf(stderr,"workspace @rank=%d, #items=%u\n", int(W.rank), unsigned(W.inner.items) );
+        field1D<double> &A = W.create< field1D<double> >("A");
+        field1D<float>  &B = W.create< field1D<float>  >("B");
+
+        fields fvar;
+        fvar << W["A"] << W["B"];
+
+        // initialize fields
+        for(unit_t i=W.inner.lower;i<=W.inner.upper;++i)
+        {
+            A[i] = double(i);
+            B[i] = -float(i);
+        }
+        
+    }
+
+
+
+#if 0
     if(true)
     {
         MPI.Printf0(stderr, "\nin 1D\n" );
