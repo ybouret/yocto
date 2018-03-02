@@ -27,5 +27,16 @@ namespace yocto
             push_back(p);
         }
 
+        size_t  fields:: block_size() const throw()
+        {
+            size_t ans = 0;
+            for(size_t i=size();i>0;--i)
+            {
+                ans += (*this)[i]->item_size;
+            }
+            return ans;
+        }
+
+
     }
 }

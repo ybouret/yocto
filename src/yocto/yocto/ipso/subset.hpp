@@ -4,6 +4,8 @@
 
 #include "yocto/ipso/swaps.hpp"
 #include "yocto/ipso/divide.hpp"
+#include "yocto/ipso/fields.hpp"
+
 #include "yocto/sort/merge.hpp"
 
 namespace yocto
@@ -31,14 +33,7 @@ namespace yocto
             subset           *prev;  //!< for subset::list
             const score_t     score; //!< (inner.items,num_async,num_local)
 
-            inline void allocate_swaps_for( const size_t block_size )
-            {
-                swaps::list & _async = (swaps::list &)async;
-                for( swaps *swp = _async.head;swp;swp=swp->next)
-                {
-                    swp->allocate_for(block_size);
-                }
-            }
+
 
 
             inline virtual ~subset() throw() {}
@@ -228,7 +223,132 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
             }
 
 
-            
+            //__________________________________________________________________
+            //
+            //! allocating memory for swaps, ASYNC only...
+            //__________________________________________________________________
+            inline void allocate_swaps_for( const size_t block_size )
+            {
+                swaps::list & _async = (swaps::list &)async;
+                for( swaps *swp = _async.head;swp;swp=swp->next)
+                {
+                    swp->allocate_for(block_size);
+                }
+            }
+
+            //! allocating memory for one field
+            inline void allocate_swaps_for( const field_info &F )
+            {
+                allocate_swaps_for(F.item_size);
+            }
+
+            //! allocating memory for different fields
+            inline void allocate_swaps_for( const fields &fvar )
+            {
+                allocate_swaps_for(fvar.block_size());
+            }
+
+            //__________________________________________________________________
+            //
+            //! copy local data for one field
+            //__________________________________________________________________
+            inline void copy_local( field_info &F ) throw()
+            {
+                F.swap_local(local);
+            }
+
+            //! copy local data for different fields
+            inline void copy_local( fields &fvar ) throw()
+            {
+                for(size_t i=fvar.size();i>0;--i)
+                {
+                    fvar[i]->swap_local(local);
+                }
+            }
+
+            //__________________________________________________________________
+            //
+            //
+            //! sync_store procedure begin: reset all async buffers
+            //
+            //__________________________________________________________________
+            inline void sync_store_begin() throw()
+            {
+                for(const swaps *swp = async.head;swp;swp=swp->next )
+                {
+                    swp->iobuf.reset();
+                }
+            }
+
+            //__________________________________________________________________
+            //
+            //! store data to send and copy local
+            //__________________________________________________________________
+            inline void sync_store( field_info &f ) throw()
+            {
+                f.swap_local(local);
+                for(const swaps *swp = async.head;swp;swp=swp->next )
+                {
+                    f.swap_store(*swp);
+                }
+            }
+
+            inline void sync_store( fields &fvar ) throw()
+            {
+                const size_t nvar = fvar.size();
+                for(size_t i=nvar;i>0;--i)
+                {
+                    fvar[i]->swap_local(local);
+                }
+                for(const swaps *swp = async.head;swp;swp=swp->next )
+                {
+                    const swaps &s = *swp;
+                    for(size_t i=nvar;i>0;--i)
+                    {
+                        fvar[i]->swap_store(s);
+                    }
+                }
+            }
+
+            //__________________________________________________________________
+            //
+            //! sync_store procedure end: prepare all iobuf for I/O
+            //__________________________________________________________________
+            inline void sync_store_end() throw()
+            {
+                for(const swaps *swp = async.head;swp;swp=swp->next )
+                {
+                    swp->iobuf.prepare_recv();
+                }
+            }
+
+            //__________________________________________________________________
+            //
+            //
+            //! sync_query procedure, once I/O is done
+            //
+            //__________________________________________________________________
+            inline void sync_query( field_info &f ) throw()
+            {
+                for(const swaps *swp = async.head;swp;swp=swp->next )
+                {
+                    f.swap_query(*swp);
+                }
+            }
+
+            inline void sync_query( fields &fvar ) throw()
+            {
+                const size_t nvar = fvar.size();
+                for(const swaps *swp = async.head;swp;swp=swp->next )
+                {
+                    const swaps &s = *swp;
+                    for(size_t i=nvar;i>0;--i)
+                    {
+                        fvar[i]->swap_query(s);
+                    }
+                }
+            }
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(subset);

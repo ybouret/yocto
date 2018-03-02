@@ -52,6 +52,34 @@ static inline void mark( FIELD &F, const SWAP *sub, const int s, const int r)
     }
 }
 
+template <typename SUBSET>
+static inline void check_io( SUBSET *sub, fields &fvar )
+{
+    std::cerr << "\t** allocating for block_size=" << fvar.block_size() << std::endl;
+    sub->allocate_swaps_for(fvar);
+
+    std::cerr << "\t** field by field I/O" << std::endl;
+    sub->sync_store_begin();
+    for(size_t i=fvar.size();i>0;--i)
+    {
+        sub->sync_store(*fvar[i]);
+    }
+    sub->sync_store_end();
+
+    for(size_t i=fvar.size();i>0;--i)
+    {
+        sub->sync_query( *fvar[i] );
+    }
+
+    std::cerr << "\t** fields I/O" << std::endl;
+    sub->sync_store_begin();
+    sub->sync_store(fvar);
+    sub->sync_store_end();
+
+    sub->sync_query(fvar);
+    
+}
+
 YOCTO_UNIT_TEST_IMPL(subset)
 {
     if(true)
@@ -84,8 +112,13 @@ YOCTO_UNIT_TEST_IMPL(subset)
     std::cerr << "cpus   = " << cpus   << std::endl;
     std::cerr << "layers = " << layers << std::endl;
 
+    field_db DB;
+    fields   fvar;
+
     if(true)
     {
+
+
         std::cerr << std::endl << "-------- 1D --------" << std::endl;
         const patch1D      region(1,dims.x);
         const coord1D      PBCS(pbcs.x);
@@ -97,42 +130,28 @@ YOCTO_UNIT_TEST_IMPL(subset)
         show_subs(subs);
         for( subset<coord1D> *sub = subs.head; sub; sub=sub->next )
         {
-
-            field1D<float>  Field("coms",sub->outer);
-            field1D<double> F2("f2",sub->outer);
-            Field.ldz();
-            Field.ld_on(sub->inner,BULK);
-            mark(Field,sub->local.head,1,2);
-            mark(Field,sub->async.head,3,4);
+            DB.free();
+            fvar.free();
+            field1D<float>  &F1 = DB.build< field1D<float>  >("f1",sub->outer);
+            field1D<double> &F2 = DB.build< field1D<double> >("f2",sub->outer);
+            fvar.append(F1);
+            fvar.append(F2);
+            F1.ldz();
+            F1.ld_on(sub->inner,BULK);
+            mark(F1,sub->local.head,1,2);
+            mark(F1,sub->async.head,3,4);
 
             const string  fn = vformat("f1d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
-            VTK::InitSaveScalars(fp, "in1D", Field, sub->outer);
+            VTK::InitSaveScalars(fp, "in1D", F1, sub->outer);
 
-            sub->allocate_swaps_for(Field.item_size+F2.item_size);
-            Field.swap_local(sub->local);
-            F2.swap_local(sub->local);
-
-            for(const swaps *swp = sub->async.head; swp; swp=swp->next )
-            {
-                
-                swp->iobuf.reset();
-                Field.swap_store(*swp);
-                F2.swap_store(*swp);
-                swp->iobuf.prepare_recv();
-                Field.swap_query(*swp);
-                F2.swap_query(*swp);
-            }
-
-
-
-
-
+            check_io(sub,fvar);
         }
     }
 
     if(true)
     {
+
         std::cerr << std::endl << "-------- 2D --------" << std::endl;
         const patch2D      region(coord2D(1,1),dims.xy());
         const coord2D      PBCS(pbcs.xy());
@@ -145,31 +164,24 @@ YOCTO_UNIT_TEST_IMPL(subset)
 
         for( subset<coord2D> *sub = subs.head; sub; sub=sub->next )
         {
-            field2D<float>             Field("coms",sub->outer);
-            field2D< point2d<double> > F2("f2",sub->outer);
-            Field.ldz();
-            Field.ld_on(sub->inner,BULK);
-            mark(Field,sub->local.head,1,2);
-            mark(Field,sub->async.head,3,4);
+            DB.free();
+            fvar.free();
+            field2D<float>             &F1 = DB.build< field2D<float> >("f1",sub->outer);
+            field2D< point2d<double> > &F2 = DB.build< field2D<point2d<double> > >("f2",sub->outer);
+            fvar.append(F1);
+            fvar.append(F2);
+
+            F1.ldz();
+            F1.ld_on(sub->inner,BULK);
+            mark(F1,sub->local.head,1,2);
+            mark(F1,sub->async.head,3,4);
 
             const string  fn = vformat("f2d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
-            VTK::InitSaveScalars(fp, "in2D", Field, sub->outer);
+            VTK::InitSaveScalars(fp, "in2D", F1, sub->outer);
 
-            sub->allocate_swaps_for(Field.item_size+F2.item_size);
-            Field.swap_local(sub->local);
-            F2.swap_local(sub->local);
+            check_io(sub,fvar);
 
-            for(const swaps *swp = sub->async.head; swp; swp=swp->next )
-            {
-
-                swp->iobuf.reset();
-                Field.swap_store(*swp);
-                F2.swap_store(*swp);
-                swp->iobuf.prepare_recv();
-                Field.swap_query(*swp);
-                F2.swap_query(*swp);
-            }
         }
     }
 
@@ -187,32 +199,24 @@ YOCTO_UNIT_TEST_IMPL(subset)
 
         for( subset<coord3D> *sub = subs.head; sub; sub=sub->next )
         {
-            field3D<float> Field("coms",sub->outer);
-            field3D<short> F2("f2",sub->outer);
+            DB.free();
+            fvar.free();
 
-            Field.ldz();
-            Field.ld_on(sub->inner,BULK);
-            mark(Field,sub->local.head,1,2);
-            mark(Field,sub->async.head,3,4);
+            field3D<float> &F1 = DB.build< field3D<float> >("f1",sub->outer);
+            field3D<short> &F2 = DB.build< field3D<short> >("f2",sub->outer);
+            fvar.append(F1);
+            fvar.append(F2);
+
+            F1.ldz();
+            F1.ld_on(sub->inner,BULK);
+            mark(F1,sub->local.head,1,2);
+            mark(F1,sub->async.head,3,4);
 
             const string  fn = vformat("f3d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
-            VTK::InitSaveScalars(fp, "in3D", Field, sub->outer);
+            VTK::InitSaveScalars(fp, "in3D", F1, sub->outer);
 
-            sub->allocate_swaps_for(Field.item_size+F2.item_size);
-            Field.swap_local(sub->local);
-            F2.swap_local(sub->local);
-
-            for(const swaps *swp = sub->async.head; swp; swp=swp->next )
-            {
-
-                swp->iobuf.reset();
-                Field.swap_store(*swp);
-                F2.swap_store(*swp);
-                swp->iobuf.prepare_recv();
-                Field.swap_query(*swp);
-                F2.swap_query(*swp);
-            }
+            check_io(sub,fvar);
 
         }
     }

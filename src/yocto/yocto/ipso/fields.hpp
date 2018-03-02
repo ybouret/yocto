@@ -11,7 +11,7 @@ namespace yocto
         //! a container of field_info
         typedef vector<field_info::pointer> fields_type;
 
-        //! simple wrapper
+        //! simple wrapper to use as variables
         class fields : public fields_type
         {
         public:
@@ -20,10 +20,14 @@ namespace yocto
             virtual ~fields() throw();
 
             void append( field_info &shared );
+            size_t block_size() const throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(fields);
         };
+
+        
+
     }
 }
 

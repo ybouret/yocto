@@ -21,9 +21,9 @@ namespace yocto
             typedef intr_ptr<string,field_info> pointer;
             typedef set<string,pointer>         set_type;
 
-            const string name;  //!< unique identifier for set
-            const size_t count; //!< items count, set by field after setup
-            const size_t bytes; //!< bytes count, set by field after setup
+            const string name;      //!< unique identifier for set
+            const size_t count;     //!< items count, set by field after setup
+            const size_t bytes;     //!< bytes count, set by field after setup
             const size_t item_size; //!< one item size
 
             virtual ~field_info() throw();
@@ -38,7 +38,7 @@ namespace yocto
             virtual void swap_store(const swaps &G) const throw() = 0;
 
             //! query data from recv region
-            virtual void swap_query(const swaps &G) const throw() = 0;
+            virtual void swap_query(const swaps &G) throw() = 0;
 
 
         protected:
@@ -59,6 +59,22 @@ namespace yocto
             const field_info & operator[](const string &id) const;
             field_info       & operator[](const char *id);
             const field_info & operator[](const char *id) const;
+
+            template <typename FIELD> inline
+            FIELD & build( const string &id, const typename FIELD::patch_type &p )
+            {
+                FIELD *f = new FIELD(id,p);
+                const field_info::pointer q(f);
+                if(!insert(q)) throw exception("field_db: multiple '%s'",*id);
+                return *f;
+            }
+
+            template <typename FIELD> inline
+            FIELD & build( const char *id, const typename FIELD::patch_type &p )
+            {
+                const string ID(id);
+                return build<FIELD>(ID,p);
+            }
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_db);
         };
@@ -116,7 +132,7 @@ namespace yocto
             
 
             //! directly swap matching local swap pairs, without extra memory
-            virtual void swap_local(const swaps_list &local) throw()
+            inline virtual void swap_local(const swaps_list &local) throw()
             {
                 assert(0==(local.size&0x1)); // even number of local swaps
                 if(local.size>0)
@@ -161,26 +177,26 @@ namespace yocto
             }
 
             //! store data from send region
-            virtual void swap_store(const swaps &G) const throw()
+            inline virtual void swap_store(const swaps &swp) const throw()
             {
-                assert(G.send.size()==G.count);
-                for(size_t i=G.count;i>0;--i)
+                assert(swp.send.size()==swp.count);
+                for(size_t i=swp.count;i>0;--i)
                 {
-                    const coord1D j=G.send[i];
+                    const coord1D j=swp.send[i];
                     assert(j<coord1D(count));
-                    G.iobuf.store(entry[j]);
+                    swp.iobuf.store(entry[j]);
                 }
             }
 
             //! query data from recv region
-            virtual void swap_query(const swaps &G) const throw()
+            inline virtual void swap_query(const swaps &swp)  throw()
             {
-                assert(G.recv.size()==G.count);
-                for(size_t i=G.count;i>0;--i)
+                assert(swp.recv.size()==swp.count);
+                for(size_t i=swp.count;i>0;--i)
                 {
-                    const coord1D j=G.recv[i];
+                    const coord1D j=swp.recv[i];
                     assert(j<coord1D(count));
-                    G.iobuf.query(entry[j]);
+                    swp.iobuf.query(entry[j]);
                 }
             }
 
@@ -191,7 +207,7 @@ namespace yocto
             inline explicit field(const char *id) :
             field_info(id,ITEM_SIZE), entry(0) {}
             
-            void set_bytes(const size_t items) throw()
+            inline void set_bytes(const size_t items) throw()
             {
                 (size_t &)count = items;
                 (size_t &)bytes = items*sizeof(T);
