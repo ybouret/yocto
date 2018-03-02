@@ -114,8 +114,6 @@ YOCTO_UNIT_TEST_IMPL(subset)
 
     if(true)
     {
-
-
         std::cerr << std::endl << "-------- 1D --------" << std::endl;
         const patch1D      region(1,dims.x);
         const coord1D      PBCS(pbcs.x);
