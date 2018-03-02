@@ -116,6 +116,51 @@ YOCTO_PROGRAM_START()
     }
 
 
+    if( true )
+    {
+        MPI.Printf0(stderr, "\nin 2D\n" );
+        const patch2D region(coord2D(1,1),dims.xy());
+        coord2D       fallback;
+        const coord2D PBCS(pbcs.xy());
+        coord2D       sizes = mapping<coord2D>::optimal_sizes_for(size,region,layers,PBCS,&fallback);
+        if( __coord_prod(sizes) < size )
+        {
+            MPI.Printf0(stderr,"switching to fallback\n");
+            sizes = fallback;
+        }
+        if( __coord_prod(sizes) < size )
+        {
+            throw exception("unable to use %d cores", size);
+        }
+        if(0==rank)
+        {
+            fprintf(stderr,"sizes="); __coord_printf(stderr,sizes); fprintf(stderr,"\n");
+        }
+
+        divide::in2D           full(sizes,region);
+        mpi_workspace<coord2D> W(MPI,full,layers,PBCS);
+        MPI.Printf(stderr,"workspace @rank=%d, #items=%u\n", int(W.rank), unsigned(W.inner.items) );
+        field2D<double> &A = W.create< field2D<double> >("A");
+        field2D<float>  &B = W.create< field2D<float>  >("B");
+
+        fields fvar;
+        fvar << A << B;
+
+        // initialize fields
+        A.ldz();
+        for(unit_t j=W.inner.lower.y;j<=W.inner.upper.y;++j)
+        {
+            for(unit_t i=W.inner.lower.x;i<=W.inner.upper.x;++i)
+            {
+                A[j][i] = double(1+rank); //double(i*j);
+            }
+        }
+
+        B.ldz();
+
+
+    }
+
 
 #if 0
     if(true)
