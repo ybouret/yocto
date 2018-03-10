@@ -9,7 +9,7 @@ using namespace ipso;
 
 static inline void show_swaps(const swaps &swp)
 {
-    std::cerr << "\t\t@" << swaps::pos2txt(swp.pos) << " " << swp.source << "<->" << swp.target << std::endl;
+    std::cerr << "\t\t@" << swaps::pos2txt(swp.pos) << " " << swp.source << "->" << swp.target << std::endl;
     std::cerr << "\t\t|_send=" << swp.send << std::endl;
     std::cerr << "\t\t|_recv=" << swp.recv << std::endl;
 
@@ -34,10 +34,17 @@ static inline void show_subs( const subsets<COORD> &subs )
         {
             show_swaps(*swp);
         }
-        std::cerr << "\t#target=" << sub->links.size() << ": ";
+        std::cerr << "\t#target=" << sub->links.size() << std::endl;
         for( swaps_table::const_iterator i=sub->links.begin(); i!= sub->links.end(); ++i)
         {
-            std::cerr << ' ' << (*i)->target << '(' << (*i)->size << ')';
+            const meta_swaps_list &msl = **i;
+            std::cerr << "\t       |_to target " << msl.target << ": #" << msl.size;
+            for(const meta_swaps *ms = msl.head; ms; ms=ms->next)
+            {
+                const swaps &swp = *(ms->handle);
+                std::cerr << " @" << swaps::pos2txt(swp.pos) << " " << swp.source << "->" << swp.target;
+            }
+            std::cerr << std::endl;
         }
         std::cerr << std::endl;
     }
@@ -149,7 +156,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
             check_io(sub,fvar);
         }
     }
-   // return 0;
+    return 0;
 
     if(true)
     {
