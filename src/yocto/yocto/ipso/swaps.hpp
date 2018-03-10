@@ -53,6 +53,9 @@ namespace yocto
             static  const char *pos2txt( const unsigned flag ) throw();
             static  string      flg2str( const unsigned flags);
 
+            void join( const swaps &other );
+
+
             //! compute the coordinates in 1D, according to settings
             void load(const patch1D &inner,
                       const patch1D &outer,

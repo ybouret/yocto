@@ -17,7 +17,7 @@ namespace yocto
         recv(),
         send(),
         count(0),
-	iobuf(),
+        iobuf(),
         source(source_rank),
         target(target_rank),
         layers(some_layers),
@@ -95,6 +95,24 @@ namespace yocto
             iobuf.set_bytes( count * block_size );
         }
 
+        void swaps:: join( const swaps &other )
+        {
+            assert(this!=&other);
+            swap    & _recv = (swap &)recv;
+            swap    & _send = (swap &)send;
+            const size_t total_count = count + other.count;
+            _recv.ensure(total_count);
+            _send.ensure(total_count);
+            for(size_t i=1;i<=other.count;++i)
+            {
+                _recv.__push_back(other.recv[i]);
+                _send.__push_back(other.send[i]);
+            }
+            assert(recv.size()==total_count);
+            assert(send.size()==total_count);
+            (size_t &)count = total_count;
+            // TODO: io_check
+        }
     }
 }
 
