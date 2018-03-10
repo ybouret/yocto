@@ -39,6 +39,7 @@ namespace yocto
             const size_t         source;    //!< rank of source
             const size_t         target;    //!< rank of target
             const coord1D        layers;    //!< number of extra layers
+            const bool           joined;    //!< flag for sanity
             const unsigned       pos;       //!< where it is
             swaps               *next;
             swaps               *prev;
@@ -53,8 +54,7 @@ namespace yocto
             static  const char *pos2txt( const unsigned flag ) throw();
             static  string      flg2str( const unsigned flags);
 
-            void join( const swaps &other );
-
+            
 
             //! compute the coordinates in 1D, according to settings
             void load(const patch1D &inner,
@@ -73,6 +73,10 @@ namespace yocto
 
             //! allocate I/O memory for block_size
             void allocate_for( const size_t block_size );
+
+            explicit swaps(const swaps &lhs, const swaps &rhs);
+
+            bool built() const throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps);
@@ -101,10 +105,38 @@ swap    & _send = (swap &)send;
                 }
                 return sum;
             }
+
+            void join()
+            {
+                std::cerr << " ** JOINING ** " << std::endl;
+                if(size<=0) return;
+                swaps::list tmp;
+                tmp.push_back( pop_front() );
+                while(size>0)
+                {
+                    swaps *swp = pop_front();
+                    if(swp->target==tmp.tail->target)
+                    {
+                        std::cerr << "\tshould join " << swaps::pos2txt(swp->pos) << " and " << swaps::pos2txt(tmp.tail->pos) << std::endl;
+                        swaps *j = new swaps(*(tmp.tail),*swp);
+                        delete swp;
+                        delete tmp.pop_back();
+                        tmp.push_back(j);
+                    }
+                    else
+                    {
+                        tmp.push_back(swp);
+                    }
+                }
+
+                swap_with(tmp);
+            }
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps_list);
         };
 
+#if 0
         //! a node with a handle on swaps
         class meta_swaps : public object
         {
@@ -176,10 +208,12 @@ swap    & _send = (swap &)send;
                 }
             }
 
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps_table);
         };
-
+#endif
+        
     }
 }
 #endif

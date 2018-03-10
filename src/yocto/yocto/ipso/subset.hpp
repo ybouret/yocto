@@ -29,7 +29,7 @@ namespace yocto
             const patch_type  outer;
             const swaps_list  local; //!< local swaps
             const swaps_list  async; //!< async swaps
-            const swaps_table links; //!< async, ranked by target
+            //const swaps_table links; //!< async, ranked by target
             subset           *next;  //!< for subset::list
             subset           *prev;  //!< for subset::list
             const score_t     score; //!< (inner.items,num_async,num_local)
@@ -87,7 +87,7 @@ namespace yocto
                 }
 
                 swaps::list & _local = (swaps::list &)local;
-                swaps::list & _async = (swaps::list &)async;
+                swaps_list  & _async = (swaps_list  &)async;
 
                 //______________________________________________________________
                 //
@@ -221,29 +221,35 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 //______________________________________________________________
                 load_cross_swaps(full,layers,pbcs,build);
 
+                if(build)
+                {
+                    _async.join();
+                }
 
                 //______________________________________________________________
                 //
                 // Pass 4: joining swaps
                 //______________________________________________________________
-
-
+#if 0
+                if(build)
+                {
+                    swaps_table &_links = (swaps_table &)links;
+                    for(const swaps *swp = async.head;swp;swp=swp->next)
+                    {
+                        _links.add(swp);
+                    }
+                    //_links.join();
+                }
+#endif
                 //______________________________________________________________
                 //
                 // Pass 5: loading cross swaps
                 //______________________________________________________________
                 set_score();
 
-                //______________________________________________________________
-                //
-                // Pass 4: build links
-                //______________________________________________________________
-                swaps_table &_links = (swaps_table &)links;
-                for(const swaps *swp = async.head;swp;swp=swp->next)
-                {
-                    _links.add(swp);
-                }
+                
             }
+
 
 
             //__________________________________________________________________
@@ -409,6 +415,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
             {
                 new ((void*)&score) score_t( inner.items,async.counts(),local.counts());
             }
+
+
         };
 
 
@@ -477,9 +485,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                                     const patch<COORD> &full,
                                     const size_t        layers,
                                     const COORD         pbcs) :
-		    subsets<COORD>::list(),
-		    optimal(0),
-		    fallback(0)
+            subsets<COORD>::list(),
+            optimal(0),
+            fallback(0)
             {
                 setup(cpus,full,layers,pbcs);
                 typename subsets<COORD>::list &self = *this;
