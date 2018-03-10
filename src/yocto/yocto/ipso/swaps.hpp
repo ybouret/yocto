@@ -5,8 +5,6 @@
 #include "yocto/ipso/swap-buffers.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/counted-object.hpp"
-#include "yocto/ptr/intr.hpp"
-#include "yocto/associative/set.hpp"
 
 namespace yocto
 {
@@ -108,7 +106,7 @@ swap    & _send = (swap &)send;
 
             void join()
             {
-                std::cerr << " ** JOINING ** " << std::endl;
+                //std::cerr << " ** JOINING ** " << std::endl;
                 if(size<=0) return;
                 swaps::list tmp;
                 tmp.push_back( pop_front() );
@@ -117,7 +115,7 @@ swap    & _send = (swap &)send;
                     swaps *swp = pop_front();
                     if(swp->target==tmp.tail->target)
                     {
-                        std::cerr << "\tshould join " << swaps::pos2txt(swp->pos) << " and " << swaps::pos2txt(tmp.tail->pos) << std::endl;
+                        //std::cerr << "\tshould join " << swaps::pos2txt(swp->pos) << " and " << swaps::pos2txt(tmp.tail->pos) << std::endl;
                         swaps *j = new swaps(*(tmp.tail),*swp);
                         delete swp;
                         delete tmp.pop_back();
@@ -136,83 +134,6 @@ swap    & _send = (swap &)send;
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps_list);
         };
 
-#if 0
-        //! a node with a handle on swaps
-        class meta_swaps : public object
-        {
-        public:
-            typedef core::list_of_cpp<meta_swaps> list;
-            const swaps * const handle;
-            meta_swaps  *       next;
-            meta_swaps  *       prev;
-
-            explicit meta_swaps( const swaps *swp ) throw() :handle(swp), next(0), prev(0) {}
-            virtual ~meta_swaps() throw() {}
-            YOCTO_DISABLE_COPY_AND_ASSIGN(meta_swaps);
-        };
-
-        //! a list of swaps with the same target, and obviously the same source
-        class meta_swaps_list : public counted_object, public meta_swaps::list
-        {
-        public:
-            typedef intr_ptr<size_t,meta_swaps_list> pointer;
-            typedef set<size_t,pointer>              table;
-
-            const size_t target;
-            explicit meta_swaps_list(const size_t tgt) throw() : target(tgt) {}
-            virtual ~meta_swaps_list() throw() {}
-
-            const size_t & key() const throw() { return target; }
-
-            bool owns( const swaps *swp)
-            {
-                for(const meta_swaps *ms = this->head;ms;ms=ms->next)
-                {
-                    if(swp==ms->handle) return true;
-                }
-                return false;
-            }
-
-            void add( const swaps *swp )
-            {
-                assert(swp); assert(target==swp->target); assert(!owns(swp));
-                push_back( new meta_swaps(swp) );
-            }
-
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(meta_swaps_list);
-        };
-
-        //! a table of meta_swaps_list, to group swaps by targets
-        class swaps_table : public meta_swaps_list::table
-        {
-        public:
-            explicit swaps_table() throw() : meta_swaps_list::table() {}
-            virtual ~swaps_table() throw() {}
-
-            void add( const swaps *swp )
-            {
-                assert(swp);
-                const size_t tgt = swp->target;
-                meta_swaps_list::pointer *ppL = search(tgt);
-                if(ppL)
-                {
-                    (*ppL)->add(swp);
-                }
-                else
-                {
-                    meta_swaps_list *pL = new meta_swaps_list(tgt);
-                    const meta_swaps_list::pointer q(pL);
-                    if(!insert(q)) throw exception("swaps_table unexpected failure");
-                    pL->add(swp);
-                }
-            }
-
-
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(swaps_table);
-        };
-#endif
         
     }
 }

@@ -28,9 +28,9 @@ namespace yocto
             {
             }
 
-            inline void __sendrecv(swap_buffers iobuf,
-                                   const int    send_peer,
-                                   const int    recv_peer) const
+            inline void __sendrecv(swap_buffers &iobuf,
+                                   const int     send_peer,
+                                   const int     recv_peer) const
             {
                 MPI_Status status;
                 assert(iobuf.in_recv()==iobuf.in_send());
@@ -39,51 +39,11 @@ namespace yocto
                              MPI_COMM_WORLD,status);
             }
 
-#if 0
-            //! wraps a send/recv operation
-            inline void __sendrecv(const mpi             &MPI,
-                                   const exchange_buffer &snd,
-                                   const int              snd_peer,
-                                   exchange_buffer       &rcv,
-                                   const int              rcv_peer) const
-
+            inline void exchange(const swaps *swp) const
             {
-                MPI_Status status;
-                MPI.Sendrecv(snd.addr(), snd.load(), MPI_BYTE, snd_peer, tag,
-                             rcv.addr(), rcv.load(), MPI_BYTE, rcv_peer, tag,
-                             MPI_COMM_WORLD,status);
+                assert(swp);
+                __sendrecv(swp->iobuf,swp->target,swp->target);
             }
-
-            //! perform MPI data exchange
-            inline void __exchange1D(const ghosts::list     &gl,
-                                     exchange_buffers::list &bl)
-            {
-                assert(gl.size==bl.size);
-                switch(gl.size)
-                {
-                    case 1: {
-                        const ghosts     &g = *(gl.head);
-                        exchange_buffers &b = *(bl.head);
-                        assert( b.send.load() == b.recv.load() );
-                        __sendrecv(MPI,b.send,g.target,b.recv,g.target);
-                    } break;
-
-                    case 2:{
-                        const ghosts     &g_lo = *(gl.head);
-                        const ghosts     &g_up = *(gl.tail);
-                        exchange_buffers &b_lo = *(bl.head);
-                        exchange_buffers &b_up = *(bl.tail);
-                        // up to lo
-                        __sendrecv(MPI,b_up.send,g_up.target,b_lo.recv,g_lo.target);
-                        // lo to up
-                        __sendrecv(MPI,b_lo.send,g_lo.target,b_up.recv,g_up.target);
-                    } break;
-
-                    default:
-                        break;
-                }
-            }
-#endif
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(async_ops);
@@ -106,15 +66,16 @@ namespace yocto
             {
             }
 
-#if 0
             //! perform synchronization on loaded buffers
             inline void synchronize()
             {
-                for(size_t dim=0;dim<workspace<COORD>::DIM;++dim)
+                for(const swaps *swp=this->async.head;swp;swp=swp->next)
                 {
-                    __exchange1D(this->async[dim],this->iobuf[dim]);
+                    exchange(swp);
                 }
             }
+
+
 
             //! for one field of some fields, using overloaded sync_store
             template <typename FIELD_TYPE>
@@ -126,8 +87,7 @@ namespace yocto
                 synchronize();
                 this->sync_query(F);
             }
-#endif
-
+            
             inline virtual ~mpi_workspace() throw()
             {
             }

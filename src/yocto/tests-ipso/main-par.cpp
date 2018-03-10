@@ -8,45 +8,6 @@
 using namespace yocto;
 using namespace ipso;
 
-#if 0
-template <typename COORD>
-static inline
-void mpi_xch( mpi_workspace<COORD> &W )
-{
-    YOCTO_MPI_GET();
-
-    field_info &A = W["A"];
-    field_info &B = W["B"];
-
-    fields fvar(2);
-    fvar.append(A);
-    fvar.append(B);
-
-    W.sync_store_begin();
-    W.sync_store(fvar);
-    W.sync_store_end();
-
-    string topology;
-    for(size_t dim=0;dim<W.DIM;++dim)
-    {
-        topology << "| " << __coord_name(dim) << ":";
-        const ghosts::list &gl = W.async[dim];
-        topology << vformat(" #async=%u", unsigned(gl.size) );
-        for(const ghosts *G=gl.head;G;G=G->next)
-        {
-            topology << vformat(" (%2u<->%2u@%s: %4u)", unsigned(G->source), unsigned(G->target), ghosts::location2text(G->location), unsigned(G->count));
-        }
-        topology << " ";
-
-    }
-    MPI.Printf(stderr, "topology %s \n", *topology);
-    MPI.Printf0(stderr,"perform exchange...\n");
-
-    W.synchronize();
-    W.sync_query(fvar);
-
-}
-#endif
 
 YOCTO_PROGRAM_START()
 {
@@ -59,6 +20,8 @@ YOCTO_PROGRAM_START()
         local_fs & fs = local_fs::instance();
         fs.remove_files_with_extension_in("./", "vtk");
     }
+    MPI.Barrier(MPI_COMM_WORLD);
+    
     if(argc<=3)
     {
         throw exception("usage: %s DIMS PBCS LAYERS", argv[0]);
@@ -106,17 +69,33 @@ YOCTO_PROGRAM_START()
         fields fvar;
         fvar << W["A"] << W["B"];
 
+        W.allocate_swaps_for( fvar.block_size() );
+
         // initialize fields
+        A.ldz();
         for(unit_t i=W.inner.lower;i<=W.inner.upper;++i)
         {
             A[i] = double(i);
             B[i] = -float(i);
         }
-        
+
+        {
+            const string fn = "f1_ini" + MPI.CommWorldID + ".vtk";
+            ios::wcstream fp(fn);
+            VTK::InitSaveScalars(fp, "1D",A,A);
+        }
+
+        W.synchronize(fvar);
+
+        {
+            const string fn = "f1_end" + MPI.CommWorldID + ".vtk";
+            ios::wcstream fp(fn);
+            VTK::InitSaveScalars(fp, "1D",A,A);
+        }
     }
 
 
-    if( true )
+    if( false )
     {
         MPI.Printf0(stderr, "\nin 2D\n" );
         const patch2D region(coord2D(1,1),dims.xy());

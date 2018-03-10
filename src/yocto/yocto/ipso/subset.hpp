@@ -226,24 +226,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                     _async.join();
                 }
 
+                
                 //______________________________________________________________
                 //
-                // Pass 4: joining swaps
-                //______________________________________________________________
-#if 0
-                if(build)
-                {
-                    swaps_table &_links = (swaps_table &)links;
-                    for(const swaps *swp = async.head;swp;swp=swp->next)
-                    {
-                        _links.add(swp);
-                    }
-                    //_links.join();
-                }
-#endif
-                //______________________________________________________________
-                //
-                // Pass 5: loading cross swaps
+                // Pass 4: setting scores
                 //______________________________________________________________
                 set_score();
 

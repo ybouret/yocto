@@ -80,6 +80,15 @@ namespace yocto
             recv_curr = recv_last - in_send();
         }
 
+        const void *swap_buffers:: send_addr() const throw()
+        {
+            return send_base;
+        }
+
+        void *swap_buffers:: recv_addr() throw()
+        {
+            return (void *)recv_curr;
+        }
     }
 }
 
