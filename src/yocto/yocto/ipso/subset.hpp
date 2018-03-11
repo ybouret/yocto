@@ -208,6 +208,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 swaps_addr_list &_asyncs = (swaps_addr_list &)asyncs;
                 for(int dim=DIM-1;dim>=0;--dim)
                 {
+                    async[dim].__sort();
                     for(swaps *swp = async[dim].tail; swp; swp=swp->prev )
                     {
                         _asyncs.append(swp);

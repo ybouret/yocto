@@ -6,6 +6,7 @@
 #include "yocto/sequence/vector.hpp"
 #include "yocto/counted-object.hpp"
 #include "yocto/sequence/addr-list.hpp"
+#include "yocto/sort/merge.hpp"
 
 namespace yocto
 {
@@ -76,6 +77,8 @@ namespace yocto
 
             bool built() const throw();
 
+            static int compare_by_pos(const swaps *lhs, const swaps *rhs, void *) throw();
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps);
             void allocate();
@@ -93,8 +96,10 @@ swap    & _send = (swap &)send;
             inline explicit swaps_list() throw() : swaps::list() {}
             inline virtual ~swaps_list() throw() {}
 
+
+
             //! total list of counts for optimal partition
-            inline size_t   counts() const throw()
+            inline size_t counts() const throw()
             {
                 size_t sum = 0;
                 for(const swaps *swp=head;swp;swp=swp->next)
@@ -102,6 +107,13 @@ swap    & _send = (swap &)send;
                     sum += swp->count;
                 }
                 return sum;
+            }
+
+            inline void __sort() const throw()
+            {
+                const swaps::list &_self = *this;
+                swaps::list       &self  = (swaps::list &)_self;
+                core::merging<swaps>::sort(self,swaps::compare_by_pos,NULL);
             }
 
 #if 0

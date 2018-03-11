@@ -103,6 +103,13 @@ namespace yocto
         }
 
 
+        int swaps::compare_by_pos(const swaps *lhs, const swaps *rhs, void *) throw()
+        {
+            assert(lhs);
+            assert(rhs);
+            return int(lhs->pos)-int(rhs->pos);
+        }
+
 #if 0
         swaps:: swaps(const swaps &lhs, const swaps &rhs) :
         recv(lhs.count+rhs.count),

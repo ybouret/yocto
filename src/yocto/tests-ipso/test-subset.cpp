@@ -31,7 +31,15 @@ static inline void show_subs( const subsets<COORD> &subs )
             show_swaps(*swp);
         }
         std::cerr << "\t#asyncs=" << sub->asyncs.size << std::endl;
-#if 1
+        for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
+        {
+            std::cerr << "-- Dimension " << dim << std::endl;
+            for(const swaps *swp = sub->async[dim].head; swp; swp=swp->next)
+            {
+                show_swaps(*swp);
+            }
+        }
+#if 0
         for(const swaps_addr_node *swp = sub->asyncs.head; swp;swp=swp->next)
         {
             show_swaps(**swp);
@@ -148,7 +156,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
             check_io(sub,fvar);
         }
     }
-   // return 0;
+    return 0;
     
     if(true)
     {
