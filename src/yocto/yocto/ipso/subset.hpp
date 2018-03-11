@@ -58,6 +58,7 @@ namespace yocto
             outer( inner ),
             local(),
             async(),
+	    asyncs(),
             next(0),
             prev(0),
             score()
