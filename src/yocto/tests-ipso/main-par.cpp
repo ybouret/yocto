@@ -18,6 +18,16 @@ static inline void write_topoly( const swaps_addr_list &asyncs )
         ans += "\t";
         ans += swaps::flg2str(s.pos);
         ans += vformat(" %u->%u", unsigned(s.source), unsigned(s.target) );
+        ans += "\n\t\t|_send:";
+        for(size_t i=1;i<=s.send.size();++i)
+        {
+            ans += vformat(" %d", int(s.send[i]));
+        }
+        ans += "\n\t\t|_recv:";
+        for(size_t i=1;i<=s.recv.size();++i)
+        {
+            ans += vformat(" %d", int(s.recv[i]));
+        }
         ans += "\n";
     }
     MPI.Printf(stderr,"%s\n",*ans);

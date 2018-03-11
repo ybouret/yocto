@@ -47,13 +47,20 @@ namespace yocto
                         return;
 
                     case 1: {
+                        // only one exchange
                         const swaps &swp = *(L.head);
                         __sendrecv(swp.iobuf,swp.target,swp.target);
                     } return;
 
-                    case 2:
-
-                        return;
+                    case 2: {
+                        const swaps &lower = *(L.head);
+                        const swaps &upper = *(L.tail);
+                        assert(lower.pos<upper.pos);
+                        // lower to upper
+                        __sendrecv(lower.iobuf,lower.target,lower.target);
+                        // upper to lower
+                        __sendrecv(upper.iobuf,upper.target,upper.target);
+                    } return;
 
                     default: // shouldn't happen
                         break;
