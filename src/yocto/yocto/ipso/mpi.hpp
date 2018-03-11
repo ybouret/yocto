@@ -39,11 +39,13 @@ namespace yocto
                              MPI_COMM_WORLD,status);
             }
 
+#if 0
             inline void exchange(const swaps *swp) const
             {
                 assert(swp);
                 __sendrecv(swp->iobuf,swp->target,swp->target);
             }
+#endif
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(async_ops);
@@ -69,10 +71,12 @@ namespace yocto
             //! perform synchronization on loaded buffers
             inline void synchronize()
             {
+#if 0
                 for(const swaps *swp=this->async.head;swp;swp=swp->next)
                 {
                     exchange(swp);
                 }
+#endif
             }
 
 

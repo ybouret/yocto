@@ -5,6 +5,7 @@
 #include "yocto/ipso/swap-buffers.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/counted-object.hpp"
+#include "yocto/sequence/addr-list.hpp"
 
 namespace yocto
 {
@@ -37,7 +38,6 @@ namespace yocto
             const size_t         source;    //!< rank of source
             const size_t         target;    //!< rank of target
             const coord1D        layers;    //!< number of extra layers
-            const bool           joined;    //!< flag for sanity
             const unsigned       pos;       //!< where it is
             swaps               *next;
             swaps               *prev;
@@ -104,6 +104,7 @@ swap    & _send = (swap &)send;
                 return sum;
             }
 
+#if 0
             void join()
             {
                 //std::cerr << " ** JOINING ** " << std::endl;
@@ -129,12 +130,14 @@ swap    & _send = (swap &)send;
 
                 swap_with(tmp);
             }
+#endif
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps_list);
         };
 
-        
+        typedef addr_list<swaps> swaps_addr_list;
+        typedef addr_node<swaps> swaps_addr_node;
     }
 }
 #endif

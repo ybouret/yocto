@@ -30,27 +30,14 @@ static inline void show_subs( const subsets<COORD> &subs )
         {
             show_swaps(*swp);
         }
-        std::cerr << "\t#async=" << sub->async.size << std::endl;
+        std::cerr << "\t#asyncs=" << sub->asyncs.size << std::endl;
 #if 1
-        for(const swaps *swp = sub->async.head; swp;swp=swp->next)
+        for(const swaps_addr_node *swp = sub->asyncs.head; swp;swp=swp->next)
         {
-            show_swaps(*swp);
+            show_swaps(**swp);
         }
 #endif
-#if 0
-        std::cerr << "\t#target=" << sub->links.size() << std::endl;
-        for( swaps_table::const_iterator i=sub->links.begin(); i!= sub->links.end(); ++i)
-        {
-            const meta_swaps_list &msl = **i;
-            std::cerr << "\t       |_to target " << msl.target << ": #" << msl.size;
-            for(const meta_swaps *ms = msl.head; ms; ms=ms->next)
-            {
-                const swaps &swp = *(ms->handle);
-                std::cerr << " @" << swaps::flg2str(swp.pos) << " " << swp.source << "->" << swp.target;
-            }
-            std::cerr << std::endl;
-        }
-#endif
+
         std::cerr << std::endl;
     }
 }
@@ -152,7 +139,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
             F1.ldz();
             F1.ld_on(sub->inner,BULK);
             mark(F1,sub->local.head,1,2);
-            mark(F1,sub->async.head,3,4);
+            mark(F1,sub->async[0].head,3,4);
 
             const string  fn = vformat("f1d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
@@ -188,7 +175,8 @@ YOCTO_UNIT_TEST_IMPL(subset)
             F1.ldz();
             F1.ld_on(sub->inner,BULK);
             mark(F1,sub->local.head,1,2);
-            mark(F1,sub->async.head,3,4);
+            mark(F1,sub->async[0].head,3,4);
+            mark(F1,sub->async[1].head,3,4);
 
             const string  fn = vformat("f2d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);
@@ -199,8 +187,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
         }
     }
 
-    return 0;
-
+    
     if(true)
     {
         std::cerr << std::endl << "-------- 3D --------" << std::endl;
@@ -226,7 +213,9 @@ YOCTO_UNIT_TEST_IMPL(subset)
             F1.ldz();
             F1.ld_on(sub->inner,BULK);
             mark(F1,sub->local.head,1,2);
-            mark(F1,sub->async.head,3,4);
+            mark(F1,sub->async[0].head,3,4);
+            mark(F1,sub->async[1].head,3,4);
+            mark(F1,sub->async[2].head,3,4);
 
             const string  fn = vformat("f3d_%u.vtk",unsigned(sub->rank));
             ios::wcstream fp(fn);

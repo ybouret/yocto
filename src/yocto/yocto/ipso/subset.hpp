@@ -23,16 +23,16 @@ namespace yocto
             typedef patch<COORD>              patch_type;
             static const size_t               DIM = YOCTO_IPSO_DIM_OF(COORD);
 
-            const size_t      rank;
-            const COORD       ranks;
-            const patch_type  inner;
-            const patch_type  outer;
-            const swaps_list  local; //!< local swaps
-            const swaps_list  async; //!< async swaps
-            //const swaps_table links; //!< async, ranked by target
-            subset           *next;  //!< for subset::list
-            subset           *prev;  //!< for subset::list
-            const score_t     score; //!< (inner.items,num_async,num_local)
+            const size_t          rank;
+            const COORD           ranks;
+            const patch_type      inner;
+            const patch_type      outer;
+            const swaps_list      local; //!< local swaps, by pair
+            const swaps_list      async[DIM]; //!< async swaps
+            const swaps_addr_list asyncs; //!< asyncs collection
+            subset               *next;  //!< for subset::list
+            subset               *prev;  //!< for subset::list
+            const score_t         score; //!< (inner.items,num_async,num_local)
 
 
 
@@ -87,24 +87,23 @@ namespace yocto
                 }
 
                 swaps::list & _local = (swaps::list &)local;
-                swaps_list  & _async = (swaps_list  &)async;
 
                 //______________________________________________________________
                 //
                 // build outer patch and straight swaps
                 //______________________________________________________________
 #define         YOCTO_IPSO_LOWER_SWAPS(KIND) \
-do { const unsigned flag = swaps::dim2pos(dim,-1); /*_##KIND##_flags |= flag;*/ _##KIND.push_back( new swaps(rank, full.prev_rank(ranks,dim), layers, flag) ); } while(false)
+do { const unsigned flag = swaps::dim2pos(dim,-1); _##KIND.push_back( new swaps(rank, full.prev_rank(ranks,dim), layers, flag) ); } while(false)
 #define         YOCTO_IPSO_UPPER_SWAPS(KIND) \
-do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ _##KIND.push_back( new swaps(rank, full.next_rank(ranks,dim), layers, flag) ); } while(false)
+do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(rank, full.next_rank(ranks,dim), layers, flag) ); } while(false)
 
 
                 COORD lower = inner.lower;
                 COORD upper = inner.upper;
-                //unsigned & _local_flags = (unsigned &)local_flags;
-                //unsigned & _async_flags = (unsigned &)async_flags;
+
                 for(size_t dim=0;dim<DIM;++dim)
                 {
+                    swaps_list  & _async = (swaps_list  &)(async[dim]);
                     //__________________________________________________________
                     //
                     // Pass 1: computing outer patch
@@ -205,9 +204,14 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 //
                 // Pass 2: loading straight swaps
                 //______________________________________________________________
-                for(swaps *swp = async.tail; swp; swp=swp->prev )
+                swaps_addr_list &_asyncs = (swaps_addr_list &)asyncs;
+                for(int dim=DIM-1;dim>=0;--dim)
                 {
-                    swp->load(inner,outer,build);
+                    for(swaps *swp = async[dim].tail; swp; swp=swp->prev )
+                    {
+                        _asyncs.append(swp);
+                        swp->load(inner,outer,build);
+                    }
                 }
 
                 for(swaps *swp = local.tail; swp; swp=swp->prev )
@@ -221,11 +225,12 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 //______________________________________________________________
                 load_cross_swaps(full,layers,pbcs,build);
 
+#if 0
                 if(build)
                 {
-                    _async.join();
+                    async.join();
                 }
-
+#endif
                 
                 //______________________________________________________________
                 //
@@ -244,10 +249,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
             //__________________________________________________________________
             inline void allocate_swaps_for( const size_t block_size )
             {
-                swaps::list & _async = (swaps::list &)async;
-                for( swaps *swp = _async.head;swp;swp=swp->next)
+                for( const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next)
                 {
-                    swp->allocate_for(block_size);
+                    swp->addr->allocate_for(block_size);
                 }
             }
 
@@ -289,9 +293,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
             //__________________________________________________________________
             inline void sync_store_begin() throw()
             {
-                for(const swaps *swp = async.head;swp;swp=swp->next )
+                for(const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next )
                 {
-                    swp->iobuf.reset();
+                    swp->addr->iobuf.reset();
                 }
             }
 
@@ -302,9 +306,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
             inline void sync_store( field_info &f ) throw()
             {
                 f.swap_local(local);
-                for(const swaps *swp = async.head;swp;swp=swp->next )
+                for(const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next )
                 {
-                    f.swap_store(*swp);
+                    f.swap_store(**swp);
                 }
             }
 
@@ -315,9 +319,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
                 {
                     fvar[i]->swap_local(local);
                 }
-                for(const swaps *swp = async.head;swp;swp=swp->next )
+                for(const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next )
                 {
-                    const swaps &s = *swp;
+                    const swaps &s = **swp;
                     for(size_t i=nvar;i>0;--i)
                     {
                         fvar[i]->swap_store(s);
@@ -333,9 +337,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
             //__________________________________________________________________
             inline void sync_store_end() throw()
             {
-                for(const swaps *swp = async.head;swp;swp=swp->next )
+                for(const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next )
                 {
-                    swp->iobuf.prepare_recv();
+                    swp->addr->iobuf.prepare_recv();
                 }
             }
 
@@ -368,18 +372,18 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
             //__________________________________________________________________
             inline void sync_query( field_info &f ) throw()
             {
-                for(const swaps *swp = async.head;swp;swp=swp->next )
+                for(const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next )
                 {
-                    f.swap_query(*swp);
+                    f.swap_query(**swp);
                 }
             }
 
             inline void sync_query( fields &fvar ) throw()
             {
                 const size_t nvar = fvar.size();
-                for(const swaps *swp = async.head;swp;swp=swp->next )
+                for(const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next )
                 {
-                    const swaps &s = *swp;
+                    const swaps &s = *(swp->addr);
                     for(size_t i=nvar;i>0;--i)
                     {
                         fvar[i]->swap_query(s);
@@ -399,7 +403,12 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); /*_##KIND##_flags |= flag;*/ 
 
             inline void set_score() throw()
             {
-                new ((void*)&score) score_t( inner.items,async.counts(),local.counts());
+                size_t num_async = 0;
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    num_async += async[dim].counts();
+                }
+                new ((void*)&score) score_t( inner.items,num_async,local.counts());
             }
 
 

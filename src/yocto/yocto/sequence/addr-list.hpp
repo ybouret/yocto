@@ -3,6 +3,7 @@
 
 #include "yocto/core/list.hpp"
 #include "yocto/object.hpp"
+#include "yocto/type/args.hpp"
 
 namespace yocto
 {
@@ -11,14 +12,18 @@ namespace yocto
     class addr_node
     {
     public:
-        YOCTO_MAKE_OBJECT
-        
+        YOCTO_MAKE_OBJECT YOCTO_ARGUMENTS_DECL_T;
+
+
         addr_node *next; //!< for list
         addr_node *prev; //!< for list
-        T         *addr; //!< for object
-        inline  addr_node( T *ptr ) throw() : next(0), prev(0), addr(ptr) {}
-        inline ~addr_node() throw() { addr=0; }
+        type      *addr; //!< for object
         
+        inline  addr_node( type *ptr ) throw() : next(0), prev(0), addr(ptr) {}
+        inline ~addr_node() throw() { addr=0; }
+        inline type       & operator*() throw()       { assert(addr); return *addr; }
+        inline const_type & operator*() const throw() { assert(addr); return *addr; }
+
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(addr_node);
     };

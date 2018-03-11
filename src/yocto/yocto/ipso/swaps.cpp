@@ -21,7 +21,6 @@ namespace yocto
         source(source_rank),
         target(target_rank),
         layers(some_layers),
-        joined(false),
         pos(where),
         next(0),
         prev(0)
@@ -104,6 +103,7 @@ namespace yocto
         }
 
 
+#if 0
         swaps:: swaps(const swaps &lhs, const swaps &rhs) :
         recv(lhs.count+rhs.count),
         send(recv.size()),
@@ -144,7 +144,7 @@ namespace yocto
             std::cerr << "\t  |_send=" << send << std::endl;
             std::cerr << "\t  |_recv=" << recv << std::endl;
         }
-
+#endif
 
     }
 }
