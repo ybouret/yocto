@@ -39,12 +39,6 @@ static inline void show_subs( const subsets<COORD> &subs )
                 show_swaps(*swp);
             }
         }
-#if 0
-        for(const swaps_addr_node *swp = sub->asyncs.head; swp;swp=swp->next)
-        {
-            show_swaps(**swp);
-        }
-#endif
 
         std::cerr << std::endl;
     }

@@ -8,6 +8,20 @@
 using namespace yocto;
 using namespace ipso;
 
+static inline void write_topoly( const swaps_addr_list &asyncs )
+{
+    YOCTO_MPI_GET();
+    string ans = "Topology:\n";
+    for(const swaps_addr_node *swp=asyncs.head;swp;swp=swp->next)
+    {
+        const swaps &s = **swp;
+        ans += "\t";
+        ans += swaps::flg2str(s.pos);
+        ans += vformat(" %u->%u", unsigned(s.source), unsigned(s.target) );
+        ans += "\n";
+    }
+    MPI.Printf(stderr,"%s\n",*ans);
+}
 
 YOCTO_PROGRAM_START()
 {
@@ -20,6 +34,7 @@ YOCTO_PROGRAM_START()
         local_fs & fs = local_fs::instance();
         fs.remove_files_with_extension_in("./", "vtk");
     }
+    // avoid removing newly created files!
     MPI.Barrier(MPI_COMM_WORLD);
     
     if(argc<=3)
@@ -63,6 +78,7 @@ YOCTO_PROGRAM_START()
         divide::in1D           full(sizes,region);
         mpi_workspace<coord1D> W(MPI,full,layers,PBCS);
         MPI.Printf(stderr,"workspace @rank=%d, #items=%u\n", int(W.rank), unsigned(W.inner.items) );
+        write_topoly(W.asyncs);
         field1D<double> &A = W.create< field1D<double> >("A");
         field1D<float>  &B = W.create< field1D<float>  >("B");
 
