@@ -35,7 +35,7 @@ namespace yocto
                                Engine               &engine,
                                const bool            normalize)
             {
-                std::cerr << "Apply stencil '" << this->name << "' " << *this << std::endl;
+                //std::cerr << "Apply stencil '" << this->name << "' " << *this << std::endl;
                 tgt = &target;
                 src = &source;
                 nrm = normalize;
@@ -66,6 +66,7 @@ namespace yocto
                 _apply<RGB,uint8_t,3>(target,source,engine,normalize);
             }
 
+            void display() const;
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Stencil);
@@ -95,7 +96,7 @@ namespace yocto
                         for(unit_t yy=upper.y;yy>=lower.y;--yy)
                         {
                             const unit_t y = source.zfy(j+yy);
-                            for(unit_t xx=-dx;xx<=dx;++xx)
+                            for(unit_t xx=upper.x;xx>=lower.x;--xx)
                             {
                                 const float   w = self[yy][xx];
                                 const unit_t  x = source.zfx(i+xx);
@@ -106,7 +107,9 @@ namespace yocto
                         // end accumulation
                         if(nrm)
                         {
+                            for(size_t i=0;i<CHANNELS;++i) { std::cerr << " " << wsum[i]; }
                             vecops<CHANNELS>::mul(wsum,factor);
+                            std::cerr << " ->";for(size_t i=0;i<CHANNELS;++i) { std::cerr << " " << wsum[i]; } std::cerr << std::endl;
                         }
                         SCALAR *q = (SCALAR *)&target[j][i];
                         for(size_t ch=0;ch<CHANNELS;++ch)
@@ -157,6 +160,43 @@ namespace yocto
         };
 
 
+        class Scharr3Y : public Stencil
+        {
+        public:
+            inline explicit Scharr3Y() : Stencil("Scharr3Y",1,1)
+            {
+                StencilType &self = *this;
+                self[1][-1]  =  3; self[1][0]   =  10; self[1][1]  =  3;
+                self[-1][-1] = -3; self[-1][ 0] = -10; self[-1][1] = -3;
+                compile();
+            }
+
+            inline virtual ~Scharr3Y() throw()
+            {
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Scharr3Y);
+        };
+
+        class Scharr3X : public Stencil
+        {
+        public:
+            inline explicit Scharr3X() : Stencil("Scharr3X",1,1)
+            {
+                StencilType &self = *this;
+                self[-1][-1] = -3; self[0][-1] = -10; self[1][-1] = -3;
+                self[-1][1]  =  3; self[0][1]  =  10; self[1][1]  = 3;
+                compile();
+            }
+
+            inline virtual ~Scharr3X() throw()
+            {
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Scharr3X);
+        };
 
     }
 }

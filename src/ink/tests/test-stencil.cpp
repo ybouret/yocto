@@ -11,40 +11,35 @@ using namespace Ink;
 static inline
 void run_stencil(Stencil           &sten,
                  const Pixmap<RGB> &img,
-                 Engine            &seq,
-                 Engine            &par)
+                 Engine            &eng)
 {
     YOCTO_IMG_IO();
-
+    sten.display();
+    
     Pixmap<RGB> pxm(img.w,img.h);
     sten.compile();
-    if(false)
+
+    sten.apply(pxm,img,eng,true);
     {
-        sten.apply(pxm,img,seq,true);
-        const string fn = "img3-" + sten.name + "-seq.png";
-        IMG.save(pxm,fn, NULL);
-    }
-    sten.apply(pxm,img,par,true);
-    {
-        const string fn = "img3-" + sten.name + "-par.png";
+        const string fn = "img3-" + sten.name + ".png";
         IMG.save(pxm,fn, NULL);
     }
 
     const Pixmap<float> img_gs(img,Convert::RGB2F);
     Pixmap<float>       pxm_gs(img.w,img.h);
     IMG.save(img_gs, "imgf.png", NULL);
-    sten.apply(pxm_gs,img_gs,par,true);
+    sten.apply(pxm_gs,img_gs,eng,true);
     {
-        const string fn = "imgf-" + sten.name + "-par.png";
+        const string fn = "imgf-" + sten.name + ".png";
         IMG.save(pxm_gs,fn, NULL);
     }
 
     const Pixmap<uint8_t> img1(img,Convert::RGB2U);
     Pixmap<uint8_t>       pxm1(img.w,img.h);
     IMG.save(img1, "img1.png", NULL);
-    sten.apply(pxm1,img1,par,true);
+    sten.apply(pxm1,img1,eng,true);
     {
-        const string fn = "img1-" + sten.name + "-par.png";
+        const string fn = "img1-" + sten.name + ".png";
         IMG.save(pxm1,fn, NULL);
     }
 
@@ -67,8 +62,10 @@ YOCTO_UNIT_TEST_IMPL(stencil)
     sten1x1.ld(1);
     sten3x1.ld(1);
     sten1x3.ld(1);
-    Sobel3Y sobel3y;
-    Sobel3X sobel3x;
+    Sobel3Y  sobel3y;
+    Sobel3X  sobel3x;
+    Scharr3Y scharr3y;
+    Scharr3X scharr3x;
 
     if(argc>1)
     {
@@ -81,11 +78,17 @@ YOCTO_UNIT_TEST_IMPL(stencil)
 
         Pixmap<RGB> pxm(img3.w,img3.h);
 
-        run_stencil(sten1x1,img3,seq,par);
-        run_stencil(sten3x1,img3,seq,par);
-        run_stencil(sten1x3,img3,seq,par);
-        run_stencil(sobel3y,img3,seq,par);
-        run_stencil(sobel3x,img3,seq,par);
+        Engine &eng = seq;
+#if 1
+        run_stencil(sten1x1,img3,eng);
+        run_stencil(sten3x1,img3,eng);
+        run_stencil(sten1x3,img3,eng);
+        run_stencil(sobel3y,img3,eng);
+        run_stencil(sobel3x,img3,eng);
+        run_stencil(scharr3y,img3,eng);
+        run_stencil(scharr3x,img3,eng);
+        run_stencil(sobel3y,img3,eng);
+#endif
 
     }
 

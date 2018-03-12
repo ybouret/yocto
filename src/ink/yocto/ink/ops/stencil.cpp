@@ -39,5 +39,19 @@ nrm(false)
             }
             std::cerr << "weight=" << weight << ", factor=" << factor << std::endl;
         }
+
+        void Stencil::display() const
+        {
+            const StencilType &self = *this;
+            std::cerr << name << ":" << std::endl;
+            for(unit_t y=upper.y;y>=lower.y;--y)
+            {
+                for(unit_t x=lower.x;x<=upper.x;++x)
+                {
+                    std::cerr << " " << self[y][x];
+                }
+                std::cerr << std::endl;
+            }
+        }
     }
 }
