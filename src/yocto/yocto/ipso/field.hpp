@@ -145,11 +145,13 @@ namespace yocto
                     {
                         const swaps *b = a->next;    assert(b!=NULL);
                         assert(a->count==b->count);
+#if 0
                         {
                             const string a_pos = a->flg2str(a->pos);
                             const string b_pos = b->flg2str(b->pos);
                             std::cerr << "local swap " << a_pos << " <-> " << b_pos << std::endl;
                         }
+#endif
 
                         const array<coord1D> &a_send = a->send;
                         const array<coord1D> &a_recv = a->recv;

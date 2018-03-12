@@ -8,10 +8,10 @@
 using namespace yocto;
 using namespace ipso;
 
-static inline void write_topoly( const swaps_addr_list &asyncs )
+static inline void write_topoly( const swaps_addr_list &asyncs, const int DIM )
 {
     YOCTO_MPI_GET();
-    string ans = "Topology:\n";
+    string ans = vformat("Topology in %dD:\n",DIM);
     for(const swaps_addr_node *swp=asyncs.head;swp;swp=swp->next)
     {
         const swaps &s = **swp;
@@ -66,7 +66,7 @@ YOCTO_PROGRAM_START()
 
     if( true )
     {
-        MPI.Printf0(stderr, "\nin 1D\n" );
+        MPI.Printf0(stderr, "\n-------- setting up in 1D --------\n");
         const patch1D region(1,dims.x);
         coord1D       fallback=0;
         const coord1D PBCS(pbcs.x);
@@ -88,7 +88,7 @@ YOCTO_PROGRAM_START()
         divide::in1D           full(sizes,region);
         mpi_workspace<coord1D> W(MPI,full,layers,PBCS);
         MPI.Printf(stderr,"workspace @rank=%d, #items=%u\n", int(W.rank), unsigned(W.inner.items) );
-        write_topoly(W.asyncs);
+        write_topoly(W.asyncs,1);
         field1D<double> &A = W.create< field1D<double> >("A");
         field1D<float>  &B = W.create< field1D<float>  >("B");
 
@@ -121,9 +121,9 @@ YOCTO_PROGRAM_START()
     }
 
 
-    if( false )
+    if( true )
     {
-        MPI.Printf0(stderr, "\nin 2D\n" );
+        MPI.Printf0(stderr, "\n-------- setting up in 2D --------\n");
         const patch2D region(coord2D(1,1),dims.xy());
         coord2D       fallback;
         const coord2D PBCS(pbcs.xy());
@@ -145,239 +145,52 @@ YOCTO_PROGRAM_START()
         divide::in2D           full(sizes,region);
         mpi_workspace<coord2D> W(MPI,full,layers,PBCS);
         MPI.Printf(stderr,"workspace @rank=%d, #items=%u\n", int(W.rank), unsigned(W.inner.items) );
+        write_topoly(W.asyncs,2);
         field2D<double> &A = W.create< field2D<double> >("A");
         field2D<float>  &B = W.create< field2D<float>  >("B");
 
         fields fvar;
         fvar << A << B;
+        W.allocate_swaps_for( fvar.block_size() );
 
         // initialize fields
+        const double xmin = full.lower.x;
+        const double xmax = full.upper.x;
+        const double xc   = (xmax+xmin)/2;
+        const double dx   = xmax-xmin;
+        const double ymin = full.lower.y;
+        const double ymax = full.upper.y;
+        const double yc   = (ymax+ymin)/2;
+        const double dy   = ymax-ymin;
         A.ldz();
         for(unit_t j=W.inner.lower.y;j<=W.inner.upper.y;++j)
         {
+            const double y = (double(j)-yc)/dy;
             for(unit_t i=W.inner.lower.x;i<=W.inner.upper.x;++i)
             {
-                A[j][i] = double(1+rank); //double(i*j);
-            }
-        }
-
-        B.ldz();
-
-
-    }
-
-
-#if 0
-    if(true)
-    {
-        MPI.Printf0(stderr, "\nin 1D\n" );
-        // setup from MPI
-        const patch1D region(1,dims.x);
-        coord1D       fallback=0;
-        coord1D       sizes = divider<coord1D>::optimal_for(region,size,&fallback);
-        if( __coord_prod(sizes) < size )
-        {
-            MPI.Printf0(stderr,"switching to fallback\n");
-            sizes = fallback;
-        }
-        if( __coord_prod(sizes) < size )
-        {
-            throw exception("unable to use %d cores", size);
-        }
-        if(0==rank)
-        {
-            fprintf(stderr,"sizes="); __coord_printf(stderr,sizes); fprintf(stderr,"\n");
-        }
-
-        // create divider
-        divide::in1D           full(sizes,region);
-
-        //create workspace
-        mpi_workspace<coord1D> W(MPI,full,ng,pbcs.x,32);
-        field1D<double> &A = W.create< field1D<double> >("A");
-        field1D<float>  &B = W.create< field1D<float>  >("B");
-
-
-
-        // initialize fields
-        for(unit_t i=W.inner.lower;i<=W.inner.upper;++i)
-        {
-            A[i] = double(i);
-            B[i] = -float(i);
-        }
-
-        {
-            const string  vtk = MPI.VTK_FileName("in1D_init");
-            ios::wcstream fp(vtk);
-            VTK::InitSaveScalars(fp, "in1D", A, W.outer);
-            VTK::SaveScalars(fp, B, W.outer);
-        }
-
-        // perform exchange
-        mpi_xch(W);
-
-        {
-            const string  vtk = MPI.VTK_FileName("in1D_sync");
-            ios::wcstream fp(vtk);
-            VTK::InitSaveScalars(fp, "in1D", A, W.outer);
-            VTK::SaveScalars(fp, B, W.outer);
-        }
-
-        fields fvar(2);
-        fvar.append(A);
-        fvar.append(B);
-
-        MPI.Printf0(stderr,"sync '%s' and '%s'\n", * A.name, *B.name );
-        W.synchronize(A);
-        W.synchronize(B);
-
-        MPI.Printf0(stderr,"sync fields\n");
-        W.synchronize(fvar);
-
-    }
-
-
-    if(true)
-    {
-        MPI.Printf0(stderr, "\nin 2D\n" );
-        // setup from MPI
-        const patch2D region(coord2D(1,1),dims.xy());
-        coord2D       fallback;
-        coord2D       sizes = divider<coord2D>::optimal_for(region,size,&fallback);
-        if( __coord_prod(sizes) < size )
-        {
-            MPI.Printf0(stderr,"switching to fallback\n");
-            sizes = fallback;
-        }
-        if( __coord_prod(sizes) < size )
-        {
-            throw exception("unable to use %d cores", size);
-        }
-        if(0==rank)
-        {
-            fprintf(stderr,"sizes="); __coord_printf(stderr,sizes); fprintf(stderr,"\n");
-        }
-
-        // create divider
-        divide::in2D           full(sizes,region);
-
-        //create workspace
-        mpi_workspace<coord2D> W(MPI,full,ng,pbcs.xy(),32);
-        field2D<double> &A = W.create< field2D<double> >("A");
-        field2D<float>  &B = W.create< field2D<float>  >("B");
-
-        // initialize fields
-        A.ldz();
-        for(unit_t j=W.inner.lower.y;j<=W.inner.upper.y;++j)
-        {
-            for(unit_t i=W.inner.lower.x;i<=W.inner.upper.x;++i)
-            {
-                A[j][i] = double(1+rank); //double(i*j);
-            }
-        }
-
-        B.ldz();
-
-        {
-            const string  vtk = MPI.VTK_FileName("in2D_init");
-            ios::wcstream fp(vtk);
-            VTK::InitSaveScalars(fp, "in2D", A, W.outer);
-        }
-
-        // perform exchange
-        mpi_xch(W);
-
-        {
-            const string  vtk = MPI.VTK_FileName("in2D_sync");
-            ios::wcstream fp(vtk);
-            VTK::InitSaveScalars(fp, "in2D", A, W.outer);
-        }
-
-        fields fvar(2);
-        fvar.append(A);
-        fvar.append(B);
-
-        MPI.Printf0(stderr,"sync '%s' and '%s'\n", * A.name, *B.name );
-        W.synchronize(A);
-        W.synchronize(B);
-
-        MPI.Printf0(stderr,"sync fields\n");
-        W.synchronize(fvar);
-
-    }
-
-    if(true)
-    {
-        MPI.Printf0(stderr, "\nin 3D\n" );
-        // setup from MPI
-        const patch3D region(coord3D(1,1,1),dims);
-        coord3D       fallback;
-        coord3D       sizes = divider<coord3D>::optimal_for(region,size,&fallback);
-        if( __coord_prod(sizes) < size )
-        {
-            MPI.Printf0(stderr,"switching to fallback\n");
-            sizes = fallback;
-        }
-        if( __coord_prod(sizes) < size )
-        {
-            throw exception("unable to use %d cores", size);
-        }
-        if(0==rank)
-        {
-            fprintf(stderr,"sizes="); __coord_printf(stderr,sizes); fprintf(stderr,"\n");
-        }
-
-        // create divider
-        divide::in3D           full(sizes,region);
-
-        //create workspace
-        mpi_workspace<coord3D> W(MPI,full,ng,pbcs,32);
-        field3D<double> &A = W.create< field3D<double> >("A");
-        field3D<float>  &B = W.create< field3D<float>  >("B");
-
-        // initialize fields
-        A.ldz();
-        for(unit_t k=W.inner.lower.z;k<=W.inner.upper.z;++k)
-        {
-            for(unit_t j=W.inner.lower.y;j<=W.inner.upper.y;++j)
-            {
-                for(unit_t i=W.inner.lower.x;i<=W.inner.upper.x;++i)
-                {
-                    A[k][j][i] = double(1+rank); //double(i*j);
-                }
+                const double x = (double(i)-xc)/dx;
+                A[j][i] = 2+cos(12*math::Hypotenuse(x,y));
             }
         }
         B.ldz();
+
         {
-            const string  vtk = MPI.VTK_FileName("in3D_init");
-            ios::wcstream fp(vtk);
-            VTK::InitSaveScalars(fp, "in2D", A, W.outer);
+            const string fn = "f2_ini" + MPI.CommWorldID + ".vtk";
+            ios::wcstream fp(fn);
+            VTK::InitSaveScalars(fp, "2D",A,A);
         }
 
-        // perform exchange
-        mpi_xch(W);
-        {
-            const string  vtk = MPI.VTK_FileName("in3D_sync");
-            ios::wcstream fp(vtk);
-            VTK::InitSaveScalars(fp, "in3D", A, W.outer);
-        }
-
-
-        fields fvar(2);
-        fvar.append(A);
-        fvar.append(B);
-
-        MPI.Printf0(stderr,"sync '%s' and '%s'\n", * A.name, *B.name );
-        W.synchronize(A);
-        W.synchronize(B);
-
-        MPI.Printf0(stderr,"sync fields\n");
         W.synchronize(fvar);
+
+        {
+            const string fn = "f2_end" + MPI.CommWorldID + ".vtk";
+            ios::wcstream fp(fn);
+            VTK::InitSaveScalars(fp, "2D",A,A);
+        }
 
     }
 
 
-#endif
     
 }
 YOCTO_PROGRAM_END()
