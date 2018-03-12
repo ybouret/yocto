@@ -15,9 +15,11 @@ dx(upper.x),                             \
 dy(upper.y),                            \
 tgt(0),                                \
 src(0),                               \
+negative_weight(0),\
+positive_weight(0),\
 weight(0),                           \
 factor(1),                          \
-nrm(false)
+nrm(false), vmin(0), vmax(0)
 
         Stencil:: Stencil(const string &id, const unit_t w, const unit_t h) :
         YOCTO_INK_STENCIL_CTOR() {}
@@ -29,15 +31,33 @@ nrm(false)
         {
             factor = 1;
             weight = 0;
+            positive_weight = 0;
+            negative_weight = 0;
             for(size_t i=0;i<count;++i)
             {
-                weight += math::Fabs( entry[i] );
+                const float w = entry[i];
+                if(w>0)
+                {
+                    positive_weight += w;
+                }
+                else
+                {
+                    if(w<0)
+                    {
+                        negative_weight -= w;
+                    }
+                    else
+                    {
+                        entry[i] = 0;
+                    }
+                }
             }
+            weight = positive_weight + negative_weight;
             if(weight>0)
             {
                 factor=1.0f/weight;
             }
-            std::cerr << "weight=" << weight << ", factor=" << factor << std::endl;
+            std::cerr << "pos=" << positive_weight << ", neg=" << negative_weight << ", weight=" << weight << ", factor=" << factor << std::endl;
         }
 
         void Stencil::display() const
@@ -53,5 +73,20 @@ nrm(false)
                 std::cerr << std::endl;
             }
         }
+
+        void Stencil:: print() const
+        {
+            std::cerr << name << "={";
+            for(size_t i=1;i<=count;++i)
+            {
+                std::cerr << " " << entry[i-1];
+                if(i<count)
+                {
+                    std::cerr << ",";
+                }
+            }
+            std::cerr << " }" << std::endl;
+        }
+
     }
 }

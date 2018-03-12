@@ -67,6 +67,11 @@ YOCTO_UNIT_TEST_IMPL(stencil)
     Scharr3Y scharr3y;
     Scharr3X scharr3x;
 
+    sobel3y.print();
+    sobel3x.print();
+    scharr3y.print();
+    scharr3x.print();
+
     if(argc>1)
     {
         const Pixmap<RGB> img3( IMG.loadRGB(argv[1],NULL) );

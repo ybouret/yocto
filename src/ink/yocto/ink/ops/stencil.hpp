@@ -39,6 +39,12 @@ namespace yocto
                 tgt = &target;
                 src = &source;
                 nrm = normalize;
+                if(nrm)
+                {
+                    vmin = -negative_weight * float( Pixel<SCALAR>::Opaque );
+                    vmax =  positive_weight * float( Pixel<SCALAR>::Opaque );
+                    //std::cerr << "vmin=" << vmin << ", vmax=" << vmax << std::endl;
+                }
                 engine.submit(this, &Stencil::applyRawThread<VECTOR,SCALAR,CHANNELS> );
             }
 
@@ -67,14 +73,19 @@ namespace yocto
             }
 
             void display() const;
-
+            void print() const;
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Stencil);
             void *       tgt;
             const void * src;
-            float        weight;
-            float        factor;
-            bool         nrm;
+            float        negative_weight;
+            float        positive_weight;
+            float        weight; //!< positive+negative
+            float        factor; //!< 1.0/weight
+            bool         nrm;    //!< if normalize
+            float        vmin;   //!< minimal value for this stencil
+            float        vmax;   //!< maximal value for this stencil
 
             template <
             typename     VECTOR,
@@ -107,9 +118,10 @@ namespace yocto
                         // end accumulation
                         if(nrm)
                         {
-                            for(size_t i=0;i<CHANNELS;++i) { std::cerr << " " << wsum[i]; }
-                            vecops<CHANNELS>::mul(wsum,factor);
-                            std::cerr << " ->";for(size_t i=0;i<CHANNELS;++i) { std::cerr << " " << wsum[i]; } std::cerr << std::endl;
+                            for(size_t i=0;i<CHANNELS;++i)
+                            {
+                                wsum[i] = (wsum[i]-vmin)*factor;
+                            }
                         }
                         SCALAR *q = (SCALAR *)&target[j][i];
                         for(size_t ch=0;ch<CHANNELS;++ch)
@@ -121,14 +133,19 @@ namespace yocto
             }
         };
 
+
         class Sobel3Y : public Stencil
         {
         public:
             inline explicit Sobel3Y() : Stencil("Sobel3Y",1,1)
             {
+                static const float mtx[9] = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
+                memcpy(entry,mtx,sizeof(mtx));
+#if 0
                 StencilType &self = *this;
                 self[1][-1]  =  1; self[1][0]   =  2; self[1][1]  =  1;
                 self[-1][-1] = -1; self[-1][ 0] = -2; self[-1][1] = -1;
+#endif
                 compile();
             }
 
@@ -145,9 +162,13 @@ namespace yocto
         public:
             inline explicit Sobel3X() : Stencil("Sobel3X",1,1)
             {
+                static const float mtx[9] = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
+                memcpy(entry,mtx,sizeof(mtx));
+#if 0
                 StencilType &self = *this;
                 self[-1][-1] = -1; self[0][-1] = -2; self[1][-1] = -1;
                 self[-1][1]  =  1; self[0][1]  =  2; self[1][1]  = 1;
+#endif
                 compile();
             }
 
@@ -165,9 +186,13 @@ namespace yocto
         public:
             inline explicit Scharr3Y() : Stencil("Scharr3Y",1,1)
             {
+                static const float mtx[9] = { -3, -10, -3, 0, 0, 0, 3, 10, 3 };
+                memcpy(entry,mtx,sizeof(mtx));
+#if 0
                 StencilType &self = *this;
                 self[1][-1]  =  3; self[1][0]   =  10; self[1][1]  =  3;
                 self[-1][-1] = -3; self[-1][ 0] = -10; self[-1][1] = -3;
+#endif
                 compile();
             }
 
@@ -184,9 +209,13 @@ namespace yocto
         public:
             inline explicit Scharr3X() : Stencil("Scharr3X",1,1)
             {
+                static const float mtx[9] = { -3, 0, 3, -10, 0, 10, -3, 0, 3 };
+                memcpy(entry,mtx,sizeof(mtx));
+#if 0
                 StencilType &self = *this;
                 self[-1][-1] = -3; self[0][-1] = -10; self[1][-1] = -3;
                 self[-1][1]  =  3; self[0][1]  =  10; self[1][1]  = 3;
+#endif
                 compile();
             }
 

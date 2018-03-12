@@ -382,7 +382,7 @@ namespace yocto
         unit_t Bitmap:: zfx(unit_t xx) const throw()
         {
             assert(0==x);
-            return clamp(x,xx,x_end);
+            //return clamp(x,xx,x_end);
             if(xx<0)
             {
                 return zfx(-xx);
@@ -403,7 +403,7 @@ namespace yocto
         unit_t Bitmap:: zfy(unit_t yy) const throw()
         {
             assert(0==y);
-            return clamp(y,yy,y_end);
+            //return clamp(y,yy,y_end);
             if(yy<0)
             {
                 return zfy(-yy);
