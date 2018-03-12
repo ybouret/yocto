@@ -23,43 +23,27 @@ namespace yocto
             const mpi &MPI;
 
             inline virtual ~async_ops() throw() {}
-            inline explicit async_ops(const mpi &__MPI) throw() :
-            MPI(__MPI)
-            {
-            }
-
-            inline void __sendrecv(swap_buffers &iobuf,
-                                   const int     send_peer,
-                                   const int     recv_peer) const
-            {
-                MPI_Status status;
-                assert(iobuf.in_recv()==iobuf.in_send());
-                MPI.Sendrecv(iobuf.send_addr(), iobuf.in_send(), MPI_BYTE, send_peer, tag,
-                             iobuf.recv_addr(), iobuf.in_recv(), MPI_BYTE, recv_peer, tag,
-                             MPI_COMM_WORLD,status);
-            }
+            inline explicit async_ops(const mpi &__MPI) throw() :MPI(__MPI) {}
 
             inline void xch1d(const swaps::list &L) const
             {
                 switch(L.size)
                 {
-                    case 0:
-                        return;
+                    case 0: return;
 
                     case 1: {
                         // only one exchange
                         const swaps &swp = *(L.head);
-                        __sendrecv(swp.iobuf,swp.target,swp.target);
+                        __sendrecv(swp.iobuf, swp.target,swp.iobuf,swp.target);
                     } return;
 
                     case 2: {
+                        // two waves
                         const swaps &lower = *(L.head);
                         const swaps &upper = *(L.tail);
                         assert(lower.pos<upper.pos);
-                        // lower to upper
-                        __sendrecv(lower.iobuf,lower.target,lower.target);
-                        // upper to lower
-                        __sendrecv(upper.iobuf,upper.target,upper.target);
+                        __sendrecv(lower.iobuf,lower.target,upper.iobuf,upper.target);
+                        __sendrecv(upper.iobuf,upper.target,lower.iobuf,lower.target);
                     } return;
 
                     default: // shouldn't happen
@@ -70,6 +54,17 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(async_ops);
+
+            inline void __sendrecv(swap_buffers &send_buff,
+                                   const int     send_peer,
+                                   swap_buffers &recv_buff,
+                                   const int     recv_peer) const
+            {
+                MPI_Status status;
+                MPI.Sendrecv(send_buff.send_addr(), send_buff.in_send(), MPI_BYTE, send_peer, tag,
+                             recv_buff.recv_addr(), recv_buff.in_recv(), MPI_BYTE, recv_peer, tag,
+                             MPI_COMM_WORLD,status);
+            }
         };
 
         //______________________________________________________________________
@@ -97,9 +92,7 @@ namespace yocto
                     xch1d(this->async[dim]);
                 }
             }
-
-
-
+            
             //! for one field of some fields, using overloaded sync_store
             template <typename FIELD_TYPE>
             inline void synchronize( FIELD_TYPE &F )
