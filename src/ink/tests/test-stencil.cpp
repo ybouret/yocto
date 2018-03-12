@@ -71,6 +71,9 @@ YOCTO_UNIT_TEST_IMPL(stencil)
     Scharr3Y scharr3y;
     Scharr3X scharr3x;
 
+    Scharr5Y scharr5y;
+    Scharr5X scharr5x;
+
     sobel3y.print();
     sobel3x.print();
     sobel5y.print();
@@ -78,7 +81,8 @@ YOCTO_UNIT_TEST_IMPL(stencil)
 
     scharr3y.print();
     scharr3x.print();
-
+    scharr5y.print();
+    scharr5x.print();
 
     if(argc>1)
     {
@@ -102,6 +106,8 @@ YOCTO_UNIT_TEST_IMPL(stencil)
         run_stencil(scharr3x,img3,eng);
         run_stencil(sobel5y,img3,eng);
         run_stencil(sobel5x,img3,eng);
+        run_stencil(scharr5y,img3,eng);
+        run_stencil(scharr5x,img3,eng);
 #endif
 
     }

@@ -44,6 +44,58 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Scharr3X);
         };
+
+
+        class Scharr5Y : public Stencil
+        {
+        public:
+            inline explicit Scharr5Y() : Stencil("Scharr5Y",2,2)
+            {
+                static const float mtx[25] =
+                {
+                    -1,-2,-3,-2,-1,
+                    -1,-2,-6,-2,-1,
+                    0,0,0,0,0,
+                    1,2,6,2,1,
+                    1,2,3,2,1
+                };
+                memcpy(entry,mtx,sizeof(mtx));
+                compile();
+            }
+
+            inline virtual ~Scharr5Y() throw()
+            {
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Scharr5Y);
+        };
+
+        class Scharr5X : public Stencil
+        {
+        public:
+            inline explicit Scharr5X() : Stencil("Scharr5X",2,2)
+            {
+                static const float mtx[25] =
+                {
+                    -1,-1,0,1,1,
+                    -2,-2,0,2,2,
+                    -3,-6,0,6,3,
+                    -2,-2,0,2,2,
+                    -1,-1,0,1,1
+                };
+                memcpy(entry,mtx,sizeof(mtx));
+                compile();
+            }
+
+            inline virtual ~Scharr5X() throw()
+            {
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Scharr5X);
+        };
+
     }
 
 }
