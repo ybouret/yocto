@@ -190,7 +190,86 @@ YOCTO_PROGRAM_START()
 
     }
 
+    if( true )
+    {
+        MPI.Printf0(stderr, "\n-------- setting up in 3D --------\n");
+        const patch3D region(coord3D(1,1,1),dims);
+        coord3D       fallback;
+        const coord3D PBCS(pbcs);
+        coord3D       sizes = mapping<coord3D>::optimal_sizes_for(size,region,layers,PBCS,&fallback);
+        if( __coord_prod(sizes) < size )
+        {
+            MPI.Printf0(stderr,"switching to fallback\n");
+            sizes = fallback;
+        }
+        if( __coord_prod(sizes) < size )
+        {
+            throw exception("unable to use %d cores", size);
+        }
+        if(0==rank)
+        {
+            fprintf(stderr,"sizes="); __coord_printf(stderr,sizes); fprintf(stderr,"\n");
+        }
 
+        divide::in3D           full(sizes,region);
+        mpi_workspace<coord3D> W(MPI,full,layers,PBCS);
+        MPI.Printf(stderr,"workspace @rank=%d, #items=%u\n", int(W.rank), unsigned(W.inner.items) );
+        write_topoly(W.asyncs,3);
+        field3D<double> &A = W.create< field3D<double> >("A");
+        field3D<float>  &B = W.create< field3D<float>  >("B");
+
+        fields fvar;
+        fvar << A << B;
+        W.allocate_swaps_for( fvar.block_size() );
+
+        // initialize fields
+        const double xmin = full.lower.x;
+        const double xmax = full.upper.x;
+        const double xc   = (xmax+xmin)/2;
+        const double dx   = xmax-xmin;
+
+        const double ymin = full.lower.y;
+        const double ymax = full.upper.y;
+        const double yc   = (ymax+ymin)/2;
+        const double dy   = ymax-ymin;
+
+        const double zmin = full.lower.z;
+        const double zmax = full.upper.z;
+        const double zc   = (zmax+zmin)/2;
+        const double dz   = zmax-zmin;
+
+        A.ldz();
+        for(unit_t k=W.inner.lower.z;k<=W.inner.upper.z;++k)
+        {
+            const double z = (double(k)-zc)/dz;
+
+            for(unit_t j=W.inner.lower.y;j<=W.inner.upper.y;++j)
+            {
+                const double y = (double(j)-yc)/dy;
+                for(unit_t i=W.inner.lower.x;i<=W.inner.upper.x;++i)
+                {
+                    const double x = (double(i)-xc)/dx;
+                    A[k][j][i] = 2+cos(12*sqrt(x*x+y*y+z*z));
+                }
+            }
+        }
+        B.ldz();
+
+        {
+            const string fn = "f3_ini" + MPI.CommWorldID + ".vtk";
+            ios::wcstream fp(fn);
+            VTK::InitSaveScalars(fp, "3D",A,A);
+        }
+
+        W.synchronize(fvar);
+
+        {
+            const string fn = "f3_end" + MPI.CommWorldID + ".vtk";
+            ios::wcstream fp(fn);
+            VTK::InitSaveScalars(fp, "3D",A,A);
+        }
+
+    }
     
 }
 YOCTO_PROGRAM_END()
