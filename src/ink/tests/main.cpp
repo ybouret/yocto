@@ -24,7 +24,8 @@ YOCTO_UNIT_TEST_INIT(32)
 
     YOCTO_UNIT_TEST_DECL(stencil);
     YOCTO_UNIT_TEST_DECL(edges);
-    
+    YOCTO_UNIT_TEST_DECL(stengrad);
+
 }
 YOCTO_UNIT_TEST_EXEC()
 

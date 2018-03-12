@@ -4,6 +4,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/ink/image.hpp"
+#include "yocto/ink/ops/differential.hpp"
 
 using namespace yocto;
 using namespace Ink;
@@ -115,3 +116,76 @@ YOCTO_UNIT_TEST_IMPL(stencil)
 }
 YOCTO_UNIT_TEST_DONE()
 
+static inline void compute_sgrad(Pixmap<float> &gn,
+                                 const Pixmap<float> &img,
+                                 const Stencil &sx,
+                                 const Stencil &sy)
+{
+    float gn_max = 0;
+    for(unit_t y=img.y_end;y>=0;--y)
+    {
+        for(unit_t x=img.x_end;x>=0;--x)
+        {
+            float gx=0,gy=0;
+            Stencil::compute(gx, sx, gy, sy, img, x, y);
+            const float g = sqrtf(gx*gx+gy*gy);
+            gn[y][x] = g;
+            gn_max   = max_of(gn_max,g);
+        }
+    }
+    if(gn_max>0)
+    {
+        for(unit_t y=img.y_end;y>=0;--y)
+        {
+            for(unit_t x=img.x_end;x>=0;--x)
+            {
+                gn[y][x] /= gn_max;
+            }
+        }
+    }
+
+}
+
+YOCTO_UNIT_TEST_IMPL(stengrad)
+{
+    YOCTO_IMG();
+    Engine::SharedServer parSrv( new threading::par_server() );
+
+    Sobel3X sobel3x;
+    Sobel3Y sobel3y;
+
+    Sobel5X sobel5x;
+    Sobel5Y sobel5y;
+
+    Scharr3X scharr3x;
+    Scharr3Y scharr3y;
+
+    Scharr5X scharr5x;
+    Scharr5Y scharr5y;
+
+
+    if(argc>1)
+    {
+        const Pixmap<float> img( IMG.loadGSF(argv[1],NULL) );
+        Engine              par(img,parSrv);
+        IMG.save(img, "img.png", NULL);
+
+        Gradient grad(img);
+        grad.compute(img,Convert::Copy<float,float>, par, true);
+        IMG.save(grad.gn,"img-gn.png",NULL);
+
+        compute_sgrad(grad.gn,img,sobel3x,sobel3y);
+        IMG.save(grad.gn,"img-sobel3.png",NULL);
+
+        compute_sgrad(grad.gn,img,sobel5x,sobel5y);
+        IMG.save(grad.gn,"img-sobel5.png",NULL);
+
+        compute_sgrad(grad.gn,img,scharr3x,scharr3y);
+        IMG.save(grad.gn,"img-scharr3.png",NULL);
+
+        compute_sgrad(grad.gn,img,scharr5x,scharr5y);
+        IMG.save(grad.gn,"img-scharr5.png",NULL);
+    }
+
+}
+YOCTO_UNIT_TEST_DONE()

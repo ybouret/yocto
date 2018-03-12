@@ -72,9 +72,67 @@ namespace yocto
                 _apply<RGB,uint8_t,3>(target,source,engine,normalize);
             }
 
+            //! display as a matrix
             void display() const;
+
+            //! print as an array
             void print() const;
-            
+
+            inline float compute(const Pixmap<float> &pxm, const unit_t x, const unit_t y) const throw()
+            {
+                float sum = 0.0f;
+                for(unit_t yy=upper.y;yy>=lower.y;--yy)
+                {
+                    const ipso::field1D<float> &self_y = (*this)[yy];
+                    const unit_t                j      = pxm.zfy(yy+y);
+                    const Pixmap<float>::Row   &pxm_j  = pxm[j];
+                    for(unit_t xx=upper.x;xx>=lower.x;--xx)
+                    {
+                        const float   w = self_y[xx];
+                        const unit_t  i = pxm.zfx(xx+x);
+                        sum += w * pxm_j[i];
+                    }
+                }
+                return sum;
+            }
+
+            static inline
+            void compute(float                &gx,
+                          const Stencil       &sx,
+                          float               &gy,
+                          const Stencil       &sy,
+                          const Pixmap<float> &pxm,
+                          const unit_t         x,
+                          const unit_t         y)
+            {
+                assert( ipso::patch2D::eq(sx,sy) );
+                float sum_x = 0.0f, sum_y=0.0f;
+                const unit_t xmin = sx.lower.x;
+                const unit_t xmax = sy.upper.x;
+                const unit_t ymin = sx.lower.y;
+                const unit_t ymax = sx.upper.y;
+                for(unit_t yy=ymax;yy>=ymin;--yy)
+                {
+                    const ipso::field1D<float> &sx_yy = sx[yy];
+                    const ipso::field1D<float> &sy_yy = sy[yy];
+                    const unit_t j = pxm.zfy(y+yy);
+                    const Pixmap<float>::Row &pxm_j = pxm[j];
+                    for(unit_t xx=xmax;xx>=xmin;--xx)
+                    {
+                        const float  wx    = sx_yy[xx];
+                        const float  wy    = sy_yy[xx];
+                        const unit_t i     = pxm.zfx(x+xx);
+                        const float  value = pxm_j[i];
+
+                        sum_x += wx * value;
+                        sum_y += wy * value;
+                    }
+                }
+                gx = sum_x;
+                gy = sum_y;
+            }
+
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Stencil);
             void *       tgt;

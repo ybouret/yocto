@@ -46,8 +46,8 @@ namespace yocto
                 gn_max = 0;
                 for(const Domain *dom = engine.head(); dom; dom=dom->next )
                 {
-                    const float *val  = (const float *)(dom->cache.data);
-                    const float  vmax = val[0];
+                    //const float *val  = (const float *)(dom->cache.data);
+                    const float  vmax = dom->get<float>(0);
                     if(vmax>gn_max) gn_max = vmax;
                 }
                 if(normalize)
