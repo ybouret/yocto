@@ -1,6 +1,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/ipso/field3d.hpp"
 #include "yocto/ios/ocstream.hpp"
+#include "yocto/ipso/box.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -71,6 +72,16 @@ static inline void display_patch(const PATCH &p)
     std::cerr << "pitch=" << p.pitch << std::endl;
     std::cerr << "items=" << p.items << std::endl;
     std::cerr << "patch=" << p << std::endl;
+}
+
+template <typename BOX>
+static inline void display_box( const BOX &b )
+{
+    std::cerr << "lower   = " << b.lower   << std::endl;
+    std::cerr << "upper   = " << b.upper   << std::endl;
+    std::cerr << "width   = " << b.width   << std::endl;
+    std::cerr << "measure = " << b.measure << std::endl;
+
 }
 
 YOCTO_UNIT_TEST_IMPL(ipso)
@@ -257,6 +268,21 @@ YOCTO_UNIT_TEST_IMPL(ipso)
             ios::acstream fp("parts.dat");
             fp("%u %u %u\n",nc,count2,count3);
         }
+    }
+
+    std::cerr << "Boxes" << std::endl;
+    {
+        box<float,1> b1f(1,3);
+        display_box(b1f);
+        box<double,1> b1d(-1,5);
+        display_box(b1d);
+
+        box<float,2> b2f( point2d<float>(1,1),  point2d<float>(3,4) );
+        display_box(b2f);
+
+        box<double,3> b3d = box<double,3>::from<coord1D,coord1D>( coord3D(0,0,0), coord3D(2,3,4) );
+        display_box(b3d);
+
     }
 }
 YOCTO_UNIT_TEST_DONE()
