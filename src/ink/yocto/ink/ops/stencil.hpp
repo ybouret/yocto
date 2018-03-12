@@ -3,7 +3,7 @@
 
 #include "yocto/ink/parallel.hpp"
 #include "yocto/ipso/field2d.hpp"
-#include "yocto/ink/pixmap.hpp"
+#include "yocto/ink/pixmaps.hpp"
 #include "yocto/code/utils.hpp"
 
 namespace yocto
@@ -18,27 +18,13 @@ namespace yocto
             const unit_t dx;
             const unit_t dy;
 
-#define YOCTO_INK_STENCIL_CTOR()        \
-StencilType(id,coord(-w,-h),coord(w,h)), \
-dx(upper.x),                              \
-dy(upper.y),                               \
-tgt(0),                                     \
-src(0)
+
 
             //! ctor : (2*w+1)x(2*h+1)
-            explicit Stencil(const string &id, const unit_t w, const unit_t h) :
-            YOCTO_INK_STENCIL_CTOR()
-            {
-            }
-
-            explicit Stencil(const char *id, const unit_t w, const unit_t h) :
-            YOCTO_INK_STENCIL_CTOR()
-            {
-            }
-
-            virtual ~Stencil() throw()
-            {
-            }
+            explicit Stencil(const string &id, const unit_t w, const unit_t h);
+            explicit Stencil(const char   *id, const unit_t w, const unit_t h);
+            virtual ~Stencil() throw();
+            void     compile() throw();
 
             template <
             typename     VECTOR,
@@ -46,72 +32,132 @@ src(0)
             const size_t CHANNELS>
             inline void _apply(Pixmap<VECTOR>       &target,
                                const Pixmap<VECTOR> &source,
-                               Engine               &engine)
+                               Engine               &engine,
+                               const bool            normalize)
             {
                 std::cerr << "Apply stencil '" << this->name << "' " << *this << std::endl;
                 tgt = &target;
                 src = &source;
-                engine.submit(this, &Stencil::applyThread<VECTOR,SCALAR,CHANNELS> );
+                nrm = normalize;
+                engine.submit(this, &Stencil::applyRawThread<VECTOR,SCALAR,CHANNELS> );
             }
+
+            inline void apply(Pixmap<float>       &target,
+                              const Pixmap<float> &source,
+                              Engine              &engine,
+                              const bool           normalize)
+            {
+                _apply<float,float,1>(target,source,engine,normalize);
+            }
+
+            inline void apply(Pixmap<uint8_t>       &target,
+                              const Pixmap<uint8_t> &source,
+                              Engine                &engine,
+                              const bool             normalize)
+            {
+                _apply<uint8_t,uint8_t,1>(target,source,engine,normalize);
+            }
+
+            inline void apply(Pixmap<RGB>       &target,
+                              const Pixmap<RGB> &source,
+                              Engine            &engine,
+                              const bool         normalize)
+            {
+                _apply<RGB,uint8_t,3>(target,source,engine,normalize);
+            }
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Stencil);
             void *       tgt;
             const void * src;
+            float        weight;
+            float        factor;
+            bool         nrm;
 
             template <
             typename     VECTOR,
             typename     SCALAR,
             const size_t CHANNELS>
-            inline void applyThread( const Area &dom, threading::context & )
+            inline void applyRawThread( const Area &dom, threading::context & )
             {
                 assert(tgt); assert(src);
                 Pixmap<VECTOR>       &target = *static_cast< Pixmap<VECTOR> *       >(tgt);
                 const Pixmap<VECTOR> &source = *static_cast< const Pixmap<VECTOR> * >(src);
-
+                const StencilType    &self   = *this;
                 YOCTO_INK_AREA_LIMITS(dom);
-                const unit_t       x_end = target.x_end;
-                const unit_t       y_end = target.y_end;
-                const StencilType &self  = *this;
                 for(unit_t j=ymax;j>=ymin;--j)
                 {
-                    const unit_t jlo = max_of<unit_t>(0,j-dy);
-                    const unit_t jhi = min_of<unit_t>(y_end,j+dy);
-                    const unit_t ylo = jlo-j;
-                    const unit_t yhi = jhi-j;
-
                     for(unit_t i=xmax;i>=xmin;--i)
                     {
-                        const unit_t ilo = max_of<unit_t>(0,i-dx);
-                        const unit_t ihi = min_of<unit_t>(x_end,i+dx);
-                        const unit_t xlo = ilo-i;
-                        const unit_t xhi = ihi-i;
-
-                        float csum    = 0.0f;
                         float wsum[4] = { 0,0,0,0 };
-                        for(unit_t yy=yhi;yy>=ylo;--yy)
+                        // accumulation
+                        for(unit_t yy=upper.y;yy>=lower.y;--yy)
                         {
-                            const StencilType::row &sten_y = self[yy];
-                            for(unit_t xx=xhi;xx>=xlo;--xx)
+                            const unit_t y = source.zfy(j+yy);
+                            for(unit_t xx=-dx;xx<=dx;++xx)
                             {
-                                const float coef = sten_y[xx];
-                                csum += coef;
-                                const SCALAR *p = (const SCALAR *)&source[j+yy][i+xx];
-                                vecops<CHANNELS>::muladd(wsum,coef,p);
+                                const float   w = self[yy][xx];
+                                const unit_t  x = source.zfx(i+xx);
+                                const SCALAR *p = (const SCALAR *)&source[y][x];
+                                vecops<CHANNELS>::muladd(wsum,w,p);
                             }
                         }
-
-                        SCALAR *q = (SCALAR *) &target[j][i];
+                        // end accumulation
+                        if(nrm)
+                        {
+                            vecops<CHANNELS>::mul(wsum,factor);
+                        }
+                        SCALAR *q = (SCALAR *)&target[j][i];
                         for(size_t ch=0;ch<CHANNELS;++ch)
                         {
-                            q[ch] = SCALAR(wsum[ch]);
+                            q[ch] = Core::FloatToClosest<SCALAR>(wsum[ch]);
                         }
                     }
-
                 }
-
             }
         };
+
+        class Sobel3Y : public Stencil
+        {
+        public:
+            inline explicit Sobel3Y() : Stencil("Sobel3Y",1,1)
+            {
+                StencilType &self = *this;
+                self[1][-1]  =  1; self[1][0]   =  2; self[1][1]  =  1;
+                self[-1][-1] = -1; self[-1][ 0] = -2; self[-1][1] = -1;
+                compile();
+            }
+
+            inline virtual ~Sobel3Y() throw()
+            {
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Sobel3Y);
+        };
+
+        class Sobel3X : public Stencil
+        {
+        public:
+            inline explicit Sobel3X() : Stencil("Sobel3X",1,1)
+            {
+                StencilType &self = *this;
+                self[-1][-1] = -1; self[0][-1] = -2; self[1][-1] = -1;
+                self[-1][1]  =  1; self[0][1]  =  2; self[1][1]  = 1;
+                compile();
+            }
+
+            inline virtual ~Sobel3X() throw()
+            {
+            }
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(Sobel3X);
+        };
+
+
+
     }
 }
 

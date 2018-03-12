@@ -71,6 +71,18 @@ U(240),U(241),U(242),U(243),U(244),U(245),U(246),U(247),U(248),U(249),U(250),U(2
             coord(-1, 1)
         };
 
+        template <>
+        float Core::FloatToClosest<float>(const float x) throw()
+        {
+            return x;
+        }
+
+        template <>
+        uint8_t Core::FloatToClosest<uint8_t>(const float x) throw()
+        {
+            return uint8_t( floorf(0.5f+x) );
+        }
+
         Vertex:: Vertex(const coord  p) throw() :
         next(0), prev(0), pos(p) {}
 

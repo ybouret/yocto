@@ -379,40 +379,40 @@ namespace yocto
             }
         }
 
-        unit_t Bitmap:: zfx(unit_t x) const throw()
+        unit_t Bitmap:: zfx(unit_t xx) const throw()
         {
-            if(x<0)
+            if(xx<0)
             {
-                return zfx(-x);
+                return zfx(-xx);
             }
             else
             {
-                if(x>=w)
+                if(xx>=w)
                 {
-                    return zfx( 2*x_end-x );
+                    return zfx( 2*x_end-xx );
                 }
                 else
                 {
-                    return x;
+                    return xx;
                 }
             }
         }
 
-        unit_t Bitmap:: zfy(unit_t y) const throw()
+        unit_t Bitmap:: zfy(unit_t yy) const throw()
         {
-            if(x<0)
+            if(yy<0)
             {
-                return zfy(-y);
+                return zfy(-yy);
             }
             else
             {
-                if(y>=h)
+                if(yy>=h)
                 {
-                    return zfy( 2*y_end-y );
+                    return zfy( 2*y_end-yy );
                 }
                 else
                 {
-                    return y;
+                    return yy;
                 }
             }
         }

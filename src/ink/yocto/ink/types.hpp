@@ -39,8 +39,13 @@ namespace yocto
 
             //! 4+4 neighbors offset
             static const coord Shift[8];
+
+            template <typename T>
+            static T FloatToClosest(const float x) throw();
         };
-        
+
+
+
         class Vertex
         {
         public:

@@ -106,7 +106,7 @@ namespace yocto
                         SCALAR *q = (SCALAR       *)&T_j[i];
                         for(size_t ch=0;ch<CHANNELS;++ch)
                         {
-                            q[ch] = SCALAR(num[ch]*wmul);
+                            q[ch] = Core::FloatToClosest<SCALAR>(num[ch]*wmul);
                         }
                     }
                 }
@@ -144,7 +144,7 @@ namespace yocto
                         SCALAR *q = (SCALAR       *)&T_j[i];
                         for(size_t ch=0;ch<CHANNELS;++ch)
                         {
-                            q[ch] = SCALAR(num[ch]*wmul);
+                            q[ch] = Core::FloatToClosest<SCALAR>(num[ch]*wmul);
                         }
 
                     }
