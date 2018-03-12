@@ -23,8 +23,8 @@ namespace yocto
                 assert(proc);
                 assert(w>0);
                 coord q(x,y);
-                assert( pxm.has(q)     );
-                assert( pxm.has(q.x+w-1,q.y) );
+                assert( pxm.contains(q)     );
+                assert( pxm.contains(q.x+w-1,q.y) );
                 
                 for(unit_t i=w;i>0;--i,++q.x)
                 {
@@ -91,8 +91,8 @@ namespace yocto
             {
                 assert(proc);
                 assert(h>0);
-                assert( pxm.has(x,y)     );
-                assert( pxm.has(x,y+h-1) );
+                assert( pxm.contains(x,y)     );
+                assert( pxm.contains(x,y+h-1) );
 
                 coord q(x,y);
                 for(size_t j=0;j<h;++j,++q.y)
@@ -167,8 +167,8 @@ namespace yocto
                 unit_t dx =  abs_of(x1-x0), sx = (x0<x1) ? 1 : -1;
                 unit_t dy = -abs_of(y1-y0), sy = (y0<y1) ? 1 : -1;
                 unit_t err = dx+dy, e2;                                   /* error value e_xy */
-                assert(img.has(x0,y0));
-                assert(img.has(x1,y1));
+                assert(img.contains(x0,y0));
+                assert(img.contains(x1,y1));
                 for (;;){
                     /* loop */
                     const coord p(x0,y0);

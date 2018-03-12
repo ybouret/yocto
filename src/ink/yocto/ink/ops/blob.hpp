@@ -104,7 +104,7 @@ namespace yocto
                                 for(size_t k=0;k<nconn;++k)
                                 {
                                     const coord p=p0+Core::Shift[k];
-                                    if(self.has(p)&&(0==self[p]))
+                                    if(self.contains(p)&&(0==self[p]))
                                     {
                                         vList.push_back( cache.create(p) );
                                     }

@@ -32,16 +32,16 @@ const unit_t ymax = (AREA).y_end;
             virtual ~Area() throw();
             Area(const Area  &rect) throw();
 
-            inline bool has( const unit_t X, const unit_t Y) const throw()
+            inline bool contains( const unit_t X, const unit_t Y) const throw()
             {
                 return (X>=x) && (X<=x_end) && (Y>=y) && (Y<=y_end);
             }
 
-            inline bool has(const coord p) const throw() { return has(p.x,p.y); }
+            inline bool contains(const coord p) const throw() { return contains(p.x,p.y); }
 
             inline bool contains( const Area &sub ) const throw()
             {
-                return has(sub.x,sub.y) && has(sub.x_end,sub.y_end);
+                return contains(sub.x,sub.y) && contains(sub.x_end,sub.y_end);
             }
 
             inline unsigned xpos(const unit_t X) const throw()
@@ -82,7 +82,6 @@ const unit_t ymax = (AREA).y_end;
                 }
             }
 
-            
         private:
             YOCTO_DISABLE_ASSIGN(Area);
         };

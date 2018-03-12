@@ -379,6 +379,46 @@ namespace yocto
             }
         }
 
+        unit_t Bitmap:: zfx(unit_t x) const throw()
+        {
+            if(x<0)
+            {
+                return zfx(-x);
+            }
+            else
+            {
+                if(x>=w)
+                {
+                    return zfx( 2*x_end-x );
+                }
+                else
+                {
+                    return x;
+                }
+            }
+        }
+
+        unit_t Bitmap:: zfy(unit_t y) const throw()
+        {
+            if(x<0)
+            {
+                return zfy(-y);
+            }
+            else
+            {
+                if(y>=h)
+                {
+                    return zfy( 2*y_end-y );
+                }
+                else
+                {
+                    return y;
+                }
+            }
+        }
+
+
+#if 0
         bool Bitmap:: contains(const unit_t x, const unit_t y) const throw()
         {
             return (x>=0) && (y>=0) && (x<w) && (y<h);
@@ -388,13 +428,8 @@ namespace yocto
         {
             return contains(rect.x,rect.y) && contains(rect.x_end,rect.y_end);
         }
-
-#if 0
-        Area Bitmap:: getArea() const throw()
-        {
-            return Area(0,0,w,h);
-        }
 #endif
+        
 
     }
 }

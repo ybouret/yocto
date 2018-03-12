@@ -125,7 +125,7 @@ namespace yocto
                                           const unit_t         y,
                                           const float          angle) throw()
         {
-            assert(I.has(x,y));
+            assert(I.contains(x,y));
             assert( *(uint32_t *)&I0 == *(uint32_t *)&I[y][x]);
             const float c   = cosf(angle);
             const float s   = sinf(angle);
@@ -138,7 +138,7 @@ namespace yocto
                 const unit_t dy = unit_t(floorf(s+0.5f));
                 assert(1==max_of( abs_of(dx), abs_of(dy) ));
                 const coord p(x+dx,y+dy);
-                if(I.has(p)) fwd = I[p];
+                if(I.contains(p)) fwd = I[p];
             }
 
             // check rev
@@ -147,7 +147,7 @@ namespace yocto
                 const unit_t dy = unit_t(floorf(0.5f-s));
                 assert(1==max_of( abs_of(dx), abs_of(dy) ));
                 const coord p(x+dx,y+dy);
-                if(I.has(p)) rev = I[p];
+                if(I.contains(p)) rev = I[p];
             }
 
             return (fwd<=mid)&&(rev<=mid);

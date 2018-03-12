@@ -28,7 +28,7 @@ namespace yocto
                 {
                     assert(0==r);
                     const coord q(xm,ym);
-                    if(img.has(q))
+                    if(img.contains(q))
                     {
                         proc(img,q,args);
                     }
@@ -47,7 +47,7 @@ namespace yocto
                         for(size_t i=0;i<4;++i)
                         {
                             const coord p = v[i];
-                            if(img.has(p))
+                            if(img.contains(p))
                             {
                                 proc( img, p, args );
                             }
@@ -113,7 +113,7 @@ namespace yocto
                 coord p(xlo,y);
                 for(;p.x<=xhi;++p.x)
                 {
-                    if(img.has(p))
+                    if(img.contains(p))
                     {
                         proc(img,p,args);
                     }
@@ -130,7 +130,7 @@ namespace yocto
                 if(r<=0)
                 {
                     const coord q(xm,ym);
-                    if(img.has(q))
+                    if(img.contains(q))
                     {
                         proc(img,q,args);
                     }

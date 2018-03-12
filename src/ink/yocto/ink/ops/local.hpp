@@ -42,7 +42,7 @@ namespace yocto
                 for(size_t k=0;k<SIZE;++k)
                 {
                     const coord p = p0 + Position[k];
-                    if(source.has(p))
+                    if(source.contains(p))
                     {
                         bmove(value[count],source[p]);
                         flags[count] = Flags[k];

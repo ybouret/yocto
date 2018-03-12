@@ -66,7 +66,7 @@ namespace yocto
             void fill_with(const void *data) throw(); //!< assume depth bytes@data
             void copy(const Bitmap &other) throw();
             void flip_vertical()   throw();   //!< inverse rows
-            void flip_horizontal() throw(); //!< inverse columns
+            void flip_horizontal() throw();   //!< inverse columns
 
             //! save as uncompressed bitmap
             /**
@@ -78,9 +78,8 @@ namespace yocto
             void save(const string &filename,
                       const bool    in_color = true ) const;
 
-            bool contains(const unit_t x, const unit_t y) const throw();
-            bool contains(const Area &rect) const throw();
-
+            unit_t zfx(unit_t x) const throw();
+            unit_t zfy(unit_t y) const throw();
 
         protected:
             void *_rows; //!< memory for rows

@@ -17,18 +17,22 @@ namespace yocto
         public:
             const unit_t dx;
             const unit_t dy;
+
+#define YOCTO_INK_STENCIL_CTOR()        \
+StencilType(id,coord(-w,-h),coord(w,h)), \
+dx(upper.x),                              \
+dy(upper.y),                               \
+tgt(0),                                     \
+src(0)
+
             //! ctor : (2*w+1)x(2*h+1)
             explicit Stencil(const string &id, const unit_t w, const unit_t h) :
-            StencilType(id,coord(-w,-h),coord(w,h)),
-            dx(upper.x),
-            dy(upper.y)
+            YOCTO_INK_STENCIL_CTOR()
             {
             }
 
             explicit Stencil(const char *id, const unit_t w, const unit_t h) :
-            StencilType(id,coord(-w,-h),coord(w,h)),
-            dx(upper.x),
-            dy(upper.y)
+            YOCTO_INK_STENCIL_CTOR()
             {
             }
 
