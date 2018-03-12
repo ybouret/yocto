@@ -134,98 +134,10 @@ namespace yocto
         };
 
 
-        class Sobel3Y : public Stencil
-        {
-        public:
-            inline explicit Sobel3Y() : Stencil("Sobel3Y",1,1)
-            {
-                static const float mtx[9] = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
-                memcpy(entry,mtx,sizeof(mtx));
-#if 0
-                StencilType &self = *this;
-                self[1][-1]  =  1; self[1][0]   =  2; self[1][1]  =  1;
-                self[-1][-1] = -1; self[-1][ 0] = -2; self[-1][1] = -1;
-#endif
-                compile();
-            }
-
-            inline virtual ~Sobel3Y() throw()
-            {
-            }
-
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(Sobel3Y);
-        };
-
-        class Sobel3X : public Stencil
-        {
-        public:
-            inline explicit Sobel3X() : Stencil("Sobel3X",1,1)
-            {
-                static const float mtx[9] = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
-                memcpy(entry,mtx,sizeof(mtx));
-#if 0
-                StencilType &self = *this;
-                self[-1][-1] = -1; self[0][-1] = -2; self[1][-1] = -1;
-                self[-1][1]  =  1; self[0][1]  =  2; self[1][1]  = 1;
-#endif
-                compile();
-            }
-
-            inline virtual ~Sobel3X() throw()
-            {
-            }
-
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(Sobel3X);
-        };
+       
 
 
-        class Scharr3Y : public Stencil
-        {
-        public:
-            inline explicit Scharr3Y() : Stencil("Scharr3Y",1,1)
-            {
-                static const float mtx[9] = { -3, -10, -3, 0, 0, 0, 3, 10, 3 };
-                memcpy(entry,mtx,sizeof(mtx));
-#if 0
-                StencilType &self = *this;
-                self[1][-1]  =  3; self[1][0]   =  10; self[1][1]  =  3;
-                self[-1][-1] = -3; self[-1][ 0] = -10; self[-1][1] = -3;
-#endif
-                compile();
-            }
-
-            inline virtual ~Scharr3Y() throw()
-            {
-            }
-
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(Scharr3Y);
-        };
-
-        class Scharr3X : public Stencil
-        {
-        public:
-            inline explicit Scharr3X() : Stencil("Scharr3X",1,1)
-            {
-                static const float mtx[9] = { -3, 0, 3, -10, 0, 10, -3, 0, 3 };
-                memcpy(entry,mtx,sizeof(mtx));
-#if 0
-                StencilType &self = *this;
-                self[-1][-1] = -3; self[0][-1] = -10; self[1][-1] = -3;
-                self[-1][1]  =  3; self[0][1]  =  10; self[1][1]  = 3;
-#endif
-                compile();
-            }
-
-            inline virtual ~Scharr3X() throw()
-            {
-            }
-
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(Scharr3X);
-        };
+      
 
     }
 }

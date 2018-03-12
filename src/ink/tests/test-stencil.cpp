@@ -1,5 +1,6 @@
 
-#include "yocto/ink/ops/stencil.hpp"
+#include "yocto/ink/ops/sobel.hpp"
+#include "yocto/ink/ops/scharr.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/ink/image.hpp"
@@ -64,13 +65,20 @@ YOCTO_UNIT_TEST_IMPL(stencil)
     sten1x3.ld(1);
     Sobel3Y  sobel3y;
     Sobel3X  sobel3x;
+    Sobel5Y  sobel5y;
+    Sobel5X  sobel5x;
+
     Scharr3Y scharr3y;
     Scharr3X scharr3x;
 
     sobel3y.print();
     sobel3x.print();
+    sobel5y.print();
+    sobel5x.print();
+
     scharr3y.print();
     scharr3x.print();
+
 
     if(argc>1)
     {
@@ -83,7 +91,7 @@ YOCTO_UNIT_TEST_IMPL(stencil)
 
         Pixmap<RGB> pxm(img3.w,img3.h);
 
-        Engine &eng = seq;
+        Engine &eng = par;
 #if 1
         run_stencil(sten1x1,img3,eng);
         run_stencil(sten3x1,img3,eng);
@@ -92,7 +100,8 @@ YOCTO_UNIT_TEST_IMPL(stencil)
         run_stencil(sobel3x,img3,eng);
         run_stencil(scharr3y,img3,eng);
         run_stencil(scharr3x,img3,eng);
-        run_stencil(sobel3y,img3,eng);
+        run_stencil(sobel5y,img3,eng);
+        run_stencil(sobel5x,img3,eng);
 #endif
 
     }
