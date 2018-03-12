@@ -28,8 +28,7 @@ namespace yocto
 
             virtual ~field_info() throw();
 
-            const string &key() const throw(); //!< name
-
+            const string &key() const throw(); //!< name, for pointer/set
 
             //! swap data locally
             virtual void swap_local(const swaps_list &G) throw() = 0;
@@ -39,7 +38,6 @@ namespace yocto
 
             //! query data from recv region
             virtual void swap_query(const swaps &G) throw() = 0;
-
 
         protected:
             explicit field_info(const char   *id, const size_t itmsz);
@@ -82,6 +80,7 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(field_db);
         };
 
+        //! for basic field operations
         enum field_ops
         {
             field_set,
@@ -97,10 +96,11 @@ namespace yocto
             YOCTO_ARGUMENTS_DECL_T;
             static const size_t ITEM_SIZE = sizeof(T);
 
-            inline virtual ~field() throw() {}
 
             T           *entry; //!< linear items
 
+            //! default destructor
+            inline virtual ~field() throw() {}
 
             //! set all to zero
             inline void ldz() throw() { assert(entry); assert(bytes); memset(entry,0,bytes); }
@@ -132,7 +132,6 @@ namespace yocto
                 }
             }
 
-            
 
             //! directly swap matching local swap pairs, without extra memory
             inline virtual void swap_local(const swaps_list &local) throw()
@@ -202,9 +201,6 @@ namespace yocto
                     swp.iobuf.query(entry[j]);
                 }
             }
-
-            
-
 
         protected:
             inline explicit field(const char *id) :

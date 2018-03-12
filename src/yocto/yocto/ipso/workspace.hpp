@@ -9,6 +9,7 @@ namespace yocto
     namespace ipso
     {
 
+        //! hold different fields with the same layouts
         template <typename COORD>
         class workspace : public subset<COORD>, public field_db, public counted
         {

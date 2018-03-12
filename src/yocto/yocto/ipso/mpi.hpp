@@ -19,7 +19,7 @@ namespace yocto
         class async_ops
         {
         public:
-            static const int tag = 7;
+            static const int __tag = 7;
             const mpi &MPI;
 
             inline virtual ~async_ops() throw() {}
@@ -61,8 +61,8 @@ namespace yocto
                                    const int     recv_peer) const
             {
                 MPI_Status status;
-                MPI.Sendrecv(send_buff.send_addr(), send_buff.in_send(), MPI_BYTE, send_peer, tag,
-                             recv_buff.recv_addr(), recv_buff.in_recv(), MPI_BYTE, recv_peer, tag,
+                MPI.Sendrecv(send_buff.send_addr(), send_buff.in_send(), MPI_BYTE, send_peer,__tag,
+                             recv_buff.recv_addr(), recv_buff.in_recv(), MPI_BYTE, recv_peer,__tag,
                              MPI_COMM_WORLD,status);
             }
         };
@@ -92,7 +92,7 @@ namespace yocto
                     xch1d(this->async[dim]);
                 }
             }
-            
+
             //! for one field of some fields, using overloaded sync_store
             template <typename FIELD_TYPE>
             inline void synchronize( FIELD_TYPE &F )
@@ -103,7 +103,8 @@ namespace yocto
                 synchronize();
                 this->sync_query(F);
             }
-            
+
+            //! destructor
             inline virtual ~mpi_workspace() throw()
             {
             }

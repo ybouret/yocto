@@ -31,7 +31,6 @@ namespace yocto
             {
             }
 
-
             //! get local ranks from global rank
             virtual COORD get_ranks(const size_t rank)  const throw() = 0;
 
@@ -93,10 +92,6 @@ namespace yocto
                 return max_items;
             }
 
-          
-
-             //static  COORD optimal_for(const patch<COORD> &p, const size_t max_cpu, COORD *fallback);
-
         protected:
             explicit divider(const COORD         s,
                              const patch<COORD> &p) :
@@ -108,8 +103,6 @@ namespace yocto
                 if(size<=0) throw libc::exception(EDOM,"__divide<%uD>: no cores", unsigned(patch<COORD>::DIM));
                 __coord_dec( (COORD &)lasts );
             }
-
-
 
         private:
             YOCTO_DISABLE_ASSIGN(divider);
@@ -147,7 +140,6 @@ namespace yocto
                 {
                 }
 
-
                 inline virtual coord1D get_ranks(const size_t rank)  const throw()
                 {
                     assert(rank<size);
@@ -171,8 +163,6 @@ namespace yocto
                     --up;
                     return patch1D(lo,up);
                 }
-
-
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(in1D);
@@ -207,7 +197,6 @@ namespace yocto
                 {
                 }
 
-
                 inline virtual coord2D get_ranks(const size_t rank)  const throw()
                 {
                     assert(rank<size);
@@ -227,7 +216,6 @@ namespace yocto
                     return ranks.y * sizes.x + ranks.x;
                 }
 
-
                 inline virtual patch_type operator()(const size_t rank, coord2D *pRanks) const throw()
                 {
                     coord2D       lo    = this->lower;
@@ -240,7 +228,6 @@ namespace yocto
                     __coord_dec(up);
                     return patch2D(lo,up);
                 }
-
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(in2D);
@@ -274,7 +261,6 @@ namespace yocto
                 inline virtual ~in3D() throw()
                 {
                 }
-
 
                 inline virtual coord3D get_ranks(const size_t rank)  const throw()
                 {

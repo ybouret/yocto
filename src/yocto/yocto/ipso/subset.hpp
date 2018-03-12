@@ -23,23 +23,23 @@ namespace yocto
             typedef patch<COORD>              patch_type;
             static const size_t               DIM = YOCTO_IPSO_DIM_OF(COORD);
 
-            const size_t          rank;
-            const COORD           ranks;
-            const patch_type      inner;
-            const patch_type      outer;
-            const swaps_list      local; //!< local swaps, by pair
+            const size_t          rank;       //!< global (aka MPI) rank
+            const COORD           ranks;      //!< local ranks
+            const patch_type      inner;      //!< inner working patch
+            const patch_type      outer;      //!< outer patch, with swap zones
+            const swaps_list      local;      //!< local swaps, by pair
             const swaps_list      async[DIM]; //!< async swaps
-            const swaps_addr_list asyncs; //!< asyncs collection
-            subset               *next;  //!< for subset::list
-            subset               *prev;  //!< for subset::list
-            const score_t         score; //!< (inner.items,num_async,num_local)
+            const swaps_addr_list asyncs;     //!< asyncs collection
+            subset               *next;       //!< for subset::list
+            subset               *prev;       //!< for subset::list
+            const score_t         score;      //!< (inner.items,num_async,num_local)
 
 
 
 
             inline virtual ~subset() throw() {}
 
-            //! build the outer layout and the straight swaps
+            //! build the outer layout and the swaps
             /**
              \param full   the full patch divider
              \param r_id   the subset global rank
@@ -58,7 +58,7 @@ namespace yocto
             outer( inner ),
             local(),
             async(),
-	    asyncs(),
+            asyncs(),
             next(0),
             prev(0),
             score()
@@ -87,7 +87,6 @@ namespace yocto
                     }
                 }
 
-                swaps::list & _local = (swaps::list &)local;
 
                 //______________________________________________________________
                 //
@@ -98,10 +97,9 @@ do { const unsigned flag = swaps::dim2pos(dim,-1); _##KIND.push_back( new swaps(
 #define         YOCTO_IPSO_UPPER_SWAPS(KIND) \
 do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(rank, full.next_rank(ranks,dim), layers, flag) ); } while(false)
 
-
-                COORD lower = inner.lower;
-                COORD upper = inner.upper;
-
+                COORD        lower = inner.lower;
+                COORD        upper = inner.upper;
+                swaps_list &_local = (swaps_list &)local;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     swaps_list  & _async = (swaps_list  &)(async[dim]);
@@ -135,8 +133,6 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                             {
                                 YOCTO_IPSO_LOWER_SWAPS(async);
                                 YOCTO_IPSO_UPPER_SWAPS(async);
-                                //async.push_back( YOCTO_IPSO_LOWER_SWAPS );
-                                //async.push_back( YOCTO_IPSO_UPPER_SWAPS );
                             }
                         }
                         else
@@ -149,8 +145,6 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
                             YOCTO_IPSO_LOWER_SWAPS(local);
                             YOCTO_IPSO_UPPER_SWAPS(local);
-                            //local.push_back( YOCTO_IPSO_LOWER_SWAPS );
-                            //local.push_back( YOCTO_IPSO_UPPER_SWAPS );
                         }
                     }
                     else
@@ -199,6 +193,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     }
 
                 }
+                // rebuild outer patch
                 new ((void*)&outer) patch_type(lower,upper);
 
                 //______________________________________________________________
@@ -217,7 +212,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 swaps_addr_list &_asyncs = (swaps_addr_list &)asyncs;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    for(swaps *swp = async[dim].head; swp; swp=swp->next )
+                    for(swaps *swp = async[dim].head;swp;swp=swp->next )
                     {
                         _asyncs.append(swp);
                     }
@@ -234,20 +229,11 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 //______________________________________________________________
                 load_cross_swaps(full,layers,pbcs,build);
 
-#if 0
-                if(build)
-                {
-                    async.join();
-                }
-#endif
-                
                 //______________________________________________________________
                 //
                 // Pass 4: setting scores
                 //______________________________________________________________
                 set_score();
-
-                
             }
 
 

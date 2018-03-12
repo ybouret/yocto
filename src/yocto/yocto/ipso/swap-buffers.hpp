@@ -8,6 +8,7 @@ namespace yocto
     namespace ipso
     {
 
+        //! memory for asynchronous exchanges
         class swap_buffers
         {
         public:

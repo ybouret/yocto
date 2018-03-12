@@ -47,9 +47,9 @@ namespace yocto
                 }
                 coord1D *p = (coord1D *)&pitch;
                 p[0] = 1;
-                for(size_t i=1;i<DIM;++i)
+                for(size_t i=1,j=0;i<DIM;++i,++j)
                 {
-                    p[i] = p[i-1] * w[i-1];
+                    p[i] = p[j] * w[j];
                 }
             }
 
