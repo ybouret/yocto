@@ -11,21 +11,21 @@ namespace yocto
     namespace Ink
     {
         typedef ipso::field2D<float> StencilType;
-
+        
         class Stencil : public StencilType
         {
         public:
             const unit_t dx;
             const unit_t dy;
-
-
-
+            
+            
+            
             //! ctor : (2*w+1)x(2*h+1)
             explicit Stencil(const string &id, const unit_t w, const unit_t h);
             explicit Stencil(const char   *id, const unit_t w, const unit_t h);
             virtual ~Stencil() throw();
             void     compile() throw();
-
+            
             template <
             typename     VECTOR,
             typename     SCALAR,
@@ -47,7 +47,7 @@ namespace yocto
                 }
                 engine.submit(this, &Stencil::applyRawThread<VECTOR,SCALAR,CHANNELS> );
             }
-
+            
             inline void apply(Pixmap<float>       &target,
                               const Pixmap<float> &source,
                               Engine              &engine,
@@ -55,7 +55,7 @@ namespace yocto
             {
                 _apply<float,float,1>(target,source,engine,normalize);
             }
-
+            
             inline void apply(Pixmap<uint8_t>       &target,
                               const Pixmap<uint8_t> &source,
                               Engine                &engine,
@@ -63,7 +63,7 @@ namespace yocto
             {
                 _apply<uint8_t,uint8_t,1>(target,source,engine,normalize);
             }
-
+            
             inline void apply(Pixmap<RGB>       &target,
                               const Pixmap<RGB> &source,
                               Engine            &engine,
@@ -71,13 +71,13 @@ namespace yocto
             {
                 _apply<RGB,uint8_t,3>(target,source,engine,normalize);
             }
-
+            
             //! display as a matrix
             void display() const;
-
+            
             //! print as an array
             void print() const;
-
+            
             inline float compute(const Pixmap<float> &pxm, const unit_t x, const unit_t y) const throw()
             {
                 float sum = 0.0f;
@@ -95,15 +95,15 @@ namespace yocto
                 }
                 return sum;
             }
-
+            
             static inline
-            void compute(float                &gx,
-                          const Stencil       &sx,
-                          float               &gy,
-                          const Stencil       &sy,
-                          const Pixmap<float> &pxm,
-                          const unit_t         x,
-                          const unit_t         y)
+            void compute(float               &gx,
+                         const Stencil       &sx,
+                         float               &gy,
+                         const Stencil       &sy,
+                         const Pixmap<float> &pxm,
+                         const unit_t         x,
+                         const unit_t         y)
             {
                 assert( ipso::patch2D::eq(sx,sy) );
                 float sum_x = 0.0f, sum_y=0.0f;
@@ -123,7 +123,7 @@ namespace yocto
                         const float  wy    = sy_yy[xx];
                         const unit_t i     = pxm.zfx(x+xx);
                         const float  value = pxm_j[i];
-
+                        
                         sum_x += wx * value;
                         sum_y += wy * value;
                     }
@@ -131,8 +131,8 @@ namespace yocto
                 gx = sum_x;
                 gy = sum_y;
             }
-
-
+            
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Stencil);
             void *       tgt;
@@ -144,7 +144,7 @@ namespace yocto
             bool         nrm;    //!< if normalize
             float        vmin;   //!< minimal value for this stencil
             float        vmax;   //!< maximal value for this stencil
-
+            
             template <
             typename     VECTOR,
             typename     SCALAR,
@@ -190,13 +190,47 @@ namespace yocto
                 }
             }
         };
-
-
-       
-
-
-      
-
+        
+        class StencilDX : public Stencil
+        {
+        public:
+            inline explicit StencilDX() : Stencil("StencilDX",1,1)
+            {
+                Stencil &self = *this;
+                self[0][-1] = -1; self[0][1] = 1;
+                compile();
+            }
+            
+            inline virtual ~StencilDX() throw()
+            {
+            }
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(StencilDX);
+        };
+        
+        class StencilDY : public Stencil
+        {
+        public:
+            inline explicit StencilDY() : Stencil("StencilDY",1,1)
+            {
+                Stencil &self = *this;
+                self[-1][0] = -1; self[1][0] = 1;
+                compile();
+            }
+            
+            inline virtual ~StencilDY() throw()
+            {
+            }
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(StencilDY);
+        };
+        
+        
+        
+        
+        
     }
 }
 
