@@ -4,6 +4,7 @@
 
 #include "yocto/ink/ops/edges.hpp"
 #include "yocto/ink/ops/sobel.hpp"
+#include "yocto/ink/ops/scharr.hpp"
 
 namespace yocto
 {
@@ -13,52 +14,44 @@ namespace yocto
         class EdgesDetector : public Edges
         {
         public:
-            Particles firm; //!< strong edges
-            Particles thin; //!< weak edges
+            Particles particles; //!< strong edges coordinates
             
+            virtual void find(const Pixmap<float> &source,
+                              Particles           *weaks,
+                              Blur                *blur,
+                              Engine              &engine) = 0;
+            
+            virtual ~EdgesDetector() throw();
             
         protected:
-            inline explicit EdgesDetector(const unit_t W, const unit_t H) :
-            Edges(W,H),
-            firm(),
-            thin()
-            {
-            }
-            
+            explicit EdgesDetector(const unit_t W, const unit_t H);
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(EdgesDetector);
         };
         
-        template <typename DX, typename DY>
-        class EdgesDetectorWith : public EdgesDetector
+        template <class DX = Scharr5X, class DY = Scharr5Y>
+        class EdgesRadar : public EdgesDetector
         {
         public:
-            const DX  dx;
-            const DY  dy;
-           
+            const DX dx;
+            const DY dy;
             
-            inline explicit EdgesDetectorWith(const unit_t W, const unit_t H) :
-            EdgesDetector(W,H),
-            dx(),
-            dy()
-            {
-            }
+            inline explicit EdgesRadar(const unit_t W, const unit_t H) :
+            EdgesDetector(W,H),dx(),dy() {}
             
-            inline virtual ~EdgesDetectorWith() throw()
-            {
-            }
+            inline virtual ~EdgesRadar() throw() {}
             
-            inline void detect(const Pixmap<float> &source,
-                               Blur                 *blur,
-                               Engine              &engine,
-                               const bool            keep)
+            virtual void find(const Pixmap<float> &source,
+                              Particles           *weaks,
+                              Blur                *blur,
+                              Engine             &engine)
             {
-                this->Edges::detect(firm,NULL,source,dx,dy,blur,engine);
+                this->detect(particles, weaks, source, dx, dy, blur, engine);
             }
             
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(EdgesDetectorWith);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(EdgesRadar);
         };
         
     }

@@ -136,6 +136,12 @@ YOCTO_UNIT_TEST_IMPL(edges)
             compute_edges(edges,pxmf,dx,dy,par,blur.__get());
         }
 
+        EdgesRadar<Scharr5X,Scharr5Y> ED(pxm3.w,pxm3.h);
+        ED.find(pxmf, NULL, blur.__get(),par);
+        IMG.save(ED,"radar-strong.png",NULL);
+        Particles weaks;
+        ED.find(pxmf, &weaks, blur.__get(),par);
+        IMG.save(ED,"radar-medium.png",NULL);
     }
 
 #if 0

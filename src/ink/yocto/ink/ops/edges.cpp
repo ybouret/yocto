@@ -188,7 +188,11 @@ namespace yocto
             Pixmap<uint8_t> &self = *this;
             Particles        all;
             tags.build(*this,all,true);
-
+            if(weaks)
+            {
+                weaks->clear();
+            }
+            
             while(all.size>0)
             {
                 Particle *pt        = all.pop_front();
@@ -227,6 +231,10 @@ namespace yocto
                 }
             }
             tags.rewrite(particles);
+            if(weaks)
+            {
+                tags.rewrite(*weaks,particles.size);
+            }
         }
 
         void Edges::detect(Particles           &particles,

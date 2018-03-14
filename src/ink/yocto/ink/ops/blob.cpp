@@ -14,11 +14,13 @@ namespace yocto
         {
         }
 
-        void Blob:: rewrite(Particles &particles)
+        void Blob:: rewrite(Particles &particles,size_t indx)
         {
             Pixmap<size_t> &self = *this;
-            ldz();
-            size_t indx = 0;
+            if(indx<=0)
+            {
+                ldz();
+            }
             for( Particle *pt = particles.head; pt; pt=pt->next )
             {
                 (size_t &)(pt->indx) = ++indx;

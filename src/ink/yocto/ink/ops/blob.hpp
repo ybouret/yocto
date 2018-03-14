@@ -123,7 +123,7 @@ namespace yocto
             }
 
             //! rewrite numbering
-            void rewrite(Particles &particles);
+            void rewrite(Particles &particles,size_t indx=0);
 
 
 
