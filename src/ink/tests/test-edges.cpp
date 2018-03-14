@@ -10,22 +10,33 @@
 #include "yocto/ink/ops/scharr.hpp"
 
 #include "yocto/ink/image.hpp"
-#include "yocto/utest/run.hpp"
 #include "yocto/ios/ocstream.hpp"
+#include "yocto/string/conv.hpp"
 
+#include "yocto/utest/run.hpp"
 
 using namespace yocto;
 using namespace Ink;
 
-static inline void compute_edges(Edges &edges,
-                                 const Pixmap<float> &intensity,
-                                 const Stencil &dx,
-                                 const Stencil &dy,
-                                 Engine        &engine)
+static inline void compute_edges(Edges               &edges,
+                                 const Pixmap<float> &img,
+                                 const Stencil       &dx,
+                                 const Stencil       &dy,
+                                 Engine              &engine,
+                                 Blur                *blur)
 {
     YOCTO_IMG_IO();
+    if(blur)
+    {
+        std::cerr << "BLUR: " << std::endl;
+    }
+    else
+    {
+        std::cerr << "NO BLUR" << std::endl;
+    }
+    edges.loadIntensity(img, blur, engine);
     const string sfx = dx.name + '-' + dy.name;
-    edges.computeGradient(intensity, dx, dy, engine);
+    edges.computeGradient(dx, dy, engine);
     {
         ramp_cold_to_very_hot gRamp(0,edges.gradient.v_max);
         const string fn = "grad-" + sfx + ".png";
@@ -39,6 +50,27 @@ static inline void compute_edges(Edges &edges,
     std::cerr << "strong=" << edges.strong << std::endl;
     std::cerr << "weak  =" << edges.weak   << std::endl;
 
+
+    edges.statisticalLevels(engine);
+    {
+        const string fn = "grade-" + sfx + ".png";
+        IMG.save(edges,fn,NULL);
+    }
+
+    Particles particles;
+    edges.build(particles);
+    {
+        const string fn = "edges-" + sfx + ".png";
+        IMG.save(edges,fn,NULL);
+    }
+
+    {
+        indx2rgba<size_t> tagColors(10);
+        const string fn = "tags-" + sfx + ".png";
+        IMG.save(fn,edges.tags,tagColors,NULL);
+    }
+
+    std::cerr << "#edges=" << particles.size << std::endl;
 
 }
 
@@ -73,30 +105,35 @@ YOCTO_UNIT_TEST_IMPL(edges)
         IMG.save(pxm3, "img3.png", NULL);
         IMG.save(pxmf, "imgf.png", NULL);
 
+        auto_ptr<Blur> blur;
+        if(argc>2)
+        {
+            blur.reset( new BlurOn<5>( strconv::to<float>(argv[2]) ) );
+        }
         Edges edges(pxm3.w,pxm3.h);
 
         {
             Sobel3X dx;
             Sobel3Y dy;
-            compute_edges(edges,pxmf,dx,dy,par);
+            compute_edges(edges,pxmf,dx,dy,par,blur.__get());
         }
 
         {
             Sobel5X dx;
             Sobel5Y dy;
-            compute_edges(edges,pxmf,dx,dy,par);
+            compute_edges(edges,pxmf,dx,dy,par,blur.__get());
         }
 
         {
             Scharr3X dx;
             Scharr3Y dy;
-            compute_edges(edges,pxmf,dx,dy,par);
+            compute_edges(edges,pxmf,dx,dy,par,blur.__get());
         }
 
         {
             Scharr5X dx;
             Scharr5Y dy;
-            compute_edges(edges,pxmf,dx,dy,par);
+            compute_edges(edges,pxmf,dx,dy,par,blur.__get());
         }
 
     }

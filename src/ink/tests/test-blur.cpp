@@ -14,9 +14,10 @@ static inline void do_blur(Pixmap<T>       &tgt,
                            Engine          &engine,
                            const string    &id)
 {
-    std::cerr << "Apply Blur(" << blr.length << ")\ton a " << tgt.x << "x" << tgt.y << "x" << tgt.depth << " pixmap" << std::endl;
+    std::cerr << "Apply Blur(" << blr.length << ")\ton a " << tgt.w << "x" << tgt.h << "x" << tgt.depth << " pixmap" << std::endl;
     YOCTO_IMG_IO();
-    blr.apply(tgt,src,engine);
+    Pixmap<T> tmp(tgt.w,tgt.h);
+    blr.apply(tgt,tmp,src,engine);
     IMG.save(tgt, id, NULL);
 }
 
@@ -61,9 +62,9 @@ YOCTO_UNIT_TEST_IMPL(blur)
         do_blur(pxmf,imgf,blurB,par,"blurBf.png");
         do_blur(pxmf,imgf,blurC,par,"blurCf.png");
 
-        do_blur(pxm1,img1,blurA,par,"blurAf.png");
-        do_blur(pxm1,img1,blurB,par,"blurBf.png");
-        do_blur(pxm1,img1,blurC,par,"blurCf.png");
+        do_blur(pxm1,img1,blurA,par,"blurA1.png");
+        do_blur(pxm1,img1,blurB,par,"blurB1.png");
+        do_blur(pxm1,img1,blurC,par,"blurC1.png");
 
     }
 

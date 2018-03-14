@@ -35,34 +35,41 @@ namespace yocto
             typename     SCALAR,
             const size_t CHANNELS>
             inline void _apply(Pixmap<VECTOR>       &target,
+                               Pixmap<VECTOR>       &tmp,
                                const Pixmap<VECTOR> &source,
                                Engine               &engine)
             {
-                tgt = &target;
+                tgt = &tmp;
                 src = &source;
                 engine.submit(this , & Blur::applyThreadX<VECTOR,SCALAR,CHANNELS> );
+
+                tgt = &target;
+                src = &tmp;
                 engine.submit(this , & Blur::applyThreadY<VECTOR,SCALAR,CHANNELS> );
             }
 
             inline void apply(Pixmap<RGB>       &target,
+                              Pixmap<RGB>       &tmp,
                               const Pixmap<RGB> &source,
                               Engine            &engine)
             {
-                _apply<RGB,uint8_t,3>(target,source,engine);
+                _apply<RGB,uint8_t,3>(target,tmp,source,engine);
             }
 
             inline void apply(Pixmap<float>       &target,
+                              Pixmap<float>       &tmp,
                               const Pixmap<float> &source,
                               Engine              &engine)
             {
-                _apply<float,float,1>(target,source,engine);
+                _apply<float,float,1>(target,tmp,source,engine);
             }
 
             inline void apply(Pixmap<uint8_t>       &target,
+                              Pixmap<uint8_t>       &tmp,
                               const Pixmap<uint8_t> &source,
                               Engine                &engine)
             {
-                _apply<uint8_t,uint8_t,1>(target,source,engine);
+                _apply<uint8_t,uint8_t,1>(target,tmp,source,engine);
             }
 
 
@@ -84,8 +91,8 @@ namespace yocto
                 YOCTO_INK_AREA_LIMITS(dom);
                 Pixmap<VECTOR>       &target = *(Pixmap<VECTOR>       *)tgt;
                 const Pixmap<VECTOR> &source = *(const Pixmap<VECTOR> *)src;
-                const unit_t          delta = length;
-                const unit_t          x_end = target.x_end;
+                const unit_t          delta  = length;
+                const unit_t          x_end  = target.x_end;
 
                 for(unit_t i=xmax;i>=xmin;--i)
                 {
