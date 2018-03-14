@@ -24,15 +24,15 @@ static inline void compute_grads(Gradients           &grad,
     const string pfx = "img" + dx.name + "-" + dy.name;
     {
         const string fn  = pfx + ".png";
-        IMG.save(grad.gn,fn, NULL);
+        IMG.save(grad.value,fn, NULL);
     }
     
     Pixmap<RGB>       ang(pxm.w,pxm.h);
     ramp_cold_to_cold r(-3.14,3.14);
     functor<RGB,TL1(float)> func( &r, & ramp::toRGB);
     Mapper mapper;
-    mapper(ang,grad.ga,func,engine);
-    mapper(ang,grad.gn,ang,Convert::scaleRGB,engine);
+    mapper(ang,grad.angle,func,engine);
+    mapper(ang,grad.value,ang,Convert::scaleRGB,engine);
     {
         const string fn = "angle-" + pfx + ".png";
         IMG.save(ang,fn,NULL);

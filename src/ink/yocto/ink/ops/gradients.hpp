@@ -18,11 +18,9 @@ namespace yocto
             Pixmaps<float> fields;
             
         public:
-            pixmap &gx; //!< x gradient
-            pixmap &gy; //!< y gradient
-            pixmap &gn; //!< norm(gx,gy)
-            pixmap &ga; //!< angle
-            float   gn_max;
+            pixmap &value; //!< norm of gradient
+            pixmap &angle; //!< angle, in [-pi:pi]
+            float   v_max; //!< max value
             
             explicit Gradients(const Bitmap &bmp);
             virtual ~Gradients() throw();
@@ -39,7 +37,6 @@ namespace yocto
             const Stencil *sdy;
             void  computeThread( const Domain &dom, threading::context &) throw();
             void  normalizeThread( const Domain &dom, threading::context &) throw();
-
         };
         
     }

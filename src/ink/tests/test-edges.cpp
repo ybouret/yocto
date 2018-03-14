@@ -6,6 +6,8 @@
 #include "yocto/ink/color/ramp/grey.hpp"
 #include "yocto/ink/ops/mapper.hpp"
 #include "yocto/ink/ops/filter.hpp"
+#include "yocto/ink/ops/sobel.hpp"
+#include "yocto/ink/ops/scharr.hpp"
 
 #include "yocto/ink/image.hpp"
 #include "yocto/utest/run.hpp"
@@ -14,6 +16,31 @@
 
 using namespace yocto;
 using namespace Ink;
+
+static inline void compute_edges(Edges &edges,
+                                 const Pixmap<float> &intensity,
+                                 const Stencil &dx,
+                                 const Stencil &dy,
+                                 Engine        &engine)
+{
+    YOCTO_IMG_IO();
+    const string sfx = dx.name + '-' + dy.name;
+    edges.computeGradient(intensity, dx, dy, engine);
+    {
+        ramp_cold_to_very_hot gRamp(0,edges.gradient.v_max);
+        const string fn = "grad-" + sfx + ".png";
+        IMG.save(fn, edges.gradient.value, gRamp, NULL);
+    }
+    edges.keepLocalMaxima(engine);
+    {
+        const string fn = "maxima-" + sfx + ".png";
+        IMG.save(edges.maxima,fn,NULL);
+    }
+    std::cerr << "strong=" << edges.strong << std::endl;
+    std::cerr << "weak  =" << edges.weak   << std::endl;
+
+
+}
 
 YOCTO_UNIT_TEST_IMPL(edges)
 {
@@ -34,10 +61,47 @@ YOCTO_UNIT_TEST_IMPL(edges)
 
     }
 
-    Engine::SharedServer seqSrv( new threading::seq_server() );
-    Engine::SharedServer parSrv( new threading::par_server() );
+    Engine::SharedServer   seqSrv( new threading::seq_server() );
+    Engine::SharedServer   parSrv( new threading::par_server() );
+    Mapper                 mapper;
+    if(argc>1)
+    {
+        const PixmapRGB pxm3( IMG.loadRGB(argv[1],NULL) );
+        Engine          par(pxm3,parSrv);
+        Pixmap<float>   pxmf( pxm3.w, pxm3.h );
+        mapper(pxmf,pxm3,Convert::RGB2F,par);
+        IMG.save(pxm3, "img3.png", NULL);
+        IMG.save(pxmf, "imgf.png", NULL);
 
-    Mapper            mapper;
+        Edges edges(pxm3.w,pxm3.h);
+
+        {
+            Sobel3X dx;
+            Sobel3Y dy;
+            compute_edges(edges,pxmf,dx,dy,par);
+        }
+
+        {
+            Sobel5X dx;
+            Sobel5Y dy;
+            compute_edges(edges,pxmf,dx,dy,par);
+        }
+
+        {
+            Scharr3X dx;
+            Scharr3Y dy;
+            compute_edges(edges,pxmf,dx,dy,par);
+        }
+
+        {
+            Scharr5X dx;
+            Scharr5Y dy;
+            compute_edges(edges,pxmf,dx,dy,par);
+        }
+
+    }
+
+#if 0
     BlurOn<5>         g5x5(1.4f);
     ramp_cold_to_cold armp(-math::numeric<float>::pi,math::numeric<float>::pi);
     std::cerr << "atan2(0,1)=" << math::Atan2(0.0f,1.0f) << std::endl;
@@ -89,10 +153,9 @@ YOCTO_UNIT_TEST_IMPL(edges)
         //F.Average(edges,par);
         // IMG.save(edges,"edges_map_filter.png",NULL);
         IMG.save("edges_map_filter.png",edges,edgeColors,NULL);
-
-        
-        
     }
+#endif
+
 
 }
 YOCTO_UNIT_TEST_DONE()
