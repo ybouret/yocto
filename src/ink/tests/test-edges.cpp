@@ -1,5 +1,5 @@
 
-#include "yocto/ink/ops/edges.hpp"
+#include "yocto/ink/ops/edges-detector.hpp"
 #include "yocto/ink/color/conv.hpp"
 #include "yocto/ink/color/ramp/cold_to_very_hot.hpp"
 #include "yocto/ink/color/ramp/cold_to_cold.hpp"
