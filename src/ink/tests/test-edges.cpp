@@ -139,9 +139,15 @@ YOCTO_UNIT_TEST_IMPL(edges)
         EdgesRadar<Scharr5X,Scharr5Y> ED(pxm3.w,pxm3.h);
         ED.find(pxmf, NULL, blur.__get(),par);
         IMG.save(ED,"radar-strong.png",NULL);
+        AutoFilter<uint8_t> F(edges);
+        F.Close(edges,par);
+        IMG.save(ED,"radar-strong-closed.png",NULL);
+
         Particles weaks;
         ED.find(pxmf, &weaks, blur.__get(),par);
         IMG.save(ED,"radar-medium.png",NULL);
+        F.Close(edges,par);
+        IMG.save(ED,"radar-medium-closed.png",NULL);
     }
 
 #if 0
