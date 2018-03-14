@@ -118,7 +118,7 @@ namespace yocto
                         }
                     }
                 }
-                std::cerr << "cache.size=" << cache.size << std::endl;
+                //std::cerr << "cache.size=" << cache.size << std::endl;
                 particles.sortBySize();
             }
 

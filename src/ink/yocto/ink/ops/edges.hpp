@@ -3,7 +3,6 @@
 
 #include "yocto/ink/ops/blob.hpp"
 #include "yocto/ink/ops/blur.hpp"
-#include "yocto/ink/ops/histogram.hpp"
 #include "yocto/ink/ops/gradients.hpp"
 
 namespace yocto
@@ -51,9 +50,10 @@ namespace yocto
             //! all in one call
             void detect(Particles           &particles,
                         Particles           *weaks,
-                        const Pixmap<float> &intensity,
+                        const Pixmap<float> &source,
                         const Stencil       &dx,
                         const Stencil       &dy,
+                        Blur                *blur,
                         Engine              &engine);
 
         private:

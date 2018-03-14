@@ -231,11 +231,14 @@ namespace yocto
 
         void Edges::detect(Particles           &particles,
                            Particles           *weaks,
-                           const Pixmap<float> &intensity,
+                           const Pixmap<float> &source,
                            const Stencil       &dx,
                            const Stencil       &dy,
+                           Blur                *blur,
                            Engine              &engine)
         {
+
+            loadIntensity(source,blur,engine);
             computeGradient(dx,dy,engine);
             keepLocalMaxima(engine);
             statisticalLevels(engine);
