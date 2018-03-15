@@ -13,6 +13,32 @@ namespace yocto
         {
         public:
             
+            
+            
+            template <typename T>
+            inline unit_t find_d2(Pixmap<T>    &img,
+                                  const unit_t  xm,
+                                  const unit_t  ym)
+            {
+                assert(img.contains(xm,ym));
+                assert(!Pixel<T>::IsZero(img[ym][xm]));
+                unit_t d2 = -1;
+                for(unit_t r=1;;++r)
+                {
+                    if(!scanCircle(d2,img,xm, ym, r))
+                    {
+                        assert(d2<0);
+                        return d2;
+                    }
+                    if(d2>=0)
+                    {
+                        return d2;
+                    }
+                }
+            }
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(EDM);
             //! scan circle
             template <typename T>
             inline bool scanCircle(unit_t       &d2,
@@ -75,9 +101,6 @@ namespace yocto
                 d2 = d2_min;
                 return has_data;
             }
-            
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(EDM);
         };
         
     }
