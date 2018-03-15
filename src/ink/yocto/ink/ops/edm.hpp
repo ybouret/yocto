@@ -15,7 +15,7 @@ namespace yocto
             
             //! scan circle
             template <typename T>
-            inline bool scanCircle(float        &d2,
+            inline bool scanCircle(unit_t       &d2,
                                    Pixmap<T>    &img,
                                    const unit_t  xm,
                                    const unit_t  ym,
@@ -24,9 +24,9 @@ namespace yocto
                 assert(r>0);
                 bool has_data = false;
                 unit_t x = -r, y = 0, err = 2-2*r; /* bottom left to top right */
-                float  d2_min = (d2 = -1.0f);
+                unit_t d2_min = (d2 = -1);
                 do {
-                  
+                    // there are four possible points at the same distance
                     const coord v[4] =
                     {
                         coord(xm-x,ym+y),  /*   I. Quadrant +x +y */
@@ -44,10 +44,10 @@ namespace yocto
                             has_data = true;
                             if( Pixel<T>::IsZero(img[p]))
                             {
-                                const unit_t x2 = x*x;
-                                const unit_t y2 = y*y;
-                                const float d2_tmp = x2+y2;
-                                if(d2_min<0.0f)
+                                const unit_t x2     = x*x;
+                                const unit_t y2     = y*y;
+                                const float  d2_tmp = x2+y2;
+                                if(d2_min<0)
                                 {
                                     d2_min = d2_tmp;
                                 }
@@ -68,12 +68,14 @@ namespace yocto
                         err += ++y*2+1;            /* e_xy+e_y < 0 */
                     }
                     if (r > x || err > y)
-                    {/* e_xy+e_x > 0 or no 2nd y-step */
+                    {
                         err += ++x*2+1;
-                    }/* -> x-step now */
+                    }
                 } while (x < 0);
+                d2 = d2_min;
                 return has_data;
             }
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(EDM);
         };
