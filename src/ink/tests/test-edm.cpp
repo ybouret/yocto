@@ -27,7 +27,7 @@ YOCTO_UNIT_TEST_IMPL(edm)
         Engine    par(pxm,parSrv);
         Histogram H;
         PixmapRGB fg(pxm.w,pxm.h);
-        H.foreground(fg,pxm, Convert::RGB2U, par);
+        H.foreground(fg,pxm, Convert::RGB2U, par,true);
         IMG.save(fg,"fg.png",NULL);
 
         EDM edm(pxm.w,pxm.h);
@@ -36,9 +36,7 @@ YOCTO_UNIT_TEST_IMPL(edm)
         ramp_cold_to_very_hot cr(0,edm.ed_max);
         IMG.save("edm.png", edm, cr, NULL);
 
-        Filter F;
-        F.fillHoles(fg,par);
-        IMG.save(fg,"fg1.png",NULL);
+        
 
     }
 

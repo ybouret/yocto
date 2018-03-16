@@ -96,7 +96,7 @@ YOCTO_UNIT_TEST_IMPL(fg)
         //const size_t level = H.build(img,Convert::RGB2U,par).threshold();
         //H.keep(level, Histogram::KeepGEQ, fg, img, Convert::RGB2U,par);
         PixmapRGB    fg(img.w,img.h);
-        H.foreground(fg,img,Convert::RGB2U,par);
+        H.foreground(fg,img,Convert::RGB2U,par,false);
         IMG.save(fg,"fg0.png",NULL);
 
 

@@ -2,9 +2,7 @@
 #ifndef YOCTO_INK_OPS_HIST_INCLUDED
 #define YOCTO_INK_OPS_HIST_INCLUDED 1
 
-#include "yocto/ink/parallel.hpp"
-#include "yocto/ink/pixmap.hpp"
-#include "yocto/ink/color/pixel.hpp"
+#include "yocto/ink/ops/filter.hpp"
 #include "yocto/code/bzset.hpp"
 
 namespace yocto
@@ -104,7 +102,8 @@ namespace yocto
             inline void foreground(Pixmap<T>       &tgt,
                                    const Pixmap<T> &src,
                                    FUNC            &pixel2byte,
-                                   Engine          &engine)
+                                   Engine          &engine,
+                                   bool             fillHoles)
             {
                 keep<T,FUNC>(build(src,pixel2byte,engine).threshold(),
                              KeepGEQ,
@@ -113,6 +112,11 @@ namespace yocto
                              pixel2byte,
                              engine,
                              false);
+                if(fillHoles)
+                {
+                    Filter F;
+                    F.fillHoles(tgt,engine);
+                }
             }
 
             template <typename T, typename FUNC>
