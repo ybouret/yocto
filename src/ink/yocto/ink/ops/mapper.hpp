@@ -26,6 +26,15 @@ namespace yocto
                 engine.submit(this, & Mapper::callThread<T,U,FUNC> );
             }
 
+            template <typename T> inline
+            void ldz( Pixmap<T> &tgt, Engine &engine )
+            {
+                target = &tgt;
+                source = NULL;
+                proc   = NULL;
+                engine.submit(this, & Mapper::ldzThread<T> );
+            }
+
             template <
             typename T,
             typename U,
@@ -143,6 +152,20 @@ namespace yocto
                 U *val = static_cast<U*>(dom.cache.data);
                 val[0] = vmin;
                 val[1] = vmax;
+            }
+
+            template <typename T>
+            inline void ldzThread(const Domain *dom, threading::context &) throw()
+            {
+                Pixmap<T>   &tgt   = *static_cast< Pixmap<T> *>(target);
+                const unit_t ymin  = dom->y;
+                const unit_t ymax  = dom->y_end;
+                const unit_t xmin  = dom->x;
+                const unit_t bytes = dom->w*sizeof(T);
+                for(unit_t j=ymax;j>=ymin;--j)
+                {
+                    memset( & tgt[j][xmin], 0, bytes );
+                }
             }
         };
     }

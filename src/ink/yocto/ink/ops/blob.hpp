@@ -125,13 +125,62 @@ namespace yocto
             //! rewrite numbering
             void rewrite(Particles &particles,size_t indx=0);
 
+            //! compute topology of 1 particle from written particles
+            void topology(Particle       *inside,
+                          Particle       *border,
+                          const Particle &source,
+                          const bool      connectFull) const;
+
+            //! compute full topology
+            void topology(Particles       *insides,
+                          Particles       *borders,
+                          const Particles &particles,
+                          const bool       connectFull) const;
+
+            //! invert particles and background
+            template <typename T> inline
+            void invert(Pixmap<T> &target, Engine &engine)
+            {
+                tgt = &target;
+                engine.submit(this, &Blob::invertThread<T>);
+            }
+
+            //! keep holes according to current map
+            /**
+             a hole has all its neighbors zero of self
+             sorted in increasing order, normally
+             */
+            void keepHoles(Particles &holes,const bool connectFull) throw();
 
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Blob);
+            void *tgt;
+            template <typename T> inline
+            void invertThread(const Domain &dom, threading::context &) throw()
+            {
+                YOCTO_INK_AREA_LIMITS(dom);
+                assert(tgt);
+                Pixmap<T> &target = *(Pixmap<T> *)tgt;
+                for(unit_t j=ymax;j>=ymin;--j)
+                {
+                    typename Pixmap<T>::Row   &T_j = target[j];
+                    const Pixmap<size_t>::Row &B_j = (*this)[j];
+                    for(unit_t i=xmax;i>=xmin;--i)
+                    {
+                        const size_t b = B_j[i];
+                        if(b>0)
+                        {
+                            T_j[i] = Pixel<T>::Zero;
+                        }
+                        else
+                        {
+                            T_j[i] = Pixel<T>::Opaque;
+                        }
+                    }
+                }
 
-
-
+            }
         };
 
     }

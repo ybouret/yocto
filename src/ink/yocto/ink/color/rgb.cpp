@@ -9,6 +9,9 @@ namespace yocto
         const RGB Pixel<RGB>::Opaque(0xff,0xff,0xff);
         
         template <>
+        const RGB Pixel<RGB>::Zero(0x00,0x00,0x00);
+
+        template <>
         bool Pixel<RGB>::IsZero(const RGB &C) throw() { return (C.r<=0) && (C.g<=0) && (C.b<=0); }
 
         template <>

@@ -79,6 +79,8 @@ YOCTO_UNIT_TEST_IMPL(blob)
 YOCTO_UNIT_TEST_DONE()
 
 #include "yocto/ink/ops/filter.hpp"
+YOCTO_INK_PIXEL_EXTERN_(RGB);
+
 YOCTO_UNIT_TEST_IMPL(fg)
 {
     YOCTO_IMG();
@@ -99,6 +101,11 @@ YOCTO_UNIT_TEST_IMPL(fg)
         H.foreground(fg,img,Convert::RGB2U,par,false);
         IMG.save(fg,"fg0.png",NULL);
 
+        {
+            Filter F;
+            F.fillHoles(fg,par);
+        }
+        IMG.save(fg,"fg1.png",NULL);
 
 
         indx2rgba<size_t> blobColors(0);
@@ -106,10 +113,31 @@ YOCTO_UNIT_TEST_IMPL(fg)
         Particles particles;
         blobs.build(fg,particles,true);
         blobs.rewrite(particles);
-        IMG.save("blobs0.png", blobs, blobColors, NULL);
+        IMG.save("blobs1.png", blobs, blobColors, NULL);
         particles.discardSmallerThan(2);
         blobs.rewrite(particles);
-        IMG.save("blobs1.png", blobs, blobColors, NULL);
+        IMG.save("blobs2.png", blobs, blobColors, NULL);
+
+        Particles insides;
+        Particles borders;
+        blobs.topology(&insides,&borders,particles,true);
+        blobs.rewrite(insides);
+        IMG.save("insides.png", blobs, blobColors, NULL);
+        blobs.rewrite(borders);
+        IMG.save("borders.png", blobs, blobColors, NULL);
+
+
+        blobs.rewrite(particles);
+        Pixmap<RGB> inv(img.w,img.h);
+        blobs.invert(inv,par);
+        Particles holes;
+        blobs.build(inv,holes,true);
+        IMG.save("holes0.png",blobs,blobColors,NULL);
+
+        blobs.rewrite(particles);
+        blobs.keepHoles(holes,true);
+        blobs.rewrite(holes);
+        IMG.save("holes1.png",blobs,blobColors,NULL);
 
     }
 }

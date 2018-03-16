@@ -94,6 +94,12 @@ U(240),U(241),U(242),U(243),U(244),U(245),U(246),U(247),U(248),U(249),U(250),U(2
         next(0), prev(0), pos() {}
         Vertex::~Vertex() throw() {}
 
+        Vertex:: Vertex(const Vertex &other) throw() :
+        next(0), prev(0), pos(other.pos)
+        {
+        }
+        
+
         Vertex:: Provider:: Provider() throw() : Pool()
         {
         }
