@@ -9,6 +9,7 @@ namespace yocto
     namespace Ink
     {
 
+
         //! run parallel local operations
         class Filter
         {
@@ -30,7 +31,14 @@ namespace yocto
                 engine.submit(this, &Filter::runThread<T,FUNC>);
             }
 
-          
+            template <typename T>
+            void fillHoles(Pixmap<T> &target, Engine &engine)
+            {
+                tgt = &target;
+                src = NULL;
+                pfn = NULL;
+                engine.submit(this, & Filter::fillHolesThread<T> );
+            }
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Filter);
@@ -60,6 +68,49 @@ namespace yocto
                     {
                         agent.collect(value,source,coord(i,j));
                         target_j[i] = func(value,agent.flags,agent.count);
+                    }
+                }
+            }
+
+            template <typename T>
+            void fillHolesThread(const Domain &dom, threading::context &) throw()
+            {
+                assert(tgt);
+                Pixmap<T>        &target = *(Pixmap<T>*)tgt;
+                T                 pixels[4];
+                YOCTO_INK_AREA_LIMITS(dom);
+                for(unit_t j=ymax;j>=ymin;--j)
+                {
+                    typename Pixmap<T>::Row &T_j = target[j];
+                    for(unit_t i=xmax;i>=xmin;--i)
+                    {
+                        T  &tgt = T_j[i];
+                        if( !Pixel<T>::IsZero(tgt) ) continue;
+                        bool         is_hole = true;
+                        size_t       count   = 0;
+                        const  coord p(i,j);
+                        for(size_t k=0;k<4;++k)
+                        {
+                            const coord q = p + Core::Shift[k];
+                            if(target.contains(q))
+                            {
+                                const T &value = target[q];
+                                if(Pixel<T>::IsZero(value))
+                                {
+                                    is_hole = false;
+                                    break;
+                                }
+                                else
+                                {
+                                    bmove(pixels[count++],value);
+                                }
+                            }
+                        }
+                        if(is_hole)
+                        {
+                            assert(count>0);
+                            tgt = Pixel<T>::Average(pixels,count);
+                        }
                     }
                 }
             }
@@ -107,6 +158,7 @@ inline void PROC(Pixmap<T> &source, Engine &engine) { transform(source,Local::PR
                 run(self,source,Local::Dilate<T>,engine);
                 run(source,self,Local::Erode<T>,engine);
             }
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(AutoFilter);

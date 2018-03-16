@@ -107,7 +107,6 @@ namespace yocto
                     assert(count>=2);
                     return Pixel<T>::Average(&value[(count>>1)-1],2);
                 }
-                return T();
             }
 
         private:

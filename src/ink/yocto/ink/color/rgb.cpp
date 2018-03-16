@@ -6,6 +6,9 @@ namespace yocto
     namespace Ink
     {
         template <>
+        const RGB Pixel<RGB>::Opaque(0xff,0xff,0xff);
+        
+        template <>
         bool Pixel<RGB>::IsZero(const RGB &C) throw() { return (C.r<=0) && (C.g<=0) && (C.b<=0); }
 
         template <>
