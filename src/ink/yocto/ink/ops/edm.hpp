@@ -13,6 +13,13 @@ namespace yocto
         class EDM : public Pixmap<float>
         {
         public:
+            enum ScanStatus
+            {
+                ScanFound,   //!< scan met background
+                ScanInside,  //!< scan totally inside foregroud
+                ScanOutside  //!< scan totally circle outside image
+            };
+
             const unit_t d2_max;
             float        ed_max;
             explicit EDM( const unit_t W, const unit_t H) :
@@ -81,37 +88,33 @@ namespace yocto
                     for(unit_t r=1;;++r)
                     {
                         unit_t d2 = d2_max;
-                        if(!scanCircle(d2,img,xm,ym,r))
+                        switch( scanCircle(d2, img, xm, ym, r) )
                         {
-                            assert(d2<0);
-                            return d2;
-                        }
-                        if(d2<d2_max)
-                        {
-                            return d2;
+                            case ScanFound:   return d2;
+                            case ScanOutside: return d2_max;
+                            case ScanInside:  break;
                         }
                     }
                 }
             }
             //__________________________________________________________________
             //
-            //! scan circle for a nearby zero pixel
+            //! scan circle for the first nearby zero pixel
             //__________________________________________________________________
             template <typename T>
-            inline bool scanCircle(unit_t       &d2,
-                                   const Pixmap<T>    &img,
-                                   const unit_t  xm,
-                                   const unit_t  ym,
-                                   unit_t        r) throw()
+            inline ScanStatus scanCircle(unit_t             &d2,
+                                         const Pixmap<T>    &img,
+                                         const unit_t        xm,
+                                         const unit_t        ym,
+                                         unit_t              r) throw()
             {
                 assert(r>0);
-                bool   has_data = false;
+                bool has_data = false;
                 //______________________________________________________________
                 //
                 // Initialize Algorithm
                 //______________________________________________________________
                 unit_t x = -r, y = 0, err = 2-2*r; /* bottom left to top right */
-                unit_t d2_min = (d2=d2_max);
                 do {
 
                     //__________________________________________________________
@@ -138,14 +141,10 @@ namespace yocto
                             has_data = true;
                             if( Pixel<T>::IsZero(img[p]))
                             {
-                                const unit_t x2     = x*x;
-                                const unit_t y2     = y*y;
-                                const unit_t d2_tmp = x2+y2;
-                                if(d2_tmp<d2_min)
-                                {
-                                    d2_min = d2_tmp;
-                                }
-                                break; // no need to test another point
+                                const unit_t x2 = x*x;
+                                const unit_t y2 = y*y;
+                                d2 = x2+y2;
+                                return ScanFound;
                             }
                         }
                     }
@@ -164,8 +163,7 @@ namespace yocto
                         err += ++x*2+1;
                     }
                 } while (x < 0);
-                d2 = d2_min;
-                return has_data;
+                return has_data ? ScanInside : ScanOutside;
             }
         };
         

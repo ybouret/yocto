@@ -37,6 +37,8 @@ namespace yocto
             // axis aligned bounding box
             Area  aabb() const throw();
 
+            void     outline(const Particle&);
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Particle);
         };
@@ -48,6 +50,7 @@ namespace yocto
             virtual ~Particles() throw();
             void     sortBySize();
             void     discardSmallerThan(const size_t count) throw();
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(Particles);
