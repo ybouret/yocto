@@ -175,6 +175,11 @@ SET( ipso_srcs ${ipso_decl} ${ipso_impl} )
 INSTALL( FILES ${ipso_decl} DESTINATION include/yocto/ipso )
 SOURCE_GROUP( ipso FILES ${ipso_srcs} )
 
+FILE( GLOB ipso_mesh_decl yocto/ipso/mesh/*.hpp)
+FILE( GLOB ipso_mesh_impl yocto/ipso/mesh/*.cpp)
+SET( ipso_mesh_srcs ${ipso_mesh_decl} ${ipso_mesh_impl} )
+INSTALL( FILES ${ipso_mesh_decl} DESTINATION include/yocto/ipso/mesh )
+SOURCE_GROUP( ipso/mesh FILES ${ipso_mesh_srcs} )
 
 FILE( GLOB mpl_decl yocto/mpl/*.hpp)
 FILE( GLOB mpl_impl yocto/mpl/*.cpp)
@@ -195,8 +200,8 @@ INSTALL( FILES ${mpl_rsa_decl} DESTINATION include/yocto/mpl/rsa )
 SOURCE_GROUP( mpl/rsa FILES ${mpl_rsa_srcs} )
 
 
-SET( decl ${top_decl} ${type_decl} ${ptr_decl} ${code_decl} ${threading_decl} ${threading_scheme_decl} ${core_decl} ${mem_decl} ${string_decl} ${container_decl} ${sequence_decl} ${hashing_decl} ${ios_decl} ${randomized_decl} ${associative_decl} ${stock_decl} ${ordered_decl} ${fragment_decl}  ${math_decl} ${rtld_decl} ${fs_decl} ${pack_decl} ${sort_decl} ${sys_decl} ${counting_decl} ${physics_decl} ${parallel_decl} ${ipso_decl} ${mpl_decl} ${mpl_natural_decl} ${mpl_rsa_decl})
-SET( srcs ${top_srcs} ${type_srcs} ${ptr_srcs} ${code_srcs} ${threading_srcs} ${threading_scheme_srcs} ${core_srcs} ${mem_srcs} ${string_srcs} ${container_srcs} ${sequence_srcs} ${hashing_srcs} ${ios_srcs} ${randomized_srcs} ${associative_srcs} ${stock_srcs} ${ordered_srcs} ${fragment_srcs}  ${math_srcs} ${rtld_srcs} ${fs_srcs} ${pack_srcs} ${sort_srcs} ${sys_srcs} ${counting_srcs} ${physics_srcs} ${parallel_srcs} ${ipso_srcs} ${mpl_srcs} ${mpl_natural_srcs} ${mpl_rsa_impl})
+SET( decl ${top_decl} ${type_decl} ${ptr_decl} ${code_decl} ${threading_decl} ${threading_scheme_decl} ${core_decl} ${mem_decl} ${string_decl} ${container_decl} ${sequence_decl} ${hashing_decl} ${ios_decl} ${randomized_decl} ${associative_decl} ${stock_decl} ${ordered_decl} ${fragment_decl}  ${math_decl} ${rtld_decl} ${fs_decl} ${pack_decl} ${sort_decl} ${sys_decl} ${counting_decl} ${physics_decl} ${parallel_decl} ${ipso_decl} ${ipso_mesh_decl} ${mpl_decl} ${mpl_natural_decl} ${mpl_rsa_decl})
+SET( srcs ${top_srcs} ${type_srcs} ${ptr_srcs} ${code_srcs} ${threading_srcs} ${threading_scheme_srcs} ${core_srcs} ${mem_srcs} ${string_srcs} ${container_srcs} ${sequence_srcs} ${hashing_srcs} ${ios_srcs} ${randomized_srcs} ${associative_srcs} ${stock_srcs} ${ordered_srcs} ${fragment_srcs}  ${math_srcs} ${rtld_srcs} ${fs_srcs} ${pack_srcs} ${sort_srcs} ${sys_srcs} ${counting_srcs} ${physics_srcs} ${parallel_srcs} ${ipso_srcs} ${ipso_mesh_srcs} ${mpl_srcs} ${mpl_natural_srcs} ${mpl_rsa_impl})
 
 INCLUDE_DIRECTORIES( . )
 
