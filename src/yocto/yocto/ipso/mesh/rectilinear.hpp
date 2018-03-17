@@ -9,17 +9,18 @@ namespace yocto
 {
     namespace ipso
     {
-        template <typename T,const size_t DIM>
+        template <typename T,const size_t _DIM>
         class rectilinear_mesh :
         public mesh_info,
-        public patch_for<DIM>::type
+        public patch_for<_DIM>::type
         {
         public:
+            static const size_t DIM = _DIM; //! over patch1D::DIM
             YOCTO_ARGUMENTS_DECL_T;
-            typedef typename patch_for<DIM>::type patch_type;
-            typedef patch1D                       axis_patch;
-            typedef field1D<T>                    axis_type;
-            typedef box<T,DIM>                    box_type;
+            typedef typename patch_for<_DIM>::type patch_type;
+            typedef patch1D                        axis_patch;
+            typedef field1D<T>                     axis_type;
+            typedef box<T,_DIM>                    box_type;
 
             inline virtual ~rectilinear_mesh() throw() {}
             inline explicit rectilinear_mesh(const array<string> &names,

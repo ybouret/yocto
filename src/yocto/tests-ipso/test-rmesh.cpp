@@ -5,7 +5,7 @@
 using namespace yocto;
 using namespace ipso;
 
-YOCTO_UNIT_TEST_IMPL(mesh)
+YOCTO_UNIT_TEST_IMPL(rmesh)
 {
     if(argc<=1)
     {
