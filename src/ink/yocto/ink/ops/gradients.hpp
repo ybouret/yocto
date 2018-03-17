@@ -37,6 +37,7 @@ namespace yocto
             const Stencil *sdy;
             void  computeThread( const Domain &dom, threading::context &) throw();
             void  normalizeThread( const Domain &dom, threading::context &) throw();
+	    YOCTO_DISABLE_COPY_AND_ASSIGN(Gradients);
         };
         
     }

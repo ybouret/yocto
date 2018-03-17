@@ -13,12 +13,12 @@ namespace yocto
         Gradients:: Gradients( const Bitmap &bmp ) :
         Area(bmp),
         fields(4,w,h),
-        //gx( *fields[1] ),
-        //gy( *fields[2] ),
         value( *fields[1] ),
         angle( *fields[2] ),
         v_max(0),
-        src(0)
+        src(0),
+	sdx(0),
+	sdy(0)
         {
         }
         
