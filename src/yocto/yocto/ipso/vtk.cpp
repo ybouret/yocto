@@ -128,7 +128,22 @@ namespace yocto
             fp << "POINT_DATA "; fp(" %u\n", unsigned(items) );
         }
 #endif
-        
+
+        // float
+        template <>
+        void VTK:: OutputScalarType<float>(ios::ostream &fp)
+        {
+            fp << "float";
+        }
+
+        // double
+        template <>
+        void VTK:: OutputScalarType<double>(ios::ostream &fp)
+        {
+            fp << "double";
+        }
+
+
         // float
         template <>
         void VTK:: OutputType<float>(ios::ostream &fp)
@@ -198,7 +213,7 @@ namespace yocto
         template <>
         void VTK:: OutputType< point3d<double> >(ios::ostream &fp)
         {
-            fp << "float 3";
+            fp << "double 3";
         }
         
         template <>

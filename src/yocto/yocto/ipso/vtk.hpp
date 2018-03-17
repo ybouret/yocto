@@ -18,7 +18,7 @@ namespace yocto
             static  void StructuredPoints(ios::ostream       &fp,
                                           const patch<COORD> &p);
 
-
+            template <typename T> static void OutputScalarType(ios::ostream &fp);
             template <typename T> static void OutputType(ios::ostream &fp);
             template <typename T> static void OutputValue(ios::ostream &fp, const T &);
             

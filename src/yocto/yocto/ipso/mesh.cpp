@@ -81,6 +81,16 @@ namespace yocto
             return *axis_info[++dim];
         }
 
+        const char * mesh_info:: vtk_coordinates(const size_t dim) throw()
+        {
+            static const char *vtk_id[3] =
+            {
+                "X_COORDINATES",
+                "Y_COORDINATES",
+                "Z_COORDINATES"
+            };
+            return vtk_id[dim&3];
+        }
 
     }
 

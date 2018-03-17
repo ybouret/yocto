@@ -34,7 +34,8 @@ namespace yocto
 
             field_info       & operator[](size_t dim) throw();
             const field_info & operator[](size_t dim) const throw();
-
+            
+            static const char * vtk_coordinates(const size_t dim) throw();
 
         protected:
             explicit mesh_info(const size_t d) throw();
