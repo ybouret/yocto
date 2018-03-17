@@ -54,8 +54,8 @@ static inline void mark( FIELD &F, const SWAP *sub, const int s, const int r)
     //std::cerr << "\t\tmarking field" << std::endl;
     for(;sub;sub=sub->next)
     {
-        F.swap_ops(sub->send,  s,  field_set);
-        F.swap_ops(sub->recv,  r,  field_set);
+        F.swap_ops(sub->send, typename FIELD::type(s),  field_set);
+        F.swap_ops(sub->recv, typename FIELD::type(r),  field_set);
     }
 }
 

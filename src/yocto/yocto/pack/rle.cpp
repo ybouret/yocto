@@ -39,7 +39,7 @@ namespace yocto
             else
             {
                 assert(num<=257);
-                const uint8_t rep(num-2);
+                const uint8_t rep = uint8_t(num-2);
                 Q.push_back(chr);
                 Q.push_back(chr);
                 Q.push_back(rep);
