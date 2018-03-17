@@ -109,7 +109,13 @@ namespace yocto
         typedef patch<coord1D> patch1D;
         typedef patch<coord2D> patch2D;
         typedef patch<coord3D> patch3D;
-        
+
+        template <const size_t DIM>
+        struct patch_for;
+
+        template <> struct patch_for<1> { typedef patch1D type; };
+        template <> struct patch_for<2> { typedef patch2D type; };
+        template <> struct patch_for<3> { typedef patch3D type; };
 
     }
 }

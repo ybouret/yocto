@@ -29,7 +29,12 @@ namespace yocto
         inline type       & at(size_t indx) throw()       { return (type &)get_data(indx); }
         inline const_type & at(size_t indx) const throw() { return (type &)get_data(indx); }
 
-        
+        inline sequence & operator<<( param_type args )
+        {
+            this->push_back(args);
+            return *this;
+        }
+
         virtual void reverse() throw() = 0;
         
 	protected:
