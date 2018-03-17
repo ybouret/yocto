@@ -35,7 +35,7 @@ namespace yocto
             inline axis_type       &Z() throw()       { assert(dimension>=3); return *axis_handle[2]; }
             inline const axis_type &Z() const throw() { assert(dimension>=3); return *axis_handle[2]; }
 
-            void vtk( ios::ostream &fp ) const
+            void vtk( ios::ostream &fp, const bool periodic = false) const
             {
                 fp << "DATASET POLYDATA\n";
                 fp << "POINTS "; fp("%u ",unsigned(items)); VTK::OutputScalarType<T>(fp); fp << '\n';

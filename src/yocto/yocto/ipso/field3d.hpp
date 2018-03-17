@@ -176,6 +176,13 @@ wlen(0)
                 this->set_bytes(this->items);
             }
         };
+
+        template <typename T,const size_t DIM> struct field_for;
+
+        template <typename T> struct field_for<T,1> { typedef field1D<T> type; };
+        template <typename T> struct field_for<T,2> { typedef field2D<T> type; };
+        template <typename T> struct field_for<T,3> { typedef field3D<T> type; };
+
     }
 }
 

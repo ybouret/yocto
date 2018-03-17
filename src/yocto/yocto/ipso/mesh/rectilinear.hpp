@@ -72,8 +72,7 @@ namespace yocto
                 fp << "DIMENSIONS";
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    const string s = vformat(" %u", unsigned(axis_handle[dim]->width));
-                    fp << s;
+                    fp(" %u", unsigned(axis_handle[dim]->width));
                 }
                 for(size_t dim=DIM;dim<3;++dim)
                 {
