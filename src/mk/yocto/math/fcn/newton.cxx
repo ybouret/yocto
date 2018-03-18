@@ -97,7 +97,7 @@ namespace yocto
             hook = &F;
             F(F0,X0);
             J(J0,X0);
-            double g0 = __NEWTON_f(F0);
+            real_t g0 = __NEWTON_f(F0);
             goto LOOP;
 
         SUCCESS:
@@ -147,7 +147,7 @@ namespace yocto
             //
             // take full xstep
             //__________________________________________________________________
-            double g1 = g(1);
+            real_t g1 = g(1);
             //std::cerr << "Xtry=" << Xtry << std::endl;
             //std::cerr << "Ftry=" << Ftry << std::endl;
             std::cerr << "g1="   << g1 << std::endl;

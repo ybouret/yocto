@@ -42,7 +42,7 @@ namespace yocto
                 (word_type &)blockIncrement = word_type(block_round/sizeof(word_type));
                 
                 const size_t top_blocks     = chunk_size/block_round;
-                stillAvailable              = (MaxBlocks < top_blocks) ? MaxBlocks : top_blocks;
+                stillAvailable              = word_type( (MaxBlocks < top_blocks) ? MaxBlocks : top_blocks );
                 (word_type &)providedNumber = stillAvailable;
                 
                 //______________________________________________________________
@@ -52,7 +52,7 @@ namespace yocto
                 word_type  *q = data;
                 for(size_t  i = 0; i != stillAvailable; q += blockIncrement )
                 {
-                    *q = ++i;
+                    *q = word_type(++i);
                 }
                 
             }

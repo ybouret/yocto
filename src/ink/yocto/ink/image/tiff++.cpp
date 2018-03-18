@@ -102,7 +102,8 @@ namespace yocto
 
         void I_TIFF:: SetDirectory(const size_t n)
         {
-            if( 1 != TIFFSetDirectory((TIFF *)handle, n) )
+			const uint16_t n16 = uint16_t(n);
+            if( 1 != TIFFSetDirectory((TIFF *)handle, n16) )
             {
                 throw imported::exception("TIFFSetDirectory", "couldn't set %u", unsigned(n));
             }

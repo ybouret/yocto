@@ -1,6 +1,9 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "yocto/ios/null-device.hpp"
 #include "yocto/exceptions.hpp"
 #include <iostream>
+
 
 namespace yocto
 {

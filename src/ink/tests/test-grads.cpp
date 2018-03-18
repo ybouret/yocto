@@ -28,7 +28,7 @@ static inline void compute_grads(Gradients           &grad,
     }
     
     Pixmap<RGB>       ang(pxm.w,pxm.h);
-    ramp_cold_to_cold r(-3.14,3.14);
+    ramp_cold_to_cold r(-3.14f,3.14f);
     functor<RGB,TL1(float)> func( &r, & ramp::toRGB);
     Mapper mapper;
     mapper(ang,grad.angle,func,engine);

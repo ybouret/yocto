@@ -7,7 +7,7 @@ namespace yocto
         unit_t Blur::GetLength(const float sigma) throw()
         {
             const float dx = sqrtf( 2.0f * sigma*sigma * logf(256.0f) );
-            return max_of<unit_t>(1,ceilf(dx));
+            return max_of<unit_t>(1,unit_t(ceilf(dx)));
         }
 
         Blur:: ~Blur() throw()
@@ -45,7 +45,7 @@ src(0)
             weight[0]=1.0f;
             for(unit_t dx=1;dx<=length;++dx)
             {
-                weight[dx] = weight[-dx] = self(dx);
+                weight[dx] = weight[-dx] = self( float(dx) );
             }
             for(unit_t ini=-length;ini<=length;++ini)
             {

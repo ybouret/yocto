@@ -510,8 +510,8 @@ namespace yocto
 	    cinv(),
             p10(0),
             lambda(0),
-            min_p10( Floor(Log10(numeric<real_t>::epsilon)) ),
-            max_p10( Floor(Log10(numeric<real_t>::maximum))/2 ),
+            min_p10( int(Floor(Log10(numeric<real_t>::epsilon)))   ),
+            max_p10( int(Floor(Log10(numeric<real_t>::maximum))/2) ),
             Rsq(0),
             cycle(0),
             verbose(false)
@@ -575,7 +575,7 @@ namespace yocto
                 return false;
             }
 
-#define CALLBACK() do \
+#define DO_CALLBACK() do \
 {\
 if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
 } while(false)
@@ -652,7 +652,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                     //__________________________________________________________
                     const real_t D2_org = sample.computeD2(F,aorg,*this);
 
-                    CALLBACK();
+                    DO_CALLBACK();
                     
                     //__________________________________________________________
                     //
@@ -762,7 +762,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         }
                         return false;
                     }
-                    CALLBACK();
+                    DO_CALLBACK();
                     Matrix &alpha = cinv;
                     alpha.ld1();
                     LU<real_t>::solve(curv,alpha);

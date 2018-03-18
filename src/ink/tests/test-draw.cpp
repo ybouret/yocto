@@ -62,7 +62,7 @@ YOCTO_UNIT_TEST_IMPL(draw)
         }
         else
         {
-            const uint8_t alpha = alea.leq(255);
+            const uint8_t alpha = uint8_t(alea.leq(255));
             Draw::HLine(img3,X,Y,W,C,alpha);
             Draw::HLine(imgf,X,Y,W,F,alpha);
             Draw::HLine(img1,X,Y,W,U,alpha);
@@ -94,7 +94,7 @@ YOCTO_UNIT_TEST_IMPL(draw)
         }
         else
         {
-            const uint8_t alpha = alea.leq(255);
+            const uint8_t alpha = uint8_t(alea.leq(255));
             Draw::Fill(img3, X0, Y0, X1, Y1, C, alpha);
             Draw::Fill(imgf, X0, Y0, X1, Y1, F, alpha);
             Draw::Fill(img1, X0, Y0, X1, Y1, U, alpha);
@@ -118,7 +118,7 @@ YOCTO_UNIT_TEST_IMPL(draw)
         }
         else
         {
-            const uint8_t alpha = alea.leq(255);
+            const uint8_t alpha = uint8_t(alea.leq(255));
             Draw::Circle(img3, X, Y, R, C, alpha);
             Draw::Circle(imgf, X, Y, R, F, alpha);
             Draw::Circle(img1, X, Y, R, U, alpha);
@@ -142,7 +142,7 @@ YOCTO_UNIT_TEST_IMPL(draw)
         }
         else
         {
-            const uint8_t alpha = alea.leq(255);
+            const uint8_t alpha = uint8_t(alea.leq(255));
             Draw::Disk(img3, X, Y, R, C, alpha);
             Draw::Disk(imgf, X, Y, R, F, alpha);
             Draw::Disk(img1, X, Y, R, U, alpha);

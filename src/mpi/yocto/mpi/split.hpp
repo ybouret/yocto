@@ -79,8 +79,8 @@ namespace yocto
             assert(sizes.y>0);
             assert(rank<sizes.x*sizes.y);
             const ldiv_t d  = ldiv(rank,sizes.x);
-            const T      rx(d.rem);
-            const T      ry(d.quot);
+            const T      rx( T(d.rem)  );
+            const T      ry( T(d.quot) );
             return point2d<T>(rx,ry);
         }
         
@@ -131,8 +131,8 @@ namespace yocto
             const ldiv_t dx  = ldiv(rank,sizes.x);
             const T      rx(dx.rem);
             const ldiv_t dy  = ldiv(dx.quot,sizes.y);
-            const T      ry(dy.rem);
-            const T      rz(dy.quot);
+            const T      ry( T(dy.rem)  );
+            const T      rz( T(dy.quot) );
             return point3d<T>(rx,ry,rz);
         }
         
