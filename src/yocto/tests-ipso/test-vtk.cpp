@@ -1,4 +1,4 @@
-#include "yocto/ipso/vtk.hpp"
+#include "yocto/ipso/format/vtk.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/math/types.hpp"

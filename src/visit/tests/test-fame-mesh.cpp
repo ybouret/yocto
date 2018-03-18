@@ -1,9 +1,14 @@
-#include "yocto/fame/visit.hpp"
-#include "yocto/fame/mpi/domains.hpp"
-#include "yocto/fame/mpi/ghosts.hpp"
+#include "yocto/visit/interface.hpp"
 
 #include "yocto/utest/run.hpp"
 
+YOCTO_UNIT_TEST_IMPL(mesh)
+{
+}
+YOCTO_UNIT_TEST_DONE()
+
+
+#if 0
 using namespace yocto;
 using namespace fame;
 using namespace math;
@@ -594,3 +599,5 @@ YOCTO_UNIT_TEST_IMPL(mesh)
     
 }
 YOCTO_UNIT_TEST_DONE()
+#endif
+

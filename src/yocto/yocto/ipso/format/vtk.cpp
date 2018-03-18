@@ -1,4 +1,4 @@
-#include "yocto/ipso/vtk.hpp"
+#include "yocto/ipso/format/vtk.hpp"
 
 namespace yocto
 {

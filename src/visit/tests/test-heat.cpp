@@ -1,11 +1,13 @@
 #include "yocto/utest/run.hpp"
-#include "yocto/fame/mesh/rectilinear.hpp"
-#include "yocto/fame/mpi/ghosts.hpp"
 #include "yocto/string/conv.hpp"
-#include "yocto/fame/mpi/domains.hpp"
-#include "yocto/fame/fields.hpp"
-#include "yocto/fame/visit.hpp"
 
+
+YOCTO_UNIT_TEST_IMPL(heat)
+{
+}
+YOCTO_UNIT_TEST_DONE()
+
+#if 0
 using namespace yocto;
 using namespace fame;
 
@@ -103,3 +105,5 @@ YOCTO_UNIT_TEST_IMPL(heat)
 
 }
 YOCTO_UNIT_TEST_DONE()
+#endif
+

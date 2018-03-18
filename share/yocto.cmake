@@ -265,7 +265,7 @@ MACRO(TARGET_LINK_YOCTO tgt)
 				LIST( APPEND ylibs "y-z"    )
 			ENDIF()
 			
-			IF( "gfx" STREQUAL ${extra} )
+			IF( "ink" STREQUAL ${extra} )
 				LIST( APPEND ylibs "y-mk" )
 			ENDIF()
 			

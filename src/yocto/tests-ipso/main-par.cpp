@@ -1,7 +1,7 @@
 #include "yocto/ipso/mpi.hpp"
 #include "yocto/program.hpp"
 #include "yocto/string/conv.hpp"
-#include "yocto/ipso/vtk.hpp"
+#include "yocto/ipso/format/vtk.hpp"
 #include "yocto/ipso/box.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/fs/local-fs.hpp"

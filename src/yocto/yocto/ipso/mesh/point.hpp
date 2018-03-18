@@ -3,7 +3,7 @@
 #define YOCTO_IPSO_MESH_POINT_INCLUDED 1
 
 #include "yocto/ipso/mesh.hpp"
-#include "yocto/ipso/vtk.hpp"
+#include "yocto/ipso/format/vtk.hpp"
 
 namespace yocto
 {

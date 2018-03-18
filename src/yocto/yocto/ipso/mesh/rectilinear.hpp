@@ -3,7 +3,7 @@
 
 #include "yocto/ipso/mesh.hpp"
 #include "yocto/ipso/box.hpp"
-#include "yocto/ipso/vtk.hpp"
+#include "yocto/ipso/format/vtk.hpp"
 
 namespace yocto
 {

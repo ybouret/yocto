@@ -1,7 +1,7 @@
 #include "yocto/ipso/subset.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/string/conv.hpp"
-#include "yocto/ipso/vtk.hpp"
+#include "yocto/ipso/format/vtk.hpp"
 #include "yocto/ios/ocstream.hpp"
 
 using namespace yocto;
