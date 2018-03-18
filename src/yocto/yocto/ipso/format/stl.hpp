@@ -1,5 +1,5 @@
-#ifndef YOCTO_SPADE_FORMAT_STL_INCLUDED
-#define YOCTO_SPADE_FORMAT_STL_INCLUDED 1
+#ifndef YOCTO_IPSO_FORMAT_STL_INCLUDED
+#define YOCTO_IPSO_FORMAT_STL_INCLUDED 1
 
 #include "yocto/ipso/coord.hpp"
 #include "yocto/exceptions.hpp"

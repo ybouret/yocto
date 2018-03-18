@@ -8,7 +8,6 @@
 #include "yocto/functor.hpp"
 #include "yocto/associative/map.hpp"
 
-#include "yocto/math/point2d.hpp"
 #include "yocto/math/point3d.hpp"
 
 namespace yocto
