@@ -8,6 +8,7 @@
 #include "yocto/core/list.hpp"
 #include "yocto/memory/slab.hpp"
 #include "yocto/container/iter-linked.hpp"
+#include "yocto/sort/merge.hpp"
 
 namespace yocto
 {
@@ -254,6 +255,42 @@ namespace yocto
             }
             return H.key<size_t>();
         }
+
+        //======================================================================
+        // ordering
+        //======================================================================
+        template <typename FUNC>
+        static inline int __data_compare(const KNode *lhs, const KNode *rhs, void *args ) throw()
+        {
+            assert(lhs);
+            assert(rhs);
+            assert(args);
+            FUNC &proc = *(FUNC *)(args);
+            return proc(lhs->data,rhs->data);
+        }
+
+        template <typename FUNC>
+        inline void sort_data_by( FUNC &proc )
+        {
+            core::merging<KNode>::sort(klist,__data_compare<FUNC>,(void*)&proc);
+        }
+
+        template <typename FUNC>
+        static inline int __key_compare(const KNode *lhs, const KNode *rhs, void *args ) throw()
+        {
+            assert(lhs);
+            assert(rhs);
+            assert(args);
+            FUNC &proc = *(FUNC *)(args);
+            return proc(lhs->key,rhs->key);
+        }
+
+        template <typename FUNC>
+        inline void sort_keys_by( FUNC &proc )
+        {
+            core::merging<KNode>::sort(klist,__key_compare<FUNC>,(void*)&proc);
+        }
+
         
     private:
         //----------------------------------------------------------------------

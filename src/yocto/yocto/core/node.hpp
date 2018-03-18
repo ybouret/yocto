@@ -51,7 +51,7 @@ namespace yocto
             inline  ~dnode_of() throw() { assert(!next); assert(!prev); }
             inline   dnode_of() : next(0), prev(0), data() {}
             inline   dnode_of(const dnode_of &other) : next(0), prev(0), data(other.data) {}
-            inline   dnode_of(const param_type args) : next(0), prev(0), data(args)       {}
+            inline   dnode_of(param_type args) : next(0), prev(0), data(args)       {}
             
             YOCTO_MAKE_OBJECT
         private:
