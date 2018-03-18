@@ -266,7 +266,7 @@ MACRO(TARGET_LINK_YOCTO tgt)
 			ENDIF()
 			
 			IF( "ink" STREQUAL ${extra} )
-				LIST( APPEND ylibs "y-mk" )
+				#LIST( APPEND ylibs "y-mk" )
 			ENDIF()
 			
 			IF( "visit" STREQUAL ${extra} )
