@@ -26,9 +26,10 @@ static inline void show_subs( const subsets<COORD> &subs )
         std::cerr << "\tinner="  << sub->inner << std::endl;
         std::cerr << "\touter="  << sub->outer << std::endl;
 
-        std::cerr << "\t#local=" << sub->locals.size << std::endl;
+        std::cerr << "\t#locals=" << sub->locals.size << std::endl;
         for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
         {
+            std::cerr << "-- Local/Dimension " << dim << std::endl;
             for(const swaps *swp = sub->local[dim].head; swp;swp=swp->next)
             {
                 show_swaps(*swp);
@@ -37,7 +38,7 @@ static inline void show_subs( const subsets<COORD> &subs )
         std::cerr << "\t#asyncs=" << sub->asyncs.size << std::endl;
         for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
         {
-            std::cerr << "-- Dimension " << dim << std::endl;
+            std::cerr << "-- Async/Dimension " << dim << std::endl;
             for(const swaps *swp = sub->async[dim].head; swp; swp=swp->next)
             {
                 show_swaps(*swp);
