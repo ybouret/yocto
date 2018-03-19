@@ -65,7 +65,7 @@ namespace yocto
 
 
 
-            Parser *DynamoCompiler:: encode( Node *master )
+            Parser *DynamoCompiler:: encode(Node *master)
             {
                 parser.release();
                 if(!master) throw exception("DynamoCompiler.encode(NULL)");
@@ -105,7 +105,8 @@ namespace yocto
                 return parser.yield();
             }
 
-            void DynamoCompiler::serialize( Node *master, ios::ostream &fp )
+            void DynamoCompiler::serialize(Node        *master,
+                                           ios::ostream &fp )
             {
                 if(!master) throw exception("DynamoCompiler.serialize(NULL)");
                 parser.release();
@@ -133,6 +134,7 @@ namespace yocto
                 return __GenerateFrom( Module::OpenFile(filename), verbose );
             }
 
+#if 0
             Parser * Parser::GenerateFromData(const char    *buffID,
                                               const void    *buffer,
                                               const size_t   buflen,
@@ -140,10 +142,11 @@ namespace yocto
             {
                 return __GenerateFrom(  Module::OpenData(buffID,buffer,buflen), verbose );
             }
+#endif
 
-            void Parser:: Compile(Module       *grammarInput,
-                                  ios::ostream &syntaxOutput,
-                                  const bool    verbose)
+            void Parser:: Serialize(Module       *grammarInput,
+                                    ios::ostream &syntaxOutput,
+                                    const bool    verbose)
             {
                 // prepare the compiler
                 Source                   source(grammarInput);
@@ -155,6 +158,24 @@ namespace yocto
 
                 // serialize the master node
                 compiler->serialize(master,syntaxOutput);
+            }
+
+            Parser * Parser::CompileFile(const string &filename,
+                                         const bool    verbose)
+            {
+                DynamoCompiler dyn;
+                dyn.verbose = verbose;
+                return dyn.encode(Syntax::Node::loadFrom( Module::OpenFile(filename), dyn) );
+            }
+
+            Parser * Parser:: CompileData(const char  *buffID,
+                                          const char  *buffer,
+                                          const size_t buflen,
+                                          const bool   verbose)
+            {
+                DynamoCompiler dyn;
+                dyn.verbose = verbose;
+                return dyn.encode(Syntax::Node::loadFrom( Module::OpenData(buffID,buffer,buflen), dyn) );
             }
 
         }

@@ -6,6 +6,7 @@
 #include "yocto/fs/local-fs.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/sequence/vector.hpp"
+#include "yocto/ios/file-loader.hpp"
 
 using namespace yocto;
 using namespace Lang;
@@ -21,12 +22,14 @@ YOCTO_UNIT_TEST_IMPL(dyn)
         const string             parserFile = argv[1];
         auto_ptr<Syntax::Parser> parser( Syntax::Parser::GenerateFromFile(parserFile,true) );
 
+#if 0
         {
             std::cerr << "\t-- Encoding..." << std::endl;
             ios::wcstream fp("encoded.dat");
             Syntax::Parser::Encode(parserFile,fp);
         }
-
+#endif
+        
         {
             std::cerr << "\t-- Writing def" << std::endl;
             ios::wcstream     fp("def_hxx.dat");
@@ -39,17 +42,32 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             std::cerr << "\t-- Compiling" << std::endl;
             Syntax::DynamoCompiler dyn;
             {
-                ios::wcstream          fp("compiled.bin");
-                dyn.Compile( Module::OpenFile(argv[1]) , fp);
+                ios::wcstream          fp("serialized.bin");
+                dyn.Serialize( Module::OpenFile(argv[1]) , fp);
             }
 
             {
                 std::cerr << "\t-- Reloading" << std::endl;
-                Syntax::Node *tree = Syntax::Node::loadFrom( Module::OpenFile("compiled.bin"), dyn);
+                Syntax::Node *tree = Syntax::Node::loadFrom( Module::OpenFile("serialized.bin"), dyn);
                 auto_ptr<Syntax::Parser> reloaded ( dyn.encode(tree) );
                 std::cerr << "\t\treloaded!" << std::endl;
                 reloaded.release();
             }
+
+            {
+                auto_ptr<Syntax::Parser> reloaded( Syntax::Parser::CompileFile("serialized.bin") );
+                std::cerr << "\t\treloaded again!" << std::endl;
+                reloaded.release();
+            }
+
+            {
+                ios::file_content          content;
+                ios::file_loader::append_to(content, "serialized.bin" );
+                auto_ptr<Syntax::Parser> reloaded( Syntax::Parser::CompileData("serialized",(char *)content.rw(),content.length()));
+                std::cerr << "\t\treloaded once more!" << std::endl;
+                reloaded.release();
+            }
+            
         }
 
         // open stdio

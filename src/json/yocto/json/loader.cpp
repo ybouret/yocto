@@ -23,7 +23,7 @@ namespace yocto
         {
         public:
             explicit jCompiler() :
-            Compiler( Syntax::Parser::GenerateFromData("embedded JSON grammar",jCode, sizeof(jCode) ) ),
+            Compiler( Syntax::Parser::CompileData("embedded JSON grammar",jCode, sizeof(jCode) ) ),
             value(),
             vStack(),
             pStack(),

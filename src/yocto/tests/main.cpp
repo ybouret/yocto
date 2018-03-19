@@ -21,6 +21,7 @@ YOCTO_UNIT_TEST_INIT(200)
     YOCTO_UNIT_TEST_DECL(carver);
     YOCTO_UNIT_TEST_DECL(pooled);
     YOCTO_UNIT_TEST_DECL(string);
+    YOCTO_UNIT_TEST_DECL(hexdump);
     YOCTO_UNIT_TEST_DECL(type_traits);
     YOCTO_UNIT_TEST_DECL(functor);
     YOCTO_UNIT_TEST_DECL(container);

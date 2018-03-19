@@ -9,7 +9,7 @@ namespace yocto
     {
         namespace Syntax
         {
-            void DynamoCompiler:: checkIncludes(Node *master)
+            void DynamoCompiler:: checkIncludes(Node      *master)
             {
                 static const char fn[] = "DynamoCompiler.checkIncludes: ";
                 assert(master);

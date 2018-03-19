@@ -97,7 +97,8 @@ namespace yocto
                 }
             }
 
-            Node * Node:: loadFrom( Module *module, const  Grammar &G)
+            Node * Node:: loadFrom(Module         *module,
+                                   const  Grammar &G)
             {
                 Source        source(module);
                 ios::istream &fp = (ios::istream &)(*(module->input));

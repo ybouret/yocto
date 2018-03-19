@@ -96,23 +96,25 @@ namespace yocto
                 static Parser *GenerateFromFile(const string &filename,
                                                 const bool    verbose=false);
 
-                //! generation from one single embeded file2data
-                static Parser *GenerateFromData(const char    *buffID,
-                                                const void    *buffer,
-                                                const size_t   buflen,
-                                                const bool     verbose=false);
-
+#if 0
                 //! rewrite the grammar
                 static void Encode(const string &filename,
                                    ios::ostream &output);
-
+#endif
 
                 //! compile and save a binary grammar tree
-                static void Compile(Module       *grammarInput,
-                                    ios::ostream &syntaxOutput,
-                                    const bool    verbose=false);
+                static void Serialize(Module       *grammarInput,
+                                      ios::ostream &syntaxOutput,
+                                      const bool    verbose=false);
 
-                
+                static Parser *CompileFile(const string &filename,
+                                           const bool    verbose=false);
+
+                static Parser *CompileData(const char  *buffID,
+                                           const char  *buffer,
+                                           const size_t buflen,
+                                           const bool   verbose=false);
+
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);

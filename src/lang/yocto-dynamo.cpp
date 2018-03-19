@@ -4,7 +4,8 @@
 #include "yocto/ptr/auto.hpp"
 #include "yocto/fs/vfs.hpp"
 #include "yocto/ios/ocstream.hpp"
-#include "yocto/sequence/vector.hpp"
+#include "yocto/ios/osstream.hpp"
+#include "yocto/string/hexdump.hpp"
 
 using namespace yocto;
 using namespace Lang;
@@ -28,8 +29,16 @@ YOCTO_PROGRAM_START()
     //std::cerr << "defs in " << defsFile << std::endl;
 
     {
-        ios::wcstream fp(inclFile);
-        Syntax::Parser::Encode(gramFile,fp);
+        string compiled;
+        {
+            ios::osstream fp(compiled);
+            Syntax::Parser::Serialize( Module::OpenFile(gramFile) , fp);
+        }
+
+        {
+            ios::wcstream fp(inclFile);
+            hexdump::write(fp,compiled);
+        }
     }
 
     {

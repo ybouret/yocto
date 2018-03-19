@@ -113,6 +113,7 @@ namespace yocto
             };
 
 
+#if 0
             static inline
             void WriteString(Emitter             &em,
                              const Lexical::Unit *u,
@@ -187,6 +188,7 @@ namespace yocto
                 }
                 em.close();
             }
+#endif
 
         }
     }
