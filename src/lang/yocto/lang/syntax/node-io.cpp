@@ -107,10 +107,11 @@ namespace yocto
             Node * Node:: __loadFrom( Source &source, ios::istream &fp, const Grammar &G )
             {
                 static const char fn[] = "Syntax::Node::loadFrom";
-                //Source            S(module);
-                //ios::istream     &fp   = (ios::istream &)(*module);
 
+                //______________________________________________________________
+                //
                 // read label
+                //______________________________________________________________
                 const size_t sz = fp.read<uint32_t>("label size");
                 if(sz<=0) throw exception("%s:invalid negative label size",fn);
                 string label(sz,as_capacity);

@@ -92,23 +92,27 @@ namespace yocto
                 //! get the AST
                 Node * parse(Source &source);
 
-                //! generation
+                //! generation from grammar file(s)
                 static Parser *GenerateFromFile(const string &filename,
                                                 const bool    verbose=false);
 
-                //! generation
+                //! generation from one single embeded file2data
                 static Parser *GenerateFromData(const char    *buffID,
                                                 const void    *buffer,
                                                 const size_t   buflen,
                                                 const bool     verbose=false);
-                
+
+                //! rewrite the grammar
                 static void Encode(const string &filename,
                                    ios::ostream &output);
 
 
+                //! compile and save a binary grammar tree
                 static void Compile(Module       *grammarInput,
                                     ios::ostream &syntaxOutput,
                                     const bool    verbose=false);
+
+                
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Parser);

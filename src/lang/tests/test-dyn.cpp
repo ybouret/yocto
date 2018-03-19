@@ -23,13 +23,13 @@ YOCTO_UNIT_TEST_IMPL(dyn)
 
         {
             std::cerr << "\t-- Encoding..." << std::endl;
-            ios::wcstream fp("tmp.dat");
+            ios::wcstream fp("encoded.dat");
             Syntax::Parser::Encode(parserFile,fp);
         }
 
         {
             std::cerr << "\t-- Writing def" << std::endl;
-            ios::wcstream     fp("def.dat");
+            ios::wcstream     fp("def_hxx.dat");
             const string      prefix = parser->tag + '_';
             Syntax::Analyzer  analyzer(*parser);
             analyzer.emitDefinitions(fp,prefix);
@@ -39,13 +39,13 @@ YOCTO_UNIT_TEST_IMPL(dyn)
             std::cerr << "\t-- Compiling" << std::endl;
             Syntax::DynamoCompiler dyn;
             {
-                ios::wcstream          fp("tree.dat");
+                ios::wcstream          fp("compiled.bin");
                 dyn.Compile( Module::OpenFile(argv[1]) , fp);
             }
 
             {
                 std::cerr << "\t-- Reloading" << std::endl;
-                Syntax::Node *tree = Syntax::Node::loadFrom( Module::OpenFile("tree.dat"), dyn);
+                Syntax::Node *tree = Syntax::Node::loadFrom( Module::OpenFile("compiled.bin"), dyn);
                 auto_ptr<Syntax::Parser> reloaded ( dyn.encode(tree) );
                 std::cerr << "\t\treloaded!" << std::endl;
                 reloaded.release();
