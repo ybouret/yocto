@@ -27,8 +27,9 @@ namespace yocto
             const COORD           ranks;      //!< local ranks
             const patch_type      inner;      //!< inner working patch
             const patch_type      outer;      //!< outer patch, with swap zones
-            const swaps_list      local;      //!< local swaps, by pair
+            const swaps_list      local[DIM]; //!< local swaps, 0 or pair by dimension
             const swaps_list      async[DIM]; //!< async swaps
+            const swaps_addr_list locals;     //!< locals collection
             const swaps_addr_list asyncs;     //!< asyncs collection
             subset               *next;       //!< for subset::list
             subset               *prev;       //!< for subset::list
@@ -58,6 +59,7 @@ namespace yocto
             outer( inner ),
             local(),
             async(),
+            locals(),
             asyncs(),
             next(0),
             prev(0),
@@ -99,10 +101,11 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
                 COORD        lower = inner.lower;
                 COORD        upper = inner.upper;
-                swaps_list &_local = (swaps_list &)local;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     swaps_list  & _async = (swaps_list  &)(async[dim]);
+                    swaps_list  & _local = (swaps_list  &)(local[dim]);
+
                     //__________________________________________________________
                     //
                     // Pass 1: computing outer patch
@@ -210,19 +213,28 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
 
                 swaps_addr_list &_asyncs = (swaps_addr_list &)asyncs;
+                swaps_addr_list &_locals = (swaps_addr_list &)locals;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
+                    for(swaps *swp = local[dim].head;swp;swp=swp->next)
+                    {
+                        _locals.append(swp);
+                    }
+
                     for(swaps *swp = async[dim].head;swp;swp=swp->next )
                     {
                         _asyncs.append(swp);
                     }
+
                 }
 
-                for(swaps *swp = local.tail; swp; swp=swp->prev )
+                for(size_t dim=0;dim<DIM;++dim)
                 {
-                    swp->load(inner,outer,build);
+                    for(swaps *swp = local[dim].tail; swp; swp=swp->prev )
+                    {
+                        swp->load(inner,outer,build);
+                    }
                 }
-
                 //______________________________________________________________
                 //
                 // Pass 3: loading cross swaps
@@ -298,29 +310,36 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             //
             //! store data to send and copy local
             //__________________________________________________________________
-            inline void sync_store( field_info &f ) throw()
+            inline void __local_xch( field_info &f ) throw()
             {
-                f.swap_local(local);
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    f.swap_local(local[dim]);
+                }
+            }
+
+            inline void __async_sto(field_info &f) throw()
+            {
                 for(const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next )
                 {
                     f.swap_store(**swp);
                 }
             }
 
+
+            inline void sync_store( field_info &f ) throw()
+            {
+                __local_xch(f);
+                __async_sto(f);
+            }
+
             inline void sync_store( fields &fvar ) throw()
             {
-                const size_t nvar = fvar.size();
-                for(size_t i=nvar;i>0;--i)
+                for(size_t i=fvar.size();i>0;--i)
                 {
-                    fvar[i]->swap_local(local);
-                }
-                for(const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next )
-                {
-                    const swaps &s = **swp;
-                    for(size_t i=nvar;i>0;--i)
-                    {
-                        fvar[i]->swap_store(s);
-                    }
+                    field_info &f = *fvar[i];
+                    __local_xch(f);
+                    __async_sto(f);
                 }
             }
 
@@ -375,14 +394,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
             inline void sync_query( fields &fvar ) throw()
             {
-                const size_t nvar = fvar.size();
-                for(const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next )
+                for(size_t i=fvar.size();i>0;--i)
                 {
-                    const swaps &s = *(swp->addr);
-                    for(size_t i=nvar;i>0;--i)
-                    {
-                        fvar[i]->swap_query(s);
-                    }
+                    sync_query(*fvar[i]);
                 }
             }
 
@@ -399,11 +413,13 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             inline void set_score() throw()
             {
                 size_t num_async = 0;
+                size_t num_local = 0;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     num_async += async[dim].counts();
+                    num_local += local[dim].counts();
                 }
-                new ((void*)&score) score_t( inner.items,num_async,local.counts());
+                new ((void*)&score) score_t( inner.items,num_async,num_local);
             }
 
 

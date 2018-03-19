@@ -25,10 +25,14 @@ static inline void show_subs( const subsets<COORD> &subs )
         std::cerr << "ranks="    << sub->ranks << std::endl;
         std::cerr << "\tinner="  << sub->inner << std::endl;
         std::cerr << "\touter="  << sub->outer << std::endl;
-        std::cerr << "\t#local=" << sub->local.size << std::endl;
-        for(const swaps *swp = sub->local.head; swp;swp=swp->next)
+
+        std::cerr << "\t#local=" << sub->locals.size << std::endl;
+        for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
         {
-            show_swaps(*swp);
+            for(const swaps *swp = sub->local[dim].head; swp;swp=swp->next)
+            {
+                show_swaps(*swp);
+            }
         }
         std::cerr << "\t#asyncs=" << sub->asyncs.size << std::endl;
         for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
@@ -140,7 +144,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
             fvar.append(F2);
             F1.ldz();
             F1.ld_on(sub->inner,BULK);
-            mark(F1,sub->local.head,1,2);
+            mark(F1,sub->local[0].head,1,2);
             mark(F1,sub->async[0].head,3,4);
 
             const string  fn = vformat("f1d_%u.vtk",unsigned(sub->rank));
@@ -150,7 +154,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
             check_io(sub,fvar);
         }
     }
-    return 0;
+    //return 0;
     
     if(true)
     {
@@ -176,7 +180,8 @@ YOCTO_UNIT_TEST_IMPL(subset)
 
             F1.ldz();
             F1.ld_on(sub->inner,BULK);
-            mark(F1,sub->local.head,1,2);
+            mark(F1,sub->local[0].head,1,2);
+            mark(F1,sub->local[1].head,1,2);
             mark(F1,sub->async[0].head,3,4);
             mark(F1,sub->async[1].head,3,4);
 
@@ -214,7 +219,10 @@ YOCTO_UNIT_TEST_IMPL(subset)
 
             F1.ldz();
             F1.ld_on(sub->inner,BULK);
-            mark(F1,sub->local.head,1,2);
+            mark(F1,sub->local[0].head,1,2);
+            mark(F1,sub->local[1].head,1,2);
+            mark(F1,sub->local[2].head,1,2);
+
             mark(F1,sub->async[0].head,3,4);
             mark(F1,sub->async[1].head,3,4);
             mark(F1,sub->async[2].head,3,4);

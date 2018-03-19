@@ -133,50 +133,39 @@ namespace yocto
             }
 
 
-            //! directly swap matching local swap pairs, without extra memory
+            //! directly swap matching local swap pair, without extra memory
             inline virtual void swap_local(const swaps_list &local) throw()
             {
-                assert(0==(local.size&0x1)); // even number of local swaps
+                assert(0==local.size||2==local.size);
                 if(local.size>0)
                 {
+                    assert(2==local.size);
                     T           *data = entry;
-                    const swaps *a    = local.head; assert(a!=NULL);
-                    for(size_t n=local.size>>1;n>0;--n)
+                    const swaps *a = local.head; assert(a!=NULL);
+                    const swaps *b = local.tail; assert(b!=NULL); assert(b!=a);
+                    assert(a->count==b->count);
+                    const array<coord1D> &a_send = a->send;
+                    const array<coord1D> &a_recv = a->recv;
+                    const array<coord1D> &b_send = b->send;
+                    const array<coord1D> &b_recv = b->recv;
+
+                    assert(a_send.size() == a->count );
+                    assert(a_recv.size() == a->count );
+                    assert(b_send.size() == b->count );
+                    assert(b_recv.size() == b->count );
+
+                    for(size_t g=a->count;g>0;--g)
                     {
-                        const swaps *b = a->next;    assert(b!=NULL);
-                        assert(a->count==b->count);
-#if 0
-                        {
-                            const string a_pos = a->flg2str(a->pos);
-                            const string b_pos = b->flg2str(b->pos);
-                            std::cerr << "local swap " << a_pos << " <-> " << b_pos << std::endl;
-                        }
-#endif
+                        assert(a_recv[g] < coord1D(this->count));
+                        assert(a_send[g] < coord1D(this->count));
+                        assert(b_recv[g] < coord1D(this->count));
+                        assert(b_send[g] < coord1D(this->count));
 
-                        const array<coord1D> &a_send = a->send;
-                        const array<coord1D> &a_recv = a->recv;
-                        const array<coord1D> &b_send = b->send;
-                        const array<coord1D> &b_recv = b->recv;
-
-                        assert(a_send.size() == a->count );
-                        assert(a_recv.size() == a->count );
-                        assert(b_send.size() == b->count );
-                        assert(b_recv.size() == b->count );
-
-                        for(size_t g=a->count;g>0;--g)
-                        {
-                            assert(a_recv[g] < coord1D(this->count));
-                            assert(a_send[g] < coord1D(this->count));
-                            assert(b_recv[g] < coord1D(this->count));
-                            assert(b_send[g] < coord1D(this->count));
-
-                            data[ a_recv[g] ] = data[ b_send[g] ];
-                            data[ b_recv[g] ] = data[ a_send[g] ];
-                        }
-
-
-                        a = b->next;
+                        data[ a_recv[g] ] = data[ b_send[g] ];
+                        data[ b_recv[g] ] = data[ a_send[g] ];
                     }
+
+
                 }
             }
 
@@ -207,7 +196,7 @@ namespace yocto
         protected:
             inline explicit field(const char *id) :
             field_info(id,ITEM_SIZE), entry(0) {}
-            
+
             inline void set_bytes(const size_t items) throw()
             {
                 (size_t &)count = items;
