@@ -21,20 +21,23 @@ YOCTO_PROGRAM_START()
     const string             inclExt  = ".inc";
     const string             defsExt  = ".def";
 
+    std::cerr << "*** Dynamo Grammar Compiler for '" << gramFile << "'" << std::endl;
+    std::cerr << "  |" << std::endl;
+    std::cerr << "  |_Generating..." << std::endl;
     auto_ptr<Syntax::Parser> parser( Syntax::Parser::GenerateFromFile(gramFile) );
     const string tag      = parser->tag; ((string&)tag).to_lower();
     const string inclFile = gramWork + tag + inclExt;
     const string defsFile = gramWork + tag + defsExt;
-    //std::cerr << "code in " << inclFile << std::endl;
-    //std::cerr << "defs in " << defsFile << std::endl;
 
     {
+        std::cerr << "  |_Serializing..." << std::endl;
         string compiled;
         {
             ios::osstream fp(compiled);
             Syntax::Parser::Serialize( Module::OpenFile(gramFile) , fp);
         }
 
+        std::cerr << "  |_Writing Hexdump to '" << inclFile << "'" << std::endl;
         {
             ios::wcstream fp(inclFile);
             hexdump::write(fp,compiled);
@@ -42,11 +45,13 @@ YOCTO_PROGRAM_START()
     }
 
     {
+        std::cerr << "  |_Writing Defines to '" << defsFile << "'" << std::endl;
         ios::wcstream     fp(defsFile);
         const string      prefix = parser->tag + '_';
         Syntax::Analyzer  analyzer(*parser);
         analyzer.emitDefinitions(fp,prefix);
     }
-
+    std::cerr << "  |" << std::endl;
+    std::cerr << "*** Done!" << std::endl;
 }
 YOCTO_PROGRAM_END()
