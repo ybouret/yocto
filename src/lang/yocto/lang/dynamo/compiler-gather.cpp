@@ -243,7 +243,7 @@ namespace yocto
                         //______________________________________________________
                         const Node::List &children = node->toList();
                         Aggregate         &r        = Decl(parser->agg( parser->newAggLabel() ),MergesAlways);
-
+                        r.reserved = node->reserved;
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
                         {
@@ -262,7 +262,7 @@ namespace yocto
                         //______________________________________________________
                         const Node::List &children = node->toList();
                         Alternate        &r        = parser->alt();
-
+                        r.reserved = node->reserved;
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
                         {
@@ -283,7 +283,9 @@ namespace yocto
                         //______________________________________________________
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '*'; }
-                        return parser->zeroOrMore(r);
+                        Rule &ans = parser->zeroOrMore(r);
+                        ans.reserved = node->reserved;
+                        return ans;
                     }
 
                         //______________________________________________________
@@ -294,7 +296,9 @@ namespace yocto
                         //______________________________________________________
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '+'; }
-                        return parser->oneOrMore(r);
+                        Rule &ans = parser->oneOrMore(r);
+                        ans.reserved = node->reserved;
+                        return ans;
                     }
 
                         //______________________________________________________
@@ -305,6 +309,8 @@ namespace yocto
                         //______________________________________________________
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '?'; }
+                        Rule &ans = parser->optional(r);
+                        ans.reserved = node->reserved;
                         return parser->optional(r);
                     }
                 }
