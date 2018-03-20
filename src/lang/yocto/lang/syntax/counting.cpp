@@ -26,7 +26,8 @@ namespace yocto
 
             void Counting:: __viz(ios::ostream &fp) const
             {
-                __mark(fp); fp("[shape=%s,label=\"%s\"];\n",__shp(),label.c_str());
+                const char *com = ( reserved.is_valid() ? **reserved : "" );
+                __mark(fp); fp("[shape=%s,label=\"%s/%s\"];\n",__shp(),*label,com);
             }
 
             void Counting:: __lnk(ios::ostream &fp) const

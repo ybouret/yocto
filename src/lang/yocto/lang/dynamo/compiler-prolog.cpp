@@ -11,23 +11,25 @@ namespace yocto
         namespace Syntax
         {
 
-            void DynamoCompiler:: __newRule(const char *fn, dynRule pR)
+            void DynamoCompiler:: __newRule(const char *fn, dynRule pR, const Tag &t)
             {
                 assert(pR);
                 if(!ruleDB.insert(pR->label,pR))
                 {
                     throw exception("%sunexpected multiple rule '%s'", fn, *(pR->label) );
                 }
+                pR->reserved = t;
             }
 
 
-            void DynamoCompiler:: __newTerm(const char *fn, dynTerm pT)
+            void DynamoCompiler:: __newTerm(const char *fn, dynTerm pT, const Tag &t)
             {
                 assert(pT);
                 if(!termDB.insert(pT->label,pT))
                 {
                     throw exception("%sunexpected multiple terminal '%s'", fn, *(pT->label) );
                 }
+                pT->reserved = t;
             }
 
 
@@ -78,8 +80,8 @@ namespace yocto
                     assert(nameNode.is_valid());
                     assert(nameNode->terminal);
                     const string   name = nameNode->toString(1);
-                    tags.push_back(name);
-                    //master->propagate( & tags.back() );
+                    const Tag      masterTag( new string(name) );
+                    master->propagate( masterTag );
                     
                     if(verbose) { std::cerr << "== new parser " << name << " ==" << std::endl; }
                     parser.reset( new Parser(name) );
@@ -119,7 +121,7 @@ namespace yocto
                                 const string ruleLabel = node->head()->toString();
                                 if(verbose) { std::cerr << "+" << ruleLabel << std::endl; }
                                 Aggregate   &rule      = parser->agg(ruleLabel);
-                                __newRule(fn,&rule);
+                                __newRule(fn,&rule,node->reserved);
                                 top_max_size = max_of(top_max_size,rule.label.size());
                             } break;
 
@@ -143,7 +145,7 @@ namespace yocto
                                     {
                                         if(verbose) { std::cerr << "*" << ruleLabel << " RX=\"" << stringExpr << "\"" << std::endl; }
                                         Terminal &t = parser->terminal(ruleLabel,stringExpr);
-                                        __newTerm(fn,&t);
+                                        __newTerm(fn,&t,node->reserved);
                                     } break;
 
                                     case 1: assert("RS"==stringKind);
@@ -152,7 +154,7 @@ namespace yocto
                                         if(verbose) { std::cerr << "*" << ruleLabel << " RS='" << stringExpr << "'=>\"" << ruleExpr << "\"" << std::endl; }
 
                                         Terminal    &t        = parser->terminal(ruleLabel,ruleExpr);
-                                        __newTerm(fn,&t);
+                                        __newTerm(fn,&t,node->reserved);
                                         t.let(IsUnique);
                                     } break;
 
@@ -174,19 +176,20 @@ namespace yocto
                                 const string  ruleLabel = plug.head->toString(1);
                                 const string  thePlugin = plug.tail->toString();
                                 if(verbose) { std::cerr << "@" << ruleLabel << "=plugin<" << thePlugin << ">" << std::endl; }
+                                const Tag tag = node->reserved;
                                 node.release();
 
                                 if("cstring"==thePlugin)
                                 {
                                     Terminal &t = parser->term<Lexical::cstring>(ruleLabel);
-                                    __newTerm(fn, &t);
+                                    __newTerm(fn, &t, tag);
                                     break;
                                 }
 
                                 if("rstring"==thePlugin)
                                 {
                                     Terminal &t = parser->term<Lexical::rstring>(ruleLabel);
-                                    __newTerm(fn, &t);
+                                    __newTerm(fn, &t, tag);
                                     break;
                                 }
 

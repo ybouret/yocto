@@ -71,7 +71,7 @@ namespace yocto
                 if(!master) throw exception("DynamoCompiler.encode(NULL)");
                 auto_ptr<Node> guard(master);
 
-#if 1
+#if 0
                 if(verbose)
                 {
                     std::cerr << "== Dynamo Input" << std::endl;
@@ -81,7 +81,7 @@ namespace yocto
 #endif
                 checkIncludes(master);
 
-#if 1
+#if 0
                 // debug: checkIncludes
                 if(verbose)
                 {
@@ -101,9 +101,7 @@ namespace yocto
                     parser->graphviz(parserDot);
                     ios::graphviz_render(parserDot);
                     std::cerr << std::endl;
-                }
-                std::cerr << "Tags=" << tags << std::endl;
-                
+                }                
                 return parser.yield();
             }
 

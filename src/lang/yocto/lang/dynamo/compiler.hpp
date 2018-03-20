@@ -60,8 +60,8 @@ namespace yocto
                 // prolog
                 //______________________________________________________________
                 void createTopLevelFrom( Node *master );
-                void  __newRule(const char *fn, dynRule pR );
-                void  __newTerm(const char *fn, dynTerm pT );
+                void  __newRule(const char *fn, dynRule pR, const Tag &t);
+                void  __newTerm(const char *fn, dynTerm pT, const Tag &t);
 
                 //______________________________________________________________
                 //
@@ -89,7 +89,6 @@ namespace yocto
                 static string RS2Expr(const string &RS);
                 string String2Expr(const Node *node) const;
                 size_t top_max_size;
-                list<const string> tags;
             };
 
         }

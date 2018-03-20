@@ -206,7 +206,7 @@ namespace yocto
                         else
                         {
                             Terminal &t = parser->terminal(RX);
-                            __newTerm(fn,&t);
+                            __newTerm(fn,&t,node->reserved);
                             return t;
                         }
                     } break;
@@ -229,7 +229,7 @@ namespace yocto
                         {
                             const string EX = RS2Expr(RS);
                             Terminal    &t  = parser->terminal(RS,EX);
-                            __newTerm(fn,&t);
+                            __newTerm(fn,&t,node->reserved);
                             t.let(IsUnique); // check hollow if not alone in sub-expression!
                             return t;
                         }

@@ -19,7 +19,7 @@ namespace yocto
     {
     public:
         YOCTO_ARGUMENTS_DECL_T;
-        inline zrc_ptr( T *p ) : pointee_( (mutable_type*)p )
+        inline explicit zrc_ptr( T *p ) : pointee_( (mutable_type*)p )
         {
             if(pointee_)
             {

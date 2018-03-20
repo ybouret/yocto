@@ -203,8 +203,8 @@ namespace yocto
 
             void Node:: propagate(const Tag &tag) throw()
             {
-                return;
                 assert(tag.is_valid());
+                //std::cerr << "...propagating <" << *tag << ">" << std::endl;
                 if(reserved.is_valid())
                 {
                     return;
@@ -251,6 +251,10 @@ namespace yocto
                         }
                         fp << '\'';
                     }
+                }
+                if(reserved.is_valid())
+                {
+                    fp("/%s",**reserved);
                 }
                 fp("\"];\n");
                 if(internal)

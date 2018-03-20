@@ -54,13 +54,13 @@ virtual bool          admitsEmpty() const throw()
                 typedef core::list_of_cpp<Rule> List;
                 static  const char InternalMark = '#';
 
-                Rule          *next;  //!< for rules
-                Rule          *prev;  //!< for rules
-                const uint32_t uuid;  //!< to retrieve type
-                const string   label; //!< to match a terminal or standalone name
-                const uint32_t flags; //!< semantic modifiers
-                void          *self_; //!< on the typed address
-                void          *reserved; //!< for tags handling
+                Rule          *next;     //!< for rules
+                Rule          *prev;     //!< for rules
+                const uint32_t uuid;     //!< to retrieve type
+                const string   label;    //!< to match a terminal or standalone name
+                const uint32_t flags;    //!< semantic modifiers
+                void          *self_;    //!< on the typed address
+                Tag            reserved; //!< for tags handling
                 
                 void let(const uint32_t flag) throw();
                 

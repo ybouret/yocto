@@ -37,8 +37,8 @@ namespace yocto
             void Aggregate:: __viz(ios::ostream &fp) const
             {
                 __mark(fp);
-                fp("[shape=%s,label=\"%s\",style=\"filled,%s\"];\n",__shp(),*label,__sty());
-                //vizLink(fp);
+                const char *com = ( reserved.is_valid() ? **reserved : "" );
+                fp("[shape=%s,label=\"%s/%s\",style=\"filled,%s\"];\n",__shp(),*label,com,__sty());
             }
 
             void Aggregate:: __lnk(ios::ostream &fp) const

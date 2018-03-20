@@ -73,10 +73,9 @@ namespace yocto
                             Node::List &content = inc->toList(); assert(content.size>0);
                             // remove the nameNode
                             auto_ptr<Node> nameNode( content.pop_front() );
-                            const string   nameTag = nameNode->toString(1);
-                            tags.push_back(nameTag);
-                            inc->propagate( & tags.back() );
-                            std::cerr << "including local grammar: " << nameTag << std::endl;
+                            const string   theName   = nameNode->toString(1);
+                            const Tag      tag( new string(theName) );
+                            inc->propagate(tag);
                             checkIncludes( inc.__get() );
                             
                             // and append the parsed content to the local tree
