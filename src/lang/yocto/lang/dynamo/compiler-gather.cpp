@@ -242,7 +242,7 @@ namespace yocto
                         //______________________________________________________
                         const Node::List &children = node->toList();
                         Aggregate         &r        = Decl(parser->agg( parser->newAggLabel() ),MergesAlways);
-                        r.reserved = node->tag;
+                        r.tag = node->tag;
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
                         {
@@ -261,7 +261,7 @@ namespace yocto
                         //______________________________________________________
                         const Node::List &children = node->toList();
                         Alternate        &r        = parser->alt();
-                        r.reserved = node->tag;
+                        r.tag = node->tag;
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
                         {
@@ -283,7 +283,7 @@ namespace yocto
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '*'; }
                         Rule &ans = parser->zeroOrMore(r);
-                        ans.reserved = node->tag;
+                        ans.tag = node->tag;
                         return ans;
                     }
 
@@ -296,7 +296,7 @@ namespace yocto
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '+'; }
                         Rule &ans = parser->oneOrMore(r);
-                        ans.reserved = node->tag;
+                        ans.tag = node->tag;
                         return ans;
                     }
 
@@ -309,7 +309,7 @@ namespace yocto
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '?'; }
                         Rule &ans = parser->optional(r);
-                        ans.reserved = node->tag;
+                        ans.tag = node->tag;
                         return parser->optional(r);
                     }
                 }

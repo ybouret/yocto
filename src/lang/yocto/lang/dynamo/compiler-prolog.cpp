@@ -18,7 +18,7 @@ namespace yocto
                 {
                     throw exception("%sunexpected multiple rule '%s'", fn, *(pR->label) );
                 }
-                pR->reserved = t;
+                pR->tag = t;
             }
 
 
@@ -29,7 +29,7 @@ namespace yocto
                 {
                     throw exception("%sunexpected multiple terminal '%s'", fn, *(pT->label) );
                 }
-                pT->reserved = t;
+                pT->tag = t;
             }
 
 

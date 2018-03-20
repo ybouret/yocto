@@ -26,7 +26,7 @@ namespace yocto
 
             void Counting:: __viz(ios::ostream &fp) const
             {
-                const char *com = ( reserved.is_valid() ? **reserved : "" );
+                const char *com = ( tag.is_valid() ? **tag : "" );
                 __mark(fp); fp("[shape=%s,label=\"%s/%s\"];\n",__shp(),*label,com);
             }
 

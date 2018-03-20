@@ -31,7 +31,7 @@ namespace yocto
             void Alternate:: __viz(ios::ostream &fp) const
             {
                 __mark(fp);
-                const char *com = ( reserved.is_valid() ? **reserved : "" );
+                const char *com = ( tag.is_valid() ? **tag : "" );
                 fp("[shape=%s,label=\"%s/%s\"];\n",__shp(),*label,com);
             }
 

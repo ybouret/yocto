@@ -60,7 +60,7 @@ virtual bool          admitsEmpty() const throw()
                 const string   label;    //!< to match a terminal or standalone name
                 const uint32_t flags;    //!< semantic modifiers
                 void          *self_;    //!< on the typed address
-                Tag            reserved; //!< for tags handling
+                Tag            tag;      //!< for specific tag in labels
                 
                 void let(const uint32_t flag) throw();
                 
