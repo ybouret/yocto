@@ -109,7 +109,7 @@ namespace yocto
 
             public:
                 const Stamp stamp;
-                Tag         reserved;
+                Tag         tag;
             };
 
 

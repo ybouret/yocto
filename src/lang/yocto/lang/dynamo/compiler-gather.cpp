@@ -175,7 +175,6 @@ namespace yocto
                 static const char fn[] = "DynamoCompiler.walk: ";
 
                 const string &label = node->origin.label;
-
                 switch(lnkHash(label))
                 {
                         //______________________________________________________
@@ -206,7 +205,7 @@ namespace yocto
                         else
                         {
                             Terminal &t = parser->terminal(RX);
-                            __newTerm(fn,&t,node->reserved);
+                            __newTerm(fn,&t,node->tag);
                             return t;
                         }
                     } break;
@@ -229,7 +228,7 @@ namespace yocto
                         {
                             const string EX = RS2Expr(RS);
                             Terminal    &t  = parser->terminal(RS,EX);
-                            __newTerm(fn,&t,node->reserved);
+                            __newTerm(fn,&t,node->tag);
                             t.let(IsUnique); // check hollow if not alone in sub-expression!
                             return t;
                         }
@@ -243,7 +242,7 @@ namespace yocto
                         //______________________________________________________
                         const Node::List &children = node->toList();
                         Aggregate         &r        = Decl(parser->agg( parser->newAggLabel() ),MergesAlways);
-                        r.reserved = node->reserved;
+                        r.reserved = node->tag;
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
                         {
@@ -262,7 +261,7 @@ namespace yocto
                         //______________________________________________________
                         const Node::List &children = node->toList();
                         Alternate        &r        = parser->alt();
-                        r.reserved = node->reserved;
+                        r.reserved = node->tag;
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
                         {
@@ -284,7 +283,7 @@ namespace yocto
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '*'; }
                         Rule &ans = parser->zeroOrMore(r);
-                        ans.reserved = node->reserved;
+                        ans.reserved = node->tag;
                         return ans;
                     }
 
@@ -297,7 +296,7 @@ namespace yocto
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '+'; }
                         Rule &ans = parser->oneOrMore(r);
-                        ans.reserved = node->reserved;
+                        ans.reserved = node->tag;
                         return ans;
                     }
 
@@ -310,7 +309,7 @@ namespace yocto
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '?'; }
                         Rule &ans = parser->optional(r);
-                        ans.reserved = node->reserved;
+                        ans.reserved = node->tag;
                         return parser->optional(r);
                     }
                 }

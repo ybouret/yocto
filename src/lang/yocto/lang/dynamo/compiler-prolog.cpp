@@ -121,7 +121,7 @@ namespace yocto
                                 const string ruleLabel = node->head()->toString();
                                 if(verbose) { std::cerr << "+" << ruleLabel << std::endl; }
                                 Aggregate   &rule      = parser->agg(ruleLabel);
-                                __newRule(fn,&rule,node->reserved);
+                                __newRule(fn,&rule,node->tag);
                                 top_max_size = max_of(top_max_size,rule.label.size());
                             } break;
 
@@ -145,7 +145,7 @@ namespace yocto
                                     {
                                         if(verbose) { std::cerr << "*" << ruleLabel << " RX=\"" << stringExpr << "\"" << std::endl; }
                                         Terminal &t = parser->terminal(ruleLabel,stringExpr);
-                                        __newTerm(fn,&t,node->reserved);
+                                        __newTerm(fn,&t,node->tag);
                                     } break;
 
                                     case 1: assert("RS"==stringKind);
@@ -154,7 +154,7 @@ namespace yocto
                                         if(verbose) { std::cerr << "*" << ruleLabel << " RS='" << stringExpr << "'=>\"" << ruleExpr << "\"" << std::endl; }
 
                                         Terminal    &t        = parser->terminal(ruleLabel,ruleExpr);
-                                        __newTerm(fn,&t,node->reserved);
+                                        __newTerm(fn,&t,node->tag);
                                         t.let(IsUnique);
                                     } break;
 
@@ -176,7 +176,7 @@ namespace yocto
                                 const string  ruleLabel = plug.head->toString(1);
                                 const string  thePlugin = plug.tail->toString();
                                 if(verbose) { std::cerr << "@" << ruleLabel << "=plugin<" << thePlugin << ">" << std::endl; }
-                                const Tag tag = node->reserved;
+                                const Tag tag = node->tag;
                                 node.release();
 
                                 if("cstring"==thePlugin)

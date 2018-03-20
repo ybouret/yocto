@@ -40,7 +40,7 @@ namespace yocto
             internal(true),
             impl( new List() ),
             stamp( source.stamp() ),
-            reserved(NULL)
+            tag(NULL)
             {
                 //std::cerr << "+Node(" << origin.label << ")/internal" << std::endl;
             }
@@ -59,7 +59,7 @@ namespace yocto
             internal(false),
             impl(l),
             stamp(source.stamp()),
-            reserved(NULL)
+            tag(NULL)
             {
                 //std::cerr << "+Node(" << origin.label << ")/terminal" << std::endl;
             }
@@ -88,7 +88,7 @@ namespace yocto
             internal(other.terminal),
             impl(NULL),
             stamp(other.stamp),
-            reserved(other.reserved)
+            tag(other.tag)
             {
                 if(terminal)
                 {
@@ -201,22 +201,22 @@ namespace yocto
                 }
             }
 
-            void Node:: propagate(const Tag &tag) throw()
+            void Node:: propagate(const Tag &t) throw()
             {
-                assert(tag.is_valid());
+                assert(t.is_valid());
                 //std::cerr << "...propagating <" << *tag << ">" << std::endl;
-                if(reserved.is_valid())
+                if(tag.is_valid())
                 {
                     return;
                 }
                 else
                 {
-                    reserved = tag;
+                    tag = t;
                     if(internal)
                     {
                         for(Node *node = static_cast<List *>(impl)->head;node;node=node->next)
                         {
-                            node->propagate(tag);
+                            node->propagate(t);
                         }
                     }
                 }
@@ -252,9 +252,9 @@ namespace yocto
                         fp << '\'';
                     }
                 }
-                if(reserved.is_valid())
+                if(tag.is_valid())
                 {
-                    fp("/%s",**reserved);
+                    fp("/%s",**tag);
                 }
                 fp("\"];\n");
                 if(internal)
