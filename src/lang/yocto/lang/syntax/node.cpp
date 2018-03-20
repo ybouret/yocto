@@ -201,20 +201,22 @@ namespace yocto
                 }
             }
 
-            void Node:: propagate(const void *info) throw()
+            void Node:: propagate(const Tag &tag) throw()
             {
-                if(reserved)
+                return;
+                assert(tag.is_valid());
+                if(reserved.is_valid())
                 {
                     return;
                 }
                 else
                 {
-                    reserved = info;
+                    reserved = tag;
                     if(internal)
                     {
                         for(Node *node = static_cast<List *>(impl)->head;node;node=node->next)
                         {
-                            node->propagate(info);
+                            node->propagate(tag);
                         }
                     }
                 }

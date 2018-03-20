@@ -5,6 +5,7 @@
 #include "yocto/lang/syntax/rpn.hpp"
 #include "yocto/hashing/function.hpp"
 #include "yocto/ios/ostream.hpp"
+#include "yocto/ptr/zrc.hpp"
 
 namespace yocto
 {
@@ -18,6 +19,8 @@ namespace yocto
 
             class Rule;    //!< forward declaration
             class Grammar; //!< forward declaration for I/O
+
+            typedef zrc_ptr<const string> Tag;
 
             //! a node to build an AST
             class Node : public object
@@ -89,7 +92,7 @@ namespace yocto
                 //! loading using grammar
                 static Node *loadFrom( Module *module, const Grammar &G );
 
-                void propagate(const void *info) throw();
+                void propagate(const Tag &tag) throw();
 
             private:
                 void                *impl;  //!< lexeme or list
@@ -106,7 +109,7 @@ namespace yocto
 
             public:
                 const Stamp stamp;
-                const void *reserved;
+                Tag         reserved;
             };
 
 

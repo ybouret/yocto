@@ -70,10 +70,13 @@ YOCTO_UNIT_TEST_IMPL(intrusive_ptr)
 YOCTO_UNIT_TEST_DONE()
 
 #include "yocto/ptr/alias.hpp"
+#include "yocto/ptr/arc.hpp"
+#include "yocto/ptr/zrc.hpp"
 
 YOCTO_UNIT_TEST_IMPL(alias_ptr)
 {
-    //typedef alias_ptr<uint32_t,dummy> aptr;
+    arc_ptr<dummy> p1( new dummy(5) );
+    arc_ptr<dummy> p2( p1 );
 
 }
 YOCTO_UNIT_TEST_DONE()

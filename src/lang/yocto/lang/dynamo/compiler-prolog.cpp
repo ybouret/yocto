@@ -79,7 +79,8 @@ namespace yocto
                     assert(nameNode->terminal);
                     const string   name = nameNode->toString(1);
                     tags.push_back(name);
-                    master->propagate( & tags.back() );
+                    //master->propagate( & tags.back() );
+                    
                     if(verbose) { std::cerr << "== new parser " << name << " ==" << std::endl; }
                     parser.reset( new Parser(name) );
                     if(verbose)
