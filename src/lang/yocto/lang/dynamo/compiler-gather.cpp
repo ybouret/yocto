@@ -310,7 +310,7 @@ namespace yocto
                         if(verbose) { std::cerr << '?'; }
                         Rule &ans = parser->optional(r);
                         ans.tag = node->tag;
-                        return parser->optional(r);
+                        return ans;
                     }
                 }
 

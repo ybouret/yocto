@@ -32,7 +32,7 @@ namespace yocto
                                         const int     hCode,
                                         const int     nArgs);
 
-                void emitDefinitions( ios::ostream &fp, const string &prefix ) const;
+                void emitDefinitions( ios::ostream &fp, const Grammar &G) const;
 
                 void showTerminal(const string &label,
                                   const int     hCode,

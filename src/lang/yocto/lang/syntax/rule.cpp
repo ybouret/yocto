@@ -15,11 +15,11 @@ namespace yocto
 next(0),          \
 prev(0),          \
 uuid(t),          \
-label(id),        \
+label(i),        \
 flags(IsNormal),  \
 self_(0), tag(0)
 
-            Rule:: Rule(const string  &id,
+            Rule:: Rule(const string  &i,
                         const uint32_t t) :
             YOCTO_LANG_SYNTAX_RULE_CTOR()
             {
@@ -27,7 +27,7 @@ self_(0), tag(0)
             }
 
 
-            Rule:: Rule(const char    *id,
+            Rule:: Rule(const char    *i,
                         const uint32_t t) :
             YOCTO_LANG_SYNTAX_RULE_CTOR()
             {

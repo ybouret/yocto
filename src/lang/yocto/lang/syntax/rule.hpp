@@ -88,12 +88,21 @@ virtual bool          admitsEmpty() const throw()
 
                 inline const char   *id() const throw() { return *label; }
 
+#if 0
+                const string getFullLabel() const
+                {
+                    string ans;
+                    if(tag.is_valid()) { ans << *tag << '_'; }
+                    ans << label;
+                    return ans;
+                }
+#endif
 
             protected:
-                explicit Rule(const string  &id,
+                explicit Rule(const string  &i,
                               const uint32_t u);
 
-                explicit Rule(const char    *id,
+                explicit Rule(const char    *i,
                               const uint32_t u);
                 
             private:

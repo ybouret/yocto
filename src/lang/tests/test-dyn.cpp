@@ -33,9 +33,8 @@ YOCTO_UNIT_TEST_IMPL(dyn)
         {
             std::cerr << "\t-- Writing def" << std::endl;
             ios::wcstream     fp("def_hxx.dat");
-            const string      prefix = parser->tag + '_';
             Syntax::Analyzer  analyzer(*parser);
-            analyzer.emitDefinitions(fp,prefix);
+            analyzer.emitDefinitions(fp,*parser);
         }
 
         {

@@ -53,7 +53,9 @@ namespace yocto
                         internalHash.insert(kw,h);
                         __updateMaxSize(kw.size());
                     }
-                    const Rule *topLevel = G.getTopLevel();
+
+                    const Rule  *topLevel = G.getTopLevel();
+
                     if(topLevel&&internalHash(topLevel->label)<0)
                     {
                         internals.push_back(topLevel->label);
@@ -171,7 +173,7 @@ namespace yocto
 
             static inline
             void __Emit(ios::ostream       &fp,
-                        const string       &prefix,
+                        const Grammar      &G,
                         const list<string> &keywords,
                         const Hasher       &H,
                         const size_t        max_size)
@@ -179,7 +181,9 @@ namespace yocto
                 for( list<string>::const_iterator i = keywords.begin(); i != keywords.end(); ++i)
                 {
                     const string &kw = *i;
-                    fp << "#define " << prefix;
+                    const Rule   &r  = G.getRuleByLabel(kw);
+                    fp << "#define ";
+                    if(r.tag.is_valid()) { fp << *r.tag << '_'; }
                     for(size_t j=0;j<kw.size();++j)
                     {
                         char c = kw[j];
@@ -195,13 +199,15 @@ namespace yocto
 
             }
 
-            void Analyzer:: emitDefinitions( ios::ostream &fp, const string &prefix ) const
+            void Analyzer:: emitDefinitions( ios::ostream &fp, const Grammar &G) const
             {
                 fp << "// TERMINALS\n";
-                __Emit(fp,prefix,terminals,terminalHash,max_size);
+                //std::cerr << "emitting terminals..." << std::endl;
+                __Emit(fp,G,terminals,terminalHash,max_size);
 
                 fp << "// INTERNALS\n";
-                __Emit(fp,prefix,internals,internalHash,max_size);
+                //std::cerr << "emitting internal..." << std::endl;
+                __Emit(fp,G,internals,internalHash,max_size);
 
             }
 
