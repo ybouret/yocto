@@ -39,7 +39,8 @@ namespace yocto
             terminal(false),
             internal(true),
             impl( new List() ),
-            stamp( source.stamp() )
+            stamp( source.stamp() ),
+            reserved(NULL)
             {
                 //std::cerr << "+Node(" << origin.label << ")/internal" << std::endl;
             }
@@ -57,7 +58,8 @@ namespace yocto
             terminal(true),
             internal(false),
             impl(l),
-            stamp(source.stamp())
+            stamp(source.stamp()),
+            reserved(NULL)
             {
                 //std::cerr << "+Node(" << origin.label << ")/terminal" << std::endl;
             }
@@ -85,7 +87,8 @@ namespace yocto
             terminal(other.terminal),
             internal(other.terminal),
             impl(NULL),
-            stamp(other.stamp)
+            stamp(other.stamp),
+            reserved(other.reserved)
             {
                 if(terminal)
                 {
@@ -198,8 +201,24 @@ namespace yocto
                 }
             }
 
-
-
+            void Node:: propagate(const void *info) throw()
+            {
+                if(reserved)
+                {
+                    return;
+                }
+                else
+                {
+                    reserved = info;
+                    if(internal)
+                    {
+                        for(Node *node = static_cast<List *>(impl)->head;node;node=node->next)
+                        {
+                            node->propagate(info);
+                        }
+                    }
+                }
+            }
         }
     }
 }

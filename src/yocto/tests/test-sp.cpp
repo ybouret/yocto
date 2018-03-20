@@ -90,6 +90,8 @@ YOCTO_UNIT_TEST_IMPL(soft_ptr)
     p3 = new double(7);
     p1 = new double(9);
     std::cerr << *p3 << "," << *p4 << "," << *p1 << std::endl;
+    p2 = p1;
+    std::cerr << *p2 << std::endl;
     }
     YOCTO_UNIT_TEST_DONE()
 

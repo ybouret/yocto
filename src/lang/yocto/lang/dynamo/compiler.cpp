@@ -70,6 +70,7 @@ namespace yocto
                 parser.release();
                 if(!master) throw exception("DynamoCompiler.encode(NULL)");
                 auto_ptr<Node> guard(master);
+
 #if 0
                 if(verbose)
                 {
@@ -101,7 +102,7 @@ namespace yocto
                     ios::graphviz_render(parserDot);
                     std::cerr << std::endl;
                 }
-
+                std::cerr << "Tags=" << tags << std::endl;
                 return parser.yield();
             }
 

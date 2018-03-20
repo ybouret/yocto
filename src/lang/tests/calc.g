@@ -1,6 +1,8 @@
 // some comment
 .calc;
 
+@include : "lex.g";
+
 prog : stat*;
 
 stat :	expr END
@@ -27,3 +29,5 @@ ASSIGN  : '=' ;
 END     : ';' ;
 LPAREN  : '(' ;
 RPAREN  : ')' ;
+
+

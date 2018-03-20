@@ -17,7 +17,7 @@ prev(0),          \
 uuid(t),          \
 label(id),        \
 flags(IsNormal),  \
-self_(0)
+self_(0), reserved(0)
 
             Rule:: Rule(const string  &id,
                         const uint32_t t) :

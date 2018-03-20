@@ -30,7 +30,7 @@ namespace yocto
                 const Rule          &origin;    //!< created by this rule
                 const bool           terminal;  //!< whick kind of node
                 const bool           internal;  //!< which kind of node
-                
+
                 void   append(Node *child) throw();
                 Node  *remove_head() throw(); //!< size>0
                 Node  *remove_tail() throw();
@@ -58,9 +58,7 @@ namespace yocto
 
                 //! Abstract Syntax Tree cleaning
                 static Node * AST( Node *node ) throw();
-
-                //static void   RPN( Node *node, const string &id, const Hasher &ops);
-
+                
                 //! wrapper to get list
                 List         & toList() throw();
 
@@ -91,6 +89,8 @@ namespace yocto
                 //! loading using grammar
                 static Node *loadFrom( Module *module, const Grammar &G );
 
+                void propagate(const void *info) throw();
+
             private:
                 void                *impl;  //!< lexeme or list
                 YOCTO_DISABLE_ASSIGN(Node);
@@ -106,6 +106,7 @@ namespace yocto
 
             public:
                 const Stamp stamp;
+                const void *reserved;
             };
 
 

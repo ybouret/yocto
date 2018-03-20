@@ -49,6 +49,13 @@ namespace yocto
             return *this;
         }
 
+        inline soft_ptr & operator=( const soft_ptr &other ) throw()
+        {
+            soft_ptr tmp(other);
+            swap_with(tmp);
+            return *this;
+        }
+
         inline bool is_valid() const throw() { return 0 != pointee_; }
 
         inline type & operator*()  throw()
@@ -78,11 +85,16 @@ namespace yocto
         inline type       * __get() throw()       { return pointee_; }
         inline const_type * __get() const throw() { return pointee_; }
 
+        inline void swap_with( soft_ptr &other ) throw()
+        {
+            cswap(pointee_,other.pointee_);
+            cswap(nref_,   other.nref_   );
+        }
 
     private:
         mutable_type *pointee_;
         size_t       *nref_;
-        YOCTO_DISABLE_ASSIGN(soft_ptr);
+
         inline void kill() throw()
         {
             if(pointee_)
