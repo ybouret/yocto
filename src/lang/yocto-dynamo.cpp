@@ -47,9 +47,9 @@ YOCTO_PROGRAM_START()
     {
         std::cerr << "  |_Writing Defines to '" << defsFile << "'" << std::endl;
         ios::wcstream     fp(defsFile);
-        const string      prefix = parser->tag + '_';
+        //const string      prefix = parser->tag + '_';
         Syntax::Analyzer  analyzer(*parser);
-        analyzer.emitDefinitions(fp,prefix);
+        analyzer.emitDefinitions(fp,*parser);
     }
     std::cerr << "  |" << std::endl;
     std::cerr << "*** Done!" << std::endl;
