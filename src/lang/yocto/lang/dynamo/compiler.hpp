@@ -60,8 +60,8 @@ namespace yocto
                 // prolog
                 //______________________________________________________________
                 void createTopLevelFrom( Node *master );
-                void  __newRule(const char *fn, dynRule pR, const Tag &t);
-                void  __newTerm(const char *fn, dynTerm pT, const Tag &t);
+                void  __newRule(const char *fn, dynRule pR);
+                void  __newTerm(const char *fn, dynTerm pT);
 
                 //______________________________________________________________
                 //

@@ -11,25 +11,23 @@ namespace yocto
         namespace Syntax
         {
 
-            void DynamoCompiler:: __newRule(const char *fn, dynRule pR, const Tag &t)
+            void DynamoCompiler:: __newRule(const char *fn, dynRule pR)
             {
                 assert(pR);
                 if(!ruleDB.insert(pR->label,pR))
                 {
                     throw exception("%sunexpected multiple rule '%s'", fn, *(pR->label) );
                 }
-                pR->tag = t;
             }
 
 
-            void DynamoCompiler:: __newTerm(const char *fn, dynTerm pT, const Tag &t)
+            void DynamoCompiler:: __newTerm(const char *fn, dynTerm pT)
             {
                 assert(pT);
                 if(!termDB.insert(pT->label,pT))
                 {
                     throw exception("%sunexpected multiple terminal '%s'", fn, *(pT->label) );
                 }
-                pT->tag = t;
             }
 
 
@@ -120,8 +118,8 @@ namespace yocto
                             {
                                 const string ruleLabel = node->head()->toString();
                                 if(verbose) { std::cerr << "+" << ruleLabel << std::endl; }
-                                Aggregate   &rule      = parser->agg(ruleLabel);
-                                __newRule(fn,&rule,node->tag);
+                                Aggregate   &rule      = Rule::TagWith(node->tag,parser->agg(ruleLabel));
+                                __newRule(fn,&rule);
                                 top_max_size = max_of(top_max_size,rule.label.size());
                             } break;
 
@@ -144,8 +142,8 @@ namespace yocto
                                     case 0: assert("RX"==stringKind);
                                     {
                                         if(verbose) { std::cerr << "*" << ruleLabel << " RX=\"" << stringExpr << "\"" << std::endl; }
-                                        Terminal &t = parser->terminal(ruleLabel,stringExpr);
-                                        __newTerm(fn,&t,node->tag);
+                                        Terminal &t = Rule::TagWith(node->tag,parser->terminal(ruleLabel,stringExpr));
+                                        __newTerm(fn,&t);
                                     } break;
 
                                     case 1: assert("RS"==stringKind);
@@ -153,8 +151,8 @@ namespace yocto
                                         const string ruleExpr = RS2Expr(stringExpr);
                                         if(verbose) { std::cerr << "*" << ruleLabel << " RS='" << stringExpr << "'=>\"" << ruleExpr << "\"" << std::endl; }
 
-                                        Terminal    &t        = parser->terminal(ruleLabel,ruleExpr);
-                                        __newTerm(fn,&t,node->tag);
+                                        Terminal    &t = Rule::TagWith(node->tag,parser->terminal(ruleLabel,ruleExpr));
+                                        __newTerm(fn,&t);
                                         t.let(IsUnique);
                                     } break;
 
@@ -181,15 +179,15 @@ namespace yocto
 
                                 if("cstring"==thePlugin)
                                 {
-                                    Terminal &t = parser->term<Lexical::cstring>(ruleLabel);
-                                    __newTerm(fn, &t, tag);
+                                    Terminal &t = Rule::TagWith(tag,parser->term<Lexical::cstring>(ruleLabel));
+                                    __newTerm(fn,&t);
                                     break;
                                 }
 
                                 if("rstring"==thePlugin)
                                 {
-                                    Terminal &t = parser->term<Lexical::rstring>(ruleLabel);
-                                    __newTerm(fn, &t, tag);
+                                    Terminal &t = Rule::TagWith(tag,parser->term<Lexical::rstring>(ruleLabel));
+                                    __newTerm(fn,&t);
                                     break;
                                 }
 

@@ -60,7 +60,7 @@ virtual bool          admitsEmpty() const throw()
                 const string   label;    //!< to match a terminal or standalone name
                 const uint32_t flags;    //!< semantic modifiers
                 void          *self_;    //!< on the typed address
-                Tag            tag;      //!< for specific tag in labels
+                Tag            tag;      //!< for Dynamo
                 
                 void let(const uint32_t flag) throw();
                 
@@ -86,17 +86,10 @@ virtual bool          admitsEmpty() const throw()
                 static void Restore( Lexer &lexer, Node *node ) throw();
                 void __mark( ios::ostream &fp ) const;
 
-                inline const char   *id() const throw() { return *label; }
+                const char   *id() const throw();
 
-#if 0
-                const string getFullLabel() const
-                {
-                    string ans;
-                    if(tag.is_valid()) { ans << *tag << '_'; }
-                    ans << label;
-                    return ans;
-                }
-#endif
+                template <typename RULE>
+                static inline RULE & TagWith(const Tag &t, RULE &r) throw() { r.tag = t; return r; }
 
             protected:
                 explicit Rule(const string  &i,

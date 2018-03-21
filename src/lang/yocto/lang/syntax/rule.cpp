@@ -34,6 +34,8 @@ self_(0), tag(0)
                 
             }
 
+            const char * Rule:: id() const throw() { return *label; }
+
             void Rule:: let(const uint32_t flag) throw()
             {
                 (uint32_t &)flags = flag;

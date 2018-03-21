@@ -204,8 +204,8 @@ namespace yocto
                         }
                         else
                         {
-                            Terminal &t = parser->terminal(RX);
-                            __newTerm(fn,&t,node->tag);
+                            Terminal &t = Rule::TagWith(node->tag,parser->terminal(RX));
+                            __newTerm(fn,&t);
                             return t;
                         }
                     } break;
@@ -227,8 +227,8 @@ namespace yocto
                         else
                         {
                             const string EX = RS2Expr(RS);
-                            Terminal    &t  = parser->terminal(RS,EX);
-                            __newTerm(fn,&t,node->tag);
+                            Terminal    &t  = Rule::TagWith(node->tag,parser->terminal(RS,EX));
+                            __newTerm(fn,&t);
                             t.let(IsUnique); // check hollow if not alone in sub-expression!
                             return t;
                         }
@@ -241,8 +241,7 @@ namespace yocto
                         //
                         //______________________________________________________
                         const Node::List &children = node->toList();
-                        Aggregate         &r        = Decl(parser->agg( parser->newAggLabel() ),MergesAlways);
-                        r.tag = node->tag;
+                        Aggregate         &r       = Rule::TagWith(node->tag,Decl(parser->agg( parser->newAggLabel() ),MergesAlways));
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
                         {
@@ -260,8 +259,7 @@ namespace yocto
                         //
                         //______________________________________________________
                         const Node::List &children = node->toList();
-                        Alternate        &r        = parser->alt();
-                        r.tag = node->tag;
+                        Alternate        &r        = Rule::TagWith(node->tag,parser->alt());
                         if(verbose) { std::cerr << '('; }
                         for(const Node *sub = children.head; sub; sub=sub->next)
                         {
@@ -282,9 +280,7 @@ namespace yocto
                         //______________________________________________________
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '*'; }
-                        Rule &ans = parser->zeroOrMore(r);
-                        ans.tag = node->tag;
-                        return ans;
+                        return Rule::TagWith(node->tag,parser->zeroOrMore(r));
                     }
 
                         //______________________________________________________
@@ -295,9 +291,7 @@ namespace yocto
                         //______________________________________________________
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '+'; }
-                        Rule &ans = parser->oneOrMore(r);
-                        ans.tag = node->tag;
-                        return ans;
+                        return Rule::TagWith(node->tag,parser->oneOrMore(r));
                     }
 
                         //______________________________________________________
@@ -308,9 +302,7 @@ namespace yocto
                         //______________________________________________________
                         Rule &r = walk(node->head());
                         if(verbose) { std::cerr << '?'; }
-                        Rule &ans = parser->optional(r);
-                        ans.tag = node->tag;
-                        return ans;
+                        return Rule::TagWith(node->tag,parser->optional(r));
                     }
                 }
 
