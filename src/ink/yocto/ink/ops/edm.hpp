@@ -5,6 +5,7 @@
 #include "yocto/ink/pixmaps.hpp"
 #include "yocto/ink/parallel.hpp"
 #include "yocto/associative/set.hpp"
+#include "yocto/associative/key-dumper.hpp"
 
 namespace yocto
 {
@@ -15,7 +16,52 @@ namespace yocto
         class EDM : public Pixmap<float>
         {
         public:
-            
+
+            class Probe
+            {
+            public:
+                typedef set<unit_t,Probe,key_dumper<unit_t> > Set;
+
+                const unit_t u,v,d2;
+
+                inline  Probe(const unit_t U, const unit_t V, const unit_t D2) throw() : u(U), v(V), d2(D2) {}
+                inline ~Probe() throw() {}
+                inline  Probe(const Probe &other) throw() : u(other.u), v(other.v), d2(other.d2) {}
+                inline const unit_t & key() const throw() { return d2; }
+
+            private:
+                YOCTO_DISABLE_ASSIGN(Probe);
+            };
+
+            class Probes : public Probe::Set
+            {
+            public:
+                inline Probes( const unit_t w ) : Probe::Set(1000000,as_capacity)
+                {
+                    for(unit_t u=1;u<=w;++u)
+                    {
+                        const unit_t u2 = u*u;
+                        for(unit_t v=u;v<=w;++v)
+                        {
+                            const unit_t v2 = v*v;
+                            const unit_t d2 = u2+v2;
+                            if( !search(d2) )
+                            {
+                                const Probe p(u,v,d2);
+                                insert__(p);
+                            }
+                        }
+                    }
+                    sort_keys_by( __compare<unit_t> );
+                }
+
+                inline virtual ~Probes() throw() {}
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Probes);
+            };
+
+
             enum ScanStatus
             {
                 ScanFound,   //!< scan met background

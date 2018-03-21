@@ -22,7 +22,20 @@ YOCTO_UNIT_TEST_IMPL(edm)
 
     Histogram H;
 
-    
+    {
+        ios::ocstream::overwrite("edm.dat");
+        const unit_t wmax = 1024;
+        for(unit_t w=1;w<=wmax;++w)
+        {
+            (std::cerr << '.').flush();
+            EDM::Probes probes(w);
+            {
+                ios::acstream fp("edm.dat");
+                fp("%d %u\n",int(w),unsigned(probes.size()));
+            }
+        }
+        std::cerr << std::endl;
+    }
 
     return 0;
 
