@@ -22,6 +22,7 @@ YOCTO_UNIT_TEST_IMPL(edm)
 
     Histogram H;
 
+    if(false)
     {
         ios::ocstream::overwrite("edm.dat");
         const unit_t wmax = 1024;

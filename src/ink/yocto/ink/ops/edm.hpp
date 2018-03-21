@@ -41,7 +41,7 @@ namespace yocto
                     for(unit_t u=1;u<=w;++u)
                     {
                         const unit_t u2 = u*u;
-                        for(unit_t v=u;v<=w;++v)
+                        for(unit_t v=1;v<=u;++v)
                         {
                             const unit_t v2 = v*v;
                             const unit_t d2 = u2+v2;
