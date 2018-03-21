@@ -30,7 +30,7 @@ YOCTO_UNIT_TEST_IMPL(pmesh)
     for(size_t i=1;i<=sz;++i)
     {
         const float theta = ((i-1) * 6.28f) / (sz-1);
-        p1.X()[i] = p2.X()[i] = p3.X()[i] = cosf(theta);
+        p2.X()[i] = p1.X()[i] = p3.X()[i] = cosf(theta);
         p2.Y()[i] = p3.Y()[i] = sinf(theta);
         p3.Z()[i] = theta/3;
     }
