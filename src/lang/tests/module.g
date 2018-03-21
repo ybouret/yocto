@@ -1,6 +1,15 @@
 
 // testing modular
 .module;
+@comment: "/\\*" "\\*/";
+@comment: "//";
 
-@include : "calc.g";
+prog : (AXP|string)*;
 
+@include : "seem.g";
+
+@string : cstring;
+
+@include : "lex.g";
+//@drop   : "[:blank:]" ' ';
+//@endl   : "[:endl:]";
