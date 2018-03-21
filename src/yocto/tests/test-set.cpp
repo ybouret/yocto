@@ -105,13 +105,14 @@ namespace
             S.collect_keys(key_seq);
         }
 
-
+        std::cerr << std::endl;
 	}
 
 
 }
 
-
+#include "yocto/associative/key-dumper.hpp"
+#include "yocto/code/alea.hpp"
 
 YOCTO_UNIT_TEST_IMPL(set)
 {
@@ -119,6 +120,7 @@ YOCTO_UNIT_TEST_IMPL(set)
 	test_set<int,key_hasher<int,hashing::sfh>,memory::global::allocator>();
 	test_set<string,key_hasher<string,hashing::elf>,memory::global::allocator>();
 	test_set<const string,key_hasher<string,hashing::sha1>,memory::pooled::allocator>();
+    test_set<short,key_dumper<short>,memory::global::allocator>();
 
     {
         set<string, dummy<string> > ds;
@@ -137,6 +139,8 @@ YOCTO_UNIT_TEST_IMPL(set)
         ds.sort_keys_by(dummy<string>::cmp_keys);
         std::cerr << ds << std::endl;
     }
+
+
 
 }
 YOCTO_UNIT_TEST_DONE()
