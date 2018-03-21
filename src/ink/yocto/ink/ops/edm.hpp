@@ -4,15 +4,18 @@
 
 #include "yocto/ink/pixmaps.hpp"
 #include "yocto/ink/parallel.hpp"
+#include "yocto/associative/set.hpp"
 
 namespace yocto
 {
     namespace Ink
     {
-        
+
+
         class EDM : public Pixmap<float>
         {
         public:
+            
             enum ScanStatus
             {
                 ScanFound,   //!< scan met background

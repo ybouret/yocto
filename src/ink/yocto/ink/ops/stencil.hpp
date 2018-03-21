@@ -174,6 +174,8 @@ namespace yocto
                             }
                         }
                         // end accumulation
+
+                        // normalize?
                         if(nrm)
                         {
                             for(size_t i=0;i<CHANNELS;++i)
@@ -181,6 +183,8 @@ namespace yocto
                                 wsum[i] = (wsum[i]-vmin)*factor;
                             }
                         }
+
+                        // store values
                         SCALAR *q = (SCALAR *)&target[j][i];
                         for(size_t ch=0;ch<CHANNELS;++ch)
                         {
