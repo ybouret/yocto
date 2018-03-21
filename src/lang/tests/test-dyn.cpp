@@ -7,6 +7,8 @@
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/ios/file-loader.hpp"
+#include "yocto/ios/osstream.hpp"
+#include "yocto/string/hexdump.hpp"
 
 using namespace yocto;
 using namespace Lang;
@@ -65,6 +67,19 @@ YOCTO_UNIT_TEST_IMPL(dyn)
                 auto_ptr<Syntax::Parser> reloaded( Syntax::Parser::CompileData("serialized",(char *)content.rw(),content.length()));
                 std::cerr << "\t\treloaded once more!" << std::endl;
                 reloaded.release();
+            }
+
+            {
+                string data;
+                {
+                    ios::osstream fp(data);
+                    dyn.Serialize( Module::OpenFile(argv[1]) , fp);
+                }
+                {
+                    ios::wcstream fp("serialized.dat");
+                    hexdump::write(fp,data);
+                }
+                std::cerr << "\t\tand serialized as a C array of " << data.size() << " bytes" << std::endl;
             }
             
         }
