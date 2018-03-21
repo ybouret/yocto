@@ -25,9 +25,7 @@ namespace yocto
         };
 
         //! a language compiler: load the AST and walk it
-        class Compiler :
-        public DynamicParser,
-        public Syntax::Analyzer
+        class Compiler : public DynamicParser, public Syntax::Analyzer
         {
         public:
             virtual ~Compiler() throw();

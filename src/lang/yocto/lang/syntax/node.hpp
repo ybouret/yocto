@@ -19,8 +19,7 @@ namespace yocto
 
             class Rule;    //!< forward declaration
             class Grammar; //!< forward declaration for I/O
-
-            typedef zrc_ptr<const string> Tag;
+            typedef zrc_ptr<const string> Tag; //!< for Dynamo
 
             //! a node to build an AST
             class Node : public object
@@ -34,10 +33,10 @@ namespace yocto
                 const bool           terminal;  //!< whick kind of node
                 const bool           internal;  //!< which kind of node
 
-                void   append(Node *child) throw();
-                Node  *remove_head() throw(); //!< size>0
-                Node  *remove_tail() throw();
-                size_t size() const throw();
+                void   append(Node *child) throw();  //!< INTERNAL: append
+                Node  *remove_head() throw();        //!< INTERNAL: if size>0
+                Node  *remove_tail() throw();        //!< INTERNAL: if size>0
+                size_t size() const throw();         //!< INTERNAL: list size
 
                 virtual ~Node() throw();
 
@@ -62,36 +61,37 @@ namespace yocto
                 //! Abstract Syntax Tree cleaning
                 static Node * AST( Node *node ) throw();
                 
-                //! wrapper to get list
+                //! INTERNAL: wrapper to get list
                 List         & toList() throw();
 
-                //! wrapper to get list
+                //! INTERNAL: wrapper to get list
                 const List   & toList() const throw();
 
-                //! wrapper to get lexeme
+                //! TERMINAL: wrapper to get lexeme
                 Lexeme       & toLex() throw();
 
-                //! wrapper to get lexeme
+                //! TERMINAL: wrapper to get lexeme
                 const Lexeme & toLex() const throw();
 
-                //! wrapper to get first item if internal
+                //! INTERNAL: wrapper to get first child
                 const Node *head() const throw();
 
-                //! wrapper to get lexeme content if terminal
+                //! INTERNAL: wrapper to get lexeme content
                 string      toString(const size_t nskip=0) const;
 
                 //! serialize binary node
                 void serialize( ios::ostream &fp ) const;
 
-                //! fill the H function
+                //! recurvsive fill the H function
                 void runHash( hashing::function &H ) const;
 
                 //! full hash and string conversion
                 string signature() const;
 
                 //! loading using grammar
-                static Node *loadFrom( Module *module, const Grammar &G );
+                static Node *loadFrom(Module *module, const Grammar &G );
 
+                //! propagate tag to children that don't already have one
                 void propagate(const Tag &tag) throw();
 
             private:
@@ -108,8 +108,8 @@ namespace yocto
                 static Node * __loadFrom( Source &source, ios::istream &fp, const Grammar &G );
 
             public:
-                const Stamp stamp;
-                Tag         tag;
+                const Stamp stamp; //!< source stamp, when created
+                Tag         tag;   //!< Dynamo tag
             };
 
 

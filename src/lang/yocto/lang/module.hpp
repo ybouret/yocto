@@ -16,9 +16,7 @@ namespace yocto
 
 
         //! a wrapper around an input to tag stamp/column/line
-        class  Module :
-        public counted_object,
-        public CharInfo
+        class  Module : public counted_object, public CharInfo
         {
         public:
             typedef arc_ptr<Module> Handle;

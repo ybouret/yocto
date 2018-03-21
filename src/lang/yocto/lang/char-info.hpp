@@ -13,7 +13,7 @@ namespace yocto
         //! shared string to put a stamp on dynamic objects
         typedef arc_ptr<const string> Stamp;
 
-        //! Char information if multiple sources
+        //! Char information if using multiple sources
         class CharInfo
         {
         public:
