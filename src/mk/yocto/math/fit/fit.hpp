@@ -246,9 +246,11 @@ namespace yocto
                 typedef typename Type<T>::Function Function;
                 
                 virtual ~Samples() throw();
-                explicit Samples(const size_t capa_samples=0, const size_t capa_global=0);
+                
+                explicit Samples(const size_t capa_samples=0,
+                                 const size_t capa_global_variables=0);
 
-                Sample<T> & add(const Array &userX, const Array &userY, Array &userZ, const size_t capa_local=0);
+                Sample<T> & add(const Array &userX, const Array &userY, Array &userZ, const size_t capa_local_variables=0);
 
                 virtual void link(); //!< link collection to this->variables
 

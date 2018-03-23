@@ -13,13 +13,13 @@ namespace yocto
             template <> SampleType<real_t>::  SampleType(const size_t n) :
             SampleInfo(n),
             u(n,as_capacity),
-	    dFdu(n,as_capacity),
+            dFdu(n,as_capacity),
             beta(n,as_capacity),
             curv(),
             D2(0)
             {
             }
-
+            
             template <>
             void SampleType<real_t>:: allocate(const size_t nvar)
             {
@@ -28,8 +28,8 @@ namespace yocto
                 beta.make(nvar);
                 curv.make(nvar); //! large model
             }
-
-
+            
+            
             template <>
             void SampleType<real_t>:: display(std::ostream &os,
                                               const Array  &aorg,
@@ -55,12 +55,12 @@ namespace yocto
                         }
                         s += ':';
                         s += ' ';
-
+                        
                         s += vformat("%.15g",aorg[i]);
                         pad_org = max_of(s.size(),pad_org);
                         vorg.push_back(s);
                     }
-
+                    
                     {
                         string s = "+/- ";
                         s += vformat("%.15g",aerr[i]);
@@ -68,7 +68,7 @@ namespace yocto
                         verr.push_back(s);
                     }
                 }
-
+                
                 const string pfx = prefix;
                 for(i=1;i<=nvar;++i)
                 {
@@ -88,7 +88,7 @@ namespace yocto
                     os << ')';
                     os << std::endl;
                 }
-
+                
             }
         }
     }
@@ -100,7 +100,7 @@ namespace yocto
     {
         namespace Fit
         {
-
+            
             template <>
             real_t Gradient<real_t>:: eval_f(const real_t x, const Array &a)
             {
@@ -108,7 +108,7 @@ namespace yocto
                 assert(pfn);
                 return (*pfn)(x,a,*var);
             }
-
+            
             template <>
             Gradient<real_t>:: Gradient() :
             derivatives<real_t>(),
@@ -119,12 +119,12 @@ namespace yocto
             f( this, & Gradient<real_t>::eval_f )
             {
             }
-
+            
             template <>
             Gradient<real_t>:: ~Gradient() throw()
             {
             }
-
+            
             template <>
             void Gradient<real_t>::  compute(Array           &dFda,
                                              Function        &F,
@@ -138,9 +138,9 @@ namespace yocto
                 dh.make(a.size(),scale);
                 drvs.gradient(dFda,f, x, a, dh);
             }
-
+            
         }
-
+        
     }
 }
 
@@ -150,10 +150,10 @@ namespace yocto
     {
         namespace Fit
         {
-
+            
             template <> Sample<real_t>:: ~Sample() throw() {}
-
-
+            
+            
             template <> Sample<real_t>:: Sample(const Array &userX,
                                                 const Array &userY,
                                                 Array       &userZ,
@@ -161,16 +161,16 @@ namespace yocto
             SampleType<real_t>(capa),
             X(userX), Y(userY), Z(userZ)
             {
-
+                
             }
-
+            
             template <>
             void Sample<real_t>:: link()
             {
                 link_to(variables);
                 allocate(variables.size());
             }
-
+            
             template <>
             void Sample<real_t>:: assign(const Array &a) const
             {
@@ -184,8 +184,8 @@ namespace yocto
                     u[i] = a[j];
                 }
             }
-
-
+            
+            
             template <>
             real_t Sample<real_t>::computeD2(Function           &F,
                                              const Array        &a) const
@@ -202,7 +202,7 @@ namespace yocto
                 }
                 return D2;
             }
-
+            
             template <>
             real_t Sample<real_t>::computeD2(Function           &F,
                                              const Array        &a,
@@ -213,7 +213,7 @@ namespace yocto
                 assert(Y.size()==N);
                 assert(Z.size()==N);
                 const size_t nvar = u.size();
-
+                
                 for(size_t k=nvar;k>0;--k)
                 {
                     beta[k] = 0;
@@ -223,7 +223,7 @@ namespace yocto
                         curv_k[l] = 0;
                     }
                 }
-
+                
                 D2 = 0;
                 for(size_t j=N;j>0;--j)
                 {
@@ -242,7 +242,7 @@ namespace yocto
                     }
                     D2 += del*del;
                 }
-
+                
                 // symetrizing
                 for(size_t k=nvar;k>0;--k)
                 {
@@ -253,7 +253,7 @@ namespace yocto
                 }
                 return D2;
             }
-
+            
             template <>
             size_t Sample<real_t>:: items() const throw()
             {
@@ -261,7 +261,7 @@ namespace yocto
                 assert( Y.size() == Z.size() );
                 return X.size();
             }
-
+            
             template <>
             size_t Sample<real_t>:: count() const throw()
             {
@@ -280,7 +280,7 @@ namespace yocto
                         ave += Y[i];
                     }
                     ave /= N;
-
+                    
                     real_t ans = 0;
                     for(size_t i=N;i>0;--i)
                     {
@@ -293,7 +293,7 @@ namespace yocto
                     return 0;
                 }
             }
-
+            
             template <>
             real_t Sample<real_t>:: correlation() const throw()
             {
@@ -310,7 +310,7 @@ namespace yocto
                     }
                     ay /= N;
                     az /= N;
-
+                    
                     real_t sum_yy = 0;
                     real_t sum_zz = 0;
                     real_t sum_yz = 0;
@@ -322,7 +322,7 @@ namespace yocto
                         sum_zz += dz*dz;
                         sum_yz += dy*dz;
                     }
-
+                    
                     return sum_yz / ( Sqrt(sum_yy*sum_zz) + numeric<real_t>::tiny );
                 }
                 else
@@ -330,7 +330,7 @@ namespace yocto
                     return 1;
                 }
             }
-
+            
         }
     }
 }
@@ -341,14 +341,15 @@ namespace yocto
     {
         namespace Fit
         {
-
+            
             template <> Samples<real_t>:: ~Samples() throw() {}
-            template <> Samples<real_t>::  Samples(const size_t capa_samples, const size_t capa_variables) :
+            template <> Samples<real_t>::  Samples(const size_t capa_samples,
+                                                   const size_t capa_variables) :
             SampleType<real_t>(capa_variables),
             Sample<real_t>::Collection(capa_samples,as_capacity)
             {
             }
-
+            
             template <>
             Sample<real_t> & Samples<real_t>::add(const Array &userX, const Array &userY, Array &userZ, const size_t capa_local)
             {
@@ -356,7 +357,7 @@ namespace yocto
                 push_back(pS);
                 return *pS;
             }
-
+            
             template <>
             void Samples<real_t>:: link()
             {
@@ -370,8 +371,8 @@ namespace yocto
                     S.allocate( S.variables.size() );
                 }
             }
-
-
+            
+            
             template <>
             real_t Samples<real_t>::computeD2(Function           &F,
                                               const Array        &a) const
@@ -384,7 +385,7 @@ namespace yocto
                 }
                 return D2;
             }
-
+            
             template <>
             real_t Samples<real_t>::computeD2(Function          &F,
                                               const Array        &a,
@@ -392,7 +393,7 @@ namespace yocto
             {
                 const array< Sample<real_t>::Pointer > &self = *this;
                 const size_t nvar = u.size();
-
+                
                 for(size_t k=nvar;k>0;--k)
                 {
                     beta[k] = 0;
@@ -401,13 +402,13 @@ namespace yocto
                         curv[k][l] = 0;
                     }
                 }
-
+                
                 D2 = 0;
                 for(size_t i=size();i>0;--i)
                 {
                     const Sample<real_t> &sample = *self[i];
                     D2 += sample.computeD2(F,a,grad);
-
+                    
                     // dispatch values
                     const size_t svar = sample.indices.size();
                     for(size_t j=svar;j>0;--j)
@@ -422,9 +423,9 @@ namespace yocto
                     }
                 }
                 return D2;
-
+                
             }
-
+            
             template <>
             size_t Samples<real_t>:: items() const throw()
             {
@@ -437,7 +438,7 @@ namespace yocto
                 }
                 return ans;
             }
-
+            
             template <>
             real_t Samples<real_t>:: SStot() const throw()
             {
@@ -456,14 +457,14 @@ namespace yocto
             {
                 return size();
             }
-
+            
             template <>
             real_t Samples<real_t>:: correlation() const throw()
             {
                 return 0;
             }
         }
-
+        
     }
 }
 
@@ -485,7 +486,7 @@ namespace yocto
             LS<real_t>:: ~LS() throw()
             {
             }
-
+            
 #if 0
             template <>
             real_t LS<real_t>:: eval1d(const real_t u)
@@ -507,7 +508,7 @@ namespace yocto
             pa0(0),
             atry(),
             step(),
-	    cinv(),
+            cinv(),
             p10(0),
             lambda(0),
             min_p10( int(Floor(Log10(numeric<real_t>::epsilon)))   ),
@@ -517,7 +518,7 @@ namespace yocto
             verbose(false)
             {
             }
-
+            
             template <>
             void LS<real_t>:: compute_lambda() throw()
             {
@@ -537,9 +538,9 @@ namespace yocto
                         lambda = ipower(REAL(0.1),-p10);
                     }
                 }
-
+                
             }
-
+            
             template <>
             bool LS<real_t>:: compute_cinv(const Matrix &curv)
             {
@@ -547,10 +548,10 @@ namespace yocto
                 assert(curv.rows>0);
                 assert(cinv.is_square());
                 assert(cinv.rows==curv.rows);
-
+                
                 const size_t nvar = curv.rows;
-
-
+                
+                
                 for(;p10<max_p10;++p10)
                 {
                     compute_lambda();
@@ -574,12 +575,12 @@ namespace yocto
                 }
                 return false;
             }
-
+            
 #define DO_CALLBACK() do \
 {\
 if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
 } while(false)
-
+            
             static inline
             void __regularize(matrix<real_t>    &curv,
                               array<real_t>     &beta,
@@ -599,9 +600,9 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                     }
                 }
             }
-
-
-
+            
+            
+            
             template <>
             bool LS<real_t>:: run(SampleType<real_t>   &sample,
                                   Function             &F,
@@ -651,7 +652,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                     // computation of D2, beta and curv
                     //__________________________________________________________
                     const real_t D2_org = sample.computeD2(F,aorg,*this);
-
+                    
                     DO_CALLBACK();
                     
                     //__________________________________________________________
@@ -680,7 +681,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                             }
                             return false;
                         }
-
+                        
                         //______________________________________________________
                         //
                         // compute step
@@ -691,13 +692,13 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         {
                             goto EXTREMUM;
                         }
-
+                        
                         //______________________________________________________
                         //
                         // new position at full step in atry
                         //______________________________________________________
                         tao::setsum(atry,aorg,step);
-
+                        
                         //______________________________________________________
                         //
                         // check numerical convergence
@@ -711,12 +712,12 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                                 break;
                             }
                         }
-
+                        
                         if(cvg)
                         {
                             goto EXTREMUM;
                         }
-
+                        
                         //______________________________________________________
                         //
                         // forward and check
@@ -724,11 +725,11 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         const real_t D2_try = sample.computeD2(F,atry);
                         if(D2_try<D2_org)
                         {
-
+                            
                             // set aorg to trial value
                             tao::set(aorg,atry);
                             --p10;
-
+                            
                             // check D2 convergence
                             assert(D2_try<D2_org);
                             if( (D2_org-D2_try) <= ftol * D2_org )
@@ -744,7 +745,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         }
                     }
                 }
-
+                
             EXTREMUM:
                 {
                     //__________________________________________________________
@@ -776,7 +777,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                     {
                         if(!used[i]) --user_nvar;
                     }
-
+                    
                     //__________________________________________________________
                     //
                     // counting data
@@ -790,13 +791,13 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                         }
                         return false;
                     }
-
+                    
                     //__________________________________________________________
                     //
                     // degrees of freedom
                     //__________________________________________________________
                     const size_t  dof = (user_ndat-user_nvar);
-
+                    
                     //__________________________________________________________
                     //
                     // compute the variances..
@@ -809,7 +810,7 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                             aerr[i] = Sqrt( Fabs(alpha[i][i]) * dS );
                         }
                     }
-
+                    
                     //__________________________________________________________
                     //
                     // compute the determination coefficient
@@ -818,15 +819,15 @@ if( (NULL!=cb) && (false==(*cb)(sample,aorg))) return false;\
                     {
                         const real_t SSres = D2;
                         const real_t SStot = sample.SStot();
-
+                        
                         Rsq = REAL(1.0) - (SSres/dof)/(SStot/(user_ndat-1));
                     }
                 }
-
+                
                 return true;
             }
-
-
+            
+            
         }
     }
 }
