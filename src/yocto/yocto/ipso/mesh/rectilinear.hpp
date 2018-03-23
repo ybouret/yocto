@@ -9,6 +9,21 @@ namespace yocto
 {
     namespace ipso
     {
+        template <typename T,const size_t DIMENSION>
+        class rectilinear_mesh :
+        public mesh_info
+        {
+        public:
+            inline virtual ~rectilinear_mesh() throw() {}
+            
+            inline explicit rectilinear_mesh(const array<string> &names) :
+            mesh_info(DIMENSION)
+            {}
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(rectilinear_mesh);
+        };
+        
         template <typename T,const size_t _DIM>
         class _rectilinear_mesh :
         public mesh_info,
