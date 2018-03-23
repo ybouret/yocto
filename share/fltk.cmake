@@ -56,21 +56,21 @@ MESSAGE( STATUS "@FLTK fluid='${FLUID}" )
 #-----------------------------------------------------------------------
 #MESSAGE( STATUS "  @FLTK query cxxflags..." )
 EXEC_PROGRAM( bash ARGS ${FLTK-CONFIG} --cxxflags OUTPUT_VARIABLE FLTK-CXXFLAGS)
-#MESSAGE( STATUS "  @FLTK-CXXFLAGS='${FLTK-CXXFLAGS}'" )
+MESSAGE( STATUS "  @FLTK-CXXFLAGS='${FLTK-CXXFLAGS}'" )
 
 #-----------------------------------------------------------------------
 # extract include directories
 #-----------------------------------------------------------------------
 STRING( REGEX MATCHALL "[-][I]([^ ;])+" FLTK-INCLUDES ${FLTK-CXXFLAGS} )
 STRING( REPLACE  "-I" "" FLTK-INCLUDES "${FLTK-INCLUDES}")
-#MESSAGE( STATUS "  @FLTK-INCLUDES='${FLTK-INCLUDES}'" )
+MESSAGE( STATUS "  @FLTK-INCLUDES='${FLTK-INCLUDES}'" )
 INCLUDE_DIRECTORIES(${FLTK-INCLUDES})
 
 #-----------------------------------------------------------------------
 # extract definitions
 #-----------------------------------------------------------------------
 STRING( REGEX MATCHALL "[-][D]([^ ;])+" FLTK-DEFINES ${FLTK-CXXFLAGS} )
-#MESSAGE( STATUS "  @FLTK-DEFINES='${FLTK-DEFINES}'")
+MESSAGE( STATUS "  @FLTK-DEFINES='${FLTK-DEFINES}'")
 ADD_DEFINITIONS( ${FLTK-DEFINES} )
 
 #-----------------------------------------------------------------------
