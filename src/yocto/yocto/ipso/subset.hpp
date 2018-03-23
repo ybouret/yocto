@@ -388,7 +388,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
             }
 
-            inline void split( subset<COORD>::list &subs ) const
+            inline void split( /*subset<coord1D>::list &subs*/ ) const
             {
                 const coord1D *inner_lower = (const coord1D *) & inner.lower;
                 const coord1D *inner_upper = (const coord1D *) & inner.upper;
@@ -399,6 +399,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 {
                     const patch1D __inner( inner_lower[dim], inner_upper[dim] );
                     const patch1D __outer( outer_lower[dim], outer_upper[dim] );
+                    subset<coord1D> *sub = NULL; //new subset<coord1D>(rank,__inner,__outer);
 
                 }
             }
@@ -439,6 +440,25 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                         _asyncs.append(swp);
                     }
                 }
+            }
+
+
+            //! 1D constructor, to split
+            inline subset(const size_t      r_id,
+                          const patch_type &__inner,
+                          const patch_type &__outer) :
+            rank(r_id),
+            ranks(r_id),
+            inner( __inner ),
+            outer( __outer ),
+            local(),
+            async(),
+            locals(),
+            asyncs(),
+            next(0),
+            prev(0),
+            score()
+            {
             }
 
         };
