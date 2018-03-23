@@ -212,22 +212,6 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     }
                 }
 
-                swaps_addr_list &_asyncs = (swaps_addr_list &)asyncs;
-                swaps_addr_list &_locals = (swaps_addr_list &)locals;
-                for(size_t dim=0;dim<DIM;++dim)
-                {
-                    for(swaps *swp = local[dim].head;swp;swp=swp->next)
-                    {
-                        _locals.append(swp);
-                    }
-
-                    for(swaps *swp = async[dim].head;swp;swp=swp->next )
-                    {
-                        _asyncs.append(swp);
-                    }
-
-                }
-
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     for(swaps *swp = local[dim].tail; swp; swp=swp->prev )
@@ -235,6 +219,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                         swp->load(inner,outer,build);
                     }
                 }
+
+                register_all_swaps();
+
+
                 //______________________________________________________________
                 //
                 // Pass 3: loading cross swaps
@@ -400,7 +388,20 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
             }
 
+            inline void split( subset<COORD>::list &subs ) const
+            {
+                const coord1D *inner_lower = (const coord1D *) & inner.lower;
+                const coord1D *inner_upper = (const coord1D *) & inner.upper;
+                const coord1D *outer_lower = (const coord1D *) & outer.lower;
+                const coord1D *outer_upper = (const coord1D *) & outer.upper;
 
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    const patch1D __inner( inner_lower[dim], inner_upper[dim] );
+                    const patch1D __outer( outer_lower[dim], outer_upper[dim] );
+
+                }
+            }
 
 
         private:
@@ -422,6 +423,23 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 new ((void*)&score) score_t( inner.items,num_async,num_local);
             }
 
+            inline void register_all_swaps()
+            {
+                swaps_addr_list &_asyncs = (swaps_addr_list &)asyncs;
+                swaps_addr_list &_locals = (swaps_addr_list &)locals;
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    for(swaps *swp = local[dim].head;swp;swp=swp->next)
+                    {
+                        _locals.append(swp);
+                    }
+
+                    for(swaps *swp = async[dim].head;swp;swp=swp->next )
+                    {
+                        _asyncs.append(swp);
+                    }
+                }
+            }
 
         };
 
