@@ -10,7 +10,7 @@ namespace yocto
     namespace ipso
     {
         template <typename T,const size_t _DIM>
-        class rectilinear_mesh :
+        class _rectilinear_mesh :
         public mesh_info,
         public patch_for<_DIM>::type
         {
@@ -22,8 +22,8 @@ namespace yocto
             typedef field1D<T>                     axis_type;
             typedef box<T,_DIM>                    box_type;
 
-            inline virtual ~rectilinear_mesh() throw() {}
-            inline explicit rectilinear_mesh(const array<string> &names,
+            inline virtual ~_rectilinear_mesh() throw() {}
+            inline explicit _rectilinear_mesh(const array<string> &names,
                                              const patch_type     full ) :
             mesh_info(DIM),patch_type(full),axis_handle()
             {
@@ -106,7 +106,7 @@ namespace yocto
             axis_type *axis_handle[DIM];
 
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(rectilinear_mesh);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(_rectilinear_mesh);
             void setup(const array<string> &names)
             {
                 assert(names.size()==DIM);

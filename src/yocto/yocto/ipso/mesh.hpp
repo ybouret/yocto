@@ -1,7 +1,7 @@
 #ifndef YOCTO_IPSO_MESH_INCLUDED
 #define YOCTO_IPSO_MESH_INCLUDED 1
 
-#include "yocto/ipso/fields.hpp"
+#include "yocto/ipso/subset.hpp"
 
 namespace yocto
 {

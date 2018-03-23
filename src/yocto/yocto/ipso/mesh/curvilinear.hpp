@@ -45,7 +45,7 @@ namespace yocto
                 {
                     an.push_back( (**it).name );
                 }
-                rectilinear_mesh<T,_DIM> rmesh(an,*this);
+                _rectilinear_mesh<T,_DIM> rmesh(an,*this);
                 rmesh.map_regular(b,inner);
                 transfer(rmesh,int2type<_DIM>());
             }
@@ -85,7 +85,7 @@ namespace yocto
                 }
             }
 
-            inline void transfer( const rectilinear_mesh<T,_DIM> &rmesh, int2type<1> ) throw()
+            inline void transfer( const _rectilinear_mesh<T,_DIM> &rmesh, int2type<1> ) throw()
             {
                 for(coord1D i=this->lower;i<=this->upper;++i)
                 {
@@ -93,7 +93,7 @@ namespace yocto
                 }
             }
 
-            inline void transfer( const rectilinear_mesh<T,_DIM> &rmesh, int2type<2> ) throw()
+            inline void transfer( const _rectilinear_mesh<T,_DIM> &rmesh, int2type<2> ) throw()
             {
                 for(coord1D j=this->lower.y;j<=this->upper.y;++j)
                 {
@@ -105,7 +105,7 @@ namespace yocto
                 }
             }
 
-            inline void transfer( const rectilinear_mesh<T,_DIM> &rmesh, int2type<3> ) throw()
+            inline void transfer( const _rectilinear_mesh<T,_DIM> &rmesh, int2type<3> ) throw()
             {
                 for(coord1D k=this->lower.z;k<=this->upper.z;++k)
                 {

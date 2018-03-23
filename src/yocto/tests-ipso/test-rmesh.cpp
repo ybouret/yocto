@@ -18,7 +18,7 @@ YOCTO_UNIT_TEST_IMPL(rmesh)
     {
         axis_names    names("x");
         const patch1D region(1,dims.x);
-        rectilinear_mesh<float,1> rmesh( names, region );
+        _rectilinear_mesh<float,1> rmesh( names, region );
         const box<float,1> b(0,1);
         rmesh.map_regular(b,rmesh);
 
@@ -33,7 +33,7 @@ YOCTO_UNIT_TEST_IMPL(rmesh)
     {
         axis_names    names("x,y");
         const patch2D region(coord2D(1,1),dims.xy());
-        rectilinear_mesh<double,2> rmesh( names, region );
+        _rectilinear_mesh<double,2> rmesh( names, region );
         const box<double,2> b( point2d<double>(0,0), point2d<double>(1,1) );
         rmesh.map_regular(b,rmesh);
 
@@ -48,7 +48,7 @@ YOCTO_UNIT_TEST_IMPL(rmesh)
     {
         axis_names    names("x,y,z");
         const patch3D region(coord3D(1,1,1),dims);
-        rectilinear_mesh<double,3> rmesh( names, region );
+        _rectilinear_mesh<double,3> rmesh( names, region );
         const box<double,3> b( point3d<double>(0,0,0), point3d<double>(1,1,1) );
         rmesh.map_regular(b,rmesh);
 
