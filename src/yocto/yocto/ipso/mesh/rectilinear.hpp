@@ -11,22 +11,56 @@ namespace yocto
     {
         template <typename T,const size_t DIMENSION>
         class rectilinear_mesh :
-        public mesh_info
+        public mesh_info,
+        public subset<typename coord_for<DIMENSION>::type>
         {
         public:
+            static const size_t DIM = DIMENSION;
             typedef typename coord_for<DIMENSION>::type coord_type;
             typedef subset<coord_type>                  subset_type;
-            
+            typedef field1D<T>                          axis_type;
             inline virtual ~rectilinear_mesh() throw() {}
             
             inline explicit rectilinear_mesh(const array<string> &names,
-                                             const subset_type   &) :
-            mesh_info(DIMENSION)
-            {}
+                                             const subset_type   &sub) :
+            mesh_info(DIMENSION),
+            subset_type(sub),
+            axis_handle()
+            {
+                build_subsets1D_from(*this,subs,true);
+                setup(names);
+            }
+            
+            inline axis_type       &X() throw()       { assert(dimension>=1); return *axis_handle[0]; }
+            inline const axis_type &X() const throw() { assert(dimension>=1); return *axis_handle[0]; }
+            
+            inline axis_type       &Y() throw()       { assert(dimension>=2); return *axis_handle[1]; }
+            inline const axis_type &Y() const throw() { assert(dimension>=2); return *axis_handle[1]; }
+            
+            inline axis_type       &Z() throw()       { assert(dimension>=3); return *axis_handle[2]; }
+            inline const axis_type &Z() const throw() { assert(dimension>=3); return *axis_handle[2]; }
+            
+        protected:
+            axis_type *axis_handle[DIMENSION];
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(rectilinear_mesh);
             subset<coord1D>::list subs;
+            inline void setup( const array<string> &names )
+            {
+                assert(names.size()==DIMENSION);
+                assert(subs.size   ==DIMENSION);
+                memset(axis_handle,0,sizeof(axis_handle));
+                
+                subset<coord1D> *sub = subs.head;
+                for(size_t dim=0;dim<DIM;++dim,sub=sub->next)
+                {
+                    axis_type       &axis = axis_db.build<axis_type>(names[dim+1],sub->outer);
+                    axis_handle[dim] = &axis;
+                    axis_info.append(axis);
+                    sub->allocate_swaps_for( sizeof(T) );
+                }
+            }
         };
         
         template <typename T,const size_t _DIM>

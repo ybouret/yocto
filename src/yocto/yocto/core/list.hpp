@@ -424,6 +424,16 @@ namespace yocto
                 clear();
             }
 
+            inline void merge_back_copy( const list_of_cpp &other )
+            {
+                list_of_cpp tmp;
+                for(const NODE *node=other.head;node;node=node->next)
+                {
+                    tmp.push_back( new NODE( *node ) );
+                }
+                this->merge_back(tmp);
+            }
+            
             //! valid only if a copy ctor is defined for NODE
             list_of_cpp( const list_of_cpp &other ) : list_of<NODE> ()
             {
