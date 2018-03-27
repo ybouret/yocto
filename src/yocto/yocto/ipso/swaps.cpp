@@ -110,49 +110,35 @@ namespace yocto
             return int(lhs->pos)-int(rhs->pos);
         }
 
-#if 0
-        swaps:: swaps(const swaps &lhs, const swaps &rhs) :
-        recv(lhs.count+rhs.count),
-        send(recv.size()),
-        count(recv.size()),
-        iobuf(),
-        source(lhs.source),
-        target(lhs.target),
-        layers(lhs.layers),
-        joined(true),
-        pos(lhs.pos|rhs.pos),
-        next(0),
-        prev(0)
+        static inline
+        unsigned __swaps_pos2pos( const unsigned pos )
         {
-            assert(!lhs.joined);
-            assert(!rhs.joined);
-            assert(lhs.source==rhs.source);
-            assert(lhs.target==rhs.target);
-            assert(lhs.count==rhs.count);
-            assert(lhs.built());
-            assert(rhs.built());
-            std::cerr << "\t|_joining " << pos2txt(lhs.pos) << " and " << pos2txt(rhs.pos) << " to target " << target << std::endl;
-#if 0
-            std::cerr << "\t  |_" << pos2txt(lhs.pos) << ".send=" << lhs.send << std::endl;
-            std::cerr << "\t  |_" << pos2txt(lhs.pos) << ".recv=" << lhs.recv << std::endl;
-            std::cerr << "\t  |_" << pos2txt(rhs.pos) << ".send=" << rhs.send << std::endl;
-            std::cerr << "\t  |_" << pos2txt(rhs.pos) << ".recv=" << rhs.recv << std::endl;
-#endif
-            const size_t com = lhs.count;
-            for(size_t i=com;i>0;--i)
+            switch(pos)
             {
-                const size_t j=i+com;
-                ((swap &)send)[i] = lhs.send[i];
-                ((swap &)send)[j] = rhs.send[i];
-                ((swap &)recv)[i] = rhs.recv[i];
-                ((swap &)recv)[j] = lhs.recv[i];
+                case swaps::lower_x:
+                case swaps::lower_y:
+                case swaps::lower_z:
+                    return swaps::lower_x;
+                    
+                case swaps::upper_x:
+                case swaps::upper_y:
+                case swaps::upper_z:
+                    return swaps::upper_x;
+                    
+                default:
+                    break;
             }
-            io_check();
-            std::cerr << "\t  |_send=" << send << std::endl;
-            std::cerr << "\t  |_recv=" << recv << std::endl;
+            return 0;
         }
-#endif
-
+        
+        swaps * swaps:: clone1D() const
+        {
+            return new swaps(source,
+                             target,
+                             layers,
+                             __swaps_pos2pos(pos));
+        }
+        
     }
 }
 

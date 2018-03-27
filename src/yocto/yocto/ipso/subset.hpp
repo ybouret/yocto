@@ -454,7 +454,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
         template <typename COORD>
         inline void split(const subset<COORD>   &source,
-                          subset<coord1D>::list &subs )
+                          subset<coord1D>::list &subs,
+                          const bool             build)
         {
             const coord1D *inner_lower = (const coord1D *) & source.inner.lower;
             const coord1D *inner_upper = (const coord1D *) & source.inner.upper;
@@ -468,16 +469,20 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 const patch1D    outer( outer_lower[dim], outer_upper[dim] );
                 subset<coord1D> *sub = new subset<coord1D>(source.rank,inner,outer);
                 subs.push_back(sub);
-                
+                swaps_list &local = (swaps_list &)(sub->local[0]);
+                swaps_list &async = (swaps_list &)(sub->async[0]);
+
                 // duplicate topology
                 for(const swaps *swp = source.local[dim].head;swp;swp=swp->next)
                 {
-                    
+                    local.push_back(swp->clone1D());
+                    local.tail->load(inner,outer,build);
                 }
                 
                 for(const swaps *swp = source.async[dim].head;swp;swp=swp->next)
                 {
-                    
+                    async.push_back(swp->clone1D());
+                    async.tail->load(inner,outer,build);
                 }
                 
                 sub->register_all_swaps();

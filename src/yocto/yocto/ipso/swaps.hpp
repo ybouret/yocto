@@ -79,6 +79,8 @@ namespace yocto
 
             static int compare_by_pos(const swaps *lhs, const swaps *rhs, void *) throw();
 
+            swaps *clone1D() const;
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps);
             void allocate();
@@ -95,8 +97,6 @@ swap    & _send = (swap &)send;
         public:
             inline explicit swaps_list() throw() : swaps::list() {}
             inline virtual ~swaps_list() throw() {}
-
-
 
             //! total list of counts for optimal partition
             inline size_t counts() const throw()
