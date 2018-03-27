@@ -15,9 +15,13 @@ namespace yocto
         {
         public:
             static const size_t DIM = DIMENSION;
+            YOCTO_ARGUMENTS_DECL_T;
             typedef typename coord_for<DIMENSION>::type coord_type;
             typedef subset<coord_type>                  subset_type;
             typedef field1D<T>                          axis_type;
+            typedef box<T,DIMENSION>                    box_type;
+            
+            //! dtor
             inline virtual ~rectilinear_mesh() throw() {}
             
             //! default constructor, based on a precomputed subset
@@ -38,6 +42,66 @@ namespace yocto
             
             inline axis_type       &Z() throw()       { assert(dimension>=3); return *axis_handle[2]; }
             inline const axis_type &Z() const throw() { assert(dimension>=3); return *axis_handle[2]; }
+            
+            inline void map_regular(const box_type &b, const patch<coord_type> inner)
+            {
+                const coord1D * _ilo  = (const coord1D *) &(inner.lower);
+                const coord1D * _iup  = (const coord1D *) &(inner.upper);
+                const_type    * _vmin = (const_type *)(&b.lower);
+                const_type    * _dv   = (const_type *)(&b.width);
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    axis_type    &a    = *axis_handle[dim];
+                    const coord1D ilo  = _ilo[dim];
+                    const coord1D iup  = _iup[dim];
+                    if(ilo>=iup) throw exception("rectilinear_mesh.map_regular(bad inner %s)", __coord_name(dim) );
+                    const coord1D den  = iup - ilo;
+                    const_type    vmin = _vmin[dim];
+                    const_type    dv   = _dv[dim];
+                    const coord1D slo  = a.lower;
+                    const coord1D sup  = a.upper;
+                    for(coord1D i=slo;i<=sup;++i)
+                    {
+                        a[i] = vmin + ( (i-ilo) * dv ) / den;
+                    }
+                }
+            }
+            
+            inline void vtk( ios::ostream &fp ) const
+            {
+                fp << "DATASET RECTILINEAR_GRID\n";
+                fp << "DIMENSIONS";
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    fp(" %u", unsigned(axis_handle[dim]->width));
+                }
+                for(size_t dim=DIM;dim<3;++dim)
+                {
+                    fp  << " 1";
+                }
+                fp << "\n";
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    fp << mesh_info::vtk_coordinates(dim);
+                    const axis_type &a = *axis_handle[dim];
+                    fp(" %u ", unsigned(a.width));
+                    VTK::OutputScalarType<T>(fp);
+                    fp << '\n';
+                    for(coord1D i=a.lower;i<=a.upper;++i)
+                    {
+                        fp("%.15g",a[i]);
+                        if(i<a.upper) fp << ' ';
+                    }
+                    fp << '\n';
+                }
+                for(size_t dim=DIM;dim<3;++dim)
+                {
+                    fp << mesh_info::vtk_coordinates(dim) << " 1 ";
+                    VTK::OutputScalarType<T>(fp); fp << '\n';
+                    fp << "0\n";
+                }
+                
+            }
             
         protected:
             axis_type *axis_handle[DIMENSION];

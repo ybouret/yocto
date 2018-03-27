@@ -47,7 +47,6 @@ namespace yocto
                            const size_t   target_rank,
                            const size_t   some_layers,
                            const unsigned where) throw();
-            swaps(const swaps &other);
             virtual ~swaps() throw();
 
             static  unsigned    dim2pos( const size_t dim, const int side ) throw();
@@ -81,6 +80,12 @@ namespace yocto
             static int compare_by_pos(const swaps *lhs, const swaps *rhs, void *) throw();
 
             swaps *clone1D() const;
+
+#if 0
+            swaps(const swaps &other);
+#else
+            YOCTO_DISABLE_COPY(swaps);
+#endif
             
         private:
             YOCTO_DISABLE_ASSIGN(swaps);

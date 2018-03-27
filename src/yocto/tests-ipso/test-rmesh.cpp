@@ -16,8 +16,9 @@ YOCTO_UNIT_TEST_IMPL(rmesh)
     std::cerr << "dims   = " << dims   << std::endl;
 
     {
-        axis_names    names("x");
-        const patch1D region(1,dims.x);
+        axis_names         names("x");
+        const patch1D      region(1,dims.x);
+        const divide::in1D full(1,region);
         _rectilinear_mesh<float,1> rmesh( names, region );
         const box<float,1> b(0,1);
         rmesh.map_regular(b,rmesh);
