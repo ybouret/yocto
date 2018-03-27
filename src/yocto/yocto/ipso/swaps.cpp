@@ -139,6 +139,20 @@ namespace yocto
                              __swaps_pos2pos(pos));
         }
         
+        swaps:: swaps(const swaps &other) :
+        recv(other.recv),
+        send(other.send),
+        count(other.count),
+        iobuf(),
+        source(other.source),
+        target(other.target),
+        layers(other.layers),
+        pos(other.pos),
+        next(0),
+        prev(0)
+        {
+        }
+        
     }
 }
 

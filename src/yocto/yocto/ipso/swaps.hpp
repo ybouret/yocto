@@ -47,6 +47,7 @@ namespace yocto
                            const size_t   target_rank,
                            const size_t   some_layers,
                            const unsigned where) throw();
+            swaps(const swaps &other);
             virtual ~swaps() throw();
 
             static  unsigned    dim2pos( const size_t dim, const int side ) throw();
@@ -82,7 +83,7 @@ namespace yocto
             swaps *clone1D() const;
             
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(swaps);
+            YOCTO_DISABLE_ASSIGN(swaps);
             void allocate();
             void io_check() throw();
         };
@@ -115,35 +116,9 @@ swap    & _send = (swap &)send;
                 swaps::list       &self  = (swaps::list &)_self;
                 core::merging<swaps>::sort(self,swaps::compare_by_pos,NULL);
             }
-
-#if 0
-            void join()
-            {
-                //std::cerr << " ** JOINING ** " << std::endl;
-                if(size<=0) return;
-                swaps::list tmp;
-                tmp.push_back( pop_front() );
-                while(size>0)
-                {
-                    swaps *swp = pop_front();
-                    if(swp->target==tmp.tail->target)
-                    {
-                        //std::cerr << "\tshould join " << swaps::pos2txt(swp->pos) << " and " << swaps::pos2txt(tmp.tail->pos) << std::endl;
-                        swaps *j = new swaps(*(tmp.tail),*swp);
-                        delete swp;
-                        delete tmp.pop_back();
-                        tmp.push_back(j);
-                    }
-                    else
-                    {
-                        tmp.push_back(swp);
-                    }
-                }
-
-                swap_with(tmp);
-            }
-#endif
-
+            
+            
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps_list);
         };
