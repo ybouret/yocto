@@ -389,7 +389,27 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             }
 
             
-
+            inline void register_all_swaps()
+            {
+                assert(0==asyncs.size);
+                assert(0==locals.size);
+                
+                swaps_addr_list &_asyncs = (swaps_addr_list &)asyncs;
+                swaps_addr_list &_locals = (swaps_addr_list &)locals;
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    for(swaps *swp = local[dim].head;swp;swp=swp->next)
+                    {
+                        _locals.append(swp);
+                    }
+                    
+                    for(swaps *swp = async[dim].head;swp;swp=swp->next )
+                    {
+                        _asyncs.append(swp);
+                    }
+                }
+            }
+            
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(subset);
@@ -410,24 +430,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 new ((void*)&score) score_t( inner.items,num_async,num_local);
             }
 
-            inline void register_all_swaps()
-            {
-                swaps_addr_list &_asyncs = (swaps_addr_list &)asyncs;
-                swaps_addr_list &_locals = (swaps_addr_list &)locals;
-                for(size_t dim=0;dim<DIM;++dim)
-                {
-                    for(swaps *swp = local[dim].head;swp;swp=swp->next)
-                    {
-                        _locals.append(swp);
-                    }
-
-                    for(swaps *swp = async[dim].head;swp;swp=swp->next )
-                    {
-                        _asyncs.append(swp);
-                    }
-                }
-            }
-
+          
 
             //! 1D constructor, to split
             inline subset(const size_t      r_id,
@@ -450,7 +453,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
         };
 
         template <typename COORD>
-        inline void split( const subset<COORD> &source /*subset<coord1D>::list &subs*/ )
+        inline void split(const subset<COORD>   &source,
+                          subset<coord1D>::list &subs )
         {
             const coord1D *inner_lower = (const coord1D *) & source.inner.lower;
             const coord1D *inner_upper = (const coord1D *) & source.inner.upper;
@@ -459,10 +463,24 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             
             for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
             {
-                const patch1D __inner( inner_lower[dim], inner_upper[dim] );
-                const patch1D __outer( outer_lower[dim], outer_upper[dim] );
-                subset<coord1D> *sub = NULL; //new subset<coord1D>(rank,__inner,__outer);
+                // take patch by dimension
+                const patch1D    inner( inner_lower[dim], inner_upper[dim] );
+                const patch1D    outer( outer_lower[dim], outer_upper[dim] );
+                subset<coord1D> *sub = new subset<coord1D>(source.rank,inner,outer);
+                subs.push_back(sub);
                 
+                // duplicate topology
+                for(const swaps *swp = source.local[dim].head;swp;swp=swp->next)
+                {
+                    
+                }
+                
+                for(const swaps *swp = source.async[dim].head;swp;swp=swp->next)
+                {
+                    
+                }
+                
+                sub->register_all_swaps();
             }
         }
         
