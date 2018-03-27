@@ -14,14 +14,19 @@ namespace yocto
         public mesh_info
         {
         public:
+            typedef typename coord_for<DIMENSION>::type coord_type;
+            typedef subset<coord_type>                  subset_type;
+            
             inline virtual ~rectilinear_mesh() throw() {}
             
-            inline explicit rectilinear_mesh(const array<string> &names) :
+            inline explicit rectilinear_mesh(const array<string> &names,
+                                             const subset_type   &) :
             mesh_info(DIMENSION)
             {}
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(rectilinear_mesh);
+            subset<coord1D>::list subs;
         };
         
         template <typename T,const size_t _DIM>

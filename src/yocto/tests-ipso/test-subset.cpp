@@ -22,7 +22,7 @@ static inline void show_subs( const subsets<COORD> &subs )
     std::cerr << "#subset=" << subs.size << " as " << subs.sizes << std::endl;
     for(const subset<COORD> *sub = subs.head; sub; sub=sub->next )
     {
-        std::cerr << "ranks="    << sub->ranks << std::endl;
+        std::cerr << "ranks  ="  << sub->ranks << std::endl;
         std::cerr << "\tinner="  << sub->inner << std::endl;
         std::cerr << "\touter="  << sub->outer << std::endl;
 

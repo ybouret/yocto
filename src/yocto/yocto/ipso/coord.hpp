@@ -79,7 +79,15 @@ namespace yocto
             static bool is_bad(char C) throw();
         };
 
+        template <size_t D>
+        struct coord_for;
+        
+        template <>  struct coord_for<1> { typedef coord1D type; };
+        template <>  struct coord_for<2> { typedef coord2D type; };
+        template <>  struct coord_for<3> { typedef coord3D type; };
 
+        
+        
     }
 }
 
