@@ -1,6 +1,7 @@
 #include "yocto/ink/parallel.hpp"
 #include "yocto/code/utils.hpp"
 #include "yocto/sort/merge.hpp"
+#include "yocto/ipso/mapping.hpp"
 #include <cstdlib>
 
 namespace yocto

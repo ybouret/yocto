@@ -1,4 +1,5 @@
 #include "yocto/ipso/mpi.hpp"
+#include "yocto/ipso/mapping.hpp"
 #include "yocto/program.hpp"
 #include "yocto/string/conv.hpp"
 #include "yocto/ipso/format/vtk.hpp"
