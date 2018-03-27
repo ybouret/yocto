@@ -410,7 +410,24 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
             }
             
-
+            //! 1D constructor, to split
+            inline subset(const size_t      r_id,
+                          const patch_type &__inner,
+                          const patch_type &__outer) :
+            rank(r_id),
+            ranks(r_id),
+            inner( __inner ),
+            outer( __outer ),
+            local(),
+            async(),
+            locals(),
+            asyncs(),
+            next(0),
+            prev(0),
+            score()
+            {
+            }
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(subset);
             void load_cross_swaps(const divider<COORD> &full,
@@ -432,30 +449,14 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
           
 
-            //! 1D constructor, to split
-            inline subset(const size_t      r_id,
-                          const patch_type &__inner,
-                          const patch_type &__outer) :
-            rank(r_id),
-            ranks(r_id),
-            inner( __inner ),
-            outer( __outer ),
-            local(),
-            async(),
-            locals(),
-            asyncs(),
-            next(0),
-            prev(0),
-            score()
-            {
-            }
+            
 
         };
 
         template <typename COORD>
-        inline void split(const subset<COORD>   &source,
-                          subset<coord1D>::list &subs,
-                          const bool             build)
+        inline void build_subsets1D_from(const subset<COORD>   &source,
+                                         subset<coord1D>::list &subs,
+                                         const bool             build)
         {
             const coord1D *inner_lower = (const coord1D *) & source.inner.lower;
             const coord1D *inner_upper = (const coord1D *) & source.inner.upper;
@@ -464,7 +465,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             
             for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
             {
+                //______________________________________________________________
+                //
                 // take patch by dimension
+                //______________________________________________________________
                 const patch1D    inner( inner_lower[dim], inner_upper[dim] );
                 const patch1D    outer( outer_lower[dim], outer_upper[dim] );
                 subset<coord1D> *sub = new subset<coord1D>(source.rank,inner,outer);
@@ -472,7 +476,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 swaps_list &local = (swaps_list &)(sub->local[0]);
                 swaps_list &async = (swaps_list &)(sub->async[0]);
 
-                // duplicate topology
+                //______________________________________________________________
+                //
+                // duplicate topology and load offsets
+                //______________________________________________________________
                 for(const swaps *swp = source.local[dim].head;swp;swp=swp->next)
                 {
                     local.push_back(swp->clone1D());
@@ -485,6 +492,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     async.tail->load(inner,outer,build);
                 }
                 
+                //______________________________________________________________
+                //
+                // and finally register all 'meta' swaps
+                //______________________________________________________________
                 sub->register_all_swaps();
             }
         }

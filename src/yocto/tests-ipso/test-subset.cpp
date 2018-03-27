@@ -67,6 +67,8 @@ static inline void mark( FIELD &F, const SWAP *sub, const int s, const int r)
 template <typename SUBSET>
 static inline void check_io( SUBSET *sub, fields &fvar )
 {
+    std::cerr << std::endl;
+    std::cerr << "\t**** Checking IO in " << SUBSET::DIM << "D ****" << std::endl;
     std::cerr << "\t** allocating for block_size=" << fvar.block_size() << std::endl;
     sub->allocate_swaps_for(fvar);
 
@@ -86,6 +88,27 @@ static inline void check_io( SUBSET *sub, fields &fvar )
     std::cerr << "\t** fields I/O" << std::endl;
     sub->sync_start(fvar);
     sub->sync_query(fvar);
+    
+}
+
+template <typename SUBSET>
+static inline void check_dispatch( const SUBSET &sub )
+{
+    std::cerr << std::endl;
+    std::cerr << "\t---- Check Dispatch in " << SUBSET::DIM << "D -----" << std::endl;
+    subset<coord1D>::list subs;
+    build_subsets1D_from(sub, subs, true);
+    std::cerr << "\t-- #subs=" << subs.size << std::endl;
+    size_t dim = 0;
+    for(const subset<coord1D> *s=subs.head;s;s=s->next,++dim)
+    {
+        std::cerr << "\t---- sub#" << dim << std::endl;
+        std::cerr << "\t----    |_rank =" << s->rank << ", ranks=" << s->ranks << std::endl;
+        std::cerr << "\t----    |_inner=" << s->inner << std::endl;
+        std::cerr << "\t----    |_outer=" << s->outer << std::endl;
+        std::cerr << "\t----    |_local=" << s->local[0].size << std::endl;
+        std::cerr << "\t----    |_async=" << s->async[0].size << std::endl;
+    }
     
 }
 
@@ -153,9 +176,9 @@ YOCTO_UNIT_TEST_IMPL(subset)
             VTK::InitSaveScalars(fp, "in1D", F1, sub->outer);
 
             check_io(sub,fvar);
+            check_dispatch(*sub);
         }
     }
-    //return 0;
     
     if(true)
     {
@@ -191,10 +214,9 @@ YOCTO_UNIT_TEST_IMPL(subset)
             VTK::InitSaveScalars(fp, "in2D", F1, sub->outer);
 
             check_io(sub,fvar);
-
+            check_dispatch(*sub);
         }
     }
-
     
     if(true)
     {
@@ -233,6 +255,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
             VTK::InitSaveScalars(fp, "in3D", F1, sub->outer);
 
             check_io(sub,fvar);
+            check_dispatch(*sub);
 
         }
     }
