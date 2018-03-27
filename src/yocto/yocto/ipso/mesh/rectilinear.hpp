@@ -11,8 +11,7 @@ namespace yocto
     {
         template <typename T,const size_t DIMENSION>
         class rectilinear_mesh :
-        public mesh_info,
-        public subset<typename coord_for<DIMENSION>::type>
+        public mesh_info
         {
         public:
             static const size_t DIM = DIMENSION;
@@ -21,13 +20,13 @@ namespace yocto
             typedef field1D<T>                          axis_type;
             inline virtual ~rectilinear_mesh() throw() {}
             
+            //! default constructor, based on a precomputed subset
             inline explicit rectilinear_mesh(const array<string> &names,
                                              const subset_type   &sub) :
             mesh_info(DIMENSION),
-            subset_type(sub),
             axis_handle()
             {
-                build_subsets1D_from(*this,subs,true);
+                build_subsets1D_from(sub,subs,true);
                 setup(names);
             }
             

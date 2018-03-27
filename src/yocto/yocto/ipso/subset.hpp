@@ -428,6 +428,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             {
             }
             
+#if 0
             inline subset( const subset &other ) :
             rank(  other.rank  ),
             ranks( other.ranks ),
@@ -450,7 +451,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
                 register_all_swaps();
             }
-            
+#else
+            YOCTO_DISABLE_COPY(subset);
+#endif
         private:
             YOCTO_DISABLE_ASSIGN(subset);
             void load_cross_swaps(const divider<COORD> &full,
