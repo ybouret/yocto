@@ -4,9 +4,21 @@
 #include "yocto/ipso/mesh/rectilinear.hpp"
 #include "yocto/ipso/mesh/curvilinear.hpp"
 #include "yocto/ipso/mesh/point.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 using namespace yocto;
 using namespace ipso;
+
+template <typename MESH>
+static inline
+void save_mesh(const MESH &msh,
+               const char *pfx,
+               const unsigned rank)
+{
+    const string  fn = pfx + vformat("_r%u.vtk",rank);
+    ios::wcstream fp(fn);
+    msh.vtk(fp);
+}
 
 
 YOCTO_UNIT_TEST_IMPL(mesh)
@@ -48,13 +60,17 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         {
             rectilinear_mesh<float,1>  rmesh(names,*sub);
             rmesh.map_regular(b,full);
+            save_mesh(rmesh,"rmesh1d",sub->rank);
             curvilinear_mesh<float,1>  cmesh(names,*sub);
             cmesh.map_regular(b,full);
+            save_mesh(cmesh,"cmesh1d",sub->rank);
+
         }
         for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
         {
             point_mesh<float,1> pmesh(names,*sub);
             pmesh.map_regular(b.lower,b.upper,full1D);
+            save_mesh(pmesh,"pmesh1d",sub->rank);
         }
         
     }
@@ -78,13 +94,17 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         {
             rectilinear_mesh<float,2>  rmesh(names,*sub);
             rmesh.map_regular(b,full);
+            save_mesh(rmesh, "rmesh2d",sub->rank);
             curvilinear_mesh<float,2> cmesh(names,*sub);
             cmesh.map_regular(b,full);
+            save_mesh(cmesh, "cmesh2d",sub->rank);
         }
         for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
         {
             point_mesh<float,2> pmesh(names,*sub);
             pmesh.map_regular(b.lower,b.upper,full1D);
+            pmesh.map_circle(full1D);
+            save_mesh(pmesh, "pmesh2d",sub->rank);
         }
     }
     
@@ -105,13 +125,17 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         {
             rectilinear_mesh<float,3>  rmesh(names,*sub);
             rmesh.map_regular(b,full);
+            save_mesh(rmesh, "rmesh3d",sub->rank);
             curvilinear_mesh<float,3> cmesh(names,*sub);
             cmesh.map_regular(b,full);
+            save_mesh(cmesh,"cmesh3d",sub->rank);
         }
         for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
         {
             point_mesh<float,3> pmesh(names,*sub);
             pmesh.map_regular(b.lower,b.upper,full1D);
+            pmesh.map_circle(full1D);
+            save_mesh(pmesh,"pmesh3d",sub->rank);
         }
         
     }

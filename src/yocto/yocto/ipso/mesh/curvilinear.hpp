@@ -52,18 +52,19 @@ namespace yocto
             
             inline void vtk( ios::ostream &fp ) const
             {
+                const patch_type &p = *axis_handle[0];
                 fp << "DATASET STRUCTURED_GRID\n";
                 fp << "DIMENSIONS";
                 for(size_t dim=0;dim<DIM;++dim)
                 {
-                    fp(" %u", unsigned(__coord(this->width,dim)));
+                    fp(" %u", unsigned(__coord(p.width,dim)));
                 }
                 for(size_t dim=DIM;dim<3;++dim)
                 {
                     fp  << " 1";
                 }
                 fp << '\n';
-                fp("POINTS %u ",unsigned(this->items)); VTK::OutputScalarType<T>(fp); fp << '\n';
+                fp("POINTS %u ",unsigned(p.items)); VTK::OutputScalarType<T>(fp); fp << '\n';
                 output_vtk(fp,int2type<DIMENSION>());
             }
             
@@ -176,7 +177,8 @@ namespace yocto
             ////////////////////////////////////////////////////////////////////
             inline void output_vtk( ios::ostream &fp, int2type<1> ) const
             {
-                for(coord1D i=this->lower;i<=this->upper;++i)
+                const patch_type &p = *axis_handle[0];
+                for(coord1D i=p.lower;i<=p.upper;++i)
                 {
                     fp("%.15g 0 0\n", X()[i]);
                 }
@@ -184,9 +186,10 @@ namespace yocto
             
             inline void output_vtk( ios::ostream &fp, int2type<2> ) const
             {
-                for(coord1D j=this->lower.y;j<=this->upper.y;++j)
+                const patch_type &p = *axis_handle[0];
+                for(coord1D j=p.lower.y;j<=p.upper.y;++j)
                 {
-                    for(coord1D i=this->lower.x;i<=this->upper.x;++i)
+                    for(coord1D i=p.lower.x;i<=p.upper.x;++i)
                     {
                         fp("%.15g %.15g 0\n",X()[j][i],Y()[j][i]);
                     }
@@ -195,12 +198,12 @@ namespace yocto
             
             inline void output_vtk( ios::ostream &fp, int2type<3> ) const
             {
-                
-                for(coord1D k=this->lower.z;k<=this->upper.z;++k)
+                const patch_type &p = *axis_handle[0];
+                for(coord1D k=p.lower.z;k<=p.upper.z;++k)
                 {
-                    for(coord1D j=this->lower.y;j<=this->upper.y;++j)
+                    for(coord1D j=p.lower.y;j<=p.upper.y;++j)
                     {
-                        for(coord1D i=this->lower.x;i<=this->upper.x;++i)
+                        for(coord1D i=p.lower.x;i<=p.upper.x;++i)
                         {
                             fp("%.15g %.15g %.15g\n",X()[k][j][i],Y()[k][j][i],Z()[k][j][i]);
                         }

@@ -70,6 +70,28 @@ namespace yocto
                 }
             }
             
+            //! 2D and 3D
+            inline void map_circle(const patch1D full)
+            {
+                assert(DIMENSION>=2);
+                static const T amax   = math::numeric<T>::two_pi;
+                const coord1D  den    = full.width;
+                const T        dtheta = amax/den;
+                const patch1D    &p   = *axis_handle[0];
+                for(size_t dim=0;dim<DIMENSION;++dim)
+                {
+                    axis_handle[dim]->ldz();
+                }
+                for(coord1D i=p.lower;i<=p.upper;++i)
+                {
+                    const T theta = (i*dtheta)/den;
+                    const T c     = math::Cos(theta);
+                    const T s     = math::Sin(theta);
+                    X()[i] = c;
+                    Y()[i] = s;
+                }
+            }
+            
             // save to vtk
             void vtk( ios::ostream &fp, const bool periodic = false) const
             {
