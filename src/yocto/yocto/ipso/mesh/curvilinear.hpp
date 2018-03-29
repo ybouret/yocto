@@ -97,6 +97,8 @@ namespace yocto
                 const_type        xmin  = b.lower;
                 const_type        xlen  = b.width;
                 const coord1D     xden  = inner.upper-inner.lower;
+                if(xden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(0) );
+
                 for(coord1D i=p.lower;i<=p.upper;++i)
                 {
                     X()[i] = xmin + (xlen*(i-inner.lower))/xden;
@@ -116,6 +118,9 @@ namespace yocto
                 const_type        ylen  = b.width.y;
                 const coord1D     yden  = inner.upper.y-inner.lower.y;
                 
+                if(xden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(0) );
+                if(yden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(1) );
+
                 for(coord1D j=p.lower.y;j<=p.lower.y;++j)
                 {
                     const_type yval = ymin + ( ylen * (j-inner.lower.y))/yden;
@@ -145,6 +150,10 @@ namespace yocto
                 const_type        zlen  = b.width.z;
                 const coord1D     zden  = inner.upper.z-inner.lower.z;
                 
+                if(xden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(0) );
+                if(yden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(1) );
+                if(zden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(2) );
+
                 for(coord1D k=p.lower.z;k<=p.lower.z;++k)
                 {
                     const_type zval = zmin + ( zlen * (k-inner.lower.z))/zden;
