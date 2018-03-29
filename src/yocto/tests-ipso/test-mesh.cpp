@@ -3,6 +3,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/ipso/mesh/rectilinear.hpp"
 #include "yocto/ipso/mesh/curvilinear.hpp"
+#include "yocto/ipso/mesh/point.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -50,6 +51,10 @@ YOCTO_UNIT_TEST_IMPL(mesh)
             curvilinear_mesh<float,1>  cmesh(names,*sub);
             cmesh.map_regular(b,full);
         }
+        for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
+        {
+            point_mesh<float,1> pmesh(names,*sub);
+        }
         
     }
     
@@ -75,6 +80,10 @@ YOCTO_UNIT_TEST_IMPL(mesh)
             curvilinear_mesh<float,2> cmesh(names,*sub);
             cmesh.map_regular(b,full);
         }
+        for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
+        {
+            point_mesh<float,2> pmesh(names,*sub);
+        }
     }
     
     if(true)
@@ -96,6 +105,10 @@ YOCTO_UNIT_TEST_IMPL(mesh)
             rmesh.map_regular(b,full);
             curvilinear_mesh<float,3> cmesh(names,*sub);
             cmesh.map_regular(b,full);
+        }
+        for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
+        {
+            point_mesh<float,3> pmesh(names,*sub);
         }
         
     }
