@@ -93,10 +93,13 @@ namespace yocto
                               const patch_type &inner,
                               int2type<1> )
             {
-                const patch_type &p = *axis_handle[0];
+                const patch_type &p    = *axis_handle[0];
+                const_type        xmin  = b.lower;
+                const_type        xlen  = b.width;
+                const coord1D     xden  = inner.upper-inner.lower;
                 for(coord1D i=p.lower;i<=p.upper;++i)
                 {
-                    X()[i] = 0;
+                    X()[i] = xmin + (xlen*(i-inner.lower))/xden;
                 }
             }
             
@@ -104,13 +107,23 @@ namespace yocto
                               const patch_type &inner,
                               int2type<2> )
             {
-                const patch_type &p = *axis_handle[0];
+                const patch_type &p     = *axis_handle[0];
+                const_type        xmin  = b.lower.x;
+                const_type        xlen  = b.width.x;
+                const coord1D     xden  = inner.upper.x-inner.lower.x;
+                
+                const_type        ymin  = b.lower.y;
+                const_type        ylen  = b.width.y;
+                const coord1D     yden  = inner.upper.y-inner.lower.y;
+                
                 for(coord1D j=p.lower.y;j<=p.lower.y;++j)
                 {
+                    const_type yval = ymin + ( ylen * (j-inner.lower.y))/yden;
                     for(coord1D i=p.lower.x;i<=p.upper.x;++i)
                     {
-                        X()[j][i] = 0;
-                        Y()[j][i] = 0;
+                        const_type xval = xmin + (xlen*(i-inner.lower.x))/xden;
+                        X()[j][i] = xval;
+                        Y()[j][i] = yval;
                     }
                 }
             }
@@ -120,15 +133,30 @@ namespace yocto
                               int2type<3> )
             {
                 const patch_type &p = *axis_handle[0];
+                const_type        xmin  = b.lower.x;
+                const_type        xlen  = b.width.x;
+                const coord1D     xden  = inner.upper.x-inner.lower.x;
+                
+                const_type        ymin  = b.lower.y;
+                const_type        ylen  = b.width.y;
+                const coord1D     yden  = inner.upper.y-inner.lower.y;
+                
+                const_type        zmin  = b.lower.z;
+                const_type        zlen  = b.width.z;
+                const coord1D     zden  = inner.upper.z-inner.lower.z;
+                
                 for(coord1D k=p.lower.z;k<=p.lower.z;++k)
                 {
+                    const_type zval = zmin + ( zlen * (k-inner.lower.z))/zden;
                     for(coord1D j=p.lower.y;j<=p.lower.y;++j)
                     {
+                        const_type yval = ymin + ( ylen * (j-inner.lower.y))/yden;
                         for(coord1D i=p.lower.x;i<=p.upper.x;++i)
                         {
-                            X()[k][j][i] = 0;
-                            Y()[k][j][i] = 0;
-                            Z()[k][j][i] = 0;
+                            const_type xval = xmin + (xlen*(i-inner.lower.x))/xden;
+                            X()[k][j][i] = xval;
+                            Y()[k][j][i] = yval;
+                            Z()[k][j][i] = zval;
                         }
                     }
                 }
