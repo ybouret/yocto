@@ -137,7 +137,7 @@ namespace yocto
                               const patch_type &inner,
                               int2type<3> )
             {
-                const patch_type &p = *axis_handle[0];
+                const patch_type &p     = *axis_handle[0];
                 const_type        xmin  = b.lower.x;
                 const_type        xlen  = b.width.x;
                 const coord1D     xden  = inner.upper.x-inner.lower.x;

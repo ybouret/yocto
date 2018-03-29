@@ -9,6 +9,7 @@ using namespace ipso;
 
 YOCTO_UNIT_TEST_IMPL(pmesh)
 {
+#if 0
     if(argc<=1)
     {
         throw exception("usage: %s size", argv[0]);
@@ -53,6 +54,7 @@ YOCTO_UNIT_TEST_IMPL(pmesh)
         VTK::Header(fp, "pmesh3d");
         p3.vtk(fp);
     }
+#endif
 
 }
 YOCTO_UNIT_TEST_DONE()

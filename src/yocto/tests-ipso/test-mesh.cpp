@@ -24,6 +24,13 @@ YOCTO_UNIT_TEST_IMPL(mesh)
     std::cerr << "cpus   = " << cpus   << std::endl;
     std::cerr << "layers = " << layers << std::endl;
     
+    const patch1D      region1D(1,dims.x);
+    const coord1D      PBCS1D(pbcs.x);
+    coord1D            fallback1D=0;
+    const coord1D      sizes1D = mapping<coord1D>::optimal_sizes_for(cpus,region1D,layers,PBCS1D,&fallback1D);
+    const divide::in1D full1D(sizes1D,region1D);
+    subsets<coord1D>   subs1D(full1D,layers,PBCS1D,true);
+    
     if(true)
     {
         std::cerr << std::endl << "-------- 1D --------" << std::endl;

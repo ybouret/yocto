@@ -9,18 +9,18 @@ namespace yocto
 {
     namespace ipso
     {
-        template <typename T,const size_t _DIM>
+        template <typename T,const size_t DIMENSION>
         class point_mesh :
-        public mesh_info,
-        public patch1D
+        public mesh_info
         {
         public:
-            static const size_t DIM = _DIM; //! over patch1D::DIM
+            static const size_t DIM = DIMENSION; //! over patch1D::DIM
             typedef field1D<T> axis_type;
             inline virtual ~point_mesh() throw() {}
 
-            inline explicit point_mesh( const array<string> &names, const patch1D full ) :
-            mesh_info(DIM), patch1D(full), axis_handle()
+            inline explicit point_mesh(const array<string>   &names,
+                                       const subset<coord1D> &sub ) :
+            mesh_info(DIMENSION),  axis_handle()
             {
                 std::cerr << "PointMesh<" << DIM << ">" << std::endl;
                 setup(names);
@@ -37,9 +37,10 @@ namespace yocto
 
             void vtk( ios::ostream &fp, const bool periodic = false) const
             {
+                const patch1D &p = *axis_handle[0];
                 fp << "DATASET POLYDATA\n";
-                fp << "POINTS "; fp("%u ",unsigned(items)); VTK::OutputScalarType<T>(fp); fp << '\n';
-                for(coord1D i=lower;i<=upper;++i)
+                fp << "POINTS "; fp("%u ",unsigned(p.items)); VTK::OutputScalarType<T>(fp); fp << '\n';
+                for(coord1D i=p.lower;i<=p.upper;++i)
                 {
                     for(size_t dim=0;dim<DIM;++dim)
                     {
