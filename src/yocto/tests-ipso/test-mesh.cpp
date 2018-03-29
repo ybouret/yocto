@@ -54,6 +54,7 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
         {
             point_mesh<float,1> pmesh(names,*sub);
+            pmesh.map_regular(b.lower,b.upper,full1D);
         }
         
     }
@@ -83,6 +84,7 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
         {
             point_mesh<float,2> pmesh(names,*sub);
+            pmesh.map_regular(b.lower,b.upper,full1D);
         }
     }
     
@@ -109,6 +111,7 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
         {
             point_mesh<float,3> pmesh(names,*sub);
+            pmesh.map_regular(b.lower,b.upper,full1D);
         }
         
     }

@@ -3,6 +3,7 @@
 #define YOCTO_IPSO_MESH_POINT_INCLUDED 1
 
 #include "yocto/ipso/mesh.hpp"
+#include "yocto/ipso/vertex.hpp"
 #include "yocto/ipso/format/vtk.hpp"
 
 namespace yocto
@@ -15,8 +16,8 @@ namespace yocto
         {
         public:
             static const size_t DIM = DIMENSION; //! over patch1D::DIM
-            typedef typename coord_for<DIMENSION>::type coord_type;
-            typedef field1D<T>                          axis_type;
+            typedef typename vertex_for<T,DIMENSION>::type vertex_type;
+            typedef field1D<T>                             axis_type;
             inline virtual ~point_mesh() throw() {}
 
             inline explicit point_mesh(const array<string>   &names,
@@ -36,18 +37,40 @@ namespace yocto
             inline axis_type       &Z() throw()       { assert(dimension>=3); return *axis_handle[2]; }
             inline const axis_type &Z() const throw() { assert(dimension>=3); return *axis_handle[2]; }
             
-            inline coord_type operator[](const coord1D i) const throw()
+            // reconstruct a vertex from coordinates
+            inline vertex_type operator[](const coord1D i) const throw()
             {
                 assert(axis_handle[0]->contains(i));
-                coord_type ans;
+                vertex_type ans;
+                T          *p = (T*)&ans;
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
-                    __coord(ans,dim) = (*axis_handle[dim])[i];
+                     p[dim] = (*axis_handle[dim])[i];
                 }
                 return ans;
             }
         
+            inline void map_regular(const vertex_type ini,
+                                    const vertex_type end,
+                                    const patch1D     inner)
+            {
+                const vertex_type del  = end-ini;
+                const coord1D     den = inner.upper-inner.lower;
+                if(den<=0) throw exception("point_mesh.map_regular(bad inner patch)");
+                const patch1D    &p   = *axis_handle[0];
+                const T *w = (const T *)&del;
+                const T *q = (const T *)&ini;
+                for(coord1D i=p.lower;i<=p.upper;++i)
+                {
+                    const coord1D num = i - inner.lower;
+                    for(size_t dim=0;i<DIMENSION;++i)
+                    {
+                        (*axis_handle[dim])[i] = q[i] + (num*w[i])/den;
+                    }
+                }
+            }
             
+            // save to vtk
             void vtk( ios::ostream &fp, const bool periodic = false) const
             {
                 const patch1D &p = *axis_handle[0];
