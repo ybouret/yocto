@@ -41,6 +41,47 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         
     }
     
+    if(true)
+    {
+        
+        std::cerr << std::endl << "-------- 2D --------" << std::endl;
+        const patch2D      region(coord2D(1,1),dims.xy());
+        const coord2D      PBCS(pbcs.xy());
+        coord2D            fallback;
+        const coord2D sizes = mapping<coord2D>::optimal_sizes_for(cpus,region,layers,PBCS,&fallback);
+        std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
+        const divide::in2D full(sizes,region);
+        subsets<coord2D>   subs(full,layers,PBCS,true);
+        
+        axis_names         names("x,y");
+        for( subset<coord2D> *sub = subs.head; sub; sub=sub->next )
+        {
+            rectilinear_mesh<float,2> rmesh(names,*sub);
+
+        }
+    }
+    
+    if(true)
+    {
+        std::cerr << std::endl << "-------- 3D --------" << std::endl;
+        const patch3D      region(coord3D(1,1,1),dims);
+        const coord3D      PBCS(pbcs);
+        coord3D            fallback;
+        const coord3D sizes = mapping<coord3D>::optimal_sizes_for(cpus,region,layers,PBCS,&fallback);
+        std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
+        const divide::in3D full(sizes,region);
+        subsets<coord3D>   subs(full,layers,PBCS,true);
+        
+        axis_names         names("x,y,z");
+        for( subset<coord3D> *sub = subs.head; sub; sub=sub->next )
+        {
+            rectilinear_mesh<float,3> rmesh(names,*sub);
+        }
+        
+    }
+    
+    
+    
 }
 YOCTO_UNIT_TEST_DONE()
 
