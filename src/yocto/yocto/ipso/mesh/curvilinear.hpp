@@ -9,7 +9,7 @@ namespace yocto
     namespace ipso
     {
         template <typename T,const size_t _DIM>
-        class  curvilinear_mesh :
+        class  _curvilinear_mesh :
         public mesh_info,
         public patch_for<_DIM>::type
         {
@@ -20,8 +20,8 @@ namespace yocto
             typedef typename field_for<T,_DIM>::type  axis_type;
             typedef box<T,_DIM>                       box_type;
 
-            inline virtual ~curvilinear_mesh() throw() {}
-            inline explicit curvilinear_mesh(const array<string> &names,
+            inline virtual ~_curvilinear_mesh() throw() {}
+            inline explicit _curvilinear_mesh(const array<string> &names,
                                              const patch_type     full ) :
             mesh_info(DIM),patch_type(full),axis_handle()
             {
@@ -71,7 +71,7 @@ namespace yocto
             axis_type *axis_handle[_DIM];
 
         private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(curvilinear_mesh);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(_curvilinear_mesh);
             void setup(const array<string> &names)
             {
                 assert(names.size()==DIM);

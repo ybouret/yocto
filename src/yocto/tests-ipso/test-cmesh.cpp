@@ -19,7 +19,7 @@ YOCTO_UNIT_TEST_IMPL(cmesh)
     {
         axis_names    names("x");
         const patch1D region(1,dims.x);
-        curvilinear_mesh<float,1> cmesh( names, region );
+        _curvilinear_mesh<float,1> cmesh( names, region );
         const box<float,1> b(0,1);
         cmesh.map_regular(b,cmesh);
 
@@ -33,7 +33,7 @@ YOCTO_UNIT_TEST_IMPL(cmesh)
     {
         axis_names    names("x,y");
         const patch2D region(coord2D(1,1),dims.xy());
-        curvilinear_mesh<double,2> cmesh( names, region );
+        _curvilinear_mesh<double,2> cmesh( names, region );
         const box<double,2> b( point2d<double>(0,0), point2d<double>(1,1) );
         cmesh.map_regular(b,cmesh);
 
@@ -47,7 +47,7 @@ YOCTO_UNIT_TEST_IMPL(cmesh)
     {
         axis_names    names("x,y,z");
         const patch3D region(coord3D(1,1,1),dims);
-        curvilinear_mesh<double,3> cmesh( names, region );
+        _curvilinear_mesh<double,3> cmesh( names, region );
         const box<double,3> b( point3d<double>(0,0,0), point3d<double>(1,1,1) );
         cmesh.map_regular(b,cmesh);
 
