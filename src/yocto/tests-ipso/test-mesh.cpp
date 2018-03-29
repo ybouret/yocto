@@ -35,10 +35,13 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         const divide::in1D full(sizes,region);
         subsets<coord1D>   subs(full,layers,PBCS,true);
         axis_names         names("x");
+        const box<float,1> b(0,1);
         for( subset<coord1D> *sub = subs.head; sub; sub=sub->next )
         {
             rectilinear_mesh<float,1>  rmesh(names,*sub);
-            curvilinear_mesh<double,1> cmesh(names,*sub);
+            rmesh.map_regular(b,full);
+            curvilinear_mesh<float,1>  cmesh(names,*sub);
+            cmesh.map_regular(b,full);
         }
         
     }
@@ -56,10 +59,14 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         subsets<coord2D>   subs(full,layers,PBCS,true);
         
         axis_names         names("x,y");
+        const box<float,2> b( point2d<float>(0,0), point2d<float>(1,1) );
+
         for( subset<coord2D> *sub = subs.head; sub; sub=sub->next )
         {
             rectilinear_mesh<float,2>  rmesh(names,*sub);
-            curvilinear_mesh<double,2> cmesh(names,*sub);
+            rmesh.map_regular(b,full);
+            curvilinear_mesh<float,2> cmesh(names,*sub);
+            cmesh.map_regular(b,full);
         }
     }
     
@@ -75,10 +82,13 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         subsets<coord3D>   subs(full,layers,PBCS,true);
         
         axis_names         names("x,y,z");
+        const box<float,3> b( point3d<float>(0,0,0), point3d<float>(1,1,1) );
         for( subset<coord3D> *sub = subs.head; sub; sub=sub->next )
         {
             rectilinear_mesh<float,3>  rmesh(names,*sub);
-            curvilinear_mesh<double,3> cmesh(names,*sub);
+            rmesh.map_regular(b,full);
+            curvilinear_mesh<float,3> cmesh(names,*sub);
+            cmesh.map_regular(b,full);
         }
         
     }

@@ -47,9 +47,7 @@ namespace yocto
                 {
                     an.push_back( (**it).name );
                 }
-                rectilinear_mesh<T,DIMENSION> rmesh(an,*this);
-                rmesh.map_regular(b,inner);
-                //transfer(rmesh,int2type<DIMENSION>());
+                __map(b,inner,int2type<DIMENSION>() );
             }
             
             inline void vtk( ios::ostream &fp ) const
@@ -68,7 +66,7 @@ namespace yocto
                 fp("POINTS %u ",unsigned(this->items)); VTK::OutputScalarType<T>(fp); fp << '\n';
                 output_vtk(fp,int2type<DIMENSION>());
             }
-
+            
             
         protected:
             axis_type *axis_handle[DIMENSION];
@@ -89,7 +87,56 @@ namespace yocto
                     axis_info.append(axis);
                 }
             }
-
+            
+            ////////////////////////////////////////////////////////////////////
+            inline void __map(const box_type   &b,
+                              const patch_type &inner,
+                              int2type<1> )
+            {
+                const patch_type &p = *axis_handle[0];
+                for(coord1D i=p.lower;i<=p.upper;++i)
+                {
+                    X()[i] = 0;
+                }
+            }
+            
+            inline void __map(const box_type   &b,
+                              const patch_type &inner,
+                              int2type<2> )
+            {
+                const patch_type &p = *axis_handle[0];
+                for(coord1D j=p.lower.y;j<=p.lower.y;++j)
+                {
+                    for(coord1D i=p.lower.x;i<=p.upper.x;++i)
+                    {
+                        X()[j][i] = 0;
+                        Y()[j][i] = 0;
+                    }
+                }
+            }
+            
+            inline void __map(const box_type   &b,
+                              const patch_type &inner,
+                              int2type<3> )
+            {
+                const patch_type &p = *axis_handle[0];
+                for(coord1D k=p.lower.z;k<=p.lower.z;++k)
+                {
+                    for(coord1D j=p.lower.y;j<=p.lower.y;++j)
+                    {
+                        for(coord1D i=p.lower.x;i<=p.upper.x;++i)
+                        {
+                            X()[k][j][i] = 0;
+                            Y()[k][j][i] = 0;
+                            Z()[k][j][i] = 0;
+                        }
+                    }
+                }
+            }
+            
+            
+            
+            ////////////////////////////////////////////////////////////////////
             inline void output_vtk( ios::ostream &fp, int2type<1> ) const
             {
                 for(coord1D i=this->lower;i<=this->upper;++i)
@@ -138,24 +185,24 @@ namespace yocto
             typedef typename patch_for<_DIM>::type    patch_type;
             typedef typename field_for<T,_DIM>::type  axis_type;
             typedef box<T,_DIM>                       box_type;
-
+            
             inline virtual ~_curvilinear_mesh() throw() {}
             inline explicit _curvilinear_mesh(const array<string> &names,
-                                             const patch_type     full ) :
+                                              const patch_type     full ) :
             mesh_info(DIM),patch_type(full),axis_handle()
             {
                 setup(names);
             }
-
+            
             inline axis_type       &X() throw()       { assert(dimension>=1); return *axis_handle[0]; }
             inline const axis_type &X() const throw() { assert(dimension>=1); return *axis_handle[0]; }
-
+            
             inline axis_type       &Y() throw()       { assert(dimension>=2); return *axis_handle[1]; }
             inline const axis_type &Y() const throw() { assert(dimension>=2); return *axis_handle[1]; }
-
+            
             inline axis_type       &Z() throw()       { assert(dimension>=3); return *axis_handle[2]; }
             inline const axis_type &Z() const throw() { assert(dimension>=3); return *axis_handle[2]; }
-
+            
             inline void map_regular(const box_type &b, const patch_type inner)
             {
                 // build a rectilinear mesh
@@ -168,7 +215,7 @@ namespace yocto
                 rmesh.map_regular(b,inner);
                 transfer(rmesh,int2type<_DIM>());
             }
-
+            
             inline void vtk( ios::ostream &fp ) const
             {
                 fp << "DATASET STRUCTURED_GRID\n";
@@ -185,17 +232,17 @@ namespace yocto
                 fp("POINTS %u ",unsigned(this->items)); VTK::OutputScalarType<T>(fp); fp << '\n';
                 output_vtk(fp,int2type<_DIM>());
             }
-
+            
         protected:
             axis_type *axis_handle[_DIM];
-
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(_curvilinear_mesh);
             void setup(const array<string> &names)
             {
                 assert(names.size()==DIM);
                 memset(axis_handle,0,sizeof(axis_handle));
-
+                
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     axis_type       &axis = axis_db.build<axis_type>(names[dim+1],*this);
@@ -203,7 +250,7 @@ namespace yocto
                     axis_info.append(axis);
                 }
             }
-
+            
             inline void transfer( const _rectilinear_mesh<T,_DIM> &rmesh, int2type<1> ) throw()
             {
                 for(coord1D i=this->lower;i<=this->upper;++i)
@@ -211,7 +258,7 @@ namespace yocto
                     X()[i] = rmesh.X()[i];
                 }
             }
-
+            
             inline void transfer( const _rectilinear_mesh<T,_DIM> &rmesh, int2type<2> ) throw()
             {
                 for(coord1D j=this->lower.y;j<=this->upper.y;++j)
@@ -223,7 +270,7 @@ namespace yocto
                     }
                 }
             }
-
+            
             inline void transfer( const _rectilinear_mesh<T,_DIM> &rmesh, int2type<3> ) throw()
             {
                 for(coord1D k=this->lower.z;k<=this->upper.z;++k)
@@ -239,7 +286,7 @@ namespace yocto
                     }
                 }
             }
-
+            
             inline void output_vtk( ios::ostream &fp, int2type<1> ) const
             {
                 for(coord1D i=this->lower;i<=this->upper;++i)
@@ -247,7 +294,7 @@ namespace yocto
                     fp("%.15g 0 0\n", X()[i]);
                 }
             }
-
+            
             inline void output_vtk( ios::ostream &fp, int2type<2> ) const
             {
                 for(coord1D j=this->lower.y;j<=this->upper.y;++j)
@@ -258,17 +305,17 @@ namespace yocto
                     }
                 }
             }
-
+            
             inline void output_vtk( ios::ostream &fp, int2type<3> ) const
             {
-
+                
                 for(coord1D k=this->lower.z;k<=this->upper.z;++k)
                 {
                     for(coord1D j=this->lower.y;j<=this->upper.y;++j)
                     {
                         for(coord1D i=this->lower.x;i<=this->upper.x;++i)
                         {
-                             fp("%.15g %.15g %.15g\n",X()[k][j][i],Y()[k][j][i],Z()[k][j][i]);
+                            fp("%.15g %.15g %.15g\n",X()[k][j][i],Y()[k][j][i],Z()[k][j][i]);
                         }
                     }
                 }
