@@ -2,6 +2,7 @@
 #include "yocto/string/conv.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/ipso/mesh/rectilinear.hpp"
+#include "yocto/ipso/mesh/curvilinear.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -36,7 +37,8 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         axis_names         names("x");
         for( subset<coord1D> *sub = subs.head; sub; sub=sub->next )
         {
-            rectilinear_mesh<float,1> rmesh(names,*sub);
+            rectilinear_mesh<float,1>  rmesh(names,*sub);
+            curvilinear_mesh<double,1> cmesh(names,*sub);
         }
         
     }
@@ -56,8 +58,8 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         axis_names         names("x,y");
         for( subset<coord2D> *sub = subs.head; sub; sub=sub->next )
         {
-            rectilinear_mesh<float,2> rmesh(names,*sub);
-
+            rectilinear_mesh<float,2>  rmesh(names,*sub);
+            curvilinear_mesh<double,2> cmesh(names,*sub);
         }
     }
     
@@ -75,7 +77,8 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         axis_names         names("x,y,z");
         for( subset<coord3D> *sub = subs.head; sub; sub=sub->next )
         {
-            rectilinear_mesh<float,3> rmesh(names,*sub);
+            rectilinear_mesh<float,3>  rmesh(names,*sub);
+            curvilinear_mesh<double,3> cmesh(names,*sub);
         }
         
     }
