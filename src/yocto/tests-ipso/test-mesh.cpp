@@ -17,6 +17,7 @@ void save_mesh(const MESH &msh,
 {
     const string  fn = pfx + vformat("_r%u.vtk",rank);
     ios::wcstream fp(fn);
+    VTK::Header(fp,fn);
     msh.vtk(fp);
 }
 

@@ -54,7 +54,7 @@ namespace yocto
                                     const vertex_type end,
                                     const patch1D     inner)
             {
-                const vertex_type del  = end-ini;
+                const vertex_type del = end-ini;
                 const coord1D     den = inner.upper-inner.lower;
                 if(den<=0) throw exception("point_mesh.map_regular(bad inner patch)");
                 const patch1D    &p   = *axis_handle[0];
@@ -63,9 +63,10 @@ namespace yocto
                 for(coord1D i=p.lower;i<=p.upper;++i)
                 {
                     const coord1D num = i - inner.lower;
-                    for(size_t dim=0;i<DIMENSION;++i)
+                    for(size_t dim=0;dim<DIMENSION;++dim)
                     {
-                        (*axis_handle[dim])[i] = q[i] + (num*w[i])/den;
+                        const T v = q[dim] + (num*w[dim])/den;
+                        (*axis_handle[dim])[i] = v;
                     }
                 }
             }
@@ -74,17 +75,17 @@ namespace yocto
             inline void map_circle(const patch1D full)
             {
                 assert(DIMENSION>=2);
-                static const T amax   = math::numeric<T>::two_pi;
-                const coord1D  den    = full.width;
-                const T        dtheta = amax/den;
-                const patch1D    &p   = *axis_handle[0];
+                static const T    amax   = math::numeric<T>::two_pi;
+                const coord1D     den    = full.width;
+                const T           dtheta = amax/den;
+                const patch1D    &p      = *axis_handle[0];
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     axis_handle[dim]->ldz();
                 }
                 for(coord1D i=p.lower;i<=p.upper;++i)
                 {
-                    const T theta = (i*dtheta)/den;
+                    const T theta = (i*dtheta);
                     const T c     = math::Cos(theta);
                     const T s     = math::Sin(theta);
                     X()[i] = c;
