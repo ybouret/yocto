@@ -2,6 +2,7 @@
 #define YOCTO_IPSO_MAPPING_INCLUDED 1
 
 #include "yocto/ipso/subset.hpp"
+#include "yocto/code/bzset.hpp"
 
 namespace yocto
 {
@@ -138,7 +139,31 @@ namespace yocto
             }
             YOCTO_DISABLE_COPY_AND_ASSIGN(mapping);
         };
-        
+
+        template <typename COORD>
+        inline COORD map_optimal_sizes(const size_t        cpus,
+                                       const patch<COORD> &full,
+                                       const size_t        layers,
+                                       const COORD        &pbcs)
+        {
+            const coord1D np = coord1D(cpus);
+            COORD         fallback;
+            COORD         ans = mapping<COORD>::optimal_sizes_for(cpus,
+                                                                  full,
+                                                                  layers,
+                                                                  pbcs,
+                                                                  &fallback);
+            if(__coord_prod(ans)<np)
+            {
+                ans = fallback;
+                if(__coord_prod(ans)<np)
+                {
+                    throw exception("map_optimal_sizes<%dD>: too many CPUS for domain",int(YOCTO_IPSO_DIM_OF(COORD)));
+                }
+            }
+            
+            return ans;
+        }
     }
 }
 

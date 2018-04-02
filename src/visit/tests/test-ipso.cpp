@@ -14,11 +14,20 @@ namespace
         const size_t   size;
         const size_t   rank;
 
-        coord1D        fallback1D;
-        const patch1D  region1D;
-        const coord1D  pbcs1D;
-        const coord1D  sizes1D;
+        const patch1D      region1D;
+        const coord1D      pbcs1D;
+        const coord1D      sizes1D;
         const divide::in1D full1D;
+
+        const patch2D      region2D;
+        const coord2D      pbcs2D;
+        const coord2D      sizes2D;
+        const divide::in2D full2D;
+
+        const patch3D      region3D;
+        const coord3D      pbcs3D;
+        const coord3D      sizes3D;
+        const divide::in3D full3D;
 
         explicit Sim(const VisIt   &visit,
                      const coord3D &dims,
@@ -27,11 +36,21 @@ namespace
         VisIt::Simulation(visit),
         size( MPI.CommWorldSize ),
         rank( MPI.CommWorldRank ),
-        fallback1D(0),
+
         region1D(1,dims.x),
         pbcs1D(pbcs.x),
-        sizes1D( check_sizes(mapping<coord1D>::optimal_sizes_for(size,region1D,layers,pbcs1D,&fallback1D),fallback1D,size) ),
-        full1D(sizes1D,region1D)
+        sizes1D( map_optimal_sizes(size,region1D,layers,pbcs1D) ),
+        full1D(sizes1D,region1D),
+
+        region2D(coord2D(1,1),dims.xy()),
+        pbcs2D(pbcs.xy()),
+        sizes2D( map_optimal_sizes(size,region2D,layers,pbcs2D) ),
+        full2D(sizes2D,region2D),
+
+        region3D(coord3D(1,1,1),dims),
+        pbcs3D(pbcs),
+        sizes3D(map_optimal_sizes(size,region3D,layers,pbcs3D) ),
+        full3D(sizes3D,region3D)
         {
 
 
@@ -44,21 +63,6 @@ namespace
 
     private:
         YOCTO_DISABLE_COPY_AND_ASSIGN(Sim);
-        template <typename COORD>
-        COORD check_sizes( const COORD sz, const COORD &fb, const coord1D np )
-        {
-            COORD ans = sz;
-            if( __coord_prod(ans) < np )
-            {
-                ans = fb;
-                if(__coord_prod(ans) < np )
-                {
-                    throw exception("too many cpus for given domain size");
-                }
-            }
-            return ans;
-        }
-
     };
 
 }
