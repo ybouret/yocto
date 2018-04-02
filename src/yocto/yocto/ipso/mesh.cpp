@@ -53,10 +53,22 @@ namespace yocto
     {
         mesh_info:: ~mesh_info() throw() {}
 
-        mesh_info:: mesh_info(const size_t d) throw() :
-        dimension(d),
-        axis_db(d),
-        axis_info(d)
+#define Y_MESH_INFO_CTOR() \
+name(id),     \
+dimension(d), \
+axis_db(d),   \
+axis_info(d)
+
+        mesh_info:: mesh_info(const char  *id,
+                              const size_t  d) :
+        Y_MESH_INFO_CTOR()
+        {
+            assert(d>=1);assert(d<=3);
+        }
+
+        mesh_info:: mesh_info(const string &id,
+                              const size_t  d) :
+        Y_MESH_INFO_CTOR()
         {
             assert(d>=1);assert(d<=3);
         }

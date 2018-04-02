@@ -30,9 +30,18 @@ namespace yocto
              \param names the different axis names
              \param sub the subset, which can be used to transert data
              */
-            inline explicit curvilinear_mesh(const array<string> &names,
+            inline explicit curvilinear_mesh(const string        &id,
+                                             const array<string> &names,
                                              const subset_type   &sub ) :
-            mesh_info(DIMENSION), axis_handle()
+            mesh_info(id,DIMENSION), axis_handle()
+            {
+                setup(names,sub);
+            }
+
+            inline explicit curvilinear_mesh(const char          *id,
+                                             const array<string> &names,
+                                             const subset_type   &sub ) :
+            mesh_info(id,DIMENSION), axis_handle()
             {
                 setup(names,sub);
             }

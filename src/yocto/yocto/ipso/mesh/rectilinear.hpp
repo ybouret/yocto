@@ -25,9 +25,20 @@ namespace yocto
             inline virtual ~rectilinear_mesh() throw() {}
             
             //! default constructor, based on a precomputed subset
-            inline explicit rectilinear_mesh(const array<string> &names,
+            inline explicit rectilinear_mesh(const string        &id,
+                                             const array<string> &names,
                                              const subset_type   &sub) :
-            mesh_info(DIMENSION),
+            mesh_info(id,DIMENSION),
+            axis_handle()
+            {
+                build_subsets1D_from(sub,subs,true);
+                setup(names);
+            }
+
+            inline explicit rectilinear_mesh(const char          *id,
+                                             const array<string> &names,
+                                             const subset_type   &sub) :
+            mesh_info(id,DIMENSION),
             axis_handle()
             {
                 build_subsets1D_from(sub,subs,true);

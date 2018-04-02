@@ -12,10 +12,9 @@ using namespace ipso;
 template <typename MESH>
 static inline
 void save_mesh(const MESH &msh,
-               const char *pfx,
                const unsigned rank)
 {
-    const string  fn = pfx + vformat("_r%u.vtk",rank);
+    const string  fn = msh.name + vformat("_r%u.vtk",rank);
     ios::wcstream fp(fn);
     VTK::Header(fp,fn);
     msh.vtk(fp);
@@ -59,19 +58,19 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         const box<float,1> b(0,1);
         for( subset<coord1D> *sub = subs.head; sub; sub=sub->next )
         {
-            rectilinear_mesh<float,1>  rmesh(names,*sub);
+            rectilinear_mesh<float,1>  rmesh("rmesh1d",names,*sub);
             rmesh.map_regular(b,full);
-            save_mesh(rmesh,"rmesh1d",sub->rank);
-            curvilinear_mesh<float,1>  cmesh(names,*sub);
+            save_mesh(rmesh,sub->rank);
+            curvilinear_mesh<float,1>  cmesh("cmesh1d",names,*sub);
             cmesh.map_regular(b,full);
-            save_mesh(cmesh,"cmesh1d",sub->rank);
+            save_mesh(cmesh,sub->rank);
 
         }
         for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
         {
-            point_mesh<float,1> pmesh(names,*sub);
+            point_mesh<float,1> pmesh("pmesh1d",names,*sub);
             pmesh.map_regular(b.lower,b.upper,full1D);
-            save_mesh(pmesh,"pmesh1d",sub->rank);
+            save_mesh(pmesh,sub->rank);
         }
         
     }
@@ -93,19 +92,19 @@ YOCTO_UNIT_TEST_IMPL(mesh)
 
         for( subset<coord2D> *sub = subs.head; sub; sub=sub->next )
         {
-            rectilinear_mesh<float,2>  rmesh(names,*sub);
+            rectilinear_mesh<float,2>  rmesh("rmesh2d",names,*sub);
             rmesh.map_regular(b,full);
-            save_mesh(rmesh, "rmesh2d",sub->rank);
-            curvilinear_mesh<float,2> cmesh(names,*sub);
+            save_mesh(rmesh,sub->rank);
+            curvilinear_mesh<float,2> cmesh("cmesh2d",names,*sub);
             cmesh.map_regular(b,full);
-            save_mesh(cmesh, "cmesh2d",sub->rank);
+            save_mesh(cmesh,sub->rank);
         }
         for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
         {
-            point_mesh<float,2> pmesh(names,*sub);
+            point_mesh<float,2> pmesh("pmesh2d",names,*sub);
             pmesh.map_regular(b.lower,b.upper,full1D);
             pmesh.map_circle(full1D);
-            save_mesh(pmesh, "pmesh2d",sub->rank);
+            save_mesh(pmesh,sub->rank);
         }
     }
     
@@ -124,19 +123,19 @@ YOCTO_UNIT_TEST_IMPL(mesh)
         const box<float,3> b( point3d<float>(0,0,0), point3d<float>(1,1,1) );
         for( subset<coord3D> *sub = subs.head; sub; sub=sub->next )
         {
-            rectilinear_mesh<float,3>  rmesh(names,*sub);
+            rectilinear_mesh<float,3>  rmesh("rmesh3d",names,*sub);
             rmesh.map_regular(b,full);
-            save_mesh(rmesh, "rmesh3d",sub->rank);
-            curvilinear_mesh<float,3> cmesh(names,*sub);
+            save_mesh(rmesh,sub->rank);
+            curvilinear_mesh<float,3> cmesh("cmesh3d",names,*sub);
             cmesh.map_regular(b,full);
-            save_mesh(cmesh,"cmesh3d",sub->rank);
+            save_mesh(cmesh,sub->rank);
         }
         for( subset<coord1D> *sub = subs1D.head;sub;sub=sub->next)
         {
-            point_mesh<float,3> pmesh(names,*sub);
+            point_mesh<float,3> pmesh("pmesh3d",names,*sub);
             pmesh.map_regular(b.lower,b.upper,full1D);
             pmesh.map_circle(full1D);
-            save_mesh(pmesh,"pmesh3d",sub->rank);
+            save_mesh(pmesh,sub->rank);
         }
         
     }

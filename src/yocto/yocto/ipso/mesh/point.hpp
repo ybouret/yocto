@@ -23,9 +23,18 @@ namespace yocto
             inline virtual ~point_mesh() throw() {}
 
             //! a point mesh based on a 1D subset
-            inline explicit point_mesh(const array<string>   &names,
+            inline explicit point_mesh(const string          &id,
+                                       const array<string>   &names,
                                        const subset<coord1D> &sub ) :
-            mesh_info(DIMENSION),  axis_handle()
+            mesh_info(id,DIMENSION),  axis_handle()
+            {
+                setup(names,sub);
+            }
+
+            inline explicit point_mesh(const char            *id,
+                                       const array<string>   &names,
+                                       const subset<coord1D> &sub ) :
+            mesh_info(id,DIMENSION),  axis_handle()
             {
                 setup(names,sub);
             }

@@ -27,8 +27,8 @@ namespace yocto
         class mesh_info : public object
         {
         public:
+            const string name;
             const size_t dimension;
-
             virtual ~mesh_info() throw();
             const field_db & db() const throw();
 
@@ -38,8 +38,8 @@ namespace yocto
             static const char * vtk_coordinates(const size_t dim) throw();
 
         protected:
-            explicit mesh_info(const size_t d) throw();
-
+            explicit mesh_info(const char   *id,const size_t d);
+            explicit mesh_info(const string &id,const size_t d);
             field_db axis_db;   //!< axis fields database
             fields   axis_info; //!< axis fields info
 
