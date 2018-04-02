@@ -2,7 +2,7 @@
 #ifndef YOCTO_IPSO_MESH_CURVILINEAR_INCLUDED
 #define YOCTO_IPSO_MESH_CURVILINEAR_INCLUDED 1
 
-#include "yocto/ipso/mesh/rectilinear.hpp"
+#include "yocto/ipso/mesh.hpp"
 
 namespace yocto
 {
