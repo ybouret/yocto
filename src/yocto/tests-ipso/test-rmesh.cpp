@@ -4,7 +4,7 @@
 
 using namespace yocto;
 using namespace ipso;
-
+#if 0
 YOCTO_UNIT_TEST_IMPL(rmesh)
 {
     if(argc<=1)
@@ -65,5 +65,6 @@ YOCTO_UNIT_TEST_IMPL(rmesh)
 
 }
 YOCTO_UNIT_TEST_DONE()
+#endif
 
 

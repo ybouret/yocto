@@ -15,16 +15,18 @@ namespace yocto
         public mesh_info
         {
         public:
+            YOCTO_ARGUMENTS_DECL_T;
+
             static const size_t DIM = DIMENSION; //! over patch1D::DIM
             typedef typename vertex_for<T,DIMENSION>::type vertex_type;
             typedef field1D<T>                             axis_type;
             inline virtual ~point_mesh() throw() {}
 
+            //! a point mesh based on a 1D subset
             inline explicit point_mesh(const array<string>   &names,
                                        const subset<coord1D> &sub ) :
             mesh_info(DIMENSION),  axis_handle()
             {
-                std::cerr << "PointMesh<" << DIM << ">" << std::endl;
                 setup(names,sub);
             }
 
@@ -49,7 +51,8 @@ namespace yocto
                 }
                 return ans;
             }
-        
+
+            //! map a regular point mesh from ini to end
             inline void map_regular(const vertex_type ini,
                                     const vertex_type end,
                                     const patch1D     inner)
@@ -71,8 +74,8 @@ namespace yocto
                 }
             }
             
-            //! 2D and 3D
-            inline void map_circle(const patch1D full)
+            //! 2D and 3D map on circle
+            inline void map_circle(const patch1D full, const_type radius=1)
             {
                 assert(DIMENSION>=2);
                 static const T    amax   = math::numeric<T>::two_pi;
@@ -88,12 +91,12 @@ namespace yocto
                     const T theta = (i*dtheta);
                     const T c     = math::Cos(theta);
                     const T s     = math::Sin(theta);
-                    X()[i] = c;
-                    Y()[i] = s;
+                    X()[i] = radius*c;
+                    Y()[i] = radius*s;
                 }
             }
             
-            // save to vtk
+            // save to vtk after a VTK::Header
             void vtk( ios::ostream &fp, const bool periodic = false) const
             {
                 const patch1D &p = *axis_handle[0];
