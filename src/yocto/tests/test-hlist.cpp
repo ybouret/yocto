@@ -25,7 +25,7 @@ YOCTO_UNIT_TEST_IMPL(HList)
     for(size_t i=0;i<nmax;++i)
     {
         const string k = gen<string>::get();
-        if(hl.insert(k, new dNode(i) ))
+        if(hl.insert(k, new dNode(k) ))
         {
             keys.push_back(k);
         }

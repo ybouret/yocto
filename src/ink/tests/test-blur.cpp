@@ -29,7 +29,7 @@ YOCTO_UNIT_TEST_IMPL(blur)
         for(float sig=0.01f;sig<=10;sig+=0.01f)
         {
             const Blur blur(sig);
-            fp( "%g %u %g\n", blur.sigma, unsigned(blur.length), blur(blur.length)  );
+            fp( "%g %u %g\n", blur.sigma, unsigned(blur.length), blur( float(blur.length) )  );
         }
     }
 

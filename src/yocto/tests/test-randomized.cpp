@@ -51,7 +51,7 @@ void test_rg( Bits &bits, const char *name )
         float sum_sq = 0;
         for(size_t i=0;i<NUM;++i)
         {
-            const double x = bits.symm<float>();
+            const float x = bits.symm<float>();
             sum    += x;
             sum_sq += x*x;
         }

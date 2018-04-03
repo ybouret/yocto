@@ -50,7 +50,7 @@ namespace yocto
             inline virtual const char *name() const throw()     { return hidden::multi_set_group; }
             inline virtual size_t      size() const throw()     { return content.size();          }
             inline virtual size_t      capacity() const throw() { return content.capacity();      }
-            inline virtual void        reserve(const size_t n)  { content.reserve(n);             }
+            inline virtual void        reserve( size_t n)  { content.reserve(n);             }
             inline virtual void        release() throw()        { /* do nothing */                }
             inline virtual void        free()    throw()        { /* do nothing */                }
 
