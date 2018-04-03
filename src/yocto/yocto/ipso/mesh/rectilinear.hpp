@@ -57,10 +57,10 @@ namespace yocto
             inline const axis_type &Z() const throw() { assert(dimension>=3); return *axis_handle[2]; }
             
             inline void map_regular(const box_type         &b,
-                                    const patch<coord_type> inner)
+                                    const patch<coord_type> full)
             {
-                const coord1D * _ilo  = (const coord1D *) &(inner.lower);
-                const coord1D * _iup  = (const coord1D *) &(inner.upper);
+                const coord1D * _ilo  = (const coord1D *) &(full.lower);
+                const coord1D * _iup  = (const coord1D *) &(full.upper);
                 const_type    * _vmin = (const_type *)(&b.lower);
                 const_type    * _dv   = (const_type *)(&b.width);
                 for(size_t dim=0;dim<DIM;++dim)

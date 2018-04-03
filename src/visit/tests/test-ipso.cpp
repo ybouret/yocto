@@ -93,23 +93,23 @@ namespace
 
             {
                 box<float,1> b1D(0,1);
-                pmesh1.map_regular(0,1,sub1D.inner);
-                rmesh1.map_regular(b1D,sub1D.inner);
-                cmesh1.map_regular(b1D,sub1D.inner);
+                pmesh1.map_regular(0,1,full1D);
+                rmesh1.map_regular(b1D,full1D);
+                cmesh1.map_regular(b1D,full1D);
             }
 
             {
                 box<float,2> b2d( v2d(0,0), v2d(1,1) );
-                rmesh2.map_regular(b2d,sub2D.inner);
-                pmesh2.map_circle(sub1D.outer);
-                cmesh2.map_regular(b2d,sub2D.inner);
+                rmesh2.map_regular(b2d,full2D);
+                pmesh2.map_circle(full1D);
+                cmesh2.map_regular(b2d,full2D);
             }
 
             {
                 box<float,3> b3d( v3d(0,0,0), v3d(1,1,1) );
-                rmesh3.map_regular(b3d,sub3D.inner);
-                pmesh3.map_circle(sub1D.outer);
-                cmesh3.map_regular(b3d,sub3D.inner);
+                rmesh3.map_regular(b3d,full3D);
+                pmesh3.map_circle(full1D);
+                cmesh3.map_regular(b3d,full3D);
             }
 
         }
