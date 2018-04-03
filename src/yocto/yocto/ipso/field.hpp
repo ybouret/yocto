@@ -28,7 +28,7 @@ namespace yocto
 
             virtual ~field_info() throw();
 
-            const string &key() const throw(); //!< name, for pointer/set
+            virtual const string &key() const throw(); //!< name, for pointer/set
 
             //! swap data locally
             virtual void swap_local(const swaps_list &G) throw() = 0;

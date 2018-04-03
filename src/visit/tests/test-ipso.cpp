@@ -9,13 +9,13 @@ using namespace ipso;
 namespace
 {
 
-    typedef field1D<double> F1D;
-    typedef field2D<float>  F2D;
-    typedef field3D<float>  F3D;
+    typedef visit_field1D<double> F1D;
+    typedef visit_field2D<float>  F2D;
+    typedef visit_field3D<float>  F3D;
     typedef point2d<float>  v2d;
     typedef point3d<float>  v3d;
-    typedef field2D< v2d >  F2DV;
-    typedef field3D< v3d >  F3DV;
+    typedef visit_field2D< v2d >  F2DV;
+    typedef visit_field3D< v3d >  F3DV;
 
     class Sim : public VisIt::Simulation
     {
@@ -168,7 +168,7 @@ namespace
                 }
             }
 
-
+            field_info::pointer fp( &f2d );
 
         }
 
@@ -190,10 +190,10 @@ namespace
             (void)__visit::add_mesh(md,rmesh3);
             (void)__visit::add_mesh(md,cmesh3);
 
-            (void)__visit::add_variable(md,rmesh2,f2d);
-            (void)__visit::add_variable(md,cmesh2,f2dv);
-            (void)__visit::add_variable(md,cmesh3,f3d);
-            (void)__visit::add_variable(md,rmesh3,f3dv);
+            (void) f2d. add(md,rmesh2);
+            (void) f2dv.add(md,cmesh2);
+            (void) f3d. add(md,cmesh3);
+            (void) f3dv.add(md,rmesh3);
 
         }
 
@@ -238,11 +238,11 @@ namespace
         // getting data
         virtual visit_handle getVariable(int,const string &id)
         {
-            if(id=="f2d")  return __visit::get_variable(f2d);
-            if(id=="f2dv") return __visit::get_variable(f2dv);
+            if(id=="f2d")  return f2d.get();
+            if(id=="f2dv") return f2dv.get();
 
-            if(id=="f3d")  return __visit::get_variable(f3d);
-            if(id=="f3dv") return __visit::get_variable(f3dv);
+            if(id=="f3d")  return f3d.get();
+            if(id=="f3dv") return f3dv.get();
 
             return VISIT_INVALID_HANDLE;
         }

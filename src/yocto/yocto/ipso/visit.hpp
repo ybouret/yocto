@@ -245,10 +245,10 @@ namespace yocto
             // Variable Metadata
             //
             ////////////////////////////////////////////////////////////////////
-            template <typename MESH,typename FIELD> static inline
-            visit_handle add_variable(visit_handle &md,
-                                      const MESH   &mesh,
-                                      const FIELD  &f)
+            template <typename FIELD> static inline
+            visit_handle add_variable(visit_handle    &md,
+                                      const mesh_info &mesh,
+                                      const FIELD     &f)
             {
                 visit_handle h = VisIt::VariableMetaData_alloc();
                 try
@@ -273,7 +273,44 @@ namespace yocto
             {
                 return VisIt:: VariableData_Set(f.entry,f.items);
             }
+
+            class field_io
+            {
+            public:
+
+                inline virtual ~field_io() throw() {}
+
+                virtual visit_handle add( visit_handle &meta_data, const mesh_info &mesh ) const = 0;
+                virtual visit_handle get() const = 0;
+
+            protected:
+                inline explicit field_io() throw() {}
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(field_io);
+            };
+
+
         };
+
+#define YOCTO_VISIT_FIELD(NAME,BASE) \
+template <typename T> \
+class NAME :  public  BASE<T>, public __visit::field_io  {\
+public:\
+inline explicit NAME(const string &id, const typename BASE<T>::patch_type &p) : BASE<T>(id,p) {}\
+inline explicit NAME(const char   *id, const typename BASE<T>::patch_type &p) : BASE<T>(id,p) {}\
+inline virtual ~NAME() throw() {}\
+inline virtual visit_handle add( visit_handle &meta_data, const mesh_info &mesh ) const { return __visit::add_variable(meta_data, mesh, *this); } \
+inline virtual visit_handle get() const { return __visit::get_variable(*this); }\
+private:\
+YOCTO_DISABLE_COPY_AND_ASSIGN(NAME);\
+}
+
+        YOCTO_VISIT_FIELD(visit_field1D,field1D);
+        YOCTO_VISIT_FIELD(visit_field2D,field2D);
+        YOCTO_VISIT_FIELD(visit_field3D,field3D);
+
+        
 
     }
 }
