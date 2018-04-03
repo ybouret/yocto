@@ -40,10 +40,10 @@ namespace yocto
             }
 
             template <typename MESH> static inline
-            void __add_mesh_metadata(visit_handle &md,
-                                     const MESH   &mesh,
-                                     const int     mesh_type,
-                                     const int     topo_dims)
+            visit_handle __add_mesh_metadata(visit_handle &md,
+                                             const MESH   &mesh,
+                                             const int     mesh_type,
+                                             const int     topo_dims)
             {
                 visit_handle m = VisIt::MeshMetaData_alloc();
                 try
@@ -58,26 +58,135 @@ namespace yocto
                     VisIt::MeshMetaData_free(m);
                     throw;
                 }
+                return m;
             }
 
             template <typename T,const size_t DIM> static inline
-            void add_mesh_metadata(visit_handle &md, const rectilinear_mesh<T,DIM> &mesh)
+            visit_handle add_mesh_metadata(visit_handle &md, const rectilinear_mesh<T,DIM> &mesh)
             {
-                __add_mesh_metadata(md,mesh,VISIT_MESHTYPE_RECTILINEAR,mesh.dimension);
+                return __add_mesh_metadata(md,mesh,VISIT_MESHTYPE_RECTILINEAR,mesh.dimension);
             }
 
             template <typename T,const size_t DIM> static inline
-            void add_mesh_metadata(visit_handle &md, const curvilinear_mesh<T,DIM> &mesh)
+            visit_handle add_mesh_metadata(visit_handle &md, const curvilinear_mesh<T,DIM> &mesh)
             {
                 __add_mesh_metadata(md,mesh,VISIT_MESHTYPE_CURVILINEAR,mesh.dimension);
             }
 
             template <typename T,const size_t DIM> static inline
-            void add_mesh_metadata(visit_handle &md, const point_mesh<T,DIM> &mesh)
+            visit_handle add_mesh_metadata(visit_handle &md, const point_mesh<T,DIM> &mesh)
             {
-                __add_mesh_metadata(md,mesh,VISIT_MESHTYPE_POINT,1);
+                return __add_mesh_metadata(md,mesh,VISIT_MESHTYPE_POINT,1);
             }
 
+
+
+            ////////////////////////////////////////////////////////////////////
+            //
+            // Rectilinear Mesh Data API
+            //
+            ////////////////////////////////////////////////////////////////////
+            static inline visit_handle __rectilinear_mesh_handle()
+            {
+                visit_handle h = VISIT_INVALID_HANDLE;
+                if( VISIT_OKAY != VisIt_RectilinearMesh_alloc(&h) )
+                {
+                    throw exception("VisIt_RectilinearMesh_alloc");
+                }
+                return h;
+            }
+
+
+            template <typename T> static inline
+            visit_handle get_mesh(const rectilinear_mesh<T,2> &mesh)
+            {
+
+                visit_handle h = __rectilinear_mesh_handle();
+                try
+                {
+                    visit_handle hx = VisIt::VariableData_Set( mesh.X().entry, mesh.X().items );
+                    visit_handle hy = VisIt::VariableData_Set( mesh.Y().entry, mesh.Y().items );
+                    VisIt_RectilinearMesh_setCoordsXY(h,hx,hy);
+                }
+                catch(...)
+                {
+                    VisIt_RectilinearMesh_free(h);
+                    throw;
+                }
+                return h;
+            }
+
+            template <typename T> static inline
+            visit_handle get_mesh(const rectilinear_mesh<T,3> &mesh)
+            {
+
+                visit_handle h = __rectilinear_mesh_handle();
+                try
+                {
+                    visit_handle hx = VisIt::VariableData_Set( mesh.X().entry, mesh.X().items );
+                    visit_handle hy = VisIt::VariableData_Set( mesh.Y().entry, mesh.Y().items );
+                    visit_handle hz = VisIt::VariableData_Set( mesh.Z().entry, mesh.Z().items );
+                    VisIt_RectilinearMesh_setCoordsXYZ(h,hx,hy,hz);
+                }
+                catch(...)
+                {
+                    VisIt_RectilinearMesh_free(h);
+                    throw;
+                }
+                return h;
+            }
+
+            ////////////////////////////////////////////////////////////////////
+            //
+            // Point Mesh Data API
+            //
+            ////////////////////////////////////////////////////////////////////
+            static inline visit_handle __point_mesh_handle()
+            {
+                visit_handle h = VISIT_INVALID_HANDLE;
+                if( VISIT_OKAY != VisIt_PointMesh_alloc(&h) )
+                {
+                    throw exception("VisIt_PointMesh_alloc");
+                }
+                return h;
+            }
+
+            template <typename T> static inline
+            visit_handle get_mesh(const point_mesh<T,2> &mesh)
+            {
+                visit_handle h = __point_mesh_handle();
+                try
+                {
+                    visit_handle hx = VisIt::VariableData_Set( mesh.X().entry, mesh.X().items );
+                    visit_handle hy = VisIt::VariableData_Set( mesh.Y().entry, mesh.Y().items );
+                    VisIt_PointMesh_setCoordsXY(h,hx,hy);
+                }
+                catch(...)
+                {
+                    VisIt_PointMesh_free(h);
+                    throw;
+                }
+                return h;
+            }
+
+            template <typename T> static inline
+            visit_handle get_mesh(const point_mesh<T,3> &mesh)
+            {
+                visit_handle h = __point_mesh_handle();
+                try
+                {
+                    visit_handle hx = VisIt::VariableData_Set( mesh.X().entry, mesh.X().items );
+                    visit_handle hy = VisIt::VariableData_Set( mesh.Y().entry, mesh.Y().items );
+                    visit_handle hz = VisIt::VariableData_Set( mesh.Z().entry, mesh.Z().items );
+                    VisIt_PointMesh_setCoordsXYZ(h,hx,hy,hz);
+                }
+                catch(...)
+                {
+                    VisIt_PointMesh_free(h);
+                    throw;
+                }
+                return h;
+            }
 
         };
 

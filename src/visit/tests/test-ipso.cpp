@@ -100,18 +100,47 @@ namespace
 
         }
 
+        // adding meshes
         virtual void setMetaData(visit_handle &md)
         {
-            // adding meshes
-            __visit::add_mesh_metadata(md,pmesh1);
-            __visit::add_mesh_metadata(md,rmesh1);
+            (void)__visit::add_mesh_metadata(md,pmesh1);
+            (void)__visit::add_mesh_metadata(md,rmesh1);
 
-            __visit::add_mesh_metadata(md,pmesh2);
-            __visit::add_mesh_metadata(md,rmesh2);
+            (void)__visit::add_mesh_metadata(md,pmesh2);
+            (void)__visit::add_mesh_metadata(md,rmesh2);
 
-            __visit::add_mesh_metadata(md,pmesh3);
-            __visit::add_mesh_metadata(md,rmesh3);
+            (void)__visit::add_mesh_metadata(md,pmesh3);
+            (void)__visit::add_mesh_metadata(md,rmesh3);
 
+        }
+
+        // getting meshes
+        virtual visit_handle getMesh(const int , const string &mesh_name)
+        {
+
+            if(mesh_name == "pmesh2")
+            {
+                return __visit::get_mesh(pmesh2);
+            }
+
+            if(mesh_name == "pmesh3")
+            {
+                return __visit::get_mesh(pmesh3);
+            }
+
+            if(mesh_name == "rmesh2")
+            {
+                return __visit::get_mesh(rmesh2);
+            }
+
+            if(mesh_name == "rmesh3")
+            {
+                return __visit::get_mesh(rmesh3);
+            }
+
+
+
+            return VISIT_INVALID_HANDLE;
         }
 
         virtual ~Sim() throw()

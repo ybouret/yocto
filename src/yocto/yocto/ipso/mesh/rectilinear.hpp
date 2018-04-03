@@ -29,7 +29,8 @@ namespace yocto
                                              const array<string> &names,
                                              const subset_type   &sub) :
             mesh_info(id,DIMENSION),
-            axis_handle()
+            axis_handle(),
+            subs()
             {
                 build_subsets1D_from(sub,subs,true);
                 setup(names);
@@ -39,7 +40,8 @@ namespace yocto
                                              const array<string> &names,
                                              const subset_type   &sub) :
             mesh_info(id,DIMENSION),
-            axis_handle()
+            axis_handle(),
+            subs()
             {
                 build_subsets1D_from(sub,subs,true);
                 setup(names);
