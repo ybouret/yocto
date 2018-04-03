@@ -86,6 +86,11 @@ namespace
         cmesh3("cmesh3",names3D,sub3D)
 
         {
+            MPI.Printf(stderr, "sub1D: %d->%d\n", int(sub1D.outer.lower), int(sub1D.outer.upper) );
+            MPI.Printf(stderr, "sub2D: %d->%d | %d->%d\n",
+                       int(sub2D.outer.lower.x), int(sub2D.outer.upper.x),
+                       int(sub2D.outer.lower.y), int(sub2D.outer.upper.y));
+
             {
                 box<float,1> b1D(0,1);
                 pmesh1.map_regular(0,1,sub1D.inner);
