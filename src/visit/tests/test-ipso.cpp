@@ -9,6 +9,10 @@ using namespace ipso;
 namespace
 {
 
+    typedef field1D<double> F1D;
+    typedef field2D<float>  F2D;
+    typedef field3D<float>  F3D;
+
     class Sim : public VisIt::Simulation
     {
     public:
@@ -27,6 +31,7 @@ namespace
         point_mesh<float,1>       pmesh1;
         rectilinear_mesh<float,1> rmesh1;
         curvilinear_mesh<float,1> cmesh1;
+        F1D                      &f1d;
 
         const patch2D             region2D;
         const coord2D             pbcs2D;
@@ -37,6 +42,7 @@ namespace
         point_mesh<float,2>       pmesh2;
         rectilinear_mesh<float,2> rmesh2;
         curvilinear_mesh<float,2> cmesh2;
+        F2D                      &f2d;
 
         const patch3D             region3D;
         const coord3D             pbcs3D;
@@ -47,6 +53,7 @@ namespace
         point_mesh<float,3>       pmesh3;
         rectilinear_mesh<float,3> rmesh3;
         curvilinear_mesh<float,3> cmesh3;
+        F3D &                     f3d;
 
         explicit Sim(const VisIt   &visit,
                      const coord3D &dims,
@@ -65,6 +72,7 @@ namespace
         pmesh1("pmesh1",names1D,W1D),
         rmesh1("rmesh1",names1D,W1D),
         cmesh1("cmesh1",names1D,W1D),
+        f1d( W1D.create<F1D>( "f1d" ) ),
 
         region2D(coord2D(1,1),dims.xy()),
         pbcs2D(pbcs.xy()),
@@ -75,6 +83,7 @@ namespace
         pmesh2("pmesh2",names2D,W1D),
         rmesh2("rmesh2",names2D,W2D),
         cmesh2("cmesh2",names2D,W2D),
+        f2d( W2D.create<F2D>( "f2d" ) ),
 
         region3D(coord3D(1,1,1),dims),
         pbcs3D(pbcs),
@@ -84,7 +93,8 @@ namespace
         W3D(MPI,full3D,layers,pbcs3D),
         pmesh3("pmesh3",names3D,W1D),
         rmesh3("rmesh3",names3D,W3D),
-        cmesh3("cmesh3",names3D,W3D)
+        cmesh3("cmesh3",names3D,W3D),
+        f3d( W3D.create<F3D>( "f3d" ) )
 
         {
             MPI.Printf(stderr, "sub1D: %d->%d\n", int(W1D.outer.lower), int(W1D.outer.upper) );
@@ -97,6 +107,7 @@ namespace
                 pmesh1.map_regular(0,1,full1D);
                 rmesh1.map_regular(b1D,full1D);
                 cmesh1.map_regular(b1D,full1D);
+                f1d.ld( rank+1 );
             }
 
             {
@@ -104,6 +115,7 @@ namespace
                 rmesh2.map_regular(b2d,full2D);
                 pmesh2.map_circle(full1D);
                 cmesh2.map_regular(b2d,full2D);
+                f2d.ld( rank+1 );
             }
 
             {
@@ -111,7 +123,10 @@ namespace
                 rmesh3.map_regular(b3d,full3D);
                 pmesh3.map_circle(full1D);
                 cmesh3.map_regular(b3d,full3D);
+                f3d.ld(rank+1);
             }
+
+
 
         }
 
