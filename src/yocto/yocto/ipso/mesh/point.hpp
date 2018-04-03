@@ -113,12 +113,12 @@ namespace yocto
                 fp << "POINTS "; fp("%u ",unsigned(p.items)); VTK::OutputScalarType<T>(fp); fp << '\n';
                 for(coord1D i=p.lower;i<=p.upper;++i)
                 {
-                    for(size_t dim=0;dim<DIM;++dim)
+                    for(size_t dim=0;dim<DIMENSION;++dim)
                     {
                         fp("%.15g",(*axis_handle[dim])[i]);
                         if(dim<2) fp << ' ';
                     }
-                    for(size_t dim=DIM;dim<3;++dim)
+                    for(size_t dim=DIMENSION;dim<3;++dim)
                     {
                         fp << '0';
                         if(dim<2) fp << ' ';
@@ -128,14 +128,14 @@ namespace yocto
             }
 
         private:
-            axis_type *axis_handle[DIM];
+            axis_type *axis_handle[DIMENSION];
             YOCTO_DISABLE_COPY_AND_ASSIGN(point_mesh);
             void setup(const array<string>   &names,
                        const subset<coord1D> &sub )
             {
-                assert(names.size()==DIM);
+                assert(names.size()==DIMENSION);
                 memset(axis_handle,0,sizeof(axis_handle));
-                for(size_t dim=0;dim<DIM;++dim)
+                for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     axis_type       &axis = axis_db.build<axis_type>(names[dim+1],sub.outer);
                     axis_handle[dim] = &axis;
