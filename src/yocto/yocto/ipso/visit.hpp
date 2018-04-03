@@ -20,8 +20,8 @@ namespace yocto
             //
             ////////////////////////////////////////////////////////////////////
             static inline
-            void __add_mesh(visit_handle    &m,
-                            const mesh_info &mesh)
+            void __add_mesh_common(visit_handle    &m,
+                                   const mesh_info &mesh)
             {
                 YOCTO_MPI_GET();
                 const size_t d = mesh.dimension;
@@ -40,15 +40,15 @@ namespace yocto
             }
 
             template <typename MESH> static inline
-            visit_handle __add_mesh_metadata(visit_handle &md,
-                                             const MESH   &mesh,
-                                             const int     mesh_type,
-                                             const int     topo_dims)
+            visit_handle __add_mesh(visit_handle &md,
+                                    const MESH   &mesh,
+                                    const int     mesh_type,
+                                    const int     topo_dims)
             {
                 visit_handle m = VisIt::MeshMetaData_alloc();
                 try
                 {
-                    __add_mesh(m,mesh);
+                    __add_mesh_common(m,mesh);
                     VisIt_MeshMetaData_setMeshType(m,mesh_type);
                     VisIt_MeshMetaData_setTopologicalDimension(m,topo_dims);
                     VisIt_SimulationMetaData_addMesh(md,m);
@@ -62,21 +62,21 @@ namespace yocto
             }
 
             template <typename T,const size_t DIM> static inline
-            visit_handle add_mesh_metadata(visit_handle &md, const rectilinear_mesh<T,DIM> &mesh)
+            visit_handle add_mesh(visit_handle &md, const rectilinear_mesh<T,DIM> &mesh)
             {
-                return __add_mesh_metadata(md,mesh,VISIT_MESHTYPE_RECTILINEAR,mesh.dimension);
+                return __add_mesh(md,mesh,VISIT_MESHTYPE_RECTILINEAR,mesh.dimension);
             }
 
             template <typename T,const size_t DIM> static inline
-            visit_handle add_mesh_metadata(visit_handle &md, const curvilinear_mesh<T,DIM> &mesh)
+            visit_handle add_mesh(visit_handle &md, const curvilinear_mesh<T,DIM> &mesh)
             {
-                return __add_mesh_metadata(md,mesh,VISIT_MESHTYPE_CURVILINEAR,mesh.dimension);
+                return __add_mesh(md,mesh,VISIT_MESHTYPE_CURVILINEAR,mesh.dimension);
             }
 
             template <typename T,const size_t DIM> static inline
-            visit_handle add_mesh_metadata(visit_handle &md, const point_mesh<T,DIM> &mesh)
+            visit_handle add_mesh(visit_handle &md, const point_mesh<T,DIM> &mesh)
             {
-                return __add_mesh_metadata(md,mesh,VISIT_MESHTYPE_POINT,1);
+                return __add_mesh(md,mesh,VISIT_MESHTYPE_POINT,1);
             }
 
 
@@ -240,6 +240,39 @@ namespace yocto
                 return h;
             }
 
+            ////////////////////////////////////////////////////////////////////
+            //
+            // Variable Metadata
+            //
+            ////////////////////////////////////////////////////////////////////
+            template <typename MESH,typename FIELD> static inline
+            visit_handle add_variable(visit_handle &md,
+                                      const MESH   &mesh,
+                                      const FIELD  &f)
+            {
+                visit_handle h = VisIt::VariableMetaData_alloc();
+                try
+                {
+                    VisIt_VariableMetaData_setName(h, *f.name );
+                    VisIt_VariableMetaData_setMeshName(h, *mesh.name);
+                    VisIt_VariableMetaData_setCentering(h, VISIT_VARCENTERING_NODE);
+                    VisIt_VariableMetaData_setType(h, VisIt::getVariableType<typename FIELD::type>());
+                    VisIt_VariableMetaData_setNumComponents(h, VisIt::getVariableNumComponents<typename FIELD::type>());
+                    VisIt_SimulationMetaData_addVariable(md,h);
+                }
+                catch(...)
+                {
+                    VisIt::VariableMetaData_free(h);
+                    throw;
+                }
+                return h;
+            }
+
+            template <typename FIELD> static inline
+            visit_handle get_variable( const FIELD &f )
+            {
+                return VisIt:: VariableData_Set(f.entry,f.items);
+            }
         };
 
     }

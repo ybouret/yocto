@@ -12,12 +12,15 @@ namespace
     typedef field1D<double> F1D;
     typedef field2D<float>  F2D;
     typedef field3D<float>  F3D;
+    typedef point2d<float>  v2d;
+    typedef point3d<float>  v3d;
+    typedef field2D< v2d >  F2DV;
+    typedef field3D< v3d >  F3DV;
 
     class Sim : public VisIt::Simulation
     {
     public:
-        typedef point2d<float> v2d;
-        typedef point3d<float> v3d;
+
 
         const size_t   size;
         const size_t   rank;
@@ -43,6 +46,7 @@ namespace
         rectilinear_mesh<float,2> rmesh2;
         curvilinear_mesh<float,2> cmesh2;
         F2D                      &f2d;
+        F2DV                     &f2dv;
 
         const patch3D             region3D;
         const coord3D             pbcs3D;
@@ -53,7 +57,8 @@ namespace
         point_mesh<float,3>       pmesh3;
         rectilinear_mesh<float,3> rmesh3;
         curvilinear_mesh<float,3> cmesh3;
-        F3D &                     f3d;
+        F3D  &                    f3d;
+        F3DV &                    f3dv;
 
         explicit Sim(const VisIt   &visit,
                      const coord3D &dims,
@@ -84,6 +89,7 @@ namespace
         rmesh2("rmesh2",names2D,W2D),
         cmesh2("cmesh2",names2D,W2D),
         f2d( W2D.create<F2D>( "f2d" ) ),
+        f2dv( W2D.create<F2DV>( "f2dv" ) ),
 
         region3D(coord3D(1,1,1),dims),
         pbcs3D(pbcs),
@@ -94,7 +100,8 @@ namespace
         pmesh3("pmesh3",names3D,W1D),
         rmesh3("rmesh3",names3D,W3D),
         cmesh3("cmesh3",names3D,W3D),
-        f3d( W3D.create<F3D>( "f3d" ) )
+        f3d(  W3D.create<F3D>( "f3d" )   ),
+        f3dv( W3D.create<F3DV>( "f3dv" ) )
 
         {
             MPI.Printf(stderr, "sub1D: %d->%d\n", int(W1D.outer.lower), int(W1D.outer.upper) );
@@ -116,6 +123,20 @@ namespace
                 pmesh2.map_circle(full1D);
                 cmesh2.map_regular(b2d,full2D);
                 f2d.ld( rank+1 );
+                const field1D<float> & _X = rmesh2.X();
+                const field1D<float> & _Y = rmesh2.Y();
+                for(coord1D j=W2D.inner.lower.y;j<=W2D.inner.upper.y;++j)
+                {
+                    const float y = _Y[j]-0.5f;
+                    for(coord1D i=W2D.inner.lower.x;i<=W2D.inner.upper.x;++i)
+                    {
+                        v2d &v = f2dv[j][i];
+                        const float x = _X[i]-0.5f;
+                        const float fac = exp( -2.2f*(x*x+y*y) );
+                        v.x = cosf(6.0f*x)*fac;
+                        v.y = sinf(6.0f*y)*fac;
+                    }
+                }
             }
 
             {
@@ -124,6 +145,27 @@ namespace
                 pmesh3.map_circle(full1D);
                 cmesh3.map_regular(b3d,full3D);
                 f3d.ld(rank+1);
+                const field1D<float> & _X = rmesh3.X();
+                const field1D<float> & _Y = rmesh3.Y();
+                const field1D<float> & _Z = rmesh3.Z();
+
+                for(coord1D k=W3D.inner.lower.z;k<=W3D.inner.upper.z;++k)
+                {
+                    const float z = _Z[k] - 0.5f;
+                    for(coord1D j=W3D.inner.lower.y;j<=W3D.inner.upper.y;++j)
+                    {
+                        const float y = _Y[j]-0.5f;
+                        for(coord1D i=W3D.inner.lower.x;i<=W3D.inner.upper.x;++i)
+                        {
+                            v3d &v = f3dv[k][j][i];
+                            const float x = _X[i]-0.5f;
+                            const float fac = exp( -2.2f*(x*x+y*y+z*z) );
+                            v.x = cosf(6.0f*x)*fac;
+                            v.y = sinf(6.0f*y)*fac;
+                            v.z = fac;
+                        }
+                    }
+                }
             }
 
 
@@ -133,17 +175,25 @@ namespace
         // adding meshes
         virtual void setMetaData(visit_handle &md)
         {
-            (void)__visit::add_mesh_metadata(md,pmesh1);
-            (void)__visit::add_mesh_metadata(md,rmesh1);
-            (void)__visit::add_mesh_metadata(md,cmesh1);
+            (void)__visit::add_mesh(md,pmesh1);
+            (void)__visit::add_mesh(md,rmesh1);
+            (void)__visit::add_mesh(md,cmesh1);
 
-            (void)__visit::add_mesh_metadata(md,pmesh2);
-            (void)__visit::add_mesh_metadata(md,rmesh2);
-            (void)__visit::add_mesh_metadata(md,cmesh2);
+            (void)__visit::add_mesh(md,pmesh2);
+            {
+                visit_handle m = __visit::add_mesh(md,rmesh2);
+                VisIt_MeshMetaData_setXLabel(m, "x2d");
+            }
+            (void)__visit::add_mesh(md,cmesh2);
 
-            (void)__visit::add_mesh_metadata(md,pmesh3);
-            (void)__visit::add_mesh_metadata(md,rmesh3);
-            (void)__visit::add_mesh_metadata(md,cmesh3);
+            (void)__visit::add_mesh(md,pmesh3);
+            (void)__visit::add_mesh(md,rmesh3);
+            (void)__visit::add_mesh(md,cmesh3);
+
+            (void)__visit::add_variable(md,rmesh2,f2d);
+            (void)__visit::add_variable(md,cmesh2,f2dv);
+            (void)__visit::add_variable(md,cmesh3,f3d);
+            (void)__visit::add_variable(md,rmesh3,f3dv);
 
         }
 
@@ -181,6 +231,18 @@ namespace
                 return __visit::get_mesh(cmesh3);
             }
 
+
+            return VISIT_INVALID_HANDLE;
+        }
+
+        // getting data
+        virtual visit_handle getVariable(int,const string &id)
+        {
+            if(id=="f2d")  return __visit::get_variable(f2d);
+            if(id=="f2dv") return __visit::get_variable(f2dv);
+
+            if(id=="f3d")  return __visit::get_variable(f3d);
+            if(id=="f3dv") return __visit::get_variable(f3dv);
 
             return VISIT_INVALID_HANDLE;
         }
