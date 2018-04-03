@@ -70,7 +70,7 @@ namespace yocto
             template <typename T,const size_t DIM> static inline
             visit_handle add_mesh_metadata(visit_handle &md, const curvilinear_mesh<T,DIM> &mesh)
             {
-                __add_mesh_metadata(md,mesh,VISIT_MESHTYPE_CURVILINEAR,mesh.dimension);
+                return __add_mesh_metadata(md,mesh,VISIT_MESHTYPE_CURVILINEAR,mesh.dimension);
             }
 
             template <typename T,const size_t DIM> static inline
@@ -183,6 +183,58 @@ namespace yocto
                 catch(...)
                 {
                     VisIt_PointMesh_free(h);
+                    throw;
+                }
+                return h;
+            }
+
+            ////////////////////////////////////////////////////////////////////
+            //
+            // Curvilinear Mesh Data API
+            //
+            ////////////////////////////////////////////////////////////////////
+            static inline visit_handle __curvilinear_mesh_handle()
+            {
+                visit_handle h = VISIT_INVALID_HANDLE;
+                if( VISIT_OKAY != VisIt_CurvilinearMesh_alloc(&h) )
+                {
+                    throw exception("VisIt_CurvilinearMesh_alloc");
+                }
+                return h;
+            }
+
+            template <typename T> static inline
+            visit_handle get_mesh(const curvilinear_mesh<T,2> &mesh)
+            {
+                visit_handle h = __curvilinear_mesh_handle();
+                try
+                {
+                    visit_handle hx = VisIt::VariableData_Set( mesh.X().entry, mesh.X().items );
+                    visit_handle hy = VisIt::VariableData_Set( mesh.Y().entry, mesh.Y().items );
+                    VisIt_CurvilinearMesh_setCoordsXY(h,(int *)(mesh.dims),hx,hy);
+                }
+                catch(...)
+                {
+                    VisIt_CurvilinearMesh_free(h);
+                    throw;
+                }
+                return h;
+            }
+
+            template <typename T> static inline
+            visit_handle get_mesh(const curvilinear_mesh<T,3> &mesh)
+            {
+                visit_handle h = __curvilinear_mesh_handle();
+                try
+                {
+                    visit_handle hx = VisIt::VariableData_Set( mesh.X().entry, mesh.X().items );
+                    visit_handle hy = VisIt::VariableData_Set( mesh.Y().entry, mesh.Y().items );
+                    visit_handle hz = VisIt::VariableData_Set( mesh.Z().entry, mesh.Z().items );
+                    VisIt_CurvilinearMesh_setCoordsXYZ(h,(int *)(mesh.dims),hx,hy,hz);
+                }
+                catch(...)
+                {
+                    VisIt_CurvilinearMesh_free(h);
                     throw;
                 }
                 return h;

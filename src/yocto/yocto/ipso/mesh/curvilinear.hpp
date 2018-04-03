@@ -33,7 +33,7 @@ namespace yocto
             inline explicit curvilinear_mesh(const string        &id,
                                              const array<string> &names,
                                              const subset_type   &sub ) :
-            mesh_info(id,DIMENSION), axis_handle()
+            mesh_info(id,DIMENSION), axis_handle(), dims()
             {
                 setup(names,sub);
             }
@@ -41,7 +41,7 @@ namespace yocto
             inline explicit curvilinear_mesh(const char          *id,
                                              const array<string> &names,
                                              const subset_type   &sub ) :
-            mesh_info(id,DIMENSION), axis_handle()
+            mesh_info(id,DIMENSION), axis_handle(), dims()
             {
                 setup(names,sub);
             }
@@ -84,7 +84,10 @@ namespace yocto
             
         protected:
             axis_type *axis_handle[DIMENSION];
-            
+
+        public:
+            const int dims[DIMENSION];
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(curvilinear_mesh);
             
@@ -92,14 +95,19 @@ namespace yocto
                        const subset_type   &sub)
             {
                 assert(names.size()==DIMENSION);
+                int *d = (int *)dims;
+
                 memset(axis_handle,0,sizeof(axis_handle));
-                
+                memset(d,0,sizeof(dims));
+
                 for(size_t dim=0;dim<DIMENSION;++dim)
                 {
                     axis_type       &axis = axis_db.build<axis_type>(names[dim+1],sub.outer);
                     axis_handle[dim] = &axis;
                     axis_info.append(axis);
+                    d[dim] = __coord(axis.width,dim);
                 }
+
             }
             
             ////////////////////////////////////////////////////////////////////
