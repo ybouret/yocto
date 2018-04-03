@@ -1,6 +1,7 @@
 #include "yocto/ipso/visit.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/string/conv.hpp"
+#include "yocto/ipso/mpi.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -17,32 +18,32 @@ namespace
         const size_t   size;
         const size_t   rank;
 
-        const patch1D         region1D;
-        const coord1D         pbcs1D;
-        const coord1D         sizes1D;
-        const divide::in1D    full1D;
-        const axis_names      names1D;
-        const subset<coord1D> sub1D;
-        point_mesh<float,1>   pmesh1;
+        const patch1D             region1D;
+        const coord1D             pbcs1D;
+        const coord1D             sizes1D;
+        const divide::in1D        full1D;
+        const axis_names          names1D;
+        mpi_workspace<coord1D>    W1D;
+        point_mesh<float,1>       pmesh1;
         rectilinear_mesh<float,1> rmesh1;
         curvilinear_mesh<float,1> cmesh1;
 
-        const patch2D      region2D;
-        const coord2D      pbcs2D;
-        const coord2D      sizes2D;
-        const divide::in2D full2D;
-        const axis_names   names2D;
-        const subset<coord2D> sub2D;
+        const patch2D             region2D;
+        const coord2D             pbcs2D;
+        const coord2D             sizes2D;
+        const divide::in2D        full2D;
+        const axis_names          names2D;
+        mpi_workspace<coord2D>    W2D;
         point_mesh<float,2>       pmesh2;
         rectilinear_mesh<float,2> rmesh2;
         curvilinear_mesh<float,2> cmesh2;
 
-        const patch3D         region3D;
-        const coord3D         pbcs3D;
-        const coord3D         sizes3D;
-        const divide::in3D    full3D;
-        const axis_names      names3D;
-        const subset<coord3D> sub3D;
+        const patch3D             region3D;
+        const coord3D             pbcs3D;
+        const coord3D             sizes3D;
+        const divide::in3D        full3D;
+        const axis_names          names3D;
+        mpi_workspace<coord3D>    W3D;
         point_mesh<float,3>       pmesh3;
         rectilinear_mesh<float,3> rmesh3;
         curvilinear_mesh<float,3> cmesh3;
@@ -60,36 +61,36 @@ namespace
         sizes1D( map_optimal_sizes(size,region1D,layers,pbcs1D) ),
         full1D(sizes1D,region1D),
         names1D("x"),
-        sub1D(full1D,rank,layers,pbcs1D,true),
-        pmesh1("pmesh1",names1D,sub1D),
-        rmesh1("rmesh1",names1D,sub1D),
-        cmesh1("cmesh1",names1D,sub1D),
+        W1D(MPI,full1D,layers,pbcs1D),
+        pmesh1("pmesh1",names1D,W1D),
+        rmesh1("rmesh1",names1D,W1D),
+        cmesh1("cmesh1",names1D,W1D),
 
         region2D(coord2D(1,1),dims.xy()),
         pbcs2D(pbcs.xy()),
         sizes2D( map_optimal_sizes(size,region2D,layers,pbcs2D) ),
         full2D(sizes2D,region2D),
         names2D("x,y"),
-        sub2D(full2D,rank,layers,pbcs2D,true),
-        pmesh2("pmesh2",names2D,sub1D),
-        rmesh2("rmesh2",names2D,sub2D),
-        cmesh2("cmesh2",names2D,sub2D),
+        W2D(MPI,full2D,layers,pbcs2D),
+        pmesh2("pmesh2",names2D,W1D),
+        rmesh2("rmesh2",names2D,W2D),
+        cmesh2("cmesh2",names2D,W2D),
 
         region3D(coord3D(1,1,1),dims),
         pbcs3D(pbcs),
         sizes3D(map_optimal_sizes(size,region3D,layers,pbcs3D) ),
         full3D(sizes3D,region3D),
         names3D("x,y,z"),
-        sub3D(full3D,rank,layers,pbcs3D,true),
-        pmesh3("pmesh3",names3D,sub1D),
-        rmesh3("rmesh3",names3D,sub3D),
-        cmesh3("cmesh3",names3D,sub3D)
+        W3D(MPI,full3D,layers,pbcs3D),
+        pmesh3("pmesh3",names3D,W1D),
+        rmesh3("rmesh3",names3D,W3D),
+        cmesh3("cmesh3",names3D,W3D)
 
         {
-            MPI.Printf(stderr, "sub1D: %d->%d\n", int(sub1D.outer.lower), int(sub1D.outer.upper) );
+            MPI.Printf(stderr, "sub1D: %d->%d\n", int(W1D.outer.lower), int(W1D.outer.upper) );
             MPI.Printf(stderr, "sub2D: %d->%d | %d->%d\n",
-                       int(sub2D.outer.lower.x), int(sub2D.outer.upper.x),
-                       int(sub2D.outer.lower.y), int(sub2D.outer.upper.y));
+                       int(W2D.outer.lower.x), int(W2D.outer.upper.x),
+                       int(W2D.outer.lower.y), int(W2D.outer.upper.y));
 
             {
                 box<float,1> b1D(0,1);
