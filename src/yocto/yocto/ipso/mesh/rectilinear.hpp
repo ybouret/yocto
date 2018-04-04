@@ -30,7 +30,8 @@ namespace yocto
                                              const subset_type   &sub) :
             mesh_info(id,DIMENSION),
             axis_handle(),
-            subs()
+            subs(),
+            rindx(sub.rindx)
             {
                 build_subsets1D_from(sub,subs,true);
                 setup(names);
@@ -41,7 +42,8 @@ namespace yocto
                                              const subset_type   &sub) :
             mesh_info(id,DIMENSION),
             axis_handle(),
-            subs()
+            subs(),
+            rindx(sub.rindx)
             {
                 build_subsets1D_from(sub,subs,true);
                 setup(names);
@@ -140,6 +142,8 @@ namespace yocto
                     sub->allocate_swaps_for( sizeof(T) );
                 }
             }
+        public:
+            const real_indices<DIMENSION> rindx;
         };
         
     }

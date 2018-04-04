@@ -113,6 +113,11 @@ namespace
                        int(W2D.outer.lower.x), int(W2D.outer.upper.x),
                        int(W2D.outer.lower.y), int(W2D.outer.upper.y));
 
+            MPI.Printf(stderr, "rmesh2d real_indices: %d-%d, %d-%d\n",
+                       rmesh2.rindx.imin[0],rmesh2.rindx.imax[0],
+                       rmesh2.rindx.imin[1],rmesh2.rindx.imax[1]);
+
+
             {
                 box<float,1> b1D(0,1);
                 pmesh1.map_regular(0,1,full1D);

@@ -13,7 +13,42 @@ namespace yocto
     namespace ipso
     {
         typedef point3d<size_t> score_t;
-        
+
+        template <const size_t DIM>
+        class real_indices
+        {
+        public:
+            int imin[DIM];
+            int imax[DIM];
+
+            inline real_indices() throw() : imin(), imax()
+            {
+                memset(imin,0,sizeof(imin));
+                memset(imax,0,sizeof(imax));
+            }
+
+            inline ~real_indices() throw() {}
+
+            inline  real_indices( const real_indices &other ) throw() :
+            imin(), imax()
+            {
+                memcpy(imin,other.imin,sizeof(imin));
+                memcpy(imax,other.imax,sizeof(imax));
+            }
+
+            inline  real_indices & operator=(const real_indices &other) throw()
+            {
+                for(size_t i=0;i<DIM;++i)
+                {
+                    imin[i] = other.imin[i];
+                    imax[i] = other.imax[i];
+                }
+                return *this;
+            }
+            
+        };
+
+
         template <typename COORD>
         class subset : public object
         {
@@ -22,6 +57,7 @@ namespace yocto
             typedef core::list_of_cpp<subset> list;
             typedef patch<COORD>              patch_type;
             static const size_t               DIM = YOCTO_IPSO_DIM_OF(COORD);
+            typedef real_indices<DIM>         real_indices_t;
 
             const size_t          rank;       //!< global (aka MPI) rank
             const COORD           ranks;      //!< local ranks
@@ -33,6 +69,7 @@ namespace yocto
             const swaps_addr_list asyncs;     //!< asyncs collection
             subset               *next;       //!< for subset::list
             subset               *prev;       //!< for subset::list
+            const real_indices_t  rindx;
             const score_t         score;      //!< (inner.items,num_async,num_local)
 
 
@@ -63,8 +100,10 @@ namespace yocto
             asyncs(),
             next(0),
             prev(0),
+            rindx(),
             score()
             {
+
                 //______________________________________________________________
                 //
                 // checking swaps availability
@@ -72,6 +111,7 @@ namespace yocto
                 const bool has_swaps = (layers>0);
                 if(!has_swaps)
                 {
+                    initial_real_indices();
                     set_score();
                     return;
                 }
@@ -106,37 +146,37 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     swaps_list  & _async = (swaps_list  &)(async[dim]);
                     swaps_list  & _local = (swaps_list  &)(local[dim]);
 
+
                     //__________________________________________________________
                     //
                     // Pass 1: computing outer patch
                     //__________________________________________________________
-                    const bool    periodic = (0!=__coord(pbcs,dim));
-                    coord1D      &lo       = __coord(lower,dim);
-                    coord1D      &up       = __coord(upper,dim);
-                    const coord1D sz       = __coord(full.sizes,dim); assert(sz>0);
-                    const bool    parallel = (sz>1);
-                    const coord1D rk       = __coord(ranks,dim);      assert(rk<sz);
-                    const coord1D last     = __coord(full.lasts,dim); assert(sz-1==last);
+                    const bool    periodic     = (0!=__coord(pbcs,dim));
+                    coord1D      &lo           = __coord(lower,dim);
+                    coord1D      &up           = __coord(upper,dim);
+                    const coord1D dim_size     = __coord(full.sizes,dim); assert(dim_size>0);
+                    const bool    dim_para     = (dim_size>1);
+                    const coord1D dim_rank     = __coord(ranks,dim);      assert(dim_rank<dim_size);
+                    const coord1D dim_last     = __coord(full.lasts,dim); assert(dim_size-1==dim_last);
+                    const bool    is_dim_first = (0       == dim_rank);
+                    const bool    is_dim_last  = (dim_last== dim_rank);
                     if(periodic)
                     {
                         ////////////////////////////////////////////////////////
                         //
-                        // PERIODIC CODE
+                        // PERIODIC CODE for PATCH
                         //
                         ////////////////////////////////////////////////////////
                         lo-=layers;
                         up+=layers;
-                        if(parallel)
+                        if(dim_para)
                         {
                             //__________________________________________________
                             //
-                            // PARALLEL in that dimension: always async
+                            // PARALLEL in that dimension: always async PAIR
                             //__________________________________________________
-                            if(has_swaps)
-                            {
-                                YOCTO_IPSO_LOWER_SWAPS(async);
-                                YOCTO_IPSO_UPPER_SWAPS(async);
-                            }
+                            YOCTO_IPSO_LOWER_SWAPS(async);
+                            YOCTO_IPSO_UPPER_SWAPS(async);
                         }
                         else
                         {
@@ -144,11 +184,12 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                             //
                             // SEQUENTIAL in that dimension: always local PAIR
                             //__________________________________________________
-                            assert(1==sz);
+                            assert(1==dim_size);
 
                             YOCTO_IPSO_LOWER_SWAPS(local);
                             YOCTO_IPSO_UPPER_SWAPS(local);
                         }
+
                     }
                     else
                     {
@@ -157,9 +198,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                         // NOT PERIODIC CODE
                         //
                         ////////////////////////////////////////////////////////
-                        if(parallel)
+                        if(dim_para)
                         {
-                            if(0==rk)
+                            if(is_dim_first)
                             {
                                 //______________________________________________
                                 //
@@ -170,7 +211,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                             }
                             else
                             {
-                                if(last==rk)
+                                if(is_dim_last)
                                 {
                                     //__________________________________________
                                     //
@@ -198,6 +239,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
                 // rebuild outer patch
                 new ((void*)&outer) patch_type(lower,upper);
+
+
+                compute_real_indices(full,layers,pbcs);
+
 
                 //______________________________________________________________
                 //
@@ -424,6 +469,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             asyncs(),
             next(0),
             prev(0),
+            rindx(),
             score()
             {
             }
@@ -473,8 +519,73 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 new ((void*)&score) score_t( inner.items,num_async,num_local);
             }
 
-          
+            void initial_real_indices() throw()
+            {
+                int *minIndices = (int *) &rindx.imin[0];
+                int *maxIndices = (int *) &rindx.imax[0];
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    minIndices[dim] = 0;
+                    maxIndices[dim] = __coord(outer.width,dim)-1;
+                }
+            }
 
+            void compute_real_indices(const divider<COORD> &full,
+                                      const size_t          layers,
+                                      const COORD           pbcs) throw()
+            {
+                // get addresses
+                int *minIndices = (int *) &rindx.imin[0];
+                int *maxIndices = (int *) &rindx.imax[0];
+
+                // update real_indices
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+
+                    //const bool    periodic     = (0!=__coord(pbcs,dim));
+                    //const coord1D dim_size     = __coord(full.sizes,dim);
+                    //const bool    dim_para     = (dim_size>1);
+                    const coord1D dim_rank     = __coord(ranks,dim);
+                    const coord1D dim_last     = __coord(full.lasts,dim);
+                    const bool    is_dim_first = (0       ==dim_rank);
+                    const bool    is_dim_last  = (dim_last==dim_rank);
+                    int &         imin         = minIndices[dim];
+                    int &         imax         = maxIndices[dim];
+                    const coord1D outer_lo     = __coord(outer.lower,dim);
+                    const coord1D outer_up     = __coord(outer.upper,dim);
+                    const coord1D inner_lo     = __coord(inner.lower,dim);
+                    const coord1D inner_up     = __coord(inner.upper,dim);
+
+                    imin = 0;
+                    imax = __coord(outer.width,dim)-1;
+
+                    // remove lowest swaps in any case
+                    bool removed_up = false;
+
+                    if(is_dim_first)
+                    {
+                        if(outer_lo<inner_lo)
+                        {
+                            imin += layers;
+                        }
+                    }
+
+
+                    // remove uppest swaps in any case
+                    if(is_dim_last)
+                    {
+                        if(inner_up<outer_up)
+                        {
+                            imax -= layers;
+                            removed_up = true;
+                        }
+                    }
+
+                    
+
+                }
+
+            }
             
 
         };
@@ -501,7 +612,11 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 subs.push_back(sub);
                 swaps_list &local = (swaps_list &)(sub->local[0]);
                 swaps_list &async = (swaps_list &)(sub->async[0]);
-
+                int *minIndx = (int *) & (sub->rindx.imin[0]);
+                int *maxIndx = (int *) & (sub->rindx.imax[0]);
+                minIndx[0]   = source.rindx.imin[dim];
+                maxIndx[0]   = source.rindx.imax[dim];
+                
                 //______________________________________________________________
                 //
                 // duplicate topology and load offsets
