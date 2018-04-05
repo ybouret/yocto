@@ -10,6 +10,15 @@
 using namespace yocto;
 using namespace Lang;
 
+static inline
+void output_style(const size_t len)
+{
+    for(size_t i=0;i<len;++i)
+    {
+        std::cerr << "-";
+    }
+}
+
 YOCTO_PROGRAM_START()
 {
     if(argc<=2)
@@ -21,23 +30,25 @@ YOCTO_PROGRAM_START()
     const string             inclExt  = ".inc";
     const string             defsExt  = ".def";
 
-    std::cerr << "*** Dynamo Grammar Compiler for '" << gramFile << "'" << std::endl;
+    const size_t length = gramFile.length()+2;
+    std::cerr << "  /-----------------------------"; output_style(length); std::cerr << std::endl;
+    std::cerr << "  | Dynamo Grammar Compiler for '" << gramFile << "'" << std::endl;
     std::cerr << "  |" << std::endl;
-    std::cerr << "  |_Generating..." << std::endl;
+    std::cerr << "  |-Generating..." << std::endl;
     auto_ptr<Syntax::Parser> parser( Syntax::Parser::GenerateFromFile(gramFile) );
     const string tag      = parser->tag; ((string&)tag).to_lower();
     const string inclFile = gramWork + tag + inclExt;
     const string defsFile = gramWork + tag + defsExt;
 
     {
-        std::cerr << "  |_Serializing..." << std::endl;
+        std::cerr << "  |-Serializing..." << std::endl;
         string compiled;
         {
             ios::osstream fp(compiled);
             Syntax::Parser::Serialize( Module::OpenFile(gramFile) , fp);
         }
 
-        std::cerr << "  |_Writing Hexdump to '" << inclFile << "'" << std::endl;
+        std::cerr << "  |-Writing Hexdump to '" << inclFile << "'" << std::endl;
         {
             ios::wcstream fp(inclFile);
             hexdump::write(fp,compiled);
@@ -45,13 +56,14 @@ YOCTO_PROGRAM_START()
     }
 
     {
-        std::cerr << "  |_Writing Defines to '" << defsFile << "'" << std::endl;
+        std::cerr << "  |-Writing Defines to '" << defsFile << "'" << std::endl;
         ios::wcstream     fp(defsFile);
         //const string      prefix = parser->tag + '_';
         Syntax::Analyzer  analyzer(*parser);
         analyzer.emitDefinitions(fp,*parser);
     }
     std::cerr << "  |" << std::endl;
-    std::cerr << "*** Done!" << std::endl;
+    std::cerr << "  \\-----------------------------"; output_style(length); std::cerr << std::endl;
+
 }
 YOCTO_PROGRAM_END()
