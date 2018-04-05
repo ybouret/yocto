@@ -109,6 +109,8 @@ namespace
 
         {
             MPI.Printf(stderr, "sub1D: %d->%d\n", int(W1D.outer.lower), int(W1D.outer.upper) );
+
+
             MPI.Printf(stderr, "sub2D: %d->%d | %d->%d\n",
                        int(W2D.outer.lower.x), int(W2D.outer.upper.x),
                        int(W2D.outer.lower.y), int(W2D.outer.upper.y));
@@ -117,6 +119,10 @@ namespace
                        rmesh2.rindx.imin[0],rmesh2.rindx.imax[0],
                        rmesh2.rindx.imin[1],rmesh2.rindx.imax[1]);
 
+            MPI.Printf(stderr, "rmesh3d real_indices: %d-%d, %d-%d, %d-%d\n",
+                       rmesh3.rindx.imin[0],rmesh3.rindx.imax[0],
+                       rmesh3.rindx.imin[1],rmesh3.rindx.imax[1],
+                       rmesh3.rindx.imin[2],rmesh3.rindx.imax[2]);
 
             {
                 box<float,1> b1D(0,1);

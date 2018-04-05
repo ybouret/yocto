@@ -541,6 +541,12 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 int *minIndices = (int *) &rindx.imin[0];
                 int *maxIndices = (int *) &rindx.imax[0];
 
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    minIndices[dim] = 0;
+                    maxIndices[dim] = __coord(outer.width,dim)-1;
+                }
+
                 //______________________________________________________________
                 //
                 // update real_indices
@@ -548,9 +554,6 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 for(size_t dim=0;dim<DIM;++dim)
                 {
 
-                    //const bool    periodic     = (0!=__coord(pbcs,dim));
-                    //const coord1D dim_size     = __coord(full.sizes,dim);
-                    //const bool    dim_para     = (dim_size>1);
                     const coord1D dim_rank     = __coord(ranks,dim);
                     const coord1D dim_last     = __coord(full.lasts,dim);
                     const bool    is_dim_first = (0       ==dim_rank);
@@ -562,8 +565,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     const coord1D inner_lo     = __coord(inner.lower,dim);
                     const coord1D inner_up     = __coord(inner.upper,dim);
 
-                    imin = 0;
-                    imax = __coord(outer.width,dim)-1;
+
 
                     //__________________________________________________________
                     //
@@ -593,23 +595,25 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                             removed_up = true;
                         }
                     }
-
-                    //__________________________________________________________
-                    //
-                    // remove all lower ghost
-                    //__________________________________________________________
-                    if( (!removed_lo) && (outer_lo<inner_lo) )
+                    
+                    if(DIM<=2)
                     {
-                        imin += layers;
+                        //______________________________________________________
+                        //
+                        // remove all lower ghost
+                        //______________________________________________________
+                        if( (!removed_lo) && (outer_lo<inner_lo) )
+                        {
+                            imin += layers;
+                        }
+
+
+                        if( (!removed_up) && (inner_up<outer_up) )
+                        {
+                            imax -= layers;
+                            imax += 1;
+                        }
                     }
-
-
-                    if( (!removed_up) && (inner_up<outer_up) )
-                    {
-                        imax -= layers;
-                        imax += 1;
-                    }
-
 
                 }
 
