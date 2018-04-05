@@ -1,3 +1,4 @@
+#if 0
 #include "yocto/lang/dynamo/compiler.hpp"
 #include "yocto/exception.hpp"
 #include <cstring>
@@ -193,3 +194,5 @@ namespace yocto
         }
     }
 }
+#endif
+
