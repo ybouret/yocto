@@ -534,11 +534,17 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                                       const size_t          layers,
                                       const COORD           pbcs) throw()
             {
+                //______________________________________________________________
+                //
                 // get addresses
+                //______________________________________________________________
                 int *minIndices = (int *) &rindx.imin[0];
                 int *maxIndices = (int *) &rindx.imax[0];
 
+                //______________________________________________________________
+                //
                 // update real_indices
+                //______________________________________________________________
                 for(size_t dim=0;dim<DIM;++dim)
                 {
 
@@ -559,7 +565,11 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     imin = 0;
                     imax = __coord(outer.width,dim)-1;
 
+                    //__________________________________________________________
+                    //
                     // remove lowest swaps in any case
+                    //__________________________________________________________
+                    bool removed_lo = false;
                     bool removed_up = false;
 
                     if(is_dim_first)
@@ -567,11 +577,14 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                         if(outer_lo<inner_lo)
                         {
                             imin += layers;
+                            removed_lo = true;
                         }
                     }
 
-
+                    //__________________________________________________________
+                    //
                     // remove uppest swaps in any case
+                    //__________________________________________________________
                     if(is_dim_last)
                     {
                         if(inner_up<outer_up)
@@ -581,7 +594,22 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                         }
                     }
 
-                    
+                    //__________________________________________________________
+                    //
+                    // remove all lower ghost
+                    //__________________________________________________________
+                    if( (!removed_lo) && (outer_lo<inner_lo) )
+                    {
+                        imin += layers;
+                    }
+
+
+                    if( (!removed_up) && (inner_up<outer_up) )
+                    {
+                        imax -= layers;
+                        imax += 1;
+                    }
+
 
                 }
 
