@@ -477,39 +477,18 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             {
             }
             
-#if 0
-            inline subset( const subset &other ) :
-            rank(  other.rank  ),
-            ranks( other.ranks ),
-            inner( other.inner ),
-            outer( other.outer ),
-            local( other.local ),
-            async( other.async ),
-            locals(),
-            asyncs(),
-            next(0),
-            prev(0),
-            score( other.score )
-            {
-                for(size_t dim=0;dim<DIM;++dim)
-                {
-                    swaps_list  & _local = (swaps_list  &)(local[dim]);
-                    _local.merge_back_copy(other.local[dim]);
-                    swaps_list  & _async = (swaps_list  &)(async[dim]);
-                    _async.merge_back_copy(other.async[dim]);
-                }
-                register_all_swaps();
-            }
-#else
-            YOCTO_DISABLE_COPY(subset);
-#endif
+
         private:
-            YOCTO_DISABLE_ASSIGN(subset);
+            YOCTO_DISABLE_COPY_AND_ASSIGN(subset);
             void load_cross_swaps(const divider<COORD> &full,
                                   const size_t          layers,
                                   const COORD           pbcs,
                                   const bool            build);
 
+            //__________________________________________________________________
+            //
+            // compute timing score
+            //__________________________________________________________________
             inline void set_score() throw()
             {
                 size_t num_async = 0;
@@ -522,6 +501,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 new ((void*)&score) score_t( inner.items,num_async,num_local);
             }
 
+            //__________________________________________________________________
+            //
+            // real indices from outer patch
+            //__________________________________________________________________
             void initial_real_indices() throw()
             {
                 int *minIndices = &realIndices.imin.x;
@@ -533,6 +516,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
             }
 
+            //__________________________________________________________________
+            //
+            // real indices from outer and inner patch
+            //__________________________________________________________________
             void compute_real_indices(const divider<COORD> &full,
                                       const size_t          layers,
                                       const COORD           pbcs) throw()
@@ -567,8 +554,6 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     const coord1D outer_up     = __coord(outer.upper,dim);
                     const coord1D inner_lo     = __coord(inner.lower,dim);
                     const coord1D inner_up     = __coord(inner.upper,dim);
-
-
 
                     //__________________________________________________________
                     //
