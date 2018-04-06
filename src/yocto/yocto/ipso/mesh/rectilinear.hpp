@@ -31,7 +31,7 @@ namespace yocto
             mesh_info(id,DIMENSION),
             axis_handle(),
             subs(),
-            rindx(sub.rindx)
+            realIndices(sub.realIndices)
             {
                 build_subsets1D_from(sub,subs,true);
                 setup(names);
@@ -43,7 +43,7 @@ namespace yocto
             mesh_info(id,DIMENSION),
             axis_handle(),
             subs(),
-            rindx(sub.rindx)
+            realIndices(sub.realIndices)
             {
                 build_subsets1D_from(sub,subs,true);
                 setup(names);
@@ -143,7 +143,7 @@ namespace yocto
                 }
             }
         public:
-            const real_indices<DIMENSION> rindx;
+            const real_indices realIndices;
         };
         
     }

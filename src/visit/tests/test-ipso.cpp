@@ -116,13 +116,13 @@ namespace
                        int(W2D.outer.lower.y), int(W2D.outer.upper.y));
 
             MPI.Printf(stderr, "rmesh2d real_indices: %d-%d, %d-%d\n",
-                       rmesh2.rindx.imin[0],rmesh2.rindx.imax[0],
-                       rmesh2.rindx.imin[1],rmesh2.rindx.imax[1]);
+                       rmesh2.realIndices.imin[1],rmesh2.realIndices.imax[1],
+                       rmesh2.realIndices.imin[2],rmesh2.realIndices.imax[2]);
 
             MPI.Printf(stderr, "rmesh3d real_indices: %d-%d, %d-%d, %d-%d\n",
-                       rmesh3.rindx.imin[0],rmesh3.rindx.imax[0],
-                       rmesh3.rindx.imin[1],rmesh3.rindx.imax[1],
-                       rmesh3.rindx.imin[2],rmesh3.rindx.imax[2]);
+                       rmesh3.realIndices.imin[1],rmesh3.realIndices.imax[1],
+                       rmesh3.realIndices.imin[2],rmesh3.realIndices.imax[2],
+                       rmesh3.realIndices.imin[3],rmesh3.realIndices.imax[3]);
 
             {
                 box<float,1> b1D(0,1);

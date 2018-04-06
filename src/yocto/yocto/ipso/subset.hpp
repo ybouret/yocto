@@ -5,7 +5,7 @@
 #include "yocto/ipso/swaps.hpp"
 #include "yocto/ipso/divide.hpp"
 #include "yocto/ipso/fields.hpp"
-
+#include "yocto/ipso/vertex.hpp"
 #include "yocto/sort/merge.hpp"
 
 namespace yocto
@@ -14,79 +14,41 @@ namespace yocto
     {
         typedef point3d<size_t> score_t;
 
-        template <const size_t DIM>
-        class base_indices
-        {
-        public:
-
-            int value[DIM];
-            inline  base_indices() throw() : value() { ldz(); }
-            inline ~base_indices() throw() { ldz(); }
-            inline  base_indices(const base_indices &other) throw() : value() { memcpy(value,other.value,sizeof(value)); }
-            inline  base_indices & operator=(const base_indices &other) throw()
-            {
-                for(size_t i=0;i<DIM;++i) { value[i] = other.value[i]; }
-                return *this;
-            }
-            inline friend std::ostream & operator<<( std::ostream &os, const base_indices &b)
-            {
-                os << '(';
-                for(size_t i=0;i<DIM;++i)
-                {
-                    os << b.value[i];
-                    if(i<DIM-1) os << ',';
-                }
-                os << ')';
-                return os;
-            }
-
-            inline void ldz() throw() { memset(value,0,sizeof(value)); }
-
-        };
-
-        template <const size_t DIM>
         class real_indices
         {
         public:
-            int imin[DIM];
-            int imax[DIM];
+            typedef point3d<int> indx_t;
+            indx_t imin;
+            indx_t imax;
 
             inline real_indices() throw() : imin(), imax()
             {
-                memset(imin,0,sizeof(imin));
-                memset(imax,0,sizeof(imax));
             }
 
             inline ~real_indices() throw() {}
 
             inline  real_indices( const real_indices &other ) throw() :
-            imin(), imax()
+            imin(other.imin), imax(other.imax)
             {
-                memcpy(imin,other.imin,sizeof(imin));
-                memcpy(imax,other.imax,sizeof(imax));
+
             }
 
             inline  real_indices & operator=(const real_indices &other) throw()
             {
-                for(size_t i=0;i<DIM;++i)
-                {
-                    imin[i] = other.imin[i];
-                    imax[i] = other.imax[i];
-                }
+                imin = other.imin;
+                imax = other.imax;
                 return *this;
             }
 
             inline friend std::ostream & operator<<( std::ostream &os, const real_indices &ri )
             {
                 os << '(';
-                for(size_t i=0;i<DIM;++i)
-                {
-                    os << ri.imin[i] << '-' << ri.imax[i];
-                    if(i<DIM-1) os << ',';
-                }
+                os << ri.imin << '-' << ri.imax;
                 os << ')';
                 return os;
             }
+
+
             
         };
 
@@ -99,7 +61,6 @@ namespace yocto
             typedef core::list_of_cpp<subset> list;
             typedef patch<COORD>              patch_type;
             static const size_t               DIM = YOCTO_IPSO_DIM_OF(COORD);
-            typedef real_indices<DIM>         real_indices_t;
 
             const size_t          rank;       //!< global (aka MPI) rank
             const COORD           ranks;      //!< local ranks
@@ -110,9 +71,9 @@ namespace yocto
             const swaps_addr_list locals;     //!< locals collection
             const swaps_addr_list asyncs;     //!< asyncs collection
             subset               *next;       //!< for subset::list
-            subset               *prev;       //!< for subset::list
-            const real_indices_t  rindx;
-            const score_t         score;      //!< (inner.items,num_async,num_local)
+            subset               *prev;        //!< for subset::list
+            real_indices          realIndices; //!< real indices
+            const score_t         score;       //!< (inner.items,num_async,num_local)
 
 
 
@@ -142,7 +103,7 @@ namespace yocto
             asyncs(),
             next(0),
             prev(0),
-            rindx(),
+            realIndices(),
             score()
             {
 
@@ -511,7 +472,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             asyncs(),
             next(0),
             prev(0),
-            rindx(),
+            realIndices(),
             score()
             {
             }
@@ -563,8 +524,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
             void initial_real_indices() throw()
             {
-                int *minIndices = (int *) &rindx.imin[0];
-                int *maxIndices = (int *) &rindx.imax[0];
+                int *minIndices = &realIndices.imin.x;
+                int *maxIndices = &realIndices.imax.x;
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     minIndices[dim] = 0;
@@ -580,8 +541,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 //
                 // get addresses
                 //______________________________________________________________
-                int *minIndices = (int *) &rindx.imin[0];
-                int *maxIndices = (int *) &rindx.imax[0];
+                int *minIndices = &realIndices.imin.x;
+                int *maxIndices = &realIndices.imax.x;
 
                 for(size_t dim=0;dim<DIM;++dim)
                 {
@@ -685,10 +646,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 subs.push_back(sub);
                 swaps_list &local = (swaps_list &)(sub->local[0]);
                 swaps_list &async = (swaps_list &)(sub->async[0]);
-                int *minIndx = (int *) & (sub->rindx.imin[0]);
-                int *maxIndx = (int *) & (sub->rindx.imax[0]);
-                minIndx[0]   = source.rindx.imin[dim];
-                maxIndx[0]   = source.rindx.imax[dim];
+                sub->realIndices.imin[1] = source.realIndices.imin[dim+1];
+                sub->realIndices.imax[1] = source.realIndices.imax[dim+1];
                 
                 //______________________________________________________________
                 //

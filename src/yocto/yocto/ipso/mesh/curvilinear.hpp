@@ -33,7 +33,10 @@ namespace yocto
             inline explicit curvilinear_mesh(const string        &id,
                                              const array<string> &names,
                                              const subset_type   &sub ) :
-            mesh_info(id,DIMENSION), axis_handle(), dims()
+            mesh_info(id,DIMENSION),
+            axis_handle(),
+            dims(),
+            realIndices(sub.realIndices)
             {
                 setup(names,sub);
             }
@@ -41,7 +44,10 @@ namespace yocto
             inline explicit curvilinear_mesh(const char          *id,
                                              const array<string> &names,
                                              const subset_type   &sub ) :
-            mesh_info(id,DIMENSION), axis_handle(), dims()
+            mesh_info(id,DIMENSION),
+            axis_handle(),
+            dims(),
+            realIndices(sub.realIndices)
             {
                 setup(names,sub);
             }
@@ -86,7 +92,8 @@ namespace yocto
             axis_type *axis_handle[DIMENSION];
 
         public:
-            const int dims[DIMENSION];
+            const int          dims[DIMENSION];
+            const real_indices realIndices;
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(curvilinear_mesh);

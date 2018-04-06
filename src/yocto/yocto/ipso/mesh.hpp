@@ -22,7 +22,7 @@ namespace yocto
         private:
             YOCTO_DISABLE_ASSIGN(axis_names);
         };
-
+        
         //! info on mesh
         class mesh_info : public object
         {
@@ -36,6 +36,7 @@ namespace yocto
             const field_info & operator[](size_t dim) const throw();
             
             static const char * vtk_coordinates(const size_t dim) throw();
+
 
         protected:
             explicit mesh_info(const char   *id,const size_t d);
