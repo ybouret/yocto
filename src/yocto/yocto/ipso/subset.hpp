@@ -15,6 +15,36 @@ namespace yocto
         typedef point3d<size_t> score_t;
 
         template <const size_t DIM>
+        class base_indices
+        {
+        public:
+
+            int value[DIM];
+            inline  base_indices() throw() : value() { ldz(); }
+            inline ~base_indices() throw() { ldz(); }
+            inline  base_indices(const base_indices &other) throw() : value() { memcpy(value,other.value,sizeof(value)); }
+            inline  base_indices & operator=(const base_indices &other) throw()
+            {
+                for(size_t i=0;i<DIM;++i) { value[i] = other.value[i]; }
+                return *this;
+            }
+            inline friend std::ostream & operator<<( std::ostream &os, const base_indices &b)
+            {
+                os << '(';
+                for(size_t i=0;i<DIM;++i)
+                {
+                    os << b.value[i];
+                    if(i<DIM-1) os << ',';
+                }
+                os << ')';
+                return os;
+            }
+
+            inline void ldz() throw() { memset(value,0,sizeof(value)); }
+
+        };
+
+        template <const size_t DIM>
         class real_indices
         {
         public:
@@ -44,6 +74,18 @@ namespace yocto
                     imax[i] = other.imax[i];
                 }
                 return *this;
+            }
+
+            inline friend std::ostream & operator<<( std::ostream &os, const real_indices &ri )
+            {
+                os << '(';
+                for(size_t i=0;i<DIM;++i)
+                {
+                    os << ri.imin[i] << '-' << ri.imax[i];
+                    if(i<DIM-1) os << ',';
+                }
+                os << ')';
+                return os;
             }
             
         };
@@ -573,7 +615,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     //__________________________________________________________
                     bool removed_lo = false;
                     bool removed_up = false;
-
+                    
                     if(is_dim_first)
                     {
                         if(outer_lo<inner_lo)
@@ -587,6 +629,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     //
                     // remove uppest swaps in any case
                     //__________________________________________________________
+
                     if(is_dim_last)
                     {
                         if(inner_up<outer_up)
@@ -595,24 +638,22 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                             removed_up = true;
                         }
                     }
-                    
-                    if(DIM<=2)
+
+
+                    //__________________________________________________________
+                    //
+                    // remove all lower ghost
+                    //__________________________________________________________
+                    if( (!removed_lo) && (outer_lo<inner_lo) )
                     {
-                        //______________________________________________________
-                        //
-                        // remove all lower ghost
-                        //______________________________________________________
-                        if( (!removed_lo) && (outer_lo<inner_lo) )
-                        {
-                            imin += layers;
-                        }
+                        imin += layers;
+                    }
 
 
-                        if( (!removed_up) && (inner_up<outer_up) )
-                        {
-                            imax -= layers;
-                            imax += 1;
-                        }
+                    if( (!removed_up) && (inner_up<outer_up) )
+                    {
+                        imax -= layers;
+                        imax += 1;
                     }
 
                 }

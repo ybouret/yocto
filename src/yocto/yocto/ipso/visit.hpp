@@ -128,7 +128,8 @@ namespace yocto
                     visit_handle hy = VisIt::VariableData_Set( mesh.Y().entry, mesh.Y().items );
                     visit_handle hz = VisIt::VariableData_Set( mesh.Z().entry, mesh.Z().items );
                     VisIt_RectilinearMesh_setCoordsXYZ(h,hx,hy,hz);
-                    VisIt_RectilinearMesh_setRealIndices(h,(int *)(mesh.rindx.imin),(int *)(mesh.rindx.imax));
+
+                    //VisIt_RectilinearMesh_setRealIndices(h,(int *)(mesh.rindx.imin),(int *)(mesh.rindx.imax));
                 }
                 catch(...)
                 {
@@ -213,6 +214,7 @@ namespace yocto
                 {
                     visit_handle hx = VisIt::VariableData_Set( mesh.X().entry, mesh.X().items );
                     visit_handle hy = VisIt::VariableData_Set( mesh.Y().entry, mesh.Y().items );
+                    
                     VisIt_CurvilinearMesh_setCoordsXY(h,(int *)(mesh.dims),hx,hy);
                 }
                 catch(...)
