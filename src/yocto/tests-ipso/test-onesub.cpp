@@ -15,9 +15,9 @@ YOCTO_UNIT_TEST_IMPL(onesub)
         throw exception("usage: %s DIMS PBCS CPUS LAYERS", argv[0]);
     }
 
-    const coord3D dims   = __coord_parser::get<coord3D>(argv[1],"dims");
-    const coord3D pbcs   = __coord_parser::get<coord3D>(argv[2],"pbcs");
-    const coord3D cpus   = __coord_parser::get<coord3D>(argv[3],"cpus");
+    const coord2D dims   = __coord_parser::get<coord2D>(argv[1],"dims");
+    const coord2D pbcs   = __coord_parser::get<coord2D>(argv[2],"pbcs");
+    const coord2D cpus   = __coord_parser::get<coord2D>(argv[3],"cpus");
     const size_t  layers = strconv::to_size(argv[4],"layers");
 
     std::cerr << "dims   = " << dims   << std::endl;
@@ -29,11 +29,9 @@ YOCTO_UNIT_TEST_IMPL(onesub)
 
     if(true)
     {
-        const patch2D      region(coord2D(1,1),dims.xy());
-        const coord2D      PBCS(pbcs.xy());
-        const coord2D      sizes(cpus.xy());
-        const divide::in2D full(sizes,region);
-        subsets<coord2D>   subs(full,layers,PBCS,true);
+        const patch2D      region(coord2D(1,1),dims);
+        const divide::in2D full(cpus,region);
+        subsets<coord2D>   subs(full,layers,pbcs,true);
 
     }
 
