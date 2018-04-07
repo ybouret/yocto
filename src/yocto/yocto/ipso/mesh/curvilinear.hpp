@@ -128,10 +128,10 @@ namespace yocto
                 const coord1D     xden  = inner.upper-inner.lower;
                 if(xden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(0) );
 
-                axis_type & _X = X();
+                axis_type & _XX = X();
                 for(coord1D i=p.lower;i<=p.upper;++i)
                 {
-                    _X[i] = xmin + (xlen*(i-inner.lower))/xden;
+                    _XX[i] = xmin + (xlen*(i-inner.lower))/xden;
                 }
             }
             
@@ -151,16 +151,16 @@ namespace yocto
                 if(xden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(0) );
                 if(yden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(1) );
 
-                axis_type & _X = X();
-                axis_type & _Y = Y();
+                axis_type & _XX = X();
+                axis_type & _YY = Y();
                 for(coord1D j=p.lower.y;j<=p.upper.y;++j)
                 {
                     const_type yval = ymin + ( ylen * (j-inner.lower.y))/yden;
                     for(coord1D i=p.lower.x;i<=p.upper.x;++i)
                     {
                         const_type xval = xmin + (xlen*(i-inner.lower.x))/xden;
-                        _X[j][i] = xval;
-                        _Y[j][i] = yval;
+                        _XX[j][i] = xval;
+                        _YY[j][i] = yval;
                     }
                 }
             }
@@ -186,9 +186,9 @@ namespace yocto
                 if(yden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(1) );
                 if(zden<=0) throw exception("curvilear_mesh.map_regular(bad inner %s)", __coord_name(2) );
 
-                axis_type & _X = X();
-                axis_type & _Y = Y();
-                axis_type & _Z = Z();
+                axis_type & _XX = X();
+                axis_type & _YY = Y();
+                axis_type & _ZZ = Z();
 
                 for(coord1D k=p.lower.z;k<=p.upper.z;++k)
                 {
@@ -199,9 +199,9 @@ namespace yocto
                         for(coord1D i=p.lower.x;i<=p.upper.x;++i)
                         {
                             const_type xval = xmin + (xlen*(i-inner.lower.x))/xden;
-                            _X[k][j][i] = xval;
-                            _Y[k][j][i] = yval;
-                            _Z[k][j][i] = zval;
+                            _XX[k][j][i] = xval;
+                            _YY[k][j][i] = yval;
+                            _ZZ[k][j][i] = zval;
                         }
                     }
                 }
