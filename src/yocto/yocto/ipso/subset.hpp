@@ -74,7 +74,7 @@ namespace yocto
             subset               *prev;        //!< for subset::list
             real_indices          realIndices; //!< real indices
             const score_t         score;       //!< (inner.items,num_async,num_local)
-
+            const unsigned        flags;       //!< full flags
 
 
 
@@ -104,7 +104,8 @@ namespace yocto
             next(0),
             prev(0),
             realIndices(),
-            score()
+            score(),
+            flags(0)
             {
 
                 //______________________________________________________________
@@ -243,9 +244,11 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 // rebuild outer patch
                 new ((void*)&outer) patch_type(lower,upper);
 
-
+                // and deduce real indices for VisIt...
                 compute_real_indices(full,layers,pbcs);
 
+                // conpute flags from outer/inner
+                compute_flags();
 
                 //______________________________________________________________
                 //
@@ -473,7 +476,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             next(0),
             prev(0),
             realIndices(),
-            score()
+            score(),
+            flags(0)
             {
             }
             
@@ -606,7 +610,24 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
             }
             
-
+            inline void compute_flags() throw()
+            {
+                unsigned &f = (unsigned &)flags;
+                unsigned  p = 0x01;
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    if(__coord(outer.lower,dim)<__coord(inner.lower,dim))
+                    {
+                        f |= p;
+                    }
+                    p <<= 1;
+                    if(__coord(outer.upper,dim)>__coord(inner.upper,dim))
+                    {
+                        f |= p;
+                    }
+                    p <<= 1;
+                }
+            }
         };
 
         template <typename COORD>

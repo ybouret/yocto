@@ -147,7 +147,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
     field_db DB;
     fields   fvar;
 
-    if(true)
+    if(false)
     {
         std::cerr << std::endl << "-------- 1D --------" << std::endl;
         const patch1D      region(1,dims.x);
@@ -187,8 +187,12 @@ YOCTO_UNIT_TEST_IMPL(subset)
         const patch2D      region(coord2D(1,1),dims.xy());
         const coord2D      PBCS(pbcs.xy());
         coord2D            fallback;
+        std::cerr << "-- look up for optimal" << std::endl;
         const coord2D sizes = mapping<coord2D>::optimal_sizes_for(cpus,region,layers,PBCS,&fallback);
+        std::cerr << "-- done optimal" << std::endl;
         std::cerr << "sizes=" << sizes << " | fallback=" << fallback << std::endl;
+        exit(0);
+        
         const divide::in2D full(sizes,region);
         subsets<coord2D>   subs(full,layers,PBCS,true);
         show_subs(subs);
@@ -218,7 +222,7 @@ YOCTO_UNIT_TEST_IMPL(subset)
         }
     }
     
-    if(true)
+    if(false)
     {
         std::cerr << std::endl << "-------- 3D --------" << std::endl;
         const patch3D      region(coord3D(1,1,1),dims);

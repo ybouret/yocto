@@ -76,6 +76,26 @@ namespace yocto
                 return get_rank_from(ranks);
             }
 
+            inline COORD neighbor_ranks( COORD ranks ) const throw()
+            {
+                for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
+                {
+                    const coord1D l = __coord(lasts,dim);
+                    coord1D      &r = __coord(ranks,dim);
+                    if(r<0)
+                    {
+                        r=l;
+                    }
+                    else if(r>l)
+                    {
+                        r=0;
+                    }
+                }
+                return ranks;
+            }
+
+
+
             //! return max items of any patches
             inline size_t max_items_per_patch() const throw()
             {

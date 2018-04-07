@@ -4,6 +4,7 @@ namespace yocto
 {
     namespace ipso
     {
+        
         template <>
         void subset<coord2D>::load_cross_swaps(const divider<coord2D> &full,
                                                const size_t            layers,
@@ -19,31 +20,8 @@ namespace yocto
 
             //const bool2D  periodic = __coord2bool(pbcs);
             //const bool2D  parallel(sizes.x>1,sizes.y>1);
-
-            //__________________________________________________________________
-            //
-            // x=+1
-            //__________________________________________________________________
-            if(outer.upper.x>inner.upper.x)
-            {
-                //______________________________________________________________
-                //
-                // y=+1
-                //______________________________________________________________
-                if(outer.upper.y>inner.upper.y)
-                {
-
-                }
-
-                //______________________________________________________________
-                //
-                // y=-1
-                //______________________________________________________________
-                if(outer.lower.y<inner.lower.y)
-                {
-
-                }
-            }
+            std::cerr << "-- CROSS_SWAPS 2D from ranks=" << ranks << "@" << rank << std::endl;
+            std::cerr << "-- flags=" << swaps::flg2str(flags) << std::endl;
 
 
         }
