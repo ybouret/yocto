@@ -26,6 +26,11 @@ namespace yocto
             static const unsigned lower_z = 0x10;
             static const unsigned upper_z = 0x20;
 
+            static const unsigned xup_yup = upper_x | upper_y;
+            static const unsigned xup_ylo = upper_x | lower_y;
+            static const unsigned xlo_ylo = lower_x | lower_y;
+            static const unsigned xlo_yup = lower_x | upper_y;
+
             static const unsigned flag1D  = lower_x|upper_x;
             static const unsigned flag2D  = lower_y|upper_y;
             static const unsigned flag3D  = lower_z|upper_z;
