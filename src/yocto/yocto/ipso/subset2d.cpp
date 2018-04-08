@@ -64,9 +64,9 @@ namespace yocto
             //------------------------------------------------------------------
             // going clockwise
             //------------------------------------------------------------------
-            if( flags & swaps::xup_yup )
+            if( swaps::xup_yup == (flags & swaps::xup_yup) )
             {
-                std::cerr << "\t@xup_yup" << std::endl;
+                std::cerr << "\t@xup_yup=" << swaps::xup_yup << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(1,1));
                 const size_t  target_rank  = full.get_rank_from(target_ranks);
                 const coord2D inner_start(up.x-shift,up.y-shift);
@@ -75,9 +75,9 @@ namespace yocto
                 Swaps.push_back(swp);
             }
 
-            if( flags & swaps::xup_ylo )
+            if( swaps::xup_ylo == (flags & swaps::xup_ylo) )
             {
-                std::cerr << "\t@xup_ylo" << std::endl;
+                std::cerr << "\t@xup_ylo=" << swaps::xup_ylo << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(1,-1));
                 const size_t  target_rank  = full.get_rank_from(target_ranks);
                 const coord2D inner_start(up.x-shift,lo.y);
@@ -86,9 +86,9 @@ namespace yocto
                 Swaps.push_back(swp);
             }
 
-            if( flags & swaps::xlo_ylo )
+            if( swaps::xlo_ylo == (flags & swaps::xlo_ylo) )
             {
-                std::cerr << "\t@xlo_ylo" << std::endl;
+                std::cerr << "\t@xlo_ylo=" << swaps::xlo_ylo << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(-1,-1));
                 const size_t  target_rank  = full.get_rank_from(target_ranks);
                 const coord2D inner_start(lo.x,lo.y);
@@ -97,9 +97,9 @@ namespace yocto
                 Swaps.push_back(swp);
             }
 
-            if( flags & swaps::xlo_yup )
+            if( swaps::xlo_yup == (flags & swaps::xlo_yup) )
             {
-                std::cerr << "\t@xlo_yup" << std::endl;
+                std::cerr << "\t@xlo_yup=" << swaps::xlo_yup << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(-1,-1));
                 const size_t  target_rank  = full.get_rank_from(target_ranks);
                 const coord2D inner_start(lo.x,up.y-shift);
