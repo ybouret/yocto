@@ -137,12 +137,12 @@ namespace yocto
             inline virtual void swap_local(const swaps_list &local) throw()
             {
                 assert(0==local.size||2==local.size);
+                const swaps *a = local.head; assert(a!=NULL);
                 if(local.size>0)
                 {
                     assert(2==local.size);
                     T           *data = entry;
-                    const swaps *a = local.head; assert(a!=NULL);
-                    const swaps *b = local.tail; assert(b!=NULL); assert(b!=a);
+                    const swaps *b    = a->next; assert(b!=NULL); assert(b!=a);
                     assert(a->count==b->count);
                     const array<coord1D> &a_send = a->send;
                     const array<coord1D> &a_recv = a->recv;
@@ -164,8 +164,6 @@ namespace yocto
                         data[ a_recv[g] ] = data[ b_send[g] ];
                         data[ b_recv[g] ] = data[ a_send[g] ];
                     }
-
-
                 }
             }
 

@@ -68,6 +68,8 @@ namespace yocto
             const patch_type      outer;      //!< outer patch, with swap zones
             const swaps_list      local[DIM]; //!< local swaps, 0 or pair by dimension
             const swaps_list      async[DIM]; //!< async swaps
+            swaps_list            cross;
+            
             const swaps_addr_list locals;     //!< locals collection
             const swaps_addr_list asyncs;     //!< asyncs collection
             subset               *next;       //!< for subset::list
@@ -75,7 +77,6 @@ namespace yocto
             real_indices          realIndices; //!< real indices
             const score_t         score;       //!< (inner.items,num_async,num_local)
             const unsigned        flags;       //!< full flags
-
 
 
             inline virtual ~subset() throw() {}
