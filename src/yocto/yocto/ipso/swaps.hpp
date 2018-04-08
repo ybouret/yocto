@@ -85,17 +85,11 @@ namespace yocto
             static int compare_by_pos(const swaps *lhs, const swaps *rhs, void *) throw();
 
             swaps *clone1D() const;
-
-#if 0
-            swaps(const swaps &other);
-#else
-            YOCTO_DISABLE_COPY(swaps);
-#endif
-            
-        private:
-            YOCTO_DISABLE_ASSIGN(swaps);
             void allocate();
             void io_check() throw();
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(swaps);
         };
 
 #define YOCTO_IPSO_SWAP_LOAD()  \
