@@ -249,7 +249,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 // and deduce real indices for VisIt...
                 compute_real_indices(full,layers,pbcs);
 
-                // conpute flags from outer/inner
+                // co,pute overall flags from outer/inner
                 compute_flags();
 
                 //______________________________________________________________
@@ -282,7 +282,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
                 //______________________________________________________________
                 //
-                // Pass 4: register all swaps
+                // Pass 4: register all swaps for coms
                 //______________________________________________________________
                 register_all_swaps();
 
@@ -297,7 +297,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
             //__________________________________________________________________
             //
+            //
             //! allocating memory for swaps, ASYNC only...
+            //
             //__________________________________________________________________
             inline void allocate_swaps_for( const size_t block_size )
             {
@@ -444,6 +446,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 
                 swaps_addr_list &_asyncs = (swaps_addr_list &)asyncs;
                 swaps_addr_list &_locals = (swaps_addr_list &)locals;
+
+                // straight
                 for(size_t dim=0;dim<DIM;++dim)
                 {
                     for(swaps *swp = local[dim].head;swp;swp=swp->next)
@@ -457,6 +461,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     }
                 }
 
+                // cross
                 for(size_t diag=0;diag<2;++diag)
                 {
                     for(swaps *swp=apex_local[diag].head;swp;swp=swp->next)
@@ -491,6 +496,12 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             {
             }
 
+
+
+
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(subset);
+            
             inline void push_back_apex( swaps *swp )
             {
                 assert(swp);
@@ -506,12 +517,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 {
                     l = & (swaps_list &)(apex_async[id]);
                 }
+                assert(l);
                 l->push_back(swp);
             }
 
-
-        private:
-            YOCTO_DISABLE_COPY_AND_ASSIGN(subset);
             void load_cross_swaps(const divider<COORD> &full,
                                   const size_t          layers,
                                   const COORD           pbcs,
@@ -656,6 +665,9 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     (p <<= 1);
                 }
             }
+
+
+
         };
 
         template <typename COORD>

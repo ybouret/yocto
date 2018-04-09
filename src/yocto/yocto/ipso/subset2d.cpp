@@ -41,6 +41,12 @@ namespace yocto
             return swp.yield();
         }
 
+
+        inline static bool __matches( const unsigned mask, const unsigned flags ) throw()
+        {
+            return mask == ( flags & mask );
+        }
+
         template <>
         void subset<coord2D>::load_cross_swaps(const divider<coord2D> &full,
                                                const size_t            layers,
@@ -63,7 +69,7 @@ namespace yocto
             //------------------------------------------------------------------
             // going clockwise
             //------------------------------------------------------------------
-            if( swaps::xup_yup == (flags & swaps::xup_yup) )
+            if( __matches(swaps::xup_yup,flags) )
             {
                 //std::cerr << "\t@xup_yup=" << swaps::xup_yup << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(1,1));
@@ -74,7 +80,7 @@ namespace yocto
                 push_back_apex(swp);
             }
 
-            if( swaps::xup_ylo == (flags & swaps::xup_ylo) )
+            if( __matches(swaps::xup_ylo,flags) )
             {
                 //std::cerr << "\t@xup_ylo=" << swaps::xup_ylo << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(1,-1));
@@ -85,7 +91,7 @@ namespace yocto
                 push_back_apex(swp);
             }
 
-            if( swaps::xlo_ylo == (flags & swaps::xlo_ylo) )
+            if( __matches(swaps::xlo_ylo,flags) )
             {
                 //std::cerr << "\t@xlo_ylo=" << swaps::xlo_ylo << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(-1,-1));
@@ -96,7 +102,7 @@ namespace yocto
                 push_back_apex(swp);
             }
 
-            if( swaps::xlo_yup == (flags & swaps::xlo_yup) )
+            if( __matches(swaps::xlo_yup,flags) )
             {
                 //std::cerr << "\t@xlo_yup=" << swaps::xlo_yup << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(-1,1));

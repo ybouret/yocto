@@ -91,6 +91,7 @@ namespace yocto
             void allocate();
             void io_check() throw();
 
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(swaps);
         };
