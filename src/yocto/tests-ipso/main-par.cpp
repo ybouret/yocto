@@ -6,6 +6,7 @@
 #include "yocto/ipso/box.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/fs/local-fs.hpp"
+#include "yocto/code/alea.hpp"
 
 using namespace yocto;
 using namespace ipso;
@@ -40,6 +41,7 @@ YOCTO_PROGRAM_START()
     YOCTO_MPI(MPI_THREAD_SINGLE);
     const int size = MPI.CommWorldSize;
     const int rank = MPI.CommWorldRank;
+    alea.initialize();
     MPI.Printf(stderr, "%s ready...\n",program);
     if(0==rank)
     {
@@ -171,7 +173,7 @@ YOCTO_PROGRAM_START()
             for(unit_t i=W.inner.lower.x;i<=W.inner.upper.x;++i)
             {
                 const double x = (double(i)-xc)/dx;
-                A[j][i] = 2+cos(12*math::Hypotenuse(x,y));
+                A[j][i] = 2+cos(13*math::Hypotenuse(x,y));
             }
         }
         B.ldz();

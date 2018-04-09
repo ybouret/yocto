@@ -70,9 +70,7 @@ namespace yocto
             const swaps_list      async[DIM]; //!< async swaps
             swaps_list            apex_local[2]; //!< for DIM>=2
             swaps_list            apex_async[2];
-            //swaps_addr_list       apex_locals;
-            //swaps_addr_list       apex_asyncs;
-
+            
             const swaps_addr_list locals;     //!< locals collection
             const swaps_addr_list asyncs;     //!< asyncs collection
             subset               *next;       //!< for subset::list
@@ -338,7 +336,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
             //__________________________________________________________________
             //
-            //! store data to send and copy local
+            //! store data to send and copy local using swaps_list
             //__________________________________________________________________
             inline void __local_xch( field_info &f ) throw()
             {
@@ -352,6 +350,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
             }
 
+            //__________________________________________________________________
+            //
+            //! store data into async send zone
+            //__________________________________________________________________
             inline void __async_sto(field_info &f) throw()
             {
                 for(const swaps_addr_node *swp = asyncs.head;swp;swp=swp->next )
@@ -461,6 +463,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     {
                         _locals.append(swp);
                     }
+
                     for(swaps *swp=apex_async[diag].head;swp;swp=swp->next)
                     {
                         _asyncs.append(swp);
