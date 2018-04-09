@@ -71,6 +71,7 @@ namespace yocto
             swaps_list            apex_local[2]; //!< for DIM>=2
             swaps_list            apex_async[2];
             swaps_addr_list       apex_locals;
+            swaps_addr_list       apex_asyncs;
 
             const swaps_addr_list locals;     //!< locals collection
             const swaps_addr_list asyncs;     //!< asyncs collection
@@ -287,6 +288,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     for(swaps *swp=apex_local[diag].head;swp;swp=swp->next)
                     {
                         apex_locals.append(swp);
+                    }
+                    for(swaps *swp=apex_async[diag].head;swp;swp=swp->next)
+                    {
+                        apex_asyncs.append(swp);
                     }
                 }
                 //______________________________________________________________
