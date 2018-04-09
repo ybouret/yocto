@@ -15,9 +15,6 @@ namespace yocto
     {
         typedef point3d<size_t> score_t;
 
-
-
-
         template <typename COORD>
         class subset : public object
         {
@@ -33,12 +30,12 @@ namespace yocto
             const patch_type      outer;         //!< outer patch, with swap zones
             const swaps_list      local[DIM];    //!< local swaps, 0 or pair by dimension
             const swaps_list      async[DIM];    //!< async swaps
-            const swaps_list      apex_local[2]; //!< for DIM>=2
-            const swaps_list      apex_async[2];
+            const swaps_list      apex_local[2]; //!< for DIM==2
+            const swaps_list      apex_async[2]; //!< for DIM==2
             
-            const swaps_addr_list locals;     //!< locals collection
-            const swaps_addr_list asyncs;     //!< asyncs collection
-            subset               *next;       //!< for subset::list
+            const swaps_addr_list locals;      //!< locals collection
+            const swaps_addr_list asyncs;      //!< asyncs collection
+            subset               *next;        //!< for subset::list
             subset               *prev;        //!< for subset::list
             real_indices          realIndices; //!< real indices
             const score_t         score;       //!< (inner.items,num_async,num_local)
@@ -116,7 +113,6 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 {
                     swaps_list  & _async = (swaps_list  &)(async[dim]);
                     swaps_list  & _local = (swaps_list  &)(local[dim]);
-
 
                     //__________________________________________________________
                     //
@@ -214,7 +210,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 // and deduce real indices for VisIt...
                 compute_real_indices(full,layers,pbcs);
 
-                // co,pute overall flags from outer/inner
+                // compute overall flags from outer/inner
                 compute_flags();
 
                 //______________________________________________________________
