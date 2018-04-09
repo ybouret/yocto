@@ -57,7 +57,7 @@ namespace yocto
         class subset : public object
         {
         public:
-
+            
             typedef core::list_of_cpp<subset> list;
             typedef patch<COORD>              patch_type;
             static const size_t               DIM = YOCTO_IPSO_DIM_OF(COORD);
@@ -69,7 +69,9 @@ namespace yocto
             const swaps_list      local[DIM]; //!< local swaps, 0 or pair by dimension
             const swaps_list      async[DIM]; //!< async swaps
             swaps_list            cross;
-            
+            swaps_list            apex_local[2]; //!< for DIM>=2
+            swaps_list            apex_async[2];
+
             const swaps_addr_list locals;     //!< locals collection
             const swaps_addr_list asyncs;     //!< asyncs collection
             subset               *next;       //!< for subset::list
@@ -481,7 +483,25 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             flags(0)
             {
             }
-            
+
+            inline void push_back_apex( swaps *swp )
+            {
+                assert(swp);
+                assert(this->rank==swp->source);
+                const unsigned id = swaps::diagonal_for(swp->pos);
+                assert(0==id||1==id);
+                swaps_list *l = 0;
+                if(swp->source==swp->target)
+                {
+                    l = & (swaps_list &)(apex_local[id]);
+                }
+                else
+                {
+                    l = & (swaps_list &)(apex_async[id]);
+                }
+                l->push_back(swp);
+            }
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(subset);
@@ -627,63 +647,63 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                         f |= p;
                     }
                     p <<= 1;
-                }
-            }
-        };
+                    }
+                    }
+                    };
 
-        template <typename COORD>
-        inline void build_subsets1D_from(const subset<COORD>   &source,
-                                         subset<coord1D>::list &subs,
-                                         const bool             build)
-        {
-            const coord1D *inner_lower = (const coord1D *) & source.inner.lower;
-            const coord1D *inner_upper = (const coord1D *) & source.inner.upper;
-            const coord1D *outer_lower = (const coord1D *) & source.outer.lower;
-            const coord1D *outer_upper = (const coord1D *) & source.outer.upper;
-            
-            for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
-            {
-                //______________________________________________________________
-                //
-                // take patch by dimension
-                //______________________________________________________________
-                const patch1D    inner( inner_lower[dim], inner_upper[dim] );
-                const patch1D    outer( outer_lower[dim], outer_upper[dim] );
-                subset<coord1D> *sub = new subset<coord1D>(source.rank,inner,outer);
-                subs.push_back(sub);
-                swaps_list &local = (swaps_list &)(sub->local[0]);
-                swaps_list &async = (swaps_list &)(sub->async[0]);
-                sub->realIndices.imin[1] = source.realIndices.imin[dim+1];
-                sub->realIndices.imax[1] = source.realIndices.imax[dim+1];
-                
-                //______________________________________________________________
-                //
-                // duplicate topology and load offsets
-                //______________________________________________________________
-                for(const swaps *swp = source.local[dim].head;swp;swp=swp->next)
-                {
-                    local.push_back(swp->clone1D());
-                    local.tail->load(inner,outer,build);
-                }
-                
-                for(const swaps *swp = source.async[dim].head;swp;swp=swp->next)
-                {
-                    async.push_back(swp->clone1D());
-                    async.tail->load(inner,outer,build);
-                }
-                
-                //______________________________________________________________
-                //
-                // and finally register all 'meta' swaps
-                //______________________________________________________________
-                sub->register_all_swaps();
-            }
-        }
-        
+                    template <typename COORD>
+                    inline void build_subsets1D_from(const subset<COORD>   &source,
+                                                     subset<coord1D>::list &subs,
+                                                     const bool             build)
+                    {
+                        const coord1D *inner_lower = (const coord1D *) & source.inner.lower;
+                        const coord1D *inner_upper = (const coord1D *) & source.inner.upper;
+                        const coord1D *outer_lower = (const coord1D *) & source.outer.lower;
+                        const coord1D *outer_upper = (const coord1D *) & source.outer.upper;
 
-        
-    }
-}
+                        for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
+                        {
+                            //______________________________________________________________
+                            //
+                            // take patch by dimension
+                            //______________________________________________________________
+                            const patch1D    inner( inner_lower[dim], inner_upper[dim] );
+                            const patch1D    outer( outer_lower[dim], outer_upper[dim] );
+                            subset<coord1D> *sub = new subset<coord1D>(source.rank,inner,outer);
+                            subs.push_back(sub);
+                            swaps_list &local = (swaps_list &)(sub->local[0]);
+                            swaps_list &async = (swaps_list &)(sub->async[0]);
+                            sub->realIndices.imin[1] = source.realIndices.imin[dim+1];
+                            sub->realIndices.imax[1] = source.realIndices.imax[dim+1];
+
+                            //______________________________________________________________
+                            //
+                            // duplicate topology and load offsets
+                            //______________________________________________________________
+                            for(const swaps *swp = source.local[dim].head;swp;swp=swp->next)
+                            {
+                                local.push_back(swp->clone1D());
+                                local.tail->load(inner,outer,build);
+                            }
+
+                            for(const swaps *swp = source.async[dim].head;swp;swp=swp->next)
+                            {
+                                async.push_back(swp->clone1D());
+                                async.tail->load(inner,outer,build);
+                            }
+
+                            //______________________________________________________________
+                            //
+                            // and finally register all 'meta' swaps
+                            //______________________________________________________________
+                            sub->register_all_swaps();
+                        }
+                    }
+
+
+
+                    }
+                    }
 
 #endif
 

@@ -71,7 +71,7 @@ namespace yocto
                 const coord2D inner_start(up.x-shift,up.y-shift);
                 const coord2D outer_start(up.x+1,    up.y+1);
                 swaps *swp = __create(*this,target_rank,swaps::xup_yup,inner_start,outer_start,width);
-                cross.push_back(swp);
+                push_back_apex(swp);
             }
 
             if( swaps::xup_ylo == (flags & swaps::xup_ylo) )
@@ -82,7 +82,7 @@ namespace yocto
                 const coord2D inner_start(up.x-shift,lo.y);
                 const coord2D outer_start(up.x+1,    lo.y-width);
                 swaps *swp = __create(*this,target_rank,swaps::xup_ylo,inner_start,outer_start,width);
-                cross.push_back(swp);
+                push_back_apex(swp);
             }
 
             if( swaps::xlo_ylo == (flags & swaps::xlo_ylo) )
@@ -93,7 +93,7 @@ namespace yocto
                 const coord2D inner_start(lo.x,lo.y);
                 const coord2D outer_start(lo.x-width,lo.y-width);
                 swaps *swp = __create(*this,target_rank,swaps::xlo_ylo,inner_start,outer_start,width);
-                cross.push_back(swp);
+                push_back_apex(swp);
             }
 
             if( swaps::xlo_yup == (flags & swaps::xlo_yup) )
@@ -104,7 +104,13 @@ namespace yocto
                 const coord2D inner_start(lo.x,up.y-shift);
                 const coord2D outer_start(lo.x-width,up.y+1);
                 swaps *swp = __create(*this,target_rank,swaps::xlo_yup,inner_start,outer_start,width);
-                cross.push_back(swp);
+                push_back_apex(swp);
+            }
+
+            for(size_t diag=0;diag<2;++diag)
+            {
+                apex_local[diag].__sort();
+                apex_async[diag].__sort();
             }
         }
 

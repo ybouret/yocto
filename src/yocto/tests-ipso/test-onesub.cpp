@@ -8,6 +8,32 @@
 using namespace yocto;
 using namespace ipso;
 
+
+static inline void display_swaps(const swaps_list &l)
+{
+    std::cerr << "-- \t\t\tcount=" << l.size << std::endl;
+    for(const swaps *swp = l.head;swp;swp=swp->next)
+    {
+        std::cerr << "-- \t\t\t" << swaps::flg2str(swp->pos) << "@" << swp->source << "->" << swp->target << std::endl;
+    }
+}
+
+template <typename SUBSET>
+static inline void display_swaps( const SUBSET *sub )
+{
+    std::cerr << "-- subset ranks=" << sub->ranks << "@" << sub->rank << std::endl;
+    std::cerr << "-- apex swaps: " << std::endl;
+    for(size_t diag=0;diag<=1;++diag)
+    {
+        std::cerr << "-- \tdiag" << diag << std::endl;
+        std::cerr << "-- \t\tlocal:" << std::endl;
+        display_swaps(sub->apex_local[diag]);
+        std::cerr << "-- \t\tasync:" << std::endl;
+        display_swaps(sub->apex_async[diag]);
+    }
+    std::cerr << std::endl;
+}
+
 YOCTO_UNIT_TEST_IMPL(onesub)
 {
     if(argc<=4)
@@ -55,6 +81,9 @@ YOCTO_UNIT_TEST_IMPL(onesub)
                 ios::wcstream fp(fn);
                 VTK::InitSaveScalars(fp, "cross", f, f);
             }
+
+            display_swaps(sub);
+
         }
 
     }

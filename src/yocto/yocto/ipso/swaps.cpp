@@ -74,7 +74,25 @@ namespace yocto
             ans << ' ' << ']';
             return ans;
         }
-        
+
+        unsigned  swaps:: diagonal_for( const unsigned flags )
+        {
+            switch(flags)
+            {
+                case xup_yup:
+                case xlo_ylo:
+                    return diagonal1;
+
+                case xup_ylo:
+                case xlo_yup:
+                    return diagonal2;
+                    
+                default:
+                    break;
+            }
+            throw exception("ipso.swaps: invalid diagonal flags");
+        }
+
         void swaps:: allocate()
         {
             swap    & _recv = (swap &)recv;

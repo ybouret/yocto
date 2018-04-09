@@ -31,6 +31,9 @@ namespace yocto
             static const unsigned xlo_ylo = lower_x | lower_y;
             static const unsigned xlo_yup = lower_x | upper_y;
 
+            static const unsigned diagonal1 = 0x00;
+            static const unsigned diagonal2 = 0x01;
+
             static const unsigned flag1D  = lower_x|upper_x;
             static const unsigned flag2D  = lower_y|upper_y;
             static const unsigned flag3D  = lower_z|upper_z;
@@ -57,7 +60,7 @@ namespace yocto
             static  unsigned    dim2pos( const size_t dim, const int side ) throw();
             static  const char *pos2txt( const unsigned flag ) throw();
             static  string      flg2str( const unsigned flags);
-
+            static  unsigned    diagonal_for( const unsigned flags );
             
 
             //! compute the coordinates in 1D, according to settings
