@@ -6,6 +6,7 @@
 #include "yocto/ipso/divide.hpp"
 #include "yocto/ipso/fields.hpp"
 #include "yocto/ipso/vertex.hpp"
+#include "yocto/ipso/real-indices.hpp"
 #include "yocto/sort/merge.hpp"
 
 namespace yocto
@@ -14,43 +15,7 @@ namespace yocto
     {
         typedef point3d<size_t> score_t;
 
-        class real_indices
-        {
-        public:
-            typedef point3d<int> indx_t;
-            indx_t imin;
-            indx_t imax;
 
-            inline real_indices() throw() : imin(), imax()
-            {
-            }
-
-            inline ~real_indices() throw() {}
-
-            inline  real_indices( const real_indices &other ) throw() :
-            imin(other.imin), imax(other.imax)
-            {
-
-            }
-
-            inline  real_indices & operator=(const real_indices &other) throw()
-            {
-                imin = other.imin;
-                imax = other.imax;
-                return *this;
-            }
-
-            inline friend std::ostream & operator<<( std::ostream &os, const real_indices &ri )
-            {
-                os << '(';
-                os << ri.imin << '-' << ri.imax;
-                os << ')';
-                return os;
-            }
-
-
-            
-        };
 
 
         template <typename COORD>
@@ -62,14 +27,14 @@ namespace yocto
             typedef patch<COORD>              patch_type;
             static const size_t               DIM = YOCTO_IPSO_DIM_OF(COORD);
 
-            const size_t          rank;       //!< global (aka MPI) rank
-            const COORD           ranks;      //!< local ranks
-            const patch_type      inner;      //!< inner working patch
-            const patch_type      outer;      //!< outer patch, with swap zones
-            const swaps_list      local[DIM]; //!< local swaps, 0 or pair by dimension
-            const swaps_list      async[DIM]; //!< async swaps
-            swaps_list            apex_local[2]; //!< for DIM>=2
-            swaps_list            apex_async[2];
+            const size_t          rank;          //!< global (aka MPI) rank
+            const COORD           ranks;         //!< local ranks
+            const patch_type      inner;         //!< inner working patch
+            const patch_type      outer;         //!< outer patch, with swap zones
+            const swaps_list      local[DIM];    //!< local swaps, 0 or pair by dimension
+            const swaps_list      async[DIM];    //!< async swaps
+            const swaps_list      apex_local[2]; //!< for DIM>=2
+            const swaps_list      apex_async[2];
             
             const swaps_addr_list locals;     //!< locals collection
             const swaps_addr_list asyncs;     //!< asyncs collection
