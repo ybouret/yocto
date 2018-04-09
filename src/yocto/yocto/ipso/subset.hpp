@@ -68,9 +68,9 @@ namespace yocto
             const patch_type      outer;      //!< outer patch, with swap zones
             const swaps_list      local[DIM]; //!< local swaps, 0 or pair by dimension
             const swaps_list      async[DIM]; //!< async swaps
-            swaps_list            cross;
             swaps_list            apex_local[2]; //!< for DIM>=2
             swaps_list            apex_async[2];
+            swaps_addr_list       apex_locals;
 
             const swaps_addr_list locals;     //!< locals collection
             const swaps_addr_list asyncs;     //!< asyncs collection
@@ -282,7 +282,13 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 // Pass 3: loading cross swaps
                 //______________________________________________________________
                 load_cross_swaps(full,layers,pbcs,build);
-
+                for(size_t diag=0;diag<2;++diag)
+                {
+                    for(swaps *swp=apex_local[diag].head;swp;swp=swp->next)
+                    {
+                        apex_locals.append(swp);
+                    }
+                }
                 //______________________________________________________________
                 //
                 // Pass 4: setting scores
@@ -316,23 +322,6 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 allocate_swaps_for(fvar.block_size());
             }
 
-            //__________________________________________________________________
-            //
-            //! copy local data for one field
-            //__________________________________________________________________
-            inline void copy_local( field_info &F ) throw()
-            {
-                F.swap_local(local);
-            }
-
-            //! copy local data for different fields
-            inline void copy_local( fields &fvar ) throw()
-            {
-                for(size_t i=fvar.size();i>0;--i)
-                {
-                    fvar[i]->swap_local(local);
-                }
-            }
 
             //__________________________________________________________________
             //

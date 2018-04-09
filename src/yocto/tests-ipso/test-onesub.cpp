@@ -59,13 +59,14 @@ YOCTO_UNIT_TEST_IMPL(onesub)
         const divide::in2D full(cpus,region);
         subsets<coord2D>   subs(full,layers,pbcs,true);
 
-        for(const subset<coord2D> *sub = subs.head; sub; sub=sub->next )
+        for( subset<coord2D> *sub = subs.head; sub; sub=sub->next )
         {
 
             field2D<double> f("f",sub->outer);
             f.ldz();
-            for(const swaps *swp =  sub->cross.head; swp; swp=swp->next)
+            for(const swaps_addr_node *s =  sub->apex_locals.head; s; s=s->next)
             {
+                const swaps *swp = s->addr;
                 const double value = (swp->target)+1;
                 for(size_t i=swp->count;i>0;--i)
                 {
@@ -77,13 +78,19 @@ YOCTO_UNIT_TEST_IMPL(onesub)
             }
 
             {
-                const string  fn = "field" + vformat("%u",unsigned(sub->rank)) + ".vtk";
+                const string  fn = "ini_field" + vformat("%u",unsigned(sub->rank)) + ".vtk";
                 ios::wcstream fp(fn);
                 VTK::InitSaveScalars(fp, "cross", f, f);
             }
 
             display_swaps(sub);
+            sub->__local_xch(f);
 
+            {
+                const string  fn = "end_field" + vformat("%u",unsigned(sub->rank)) + ".vtk";
+                ios::wcstream fp(fn);
+                VTK::InitSaveScalars(fp, "cross", f, f);
+            }
         }
 
     }
