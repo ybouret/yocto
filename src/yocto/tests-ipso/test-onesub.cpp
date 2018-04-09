@@ -66,31 +66,25 @@ YOCTO_UNIT_TEST_IMPL(onesub)
             sub->allocate_swaps_for(f);
             f.ldz();
             //f.ld_on(sub->inner,1);
-            size_t indx=1;
-            for(const swaps_addr_node *s =  sub->apex_locals.head; s; s=s->next)
+            for(const swaps_addr_node *s =  sub->locals.head; s; s=s->next)
             {
                 const swaps *swp   = s->addr;
-                const double value = (swp->target)+indx++;
+                const double value = (swp->pos);
                 for(size_t i=swp->count;i>0;--i)
                 {
                     const coord1D iSend = swp->send[i];
-                    //const coord1D iRecv = swp->recv[i];
                     f.entry[iSend] =  value;
-                    //f.entry[iRecv] = -value;
                 }
             }
 
-            indx=1;
-            for(const swaps_addr_node *s =  sub->apex_asyncs.head; s; s=s->next)
+            for(const swaps_addr_node *s =  sub->asyncs.head; s; s=s->next)
             {
                 const swaps *swp   = s->addr;
-                const double value = (swp->target)+indx++;
+                const double value = (swp->pos);
                 for(size_t i=swp->count;i>0;--i)
                 {
                     const coord1D iSend = swp->send[i];
-                    //const coord1D iRecv = swp->recv[i];
                     f.entry[iSend] =  value;
-                    //f.entry[iRecv] = -value;
                 }
             }
 
@@ -102,8 +96,8 @@ YOCTO_UNIT_TEST_IMPL(onesub)
             }
 
             display_swaps(sub);
-            //sub->__local_xch(f);
             sub->sync_start(f);
+            sub->sync_query(f);
 
             {
                 const string  fn = "end_field" + vformat("%u",unsigned(sub->rank)) + ".vtk";

@@ -70,8 +70,8 @@ namespace yocto
             const swaps_list      async[DIM]; //!< async swaps
             swaps_list            apex_local[2]; //!< for DIM>=2
             swaps_list            apex_async[2];
-            swaps_addr_list       apex_locals;
-            swaps_addr_list       apex_asyncs;
+            //swaps_addr_list       apex_locals;
+            //swaps_addr_list       apex_asyncs;
 
             const swaps_addr_list locals;     //!< locals collection
             const swaps_addr_list asyncs;     //!< asyncs collection
@@ -275,28 +275,22 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     }
                 }
 
-                register_all_swaps();
-
-
                 //______________________________________________________________
                 //
                 // Pass 3: loading cross swaps
                 //______________________________________________________________
                 load_cross_swaps(full,layers,pbcs,build);
-                for(size_t diag=0;diag<2;++diag)
-                {
-                    for(swaps *swp=apex_local[diag].head;swp;swp=swp->next)
-                    {
-                        apex_locals.append(swp);
-                    }
-                    for(swaps *swp=apex_async[diag].head;swp;swp=swp->next)
-                    {
-                        apex_asyncs.append(swp);
-                    }
-                }
+
+
                 //______________________________________________________________
                 //
-                // Pass 4: setting scores
+                // Pass 4: register all swaps
+                //______________________________________________________________
+                register_all_swaps();
+
+                //______________________________________________________________
+                //
+                // Pass 5: setting scores (TODO: use cross?)
                 //______________________________________________________________
                 set_score();
             }
@@ -456,6 +450,18 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     }
                     
                     for(swaps *swp = async[dim].head;swp;swp=swp->next )
+                    {
+                        _asyncs.append(swp);
+                    }
+                }
+
+                for(size_t diag=0;diag<2;++diag)
+                {
+                    for(swaps *swp=apex_local[diag].head;swp;swp=swp->next)
+                    {
+                        _locals.append(swp);
+                    }
+                    for(swaps *swp=apex_async[diag].head;swp;swp=swp->next)
                     {
                         _asyncs.append(swp);
                     }
