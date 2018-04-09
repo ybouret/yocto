@@ -358,6 +358,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 {
                     f.swap_local(local[dim]);
                 }
+                for(size_t diag=0;diag<2;++diag)
+                {
+                    f.swap_local(apex_local[diag]);
+                }
             }
 
             inline void __async_sto(field_info &f) throw()
@@ -641,69 +645,69 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     {
                         f |= p;
                     }
-                    p <<= 1;
+                    (p <<= 1);
                     if(__coord(outer.upper,dim)>__coord(inner.upper,dim))
                     {
                         f |= p;
                     }
-                    p <<= 1;
-                    }
-                    }
-                    };
+                    (p <<= 1);
+                }
+            }
+        };
 
-                    template <typename COORD>
-                    inline void build_subsets1D_from(const subset<COORD>   &source,
-                                                     subset<coord1D>::list &subs,
-                                                     const bool             build)
-                    {
-                        const coord1D *inner_lower = (const coord1D *) & source.inner.lower;
-                        const coord1D *inner_upper = (const coord1D *) & source.inner.upper;
-                        const coord1D *outer_lower = (const coord1D *) & source.outer.lower;
-                        const coord1D *outer_upper = (const coord1D *) & source.outer.upper;
+        template <typename COORD>
+        inline void build_subsets1D_from(const subset<COORD>   &source,
+                                         subset<coord1D>::list &subs,
+                                         const bool             build)
+        {
+            const coord1D *inner_lower = (const coord1D *) & source.inner.lower;
+            const coord1D *inner_upper = (const coord1D *) & source.inner.upper;
+            const coord1D *outer_lower = (const coord1D *) & source.outer.lower;
+            const coord1D *outer_upper = (const coord1D *) & source.outer.upper;
 
-                        for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
-                        {
-                            //______________________________________________________________
-                            //
-                            // take patch by dimension
-                            //______________________________________________________________
-                            const patch1D    inner( inner_lower[dim], inner_upper[dim] );
-                            const patch1D    outer( outer_lower[dim], outer_upper[dim] );
-                            subset<coord1D> *sub = new subset<coord1D>(source.rank,inner,outer);
-                            subs.push_back(sub);
-                            swaps_list &local = (swaps_list &)(sub->local[0]);
-                            swaps_list &async = (swaps_list &)(sub->async[0]);
-                            sub->realIndices.imin[1] = source.realIndices.imin[dim+1];
-                            sub->realIndices.imax[1] = source.realIndices.imax[dim+1];
+            for(size_t dim=0;dim<YOCTO_IPSO_DIM_OF(COORD);++dim)
+            {
+                //______________________________________________________________
+                //
+                // take patch by dimension
+                //______________________________________________________________
+                const patch1D    inner( inner_lower[dim], inner_upper[dim] );
+                const patch1D    outer( outer_lower[dim], outer_upper[dim] );
+                subset<coord1D> *sub = new subset<coord1D>(source.rank,inner,outer);
+                subs.push_back(sub);
+                swaps_list &local = (swaps_list &)(sub->local[0]);
+                swaps_list &async = (swaps_list &)(sub->async[0]);
+                sub->realIndices.imin[1] = source.realIndices.imin[dim+1];
+                sub->realIndices.imax[1] = source.realIndices.imax[dim+1];
 
-                            //______________________________________________________________
-                            //
-                            // duplicate topology and load offsets
-                            //______________________________________________________________
-                            for(const swaps *swp = source.local[dim].head;swp;swp=swp->next)
-                            {
-                                local.push_back(swp->clone1D());
-                                local.tail->load(inner,outer,build);
-                            }
+                //______________________________________________________________
+                //
+                // duplicate topology and load offsets
+                //______________________________________________________________
+                for(const swaps *swp = source.local[dim].head;swp;swp=swp->next)
+                {
+                    local.push_back(swp->clone1D());
+                    local.tail->load(inner,outer,build);
+                }
 
-                            for(const swaps *swp = source.async[dim].head;swp;swp=swp->next)
-                            {
-                                async.push_back(swp->clone1D());
-                                async.tail->load(inner,outer,build);
-                            }
+                for(const swaps *swp = source.async[dim].head;swp;swp=swp->next)
+                {
+                    async.push_back(swp->clone1D());
+                    async.tail->load(inner,outer,build);
+                }
 
-                            //______________________________________________________________
-                            //
-                            // and finally register all 'meta' swaps
-                            //______________________________________________________________
-                            sub->register_all_swaps();
-                        }
-                    }
+                //______________________________________________________________
+                //
+                // and finally register all 'meta' swaps
+                //______________________________________________________________
+                sub->register_all_swaps();
+            }
+        }
 
 
 
-                    }
-                    }
+    }
+}
 
 #endif
 
