@@ -15,6 +15,29 @@ namespace yocto
     {
         typedef point3d<size_t> score_t;
 
+        template <size_t DIM>
+        struct subset_metrics;
+
+        template <>
+        struct subset_metrics<1>
+        {
+            static const size_t num_apex = 0;
+        };
+
+        template <>
+        struct subset_metrics<2>
+        {
+            static const size_t num_apex = 2;
+        };
+
+        template <>
+        struct subset_metrics<3>
+        {
+            static const size_t num_apex = 0;
+        };
+
+
+
         template <typename COORD>
         class subset : public object
         {
@@ -23,15 +46,17 @@ namespace yocto
             typedef core::list_of_cpp<subset> list;
             typedef patch<COORD>              patch_type;
             static const size_t               DIM = YOCTO_IPSO_DIM_OF(COORD);
+            typedef subset_metrics<DIM>       metrics;
+            static const size_t               APEX = metrics::num_apex;
 
-            const size_t          rank;          //!< global (aka MPI) rank
-            const COORD           ranks;         //!< local ranks
-            const patch_type      inner;         //!< inner working patch
-            const patch_type      outer;         //!< outer patch, with swap zones
-            const swaps_list      local[DIM];    //!< local swaps, 0 or pair by dimension
-            const swaps_list      async[DIM];    //!< async swaps
-            const swaps_list      apex_local[2]; //!< for DIM==2
-            const swaps_list      apex_async[2]; //!< for DIM==2
+            const size_t          rank;             //!< global (aka MPI) rank
+            const COORD           ranks;            //!< local ranks
+            const patch_type      inner;            //!< inner working patch
+            const patch_type      outer;            //!< outer patch, with swap zones
+            const swaps_list      local[DIM];       //!< local swaps, 0 or pair by dimension
+            const swaps_list      async[DIM];       //!< async swaps
+            const swaps_list      apex_local[APEX]; //!<
+            const swaps_list      apex_async[APEX]; //!<
             
             const swaps_addr_list locals;      //!< locals collection
             const swaps_addr_list asyncs;      //!< asyncs collection
@@ -462,7 +487,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(subset);
-            
+
+            //! store the apex swap in its slot, and optimize I/O
             inline void push_back_apex( swaps *swp )
             {
                 assert(swp);
@@ -480,8 +506,10 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
                 assert(l);
                 l->push_back(swp);
+                swp->io_check();
             }
 
+            //! dimension dependant function
             void load_cross_swaps(const divider<COORD> &full,
                                   const size_t          layers,
                                   const COORD           pbcs,

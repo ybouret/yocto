@@ -81,14 +81,19 @@ namespace yocto
             //! allocate I/O memory for block_size
             void allocate_for( const size_t block_size );
 
-            explicit swaps(const swaps &lhs, const swaps &rhs);
-
+            //! check if was built...
             bool built() const throw();
 
+            //! for sorting
             static int compare_by_pos(const swaps *lhs, const swaps *rhs, void *) throw();
 
+            //! deduce the equivalent 1D swaps
             swaps *clone1D() const;
+
+            //! allocate memory
             void allocate();
+
+            //! co-sort indices
             void io_check() throw();
 
 
