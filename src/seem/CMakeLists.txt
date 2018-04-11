@@ -5,29 +5,25 @@ FILE( GLOB impl yocto/seem/*.cpp )
 SET( srcs ${decl} ${impl} )
 INSTALL( FILES ${decl} DESTINATION include/yocto/seem )
 
-SET(SEEM_GRAM ${CMAKE_CURRENT_SOURCE_DIR}/yocto/seem/seem.g)
-SET(SEEM_INCL ${CMAKE_CURRENT_SOURCE_DIR}/yocto/seem/seem.inc)
-SET(SEEM_DEFS ${CMAKE_CURRENT_SOURCE_DIR}/yocto/seem/seem.def)
+SET(SEEM_DIR ${CMAKE_CURRENT_SOURCE_DIR}/yocto/seem)
+SET(SEEM_GRM ${CMAKE_CURRENT_SOURCE_DIR}/yocto/seem/seem.g)
+SET(SEEM_INC ${CMAKE_CURRENT_SOURCE_DIR}/yocto/seem/seem.inc)
+SET(SEEM_DEF ${CMAKE_CURRENT_SOURCE_DIR}/yocto/seem/seem.def)
 
 ADD_CUSTOM_COMMAND(
-OUTPUT ${SEEM_INCL}
-COMMAND yocto_file2data ${SEEM_GRAM} ${SEEM_INCL}
-DEPENDS yocto_file2data ${SEEM_GRAM}
+OUTPUT  ${SEEM_INC} ${SEEM_DEF}
+COMMAND yocto-dynamo ${SEEM_GRM} ${SEEM_DIR}
+DEPENDS yocto-dynamo ${SEEM_GRM}
 )
 
-ADD_CUSTOM_COMMAND(
-OUTPUT ${SEEM_DEFS}
-COMMAND yocto_gram2defs SEEM_ ${SEEM_GRAM} ${SEEM_DEFS}
-DEPENDS yocto_gram2defs ${SEEM_GRAM})
+SOURCE_GROUP( seem FILES ${srcs} ${SEEM_GRM} ${SEEM_INC} ${SEEM_DEF} )
 
-SOURCE_GROUP( seem FILES ${srcs} ${SEEM_GRAM} ${SEEM_INCL} ${SEEM_DEFS} )
-
-INCLUDE_DIRECTORIES( . ../yocto ../lingua)
+INCLUDE_DIRECTORIES( . ../yocto ../lang)
 
 ADD_LIBRARY(y-seem STATIC  ${srcs} 
-${SEEM_GRAM} 
-${SEEM_INCL} 
-${SEEM_DEFS})
+${SEEM_GRM} 
+${SEEM_INC} 
+${SEEM_DEF})
 	
 INSTALL( TARGETS y-seem ARCHIVE DESTINATION lib )
 

@@ -29,4 +29,7 @@ ID       : "([:alpha:]|_)([:word:]|_)*";
 @drop : "[:blank:]";
 @endl : "[:endl:]";
 
-$no_single: AXP MXP PXP;
+//change the AST
+%RPN : AXP (PLUS MINUS);
+%RPN : MXP (MUL DIV MOD);
+

@@ -5,16 +5,17 @@
 #include "yocto/ios/ocstream.hpp"
 
 #include "yocto/ios/graphviz.hpp"
-#include "yocto/lingua/syntax/analyzer.hpp"
+#include "yocto/lang/syntax/analyzer.hpp"
 
 using namespace yocto;
 
 YOCTO_UNIT_TEST_IMPL(compiler)
 {
+
     Seem::Compiler           compiler( true );
+
+#if 0
     ios::icstream            fp(ios::cstdin);
-
-
     Seem::vCode tree = compiler.compile(fp);
 
     tree->graphviz(       compiler.gram->name + "_output.dot" );
@@ -23,6 +24,7 @@ YOCTO_UNIT_TEST_IMPL(compiler)
     lingua::syntax::analyzer walker( * compiler.gram );
     ios::ocstream  output( ios::cstderr );
     walker.walk(tree.__get(), &output);
+#endif
 
 }
 YOCTO_UNIT_TEST_DONE()

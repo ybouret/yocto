@@ -1,0 +1,14 @@
+// TERMINALS
+#define seem_PLUS   0
+#define seem_MINUS  1
+#define seem_MUL    2
+#define seem_DIV    3
+#define seem_MOD    4
+#define seem_NUMBER 5
+#define seem_ID     6
+// INTERNALS
+#define seem_AXP    1000
+#define seem_MXP    1001
+#define seem_PXP    1002
+#define seem_ARGS   1003
+#define seem_FUNC   1004
