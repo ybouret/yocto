@@ -88,6 +88,8 @@ namespace yocto
             outer( inner ),
             local(),
             async(),
+            apex_local(),
+            apex_async(),
             locals(),
             asyncs(),
             next(0),
@@ -97,6 +99,10 @@ namespace yocto
             flags(0)
             {
 
+                memset( (void*)&local[0], 0, sizeof(local) );
+                memset( (void*)&async[0], 0, sizeof(async) );
+                memset( (void*)&apex_local[0], 0, sizeof(apex_local) );
+                memset( (void*)&apex_async[0], 0, sizeof(apex_async) );
                 //______________________________________________________________
                 //
                 // checking swaps availability
@@ -429,7 +435,6 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             {
                 assert(0==asyncs.size);
                 assert(0==locals.size);
-                
                 swaps_addr_list &_asyncs = (swaps_addr_list &)asyncs;
                 swaps_addr_list &_locals = (swaps_addr_list &)locals;
 
@@ -448,7 +453,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
 
                 // cross
-                for(size_t diag=0;diag<2;++diag)
+                for(size_t diag=0;diag<APEX;++diag)
                 {
                     for(swaps *swp=apex_local[diag].head;swp;swp=swp->next)
                     {
@@ -472,6 +477,8 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             outer( __outer ),
             local(),
             async(),
+            apex_local(),
+            apex_async(),
             locals(),
             asyncs(),
             next(0),

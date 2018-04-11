@@ -334,6 +334,8 @@ YOCTO_UNIT_TEST_IMPL(ipso)
     const string sim_comm = "testing ipso API";
     //const string sim_gui  = "loop.ui";
 
+    MPI.CloseStdIO();
+
     // prepare VisIt
     VisIt &visit = VisIt::Start(sim_name,
                                 sim_comm,

@@ -61,10 +61,10 @@ namespace yocto
             const coord1D shift    = width-1;
             const coord2D up       = inner.upper;
             const coord2D lo       = inner.lower;
+            
 
-            //std::cerr << "-- CROSS_SWAPS 2D from ranks=" << ranks << "@" << rank << std::endl;
-            //std::cerr << "-- flags=" << swaps::flg2str(flags) << std::endl;
-
+#define Y_SUB2D_APEX(FLAGS) \
+do {  push_back_apex( __create(*this,full.get_rank_from(target_ranks),FLAGS,inner_start,outer_start,width) ); } while(false)
 
             //------------------------------------------------------------------
             // going clockwise
@@ -73,44 +73,36 @@ namespace yocto
             {
                 //std::cerr << "\t@xup_yup=" << swaps::xup_yup << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(1,1));
-                const size_t  target_rank  = full.get_rank_from(target_ranks);
                 const coord2D inner_start(up.x-shift,up.y-shift);
                 const coord2D outer_start(up.x+1,    up.y+1);
-                swaps *swp = __create(*this,target_rank,swaps::xup_yup,inner_start,outer_start,width);
-                push_back_apex(swp);
+                Y_SUB2D_APEX(swaps::xup_yup);
             }
 
             if( __matches(swaps::xup_ylo,flags) )
             {
                 //std::cerr << "\t@xup_ylo=" << swaps::xup_ylo << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(1,-1));
-                const size_t  target_rank  = full.get_rank_from(target_ranks);
                 const coord2D inner_start(up.x-shift,lo.y);
                 const coord2D outer_start(up.x+1,    lo.y-width);
-                swaps *swp = __create(*this,target_rank,swaps::xup_ylo,inner_start,outer_start,width);
-                push_back_apex(swp);
+                Y_SUB2D_APEX(swaps::xup_ylo);
             }
 
             if( __matches(swaps::xlo_ylo,flags) )
             {
                 //std::cerr << "\t@xlo_ylo=" << swaps::xlo_ylo << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(-1,-1));
-                const size_t  target_rank  = full.get_rank_from(target_ranks);
                 const coord2D inner_start(lo.x,lo.y);
                 const coord2D outer_start(lo.x-width,lo.y-width);
-                swaps *swp = __create(*this,target_rank,swaps::xlo_ylo,inner_start,outer_start,width);
-                push_back_apex(swp);
+                Y_SUB2D_APEX(swaps::xlo_ylo);
             }
 
             if( __matches(swaps::xlo_yup,flags) )
             {
                 //std::cerr << "\t@xlo_yup=" << swaps::xlo_yup << std::endl;
                 const coord2D target_ranks = full.neighbor_ranks(ranks+coord2D(-1,1));
-                const size_t  target_rank  = full.get_rank_from(target_ranks);
                 const coord2D inner_start(lo.x,up.y-shift);
                 const coord2D outer_start(lo.x-width,up.y+1);
-                swaps *swp = __create(*this,target_rank,swaps::xlo_yup,inner_start,outer_start,width);
-                push_back_apex(swp);
+                Y_SUB2D_APEX(swaps::xlo_yup);
             }
 
             for(size_t diag=0;diag<2;++diag)
