@@ -19,6 +19,34 @@ namespace {
     typedef box<double,2>              Box;
     typedef Box::vtx                   Vertex;
 
+    void display_swaps(const mpi             &MPI,
+                       const string          &pfx,
+                       const swaps_addr_list &L )
+    {
+        string ans = "#" + pfx + "=";
+        ans += vformat("%u:\n", unsigned(L.size));
+        for(const swaps_addr_node *node = L.head;node;node=node->next)
+        {
+            const swaps &swp = **node;
+            ans += "\t";
+            ans += swaps::flg2str(swp.pos);
+            ans += "\n";
+            ans += "\t\tsend:";
+            for(size_t i=1;i<=swp.count;++i)
+            {
+                ans += vformat(" %u", unsigned( swp.send[i] ));
+            }
+            ans += "\n";
+            ans += "\t\trecv:";
+            for(size_t i=1;i<=swp.count;++i)
+            {
+                ans += vformat(" %u", unsigned( swp.recv[i] ));
+            }
+            ans += "\n";
+        }
+        MPI.Printf(stderr, "%s\n", *ans);
+    }
+
 
     // VisIt agnostic Code
     class Heat1D
@@ -46,7 +74,7 @@ namespace {
         rank( MPI.CommWorldRank ),
         region( coord2D(0,0), coord2D(NX,1) ),
         pbcs(0,0),
-        sizes( map_optimal_sizes(size,region,NumGhosts,pbcs) ),
+        sizes( coord2D(size,1) /* map_optimal_sizes(size,region,NumGhosts,pbcs) */ ),
         full( sizes, region ),
         names("x,T"),
         fields(MPI,full,NumGhosts,pbcs),
@@ -61,8 +89,12 @@ namespace {
 
             alea.initialize();
             fields.allocate_swaps_for(A);
-
+            MPI.Printf0(stderr,"\n-- swaps --\n");
+            display_swaps(MPI, "asyncs", fields.asyncs);
+            MPI.Printf0(stderr,"\n");
             initialize();
+
+
         }
 
         virtual ~Heat1D() throw()
@@ -76,7 +108,9 @@ namespace {
 
         void initialize()
         {
+            A.ldz();
             double xc = alea.to<double>();
+            tmx = 0;
             fields.MPI.Bcast(xc,0,MPI_COMM_WORLD);
             const field1D<double> &X = rmesh.X();
             for(coord1D i=inner.lower.x;i<=inner.upper.x;++i)
@@ -85,16 +119,19 @@ namespace {
                 A[0][i] = 2*exp( -3.0*(dx*dx) ) + 0.1*alea.to<double>();
                 A[1][i] = A[0][i];
             }
+
             if(fields.MPI.IsFirst)
             {
                 A[0][inner.lower.x] = A[1][inner.lower.x] = A0(0);
             }
+
             if(fields.MPI.IsFinal)
             {
                 A[0][inner.upper.x] = A[1][inner.upper.x] = 0;
             }
+
+            
             fields.synchronize(A);
-            tmx = 0;
         }
 
         void evolve()
@@ -125,7 +162,7 @@ namespace {
             // update
             for(coord1D i=inner.lower.x;i<=inner.upper.x;++i)
             {
-                A[1][i] = A[0][i];
+                A[1][i] = _A[i];
             }
             fields.synchronize(A);
         }
@@ -190,6 +227,7 @@ namespace {
         virtual void one_step()
         {
             evolve();
+            runTime = tmx;
         }
 
     private:
@@ -206,7 +244,8 @@ YOCTO_UNIT_TEST_IMPL(heat1d)
     const string sim_comm = "heat1d";
     //const string sim_gui  = "loop.ui";
 
-
+    MPI.CloseStdIO();
+    
     // prepare VisIt
     VisIt &visit = VisIt::Start(sim_name,
                                 sim_comm,

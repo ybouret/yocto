@@ -81,6 +81,13 @@ namespace yocto
                 typename subsets<COORD>::list &self = *this;
                 assert(self.size>0);
                 core::merging< subsets<COORD> >::sort(self, compare_by_scores, NULL );
+                if(false)
+                {
+                    for(const subsets<COORD> *subs = self.head; subs; subs=subs->next)
+                    {
+                        std::cerr << "subset#" << subs->sizes << " : score=" << subs->score << std::endl;
+                    }
+                }
                 optimal  = self.head; assert(optimal);
                 fallback = self.tail; assert(fallback);
                 for(const subsets<COORD> *subs=fallback;subs;subs=subs->prev)
