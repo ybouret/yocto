@@ -22,7 +22,7 @@ namespace yocto
             typedef zrc_ptr<const string> Tag; //!< for Dynamo
 
             //! a node to build an AST
-            class Node : public object
+            class Node : public counted_object
             {
             public:
                 typedef core::list_of_cpp<Node> List;

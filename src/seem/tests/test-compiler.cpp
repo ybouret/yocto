@@ -12,19 +12,15 @@ using namespace yocto;
 YOCTO_UNIT_TEST_IMPL(compiler)
 {
 
-    Seem::Compiler           compiler( true );
+    Seem::Compiler SEEMC( true );
+    Lang::Source   source( Lang::Module::OpenSTDIN());
 
-#if 0
-    ios::icstream            fp(ios::cstdin);
-    Seem::vCode tree = compiler.compile(fp);
+    Seem::vCode tree = SEEMC.compile(source);
+    tree->graphviz(       SEEMC.gram().name + "_output.dot" );
+    ios::graphviz_render( SEEMC.gram().name + "_output.dot" );
 
-    tree->graphviz(       compiler.gram->name + "_output.dot" );
-    ios::graphviz_render( compiler.gram->name + "_output.dot" );
-
-    lingua::syntax::analyzer walker( * compiler.gram );
-    ios::ocstream  output( ios::cstderr );
-    walker.walk(tree.__get(), &output);
-#endif
-
+    Lang::Syntax::Analyzer analyzer( SEEMC.gram() );
+    analyzer.walk( tree.__get() );
+    
 }
 YOCTO_UNIT_TEST_DONE()
