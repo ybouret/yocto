@@ -93,7 +93,7 @@ namespace {
             display_swaps(MPI, "asyncs", fields.asyncs);
             MPI.Printf0(stderr,"\n");
             initialize();
-
+            
 
         }
 
@@ -244,7 +244,7 @@ YOCTO_UNIT_TEST_IMPL(heat1d)
     const string sim_comm = "heat1d";
     //const string sim_gui  = "loop.ui";
 
-    MPI.CloseStdIO();
+    //MPI.CloseStdIO();
     
     // prepare VisIt
     VisIt &visit = VisIt::Start(sim_name,

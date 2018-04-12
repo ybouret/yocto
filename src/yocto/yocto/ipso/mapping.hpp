@@ -86,6 +86,10 @@ namespace yocto
                     for(const subsets<COORD> *subs = self.head; subs; subs=subs->next)
                     {
                         std::cerr << "subset#" << subs->sizes << " : score=" << subs->score << std::endl;
+                        for(const subset<COORD> *sub = subs->head;sub;sub=sub->next)
+                        {
+                            std::cerr << "\t\t" << sub->score << std::endl;
+                        }
                     }
                 }
                 optimal  = self.head; assert(optimal);
