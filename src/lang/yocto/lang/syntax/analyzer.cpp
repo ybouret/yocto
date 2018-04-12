@@ -142,7 +142,7 @@ namespace yocto
                                        const int     hCode,
                                        const int     nArgs)
             {
-                showTerminal(label,hCode,nArgs);
+                showInternal(label,hCode,nArgs);
             }
 
 
