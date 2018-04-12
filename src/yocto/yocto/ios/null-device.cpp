@@ -22,7 +22,7 @@ namespace yocto
         {
             YOCTO_LOCK(access);
 
-#if defined(YOCTO_WIN) || defined(YOCTO_SUNOS)
+#if defined(YOCTO_WIN) || defined(YOCTO_SUNOS) || defined(YOCTO_OPENBSD)
             (void) freopen(YOCTO_NULL_DEVICE,"r",stdin);
 #else
             stdin = freopen(YOCTO_NULL_DEVICE,"r",stdin);
@@ -34,7 +34,7 @@ namespace yocto
         {
             YOCTO_LOCK(access);
 
-#if defined(YOCTO_WIN) || defined(YOCTO_SUNOS)
+#if defined(YOCTO_WIN) || defined(YOCTO_SUNOS) || defined(YOCTO_OPENBSD)
             (void) freopen(YOCTO_NULL_DEVICE,"w",stderr);
 #else
             stderr = freopen(YOCTO_NULL_DEVICE,"w",stderr);
@@ -46,7 +46,7 @@ namespace yocto
         {
             YOCTO_LOCK(access);
 
-#if defined(YOCTO_WIN) || defined(YOCTO_SUNOS)
+#if defined(YOCTO_WIN) || defined(YOCTO_SUNOS) || defined(YOCTO_OPENBSD)
             (void) freopen(YOCTO_NULL_DEVICE,"w",stdout);
 #else
             stdout = freopen(YOCTO_NULL_DEVICE,"w",stdout);
