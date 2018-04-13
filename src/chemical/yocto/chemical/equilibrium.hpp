@@ -28,6 +28,9 @@ namespace yocto
             friend std::ostream & operator<<( std::ostream &os, const equilibrium &eq);
             void check() const;
 
+            //! fill reaction topology
+            void fill( array<double> &nu, array<bool> &active) const throw();
+
         protected:
             explicit equilibrium(const string &id);
             void dispatch();
@@ -53,6 +56,7 @@ namespace yocto
             virtual double getK(double) const throw();
             YOCTO_DISABLE_COPY_AND_ASSIGN(constant_equilibrium);
         };
+        
 
     }
 }

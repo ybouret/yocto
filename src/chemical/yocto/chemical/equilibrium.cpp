@@ -144,6 +144,20 @@ namespace yocto
             }
         }
 
+        void equilibrium:: fill( array<double> &nu, array<bool> &active) const throw()
+        {
+            assert(nu.size()==active.size());
+            for(components::const_iterator i=content.begin();i!=content.end();++i)
+            {
+                const component &cmp = **i;
+                const species   &s   = *cmp.sp;
+                assert(s.indx>0);
+                assert(s.indx<=nu.size());
+                assert(cmp.nu!=0);
+                nu[s.indx] = cmp.nu;
+                active[s.indx] = true;
+            }
+        }
 
     }
 }
