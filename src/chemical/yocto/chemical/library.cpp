@@ -37,8 +37,21 @@ namespace yocto
             }
         }
 
-        
+        species & library:: operator()(const string &id)
+        {
+            species::pointer *p = search(id);
+            if(!p)
+            {
+                throw exception("library: no '%s'", *id);
+            }
+            return **p;
+        }
 
+        species & library:: operator()(const char *id)
+        {
+            const string ID(id);
+            return (*this)(ID);
+        }
     }
 }
 

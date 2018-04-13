@@ -24,6 +24,10 @@ namespace yocto
 
             species & add( const string &sp_name, const int sp_z );
 
+            species & operator()(const string &);
+            species & operator()(const char   *);
+
+
             void compile() throw();
             
         private:
