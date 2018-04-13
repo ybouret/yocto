@@ -37,6 +37,7 @@ namespace yocto
             matrix<double> nu;   //!< topology    NxM
             matrix<double> nuT;  //!< transposed  MxN
             matrix<double> Phi;  //!< jacobian    NxM
+            vector<double> K;    //!< constants   N
             vector<double> Gam;  //!< Gamma       N
             vector<double> xi;   //!< extent      N
 
@@ -45,6 +46,9 @@ namespace yocto
 
             void clear() throw();
 
+            void initializeGamma(const double t);
+            void updateGamma();
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
         };

@@ -1,5 +1,6 @@
 #include "yocto/chemical/equilibrium.hpp"
 #include "yocto/exception.hpp"
+#include "yocto/code/ipower.hpp"
 
 namespace yocto
 {
@@ -158,6 +159,37 @@ namespace yocto
                 active[s.indx] = true;
             }
         }
+
+        double equilibrium:: computeGamma( const array<double> &C, const double Kt ) const
+        {
+            double lhs = 1;
+            {
+                components::const_iterator  i  = reactants.begin();
+                for(size_t r=reactants.size();r>0;--r,++i)
+                {
+                    const component &cmp = **i;
+                    assert(cmp.nu<0);
+                    const size_t nu = (-cmp.nu);
+                    lhs *= ipower( C[cmp.sp->indx], nu );
+                }
+            }
+
+            double rhs = 1;
+            {
+                components::const_iterator  i  = products.begin();
+                for(size_t p=products.size();p>0;--p,++i)
+                {
+                    const component &cmp = **i;
+                    assert(cmp.nu>0);
+                    const size_t nu = (cmp.nu);
+                    rhs *= ipower( C[cmp.sp->indx], nu );
+                }
+            }
+
+
+            return lhs*Kt - rhs;
+        }
+
 
     }
 }

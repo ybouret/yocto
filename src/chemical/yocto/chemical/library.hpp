@@ -3,6 +3,7 @@
 
 #include "yocto/chemical/species.hpp"
 #include "yocto/associative/set.hpp"
+#include "yocto/sequence/array.hpp"
 
 namespace yocto
 {
@@ -31,7 +32,9 @@ namespace yocto
             void compile() throw();
             const size_t max_name_length;
             friend std::ostream & operator<<( std::ostream &os, const library &lib);
-            
+
+            void display( const array<double> &C ) const;
+
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(library);

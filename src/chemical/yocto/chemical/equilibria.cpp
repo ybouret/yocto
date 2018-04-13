@@ -44,6 +44,7 @@ namespace yocto
 
             xi.     release();
             Gam.    release();
+            K.      release();
             Phi.    release();
             nuT.    release();
             nu.     release();
@@ -80,8 +81,9 @@ namespace yocto
                     nu. make(N,M);
                     nuT.make(M,N);
                     Phi.make(N,M);
+                    K  .make(N);
                     Gam.make(N);
-                    xi.make(N);
+                    xi. make(N);
                     {
                         size_t ii=1;
                         for(iterator i=begin();i!=end();++i,++ii)
@@ -105,6 +107,26 @@ namespace yocto
             {
                 clear();
                 throw;
+            }
+        }
+
+        void equilibria:: initializeGamma(const double t)
+        {
+            iterator ii=begin();
+            for(size_t i=1;i<=N;++i,++ii)
+            {
+                const equilibrium &eq = **ii;
+                Gam[i] = eq.computeGamma(C,K[i]=eq.K(t));
+            }
+        }
+
+        void equilibria:: updateGamma()
+        {
+            iterator ii=begin();
+            for(size_t i=1;i<=N;++i,++ii)
+            {
+                const equilibrium &eq = **ii;
+                Gam[i] = eq.computeGamma(C,K[i]);
             }
         }
 

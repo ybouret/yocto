@@ -31,12 +31,20 @@ YOCTO_UNIT_TEST_IMPL(eqs)
     std::cerr << cs << std::endl;
 
     cs.compile_for(lib);
+    for(size_t j=cs.M;j>0;--j)
+    {
+        cs.C[j] = alea.to<double>();
+    }
     std::cerr << "N="   << cs.N << std::endl;
     std::cerr << "M="   << cs.M << std::endl;
     std::cerr << "nu="  << cs.nu << std::endl;
     std::cerr << "nuT=" << cs.nuT << std::endl;
     std::cerr << "active=" << cs.active << std::endl;
-    
+
+    cs.initializeGamma(0.0);
+    std::cerr << "C=" << cs.C << std::endl;
+    std::cerr << "Gam=" << cs.Gam << std::endl;
+    lib.display(cs.C);
 }
 YOCTO_UNIT_TEST_DONE()
 

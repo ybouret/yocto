@@ -72,6 +72,19 @@ namespace yocto
             return os;
         }
 
+        void library:: display( const array<double> &C ) const
+        {
+            assert(C.size()>=size());
+            size_t ii=1;
+            for( library::const_iterator i=begin();i!=end();++i,++ii)
+            {
+                const species &sp = **i;
+                assert(sp.indx==ii);
+                std::cerr << '[' << sp.name << ']';
+                for(size_t j=sp.name.length();j<=max_name_length;++j) std::cerr << ' ';
+                std::cerr << '=' << ' ' << C[ii] << std::endl;
+            }
+        }
     }
 }
 

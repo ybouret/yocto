@@ -31,6 +31,9 @@ namespace yocto
             //! fill reaction topology
             void fill( array<double> &nu, array<bool> &active) const throw();
 
+            double computeGamma( const array<double> &C, const double Kt ) const;
+            
+
         protected:
             explicit equilibrium(const string &id);
             void dispatch();
