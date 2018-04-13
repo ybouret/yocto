@@ -29,7 +29,10 @@ namespace yocto
 
 
             void compile() throw();
+            const size_t max_name_length;
+            friend std::ostream & operator<<( std::ostream &os, const library &lib);
             
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(library);
         };
