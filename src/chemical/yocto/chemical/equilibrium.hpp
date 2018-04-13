@@ -16,6 +16,7 @@ namespace yocto
         {
         public:
             typedef intr_ptr<string,equilibrium>    pointer;
+            typedef set<string,pointer>             database;
             typedef math::numeric<double>::function constant;
             virtual ~equilibrium() throw();
 

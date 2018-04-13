@@ -142,7 +142,6 @@ namespace yocto
             {
                 throw exception("equilibrium '%s' doesn't conserve charge!", *name);
             }
-
         }
 
 
