@@ -41,10 +41,15 @@ YOCTO_UNIT_TEST_IMPL(eqs)
     std::cerr << "nuT=" << cs.nuT << std::endl;
     std::cerr << "active=" << cs.active << std::endl;
 
-    cs.initializeGamma(0.0);
+    cs.initializeGamma(cs.C,0.0);
     std::cerr << "C=" << cs.C << std::endl;
-    std::cerr << "Gam=" << cs.Gam << std::endl;
     lib.display(cs.C);
+    std::cerr << "Gamma=" << cs.Gamma << std::endl;
+    std::cerr << "K    =" << cs.K     << std::endl;
+    cs.initializeGammaAndPhi(cs.C,0.0);
+    std::cerr << "Gamma=" << cs.Gamma << std::endl;
+    std::cerr << "Phi  =" << cs.Phi   << std::endl;
+    cs.computeW();
 }
 YOCTO_UNIT_TEST_DONE()
 

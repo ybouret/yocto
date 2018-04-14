@@ -16,8 +16,10 @@ namespace yocto
             explicit  component( species &s, const int coef);
 
             const species::pointer sp;
-            const int              nu;
-
+            const size_t          &id;  //! sp->indx
+            const int              nu;  //!< stoichiometric coef
+            const size_t           ev;  //! |nu|
+            const size_t           evm; //!  ev-1
             const string & key() const throw();
 
         private:

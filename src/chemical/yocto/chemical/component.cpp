@@ -10,7 +10,10 @@ namespace yocto
 
         component:: component(species &s, const int coef) :
         sp( &s ),
-        nu( coef )
+        id( sp->indx ),
+        nu( coef ),
+        ev( (nu<0) ? -nu : nu ),
+        evm( ev-1 )
         {
             assert(sp->refcount()>1);
             if(!nu) throw exception("component: no stoichiometry");

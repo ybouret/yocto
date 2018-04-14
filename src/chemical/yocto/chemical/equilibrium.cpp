@@ -1,7 +1,7 @@
 #include "yocto/chemical/equilibrium.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/code/ipower.hpp"
-
+#include "yocto/math/core/tao.hpp"
 namespace yocto
 {
     namespace chemical
@@ -69,13 +69,22 @@ namespace yocto
 
         void equilibrium:: dispatch()
         {
-            products.free();
-            reactants.free();
-            products.ensure( content.size() );
-            reactants.ensure( content.size() );
+            products.clear();
+            reactants.clear();
+
             for( components::iterator i=content.begin();i!=content.end();++i)
             {
-                const component::pointer &p = *i;
+                component *p = &(**i);
+                if(p->nu>0)
+                {
+                    products.append(p);
+                }
+                else
+                {
+                    assert(p->nu<0);
+                    reactants.append(p);
+                }
+                /*
                 assert(p->nu!=0);
                 if(p->nu>0)
                 {
@@ -86,6 +95,7 @@ namespace yocto
                     assert(p->nu<0);
                     if( !reactants.insert(p) ) throw exception("%s: unexpected reactant failure for '%s'",*name, *(p->key()));
                 }
+                 */
             }
         }
 
@@ -94,7 +104,7 @@ namespace yocto
             os << eq.name << ": ";
             {
                 size_t ir = 1;
-                for( components::const_iterator r=eq.reactants.begin();r!=eq.reactants.end();++r,++ir)
+                for( equilibrium::meta_node *r=eq.reactants.head;r;r=r->next,++ir)
                 {
                     const component &cmp = **r;
                     assert(cmp.nu<0);
@@ -112,7 +122,7 @@ namespace yocto
             os << " <=> ";
             {
                 size_t ip = 1;
-                for( components::const_iterator p=eq.products.begin();p!=eq.products.end();++p,++ip)
+                for( equilibrium::meta_node *p=eq.products.head;p;p=p->next,++ip)
                 {
                     const component &cmp = **p;
                     assert(cmp.nu>0);
@@ -155,7 +165,7 @@ namespace yocto
                 assert(s.indx>0);
                 assert(s.indx<=nu.size());
                 assert(cmp.nu!=0);
-                nu[s.indx] = cmp.nu;
+                nu[s.indx]     = cmp.nu;
                 active[s.indx] = true;
             }
         }
@@ -164,30 +174,67 @@ namespace yocto
         {
             double lhs = 1;
             {
-                components::const_iterator  i  = reactants.begin();
-                for(size_t r=reactants.size();r>0;--r,++i)
+                for(const meta_node *r=reactants.head;r;r=r->next)
                 {
-                    const component &cmp = **i;
+                    const component &cmp = **r;
                     assert(cmp.nu<0);
-                    const size_t nu = (-cmp.nu);
-                    lhs *= ipower( C[cmp.sp->indx], nu );
+                    lhs *= ipower( C[cmp.id], cmp.ev );
                 }
             }
 
             double rhs = 1;
             {
-                components::const_iterator  i  = products.begin();
-                for(size_t p=products.size();p>0;--p,++i)
+                for(const meta_node *p=products.head;p;p=p->next)
                 {
-                    const component &cmp = **i;
+                    const component &cmp = **p;
                     assert(cmp.nu>0);
-                    const size_t nu = (cmp.nu);
-                    rhs *= ipower( C[cmp.sp->indx], nu );
+                    rhs *= ipower( C[cmp.id], cmp.ev );
                 }
             }
 
 
             return lhs*Kt - rhs;
+        }
+
+        void   equilibrium:: computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const
+        {
+            math::tao::ld(Phi,0);
+            for(const meta_node *a = reactants.head; a != NULL; a=a->next )
+            {
+                const  component &A = **a;
+                const  size_t j     = A.id;
+                double        lhs   = Kt * A.ev * ipower(C[j],A.evm);
+
+                for(const meta_node *b = reactants.head; b!=NULL; b=b->next)
+                {
+                    if(a!=b)
+                    {
+                        const  component &B = **b;
+                        lhs *= ipower(C[B.id],B.ev);
+                    }
+                }
+
+                Phi[j] = lhs;
+            }
+
+            for(const meta_node *a = products.head; a != NULL; a=a->next )
+            {
+                const component &A   = **a;
+                const  size_t    j   = A.id;
+                double           rhs = A.ev * ipower(C[j],A.evm);
+
+                for(const meta_node *b = products.head; b!=NULL; b=b->next)
+                {
+                    if(a!=b)
+                    {
+                        const  component &B = **b;
+                        rhs *= ipower(C[B.id],B.ev);
+                    }
+                }
+
+                Phi[j] = -rhs;
+            }
+
         }
 
 

@@ -1,9 +1,13 @@
 
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/exception.hpp"
+#include "yocto/math/core/tao.hpp"
+#include "yocto/math/core/lu.hpp"
 
 namespace yocto
 {
+    using namespace math;
+    
     namespace chemical
     {
         equilibria:: ~equilibria() throw() {}
@@ -43,8 +47,9 @@ namespace yocto
             (size_t &)N = 0;
 
             xi.     release();
-            Gam.    release();
+            Gamma.  release();
             K.      release();
+            W.      release();
             Phi.    release();
             nuT.    release();
             nu.     release();
@@ -78,12 +83,13 @@ namespace yocto
 
                 if(N>0)
                 {
-                    nu. make(N,M);
-                    nuT.make(M,N);
-                    Phi.make(N,M);
-                    K  .make(N);
-                    Gam.make(N);
-                    xi. make(N);
+                    nu.   make(N,M);
+                    nuT.  make(M,N);
+                    Phi.  make(N,M);
+                    W.    make(N);
+                    K.    make(N);
+                    Gamma.make(N);
+                    xi.   make(N);
                     {
                         size_t ii=1;
                         for(iterator i=begin();i!=end();++i,++ii)
@@ -110,24 +116,54 @@ namespace yocto
             }
         }
 
-        void equilibria:: initializeGamma(const double t)
+        void equilibria:: initializeGamma(const array<double> &C0, const double t)
         {
             iterator ii=begin();
             for(size_t i=1;i<=N;++i,++ii)
             {
                 const equilibrium &eq = **ii;
-                Gam[i] = eq.computeGamma(C,K[i]=eq.K(t));
+                Gamma[i] = eq.computeGamma(C0,K[i]=eq.K(t));
             }
         }
 
-        void equilibria:: updateGamma()
+        void equilibria:: updateGamma(const array<double> &C0)
         {
             iterator ii=begin();
             for(size_t i=1;i<=N;++i,++ii)
             {
                 const equilibrium &eq = **ii;
-                Gam[i] = eq.computeGamma(C,K[i]);
+                Gamma[i] = eq.computeGamma(C0,K[i]);
             }
+        }
+
+        void equilibria:: initializeGammaAndPhi(const array<double> &C0,const double t)
+        {
+            iterator ii=begin();
+            for(size_t i=1;i<=N;++i,++ii)
+            {
+                const equilibrium &eq = **ii;
+                const double Kt = (K[i]=eq.K(t));
+                Gamma[i] = eq.computeGamma(C0,Kt);
+                eq.computeGradient(Phi[i],C0,Kt);
+            }
+        }
+
+        void equilibria:: updateGammaAndPhi(const array<double> &C0)
+        {
+            iterator ii=begin();
+            for(size_t i=1;i<=N;++i,++ii)
+            {
+                const equilibrium &eq = **ii;
+                const double Kt = K[i];
+                Gamma[i] = eq.computeGamma(C0,Kt);
+                eq.computeGradient(Phi[i],C0,Kt);
+            }
+        }
+
+        bool equilibria:: computeW()
+        {
+            tao::mmul_rtrn(W,Phi,nu);
+            return LU<double>::build(W);
         }
 
     }

@@ -4,6 +4,7 @@
 #include "yocto/chemical/component.hpp"
 #include "yocto/associative/set.hpp"
 #include "yocto/math/types.hpp"
+#include "yocto/sequence/addr-list.hpp"
 
 namespace yocto
 {
@@ -32,14 +33,17 @@ namespace yocto
             void fill( array<double> &nu, array<bool> &active) const throw();
 
             double computeGamma( const array<double> &C, const double Kt ) const;
-            
+            void   computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const;
+
 
         protected:
             explicit equilibrium(const string &id);
             void dispatch();
+            typedef addr_list<component> meta_list;
+            typedef addr_node<component> meta_node;
             components content;
-            components reactants;
-            components products;
+            meta_list  reactants;
+            meta_list  products;
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);

@@ -34,20 +34,31 @@ namespace yocto
             vector<bool>   active;
 
             // N dependent objects
-            matrix<double> nu;   //!< topology    NxM
-            matrix<double> nuT;  //!< transposed  MxN
-            matrix<double> Phi;  //!< jacobian    NxM
-            vector<double> K;    //!< constants   N
-            vector<double> Gam;  //!< Gamma       N
-            vector<double> xi;   //!< extent      N
+            matrix<double> nu;     //!< topology    NxM
+            matrix<double> nuT;    //!< transposed  MxN
+            matrix<double> Phi;    //!< jacobian    NxM
+            matrix<double> W;      //!< inv(jacobian.nuT) NxN
+            vector<double> K;      //!< constants   N
+            vector<double> Gamma;  //!< Gamma       N
+            vector<double> xi;     //!< extent      N
 
 
             void compile_for(const library &lib);
 
             void clear() throw();
 
-            void initializeGamma(const double t);
-            void updateGamma();
+            //! initialize K and Gamma
+            void initializeGamma(const array<double> &C0, const double t);
+
+            //! compute Gamma for a computed set of K
+            void updateGamma(const array<double> &C0);
+
+            //! initialize K, Gamma and Phi 
+            void initializeGammaAndPhi(const array<double> &C0,const double t);
+            void updateGammaAndPhi(const array<double> &C0);
+
+            //! compute LU for Phi*nu'
+            bool computeW();
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
