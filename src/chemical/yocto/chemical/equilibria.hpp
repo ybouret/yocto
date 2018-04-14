@@ -32,16 +32,21 @@ namespace yocto
             vector<double> C;
             vector<double> dC;
             vector<bool>   active;
-
+            vector<double> Ctry;
+            
             // N dependent objects
-            matrix<double> nu;     //!< topology    NxM
-            matrix<double> nuT;    //!< transposed  MxN
-            matrix<double> Phi;    //!< jacobian    NxM
+            vector<double> beta;   //!< if negative active species [M]
+            matrix<double> nu;     //!< topology    [NxM]
+            matrix<double> nuT;    //!< transposed  [MxN]
+            matrix<double> nu2;    //!< nuT.nu      [MxM]
+            matrix<double> Phi;    //!< jacobian    [NxM]
             matrix<double> W;      //!< inv(jacobian.nuT) NxN
             vector<double> K;      //!< constants   N
             vector<double> Gamma;  //!< Gamma       N
             vector<double> xi;     //!< extent      N
 
+            // helper
+            math::numeric<double>::function E; //!< for balancing
 
             void compile_for(const library &lib);
 
@@ -59,9 +64,12 @@ namespace yocto
 
             //! compute LU for Phi*nu'
             bool computeW();
+
+            bool balance( array<double> &C0, const double t );
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
+            double callE(double alpha);
         };
 
     }

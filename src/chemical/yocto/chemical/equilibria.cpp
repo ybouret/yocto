@@ -16,7 +16,8 @@ namespace yocto
         equilibrium::database(n,as_capacity),
         name(id),
         M(0),
-        N(0)
+        N(0),
+        E(this, & equilibria::callE )
         {
         }
 
@@ -51,9 +52,12 @@ namespace yocto
             K.      release();
             W.      release();
             Phi.    release();
+            nu2.    release();
             nuT.    release();
             nu.     release();
+            beta.   release();
 
+            Ctry.   release();
             active. release();
             dC.     release();
             C.      release();
@@ -80,11 +84,14 @@ namespace yocto
                 C.make(M);
                 dC.make(M);
                 active.make(M,false);
-
+                Ctry.make(M);
+                
                 if(N>0)
                 {
+                    beta. make(M);
                     nu.   make(N,M);
                     nuT.  make(M,N);
+                    nu2.  make(M,M);
                     Phi.  make(N,M);
                     W.    make(N);
                     K.    make(N);
@@ -104,6 +111,7 @@ namespace yocto
                             nuT[j][i] = nu[i][j];
                         }
                     }
+                    tao::mmul(nu2, nuT, nu);
                 }
 
 
