@@ -65,7 +65,8 @@ namespace yocto
             //! compute LU for Phi*nu'
             bool computeW();
 
-            bool balance( array<double> &C0, const double t );
+            //! balance a pre-loaded concentration
+            bool balance();
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);

@@ -54,8 +54,13 @@ YOCTO_UNIT_TEST_IMPL(balance)
     }
     lib.display(C0);
     std::cerr << "nu2=" << cs.nu2 << std::endl;
-    cs.balance(C0,0.0);
-    lib.display(C0);
+
+    for(size_t j=M;j>0;--j)
+    {
+        cs.C[j] = C0[j];
+    }
+    cs.balance();
+    lib.display(cs.C);
 
 }
 YOCTO_UNIT_TEST_DONE()
