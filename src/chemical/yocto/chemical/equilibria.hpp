@@ -44,9 +44,9 @@ namespace yocto
             vector<double> K;      //!< constants   N
             vector<double> Gamma;  //!< Gamma       N
             vector<double> xi;     //!< extent      N
-
-            // helper
-           // math::numeric<double>::function E; //!< for balancing
+            vector<double> GamEV;  //!< Gamma Exponent Values [N]
+            
+            
 
             void compile_for(const library &lib);
 
@@ -59,8 +59,9 @@ namespace yocto
             void updateGamma(const array<double> &C0);
 
             //! initialize K, Gamma and Phi 
-            void initializeGammaAndPhi(const array<double> &C0,const double t);
-            void updateGammaAndPhi(const array<double> &C0);
+            void   initializeGammaAndPhi(const array<double> &C0,const double t);
+            void   updateGammaAndPhi(const array<double> &C0);
+            double GammaToScalar() const throw();
 
             //! compute LU for Phi*nu'
             bool computeW();

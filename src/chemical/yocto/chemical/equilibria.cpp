@@ -46,6 +46,7 @@ namespace yocto
             (size_t &)M = 0;
             (size_t &)N = 0;
 
+            GamEV.  release();
             xi.     release();
             Gamma.  release();
             K.      release();
@@ -96,11 +97,23 @@ namespace yocto
                     K.    make(N);
                     Gamma.make(N);
                     xi.   make(N);
+                    GamEV. make(N);
+
                     {
                         size_t ii=1;
                         for(iterator i=begin();i!=end();++i,++ii)
                         {
-                            (**i).fill(nu[ii],active);
+                            const equilibrium &eq = **i;
+                            eq.fill(nu[ii],active);
+                            const int nuP = eq.productsStoichiometry();
+                            if(nuP>0)
+                            {
+                                GamEV[ii] = 1.0/nuP;
+                            }
+                            else
+                            {
+                                GamEV[ii] = 1.0;
+                            }
                         }
                     }
                     for(size_t i=1;i<=N;++i)
@@ -172,6 +185,9 @@ namespace yocto
             tao::mmul_rtrn(W,Phi,nu);
             return LU<double>::build(W);
         }
+
+        double GammaToScalar() const throw();
+
 
     }
 }

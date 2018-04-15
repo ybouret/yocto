@@ -155,6 +155,17 @@ namespace yocto
             }
         }
 
+        int    equilibrium::productsStoichiometry() const throw()
+        {
+            int ans = 0;
+            for(const meta_node *p=products.head;p;p=p->next)
+            {
+                ans += (**p).nu; assert( (**p).nu>0 );
+            }
+            return ans;
+        }
+
+
         void equilibrium:: fill( array<double> &nu, array<bool> &active) const throw()
         {
             assert(nu.size()==active.size());

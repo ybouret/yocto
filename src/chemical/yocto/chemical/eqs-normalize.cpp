@@ -16,18 +16,23 @@ namespace yocto
             //
             // initialize
             //__________________________________________________________________
-            if(!balance(C0))
+            for(size_t j=M;j>0;--j)
+            {
+                C[j] = C0[j];
+            }
+
+            if(!balance(C))
             {
                 throw exception("%sno initial balancing!",fn);
             }
 
-            initializeGammaAndPhi(C0,t);
+            initializeGammaAndPhi(C,t);
             size_t cycle=0;
             while(true)
             {
                 ++cycle;
                 // compute system matrix
-                std::cerr << "C0   =" << C0    << std::endl;
+                std::cerr << "C    =" << C    << std::endl;
                 std::cerr << "Gamma=" << Gamma << std::endl;
                 if(!computeW())
                 {
@@ -40,18 +45,20 @@ namespace yocto
 
                 // compute dC
                 tao::mul(dC,nuT,xi);
-                for(size_t j=M;j>0;--j)
-                {
-                    C0[j] += dC[j];
-                }
+                tao::add(C,dC);
 
-                if(!balance(C0))
+                if(!balance(C))
                 {
                     throw exception("%s: unable to balance",fn);
                 }
 
                 if(cycle>10) break;
-                updateGammaAndPhi(C0);
+                updateGammaAndPhi(C);
+            }
+
+            for(size_t j=M;j>0;--j)
+            {
+                C0[j] = C[j];
             }
 
             
