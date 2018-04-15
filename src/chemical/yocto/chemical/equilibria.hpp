@@ -46,7 +46,7 @@ namespace yocto
             vector<double> xi;     //!< extent      N
 
             // helper
-            math::numeric<double>::function E; //!< for balancing
+           // math::numeric<double>::function E; //!< for balancing
 
             void compile_for(const library &lib);
 
@@ -70,7 +70,8 @@ namespace yocto
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
-            double callE(double alpha);
+           // double callE(double alpha);
+            void   stay_positive() throw();
         };
 
     }

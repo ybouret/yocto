@@ -16,8 +16,7 @@ namespace yocto
         equilibrium::database(n,as_capacity),
         name(id),
         M(0),
-        N(0),
-        E(this, & equilibria::callE )
+        N(0) //,E(this, & equilibria::callE )
         {
         }
 
@@ -81,14 +80,14 @@ namespace yocto
 
             try
             {
-                C.make(M);
-                dC.make(M);
-                active.make(M,false);
-                Ctry.make(M);
-                
+                C.      make(M);
+                dC.     make(M);
+                active. make(M,false);
+                Ctry.   make(M);
+                beta.   make(M);
+
                 if(N>0)
                 {
-                    beta. make(M);
                     nu.   make(N,M);
                     nuT.  make(M,N);
                     nu2.  make(M,M);
