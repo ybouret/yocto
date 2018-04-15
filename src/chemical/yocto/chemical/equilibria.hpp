@@ -66,8 +66,12 @@ namespace yocto
             bool computeW();
 
             //! balance a pre-loaded concentration
-            bool balance();
+            bool balance(array<double> &C0) throw();
+
+            //! normalize a balanced concentration
+            void normalize( array<double> &C0, const double t );
             
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
         };

@@ -9,21 +9,7 @@ namespace yocto
     {
         
 
-
-#if 0
-        void   equilibria:: stay_positive() throw()
-        {
-            for(size_t j=M;j>0;--j)
-            {
-                if(active[j])
-                {
-                    if(C[j]<=0) C[j] = 0;
-                }
-            }
-        }
-#endif
-
-        bool equilibria:: balance( )
+        bool equilibria:: balance( array<double> &C0 ) throw()
         {
             //__________________________________________________________________
             //
@@ -35,7 +21,7 @@ namespace yocto
             double E0 = 0;
             for(size_t j=M;j>0;--j)
             {
-                const double Cj = C[j];
+                const double Cj = C0[j];
                 if(active[j]&&(Cj<0))
                 {
                     E0     +=  Cj*Cj;
@@ -83,7 +69,7 @@ namespace yocto
 
                 for(size_t j=M;j>0;--j)
                 {
-                    const double c = C[j];
+                    const double c = C0[j];
                     const double d = dC[j];
                     //std::cerr << c << " -> " << d << std::endl;
                     if(d<0)
@@ -142,7 +128,7 @@ namespace yocto
                 std::cerr << "amin=" << amin << "@" << jmin << std::endl;
                 if( (jmax<=0) && (jmin<=0) )
                 {
-                    throw exception("chemical.equilibria: invalid system");
+                    return false;
                 }
 
                 if(jmax>0)
@@ -163,9 +149,9 @@ namespace yocto
                         // update
                         //______________________________________________________
                         std::cerr << "maximum advance" << std::endl;
-                        tao::muladd(C,amax,dC);
-                        C[jmax] = 0;
-                        std::cerr << "C=" << C << std::endl;
+                        tao::muladd(C0,amax,dC);
+                        C0[jmax] = 0;
+                        std::cerr << "C0=" << C0 << std::endl;
                         goto BALANCE;
                     }
                 }
@@ -177,9 +163,9 @@ namespace yocto
                     //__________________________________________________________
                     assert(jmin>0);
                     std::cerr << "minimum advance" << std::endl;
-                    tao::muladd(C,amin,dC);
-                    C[jmin] = 0;
-                    std::cerr << "C=" << C << std::endl;
+                    tao::muladd(C0,amin,dC);
+                    C0[jmin] = 0;
+                    std::cerr << "C0=" << C0 << std::endl;
                     goto BALANCE;
                 }
 

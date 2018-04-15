@@ -1,4 +1,5 @@
 
+
 #include "yocto/utest/run.hpp"
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/chemical/library.hpp"
@@ -6,7 +7,7 @@
 using namespace yocto;
 using namespace chemical;
 
-YOCTO_UNIT_TEST_IMPL(balance)
+YOCTO_UNIT_TEST_IMPL(norm)
 {
     library lib( "lib" );
     species &H   = lib.add("H+",1);
@@ -36,7 +37,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
         std::cerr << acetic << std::endl;
     }
 
-    if(false)
+    if(true)
     {
         equilibrium &ammoniac = cs("ammoniac",pow(10,-9.8));
         ammoniac(NH4,-1);
@@ -49,11 +50,11 @@ YOCTO_UNIT_TEST_IMPL(balance)
     const size_t   M = cs.M;
     vector<double> C0(M+2);
 
-    for(size_t iter=1;iter<=1000;++iter)
+    for(size_t iter=1;iter<=1;++iter)
     {
         for(size_t i=1;i<=M;++i)
         {
-            C0[i] = 1e-3 * alea.symm<double>();
+            C0[i] = 1e-3 * alea.to<double>();
         }
         lib.display(C0);
 
@@ -61,6 +62,10 @@ YOCTO_UNIT_TEST_IMPL(balance)
         if(cs.balance(C0))
         {
             lib.display(C0);
+            std::cerr << "<normalizing>" << std::endl;
+            cs.normalize(C0,0.0);
+            std::cerr << "<normalizing/>" << std::endl;
+
         }
         std::cerr << "<balancing/>" << std::endl << std::endl;
     }
