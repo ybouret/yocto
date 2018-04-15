@@ -70,8 +70,6 @@ namespace yocto
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
-           // double callE(double alpha);
-            void   stay_positive() throw();
         };
 
     }

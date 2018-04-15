@@ -49,7 +49,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
     const size_t   M = cs.M;
     vector<double> C0(M+2);
 
-    for(size_t iter=1;iter<=10000;++iter)
+    for(size_t iter=1;iter<=1000;++iter)
     {
         for(size_t i=1;i<=M;++i)
         {

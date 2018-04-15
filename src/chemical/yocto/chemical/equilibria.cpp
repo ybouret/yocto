@@ -16,7 +16,7 @@ namespace yocto
         equilibrium::database(n,as_capacity),
         name(id),
         M(0),
-        N(0) //,E(this, & equilibria::callE )
+        N(0)
         {
         }
 
