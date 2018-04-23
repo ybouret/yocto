@@ -186,7 +186,10 @@ namespace yocto
             return LU<double>::build(W);
         }
 
-        double GammaToScalar() const throw();
+        double equilibria:: GammaToScalar() const throw()
+        {
+            return 0;
+        }
 
 
     }

@@ -57,19 +57,12 @@ YOCTO_UNIT_TEST_IMPL(norm)
             C0[i] = 1e-3 * alea.to<double>();
         }
         lib.display(C0);
+        std::cerr << "<normalizing>" << std::endl;
+        cs.normalize(C0,0.0);
+        std::cerr << "<normalizing/>" << std::endl;
 
-        std::cerr << "<balancing>" << std::endl;
-        if(cs.balance(C0))
-        {
-            lib.display(C0);
-            std::cerr << "<normalizing>" << std::endl;
-            cs.normalize(C0,0.0);
-            std::cerr << "<normalizing/>" << std::endl;
-
-        }
-        std::cerr << "<balancing/>" << std::endl << std::endl;
     }
-
+    std::cerr << "nu=" << cs.nu << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()
 

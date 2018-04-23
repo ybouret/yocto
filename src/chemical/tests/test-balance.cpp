@@ -47,7 +47,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
     cs.compile_for(lib);
     std::cerr << "active=" << cs.active << std::endl;
     const size_t   M = cs.M;
-    vector<double> C0(M+2);
+    vector<double> C0(M);
 
     for(size_t iter=1;iter<=1000;++iter)
     {
@@ -58,6 +58,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
         lib.display(C0);
 
         std::cerr << "<balancing>" << std::endl;
+        
         if(cs.balance(C0))
         {
             lib.display(C0);
