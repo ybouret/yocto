@@ -1,7 +1,7 @@
 #ifndef YOCTO_CHEMICAL_EQUILIBRIUM_INCLUDED
 #define YOCTO_CHEMICAL_EQUILIBRIUM_INCLUDED 1
 
-#include "yocto/chemical/component.hpp"
+#include "yocto/chemical/actor.hpp"
 #include "yocto/associative/set.hpp"
 #include "yocto/math/types.hpp"
 #include "yocto/sequence/addr-list.hpp"
@@ -11,7 +11,6 @@ namespace yocto
     namespace chemical
     {
 
-        typedef set<string,component::pointer> components;
         typedef core::list_of_cpp<actor>       actors;
         
         class equilibrium : public counted_object
@@ -22,8 +21,8 @@ namespace yocto
             typedef math::numeric<double>::function constant;
             virtual ~equilibrium() throw();
 
-            const string    name;
-            const string  & key() const throw();
+            const string     name;
+            const string  &  key() const throw();
             mutable constant K;
 
             bool operator()(species &sp, const int nu);
@@ -39,10 +38,7 @@ namespace yocto
 
         protected:
             explicit equilibrium(const string &id);
-            //void dispatch();
-            //typedef addr_list<component> meta_list;
-            //typedef addr_node<component> meta_node;
-            //components content;
+            
             actors  reactants;
             actors  products;
 
