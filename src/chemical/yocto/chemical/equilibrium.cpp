@@ -24,6 +24,88 @@ namespace yocto
         bool equilibrium:: operator()(species &sp, const int nu)
         {
             const string       &id  = sp.name;
+            actors             *l   = NULL;
+            actor              *a   = NULL;
+            
+            for(actor *r=reactants.head;r;r=r->next)
+            {
+                if(id==r->sp->name)
+                {
+                    a=r;
+                    l=&reactants;
+                    goto DISPATCH;
+                }
+            }
+            
+            for(actor *p=products.head;p;p=p->next)
+            {
+                if(id==p->sp->name)
+                {
+                    a=p;
+                    l=&products;
+                    goto DISPATCH;
+                }
+            }
+            
+            
+        DISPATCH:
+            if(!a)
+            {
+                // actor doesn't exist
+                if(!nu)
+                {
+                    return false;
+                }
+                else
+                {
+                    a = new actor(sp,nu);
+                    if(nu>0)
+                    {
+                        products.push_back(a);
+                    }
+                    else
+                    {
+                        reactants.push_back(a);
+                    }
+                    return true;
+                }
+                
+            }
+            else
+            {
+                // actor already exists
+                assert(l!=NULL);
+                const int new_nu = a->nu + nu;
+                if(!new_nu)
+                {
+                    // removed...
+                    delete l->unlink(a);
+                    return false;
+                }
+                else
+                {
+                    if(new_nu*nu>0)
+                    {
+                        // same sign
+                        (int &)(a->nu) = new_nu;
+                    }
+                    else
+                    {
+                        // change side
+                        actors *t = (new_nu>0) ? &products : &reactants;
+                        assert(t!=l);
+                        t->push_back( l->unlink(a) );
+                    }
+                    return true;
+                }
+            }
+            
+        }
+        
+#if 0
+        bool equilibrium:: operator()(species &sp, const int nu)
+        {
+            const string       &id  = sp.name;
             component::pointer *pp  = content.search(id);
             if(!pp)
             {
@@ -66,7 +148,10 @@ namespace yocto
                 }
             }
         }
+#endif
+        
 
+#if 0
         void equilibrium:: dispatch()
         {
             products.clear();
@@ -84,57 +169,44 @@ namespace yocto
                     assert(p->nu<0);
                     reactants.append(p);
                 }
-                /*
-                assert(p->nu!=0);
-                if(p->nu>0)
-                {
-                    if( !products.insert(p) ) throw exception("%s: unexpected product failure for '%s'", *name, *(p->key()));
-                }
-                else
-                {
-                    assert(p->nu<0);
-                    if( !reactants.insert(p) ) throw exception("%s: unexpected reactant failure for '%s'",*name, *(p->key()));
-                }
-                 */
             }
         }
-
+#endif
+        
         std::ostream & operator<<( std::ostream &os, const equilibrium &eq)
         {
             os << eq.name << ": ";
             {
                 size_t ir = 1;
-                for( equilibrium::meta_node *r=eq.reactants.head;r;r=r->next,++ir)
+                for( const actor *r=eq.reactants.head;r;r=r->next,++ir)
                 {
-                    const component &cmp = **r;
-                    assert(cmp.nu<0);
+                    assert(r->nu<0);
                     if(ir>1)
                     {
                         os << " + ";
                     }
-                    if(cmp.nu<-1)
+                    if(r->nu<-1)
                     {
-                        os << -cmp.nu << '*';
+                        os << -r->nu << '*';
                     }
-                    os << cmp.key();
+                    os << r->sp->name;
                 }
             }
             os << " <=> ";
             {
                 size_t ip = 1;
-                for( equilibrium::meta_node *p=eq.products.head;p;p=p->next,++ip)
+                for( const actor *p=eq.products.head;p;p=p->next,++ip)
                 {
-                    const component &cmp = **p;
-                    assert(cmp.nu>0);
+                    assert(p->nu>0);
                     if(ip>1)
                     {
                         os << " + ";
                     }
-                    if(cmp.nu>1)
+                    if(p->nu>1)
                     {
-                        os << cmp.nu << '*';
+                        os << p->nu << '*';
                     }
-                    os << cmp.key();
+                    os << p->sp->name;
                 }
             }
             os << ", " << eq.K(0);
@@ -144,10 +216,13 @@ namespace yocto
         void equilibrium:: check() const
         {
             int z = 0;
-            for(components::const_iterator i=content.begin();i!=content.end();++i)
+            for(const actor *a=reactants.head;a;a=a->next)
             {
-                const component &cmp = **i;
-                z += cmp.nu * cmp.sp->z;
+                z += a->nu * a->sp->z;
+            }
+            for(const actor *a=products.head;a;a=a->next)
+            {
+                z += a->nu * a->sp->z;
             }
             if(z!=0)
             {
@@ -158,9 +233,9 @@ namespace yocto
         int    equilibrium::productsStoichiometry() const throw()
         {
             int ans = 0;
-            for(const meta_node *p=products.head;p;p=p->next)
+            for(const actor *p=products.head;p;p=p->next)
             {
-                ans += (**p).nu; assert( (**p).nu>0 );
+                ans += p->nu; assert( p->nu>0 );
             }
             return ans;
         }
@@ -169,6 +244,20 @@ namespace yocto
         void equilibrium:: fill( array<double> &nu, array<bool> &active) const throw()
         {
             assert(nu.size()==active.size());
+            for(const actor *a=reactants.head;a;a=a->next)
+            {
+                const size_t i = a->sp->indx;
+                nu[i]     = a->nu;
+                active[i] = true;
+            }
+            for(const actor *a=products.head;a;a=a->next)
+            {
+                const size_t i = a->sp->indx;
+                nu[i]     = a->nu;
+                active[i] = true;
+            }
+            
+#if 0
             for(components::const_iterator i=content.begin();i!=content.end();++i)
             {
                 const component &cmp = **i;
@@ -179,27 +268,26 @@ namespace yocto
                 nu[s.indx]     = cmp.nu;
                 active[s.indx] = true;
             }
+#endif
         }
 
         double equilibrium:: computeGamma( const array<double> &C, const double Kt ) const
         {
             double lhs = 1;
             {
-                for(const meta_node *r=reactants.head;r;r=r->next)
+                for(const actor *r=reactants.head;r;r=r->next)
                 {
-                    const component &cmp = **r;
-                    assert(cmp.nu<0);
-                    lhs *= ipower( C[cmp.id], cmp.ev );
+                    assert(r->nu<0);
+                    lhs *= ipower( C[r->sp->indx], r->ev );
                 }
             }
 
             double rhs = 1;
             {
-                for(const meta_node *p=products.head;p;p=p->next)
+                for(const actor *p=products.head;p;p=p->next)
                 {
-                    const component &cmp = **p;
-                    assert(cmp.nu>0);
-                    rhs *= ipower( C[cmp.id], cmp.ev );
+                    assert(p->nu>0);
+                    rhs *= ipower( C[p->sp->indx], p->ev );
                 }
             }
 
@@ -210,36 +298,32 @@ namespace yocto
         void   equilibrium:: computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const
         {
             math::tao::ld(Phi,0);
-            for(const meta_node *a = reactants.head; a != NULL; a=a->next )
+            for(const actor *a = reactants.head; a != NULL; a=a->next )
             {
-                const  component &A = **a;
-                const  size_t j     = A.id;
-                double        lhs   = Kt * A.ev * ipower(C[j],A.evm);
+                const  size_t j     = a->sp->indx;
+                double        lhs   = Kt * a->ev * ipower(C[j],a->evm);
 
-                for(const meta_node *b = reactants.head; b!=NULL; b=b->next)
+                for(const actor *b = reactants.head; b!=NULL; b=b->next)
                 {
                     if(a!=b)
                     {
-                        const  component &B = **b;
-                        lhs *= ipower(C[B.id],B.ev);
+                        lhs *= ipower(C[b->sp->indx],b->ev);
                     }
                 }
 
                 Phi[j] = lhs;
             }
 
-            for(const meta_node *a = products.head; a != NULL; a=a->next )
+            for(const actor *a = products.head; a != NULL; a=a->next )
             {
-                const component &A   = **a;
-                const  size_t    j   = A.id;
-                double           rhs = A.ev * ipower(C[j],A.evm);
+                const  size_t    j   = a->sp->indx;
+                double           rhs = a->ev * ipower(C[j],a->evm);
 
-                for(const meta_node *b = products.head; b!=NULL; b=b->next)
+                for(const actor *b = products.head; b!=NULL; b=b->next)
                 {
                     if(a!=b)
                     {
-                        const  component &B = **b;
-                        rhs *= ipower(C[B.id],B.ev);
+                        rhs *= ipower(C[b->sp->indx],b->ev);
                     }
                 }
 

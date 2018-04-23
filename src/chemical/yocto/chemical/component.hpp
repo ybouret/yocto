@@ -25,6 +25,23 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(component);
         };
+        
+        class actor : public object
+        {
+        public:
+            virtual ~actor() throw();
+            explicit actor( species &s, const int coef);
+            
+            const species::pointer sp;
+            const int              nu;  //!< stoichiometric coef
+            const size_t           ev;  //! |nu|
+            const size_t           evm; //!  ev-1
+            actor                 *next;
+            actor                 *prev;
+            
+        private:
+            YOCTO_DISABLE_COPY_AND_ASSIGN(actor);
+        };
     }
 }
 

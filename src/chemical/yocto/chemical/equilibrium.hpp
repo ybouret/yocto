@@ -12,7 +12,8 @@ namespace yocto
     {
 
         typedef set<string,component::pointer> components;
-
+        typedef core::list_of_cpp<actor>       actors;
+        
         class equilibrium : public counted_object
         {
         public:
@@ -38,12 +39,12 @@ namespace yocto
 
         protected:
             explicit equilibrium(const string &id);
-            void dispatch();
-            typedef addr_list<component> meta_list;
-            typedef addr_node<component> meta_node;
-            components content;
-            meta_list  reactants;
-            meta_list  products;
+            //void dispatch();
+            //typedef addr_list<component> meta_list;
+            //typedef addr_node<component> meta_node;
+            //components content;
+            actors  reactants;
+            actors  products;
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);
