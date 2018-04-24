@@ -29,6 +29,7 @@ namespace yocto
             }
 
             initializeGammaAndPhi(C,t);
+            double GS = GammaToScalar();
             size_t cycle=0;
             while(true)
             {
@@ -37,101 +38,89 @@ namespace yocto
                 // compute system and full extent
                 //______________________________________________________________
                 ++cycle;
-                //std::cerr << "C    =" << C    << std::endl;
-                //std::cerr << "Gamma=" << Gamma << std::endl;
-                //std::cerr << "gs   =" << GammaToScalar() << std::endl;
+                std::cerr << "C    =" << C    << std::endl;
+                std::cerr << "Gamma=" << Gamma << std::endl;
                 if(!computeW())
                 {
-                    throw exception("%ssingular system",fn);
+                    tao::mmul_rtrn(W,Phi,Nu);
+                    std::cerr << "W=" << W << std::endl;
+                    matrix<double> V(N,N);
+                    vector<double> w(N);
+                    if(!svd<double>::build(W, w, V))
+                    {
+                        std::cerr << "can't event build SVD!" << std::endl;
+                        throw exception("%ssingular system",fn);
+                    }
+                    std::cerr << "w=" << w << std::endl;
+                    const size_t dimKer = svd<double>::truncate(w);
+                    std::cerr << "w=" << w << ", dimKer=" << dimKer << std::endl;
+                    svd<double>::solve(W,w,V,Gamma,xi);
+                    tao::neg(xi,xi);
+                    tao::mul(dC,NuT,xi);
+                    std::cerr << "dC_svd=" << dC << std::endl;
+                    exit(1);
                 }
-                
-                
-                tao::neg(xi,Gamma);
-                LU<double>::solve(W,xi);
+                else
+                {
+                    tao::neg(xi,Gamma);
+                    LU<double>::solve(W,xi);
+                    tao::mul(dC,NuT,xi);
+                    std::cerr << "dC_lu  =" << dC   << std::endl;
+                }
                 
                 //______________________________________________________________
                 //
                 // compute expected full new concentration
                 //______________________________________________________________
-                tao::mul(dC,NuT,xi);
-                tao::add(C,dC);
                 
-                //______________________________________________________________
-                //
-                // check step
-                //______________________________________________________________
-                bool bad = false;
+                double zcoef = 0;
+                size_t zindx = 0;
+               
+
                 for(size_t j=M;j>0;--j)
                 {
-                    beta[j] = 0;
+                    const double d = dC[j];
+                    if(active[j] && (d<0) )
+                    {
+                        const double c     = C[j]; assert(c>=0);
+                        const double ztemp = c/(-d);
+                        if( (zindx<=0) || (ztemp<zcoef) )
+                        {
+                            zindx = j;
+                            zcoef = ztemp;
+                        }
+                    }
+                }
+                const double alpha = (zindx>0) ? min_of(1.0,zcoef) : 1;
+                std::cerr << "zindx=" << zindx << " => " << zcoef << std::endl;
+                std::cerr << "alpha=" << alpha << std::endl;
+                tao::muladd(C,alpha,dC);
+                // force at least one zero
+                if(zindx)
+                {
+                    assert(active[zindx]);
+                    C[zindx] = 0;
+                }
+                
+                // numerical rounding
+                for(size_t j=M;j>0;--j)
+                {
                     const double Cj = C[j];
                     if(active[j]&&(Cj<0))
                     {
-                        beta[j] = -Cj;
-                        bad     = true;
+                        C[j] = 0;
                     }
                 }
-                if(bad)
-                {
-                    std::cerr << "C   =" << C    << std::endl;
-                    std::cerr << "beta=" << beta << std::endl;
-                    if(M>N)
-                    {
-                        const size_t   dof = M-N;
-                        matrix<double> sigma(dof,M);
-                        if(!svd<double>::orthonormal(sigma,Nu))
-                        {
-                            std::cerr << "couldn't build sigma" << std::endl;
-                        }
-                        //std::cerr << "nu    = " << nu << std::endl;
-                        std::cerr << "sigma = " << sigma << std::endl;
-                        vector<double> q(dof);
-                        tao::mul(q,sigma,beta);
-                        std::cerr << "q=" << q << std::endl;
-                    }
-                    exit(0);
-                }
-                if(cycle>10) break;
+                std::cerr << "C1=" << C << std::endl;
                 updateGammaAndPhi(C);
+                const double gs = GammaToScalar();
+                std::cerr << "GS: " << GS << " => " << gs << std::endl;
+
+                if(cycle>5) break;
+                GS  = gs;
             }
             
             
-#if 0
-            if(!balance(C))
-            {
-                throw exception("%sno initial balancing!",fn);
-            }
-
-            initializeGammaAndPhi(C,t);
-            size_t cycle=0;
-            while(true)
-            {
-                ++cycle;
-                // compute system matrix
-                std::cerr << "C    =" << C    << std::endl;
-                std::cerr << "Gamma=" << Gamma << std::endl;
-                if(!computeW())
-                {
-                    throw exception("%ssingular system",fn);
-                }
-
-                // compute extent
-                tao::neg(xi,Gamma);
-                LU<double>::solve(W,xi);
-
-                // compute dC
-                tao::mul(dC,nuT,xi);
-                tao::add(C,dC);
-
-                if(!balance(C))
-                {
-                    throw exception("%s: unable to balance",fn);
-                }
-
-                if(cycle>10) break;
-                updateGammaAndPhi(C);
-            }
-#endif
             
             for(size_t j=M;j>0;--j)
             {
