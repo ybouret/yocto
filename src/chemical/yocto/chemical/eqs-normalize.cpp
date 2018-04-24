@@ -138,7 +138,7 @@ namespace yocto
                 const double gs = GammaToScalar();
                 std::cerr << "GS: " << GS << " => " << gs << std::endl;
                 
-                if(cycle>20) break;
+                if(cycle>30) break;
                 GS  = gs;
             }
             
