@@ -204,6 +204,9 @@ namespace yocto
                 
                 double decrease_coeff = 0;
                 size_t decrease_index = 0;
+                
+                double increase_coeff = 0;
+                size_t increase_index = 0;
                 for(size_t j=M;j>0;--j)
                 {
                     const double d = dC[j];
@@ -217,14 +220,32 @@ namespace yocto
                             return false;
                         }
                         const double coeff = c/(-d);
-                        if( decrease_index<=0 || coeff<decrease_coeff)
+                        if( (decrease_index<=0) || (coeff<decrease_coeff) )
                         {
+                            std::cerr << "..decrease@" << j << " = " << coeff << std::endl;
                             decrease_index = j;
                             decrease_coeff = coeff;
                         }
                     }
+                    else if(d>0)
+                    {
+                        assert(active[j]);
+                        if(c<0)
+                        {
+                            const double coeff = (-c)/d;
+                            if( (increase_index<=0) || (coeff>increase_coeff) )
+                            {
+                                std::cerr << "..increase@" << j << " = " << coeff << std::endl;
+                                increase_index = j;
+                                increase_coeff = coeff;
+                            }
+                        }
+                    }
+                   
                 }
-                
+                std::cerr << "decrease_index=" << decrease_index << " => coeff=" << decrease_coeff << std::endl;
+                std::cerr << "increase_index=" << increase_index << " => coeff=" << increase_coeff << std::endl;
+
                 return false;
             }
             
