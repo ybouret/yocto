@@ -18,9 +18,69 @@ namespace yocto
             //__________________________________________________________________
             for(size_t j=M;j>0;--j)
             {
-                C[j] = C0[j];
+                const double Cj = (C[j] = C0[j]);
+                if(active[j]&&(Cj<0))
+                {
+                    equilibrium::database      &db = *this;
+                    const equilibrium::pointer &eq = db(j);
+                    throw exception("%s: invalid initial [%s]=%g",fn, *(eq->name), Cj);
+                }
             }
 
+            initializeGammaAndPhi(C,t);
+            size_t cycle=0;
+            while(true)
+            {
+                //______________________________________________________________
+                //
+                // compute system and full extent
+                //______________________________________________________________
+                ++cycle;
+                //std::cerr << "C    =" << C    << std::endl;
+                //std::cerr << "Gamma=" << Gamma << std::endl;
+                //std::cerr << "gs   =" << GammaToScalar() << std::endl;
+                if(!computeW())
+                {
+                    throw exception("%ssingular system",fn);
+                }
+                
+                
+                tao::neg(xi,Gamma);
+                LU<double>::solve(W,xi);
+                
+                //______________________________________________________________
+                //
+                // compute expected full new concentration
+                //______________________________________________________________
+                tao::mul(dC,nuT,xi);
+                tao::add(C,dC);
+                
+                //______________________________________________________________
+                //
+                // check step
+                //______________________________________________________________
+                bool bad = false;
+                for(size_t j=M;j>0;--j)
+                {
+                    beta[j] = 0;
+                    const double Cj = C[j];
+                    if(active[j]&&(Cj<0))
+                    {
+                        beta[j] = -Cj;
+                        bad     = true;
+                    }
+                }
+                if(bad)
+                {
+                    std::cerr << "beta=" << beta << std::endl;
+                    exit(0);
+                }
+                if(cycle>10) break;
+                updateGammaAndPhi(C);
+            }
+            
+            
+#if 0
             if(!balance(C))
             {
                 throw exception("%sno initial balancing!",fn);
@@ -55,7 +115,8 @@ namespace yocto
                 if(cycle>10) break;
                 updateGammaAndPhi(C);
             }
-
+#endif
+            
             for(size_t j=M;j>0;--j)
             {
                 C0[j] = C[j];

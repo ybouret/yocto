@@ -188,7 +188,12 @@ namespace yocto
 
         double equilibria:: GammaToScalar() const throw()
         {
-            return 0;
+            double ans = 0;
+            for(size_t i=N;i>0;--i)
+            {
+                ans += pow( Square(Gamma[i]), GamEV[i] );
+            }
+            return sqrt(ans);
         }
 
 

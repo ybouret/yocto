@@ -38,7 +38,6 @@ namespace yocto
 
         protected:
             explicit equilibrium(const string &id);
-            
             actors  reactants;
             actors  products;
 

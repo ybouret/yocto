@@ -1,5 +1,6 @@
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/math/core/tao.hpp"
+#include "yocto/math/core/adjoint.hpp"
 
 namespace yocto
 {
@@ -172,6 +173,88 @@ namespace yocto
             }
         }
 
+        bool equilibria:: balance2(array<double> &C0) throw()
+        {
+            matrix<double> nn(N,N);
+            tao::mmul_rtrn(nn,nu,nu);
+            std::cerr << "nn=" << nn << std::endl;
+            double det_nn = ideterminant(nn);
+            std::cerr << "det_nn=" << det_nn << std::endl;
+            matrix<double> adj_nn(N,N);
+            iadjoint(adj_nn,nn);
+            std::cerr << "adj_nn=" << adj_nn << std::endl;
+            matrix<double> tmp(N,M);
+            tao::mmul(tmp,adj_nn,nu);
+            matrix<double> pNu(M,M);
+            tao::mmul(pNu,nuT,tmp);
+            std::cerr << "pNu=" << pNu << std::endl;
+            std::cerr << "C0=" << C0 << std::endl;
+            bool bad = false;
+            for(size_t j=M;j>0;--j)
+            {
+                const double Cj = C0[j];
+                if(active[j]&&(Cj<0))
+                {
+                    bad     = true;
+                    beta[j] = -Cj;
+                }
+            }
+            if(bad)
+            {
+                std::cerr << "beta=" << beta << std::endl;
+            }
+            else
+            {
+                std::cerr << "OK" << std::endl;
+            }
+#if 0
+            assert(C0.size()==M);
+            matrix<double> sigma;
+            size_t         dof = 0;
+            if(M>N)
+            {
+                dof = M-N;
+                sigma.make(dof,M);
+                if(!svd<double>::orthonormal(sigma,nu))
+                {
+                    std::cerr << "couldn't build sigma" << std::endl;
+                }
+                std::cerr << "nu    = " << nu << std::endl;
+                std::cerr << "sigma = " << sigma << std::endl;
+            }
+            
+            bool bad = false;
+            for(size_t j=M;j>0;--j)
+            {
+                const double Cj = C0[j];
+                if(active[j]&&(Cj<0))
+                {
+                    bad     = true;
+                    beta[j] = -Cj;
+                }
+            }
+            std::cerr << "C0=" << C0 << std::endl;
+            if(bad)
+            {
+                std::cerr << "beta=" << beta << std::endl;
+                vector<double> p(N);
+                tao::mul(p,nu,beta);
+                std::cerr << "p=" << p << std::endl;
+                if(dof)
+                {
+                    vector<double> q(dof);
+                    tao::mul(q,sigma,beta);
+                    std::cerr << "q=" << q << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "OK" << std::endl;
+            }
+            return false;
+#endif
+        }
+        
     }
 
 }

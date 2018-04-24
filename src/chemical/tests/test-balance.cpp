@@ -66,6 +66,17 @@ YOCTO_UNIT_TEST_IMPL(balance)
         std::cerr << "<balancing/>" << std::endl << std::endl;
     }
 
+    {
+        std::cerr << "balance2" << std::endl;
+        for(size_t i=1;i<=M;++i)
+        {
+            C0[i] = 1e-3 * alea.symm<double>();
+        }
+        lib.display(C0);
+        cs.balance2(C0);
+        cs.balance(C0);
+    }
+    
 }
 YOCTO_UNIT_TEST_DONE()
 
