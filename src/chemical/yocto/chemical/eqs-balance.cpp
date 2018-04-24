@@ -9,7 +9,7 @@ namespace yocto
     namespace chemical
     {
         
-
+#if 0
         bool equilibria:: balance( array<double> &C0 ) throw()
         {
             //__________________________________________________________________
@@ -172,87 +172,62 @@ namespace yocto
 
             }
         }
-
-        bool equilibria:: balance2(array<double> &C0) throw()
+#endif
+        
+        bool equilibria:: balance() throw()
         {
-            matrix<double> nn(N,N);
-            tao::mmul_rtrn(nn,nu,nu);
-            std::cerr << "nn=" << nn << std::endl;
-            double det_nn = ideterminant(nn);
-            std::cerr << "det_nn=" << det_nn << std::endl;
-            matrix<double> adj_nn(N,N);
-            iadjoint(adj_nn,nn);
-            std::cerr << "adj_nn=" << adj_nn << std::endl;
-            matrix<double> tmp(N,M);
-            tao::mmul(tmp,adj_nn,nu);
-            matrix<double> pNu(M,M);
-            tao::mmul(pNu,nuT,tmp);
-            std::cerr << "pNu=" << pNu << std::endl;
-            std::cerr << "C0=" << C0 << std::endl;
-            bool bad = false;
+            
+            // gather bad concentration
+            size_t nbad = 0;
             for(size_t j=M;j>0;--j)
             {
-                const double Cj = C0[j];
+                beta[j] = 0;
+                const double Cj = C[j];
                 if(active[j]&&(Cj<0))
                 {
-                    bad     = true;
                     beta[j] = -Cj;
+                    ++nbad;
                 }
-            }
-            if(bad)
-            {
-                std::cerr << "beta=" << beta << std::endl;
-            }
-            else
-            {
-                std::cerr << "OK" << std::endl;
-            }
-#if 0
-            assert(C0.size()==M);
-            matrix<double> sigma;
-            size_t         dof = 0;
-            if(M>N)
-            {
-                dof = M-N;
-                sigma.make(dof,M);
-                if(!svd<double>::orthonormal(sigma,nu))
-                {
-                    std::cerr << "couldn't build sigma" << std::endl;
-                }
-                std::cerr << "nu    = " << nu << std::endl;
-                std::cerr << "sigma = " << sigma << std::endl;
             }
             
-            bool bad = false;
-            for(size_t j=M;j>0;--j)
+            if(nbad<=0)
             {
-                const double Cj = C0[j];
-                if(active[j]&&(Cj<0))
-                {
-                    bad     = true;
-                    beta[j] = -Cj;
-                }
-            }
-            std::cerr << "C0=" << C0 << std::endl;
-            if(bad)
-            {
-                std::cerr << "beta=" << beta << std::endl;
-                vector<double> p(N);
-                tao::mul(p,nu,beta);
-                std::cerr << "p=" << p << std::endl;
-                if(dof)
-                {
-                    vector<double> q(dof);
-                    tao::mul(q,sigma,beta);
-                    std::cerr << "q=" << q << std::endl;
-                }
+                std::cerr << "balanced" << std::endl;
+                return true;
             }
             else
             {
-                std::cerr << "OK" << std::endl;
+                std::cerr << "nbad=" << nbad << std::endl;
+                std::cerr << "beta=" << beta << std::endl;
+                tao::mul_and_div(dC,Psi,beta,Det);
+                std::cerr << "dC=" << dC << std::endl;
+                
+                double decrease_coeff = 0;
+                size_t decrease_index = 0;
+                for(size_t j=M;j>0;--j)
+                {
+                    const double d = dC[j];
+                    const double c = C[j];
+                    if(d<0)
+                    {
+                        assert(active[j]);
+                        if(c<=0)
+                        {
+                            std::cerr << "blocked by #" << j << std::endl;
+                            return false;
+                        }
+                        const double coeff = c/(-d);
+                        if( decrease_index<=0 || coeff<decrease_coeff)
+                        {
+                            decrease_index = j;
+                            decrease_coeff = coeff;
+                        }
+                    }
+                }
+                
+                return false;
             }
-            return false;
-#endif
+            
         }
         
     }

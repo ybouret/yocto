@@ -36,9 +36,10 @@ namespace yocto
             
             // N dependent objects
             vector<double> beta;   //!< if negative active species [M]
-            matrix<double> nu;     //!< topology    [NxM]
-            matrix<double> nuT;    //!< transposed  [MxN]
-            matrix<double> nu2;    //!< nuT.nu      [MxM]
+            matrix<double> Nu;     //!< topology    [NxM]
+            matrix<double> NuT;    //!< transposed  [MxN]
+            matrix<double> Psi;    //!< NuT*adj(Nu*NuT)*Nu    [MxM]
+            const double   Det;    //!< det(Nu*NuT)
             matrix<double> Phi;    //!< jacobian    [NxM]
             matrix<double> W;      //!< inv(jacobian.nuT) NxN
             vector<double> K;      //!< constants   N
@@ -67,14 +68,13 @@ namespace yocto
             bool computeW();
 
             //! balance a concentration
-            bool balance(array<double> &C0) throw();
-            bool balance2(array<double> &C0) throw();
+            bool balance() throw();
             
             
             //! normalize a balanced concentration
             void normalize( array<double> &C0, const double t );
             
-
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
         };

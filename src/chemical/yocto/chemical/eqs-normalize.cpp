@@ -1,6 +1,7 @@
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/core/tao.hpp"
+#include "yocto/math/core/svd.hpp"
 
 namespace yocto
 {
@@ -52,7 +53,7 @@ namespace yocto
                 //
                 // compute expected full new concentration
                 //______________________________________________________________
-                tao::mul(dC,nuT,xi);
+                tao::mul(dC,NuT,xi);
                 tao::add(C,dC);
                 
                 //______________________________________________________________
@@ -72,7 +73,22 @@ namespace yocto
                 }
                 if(bad)
                 {
+                    std::cerr << "C   =" << C    << std::endl;
                     std::cerr << "beta=" << beta << std::endl;
+                    if(M>N)
+                    {
+                        const size_t   dof = M-N;
+                        matrix<double> sigma(dof,M);
+                        if(!svd<double>::orthonormal(sigma,Nu))
+                        {
+                            std::cerr << "couldn't build sigma" << std::endl;
+                        }
+                        //std::cerr << "nu    = " << nu << std::endl;
+                        std::cerr << "sigma = " << sigma << std::endl;
+                        vector<double> q(dof);
+                        tao::mul(q,sigma,beta);
+                        std::cerr << "q=" << q << std::endl;
+                    }
                     exit(0);
                 }
                 if(cycle>10) break;

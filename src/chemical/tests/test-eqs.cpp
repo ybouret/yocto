@@ -37,8 +37,8 @@ YOCTO_UNIT_TEST_IMPL(eqs)
     }
     std::cerr << "N="   << cs.N << std::endl;
     std::cerr << "M="   << cs.M << std::endl;
-    std::cerr << "nu="  << cs.nu << std::endl;
-    std::cerr << "nuT=" << cs.nuT << std::endl;
+    std::cerr << "Nu="  << cs.Nu << std::endl;
+    std::cerr << "NuT=" << cs.NuT << std::endl;
     std::cerr << "active=" << cs.active << std::endl;
 
     cs.initializeGamma(cs.C,0.0);

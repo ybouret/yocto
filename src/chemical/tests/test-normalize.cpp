@@ -71,6 +71,7 @@ YOCTO_UNIT_TEST_IMPL(norm)
     const size_t   M = cs.M;
     vector<double> C0(M+2);
 
+    exit(0);
     for(size_t iter=1;iter<=1000;++iter)
     {
         for(size_t i=1;i<=M;++i)
@@ -83,7 +84,7 @@ YOCTO_UNIT_TEST_IMPL(norm)
         std::cerr << "<normalizing/>" << std::endl;
 
     }
-    std::cerr << "nu=" << cs.nu << std::endl;
+    std::cerr << "Nu=" << cs.Nu << std::endl;
     std::cerr << cs << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()

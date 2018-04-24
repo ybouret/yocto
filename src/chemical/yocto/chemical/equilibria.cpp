@@ -3,6 +3,7 @@
 #include "yocto/exception.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/lu.hpp"
+#include "yocto/math/core/adjoint.hpp"
 
 namespace yocto
 {
@@ -16,7 +17,8 @@ namespace yocto
         equilibrium::database(n,as_capacity),
         name(id),
         M(0),
-        N(0)
+        N(0),
+        Det(0)
         {
         }
 
@@ -43,18 +45,19 @@ namespace yocto
 
         void equilibria::clear() throw()
         {
-            (size_t &)M = 0;
-            (size_t &)N = 0;
-
+            (size_t &)M   = 0;
+            (size_t &)N   = 0;
+            (double &)Det = 0;
+            
             GamEV.  release();
             xi.     release();
             Gamma.  release();
             K.      release();
             W.      release();
             Phi.    release();
-            nu2.    release();
-            nuT.    release();
-            nu.     release();
+            Psi.    release();
+            NuT.    release();
+            Nu.     release();
             beta.   release();
 
             Ctry.   release();
@@ -89,9 +92,9 @@ namespace yocto
 
                 if(N>0)
                 {
-                    nu.   make(N,M);
-                    nuT.  make(M,N);
-                    nu2.  make(M,M);
+                    Nu.   make(N,M);
+                    NuT.  make(M,N);
+                    Psi.  make(M,M);
                     Phi.  make(N,M);
                     W.    make(N);
                     K.    make(N);
@@ -104,7 +107,7 @@ namespace yocto
                         for(iterator i=begin();i!=end();++i,++ii)
                         {
                             const equilibrium &eq = **i;
-                            eq.fill(nu[ii],active);
+                            eq.fill(Nu[ii],active);
                             const int nuP = eq.productsStoichiometry();
                             if(nuP>0)
                             {
@@ -120,10 +123,29 @@ namespace yocto
                     {
                         for(size_t j=1;j<=M;++j)
                         {
-                            nuT[j][i] = nu[i][j];
+                            NuT[j][i] = Nu[i][j];
                         }
                     }
-                    tao::mmul(nu2, nuT, nu);
+                    
+                    // Nu2 is the Gram matrix
+                    matrix<double> Nu2(N,N);
+                    tao::mmul_rtrn(Nu2,Nu,Nu);
+                    std::cerr << "Nu2=" << Nu2 << std::endl;
+                    (double &)Det = ideterminant(Nu2);
+                    std::cerr << "Det=" << Det << std::endl;
+                    if( fabs(Det) <= 0 )
+                    {
+                        throw exception("equilibria: singular equations");
+                    }
+                    matrix<double> Adj(N,N);
+                    iadjoint(Adj,Nu2);
+                   // std::cerr << "Adj=" << Adj << std::endl;
+                    matrix<double> AdjNu(N,M);
+                    tao::mmul(AdjNu,Adj,Nu);
+                    //std::cerr << "AdjNu=" << AdjNu << std::endl;
+                    tao::mmul_ltrn(Psi,Nu,AdjNu);
+                    std::cerr << "Psi=" << Psi << std::endl;
+                    //tao::mmul(nu2, nuT, nu);
                 }
 
 
@@ -182,7 +204,7 @@ namespace yocto
 
         bool equilibria:: computeW()
         {
-            tao::mmul_rtrn(W,Phi,nu);
+            tao::mmul_rtrn(W,Phi,Nu);
             return LU<double>::build(W);
         }
 
@@ -196,6 +218,6 @@ namespace yocto
             return sqrt(ans);
         }
 
-
+       
     }
 }

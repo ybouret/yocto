@@ -47,35 +47,26 @@ YOCTO_UNIT_TEST_IMPL(balance)
     cs.compile_for(lib);
     std::cerr << "active=" << cs.active << std::endl;
     const size_t   M = cs.M;
-    vector<double> C0(M);
 
+    
     for(size_t iter=1;iter<=1000;++iter)
     {
         for(size_t i=1;i<=M;++i)
         {
-            C0[i] = 1e-3 * alea.symm<double>();
+            cs.C[i] = 1e-3 * alea.symm<double>();
         }
-        lib.display(C0);
+        lib.display(cs.C);
 
         std::cerr << "<balancing>" << std::endl;
         
-        if(cs.balance(C0))
+        if(cs.balance())
         {
-            lib.display(C0);
+           lib.display(cs.C);
         }
         std::cerr << "<balancing/>" << std::endl << std::endl;
+        exit(0);
     }
-
-    {
-        std::cerr << "balance2" << std::endl;
-        for(size_t i=1;i<=M;++i)
-        {
-            C0[i] = 1e-3 * alea.symm<double>();
-        }
-        lib.display(C0);
-        cs.balance2(C0);
-        cs.balance(C0);
-    }
+    
     
 }
 YOCTO_UNIT_TEST_DONE()

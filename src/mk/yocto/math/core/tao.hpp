@@ -403,6 +403,7 @@ namespace yocto
                 YOCTO_TAO_LOOP(M.rows,MULROW);
 #undef  Y_TAO_MULROW
             }
+            
 
 
             //! a = (M*b)/D
