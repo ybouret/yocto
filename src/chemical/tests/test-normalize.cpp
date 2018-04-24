@@ -12,6 +12,7 @@ YOCTO_UNIT_TEST_IMPL(norm)
     library lib( "lib" );
     species &H   = lib.add("H+",1);
     species &OH  = lib.add("HO-",-1);
+#if 0
     species &AH  = lib.add("AH",0);
     species &Am  = lib.add("Am",-1);
     species &NH4 = lib.add("NH4+",1);
@@ -19,7 +20,7 @@ YOCTO_UNIT_TEST_IMPL(norm)
     species &OxH2 = lib.add("OxH2",0);
     species &OxHm = lib.add("OxH-",-1);
     species &Oxmm = lib.add("Ox--",-2);
-
+#endif
     lib.add("Na+",1);
     lib.add("Cl-",-1);
 
@@ -33,6 +34,7 @@ YOCTO_UNIT_TEST_IMPL(norm)
         std::cerr << water << std::endl;
     }
 
+#if 0
     if(true)
     {
         equilibrium &acetic = cs("acetic",pow(10, -4.7));
@@ -66,17 +68,25 @@ YOCTO_UNIT_TEST_IMPL(norm)
             ox2(H,1);
         }
     }
+#endif
+    
     cs.compile_for(lib);
     std::cerr << "active=" << cs.active << std::endl;
     const size_t   M = cs.M;
     vector<double> C0(M+2);
-
+    std::cerr << cs << std::endl;
+    std::cerr << "Nu=" << cs.Nu << std::endl;
+    
     for(size_t iter=1;iter<=1000;++iter)
     {
         for(size_t i=1;i<=M;++i)
         {
             C0[i] = 10 * alea.to<double>();
+            C0[i] = 0.01* alea.to<double>();
+            C0[i] = 0;
         }
+        C0[1] = 0.1;
+        C0[2] = 0.1;
         lib.display(C0);
         std::cerr << "<normalizing>" << std::endl;
         cs.normalize(C0,0.0);
