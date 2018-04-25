@@ -32,19 +32,28 @@ namespace yocto
         {
             //__________________________________________________________________
             //
+            //
             // initialize
+            //
+            //__________________________________________________________________
+          
+            //__________________________________________________________________
+            //
+            // check and transfer concentration
             //__________________________________________________________________
             for(size_t j=M;j>0;--j)
             {
                 const double Cj = (C[j] = C0[j]);
                 if(active[j]&&(Cj<0))
                 {
-                    equilibrium::database      &db = *this;
-                    const equilibrium::pointer &eq = db(j);
-                    throw exception("%s: invalid initial [%s]=%g",fn, *(eq->name), Cj);
+                    throw exception("%s: invalid initial concentraton",fn);
                 }
             }
             
+            //__________________________________________________________________
+            //
+            // initialize Gamma, Phi, K at time t, and |Gamma|
+            //__________________________________________________________________
             initializeGammaAndPhi(C,t);
             double GS = GammaToScalar();
             size_t cycle=0;
@@ -52,10 +61,10 @@ namespace yocto
             {
                 //______________________________________________________________
                 //
-                // compute system and full extent
+                // compute full extent and Newton's step
                 //______________________________________________________________
                 ++cycle;
-                std::cerr << "C    =" << C    << std::endl;
+                std::cerr << "C0=" << C    << std::endl;
                 if(!computeW())
                 {
                     throw exception("%ssingular system",fn);
@@ -106,9 +115,8 @@ namespace yocto
                     std::cerr << "zindx=" << zindx << std::endl;
                     std::cerr << "alpha=" << alpha << std::endl;
                     assert(active[zindx]);
-                    C[zindx] = 0;
-                    tao::muladd(C,alpha,dC);
                     tao::setprobe(Ctry, C, alpha, dC);
+                    Ctry[zindx] = 0;
                 }
                 else
                 {
@@ -117,7 +125,10 @@ namespace yocto
                 }
                 
                 
+                //______________________________________________________________
+                //
                 // numerical rounding
+                //______________________________________________________________
                 for(size_t j=M;j>0;--j)
                 {
                     const double Cj = Ctry[j];
@@ -161,9 +172,15 @@ namespace yocto
                     std::cerr << "alpha=" << alpha << std::endl;
                     std::cerr << "gs   =" << gs    << "/" << GS <<  std::endl;
                 }
+                
+                //______________________________________________________________
+                //
+                // update C
+                //______________________________________________________________
                 tao::set(C,Ctry);
                 if(gs>=GS||gs<=0)
                 {
+                    std::cerr << "C =" << C << std::endl;
                     break;
                 }
                 
