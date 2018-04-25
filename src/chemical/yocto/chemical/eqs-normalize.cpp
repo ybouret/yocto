@@ -3,6 +3,7 @@
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/svd.hpp"
 #include "yocto/math/opt/bracket.hpp"
+#include "yocto/math/opt/minimize.hpp"
 
 namespace yocto
 {
@@ -14,7 +15,14 @@ namespace yocto
         
         double equilibria:: callGamma(double alpha)
         {
-            tao::setprobe(Ctry, C, alpha, dC);
+            for(size_t j=M;j>0;--j)
+            {
+                const double Cj = (Ctry[j]=C[j]+alpha*dC[j]);
+                if(active[j]&&(Cj<0))
+                {
+                    Ctry[j] = 0;
+                }
+            }
             updateGamma(Ctry);
             return GammaToScalar();
         }
@@ -100,27 +108,28 @@ namespace yocto
                     assert(active[zindx]);
                     C[zindx] = 0;
                     tao::muladd(C,alpha,dC);
+                    tao::setprobe(Ctry, C, alpha, dC);
                 }
                 else
                 {
                     // full step!
-                    tao::add(C,dC);
+                    tao::setsum(Ctry, C, dC);
                 }
                 
                 
                 // numerical rounding
                 for(size_t j=M;j>0;--j)
                 {
-                    const double Cj = C[j];
+                    const double Cj = Ctry[j];
                     if(active[j]&&(Cj<0))
                     {
-                        C[j] = 0;
+                        Ctry[j] = 0;
                     }
                 }
                 
-                std::cerr << "C1=" << C << std::endl;
-                updateGammaAndPhi(C);
-                const double gs = GammaToScalar();
+                std::cerr << "C1=" << Ctry << std::endl;
+                updateGammaAndPhi(Ctry);
+                double gs = GammaToScalar();
                 std::cerr << "GS: " << GS << " => " << gs << std::endl;
                 
                 //______________________________________________________________
@@ -129,24 +138,40 @@ namespace yocto
                 //______________________________________________________________
                 if(gs>GS)
                 {
-                    std::cerr << "Local Increase" << std::endl;
+                    std::cerr << "Local Increase, alpha=" << alpha << std::endl;
                     numeric<double>::function F(this, & equilibria::callGamma);
                     std::cerr << "F(" << alpha << ")=" << F(alpha) << std::endl;
                     triplet<double> XX = { 0,  alpha, alpha };
                     triplet<double> FF = { GS, gs,    gs    };
+                    //std::cerr << std::scientific;
+                    std::cerr << "init:" << std::endl;
+                    std::cerr << "\t" << XX << std::endl;
+                    std::cerr << "\t" << FF << std::endl;
                     bracket<double>::inside(F, XX, FF);
                     std::cerr << "bracket:" << std::endl;
                     std::cerr << "\t" << XX << std::endl;
                     std::cerr << "\t" << FF << std::endl;
-                    exit(0);
+                    std::cerr << "xx=" << XX.b << std::endl;
+                    minimize(F, XX, FF,0.0);
+                    std::cerr << "minimize:" << std::endl;
+                    std::cerr << "\t" << XX << std::endl;
+                    std::cerr << "\t" << FF << std::endl;
+                    alpha = XX.b;
+                    gs    = F(alpha);
+                    std::cerr << "alpha=" << alpha << std::endl;
+                    std::cerr << "gs   =" << gs    << "/" << GS <<  std::endl;
+                }
+                tao::set(C,Ctry);
+                if(gs>=GS||gs<=0)
+                {
+                    break;
                 }
                 
-                
-                if(cycle>30) break;
+                //if(cycle>30) break;
                 GS  = gs;
             }
             
-            
+            std::cerr << "Gamma=" << Gamma << std::endl;
             
             for(size_t j=M;j>0;--j)
             {
