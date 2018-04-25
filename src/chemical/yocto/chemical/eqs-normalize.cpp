@@ -2,6 +2,7 @@
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/svd.hpp"
+#include "yocto/math/opt/bracket.hpp"
 
 namespace yocto
 {
@@ -10,6 +11,14 @@ namespace yocto
     namespace chemical
     {
         static const char fn[] = "equilibria.normalize: ";
+        
+        double equilibria:: callGamma(double alpha)
+        {
+            tao::setprobe(Ctry, C, alpha, dC);
+            updateGamma(Ctry);
+            return GammaToScalar();
+        }
+
         
         void equilibria:: normalize(array<double> &C0, const double t)
         {
@@ -39,37 +48,14 @@ namespace yocto
                 //______________________________________________________________
                 ++cycle;
                 std::cerr << "C    =" << C    << std::endl;
-                std::cerr << "Gamma=" << Gamma << std::endl;
-                std::cerr << "Phi  =" << Phi   << std::endl;
-                tao::mmul_rtrn(W,Phi,Nu);
-                std::cerr << "W=" << W << std::endl;
                 if(!computeW())
                 {
-                    tao::mmul_rtrn(W,Phi,Nu);
-                    std::cerr << "W=" << W << std::endl;
-                    matrix<double> V(N,N);
-                    vector<double> w(N);
-                    if(!svd<double>::build(W, w, V))
-                    {
-                        std::cerr << "can't event build SVD!" << std::endl;
-                        throw exception("%ssingular system",fn);
-                    }
-                    std::cerr << "w=" << w << std::endl;
-                    const size_t dimKer = svd<double>::truncate(w);
-                    std::cerr << "w=" << w << ", dimKer=" << dimKer << std::endl;
-                    svd<double>::solve(W,w,V,Gamma,xi);
-                    tao::neg(xi,xi);
-                    tao::mul(dC,NuT,xi);
-                    std::cerr << "dC_svd=" << dC << std::endl;
                     throw exception("%ssingular system",fn);
                 }
-                else
-                {
-                    tao::neg(xi,Gamma);
-                    LU<double>::solve(W,xi);
-                    tao::mul(dC,NuT,xi);
-                    std::cerr << "dC_lu  =" << dC   << std::endl;
-                }
+                
+                tao::neg(xi,Gamma);
+                LU<double>::solve(W,xi);
+                tao::mul(dC,NuT,xi);
                 
                 //______________________________________________________________
                 //
@@ -114,7 +100,6 @@ namespace yocto
                     assert(active[zindx]);
                     C[zindx] = 0;
                     tao::muladd(C,alpha,dC);
-                    exit(0);
                 }
                 else
                 {
@@ -137,6 +122,25 @@ namespace yocto
                 updateGammaAndPhi(C);
                 const double gs = GammaToScalar();
                 std::cerr << "GS: " << GS << " => " << gs << std::endl;
+                
+                //______________________________________________________________
+                //
+                // be sure to decrease |Gamma|
+                //______________________________________________________________
+                if(gs>GS)
+                {
+                    std::cerr << "Local Increase" << std::endl;
+                    numeric<double>::function F(this, & equilibria::callGamma);
+                    std::cerr << "F(" << alpha << ")=" << F(alpha) << std::endl;
+                    triplet<double> XX = { 0,  alpha, alpha };
+                    triplet<double> FF = { GS, gs,    gs    };
+                    bracket<double>::inside(F, XX, FF);
+                    std::cerr << "bracket:" << std::endl;
+                    std::cerr << "\t" << XX << std::endl;
+                    std::cerr << "\t" << FF << std::endl;
+                    exit(0);
+                }
+                
                 
                 if(cycle>30) break;
                 GS  = gs;

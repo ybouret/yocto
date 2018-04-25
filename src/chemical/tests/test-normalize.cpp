@@ -12,7 +12,7 @@ YOCTO_UNIT_TEST_IMPL(norm)
     library lib( "lib" );
     species &H   = lib.add("H+",1);
     species &OH  = lib.add("HO-",-1);
-#if 0
+#if 1
     species &AH  = lib.add("AH",0);
     species &Am  = lib.add("Am",-1);
     species &NH4 = lib.add("NH4+",1);
@@ -34,7 +34,7 @@ YOCTO_UNIT_TEST_IMPL(norm)
         std::cerr << water << std::endl;
     }
 
-#if 0
+#if 1
     if(true)
     {
         equilibrium &acetic = cs("acetic",pow(10, -4.7));
@@ -81,12 +81,12 @@ YOCTO_UNIT_TEST_IMPL(norm)
     {
         for(size_t i=1;i<=M;++i)
         {
-            C0[i] = 10 * alea.to<double>();
-            C0[i] = 0.01* alea.to<double>();
-            C0[i] = 0;
+            C0[i] = 10   * alea.to<double>();
+            //C0[i] = 1e-6 * alea.to<double>();
+            //C0[i] = 0;
         }
-        C0[1] = 0.1;
-        C0[2] = 0.1;
+        //C0[1] = 0.1;
+        //C0[2] = 0.1;
         lib.display(C0);
         std::cerr << "<normalizing>" << std::endl;
         cs.normalize(C0,0.0);

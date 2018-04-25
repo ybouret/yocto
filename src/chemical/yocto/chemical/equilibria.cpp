@@ -18,7 +18,8 @@ namespace yocto
         name(id),
         M(0),
         N(0),
-        Det(0)
+        Det(0),
+        max_length(0)
         {
         }
 
@@ -37,7 +38,19 @@ namespace yocto
             os << "<equilibria:" << eqs.name << "#" << eqs.size() << ">" << std::endl;
             for( equilibria::const_iterator i=eqs.begin();i!=eqs.end();++i)
             {
-                os << '\t' << **i << std::endl;
+                const equilibrium &eq = **i;
+                os << '\t';// << **i << std::endl;
+                const size_t eq_len = eq.name.length();
+                const size_t mx_len = eqs.max_length;
+                if(mx_len>=eq_len)
+                {
+                    eq.display(os,mx_len-eq_len);
+                }
+                else
+                {
+                    eq.display(os,0);
+                }
+                os << std::endl;
             }
             os << "<equilibria:" << eqs.name << "/>";
             return os;
@@ -48,6 +61,7 @@ namespace yocto
             (size_t &)M   = 0;
             (size_t &)N   = 0;
             (double &)Det = 0;
+            (size_t &)max_length = 0;
             
             GamEV.  release();
             xi.     release();
@@ -72,9 +86,12 @@ namespace yocto
             clear();
 
             // check equilibria
+            size_t &m = (size_t &)max_length;
             for(iterator i=begin();i!=end();++i)
             {
-                (**i).check();
+                const equilibrium &eq = **i;
+                eq.check();
+                m = max_of(m,eq.name.length());
             }
 
             // compute sizes

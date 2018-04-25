@@ -102,80 +102,14 @@ namespace yocto
             
         }
         
-#if 0
-        bool equilibrium:: operator()(species &sp, const int nu)
+        void equilibrium:: display( std::ostream &os, const size_t ns) const
         {
-            const string       &id  = sp.name;
-            component::pointer *pp  = content.search(id);
-            if(!pp)
+            const equilibrium &eq = *this;
+            os << eq.name << ':';
+            for(size_t i=0;i<=ns;++i)
             {
-                // create component
-                if(!nu)
-                {
-                    dispatch();
-                    return false;
-                }
-                else
-                {
-                    component::pointer p( new component(sp,nu) );
-                    if( !content.insert(p) )
-                    {
-                        throw exception("equilibrium: unexpected failure to insert '%s'",*id);
-                    }
-                    dispatch();
-                    return true;
-                }
+                os << ' ';
             }
-            else
-            {
-                // update component
-                component &cmp    = **pp;
-                const int  new_nu = cmp.nu + nu;
-                if(new_nu)
-                {
-                    (int&)(cmp.nu) = new_nu;
-                    dispatch();
-                    return true;
-                }
-                else
-                {
-                    if(!content.remove(id))
-                    {
-                        throw exception("equilibrium: failure to remove '%s'", *id);
-                    }
-                    dispatch();
-                    return false;
-                }
-            }
-        }
-#endif
-        
-
-#if 0
-        void equilibrium:: dispatch()
-        {
-            products.clear();
-            reactants.clear();
-
-            for( components::iterator i=content.begin();i!=content.end();++i)
-            {
-                component *p = &(**i);
-                if(p->nu>0)
-                {
-                    products.append(p);
-                }
-                else
-                {
-                    assert(p->nu<0);
-                    reactants.append(p);
-                }
-            }
-        }
-#endif
-        
-        std::ostream & operator<<( std::ostream &os, const equilibrium &eq)
-        {
-            os << eq.name << ": ";
             {
                 size_t ir = 1;
                 for( const actor *r=eq.reactants.head;r;r=r->next,++ir)
@@ -209,7 +143,13 @@ namespace yocto
                     os << p->sp->name;
                 }
             }
-            os << ", " << eq.K(0);
+            os << '\t' << '(' << eq.K(0) << ')';
+        }
+
+        
+        std::ostream & operator<<( std::ostream &os, const equilibrium &eq)
+        {
+            eq.display(os,0);
             return os;
         }
 
@@ -257,18 +197,7 @@ namespace yocto
                 active[i] = true;
             }
             
-#if 0
-            for(components::const_iterator i=content.begin();i!=content.end();++i)
-            {
-                const component &cmp = **i;
-                const species   &s   = *cmp.sp;
-                assert(s.indx>0);
-                assert(s.indx<=nu.size());
-                assert(cmp.nu!=0);
-                nu[s.indx]     = cmp.nu;
-                active[s.indx] = true;
-            }
-#endif
+            
         }
 
         double equilibrium:: computeGamma( const array<double> &C, const double Kt ) const

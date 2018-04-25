@@ -27,6 +27,8 @@ namespace yocto
 
             bool operator()(species &sp, const int nu);
             friend std::ostream & operator<<( std::ostream &os, const equilibrium &eq);
+            void display( std::ostream &os, const size_t ns) const;
+            
             void check() const;
 
             //! fill reaction topology

@@ -46,7 +46,7 @@ namespace yocto
             vector<double> Gamma;  //!< Gamma       N
             vector<double> xi;     //!< extent      N
             vector<double> GamEV;  //!< Gamma Exponent Values [N]
-            
+            const size_t   max_length;
             
 
             void compile_for(const library &lib);
@@ -77,6 +77,7 @@ namespace yocto
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
+            double callGamma(double alpha);
         };
 
     }
