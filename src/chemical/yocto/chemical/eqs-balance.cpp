@@ -176,9 +176,8 @@ namespace yocto
         
         bool equilibria:: balance() throw()
         {
-            
-            // gather bad concentration
-            size_t nbad = 0;
+          
+            size_t nbad  = 0;
             for(size_t j=M;j>0;--j)
             {
                 beta[j] = 0;
@@ -198,53 +197,44 @@ namespace yocto
             else
             {
                 std::cerr << "nbad=" << nbad << std::endl;
+                std::cerr << "C   =" << C    << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
                 tao::mul_and_div(dC,Psi,beta,Det);
                 std::cerr << "dC=" << dC << std::endl;
                 
-                double decrease_coeff = 0;
-                size_t decrease_index = 0;
-                
-                double increase_coeff = 0;
-                size_t increase_index = 0;
+                // analyse step
                 for(size_t j=M;j>0;--j)
                 {
-                    const double d = dC[j];
+                    if(!active[j]) continue;
                     const double c = C[j];
+                    const double d = dC[j];
+                    
                     if(d<0)
                     {
-                        assert(active[j]);
+                        //------------------------------------------------------
+                        // decrease concentration: should never get negative!
+                        //------------------------------------------------------
                         if(c<=0)
                         {
-                            std::cerr << "blocked by #" << j << std::endl;
+                            std::cerr << "..blocked by #" << j << std::endl;
                             return false;
                         }
-                        const double coeff = c/(-d);
-                        if( (decrease_index<=0) || (coeff<decrease_coeff) )
+                        else
                         {
-                            std::cerr << "..decrease@" << j << " = " << coeff << std::endl;
-                            decrease_index = j;
-                            decrease_coeff = coeff;
+                            assert(c>0);
+                            
                         }
                     }
                     else if(d>0)
                     {
-                        assert(active[j]);
-                        if(c<0)
-                        {
-                            const double coeff = (-c)/d;
-                            if( (increase_index<=0) || (coeff>increase_coeff) )
-                            {
-                                std::cerr << "..increase@" << j << " = " << coeff << std::endl;
-                                increase_index = j;
-                                increase_coeff = coeff;
-                            }
-                        }
+                        //------------------------------------------------------
+                        // increase concentration:
+                        //------------------------------------------------------
                     }
-                   
+                    
                 }
-                std::cerr << "decrease_index=" << decrease_index << " => coeff=" << decrease_coeff << std::endl;
-                std::cerr << "increase_index=" << increase_index << " => coeff=" << increase_coeff << std::endl;
+                
+                
 
                 return false;
             }

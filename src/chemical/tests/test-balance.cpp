@@ -48,6 +48,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
     std::cerr << "active=" << cs.active << std::endl;
     const size_t   M = cs.M;
 
+    std::cerr << "Nu=" << cs.Nu << std::endl;
     
     for(size_t iter=1;iter<=1000;++iter)
     {

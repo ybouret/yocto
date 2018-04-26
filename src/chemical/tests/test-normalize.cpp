@@ -91,6 +91,7 @@ YOCTO_UNIT_TEST_IMPL(norm)
         std::cerr << "<normalizing>" << std::endl;
         cs.normalize(C0,0.0);
         std::cerr << "<normalizing/>" << std::endl;
+        lib.display(C0);
         break;
     }
     std::cerr << "Nu=" << cs.Nu << std::endl;
