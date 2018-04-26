@@ -19,7 +19,8 @@ namespace yocto
         M(0),
         N(0),
         Det(0),
-        max_length(0)
+        max_length(0),
+        normGamma(this, & equilibria::__normGamma)
         {
         }
 
@@ -219,12 +220,14 @@ namespace yocto
             }
         }
 
+#if 0
         bool equilibria:: computeW()
         {
             tao::mmul_rtrn(W,Phi,Nu);
             return LU<double>::build(W);
         }
-
+#endif
+        
         double equilibria:: GammaToScalar() const throw()
         {
             double ans = 0;

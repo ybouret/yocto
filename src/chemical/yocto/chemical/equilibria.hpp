@@ -5,6 +5,7 @@
 #include "yocto/chemical/library.hpp"
 #include "yocto/container/matrix.hpp"
 #include "yocto/sequence/vector.hpp"
+#include "yocto/math/types.hpp"
 
 namespace yocto
 {
@@ -64,8 +65,7 @@ namespace yocto
             void   updateGammaAndPhi(const array<double> &C0);
             double GammaToScalar() const throw();
 
-            //! compute LU for Phi*nu'
-            bool computeW();
+            
 
             //! balance a concentration
             bool balance() throw();
@@ -77,7 +77,8 @@ namespace yocto
             
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
-            double callGamma(double alpha);
+            double __normGamma(double alpha);
+            math::numeric<double>::function normGamma;
         };
 
     }

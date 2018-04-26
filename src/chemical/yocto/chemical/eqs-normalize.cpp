@@ -13,7 +13,7 @@ namespace yocto
     {
         static const char fn[] = "equilibria.normalize: ";
         
-        double equilibria:: callGamma(double alpha)
+        double equilibria:: __normGamma(double alpha)
         {
             for(size_t j=M;j>0;--j)
             {
@@ -27,6 +27,34 @@ namespace yocto
             return GammaToScalar();
         }
 
+        static inline
+        void __optimize(math::numeric<double>::function &F,
+                        triplet<double>                 &XX,
+                        triplet<double>                 &FF) throw()
+        {
+            std::cerr << "init:" << std::endl;
+            std::cerr << "\t" << XX << std::endl;
+            std::cerr << "\t" << FF << std::endl;
+            bracket<double>::inside(F, XX, FF);
+            std::cerr << "bracket:" << std::endl;
+            std::cerr << "\t" << XX << std::endl;
+            std::cerr << "\t" << FF << std::endl;
+            std::cerr << "xx=" << XX.b << std::endl;
+            double width = XX.c-XX.a; assert(width>=0);
+            while(true)
+            {
+                kernel::minimize(F, XX, FF);
+                const double new_width = XX.c-XX.a;
+                assert(new_width>=width);
+                if(new_width>=width)
+                {
+                    break;
+                }
+            }
+            std::cerr << "minimize:" << std::endl;
+            std::cerr << "\t" << XX << std::endl;
+            std::cerr << "\t" << FF << std::endl;
+        }
         
         void equilibria:: normalize(array<double> &C0, const double t)
         {
@@ -57,19 +85,28 @@ namespace yocto
             initializeGammaAndPhi(C,t);
             double GS = GammaToScalar();
             size_t cycle=0;
+            
+            //__________________________________________________________________
+            //
+            //
+            // Loop
+            //
+            //__________________________________________________________________
             while(true)
             {
                 //______________________________________________________________
                 //
                 // compute full extent and Newton's step
+                // xi = -inv(Phi*Nu')*Gamma
+                // dC = Nu'*xi
                 //______________________________________________________________
                 ++cycle;
                 std::cerr << "C0=" << C    << std::endl;
-                if(!computeW())
+                tao::mmul_rtrn(W,Phi,Nu);
+                if(!LU<double>::build(W))
                 {
                     throw exception("%ssingular system",fn);
                 }
-                
                 tao::neg(xi,Gamma);
                 LU<double>::solve(W,xi);
                 tao::mul(dC,NuT,xi);
@@ -81,7 +118,6 @@ namespace yocto
                 double zcoef = 0;
                 size_t zindx = 0;
                 
-                
                 for(size_t j=M;j>0;--j)
                 {
                     const double d = dC[j];
@@ -89,12 +125,12 @@ namespace yocto
                     {
                         const double c     = C[j]; assert(c>=0);
                         const double ztemp = c/(-d);
-                        if(ztemp>1)
+                        if(ztemp>1.0)
                         {
                             // is not a limitation
                             continue;
                         }
-                        
+                        assert(ztemp<=1.0);
                         if( (zindx<=0) || (ztemp<zcoef) )
                         {
                             zindx = j;
@@ -127,7 +163,7 @@ namespace yocto
                 
                 //______________________________________________________________
                 //
-                // numerical rounding
+                // numerical rounding in any case
                 //______________________________________________________________
                 for(size_t j=M;j>0;--j)
                 {
@@ -139,6 +175,11 @@ namespace yocto
                 }
                 
                 std::cerr << "C1=" << Ctry << std::endl;
+                
+                //______________________________________________________________
+                //
+                // check where we are @Ctry, for we must decrease |Gamma|
+                //______________________________________________________________
                 updateGammaAndPhi(Ctry);
                 double gs = GammaToScalar();
                 std::cerr << "GS: " << GS << " => " << gs << std::endl;
@@ -150,25 +191,14 @@ namespace yocto
                 if(gs>GS)
                 {
                     std::cerr << "Local Increase, alpha=" << alpha << std::endl;
-                    numeric<double>::function F(this, & equilibria::callGamma);
-                    std::cerr << "F(" << alpha << ")=" << F(alpha) << std::endl;
+                    std::cerr << "normGamma(" << alpha << ")=" << normGamma(alpha) << std::endl;
                     triplet<double> XX = { 0,  alpha, alpha };
                     triplet<double> FF = { GS, gs,    gs    };
-                    //std::cerr << std::scientific;
-                    std::cerr << "init:" << std::endl;
-                    std::cerr << "\t" << XX << std::endl;
-                    std::cerr << "\t" << FF << std::endl;
-                    bracket<double>::inside(F, XX, FF);
-                    std::cerr << "bracket:" << std::endl;
-                    std::cerr << "\t" << XX << std::endl;
-                    std::cerr << "\t" << FF << std::endl;
-                    std::cerr << "xx=" << XX.b << std::endl;
-                    minimize(F, XX, FF,0.0);
-                    std::cerr << "minimize:" << std::endl;
-                    std::cerr << "\t" << XX << std::endl;
-                    std::cerr << "\t" << FF << std::endl;
+                    __optimize(normGamma,XX,FF);
+                    
+                    // compute final Ctry and |Gamma|
                     alpha = XX.b;
-                    gs    = F(alpha);
+                    gs    = normGamma(alpha);
                     std::cerr << "alpha=" << alpha << std::endl;
                     std::cerr << "gs   =" << gs    << "/" << GS <<  std::endl;
                 }

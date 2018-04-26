@@ -49,7 +49,7 @@ YOCTO_UNIT_TEST_IMPL(eqs)
     cs.initializeGammaAndPhi(cs.C,0.0);
     std::cerr << "Gamma=" << cs.Gamma << std::endl;
     std::cerr << "Phi  =" << cs.Phi   << std::endl;
-    cs.computeW();
+    //cs.computeW();
 }
 YOCTO_UNIT_TEST_DONE()
 
