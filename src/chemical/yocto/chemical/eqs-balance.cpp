@@ -267,10 +267,10 @@ namespace yocto
                     
                 }
                 
-                
+               
                 std::cerr << "decrease_index = " << decrease_index << " : " << decrease_coeff << std::endl;
                 std::cerr << "increase_index = " << increase_index << " : " << increase_coeff << std::endl;
-
+                
 
                 return false;
             }
