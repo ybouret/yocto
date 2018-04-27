@@ -196,6 +196,10 @@ namespace yocto
             }
             else
             {
+                //______________________________________________________________
+                //
+                // compute the projection of beta on Nu range
+                //______________________________________________________________
                 std::cerr << "nbad=" << nbad << std::endl;
                 std::cerr << "C   =" << C    << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
@@ -203,6 +207,12 @@ namespace yocto
                 std::cerr << "dC=" << dC << std::endl;
                 
                 // analyse step
+                double decrease_coeff = 0;
+                size_t decrease_index = 0;
+                
+                double increase_coeff = 0;
+                size_t increase_index = 0;
+                
                 for(size_t j=M;j>0;--j)
                 {
                     if(!active[j]) continue;
@@ -222,19 +232,42 @@ namespace yocto
                         else
                         {
                             assert(c>0);
-                            
+                            const double coeff = c/(-d);
+                            std::cerr << "dec : " << j << " : " << coeff << std::endl;
+                            if((coeff<=1.0) &&
+                               ( (decrease_index<=0) || (coeff<decrease_coeff) )
+                               )
+                               {
+                                   decrease_index = j;
+                                   decrease_coeff = coeff;
+                               }
                         }
                     }
                     else if(d>0)
                     {
                         //------------------------------------------------------
-                        // increase concentration:
+                        // increase concentration: no more than reaching zero
                         //------------------------------------------------------
+                        if(c<0)
+                        {
+                            const double coeff = (-c)/d;
+                            std::cerr << "inc : " << j << " : " << coeff << std::endl;
+                            if((coeff<=1.0) &&
+                               ( (increase_index<=0) || (coeff>increase_coeff) )
+                               )
+                            {
+                                increase_index = j;
+                                increase_coeff = coeff;
+                            }
+                        }
                     }
                     
                 }
                 
                 
+                std::cerr << "decrease_index = " << decrease_index << " : " << decrease_coeff << std::endl;
+                std::cerr << "increase_index = " << increase_index << " : " << increase_coeff << std::endl;
+
 
                 return false;
             }
