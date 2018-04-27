@@ -206,7 +206,10 @@ namespace yocto
                 tao::mul_and_div(dC,Psi,beta,Det);
                 std::cerr << "dC=" << dC << std::endl;
                 
+                //______________________________________________________________
+                //
                 // analyse step
+                //______________________________________________________________
                 double decrease_coeff = 0;
                 size_t decrease_index = 0;
                 
@@ -234,7 +237,7 @@ namespace yocto
                             assert(c>0);
                             const double coeff = c/(-d);
                             std::cerr << "dec : " << j << " : " << coeff << std::endl;
-                            if((coeff<=1.0) &&
+                            if(//(coeff<=1.0) &&
                                ( (decrease_index<=0) || (coeff<decrease_coeff) )
                                )
                                {
@@ -252,7 +255,7 @@ namespace yocto
                         {
                             const double coeff = (-c)/d;
                             std::cerr << "inc : " << j << " : " << coeff << std::endl;
-                            if((coeff<=1.0) &&
+                            if(//(coeff<=1.0) &&
                                ( (increase_index<=0) || (coeff>increase_coeff) )
                                )
                             {
