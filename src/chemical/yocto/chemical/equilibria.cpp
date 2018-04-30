@@ -34,6 +34,17 @@ namespace yocto
             return *eq;
         }
 
+        void equilibria:: spaces_for( const string &id, std::ostream &os ) const
+        {
+            const size_t eq_len = id.length();
+            const size_t mx_len = max_length;
+            for(size_t i=eq_len;i<=mx_len;++i)
+            {
+                os << ' ';
+            }
+        }
+
+
         std::ostream & operator<<( std::ostream &os, const equilibria &eqs)
         {
             os << "<equilibria:" << eqs.name << "#" << eqs.size() << ">" << std::endl;
@@ -71,6 +82,7 @@ namespace yocto
             W.      release();
             Phi.    release();
             Psi.    release();
+            AdjNu.  release();
             Adj.    release();
             Nu2.    release();
             NuT.    release();
@@ -112,16 +124,17 @@ namespace yocto
 
                 if(N>0)
                 {
-                    Nu.   make(N,M);
-                    NuT.  make(M,N);
-                    Nu2.  make(N,N);
-                    Adj.  make(N,N);
-                    Psi.  make(M,M);
-                    Phi.  make(N,M);
-                    W.    make(N);
-                    K.    make(N);
-                    Gamma.make(N);
-                    xi.   make(N);
+                    Nu.    make(N,M);
+                    NuT.   make(M,N);
+                    Nu2.   make(N,N);
+                    Adj.   make(N,N);
+                    AdjNu. make(N,M);
+                    Psi.   make(M,M);
+                    Phi.   make(N,M);
+                    W.     make(N);
+                    K.     make(N);
+                    Gamma. make(N);
+                    xi.    make(N);
                     GamEV. make(N);
 
                     {
@@ -160,12 +173,10 @@ namespace yocto
                     }
                     iadjoint(Adj,Nu2);
                     std::cerr << "Adj=" << Adj << std::endl;
-                    matrix<double> AdjNu(N,M);
                     tao::mmul(AdjNu,Adj,Nu);
-                    //std::cerr << "AdjNu=" << AdjNu << std::endl;
+                    std::cerr << "AdjNu=" << AdjNu << std::endl;
                     tao::mmul_ltrn(Psi,Nu,AdjNu);
                     std::cerr << "Psi=" << Psi << std::endl;
-                    //tao::mmul(nu2, nuT, nu);
                 }
 
 

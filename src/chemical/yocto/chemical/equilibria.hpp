@@ -41,6 +41,7 @@ namespace yocto
             matrix<double> NuT;    //!< transposed  [MxN]
             matrix<double> Nu2;    //!< Nu*NuT      [NxN];
             matrix<double> Adj;    //!< adjoint(Nu2) [NxN]
+            matrix<double> AdjNu;  //!< Adj*Nu      [NxM];
             matrix<double> Psi;    //!< NuT*adj(Nu*NuT)*Nu    [MxM]
             const double   Det;    //!< det(Nu*NuT)
             matrix<double> Phi;    //!< jacobian    [NxM]
@@ -76,7 +77,8 @@ namespace yocto
             //! normalize a balanced concentration
             void normalize( array<double> &C0, const double t );
             
-            
+            void spaces_for( const string &id, std::ostream &os ) const;
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
             double __normGamma(double alpha);

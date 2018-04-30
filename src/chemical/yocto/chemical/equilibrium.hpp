@@ -22,9 +22,12 @@ namespace yocto
             static const int has_rev  = 0x02;
             static const int has_both = has_fwd | has_rev;
 
-            YOCTO_PAIR_DECL(STANDARD,range,bool,exists,double,extent);
-            inline range() throw() : exists(false), extent(0) {}
-            YOCTO_PAIR_END();
+            YOCTO_TRIPLE_DECL(STANDARD,range,bool,exists,double,extent,size_t,index);
+            inline range() throw() :
+            exists(false),
+            extent(0),
+            index(0) {}
+            YOCTO_TUPLE_END();
             
             typedef intr_ptr<string,equilibrium>    pointer;
             typedef set<string,pointer>             database;

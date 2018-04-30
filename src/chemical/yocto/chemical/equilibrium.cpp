@@ -271,16 +271,22 @@ namespace yocto
             for(const actor *a = reactants.head;a;a=a->next)
             {
                 const int    nu  = a->nu; assert(nu<0);
-                const double c   = C[a->sp->indx];
+                const size_t id  = a->sp->indx;
+                const double c   = C[id];
                 const double xi  = max_of<double>(c,0)/(-nu);
                 if(!fwd.exists)
                 {
                     fwd.exists=true;
                     fwd.extent=xi;
+                    fwd.index =id;
                 }
                 else
                 {
-                    fwd.extent = min_of(fwd.extent,xi);
+                    if(xi<fwd.extent)
+                    {
+                        fwd.extent = xi;
+                        fwd.index  = id;
+                    }
                 }
             }
 
@@ -289,16 +295,22 @@ namespace yocto
             for(const actor *a = products.head;a;a=a->next)
             {
                 const int    nu  = a->nu; assert(nu>0);
-                const double c   = C[a->sp->indx];
+                const size_t id  = a->sp->indx;
+                const double c   = C[id];
                 const double xi  = -max_of<double>(c,0)/(nu);
                 if(!rev.exists)
                 {
                     rev.exists=true;
                     rev.extent=xi;
+                    rev.index =id;
                 }
                 else
                 {
-                    rev.extent = max_of(rev.extent,xi);
+                    if(xi>rev.extent)
+                    {
+                        rev.extent = xi;
+                        rev.index  = id;
+                    }
                 }
             }
 

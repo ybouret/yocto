@@ -39,11 +39,13 @@ YOCTO_UNIT_TEST_IMPL(balance)
     if(true)
     {
         equilibrium &ammoniac = cs("ammoniac",pow(10,-9.8));
-        ammoniac(NH4,-1);
-        ammoniac(NH3,1);
-        ammoniac(H,1);
+        ammoniac(NH4,-2);
+        ammoniac(NH3,2);
+        ammoniac(H,2);
+        std::cerr << ammoniac << std::endl;
     }
 
+    std::cerr << cs << std::endl;
     cs.compile_for(lib);
     std::cerr << "active=" << cs.active << std::endl;
     const size_t   M = cs.M;
