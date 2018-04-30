@@ -17,6 +17,11 @@ namespace yocto
         class equilibrium : public counted_object
         {
         public:
+            static const int has_none = 0;
+            static const int has_fwd  = 0x01;
+            static const int has_rev  = 0x02;
+            static const int has_both = has_fwd | has_rev;
+
             YOCTO_PAIR_DECL(STANDARD,range,bool,exists,double,extent);
             inline range() throw() : exists(false), extent(0) {}
             YOCTO_PAIR_END();
@@ -43,9 +48,9 @@ namespace yocto
             void   computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const;
             int    productsStoichiometry() const throw();
 
-            void   check_ranges(range &fwd,
-                                range &rev,
-                                const array<double> &C ) const throw();
+            int   check_ranges(range &fwd,
+                               range &rev,
+                               const array<double> &C ) const throw();
 
         protected:
             explicit equilibrium(const string &id);

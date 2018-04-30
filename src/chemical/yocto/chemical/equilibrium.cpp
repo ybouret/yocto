@@ -261,10 +261,11 @@ namespace yocto
 
         }
 
-        void   equilibrium:: check_ranges(range &fwd,
+        int   equilibrium:: check_ranges(range &fwd,
                                           range &rev,
                                           const array<double> &C ) const throw()
         {
+            int status = has_none;
             fwd.exists = false;
             fwd.extent = 0;
             for(const actor *a = reactants.head;a;a=a->next)
@@ -300,6 +301,11 @@ namespace yocto
                     rev.extent = max_of(rev.extent,xi);
                 }
             }
+
+            if(fwd.exists) status |= has_fwd;
+            if(rev.exists) status |= has_rev;
+
+            return status;
         }
 
 
