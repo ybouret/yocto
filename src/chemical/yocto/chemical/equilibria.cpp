@@ -219,14 +219,7 @@ namespace yocto
                 eq.computeGradient(Phi[i],C0,Kt);
             }
         }
-
-#if 0
-        bool equilibria:: computeW()
-        {
-            tao::mmul_rtrn(W,Phi,Nu);
-            return LU<double>::build(W);
-        }
-#endif
+        
         
         double equilibria:: GammaToScalar() const throw()
         {
