@@ -45,11 +45,12 @@ namespace yocto
             {
                 kernel::minimize(F, XX, FF);
                 const double new_width = XX.c-XX.a;
-                assert(new_width>=width);
+                assert(new_width<=width);
                 if(new_width>=width)
                 {
                     break;
                 }
+                width = new_width;
             }
             std::cerr << "minimize:" << std::endl;
             std::cerr << "\t" << XX << std::endl;
