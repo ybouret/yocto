@@ -71,6 +71,8 @@ namespace yocto
             W.      release();
             Phi.    release();
             Psi.    release();
+            Adj.    release();
+            Nu2.    release();
             NuT.    release();
             Nu.     release();
             beta.   release();
@@ -112,6 +114,8 @@ namespace yocto
                 {
                     Nu.   make(N,M);
                     NuT.  make(M,N);
+                    Nu2.  make(N,N);
+                    Adj.  make(N,N);
                     Psi.  make(M,M);
                     Phi.  make(N,M);
                     W.    make(N);
@@ -146,7 +150,6 @@ namespace yocto
                     }
                     
                     // Nu2 is the Gram matrix
-                    matrix<double> Nu2(N,N);
                     tao::mmul_rtrn(Nu2,Nu,Nu);
                     std::cerr << "Nu2=" << Nu2 << std::endl;
                     (double &)Det = ideterminant(Nu2);
@@ -155,9 +158,8 @@ namespace yocto
                     {
                         throw exception("equilibria: singular equations");
                     }
-                    matrix<double> Adj(N,N);
                     iadjoint(Adj,Nu2);
-                   // std::cerr << "Adj=" << Adj << std::endl;
+                    std::cerr << "Adj=" << Adj << std::endl;
                     matrix<double> AdjNu(N,M);
                     tao::mmul(AdjNu,Adj,Nu);
                     //std::cerr << "AdjNu=" << AdjNu << std::endl;

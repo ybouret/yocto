@@ -5,6 +5,7 @@
 #include "yocto/associative/set.hpp"
 #include "yocto/math/types.hpp"
 #include "yocto/sequence/addr-list.hpp"
+#include "yocto/container/tuple.hpp"
 
 namespace yocto
 {
@@ -16,6 +17,10 @@ namespace yocto
         class equilibrium : public counted_object
         {
         public:
+            YOCTO_PAIR_DECL(STANDARD,range,bool,exists,double,extent);
+            inline range() throw() : exists(false), extent(0) {}
+            YOCTO_PAIR_END();
+            
             typedef intr_ptr<string,equilibrium>    pointer;
             typedef set<string,pointer>             database;
             typedef math::numeric<double>::function constant;
@@ -37,6 +42,10 @@ namespace yocto
             double computeGamma( const array<double> &C, const double Kt ) const;
             void   computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const;
             int    productsStoichiometry() const throw();
+
+            void   check_ranges(range &fwd,
+                                range &rev,
+                                const array<double> &C ) const throw();
 
         protected:
             explicit equilibrium(const string &id);

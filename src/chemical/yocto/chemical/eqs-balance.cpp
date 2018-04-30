@@ -11,7 +11,17 @@ namespace yocto
         
         bool equilibria:: balance() throw()
         {
-          
+
+            size_t ii=1;
+            equilibrium::range fwd,rev;
+            for(iterator i=begin();i!=end();++i,++ii)
+            {
+                const equilibrium &eq = **i;
+                eq.check_ranges(fwd,rev,C);
+                std::cerr << eq.name << " : fwd=" << fwd << ", rev=" << rev << std::endl;
+            }
+
+#if 0
             size_t nbad  = 0;
             for(size_t j=M;j>0;--j)
             {
@@ -112,7 +122,7 @@ namespace yocto
                     return false;
                 }
             }
-            
+#endif
         }
         
     }

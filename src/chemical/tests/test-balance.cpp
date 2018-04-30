@@ -36,7 +36,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
         std::cerr << acetic << std::endl;
     }
 
-    if(false)
+    if(true)
     {
         equilibrium &ammoniac = cs("ammoniac",pow(10,-9.8));
         ammoniac(NH4,-1);
@@ -58,13 +58,11 @@ YOCTO_UNIT_TEST_IMPL(balance)
         }
         lib.display(cs.C);
 
-        std::cerr << "<balancing>" << std::endl;
-        
+
         if(cs.balance())
         {
            lib.display(cs.C);
         }
-        std::cerr << "<balancing/>" << std::endl << std::endl;
         exit(0);
     }
     
