@@ -8,6 +8,14 @@ namespace yocto
     
     namespace chemical
     {
+
+
+        bool equilibria:: apply_extent() throw()
+        {
+
+
+            return false;
+        }
         
         bool equilibria:: balance() throw()
         {

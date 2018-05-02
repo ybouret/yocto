@@ -262,10 +262,11 @@ namespace yocto
         }
 
         int   equilibrium:: check_ranges(range &fwd,
-                                          range &rev,
-                                          const array<double> &C ) const throw()
+                                         range &rev,
+                                         const array<double> &C ) const throw()
         {
             int status = has_none;
+            
             fwd.exists = false;
             fwd.extent = 0;
             for(const actor *a = reactants.head;a;a=a->next)
@@ -320,7 +321,7 @@ namespace yocto
             return status;
         }
 
-
+        
     }
 }
 

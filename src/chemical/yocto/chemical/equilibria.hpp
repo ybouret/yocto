@@ -72,7 +72,9 @@ namespace yocto
 
             //! balance a concentration
             bool balance() throw();
-            
+
+            bool apply_extent() throw();
+
             
             //! normalize a balanced concentration
             void normalize( array<double> &C0, const double t );
