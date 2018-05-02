@@ -18,50 +18,14 @@ namespace yocto
             // we start from C: analyze and clip extent
             //__________________________________________________________________
             std::cerr << "xi0=" << xi << std::endl;
-            equilibrium::range fwd,rev;
             vector<bool>       nil(M,false);
             size_t i=1;
             for(iterator ii=begin();ii!=end();++i,++ii)
             {
                 const equilibrium &eq     = **ii;
-                std::cerr << eq.name;
-                spaces_for(eq.name,std::cerr);
                 double            &extent = xi[i];
-                std::cerr << " : xi=" << extent << std::endl;
-                if(extent>0)
-                {
-                    // trying to go forward
-                    std::cerr << "\t|_limitation by reactants:" << std::endl;
-                    for(const actor *a = eq.reactants.head;a;a=a->next)
-                    {
-                        const int    nu  = a->nu; assert(nu<0);
-                        const size_t id  = a->sp->indx;
-                        const double c   = C[id];
-                        std::cerr << "\t |_C[" << id << "]=" << c << std::endl;
-                    }
-                }
-                else if(extent<0)
-                {
-                    // trying to go reverse
-                    std::cerr << "\t|_limitation by products:" << std::endl;
-                    for(const actor *a = eq.products.head;a;a=a->next)
-                    {
-                        const int    nu  = a->nu; assert(nu>0);
-                        const size_t id  = a->sp->indx;
-                        const double c   = C[id];
-                        std::cerr << "\t |_C[" << id << "]=" << c << std::endl;
-                    }
-                }
-#if 0
-                std::cerr << "\tlimitation by reactants:" << std::endl;
-                for(const actor *a = eq.reactants.head;a;a=a->next)
-                {
-                    const int    nu  = a->nu; assert(nu<0);
-                    const size_t id  = a->sp->indx;
-                    const double c   = C[id];
-
-                }
-#endif
+                eq.check_extent(extent,C);
+                std::cerr << std::endl;
             }
 
             std::cerr << "xi1=" << xi << std::endl;

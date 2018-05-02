@@ -89,7 +89,15 @@ namespace yocto
 
         inline friend std::ostream & operator<<( std::ostream &os, const zrc_ptr &p)
         {
-            os << *p;
+            const_type *q = p.pointee_;
+            if(q)
+            {
+                os << *q;
+            }
+            else
+            {
+                os << "(nil)";
+            }
             return os;
         }
 

@@ -337,6 +337,91 @@ namespace yocto
             return status;
         }
 
+
+        void  equilibrium:: check_extent( double &extent, const array<double> &C ) const throw()
+        {
+            std::cerr << name << ": xi=" << extent << std::endl;
+            bool   limited = false;
+            size_t z_index = 0;
+            double z_value = 0;
+            if(extent>0)
+            {
+                //______________________________________________________________
+                //
+                // trying to go forward: limitation by reactants
+                //______________________________________________________________
+                std::cerr << "|_limitation by reactants:" << std::endl;
+                for(const actor *a = reactants.head;a;a=a->next)
+                {
+                    const int    nu  = a->nu; assert(nu<0);
+                    const size_t id  = a->sp->indx;
+                    const double c   = C[id];
+                    std::cerr << " |_C[" << id << "]=" << c << std::endl;
+                    if(c<=0)
+                    {
+                        //------------------------------------------------------
+                        // blocked
+                        //------------------------------------------------------
+                        std::cerr << "  |_forward blocked!" << std::endl;
+                        limited = true;
+                        z_index = 0;
+                        z_value = 0;
+                        break;
+                    }
+                    else
+                    {
+                        assert(c>0);
+                        const double xi = c/(-nu); assert(xi>=0);
+                        std::cerr << "  |__xi=" << xi << std::endl;
+                        if( (!limited) || (xi<z_value) )
+                        {
+                            limited = true;
+                            z_value = xi;
+                            z_index = id;
+                        }
+                    }
+                }
+
+                if(limited)
+                {
+
+                }
+                else { std::cerr << "|_none" << std::endl; }
+
+            }
+            else if(extent<0)
+            {
+                //______________________________________________________________
+                //
+                // trying to go reverse
+                //______________________________________________________________
+                std::cerr << "|_limitation by products:" << std::endl;
+                for(const actor *a = products.head;a;a=a->next)
+                {
+                    const int    nu  = a->nu; assert(nu>0);
+                    const size_t id  = a->sp->indx;
+                    const double c   = C[id];
+                    std::cerr << " |_C[" << id << "]=" << c << std::endl;
+                    if(c<=0)
+                    {
+                        //------------------------------------------------------
+                        // blocked
+                        //------------------------------------------------------
+                        std::cerr << "  |_reverse blocked!" << std::endl;
+                        limited = true;
+                        z_index = 0;
+                        z_value = 0;
+                        break;
+                    }
+                    else
+                    {
+                        assert(c>0);
+                        const double xi = (-c)/nu;
+                        std::cerr << "  |__xi=" << xi << std::endl;
+                    }
+                }
+            }
+        }
         
     }
 }

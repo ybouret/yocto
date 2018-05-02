@@ -56,6 +56,8 @@ namespace yocto
                                range &rev,
                                const array<double> &C ) const throw();
 
+            void  check_extent( double &extent, const array<double> &C ) const throw();
+
         protected:
             explicit equilibrium(const string &id);
             actors  reactants;
