@@ -13,7 +13,8 @@ namespace yocto
     {
 
         typedef core::list_of_cpp<actor>       actors;
-        
+        class                                  equilibria;
+
         class equilibrium : public counted_object
         {
         public:
@@ -63,6 +64,7 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);
             virtual double getK(double) const throw() = 0;
+            friend class equilibria;
         };
 
 

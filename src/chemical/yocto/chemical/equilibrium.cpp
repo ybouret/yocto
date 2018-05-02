@@ -269,48 +269,64 @@ namespace yocto
             
             fwd.exists = false;
             fwd.extent = 0;
+            fwd.index  = 0;
             for(const actor *a = reactants.head;a;a=a->next)
             {
                 const int    nu  = a->nu; assert(nu<0);
                 const size_t id  = a->sp->indx;
                 const double c   = C[id];
-                const double xi  = max_of<double>(c,0)/(-nu);
+                const bool   ok  = (c>=0);
+                const double xi  = (ok?c/(-nu):0);
                 if(!fwd.exists)
                 {
                     fwd.exists=true;
                     fwd.extent=xi;
-                    fwd.index =id;
+                    if(ok)
+                    {
+                        fwd.index =id;
+                    }
                 }
                 else
                 {
                     if(xi<fwd.extent)
                     {
                         fwd.extent = xi;
-                        fwd.index  = id;
+                        if(ok)
+                        {
+                            fwd.index=id;
+                        }
                     }
                 }
             }
 
             rev.exists = false;
             rev.extent = 0;
+            rev.index  = 0;
             for(const actor *a = products.head;a;a=a->next)
             {
                 const int    nu  = a->nu; assert(nu>0);
                 const size_t id  = a->sp->indx;
                 const double c   = C[id];
-                const double xi  = -max_of<double>(c,0)/(nu);
+                const bool   ok  = (c>=0);
+                const double xi  = (ok?-c/nu:0);
                 if(!rev.exists)
                 {
                     rev.exists=true;
                     rev.extent=xi;
-                    rev.index =id;
+                    if(ok)
+                    {
+                        rev.index =id;
+                    }
                 }
                 else
                 {
                     if(xi>rev.extent)
                     {
                         rev.extent = xi;
-                        rev.index  = id;
+                        if(ok)
+                        {
+                            rev.index  = id;
+                        }
                     }
                 }
             }

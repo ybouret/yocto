@@ -13,15 +13,72 @@ namespace yocto
         bool equilibria:: apply_extent() throw()
         {
 
+            //__________________________________________________________________
+            //
+            // we start from C: analyze and clip extent
+            //__________________________________________________________________
+            std::cerr << "xi0=" << xi << std::endl;
+            equilibrium::range fwd,rev;
+            vector<bool>       nil(M,false);
+            size_t i=1;
+            for(iterator ii=begin();ii!=end();++i,++ii)
+            {
+                const equilibrium &eq     = **ii;
+                std::cerr << eq.name;
+                spaces_for(eq.name,std::cerr);
+                double            &extent = xi[i];
+                std::cerr << " : xi=" << extent << std::endl;
+#if 0
+                std::cerr << "\tlimitation by reactants:" << std::endl;
+                for(const actor *a = eq.reactants.head;a;a=a->next)
+                {
+                    const int    nu  = a->nu; assert(nu<0);
+                    const size_t id  = a->sp->indx;
+                    const double c   = C[id];
 
+                }
+#endif
+            }
+
+            std::cerr << "xi1=" << xi << std::endl;
+            std::cerr << "nil=" << nil << std::endl;
             return false;
         }
-        
+
         bool equilibria:: balance() throw()
         {
+
+            size_t nbad  = 0;
+            for(size_t j=M;j>0;--j)
+            {
+                beta[j] = 0;
+                const double Cj = C[j];
+                if(active[j]&&(Cj<0))
+                {
+                    beta[j] = -Cj;
+                    ++nbad;
+                }
+            }
+            if(nbad<=0)
+            {
+                std::cerr << "balanced" << std::endl;
+                return true;
+            }
+            else
+            {
+                std::cerr << "C   =" << C << std::endl;
+                std::cerr << "beta=" << beta << std::endl;
+                tao::mul_and_div(xi,AdjNu,beta,Det);
+                (void)apply_extent();
+
+                return false;
+            }
+
+
+
+#if 0
             equilibrium::range fwd,rev;
 
-#if 1
             {
                 size_t ii=1;
                 for(iterator i=begin();i!=end();++i,++ii)
@@ -33,7 +90,8 @@ namespace yocto
                     std::cerr << ": fwd=" << fwd << ", rev=" << rev << std::endl;
                 }
             }
-#endif
+
+
 
             size_t nbad  = 0;
             for(size_t j=M;j>0;--j)
@@ -88,107 +146,6 @@ namespace yocto
             }
 
 
-#if 0
-            size_t nbad  = 0;
-            for(size_t j=M;j>0;--j)
-            {
-                beta[j] = 0;
-                const double Cj = C[j];
-                if(active[j]&&(Cj<0))
-                {
-                    beta[j] = -Cj;
-                    ++nbad;
-                }
-            }
-            
-            if(nbad<=0)
-            {
-                std::cerr << "balanced" << std::endl;
-                return true;
-            }
-            else
-            {
-                //______________________________________________________________
-                //
-                // compute the projection of beta on Nu range
-                //______________________________________________________________
-                std::cerr << "nbad=" << nbad << std::endl;
-                std::cerr << "C   =" << C    << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
-                tao::mul_and_div(dC,Psi,beta,Det);
-                std::cerr << "dC=" << dC << std::endl;
-                
-                //______________________________________________________________
-                //
-                // analyse step
-                //______________________________________________________________
-                double decrease_coeff = 0;
-                size_t decrease_index = 0;
-                
-                double increase_coeff = 0;
-                size_t increase_index = 0;
-                
-                for(size_t j=M;j>0;--j)
-                {
-                    if(!active[j]) continue;
-                    const double c = C[j];
-                    const double d = dC[j];
-                    
-                    if(d<0)
-                    {
-                        //------------------------------------------------------
-                        // decrease concentration: should never get negative!
-                        //------------------------------------------------------
-                        if(c<=0)
-                        {
-                            std::cerr << "..blocked by #" << j << std::endl;
-                            return false;
-                        }
-                        else
-                        {
-                            assert(c>0);
-                            const double coeff = c/(-d);
-                            std::cerr << "dec : " << j << " : " << coeff << std::endl;
-                            if( (decrease_index<=0) || (coeff<decrease_coeff) )
-                            {
-                                decrease_index = j;
-                                decrease_coeff = coeff;
-                            }
-                        }
-                    }
-                    else if(d>0)
-                    {
-                        //------------------------------------------------------
-                        // increase concentration: no more than reaching zero
-                        //------------------------------------------------------
-                        if(c<0)
-                        {
-                            const double coeff = (-c)/d;
-                            std::cerr << "inc : " << j << " : " << coeff << std::endl;
-                            if( (increase_index<=0) || (coeff>increase_coeff) )
-                            {
-                                increase_index = j;
-                                increase_coeff = coeff;
-                            }
-                        }
-                    }
-                    
-                }
-                
-               
-                std::cerr << "decrease_index = " << decrease_index << " : " << decrease_coeff << std::endl;
-                std::cerr << "increase_index = " << increase_index << " : " << increase_coeff << std::endl;
-                
-                if(increase_index<=0)
-                {
-                    std::cerr << "no increasing concentration" << std::endl;
-                    return false;
-                }
-                else
-                {
-                    return false;
-                }
-            }
 #endif
         }
         
