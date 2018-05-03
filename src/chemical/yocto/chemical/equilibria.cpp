@@ -18,7 +18,6 @@ namespace yocto
         name(id),
         M(0),
         N(0),
-        Det(0),
         max_length(0),
         normGamma(this, & equilibria::__normGamma)
         {
@@ -72,7 +71,6 @@ namespace yocto
         {
             (size_t &)M   = 0;
             (size_t &)N   = 0;
-            (double &)Det = 0;
             (size_t &)max_length = 0;
             
             GamEV.  release();
@@ -81,10 +79,6 @@ namespace yocto
             K.      release();
             W.      release();
             Phi.    release();
-            Psi.    release();
-            AdjNu.  release();
-            Adj.    release();
-            Nu2.    release();
             NuT.    release();
             Nu.     release();
             beta.   release();
@@ -126,10 +120,6 @@ namespace yocto
                 {
                     Nu.    make(N,M);
                     NuT.   make(M,N);
-                    Nu2.   make(N,N);
-                    Adj.   make(N,N);
-                    AdjNu. make(N,M);
-                    Psi.   make(M,M);
                     Phi.   make(N,M);
                     W.     make(N);
                     K.     make(N);
@@ -162,21 +152,7 @@ namespace yocto
                         }
                     }
                     
-                    // Nu2 is the Gram matrix
-                    tao::mmul_rtrn(Nu2,Nu,Nu);
-                    std::cerr << "Nu2=" << Nu2 << std::endl;
-                    (double &)Det = ideterminant(Nu2);
-                    std::cerr << "Det=" << Det << std::endl;
-                    if( fabs(Det) <= 0 )
-                    {
-                        throw exception("equilibria: singular equations");
-                    }
-                    iadjoint(Adj,Nu2);
-                    std::cerr << "Adj=" << Adj << std::endl;
-                    tao::mmul(AdjNu,Adj,Nu);
-                    std::cerr << "AdjNu=" << AdjNu << std::endl;
-                    tao::mmul_ltrn(Psi,Nu,AdjNu);
-                    std::cerr << "Psi=" << Psi << std::endl;
+                    
                 }
 
 

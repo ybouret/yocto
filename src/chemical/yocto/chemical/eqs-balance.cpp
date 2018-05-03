@@ -45,7 +45,9 @@ namespace yocto
                 //______________________________________________________________
                 std::cerr << "C0  =" << C << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
-                tao::mul_and_div(dC,Psi,beta,Det);
+                tao::mul(xi,Nu,beta);
+                tao::mul(dC,NuT,xi);
+                std::cerr << "xi  =" << xi << std::endl;
                 std::cerr << "dC  =" << dC << std::endl;
 
                 //______________________________________________________________
@@ -110,6 +112,7 @@ namespace yocto
                             }
                         }
                     }
+                    else { std::cerr << "nothing to do..." << std::endl; }
                 }
 
                 if(incr_index<=0)
@@ -160,6 +163,8 @@ namespace yocto
             }
 
         }
+
+
         
     }
 
