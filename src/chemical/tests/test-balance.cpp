@@ -57,6 +57,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
         for(size_t i=1;i<=M;++i)
         {
             cs.C[i] = 1e-3 * alea.symm<double>();
+            //if(!cs.active[i]) cs.C[i] = 0;
         }
         lib.display(cs.C);
 

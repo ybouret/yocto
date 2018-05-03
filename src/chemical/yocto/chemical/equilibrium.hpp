@@ -44,9 +44,7 @@ namespace yocto
             double computeGamma( const array<double> &C, const double Kt ) const;
             void   computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const;
             int    productsStoichiometry() const throw();
-
-            void  check_extent(double &extent,
-                               const array<double> &C ) const throw();
+            
 
         protected:
             explicit equilibrium(const string &id);

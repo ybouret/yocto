@@ -1,6 +1,7 @@
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/adjoint.hpp"
+#include "yocto/sort/quick.hpp"
 
 namespace yocto
 {
@@ -10,32 +11,19 @@ namespace yocto
     {
 
 
-        bool equilibria:: apply_extent() throw()
+
+        
+        bool equilibria:: balance() throw()
         {
+            std::cerr << "active=" << active << std::endl;
+
+            vector<size_t> incr_index(M,as_capacity);
+            vector<double> incr_value(M,as_capacity);
 
             //__________________________________________________________________
             //
-            // we start from C: analyze and clip extent
+            // construct the bad vector
             //__________________________________________________________________
-            std::cerr << "xi0=" << xi << std::endl;
-            vector<bool>       nil(M,false);
-            size_t i=1;
-            for(iterator ii=begin();ii!=end();++i,++ii)
-            {
-                const equilibrium &eq     = **ii;
-                double            &extent = xi[i];
-                eq.check_extent(extent,C);
-                std::cerr << std::endl;
-            }
-
-            std::cerr << "xi1=" << xi << std::endl;
-            std::cerr << "nil=" << nil << std::endl;
-            return false;
-        }
-
-        bool equilibria:: balance() throw()
-        {
-
             size_t nbad  = 0;
             for(size_t j=M;j>0;--j)
             {
@@ -54,87 +42,91 @@ namespace yocto
             }
             else
             {
+                //______________________________________________________________
+                //
+                // try to resorb it
+                //______________________________________________________________
                 std::cerr << "C   =" << C << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
-                tao::mul_and_div(xi,AdjNu,beta,Det);
-                (void)apply_extent();
+                tao::mul_and_div(dC,Psi,beta,Det);
+                std::cerr << "dC  =" << dC << std::endl;
 
-                return false;
-            }
-
-
-
-#if 0
-            equilibrium::range fwd,rev;
-
-            {
-                size_t ii=1;
-                for(iterator i=begin();i!=end();++i,++ii)
+                //______________________________________________________________
+                //
+                // analyze the step
+                //______________________________________________________________
+                size_t decr_index = 0;
+                double decr_value = 0;
+                incr_value.free();
+                incr_index.free();
+                for(size_t j=M;j>0;--j)
                 {
-                    const equilibrium &eq = **i;
-                    eq.check_ranges(fwd,rev,C);
-                    std::cerr << eq.name;
-                    spaces_for(eq.name,std::cerr);
-                    std::cerr << ": fwd=" << fwd << ", rev=" << rev << std::endl;
-                }
-            }
+                    //__________________________________________________________
+                    //
+                    // gather status
+                    //__________________________________________________________
+                    if(!active[j]) continue;
+                    const double c = C[j];
+                    const double d = dC[j];
+                    std::cerr << "\t@" << j << " : C=" << c << ", dC=" << d << std::endl;
 
-
-
-            size_t nbad  = 0;
-            for(size_t j=M;j>0;--j)
-            {
-                beta[j] = 0;
-                const double Cj = C[j];
-                if(active[j]&&(Cj<0))
-                {
-                    beta[j] = -Cj;
-                    ++nbad;
-                }
-            }
-            if(nbad<=0)
-            {
-                std::cerr << "balanced" << std::endl;
-                return true;
-            }
-            else
-            {
-                std::cerr << "C   =" << C << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
-                tao::mul_and_div(xi,AdjNu,beta,Det);
-                std::cerr << "xi=" << xi << std::endl;
-
-                // Analyzing extent...
-                size_t i=1;
-                for(iterator ii=begin();ii!=end();++i,++ii)
-                {
-                    const equilibrium &eq     = **ii;
-                    const int          status = eq.check_ranges(fwd,rev,C);
-                    double            &extent = xi[i];
-                    switch(status)
+                    if(d>0)
                     {
-                        case equilibrium::has_fwd:
-                            break;
-
-                        case equilibrium::has_rev:
-                            break;
-
-                        case equilibrium::has_both:
-                            break;
-
-                        default:
-                            assert(equilibrium::has_none==status);
-                            break;
+                        //______________________________________________________
+                        //
+                        // increasing a concentration:
+                        //______________________________________________________
+                        if(c<0)
+                        {
+                            //this is one of the bad!
+                            const double tmp = (-c)/d;
+                            std::cerr << "\t\tcorrected, advance at least * " << tmp << std::endl;
+                            incr_value.__push_back(tmp);
+                            incr_index.__push_back(j);
+                        }
+                    }
+                    else if(d<0)
+                    {
+                        //______________________________________________________
+                        //
+                        // decreasing a concentration: don't let
+                        // them become invalid!
+                        //______________________________________________________
+                        if(c<=0)
+                        {
+                            //this is one of the bad: too bad...
+                            std::cerr << "\t\tblocked!" << std::endl;
+                            return false;
+                        }
+                        else
+                        {
+                            const double tmp = c/(-d);
+                            std::cerr << "\t\tdon't move more than * " << tmp << std::endl;
+                            if( (decr_index<=0) || (tmp<decr_value) )
+                            {
+                                decr_index = j;
+                                decr_value = tmp;
+                            }
+                        }
                     }
                 }
 
-                tao::mul(dC,NuT,xi);
-                std::cerr << "dC=" << dC << std::endl;
+                co_qsort(incr_value,incr_index);
+                std::cerr << "incr_index: " << incr_index << std::endl;
+                std::cerr << "incr_value: " << incr_value << std::endl;
+
+                if(decr_index)
+                {
+                    std::cerr << "decrease  : " << decr_value << " @" << decr_index << std::endl;
+                }
+                else
+                {
+                    std::cerr << "no decreasing limit" << std::endl;
+                }
+
                 return false;
             }
 
-
-#endif
         }
         
     }
