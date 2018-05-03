@@ -17,8 +17,8 @@ namespace yocto
         {
             std::cerr << "active=" << active << std::endl;
 
-            vector<size_t> incr_index(M,as_capacity);
-            vector<double> incr_value(M,as_capacity);
+            vector<size_t> _incr_index(M,as_capacity);
+            vector<double> _incr_value(M,as_capacity);
 
             //__________________________________________________________________
             //
@@ -57,8 +57,10 @@ namespace yocto
                 //______________________________________________________________
                 size_t decr_index = 0;
                 double decr_value = 0;
-                incr_value.free();
-                incr_index.free();
+                size_t incr_index = 0;
+                double incr_value = 0;
+                _incr_value.free();
+                _incr_index.free();
                 for(size_t j=M;j>0;--j)
                 {
                     //__________________________________________________________
@@ -74,15 +76,20 @@ namespace yocto
                     {
                         //______________________________________________________
                         //
-                        // increasing a concentration:
+                        // increasing a concentration: stop at zero
                         //______________________________________________________
                         if(c<0)
                         {
                             //this is one of the bad!
                             const double tmp = (-c)/d;
                             std::cerr << "corrected, advance at least * " << tmp << std::endl;
-                            incr_value.__push_back(tmp);
-                            incr_index.__push_back(j);
+                            _incr_value.__push_back(tmp);
+                            _incr_index.__push_back(j);
+                            if( (incr_index<=0) || (tmp<incr_value) )
+                            {
+                                incr_value = tmp;
+                                incr_index = j;
+                            }
                         }
                         else { std::cerr << "no effect..." << std::endl; }
                     }
@@ -111,25 +118,64 @@ namespace yocto
                         }
                     }
                 }
-                const size_t incr_count = incr_value.size();
+                const size_t incr_count = _incr_value.size();
                 if(incr_count<=0)
                 {
                     std::cerr << "unable to decrease!" << std::endl;
                     return false;
                 }
 
-                co_qsort(incr_value,incr_index);
-                std::cerr << "incr_index: " << incr_index << std::endl;
-                std::cerr << "incr_value: " << incr_value << std::endl;
-                
+
+                co_qsort(_incr_value,_incr_index);
+                std::cerr << "incr_index: " << _incr_index << std::endl;
+                std::cerr << "incr_value: " << _incr_value << std::endl;
+
+                if(incr_index<=0)
+                {
+                    std::cerr << "unable to decrease!" << std::endl;
+                    return false;
+                }
+                std::cerr << "increase  : " << incr_value << " @" << incr_index << std::endl;
+                assert(incr_value>0);
+
+                double fac = incr_value;
+                size_t idx = incr_index;
                 if(decr_index)
                 {
                     std::cerr << "decrease  : " << decr_value << " @" << decr_index << std::endl;
+                    if(decr_value<incr_value)
+                    {
+                        std::cerr << "\ttakes precedence!" << std::endl;
+                        fac = decr_value;
+                        idx = decr_index;
+                    }
                 }
-                else
+
+                // updating carefully
+                for(size_t j=M;j>0;--j)
                 {
-                    std::cerr << "no decreasing limit" << std::endl;
+                    if(!active[j])
+                    {
+                        assert(Fabs(dC[j])<=0);
+                        continue;
+                    }
+
+                    const bool is_bad = (C[j]<0);
+                    C[j] += fac * dC[j];
+                    if(is_bad)
+                    {
+                         if(C[j]>=0) C[j]=0;
+                    }
+                    else
+                    {
+                        if(C[j]<=0) C[j]=0;
+                    }
                 }
+                C[idx] = 0;
+
+
+
+
 
                 return false;
             }
