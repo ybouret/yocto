@@ -1,7 +1,6 @@
 #include "yocto/math/opt/minimize.hpp"
 #include "yocto/math/ztype.hpp"
 #include "yocto/code/utils.hpp"
-#include "yocto/sort/network.hpp"
 #include "yocto/ios/ocstream.hpp"
 
 #include "yocto/math/types.hxx"

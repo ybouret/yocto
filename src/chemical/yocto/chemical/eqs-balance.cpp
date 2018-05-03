@@ -68,7 +68,7 @@ namespace yocto
                     if(!active[j]) continue;
                     const double c = C[j];
                     const double d = dC[j];
-                    std::cerr << "\t@" << j << " : C=" << c << ", dC=" << d << std::endl;
+                    std::cerr << "\t@" << j << " : C=" << c << ", dC=" << d << " => ";
 
                     if(d>0)
                     {
@@ -80,10 +80,11 @@ namespace yocto
                         {
                             //this is one of the bad!
                             const double tmp = (-c)/d;
-                            std::cerr << "\t\tcorrected, advance at least * " << tmp << std::endl;
+                            std::cerr << "corrected, advance at least * " << tmp << std::endl;
                             incr_value.__push_back(tmp);
                             incr_index.__push_back(j);
                         }
+                        else { std::cerr << "no effect..." << std::endl; }
                     }
                     else if(d<0)
                     {
@@ -95,13 +96,13 @@ namespace yocto
                         if(c<=0)
                         {
                             //this is one of the bad: too bad...
-                            std::cerr << "\t\tblocked!" << std::endl;
+                            std::cerr << "blocked!" << std::endl;
                             return false;
                         }
                         else
                         {
                             const double tmp = c/(-d);
-                            std::cerr << "\t\tdon't move more than * " << tmp << std::endl;
+                            std::cerr << "don't move more than * " << tmp << std::endl;
                             if( (decr_index<=0) || (tmp<decr_value) )
                             {
                                 decr_index = j;
@@ -110,11 +111,17 @@ namespace yocto
                         }
                     }
                 }
+                const size_t incr_count = incr_value.size();
+                if(incr_count<=0)
+                {
+                    std::cerr << "unable to decrease!" << std::endl;
+                    return false;
+                }
 
                 co_qsort(incr_value,incr_index);
                 std::cerr << "incr_index: " << incr_index << std::endl;
                 std::cerr << "incr_value: " << incr_value << std::endl;
-
+                
                 if(decr_index)
                 {
                     std::cerr << "decrease  : " << decr_value << " @" << decr_index << std::endl;
