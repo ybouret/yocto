@@ -1,7 +1,6 @@
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/adjoint.hpp"
-#include "yocto/sort/quick.hpp"
 
 namespace yocto
 {
@@ -17,9 +16,7 @@ namespace yocto
         {
             std::cerr << "active=" << active << std::endl;
 
-            vector<size_t> _incr_index(M,as_capacity);
-            vector<double> _incr_value(M,as_capacity);
-
+        BALANCE:
             //__________________________________________________________________
             //
             // construct the bad vector
@@ -46,7 +43,7 @@ namespace yocto
                 //
                 // try to resorb it
                 //______________________________________________________________
-                std::cerr << "C   =" << C << std::endl;
+                std::cerr << "C0  =" << C << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
                 tao::mul_and_div(dC,Psi,beta,Det);
                 std::cerr << "dC  =" << dC << std::endl;
@@ -59,8 +56,6 @@ namespace yocto
                 double decr_value = 0;
                 size_t incr_index = 0;
                 double incr_value = 0;
-                _incr_value.free();
-                _incr_index.free();
                 for(size_t j=M;j>0;--j)
                 {
                     //__________________________________________________________
@@ -83,8 +78,6 @@ namespace yocto
                             //this is one of the bad!
                             const double tmp = (-c)/d;
                             std::cerr << "corrected, advance at least * " << tmp << std::endl;
-                            _incr_value.__push_back(tmp);
-                            _incr_index.__push_back(j);
                             if( (incr_index<=0) || (tmp<incr_value) )
                             {
                                 incr_value = tmp;
@@ -103,7 +96,7 @@ namespace yocto
                         if(c<=0)
                         {
                             //this is one of the bad: too bad...
-                            std::cerr << "blocked!" << std::endl;
+                            std::cerr << "blocked!" << std::endl << "Failure to balance" << std::endl;
                             return false;
                         }
                         else
@@ -118,17 +111,6 @@ namespace yocto
                         }
                     }
                 }
-                const size_t incr_count = _incr_value.size();
-                if(incr_count<=0)
-                {
-                    std::cerr << "unable to decrease!" << std::endl;
-                    return false;
-                }
-
-
-                co_qsort(_incr_value,_incr_index);
-                std::cerr << "incr_index: " << _incr_index << std::endl;
-                std::cerr << "incr_value: " << _incr_value << std::endl;
 
                 if(incr_index<=0)
                 {
@@ -145,11 +127,12 @@ namespace yocto
                     std::cerr << "decrease  : " << decr_value << " @" << decr_index << std::endl;
                     if(decr_value<incr_value)
                     {
-                        std::cerr << "\ttakes precedence!" << std::endl;
+                        std::cerr << "\tdecrease takes precedence!" << std::endl;
                         fac = decr_value;
                         idx = decr_index;
                     }
                 }
+                std::cerr << "advance   : " << fac << " @" << idx << std::endl;
 
                 // updating carefully
                 for(size_t j=M;j>0;--j)
@@ -172,12 +155,8 @@ namespace yocto
                     }
                 }
                 C[idx] = 0;
-
-
-
-
-
-                return false;
+                std::cerr << "C1  =" << C << std::endl;
+                goto BALANCE;
             }
 
         }
