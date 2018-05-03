@@ -261,89 +261,16 @@ namespace yocto
 
         }
 
-        int   equilibrium:: check_ranges(range &fwd,
-                                         range &rev,
-                                         const array<double> &C ) const throw()
-        {
-            int status = has_none;
-            
-            fwd.exists = false;
-            fwd.extent = 0;
-            fwd.index  = 0;
-            for(const actor *a = reactants.head;a;a=a->next)
-            {
-                const int    nu  = a->nu; assert(nu<0);
-                const size_t id  = a->sp->indx;
-                const double c   = C[id];
-                const bool   ok  = (c>=0);
-                const double xi  = (ok?c/(-nu):0);
-                if(!fwd.exists)
-                {
-                    fwd.exists=true;
-                    fwd.extent=xi;
-                    if(ok)
-                    {
-                        fwd.index =id;
-                    }
-                }
-                else
-                {
-                    if(xi<fwd.extent)
-                    {
-                        fwd.extent = xi;
-                        if(ok)
-                        {
-                            fwd.index=id;
-                        }
-                    }
-                }
-            }
-
-            rev.exists = false;
-            rev.extent = 0;
-            rev.index  = 0;
-            for(const actor *a = products.head;a;a=a->next)
-            {
-                const int    nu  = a->nu; assert(nu>0);
-                const size_t id  = a->sp->indx;
-                const double c   = C[id];
-                const bool   ok  = (c>=0);
-                const double xi  = (ok?-c/nu:0);
-                if(!rev.exists)
-                {
-                    rev.exists=true;
-                    rev.extent=xi;
-                    if(ok)
-                    {
-                        rev.index =id;
-                    }
-                }
-                else
-                {
-                    if(xi>rev.extent)
-                    {
-                        rev.extent = xi;
-                        if(ok)
-                        {
-                            rev.index  = id;
-                        }
-                    }
-                }
-            }
-
-            if(fwd.exists) status |= has_fwd;
-            if(rev.exists) status |= has_rev;
-
-            return status;
-        }
-
+        
 
         void  equilibrium:: check_extent( double &extent, const array<double> &C ) const throw()
         {
-            std::cerr << name << ": xi=" << extent << std::endl;
+            std::cerr << "<" << name << ">" << ": xi=" << extent << std::endl;
+
             bool   limited = false;
             size_t z_index = 0;
             double z_value = 0;
+
             if(extent>0)
             {
                 //______________________________________________________________
@@ -382,11 +309,6 @@ namespace yocto
                     }
                 }
 
-                if(limited)
-                {
-
-                }
-                else { std::cerr << "|_none" << std::endl; }
 
             }
             else if(extent<0)
@@ -416,11 +338,40 @@ namespace yocto
                     else
                     {
                         assert(c>0);
-                        const double xi = (-c)/nu;
+                        const double xi = (-c)/nu; assert(xi<=0);
                         std::cerr << "  |__xi=" << xi << std::endl;
+                        if( (!limited) || (xi>z_value) )
+                        {
+                            limited = true;
+                            z_value = xi;
+                            z_index = id;
+                        }
                     }
                 }
+
             }
+
+            //__________________________________________________________________
+            //
+            // analyze  limitation
+            //__________________________________________________________________
+            if(limited)
+            {
+                std::cerr << "|_limited!" << std::endl;
+                if(z_index)
+                {
+                    std::cerr << " |_by C[" << z_index << "]" << std::endl;
+                }
+                else
+                {
+                    std::cerr << " |_by negative concentration" << std::endl;
+                    extent = 0;
+                }
+            }
+            else { std::cerr << "|_none" << std::endl; }
+            std::cerr << "<" << name << "/>" << std::endl;
+
+
         }
         
     }
