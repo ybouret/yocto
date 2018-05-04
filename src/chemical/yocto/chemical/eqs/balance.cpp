@@ -9,33 +9,68 @@ namespace yocto
     namespace chemical
     {
 
-        bool equilibrium:: balance(array<double>       &beta,
-                                   array<double>       &C,
-                                   const array<double> &nu )
-        {
-            assert(nu2>0);
-            std::cerr << "balancing with " << name << ", nu=" << nu << std::endl;
-            const double extent = tao::dot(beta,nu)/nu2;
-            std::cerr << "\textent=" << extent << std::endl;
-            if(extent>0)
-            {
-                return false;
-            }
-            else
-            {
-                if(extent<0)
-                {
 
-                    return false;
+        void equilibrium:: ranges( range &fwd, range &rev, const array<double> &C) const throw()
+        {
+            fwd.exists = false;
+            fwd.xi     = 0;
+            fwd.id     = 0;
+
+            for(const actor *a=reactants.head;a;a=a->next)
+            {
+                const size_t id = a->sp->indx;
+                const double c  = C[id];
+                if(c<0)
+                {
+                    // blocked
+                    fwd.exists=true;
+                    fwd.xi    =0;
+                    fwd.id    =0;
                 }
                 else
                 {
-                    // no component on topology
-                    std::cerr << "no component" << std::endl;
-                    return false;
+                    const int    nu = a->nu; assert(nu<0);
+                    const double xi = c/(-nu); assert(xi>=0);
+                    if( (!fwd.exists) || (xi<fwd.xi) )
+                    {
+                        fwd.exists = true;
+                        fwd.xi     = xi;
+                        fwd.id     = id;
+                    }
                 }
             }
+
+            rev.exists = false;
+            rev.xi     = 0;
+            rev.id     = 0;
+
+            for(const actor *a=products.head;a;a=a->next)
+            {
+                const size_t id = a->sp->indx;
+                const double c  = C[id];
+                if(c<0)
+                {
+                    // blocked
+                    rev.exists=true;
+                    rev.xi    =0;
+                    rev.id    =0;
+                }
+                else
+                {
+                    const int    nu = a->nu; assert(nu>0);
+                    const double xi = c/(nu); assert(xi<=0);
+                    if( (!rev.exists) || (xi>rev.xi) )
+                    {
+                        rev.exists = true;
+                        rev.xi     = xi;
+                        rev.id     = id;
+                    }
+                }
+            }
+            
+
         }
+
 
         bool equilibria:: balance(array<double> &C0) throw()
         {
@@ -62,7 +97,7 @@ namespace yocto
                 for(iterator ii=begin();i<=N;++ii,++i)
                 {
                     equilibrium &eq = **ii;
-                    eq.balance(beta,C,Nu[i]);
+                    //eq.balance(beta,C,Nu[i]);
                 }
             }
 

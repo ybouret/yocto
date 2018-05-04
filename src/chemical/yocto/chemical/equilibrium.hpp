@@ -5,6 +5,7 @@
 #include "yocto/associative/set.hpp"
 #include "yocto/math/types.hpp"
 #include "yocto/sequence/addr-list.hpp"
+#include "yocto/container/tuple.hpp"
 
 namespace yocto
 {
@@ -20,6 +21,10 @@ namespace yocto
             static const int has_fwd  = 0x01;
             static const int has_rev  = 0x02;
             static const int has_both = has_fwd | has_rev;
+
+            YOCTO_TRIPLE_DECL(STANDARD,range,bool,exists,double,xi,size_t,id);
+            inline range() throw() : exists(false), xi(0), id(0) {}
+            YOCTO_TUPLE_END();
 
             
             typedef intr_ptr<string,equilibrium>    pointer;
@@ -59,6 +64,9 @@ namespace yocto
             bool balance(array<double>       &beta,
                          array<double>       &C,
                          const array<double> &nu);
+
+            void ranges( range &fwd, range &rev, const array<double> &C) const throw();
+
         };
 
 
