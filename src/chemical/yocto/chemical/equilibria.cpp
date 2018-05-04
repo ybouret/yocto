@@ -127,6 +127,10 @@ namespace yocto
                     xi.    make(N);
                     GamEV. make(N);
 
+                    //__________________________________________________________
+                    //
+                    // Compute Topology Matrix Nu
+                    //__________________________________________________________
                     {
                         size_t ii=1;
                         for(iterator i=begin();i!=end();++i,++ii)
@@ -144,6 +148,11 @@ namespace yocto
                             }
                         }
                     }
+
+                    //__________________________________________________________
+                    //
+                    // compute its transpose
+                    //__________________________________________________________
                     for(size_t i=1;i<=N;++i)
                     {
                         for(size_t j=1;j<=M;++j)
@@ -151,12 +160,8 @@ namespace yocto
                             NuT[j][i] = Nu[i][j];
                         }
                     }
-                    
-                    
                 }
 
-
-                
             }
             catch(...)
             {
@@ -220,6 +225,6 @@ namespace yocto
             return sqrt(ans);
         }
 
-       
+
     }
 }

@@ -14,14 +14,13 @@ namespace yocto
         
         bool equilibria:: balance() throw()
         {
-            std::cerr << "active=" << active << std::endl;
 
         BALANCE:
             //__________________________________________________________________
             //
             // construct the bad vector
             //__________________________________________________________________
-            size_t nbad  = 0;
+            size_t nbad = 0;
             for(size_t j=M;j>0;--j)
             {
                 beta[j] = 0;
@@ -34,7 +33,6 @@ namespace yocto
             }
             if(nbad<=0)
             {
-                std::cerr << "balanced" << std::endl;
                 return true;
             }
             else
@@ -43,12 +41,8 @@ namespace yocto
                 //
                 // try to resorb it
                 //______________________________________________________________
-                std::cerr << "C0  =" << C << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
-                tao::mul(xi,Nu,beta);
-                tao::mul(dC,NuT,xi);
-                std::cerr << "xi  =" << xi << std::endl;
-                std::cerr << "dC  =" << dC << std::endl;
+                tao::mul(xi,Nu,beta); //!< projection on equation
+                tao::mul(dC,NuT,xi);  //!< global decrease direction
 
                 //______________________________________________________________
                 //
@@ -67,26 +61,25 @@ namespace yocto
                     if(!active[j]) continue;
                     const double c = C[j];
                     const double d = dC[j];
-                    std::cerr << "\t@" << j << " : C=" << c << ", dC=" << d << " => ";
 
                     if(d>0)
                     {
                         //______________________________________________________
                         //
-                        // increasing a concentration: stop at zero
+                        // increasing a concentration
                         //______________________________________________________
                         if(c<0)
                         {
-                            //this is one of the bad!
+                            // this is one of the bad!
+                            // compute the smallest step
                             const double tmp = (-c)/d;
-                            std::cerr << "corrected, advance at least * " << tmp << std::endl;
                             if( (incr_index<=0) || (tmp<incr_value) )
                             {
                                 incr_value = tmp;
                                 incr_index = j;
                             }
                         }
-                        else { std::cerr << "no effect..." << std::endl; }
+                        // else nothing to do...
                     }
                     else if(d<0)
                     {
@@ -97,14 +90,12 @@ namespace yocto
                         //______________________________________________________
                         if(c<=0)
                         {
-                            //this is one of the bad: too bad...
-                            std::cerr << "blocked!" << std::endl << "Failure to balance" << std::endl;
+                            //this is one of the bad: too bad!!!
                             return false;
                         }
                         else
                         {
                             const double tmp = c/(-d);
-                            std::cerr << "don't move more than * " << tmp << std::endl;
                             if( (decr_index<=0) || (tmp<decr_value) )
                             {
                                 decr_index = j;
@@ -112,30 +103,25 @@ namespace yocto
                             }
                         }
                     }
-                    else { std::cerr << "nothing to do..." << std::endl; }
                 }
 
                 if(incr_index<=0)
                 {
-                    std::cerr << "unable to decrease!" << std::endl;
+                    // shoudn't happen
                     return false;
                 }
-                std::cerr << "increase  : " << incr_value << " @" << incr_index << std::endl;
                 assert(incr_value>0);
-
                 double fac = incr_value;
                 size_t idx = incr_index;
                 if(decr_index)
                 {
-                    std::cerr << "decrease  : " << decr_value << " @" << decr_index << std::endl;
                     if(decr_value<incr_value)
                     {
-                        std::cerr << "\tdecrease takes precedence!" << std::endl;
+                        // takes precedence
                         fac = decr_value;
                         idx = decr_index;
                     }
                 }
-                std::cerr << "advance   : " << fac << " @" << idx << std::endl;
 
                 // updating carefully
                 for(size_t j=M;j>0;--j)
@@ -158,7 +144,6 @@ namespace yocto
                     }
                 }
                 C[idx] = 0;
-                std::cerr << "C1  =" << C << std::endl;
                 goto BALANCE;
             }
 
