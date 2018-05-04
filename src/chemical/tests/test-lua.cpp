@@ -23,12 +23,32 @@ YOCTO_UNIT_TEST_IMPL(lua)
     
     library lib("species");
     __lua::load(vm,lib);
-    std::cerr <<  lib.name << ":" << std::endl;
+    std::cerr << lib.name << ":" << std::endl;
     std::cerr << lib << std::endl;
 
     equilibria cs("cs");
     __lua::load(vm,cs,lib);
     std::cerr << cs << std::endl;
+
+    for(size_t iter=1;iter<=100;++iter)
+    {
+        for(size_t j=cs.M;j>0;--j)
+        {
+            cs.C[j] = 1e-3 * (alea.get<double>()-0.3);
+        }
+        std::cerr << "initial: " << std::endl;
+        lib.display(cs.C);
+        if(!cs.balance())
+        {
+            std::cerr << "unable to balance..." << std::endl;
+            continue;
+        }
+        std::cerr << "balanced: " << std::endl;
+        lib.display(cs.C);
+
+    }
+
+
 }
 YOCTO_UNIT_TEST_DONE()
 

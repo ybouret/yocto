@@ -56,7 +56,8 @@ namespace yocto
                 __add_species(L,lib,++count);
                 lua_pop(L, 1);
             }
-            
+
+            lib.compile();
         }
 
     }
