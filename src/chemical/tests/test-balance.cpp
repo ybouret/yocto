@@ -62,7 +62,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
         }
         lib.display(cs.C);
 
-        if(cs.balance())
+        if(cs.balance(cs.C))
         {
             std::cerr << "balanced:" << std::endl;
             lib.display(cs.C);
@@ -72,6 +72,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
             std::cerr << "unable to balance" << std::endl;
         }
         std::cerr << "<balancing/>" << std::endl << std::endl;
+        exit(0);
     }
     
     

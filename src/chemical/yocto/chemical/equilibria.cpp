@@ -202,13 +202,24 @@ namespace yocto
             }
         }
 
+        void equilibria:: updatePhi(const array<double> &C0)
+        {
+            iterator ii=begin();
+            for(size_t i=1;i<=N;++i,++ii)
+            {
+                const equilibrium &eq = **ii;
+                const double       Kt = K[i];
+                eq.computeGradient(Phi[i],C0,Kt);
+            }
+        }
+
         void equilibria:: updateGammaAndPhi(const array<double> &C0)
         {
             iterator ii=begin();
             for(size_t i=1;i<=N;++i,++ii)
             {
                 const equilibrium &eq = **ii;
-                const double Kt = K[i];
+                const double       Kt = K[i];
                 Gamma[i] = eq.computeGamma(C0,Kt);
                 eq.computeGradient(Phi[i],C0,Kt);
             }
@@ -222,7 +233,7 @@ namespace yocto
             {
                 ans += pow( Fabs(Gamma[i]), GamEV[i] );
             }
-            return ans/N;
+            return ans;
         }
 
 

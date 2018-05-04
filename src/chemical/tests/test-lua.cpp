@@ -30,23 +30,24 @@ YOCTO_UNIT_TEST_IMPL(lua)
     __lua::load(vm,cs,lib);
     std::cerr << cs << std::endl;
 
+    vector<double> C0(cs.M,0);
     for(size_t iter=1;iter<=100;++iter)
     {
         for(size_t j=cs.M;j>0;--j)
         {
-            cs.C[j] = 1e-3 * (alea.get<double>()-0.3);
+            C0[j] = 1e-3 * (alea.get<double>()-0.3);
         }
         std::cerr << "initial: " << std::endl;
-        lib.display(cs.C);
-        if(!cs.balance())
+        lib.display(C0);
+        if(!cs.balance(C0))
         {
             std::cerr << "unable to balance..." << std::endl;
             continue;
         }
         std::cerr << "balanced: " << std::endl;
-        lib.display(cs.C);
+        lib.display(C0);
         std::cerr << "normalizing..." << std::endl;
-        cs.normalize(cs.C,0.0);
+        cs.normalize(C0,0.0);
 
 
     }

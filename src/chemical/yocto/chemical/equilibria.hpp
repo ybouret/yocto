@@ -57,7 +57,8 @@ namespace yocto
 
             //! compute Gamma for a computed set of K
             void updateGamma(const array<double> &C0);
-
+            void updatePhi(const array<double> &C0);
+            
             //! initialize K, Gamma and Phi 
             void   initializeGammaAndPhi(const array<double> &C0,const double t);
             void   updateGammaAndPhi(const array<double> &C0);
@@ -66,7 +67,7 @@ namespace yocto
             
 
             //! balance a concentration
-            bool balance() throw();
+            bool balance(array<double> &C0) throw();
             
             //! normalize a balanced concentration
             void normalize( array<double> &C0, const double t );
@@ -77,6 +78,9 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
             double __normGamma(double alpha);
             math::numeric<double>::function normGamma;
+
+            // from Gamma and Phi
+            void compute_full_step();
         };
 
     }

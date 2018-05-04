@@ -12,9 +12,11 @@ namespace yocto
 
 
         
-        bool equilibria:: balance() throw()
+        bool equilibria:: balance(array<double> &C0) throw()
         {
 
+            assert(C0.size()>=M);
+            
         BALANCE:
             //__________________________________________________________________
             //
@@ -24,7 +26,7 @@ namespace yocto
             for(size_t j=M;j>0;--j)
             {
                 beta[j] = 0;
-                const double Cj = C[j];
+                const double Cj = C0[j];
                 if(active[j]&&(Cj<0))
                 {
                     beta[j] = -Cj;
@@ -58,8 +60,8 @@ namespace yocto
                     //
                     // gather status
                     //__________________________________________________________
-                    if(!active[j]) continue;
-                    const double c = C[j];
+                    if(!active[j]) { assert(Fabs(dC[j])<=0); continue; }
+                    const double c = C0[j];
                     const double d = dC[j];
 
                     if(d>0)
@@ -132,18 +134,18 @@ namespace yocto
                         continue;
                     }
 
-                    const bool is_bad = (C[j]<0);
-                    C[j] += fac * dC[j];
+                    const bool is_bad = (C0[j]<0);
+                    C0[j] += fac * dC[j];
                     if(is_bad)
                     {
-                         if(C[j]>=0) C[j]=0;
+                         if(C0[j]>=0) C0[j]=0;
                     }
                     else
                     {
-                        if(C[j]<=0) C[j]=0;
+                        if(C0[j]<=0) C0[j]=0;
                     }
                 }
-                C[idx] = 0;
+                C0[idx] = 0;
                 goto BALANCE;
             }
 
