@@ -45,6 +45,9 @@ YOCTO_UNIT_TEST_IMPL(lua)
         }
         std::cerr << "balanced: " << std::endl;
         lib.display(cs.C);
+        std::cerr << "normalizing..." << std::endl;
+        cs.normalize(cs.C,0.0);
+
 
     }
 

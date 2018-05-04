@@ -196,7 +196,7 @@ namespace yocto
             for(size_t i=1;i<=N;++i,++ii)
             {
                 const equilibrium &eq = **ii;
-                const double Kt = (K[i]=eq.K(t));
+                const double       Kt = (K[i]=eq.K(t));
                 Gamma[i] = eq.computeGamma(C0,Kt);
                 eq.computeGradient(Phi[i],C0,Kt);
             }
@@ -220,9 +220,9 @@ namespace yocto
             double ans = 0;
             for(size_t i=N;i>0;--i)
             {
-                ans += pow( Square(Gamma[i]), GamEV[i] );
+                ans += pow( Fabs(Gamma[i]), GamEV[i] );
             }
-            return sqrt(ans);
+            return ans/N;
         }
 
 
