@@ -99,7 +99,7 @@ namespace yocto
             for(iterator i=begin();i!=end();++i)
             {
                 const equilibrium &eq = **i;
-                eq.check();
+                eq.compile();
                 m = max_of(m,eq.name.length());
             }
 

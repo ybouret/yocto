@@ -12,7 +12,6 @@ namespace yocto
     {
 
         typedef core::list_of_cpp<actor>       actors;
-        class                                  equilibria;
 
         class equilibrium : public counted_object
         {
@@ -36,7 +35,7 @@ namespace yocto
             friend std::ostream & operator<<( std::ostream &os, const equilibrium &eq);
             void display( std::ostream &os, const size_t ns) const;
             
-            void check() const;
+            void compile() const;
 
             //! fill reaction topology
             void fill( array<double> &nu, array<bool> &active) const throw();
@@ -54,7 +53,12 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);
             virtual double getK(double) const= 0;
-            friend class equilibria;
+
+        public:
+            const double nu2;
+            bool balance(array<double>       &beta,
+                         array<double>       &C,
+                         const array<double> &nu);
         };
 
 

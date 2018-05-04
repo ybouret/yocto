@@ -9,9 +9,68 @@ namespace yocto
     namespace chemical
     {
 
+        bool equilibrium:: balance(array<double>       &beta,
+                                   array<double>       &C,
+                                   const array<double> &nu )
+        {
+            assert(nu2>0);
+            std::cerr << "balancing with " << name << ", nu=" << nu << std::endl;
+            const double extent = tao::dot(beta,nu)/nu2;
+            std::cerr << "\textent=" << extent << std::endl;
+            if(extent>0)
+            {
+                return false;
+            }
+            else
+            {
+                if(extent<0)
+                {
+
+                    return false;
+                }
+                else
+                {
+                    // no component on topology
+                    std::cerr << "no component" << std::endl;
+                    return false;
+                }
+            }
+        }
+
+        bool equilibria:: balance(array<double> &C0) throw()
+        {
+            size_t nbad = 0;
+            for(size_t j=M;j>0;--j)
+            {
+                beta[j] = 0;
+                const double Cj = C0[j];
+                if(active[j]&&(Cj<0))
+                {
+                    beta[j] = -Cj;
+                    ++nbad;
+                }
+            }
+            if(nbad<=0)
+            {
+                return true;
+            }
+            else
+            {
+                std::cerr << "beta=" << beta << std::endl;
+                std::cerr << "C   =" << C << std::endl;
+                size_t i=1;
+                for(iterator ii=begin();i<=N;++ii,++i)
+                {
+                    equilibrium &eq = **ii;
+                    eq.balance(beta,C,Nu[i]);
+                }
+            }
+
+            return false;
+        }
 
 
-        
+#if 0
         bool equilibria:: balance(array<double> &C0) throw()
         {
 
@@ -150,7 +209,7 @@ namespace yocto
             }
 
         }
-
+#endif
 
         
     }

@@ -12,7 +12,8 @@ namespace yocto
 
         equilibrium:: equilibrium(const string &id) :
         name(id),
-        K( this, & equilibrium:: getK )
+        K( this, & equilibrium:: getK ),
+        nu2(0)
         {
         }
 
@@ -153,20 +154,32 @@ namespace yocto
             return os;
         }
 
-        void equilibrium:: check() const
+        void equilibrium:: compile() const
         {
+            double &sum2 = (double &)nu2;
+            sum2  = 0;
             int z = 0;
             for(const actor *a=reactants.head;a;a=a->next)
             {
-                z += a->nu * a->sp->z;
+                const int nu = a->nu;
+                z += nu * a->sp->z;
+                sum2 += nu*nu;
             }
             for(const actor *a=products.head;a;a=a->next)
             {
-                z += a->nu * a->sp->z;
+                const int nu = a->nu;
+                z += nu * a->sp->z;
+                sum2 += nu*nu;
             }
+
             if(z!=0)
             {
                 throw exception("equilibrium '%s' doesn't conserve charge!", *name);
+            }
+
+            if(nu2<=0)
+            {
+                throw exception("equilibrium '%s' has no topology!", *name);
             }
         }
 

@@ -17,7 +17,8 @@ YOCTO_UNIT_TEST_IMPL(balance)
     species &NH3 = lib.add("NH3",0);
     lib.add("Na+",1);
     lib.add("Cl-",-1);
-
+    lib.compile();
+    
     std::cerr << lib << std::endl;
     equilibria   cs("eqs");
     {
@@ -36,7 +37,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
         std::cerr << acetic << std::endl;
     }
 
-    if(true)
+    if(false)
     {
         equilibrium &ammoniac = cs("ammoniac",pow(10,-9.8));
         ammoniac(NH4,-2);
