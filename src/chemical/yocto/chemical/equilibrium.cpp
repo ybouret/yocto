@@ -279,7 +279,7 @@ namespace yocto
 
         constant_equilibrium:: ~constant_equilibrium() throw() {}
 
-        double constant_equilibrium:: getK(double) const throw()
+        double constant_equilibrium:: getK(double) const
         {
             return __K;
         }

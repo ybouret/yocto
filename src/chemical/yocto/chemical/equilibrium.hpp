@@ -53,7 +53,7 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibrium);
-            virtual double getK(double) const throw() = 0;
+            virtual double getK(double) const= 0;
             friend class equilibria;
         };
 
@@ -67,7 +67,7 @@ namespace yocto
 
         private:
             const double __K;
-            virtual double getK(double) const throw();
+            virtual double getK(double) const;
             YOCTO_DISABLE_COPY_AND_ASSIGN(constant_equilibrium);
         };
         

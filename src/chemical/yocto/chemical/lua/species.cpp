@@ -7,12 +7,12 @@ namespace yocto
     {
 
         // loading a { "species", z } table
-        static inline void __add_species( lua_State *L, library &lib )
+        static inline void __add_species( lua_State *L, library &lib, const int count )
         {
             // get name
             assert( lua_istable(L,-1) );
             lua_rawgeti(L,-1,1);
-            if(!lua_isstring(L,-1)) throw exception("in '%s': invalid species name",*lib.name);
+            if(!lua_isstring(L,-1)) throw exception("in '%s': invalid species#%d name",*lib.name,count);
             const string name = lua_tostring(L,-1);
             lua_pop(L,1);
 
@@ -20,7 +20,7 @@ namespace yocto
             // get charge
             assert( lua_istable(L,-1) );
             lua_rawgeti(L,-1,2);
-            if(!lua_isnumber(L,-1)) throw exception("in '%s': invalid species charge",*lib.name);
+            if(!lua_isnumber(L,-1)) throw exception("in '%s': invalid species#%d charge",*lib.name,count);
             const int  charge = int(lua_tonumber(L,-1));
             lua_pop(L,1);
 
@@ -30,10 +30,10 @@ namespace yocto
             std::cerr << "\tadded " << sp.name << ", z=" << sp.z << std::endl;
         }
 
-        void __lua:: load( lua_State *L, library &lib )
+        void __lua:: load( Lua::State::Pointer &vm, library &lib )
         {
             std::cerr << "lua: loading library " << lib.name << std::endl;
-            assert(L);
+            lua_State *L = **vm;
             lua_settop(L,0);
             const char *name = *(lib.name);
             lua_getglobal(L,name);
@@ -44,6 +44,7 @@ namespace yocto
 
             // Lua loop over table
             lua_pushnil(L);  /* first key */
+            int count = 0;
             while (lua_next(L,-2) != 0) {
                 /* uses 'key' (at index -2) and 'value' (at index -1) */
                 /*
@@ -52,7 +53,7 @@ namespace yocto
                  lua_typename(L, lua_type(L, -1)));
                  */
                 /* removes 'value'; keeps 'key' for next iteration */
-                __add_species(L,lib);
+                __add_species(L,lib,++count);
                 lua_pop(L, 1);
             }
             
