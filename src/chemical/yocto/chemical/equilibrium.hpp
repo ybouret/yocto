@@ -65,8 +65,9 @@ namespace yocto
                          array<double>       &C,
                          const array<double> &nu);
 
-            void compute_ranges( range &fwd, range &rev, const array<double> &C) const throw();
-
+            void compute_forward( range &fwd, const array<double> &C) const throw();
+            void compute_reverse( range &rev, const array<double> &C) const throw();
+            void compute_extents( range &fwd, range &rev, const array<double> &C) const throw();
         };
 
         class constant_equilibrium : public equilibrium

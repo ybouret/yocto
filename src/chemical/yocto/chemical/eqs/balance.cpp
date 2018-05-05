@@ -10,8 +10,13 @@ namespace yocto
     namespace chemical
     {
 
+        void equilibrium::compute_extents( range &fwd, range &rev, const array<double> &C) const throw()
+        {
+            compute_forward(fwd,C);
+            compute_reverse(rev,C);
+        }
 
-        void equilibrium:: compute_ranges( range &fwd, range &rev, const array<double> &C) const throw()
+        void equilibrium:: compute_forward( range &fwd, const array<double> &C) const throw()
         {
             fwd.clear();
 
@@ -39,8 +44,10 @@ namespace yocto
                     }
                 }
             }
+        }
 
-            rev.clear();
+        void equilibrium:: compute_reverse( range &rev, const array<double> &C) const throw()
+        {
 
             for(const actor *a=products.head;a;a=a->next)
             {
@@ -66,17 +73,15 @@ namespace yocto
                     }
                 }
             }
-            
-
         }
+
+
 
 
         bool equilibria:: balance(array<double> &C0) throw()
         {
             equilibrium::range fwd,rev;
 
-            double Beta = 0;
-            size_t jbad = 0;
             size_t nbad      = 0;
             for(size_t j=M;j>0;--j)
             {
@@ -85,15 +90,19 @@ namespace yocto
                 if(active[j]&&(Cj<0))
                 {
                     ++nbad;
-                    std::cerr << "bad C[" << j << "]=" << Cj << std::endl;
-                    const double bad_C = -Cj;
-                    if(jbad<=0 || bad_C < Beta )
-                    {
-                        jbad = j;
-                        Beta = bad_C;
-                    }
+                    beta[j] = -Cj;
                 }
             }
+            if(nbad<=0)
+            {
+                return true;
+            }
+            else
+            {
+                
+            }
+
+#if 0
             if(nbad<=0)
             {
                 return true;
@@ -104,15 +113,20 @@ namespace yocto
                 //
                 // computing the desired extent to resorb the smallest excess
                 //______________________________________________________________
-                assert(jbad);
-                assert(Beta>0);
-                std::cerr << "Trying to resorb " << Beta << " @" << jbad << std::endl;
-                beta[jbad] = Beta;
-                const array<double> &vj = NuT[jbad];
-                const double         v2 = tao::norm_sq(vj); assert(v2>0);
-                tao::mulset(xi,Beta/v2,vj);
-                std::cerr << "vj=" << vj << std::endl;
-                std::cerr << "xi=" << xi << std::endl;
+                std::cerr << "beta=" << beta << std::endl;
+                tao::ld(xi,0);
+                for(size_t j=1;j<=M;++j)
+                {
+                    if(beta[j]>0)
+                    {
+                        assert(active[j]);
+                        const array<double> &Vj  = NuT[j];
+                        const double         V2  = tao::norm_sq(Vj); assert(V2>0);
+                        const double         lam = beta[j]/V2;
+                        std::cerr << "beta[" << j << "]=" << beta[j] << "\t => " << lam << '*' << Vj << std::endl;
+                    }
+                }
+                return false;
 
                 //______________________________________________________________
                 //
@@ -122,15 +136,32 @@ namespace yocto
                 for(iterator ii=begin();i<=N;++ii,++i)
                 {
                     equilibrium &eq = **ii;
-                    eq.compute_ranges(fwd,rev,C);
-                    std::cerr << eq.name;
-                    spaces_for(eq.name,std::cerr) << " : fwd=" << fwd << ", rev=" << rev << std::endl;
+                    double      &extent = xi[i];
+                    std::cerr << eq.name; spaces_for(eq.name,std::cerr) << ": ";
+                    if(extent>0)
+                    {
+                        eq.compute_forward(fwd,C);
+                        std::cerr << "fwd=" << fwd << std::endl;
+                    }
+                    else
+                    {
+                        if(extent<0)
+                        {
+                            eq.compute_reverse(rev,C);
+                            std::cerr << "rev=" << rev << std::endl;
+                        }
+                        else
+                        {
+                            std::cerr << "nope" << std::endl;
+                            continue; // do nothing
+                        }
+                    }
                 }
 
 
                 return false;
             }
-
+#endif
 
 
         }
