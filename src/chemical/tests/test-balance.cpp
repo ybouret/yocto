@@ -37,9 +37,9 @@ YOCTO_UNIT_TEST_IMPL(balance)
         std::cerr << acetic << std::endl;
     }
 
-    if(false)
+    if(true)
     {
-        equilibrium &ammoniac = cs("ammoniac",pow(10,-9.8));
+        equilibrium &ammoniac = cs("ammoniac",(pow(10,-9.8*2)));
         ammoniac(NH4,-2);
         ammoniac(NH3,2);
         ammoniac(H,2);

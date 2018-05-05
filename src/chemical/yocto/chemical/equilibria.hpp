@@ -72,7 +72,7 @@ namespace yocto
             //! normalize a balanced concentration
             void normalize( array<double> &C0, const double t );
             
-            void spaces_for( const string &id, std::ostream &os ) const;
+            std::ostream & spaces_for( const string &id, std::ostream &os ) const;
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);

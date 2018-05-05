@@ -33,7 +33,7 @@ namespace yocto
             return *eq;
         }
 
-        void equilibria:: spaces_for( const string &id, std::ostream &os ) const
+        std::ostream & equilibria:: spaces_for( const string &id, std::ostream &os ) const
         {
             const size_t eq_len = id.length();
             const size_t mx_len = max_length;
@@ -41,6 +41,7 @@ namespace yocto
             {
                 os << ' ';
             }
+            return os;
         }
 
 

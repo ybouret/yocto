@@ -1,6 +1,7 @@
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/adjoint.hpp"
+#include "yocto/math/core/svd.hpp"
 
 namespace yocto
 {
@@ -10,11 +11,9 @@ namespace yocto
     {
 
 
-        void equilibrium:: ranges( range &fwd, range &rev, const array<double> &C) const throw()
+        void equilibrium:: compute_ranges( range &fwd, range &rev, const array<double> &C) const throw()
         {
-            fwd.exists = false;
-            fwd.xi     = 0;
-            fwd.id     = 0;
+            fwd.clear();
 
             for(const actor *a=reactants.head;a;a=a->next)
             {
@@ -26,6 +25,7 @@ namespace yocto
                     fwd.exists=true;
                     fwd.xi    =0;
                     fwd.id    =0;
+                    fwd.no    =id;
                 }
                 else
                 {
@@ -40,9 +40,7 @@ namespace yocto
                 }
             }
 
-            rev.exists = false;
-            rev.xi     = 0;
-            rev.id     = 0;
+            rev.clear();
 
             for(const actor *a=products.head;a;a=a->next)
             {
@@ -54,11 +52,12 @@ namespace yocto
                     rev.exists=true;
                     rev.xi    =0;
                     rev.id    =0;
+                    rev.no    =id;
                 }
                 else
                 {
                     const int    nu = a->nu; assert(nu>0);
-                    const double xi = c/(nu); assert(xi<=0);
+                    const double xi = -c/(nu); assert(xi<=0);
                     if( (!rev.exists) || (xi>rev.xi) )
                     {
                         rev.exists = true;
@@ -74,6 +73,7 @@ namespace yocto
 
         bool equilibria:: balance(array<double> &C0) throw()
         {
+#if 0
             size_t nbad = 0;
             for(size_t j=M;j>0;--j)
             {
@@ -85,6 +85,43 @@ namespace yocto
                     ++nbad;
                 }
             }
+#endif
+
+            double min_bad_C = 0;
+            size_t min_bad_j = 0;
+            size_t nbad      = 0;
+            for(size_t j=M;j>0;--j)
+            {
+                beta[j] = 0;
+                const double Cj = C0[j];
+                if(active[j]&&(Cj<0))
+                {
+                    ++nbad;
+                    std::cerr << "bad C[" << j << "]=" << Cj << std::endl;
+                    const double bad_C = -Cj;
+                    if(min_bad_j<=0 || bad_C < min_bad_C )
+                    {
+                        min_bad_j = j;
+                        min_bad_C = bad_C;
+                    }
+                }
+            }
+            if(nbad<=0)
+            {
+                return true;
+            }
+            else
+            {
+                assert(min_bad_j);
+                assert(min_bad_C>0);
+                std::cerr << "Trying to resorb " << min_bad_C << " @" << min_bad_j << std::endl;
+                beta[min_bad_j] = min_bad_C;
+                const array<double> &v = NuT[min_bad_j];
+                std::cerr << "v=" << v << std::endl;
+                return false;
+            }
+
+
             if(nbad<=0)
             {
                 return true;
@@ -93,11 +130,14 @@ namespace yocto
             {
                 std::cerr << "beta=" << beta << std::endl;
                 std::cerr << "C   =" << C << std::endl;
+                equilibrium::range fwd,rev;
                 size_t i=1;
                 for(iterator ii=begin();i<=N;++ii,++i)
                 {
                     equilibrium &eq = **ii;
-                    //eq.balance(beta,C,Nu[i]);
+                    eq.compute_ranges(fwd,rev,C);
+                    std::cerr << eq.name;
+                    spaces_for(eq.name,std::cerr) << " : fwd=" << fwd << ", rev=" << rev << std::endl;
                 }
             }
 

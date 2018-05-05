@@ -22,11 +22,11 @@ namespace yocto
             static const int has_rev  = 0x02;
             static const int has_both = has_fwd | has_rev;
 
-            YOCTO_TRIPLE_DECL(STANDARD,range,bool,exists,double,xi,size_t,id);
-            inline range() throw() : exists(false), xi(0), id(0) {}
+            YOCTO_QUAD_DECL(STANDARD,range,bool,exists,double,xi,size_t,id,size_t,no);
+            inline range() throw() : exists(false), xi(0), id(0),no(0) {}
+            inline void clear() throw() { exists=false; xi=0; id=0; no=0; }
             YOCTO_TUPLE_END();
 
-            
             typedef intr_ptr<string,equilibrium>    pointer;
             typedef set<string,pointer>             database;
             typedef math::numeric<double>::function constant;
@@ -65,11 +65,9 @@ namespace yocto
                          array<double>       &C,
                          const array<double> &nu);
 
-            void ranges( range &fwd, range &rev, const array<double> &C) const throw();
+            void compute_ranges( range &fwd, range &rev, const array<double> &C) const throw();
 
         };
-
-
 
         class constant_equilibrium : public equilibrium
         {

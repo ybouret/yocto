@@ -82,7 +82,7 @@ inline virtual ~CLASS() throw() {} \
 friend inline \
 std::ostream & operator<<( std::ostream &os, const CLASS &self )\
 {\
-os << '(' << self.N1 << ',' << self.N2 << ',' << self.N3 << ',' << self.N4 << ')';\
+os << '(' << #N1 << '=' << self.N1 << ',' << #N2 << '=' << self.N2 << ',' << #N3 << '=' << self.N3 << ',' << #N4 << '=' << self.N4 << ')';\
 return os;\
 }\
 T1 N1;\
