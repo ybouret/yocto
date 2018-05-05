@@ -73,22 +73,10 @@ namespace yocto
 
         bool equilibria:: balance(array<double> &C0) throw()
         {
-#if 0
-            size_t nbad = 0;
-            for(size_t j=M;j>0;--j)
-            {
-                beta[j] = 0;
-                const double Cj = C0[j];
-                if(active[j]&&(Cj<0))
-                {
-                    beta[j] = -Cj;
-                    ++nbad;
-                }
-            }
-#endif
+            equilibrium::range fwd,rev;
 
-            double min_bad_C = 0;
-            size_t min_bad_j = 0;
+            double Beta = 0;
+            size_t jbad = 0;
             size_t nbad      = 0;
             for(size_t j=M;j>0;--j)
             {
@@ -99,10 +87,10 @@ namespace yocto
                     ++nbad;
                     std::cerr << "bad C[" << j << "]=" << Cj << std::endl;
                     const double bad_C = -Cj;
-                    if(min_bad_j<=0 || bad_C < min_bad_C )
+                    if(jbad<=0 || bad_C < Beta )
                     {
-                        min_bad_j = j;
-                        min_bad_C = bad_C;
+                        jbad = j;
+                        Beta = bad_C;
                     }
                 }
             }
@@ -112,25 +100,24 @@ namespace yocto
             }
             else
             {
-                assert(min_bad_j);
-                assert(min_bad_C>0);
-                std::cerr << "Trying to resorb " << min_bad_C << " @" << min_bad_j << std::endl;
-                beta[min_bad_j] = min_bad_C;
-                const array<double> &v = NuT[min_bad_j];
-                std::cerr << "v=" << v << std::endl;
-                return false;
-            }
+                //______________________________________________________________
+                //
+                // computing the desired extent to resorb the smallest excess
+                //______________________________________________________________
+                assert(jbad);
+                assert(Beta>0);
+                std::cerr << "Trying to resorb " << Beta << " @" << jbad << std::endl;
+                beta[jbad] = Beta;
+                const array<double> &vj = NuT[jbad];
+                const double         v2 = tao::norm_sq(vj); assert(v2>0);
+                tao::mulset(xi,Beta/v2,vj);
+                std::cerr << "vj=" << vj << std::endl;
+                std::cerr << "xi=" << xi << std::endl;
 
-
-            if(nbad<=0)
-            {
-                return true;
-            }
-            else
-            {
-                std::cerr << "beta=" << beta << std::endl;
-                std::cerr << "C   =" << C << std::endl;
-                equilibrium::range fwd,rev;
+                //______________________________________________________________
+                //
+                // clipping
+                //______________________________________________________________
                 size_t i=1;
                 for(iterator ii=begin();i<=N;++ii,++i)
                 {
@@ -139,9 +126,13 @@ namespace yocto
                     std::cerr << eq.name;
                     spaces_for(eq.name,std::cerr) << " : fwd=" << fwd << ", rev=" << rev << std::endl;
                 }
+
+
+                return false;
             }
 
-            return false;
+
+
         }
 
 
