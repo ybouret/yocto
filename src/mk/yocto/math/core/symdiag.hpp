@@ -31,7 +31,7 @@ namespace yocto
             static
             void eigsrt( array_t &d, matrix_t &v ) throw();
 
-            //! sort eigenvalues and according columns of v by AMPLUTUDE DESCENDING order
+            //! sort eigenvalues and according columns of v by AMPLITUDE DESCENDING order
             /**
              \param d a vector or eigenvalues
              \param v a matrix of eigenvectors

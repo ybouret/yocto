@@ -2,6 +2,7 @@
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/adjoint.hpp"
 #include "yocto/math/core/svd.hpp"
+#include "yocto/math/core/symdiag.hpp"
 
 namespace yocto
 {
@@ -34,7 +35,7 @@ namespace yocto
                 }
                 else
                 {
-                    const int    nu = a->nu; assert(nu<0);
+                    const int    nu = a->nu;   assert(nu<0);
                     const double xi = c/(-nu); assert(xi>=0);
                     if( (!fwd.exists) || (xi<fwd.xi) )
                     {
@@ -82,6 +83,7 @@ namespace yocto
         {
             equilibrium::range fwd,rev;
 
+
             size_t nbad      = 0;
             for(size_t j=M;j>0;--j)
             {
@@ -99,7 +101,21 @@ namespace yocto
             }
             else
             {
+                std::cerr << "C   =" << C    << std::endl;
+                std::cerr << "beta=" << beta << std::endl;
+                tao::mul(xi,Nu,beta);
+                std::cerr << "dxi =" << xi << std::endl;
                 
+                size_t i=1;
+                for(iterator ii=begin();i<=N;++ii,++i)
+                {
+                    equilibrium &eq = **ii;
+                    std::cerr << eq.name; spaces_for(eq.name,std::cerr) << ": ";
+                    eq.compute_extents(fwd,rev,C);
+                    std::cerr << "fwd=" << fwd << ", rev=" << rev;
+                    std::cerr << std::endl;
+                }
+                return false;
             }
 
 #if 0

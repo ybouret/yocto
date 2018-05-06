@@ -551,9 +551,56 @@ namespace yocto
                     }
                 }
             }
-            
-
         }
+
+
+
     }
 }
+
+#include "yocto/sort/ysort.hpp"
+
+namespace yocto
+{
+
+    namespace math
+    {
+        static inline
+        int __cmp_decreasing_abs( const real_t lhs, const real_t rhs ) throw()
+        {
+            const real_t L = Fabs(lhs);
+            const real_t R = Fabs(rhs);
+            return __compare_decreasing(L,R);
+        }
+
+
+        template <>
+        void svd<real_t>::set_image_dimension( array<real_t> &w, const size_t dim_img )
+        {
+            const size_t n = w.size();
+            assert(w.size()>=dim_img);
+            vector<size_t> I(n,0);
+            for(size_t i=n;i>0;--i)
+            {
+                I[i] = i;
+            }
+            yCoSort(w,I,__cmp_decreasing_abs);
+            for(size_t i=dim_img+1;i<=n;++i)
+            {
+                w[i] = 0;
+            }
+            yCoSort(I,w,__compare<size_t>);
+        }
+
+        template <>
+        void svd<real_t>::set_kernel_dimension( array<real_t> &w, const size_t dim_ker )
+        {
+            const size_t n = w.size();
+            assert(w.size()>=dim_ker);
+            set_image_dimension(w,n-dim_ker);
+        }
+    }
+
+}
+
 

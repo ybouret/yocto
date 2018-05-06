@@ -55,6 +55,12 @@ namespace yocto
             static
             size_t truncate( matrix<T> &A) throw();
 
+            static
+            void set_image_dimension( array<T> &w, const size_t dim_img );
+
+            static
+            void set_kernel_dimension( array<T> &w, const size_t dim_ker );
+
             //! inverse of diagonal values
             /**
              -compute tol = epsilon * n * max(|w|).
