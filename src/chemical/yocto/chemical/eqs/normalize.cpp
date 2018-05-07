@@ -187,7 +187,10 @@ namespace yocto
             std::cerr << "Try Solve " << eq.name << std::endl;
             array<double> &nu  = Nu[i];
             array<double> &phi = Phi[i];
+
             eq.computeGradient(phi,C,Kt);
+            std::cerr << "phi=" << phi << std::endl;
+            std::cerr << "nu =" << nu  << std::endl;
             const double   den = tao::dot(phi,nu);
             if(Fabs(den)<=0)
             {
