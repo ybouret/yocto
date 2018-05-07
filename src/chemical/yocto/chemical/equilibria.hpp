@@ -39,7 +39,7 @@ namespace yocto
             vector<double> beta;   //!< if negative active species [M]
             matrix<double> Nu;     //!< topology    [NxM]
             matrix<double> NuT;    //!< transposed  [MxN]
-            matrix<double> NuTNu;  //!< NuTxNu      [MxM]
+            vector<double> nu2;    //!< norm2 of Nu [N]
             matrix<double> Phi;    //!< jacobian    [NxM]
             matrix<double> W;      //!< inv(jacobian.nuT) NxN
             vector<double> K;      //!< constants   N

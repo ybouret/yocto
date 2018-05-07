@@ -80,7 +80,7 @@ namespace yocto
             K.      release();
             W.      release();
             Phi.    release();
-            NuTNu.  release();
+            nu2.    release();
             NuT.    release();
             Nu.     release();
             beta.   release();
@@ -122,7 +122,7 @@ namespace yocto
                 {
                     Nu.    make(N,M);
                     NuT.   make(M,N);
-                    NuTNu. make(M,M);
+                    nu2.   make(N,0);
                     Phi.   make(N,M);
                     W.     make(N);
                     K.     make(N);
@@ -158,10 +158,12 @@ namespace yocto
                     //__________________________________________________________
                     for(size_t i=1;i<=N;++i)
                     {
+                        const array<double> &Nu_i = Nu[i];
                         for(size_t j=1;j<=M;++j)
                         {
-                            NuT[j][i] = Nu[i][j];
+                            NuT[j][i] = Nu_i[j];
                         }
+                        nu2[i] = tao::norm_sq(Nu_i);
                     }
 
 
@@ -177,20 +179,8 @@ namespace yocto
                             throw exception("singular system of chemical equations");
                         }
                     }
-#if 0
-                    {
-                        matrix<double> __Nu(Nu);
-                        for(size_t i=N;i>0;--i)
-                        {
-                            array<double> &nu  = __Nu[i];
-                            const double   nrm = tao::norm_sq(nu);
-                            assert(nrm>0);
-                            tao::mulby(1.0/sqrt(nrm),nu);
-                        }
-                        tao::mmul_ltrn(NuTNu,__Nu,__Nu);
-                    }
-#endif
-                    tao::mmul(NuTNu,NuT,Nu);
+                    
+
                 }
 
             }

@@ -81,8 +81,12 @@ namespace yocto
 
         bool equilibria:: balance(array<double> &C0) throw()
         {
-            std::cerr << "NuTNu=" << NuTNu << std::endl;
-            
+
+        BALANCE:
+            //__________________________________________________________________
+            //
+            // build the vector of bad concentrations
+            //__________________________________________________________________
             size_t nbad      = 0;
             for(size_t j=M;j>0;--j)
             {
@@ -96,16 +100,39 @@ namespace yocto
             }
             if(nbad<=0)
             {
+                //______________________________________________________________
+                //
+                // balanced return!
+                //______________________________________________________________
                 return true;
             }
             else
             {
+                //______________________________________________________________
+                //
                 // compute the descent direction
+                //______________________________________________________________
                 std::cerr << "C   =" << C    << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
-                tao::mul(dC,NuTNu,beta);
-                std::cerr << "dC  =" << dC   << std::endl;
 
+                // on the Nu space
+                tao::mul(xi,Nu,beta);
+                for(size_t i=N;i>0;--i)
+                {
+                    xi[i] /= nu2[i]; // rescaling according to topology
+                }
+                // on the Nu space
+                tao::mul(dC,NuT,xi);
+                std::cerr << "desc=" << dC   << std::endl;
+
+                //______________________________________________________________
+                //
+                // compute the descent factor
+                //______________________________________________________________
+                size_t increase_idx = 0;
+                double increase_fac = 0;
+                size_t decrease_idx = 0;
+                double decrease_fac = 0;
                 for(size_t j=M;j>0;--j)
                 {
                     if(!active[j]) continue;
@@ -118,6 +145,21 @@ namespace yocto
                         //
                         // check increasing concentration
                         //______________________________________________________
+                        if(c<=0)
+                        {
+                            //__________________________________________________
+                            //
+                            // don't go too fast
+                            //__________________________________________________
+                            const double fac = (-c)/d;
+                            std::cerr << "INCR: C[" << j << "]=" << c << " : d=" << d << " : " << fac << std::endl;
+                            if( (!increase_idx) || (fac>increase_fac) )
+                            {
+                                increase_idx = j;
+                                increase_fac = fac;
+                            }
+                        }
+                        // else do nothing!
                     }
                     else if(d<0)
                     {
@@ -125,21 +167,78 @@ namespace yocto
                         //
                         // check decreasing concentration
                         //______________________________________________________
+                        if(c<=0)
+                        {
+                            //__________________________________________________
+                            //
+                            // blocked!
+                            //__________________________________________________
+                            std::cerr << "BLCK: C[" << j << "]=" << c << std::endl;
+                            return false;
+                        }
+                        else
+                        {
+                            //__________________________________________________
+                            //
+                            // don't make a negative concentration!
+                            //__________________________________________________
+                            assert(c>0);
+                            const double fac = c/(-d);
+                            std::cerr << "DECR: C[" << j << "]=" << c << " : d=" << d << " : " << fac << std::endl;
+                            if( !(decrease_idx) || (fac<decrease_idx) )
+                            {
+                                decrease_idx = j;
+                                decrease_fac = fac;
+                            }
+                        }
                     }
-
                 }
 
+                //______________________________________________________________
+                //
+                // choose the step factor
+                //______________________________________________________________
+                if(!increase_idx)
+                {
+                    std::cerr << "coulnd't increase...failure!" << std::endl;
+                    return false;
+                }
+                std::cerr << "increase@" << increase_idx << " : " << increase_fac << std::endl;
+                double alpha = increase_fac;
+                size_t zindx = increase_idx;
+                if( decrease_idx )
+                {
+                    std::cerr << "decrease@" << decrease_idx << " : " << decrease_fac << std::endl;
+                    if(decrease_fac<increase_fac)
+                    {
+                        std::cerr << "->takes over!" << std::endl;
+                        alpha = decrease_fac;
+                        zindx = decrease_idx;
+                    }
+                }
+                std::cerr << "alpha=" << alpha << ", zindx=" << zindx << std::endl;
 
-                return false;
+                //______________________________________________________________
+                //
+                // carefull move
+                //______________________________________________________________
+                for(size_t j=M;j>0;--j)
+                {
+                    if(!active[j]) { assert(Fabs(dC[j])<=0); continue; }
+                    const double d = alpha * dC[j];
+                    C[j] += d;
+                    if(d<=0&&C[j]<=0)
+                    {
+                        C[j] = 0;
+                    }
+                }
+                C[zindx] = 0;
+                goto BALANCE;
             }
-
-
-
         }
 
 
 
     }
-
 }
 
