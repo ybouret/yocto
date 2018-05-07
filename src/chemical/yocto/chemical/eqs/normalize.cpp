@@ -183,6 +183,7 @@ namespace yocto
 
         bool equilibria:: try_solve(const size_t i, const equilibrium &eq, const double Kt)
         {
+            equilibrium::range rng;
             std::cerr << "Try Solve " << eq.name << std::endl;
             array<double> &nu  = Nu[i];
             array<double> &phi = Phi[i];
@@ -194,13 +195,18 @@ namespace yocto
             }
             const double gam    = eq.computeGamma(C,Kt);
             const double extent = -gam/den;
+            std::cerr << "extent=" << extent << std::endl;
             if(extent>0)
             {
+                eq.compute_forward(rng,C);
+                std::cerr << "fwd=" << rng << std::endl;
             }
             else
             {
                 if(extent<0)
                 {
+                    eq.compute_reverse(rng,C);
+                    std::cerr << "fwd=" << rng << std::endl;
                 }
                 else
                 {
