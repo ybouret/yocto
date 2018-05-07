@@ -206,7 +206,7 @@ namespace yocto
                 if(extent<0)
                 {
                     eq.compute_reverse(rng,C);
-                    std::cerr << "fwd=" << rng << std::endl;
+                    std::cerr << "rev=" << rng << std::endl;
                 }
                 else
                 {
