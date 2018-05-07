@@ -149,6 +149,7 @@ namespace yocto
                             {
                                 GamEV[ii] = 1.0;
                             }
+                            nu2[ii] = eq.nu2;
                         }
                     }
 
@@ -163,7 +164,6 @@ namespace yocto
                         {
                             NuT[j][i] = Nu_i[j];
                         }
-                        nu2[i] = tao::norm_sq(Nu_i);
                     }
 
 

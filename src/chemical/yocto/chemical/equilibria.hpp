@@ -47,7 +47,7 @@ namespace yocto
             vector<double> xi;     //!< extent      N
             vector<double> GamEV;  //!< Gamma Exponent Values [N]
             const size_t   max_length;
-            
+            //size_t         steps;  //!< last #steps for normalizing
 
             void compile_for(const library &lib);
 
@@ -74,6 +74,8 @@ namespace yocto
             void normalize( array<double> &C0, const double t );
             
             std::ostream & spaces_for( const string &id, std::ostream &os ) const;
+
+            bool try_solve(const size_t i,const equilibrium &eq, const double Kt);
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);

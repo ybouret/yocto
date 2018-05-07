@@ -48,8 +48,7 @@ YOCTO_UNIT_TEST_IMPL(lua)
         lib.display(C0);
         std::cerr << "normalizing..." << std::endl;
         cs.normalize(C0,0.0);
-
-
+        break;
     }
 
 

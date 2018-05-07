@@ -61,9 +61,6 @@ namespace yocto
 
         public:
             const double nu2;
-            bool balance(array<double>       &beta,
-                         array<double>       &C,
-                         const array<double> &nu);
 
             void compute_forward( range &fwd, const array<double> &C) const throw();
             void compute_reverse( range &rev, const array<double> &C) const throw();

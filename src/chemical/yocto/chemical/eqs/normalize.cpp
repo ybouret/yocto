@@ -56,7 +56,7 @@ namespace yocto
             tao::mmul_rtrn(W,Phi,Nu);
             if(!LU<double>::build(W))
             {
-                throw exception("%ssingular system",fn);
+                throw exception("%ssingular set of concentrations",fn);
             }
             tao::neg(xi,Gamma);
             LU<double>::solve(W,xi);
@@ -79,218 +79,138 @@ namespace yocto
             }
 
 
+            {
+                iterator ii = begin();
+                for(size_t i=1;i<=N;++i,++ii)
+                {
+                    const equilibrium &eq = **ii;
+                    const double Kt = (K[i] = eq.K(i));
+                    try_solve(i,eq,Kt);
+                }
+
+            }
+
+            exit(0);
+
             // initialize K, Gamma, Phi, and GS
             initializeGammaAndPhi(C,t);
             double GS = GammaToScalar();
 
             while(true)
             {
-                std::cerr << "Cini=" << C << std::endl;
+                // compute full step
+                std::cerr << "Cini =" << C << std::endl;
+                std::cerr << "Gamma=" << Gamma << std::endl;
                 compute_full_step();
-                tao::setsum(Ctry,C,dC);
-                std::cerr << "Ctry=" << Ctry << std::endl;
-                if(!balance(Ctry))
-                {
-                    throw exception("%sunable to balance",fn);
-                }
-                std::cerr << "Cend=" << Ctry << std::endl;
-                break;
-            }
 
-
-        }
-
-#if 0
-        void equilibria:: normalize(array<double> &C0, const double t)
-        {
-            //__________________________________________________________________
-            //
-            //
-            // initialize
-            //
-            //__________________________________________________________________
-
-            //__________________________________________________________________
-            //
-            // check and transfer concentration
-            //__________________________________________________________________
-            for(size_t j=M;j>0;--j)
-            {
-                const double Cj = (C[j] = C0[j]);
-                if(active[j]&&(Cj<0))
-                {
-                    throw exception("%s: invalid initial concentraton",fn);
-                }
-            }
-
-            //__________________________________________________________________
-            //
-            // initialize Gamma, Phi, K at time t, and |Gamma|
-            //__________________________________________________________________
-            initializeGammaAndPhi(C,t);
-            double GS = GammaToScalar();
-            size_t cycle=0;
-
-            //__________________________________________________________________
-            //
-            //
-            // Loop
-            //
-            //__________________________________________________________________
-            while(true)
-            {
-                //______________________________________________________________
-                //
-                // compute full extent and Newton's step
-                // xi = -inv(Phi*Nu')*Gamma
-                // dC = Nu'*xi
-                //______________________________________________________________
-                ++cycle;
-                std::cerr << "C0=" << C    << std::endl;
-                compute_full_step();
-                std::cerr << "dC=" << dC    << std::endl;
-
-                //______________________________________________________________
-                //
-                // detect a limitation in full step
-                //______________________________________________________________
-                double zcoef = 0;
+                // limit full step, stay positive
+                double alpha = 1;
                 size_t zindx = 0;
-
                 for(size_t j=M;j>0;--j)
                 {
+                    if(!active[j]) { assert(Fabs(dC[j])<=0); continue; }
                     const double d = dC[j];
-                    if(active[j] && (d<0) )
+                    if(d<0)
                     {
-                        const double c     = C[j]; assert(c>=0);
-                        const double ztemp = c/(-d);
-                        if(ztemp>1.0)
+                        const double c = C[j]; assert(c>=0);
+                        if(c+d<=0)
                         {
-                            // is not a limitation
-                            continue;
-                        }
-                        assert(ztemp<=1.0);
-                        if( (zindx<=0) || (ztemp<zcoef) )
-                        {
-                            zindx = j;
-                            zcoef = ztemp;
+                            const double atmp=c/(-d);
+                            if(atmp<alpha)
+                            {
+                                alpha = atmp;
+                                zindx = j;
+                            }
                         }
                     }
                 }
-
-                //______________________________________________________________
-                //
-                // take a step, keep track of truncation
-                //______________________________________________________________
-                double  alpha = 1;
-                if(zindx>0)
-                {
-                    assert(zcoef<=1);
-                    alpha=zcoef;
-                    std::cerr << "zindx=" << zindx << std::endl;
-                    std::cerr << "alpha=" << alpha << std::endl;
-                    assert(active[zindx]);
-                    tao::setprobe(Ctry, C, alpha, dC);
-                    Ctry[zindx] = 0;
-                }
-                else
-                {
-                    // full step!
-                    tao::setsum(Ctry, C, dC);
-                }
-
-
-                //______________________________________________________________
-                //
-                // numerical rounding in any case
-                //______________________________________________________________
+                std::cerr << "alpha=" << alpha << ", zindx=" << zindx << std::endl;
                 for(size_t j=M;j>0;--j)
                 {
-                    const double Cj = Ctry[j];
-                    if(active[j]&&(Cj<0))
+                    if(active[j])
                     {
-                        Ctry[j] = 0;
+                        Ctry[j] = max_of<double>(C[j]+alpha*dC[j],0);
+                        dC[j] = Ctry[j] - C[j];
+                    }
+                    else
+                    {
+                        Ctry[j] = C[j];
+                        dC[j]   = 0;    // should be
                     }
                 }
-
-                std::cerr << "C1=" << Ctry << std::endl;
-
-                //______________________________________________________________
-                //
-                // check where we are @Ctry, for we must decrease |Gamma|
-                //______________________________________________________________
-                updateGammaAndPhi(Ctry);
-                double gs = GammaToScalar();
-                std::cerr << "GS: " << GS << " => " << gs << std::endl;
-
-                //______________________________________________________________
-                //
-                // be sure to decrease |Gamma|
-                //______________________________________________________________
-                if(gs>GS)
+                if(zindx)
                 {
-                    std::cerr << "Local Increase, alpha=" << alpha << std::endl;
-                    std::cerr << "normGamma(" << alpha << ")=" << normGamma(alpha) << std::endl;
-                    triplet<double> XX = { 0,  alpha, alpha };
-                    triplet<double> FF = { GS, gs,    gs    };
-                    __optimize(normGamma,XX,FF);
-
-                    // compute final Ctry and |Gamma|
-                    alpha = XX.b;
-                    gs    = normGamma(alpha);
-                    std::cerr << "alpha=" << alpha << std::endl;
-                    std::cerr << "gs   =" << gs    << "/" << GS <<  std::endl;
+                    Ctry[zindx] = 0;
+                    dC[zindx]   = Ctry[zindx] - C[zindx];
                 }
 
-                //______________________________________________________________
-                //
-                // update C
-                //______________________________________________________________
-                tao::set(C,Ctry);
-
-                if(gs>=GS||gs<=0)
+                // check where we are
+                updateGamma(Ctry);
+                double gs = GammaToScalar();
+                std::cerr << "|Gamma| : " << GS << " -> " << gs << std::endl;
+                if(gs<=0)
                 {
-                    std::cerr << "C =" << C << std::endl;
-                    GS=gs;
+                    GS=0;
                     break;
                 }
-                else
+
+                if(gs<GS)
                 {
-                    GS  = gs;
+                    tao::set(C,Ctry);
+                    updatePhi(C);
+                    GS=gs;
+                    continue;
                 }
+
+                std::cerr << "Need to backtrack!" << std::endl;
+                triplet<double> xx = { 0, alpha,alpha };
+                triplet<double> ff = { GS,gs,   gs    };
+                __optimize(normGamma,xx,ff);
+                gs = normGamma(alpha=xx.b);
+                std::cerr << "gs=" << gs << "@alpha=" << alpha << std::endl;
+                exit(0);
+                break;
+
             }
 
-            std::cerr << "Gamma=" << Gamma << std::endl;
-            std::cerr << "GS   =" << GS << std::endl;
             if(GS>0)
             {
-                std::cerr << "Checking..." << std::endl;
-                updatePhi(C);
-                compute_full_step();
-                std::cerr << "dC=" << dC << std::endl;
-                bool converged = true;
-                for(size_t j=M;j>0;--j)
-                {
+                // check convergence
+                std::cerr << "Checking convergence..." << std::endl;
+            }
+        }
 
-                    if( active[j] && (Fabs(dC[j]) > numeric<double>::ftol * Fabs(C[j]) ) )
-                    {
-                        converged = false;
-                        std::cerr << "Not converged on C[" << j << "]" << std::endl;
-                        break;
-                    }
+
+        bool equilibria:: try_solve(const size_t i, const equilibrium &eq, const double Kt)
+        {
+            std::cerr << "Try Solve " << eq.name << std::endl;
+            array<double> &nu  = Nu[i];
+            array<double> &phi = Phi[i];
+            eq.computeGradient(phi,C,Kt);
+            const double   den = tao::dot(phi,nu);
+            if(Fabs(den)<=0)
+            {
+                return false;
+            }
+            const double gam    = eq.computeGamma(C,Kt);
+            const double extent = -gam/den;
+            if(extent>0)
+            {
+            }
+            else
+            {
+                if(extent<0)
+                {
+                }
+                else
+                {
+                    return true;
                 }
             }
 
-
-            for(size_t j=M;j>0;--j)
-            {
-                C0[j] = C[j];
-            }
-
-
-
+            return false;
         }
-#endif
+
 
     }
 
