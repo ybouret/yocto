@@ -4,6 +4,7 @@
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/core/adjoint.hpp"
+#include "yocto/sort/index.hpp"
 
 namespace yocto
 {
@@ -77,6 +78,8 @@ namespace yocto
             GamEV.  release();
             xi.     release();
             Gamma.  release();
+            Ranks.  release();
+            Kn.     release();
             K.      release();
             W.      release();
             Phi.    release();
@@ -126,6 +129,8 @@ namespace yocto
                     Phi.   make(N,M);
                     W.     make(N);
                     K.     make(N);
+                    Kn.    make(N);
+                    Ranks. make(N);
                     Gamma. make(N);
                     xi.    make(N);
                     GamEV. make(N);
@@ -191,14 +196,35 @@ namespace yocto
             }
         }
 
+#define __COMPUTE_K() \
+const double Kt = (K[i] = max_of<double>(eq.K(t),0));\
+Kn[i]    = pow(Kt,1.0/sqrt(nu2[i])); \
+Ranks[i] = i;
+#define __COMPUTE_RANKS() make_index(Kn,Ranks,__compare_decreasing<double>)
+
         void equilibria:: initializeGamma(const array<double> &C0, const double t)
         {
             iterator ii=begin();
             for(size_t i=1;i<=N;++i,++ii)
             {
-                const equilibrium &eq = **ii;
-                Gamma[i] = eq.computeGamma(C0,K[i]=eq.K(t));
+                const equilibrium &eq = **ii; assert(eq.nu2>0); assert(nu2[i]>0);
+                __COMPUTE_K();
+                Gamma[i] = eq.computeGamma(C0,Kt);
             }
+            __COMPUTE_RANKS();
+        }
+
+        void equilibria:: initializeGammaAndPhi(const array<double> &C0,const double t)
+        {
+            iterator ii=begin();
+            for(size_t i=1;i<=N;++i,++ii)
+            {
+                const equilibrium &eq = **ii;
+                __COMPUTE_K();
+                Gamma[i] = eq.computeGamma(C0,Kt);
+                eq.computeGradient(Phi[i],C0,Kt);
+            }
+            __COMPUTE_RANKS();
         }
 
         void equilibria:: updateGamma(const array<double> &C0)
@@ -211,17 +237,7 @@ namespace yocto
             }
         }
 
-        void equilibria:: initializeGammaAndPhi(const array<double> &C0,const double t)
-        {
-            iterator ii=begin();
-            for(size_t i=1;i<=N;++i,++ii)
-            {
-                const equilibrium &eq = **ii;
-                const double       Kt = (K[i]=eq.K(t));
-                Gamma[i] = eq.computeGamma(C0,Kt);
-                eq.computeGradient(Phi[i],C0,Kt);
-            }
-        }
+
 
         void equilibria:: updatePhi(const array<double> &C0)
         {

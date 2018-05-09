@@ -13,7 +13,8 @@ namespace yocto
         equilibrium:: equilibrium(const string &id) :
         name(id),
         K( this, & equilibrium:: getK ),
-        nu2(0)
+        nu2(0),
+        scale(0)
         {
         }
 
@@ -157,18 +158,24 @@ namespace yocto
         void equilibrium:: compile() const
         {
             double &sum2 = (double &)nu2;
-            sum2  = 0;
-            int z = 0;
+            double &cc   = (double &)scale;
+            cc      = 0;
+            sum2    = 0;
+            int z   = 0;
+            int sum = 0;
             for(const actor *a=reactants.head;a;a=a->next)
             {
                 const int nu = a->nu;
                 z += nu * a->sp->z;
+                sum  += nu;
                 sum2 += nu*nu;
             }
+
             for(const actor *a=products.head;a;a=a->next)
             {
                 const int nu = a->nu;
                 z += nu * a->sp->z;
+                sum  += nu;
                 sum2 += nu*nu;
             }
 
@@ -180,6 +187,11 @@ namespace yocto
             if(nu2<=0)
             {
                 throw exception("equilibrium '%s' has no topology!", *name);
+            }
+            
+            if(sum)
+            {
+
             }
         }
 

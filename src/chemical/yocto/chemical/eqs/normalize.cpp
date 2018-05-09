@@ -53,13 +53,9 @@ namespace yocto
 
         void equilibria:: compute_full_step()
         {
+            std::cerr << "Phi=" << Phi << std::endl;
             tao::mmul_rtrn(W,Phi,Nu);
             std::cerr << "W=" << W << std::endl;
-            for(size_t i=1;i<=N;++i)
-            {
-                std::cerr << "Phi*Nu#" << i << "=" << tao::dot(Phi[i],Nu[i]) << ", Gamma=" << Gamma[i] << std::endl;
-            }
-            exit(0);
             if(!LU<double>::build(W))
             {
                 throw exception("%ssingular set of concentrations",fn);
@@ -83,20 +79,6 @@ namespace yocto
                     throw exception("%sinvalid initial concentration",fn);
                 }
             }
-
-#if 0
-            {
-                iterator ii = begin();
-                for(size_t i=1;i<=N;++i,++ii)
-                {
-                    const equilibrium &eq = **ii;
-                    const double Kt = (K[i] = eq.K(i));
-                    try_solve(i,eq,Kt);
-                }
-
-            }
-            exit(0);
-#endif
 
 
             // initialize K, Gamma, Phi, and GS
@@ -175,6 +157,10 @@ namespace yocto
                 __optimize(normGamma,xx,ff);
                 gs = normGamma(alpha=xx.b);
                 std::cerr << "gs=" << gs << "@alpha=" << alpha << std::endl;
+                std::cerr << "Gamma=" << Gamma << std::endl;
+                std::cerr << "K    =" << K     << std::endl;
+                std::cerr << "Kn   =" << Kn    << std::endl;
+                std::cerr << "Ranks=" << Ranks << std::endl;
                 exit(0);
                 break;
 

@@ -43,6 +43,8 @@ namespace yocto
             matrix<double> Phi;    //!< jacobian    [NxM]
             matrix<double> W;      //!< inv(jacobian.nuT) NxN
             vector<double> K;      //!< constants   N
+            vector<double> Kn;     //!< constants/normalized N
+            vector<size_t> Ranks;  //!< equilibrium ranks N
             vector<double> Gamma;  //!< Gamma       N
             vector<double> xi;     //!< extent      N
             vector<double> GamEV;  //!< Gamma Exponent Values [N]

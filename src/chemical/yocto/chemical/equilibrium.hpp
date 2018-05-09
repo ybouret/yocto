@@ -61,6 +61,7 @@ namespace yocto
 
         public:
             const double nu2;
+            const double scale;
 
             void compute_forward( range &fwd, const array<double> &C) const throw();
             void compute_reverse( range &rev, const array<double> &C) const throw();
