@@ -151,7 +151,7 @@ namespace yocto
                 // at this point, E0, beta and C are set: compute
                 // the descent direction
                 //______________________________________________________________
-                std::cerr << "balance.E0=" << E0 << std::endl;
+                //std::cerr << "balance.E0=" << E0 << std::endl;
 
                 tao::mul(xi,Nu,beta);
                 for(size_t i=N;i>0;--i)
@@ -160,10 +160,10 @@ namespace yocto
                 }
                 tao::mul(dC,NuT,xi);
 
-                std::cerr << "C   =" << C    << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
-                std::cerr << "xi  =" << xi   << std::endl;
-                std::cerr << "dC  =" << dC   << std::endl;
+                //std::cerr << "C   =" << C    << std::endl;
+                //std::cerr << "beta=" << beta << std::endl;
+                //std::cerr << "xi  =" << xi   << std::endl;
+                //std::cerr << "dC  =" << dC   << std::endl;
 
                 //______________________________________________________________
                 //
@@ -171,10 +171,10 @@ namespace yocto
                 //______________________________________________________________
                 double alpha = 1;
                 double E1    = callE(alpha);
-                std::cerr << "E1=" << E1 << "/" << E0 << std::endl;
                 {
                     triplet<double> xx = { 0,  alpha, alpha };
                     triplet<double> ff = { E0, E1,    E1    };
+                    /*
                     if(E1<E0)
                     {
                         std::cerr << "balance.bracket.expand" << std::endl;
@@ -189,6 +189,9 @@ namespace yocto
                     __optimizeE(callE,xx,ff);
                     alpha = xx.b;
                     E1    = callE(alpha); // final Ctry, and beta
+                     */
+                    alpha = optimize1D<double>::forward_run(callE,xx,ff,0);
+                    E1    = ff.b;
                 }
 
                 //______________________________________________________________
@@ -226,22 +229,60 @@ namespace yocto
             for(size_t j=1;j<=M;++j)
             {
                 fprintf(stderr,"C0[%2d]= %+12.8e -> %+12.8e : dC=%+12.8e\n", int(j), C0[j], C[j], dC[j]);
-                //std::cerr << "C0[" << j << "]=" << C0[j] << " -> " << C[j] << " : dC=" << dC[j] << std::endl;
             }
             fflush(stderr);
 
 
+            //__________________________________________________________________
+            //
+            // check negative components
+            //__________________________________________________________________
             for(size_t j=M;j>0;--j)
             {
                 if(!active[j]) continue;
                 const double Cj = C[j];
                 if(Cj<0)
                 {
-                    std::cerr << "Try to correct C[" << j << "]=" << Cj << std::endl;
+                    //__________________________________________________________
+                    //
+                    // check if significant among other species/per equilibrium
+                    //__________________________________________________________
+                    for(size_t i=N;i>0;--i)
+                    {
+                        const array<double> &nu = Nu[i];
+                        if(Fabs(nu[j])>0)
+                        {
+                            for(size_t k=M;k>0;--k)
+                            {
+                                if(fabs(nu[k])>0)
+                                {
+                                    dC[k] = C[k];
+                                }
+                                else
+                                {
+                                    dC[k] = 0;
+                                }
+                            }
+                            const size_t ans = svd<double>::truncate(dC);
+                            if(ans>0&&Fabs(dC[j])<=0)
+                            {
+                                // truncated!
+                                C[j] = 0;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(C[j]<0)
+                    {
+                        std::cerr << "invalid concentration C[" << j << "]=" << C[j] << std::endl;
+                        return false;
+                    }
                 }
             }
 
-            return false;
+            tao::set(C0,C,M);
+            return true;
 
         }
 
