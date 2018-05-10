@@ -82,8 +82,9 @@ namespace yocto
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
             double __normGamma(double alpha);
+            double __callE(double alpha);
             math::numeric<double>::function normGamma;
-
+            math::numeric<double>::function callE;
             // from Gamma and Phi
             void compute_full_step();
         };

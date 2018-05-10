@@ -4,6 +4,8 @@
 #include "yocto/math/core/svd.hpp"
 #include "yocto/math/core/symdiag.hpp"
 #include "yocto/sort/quick.hpp"
+#include "yocto/math/opt/bracket.hpp"
+#include "yocto/math/opt/minimize.hpp"
 
 namespace yocto
 {
@@ -77,176 +79,129 @@ namespace yocto
             }
         }
 
+        double equilibria:: __callE(double alpha)
+        {
+            double E = 0;
+            for(size_t j=M;j>0;--j)
+            {
+                const double Cj = (Ctry[j]=C[j]+alpha*dC[j]);
+                beta[j] = 0;
+                if(active[j]&&Cj<0)
+                {
+                    beta[j] = -Cj;
+                    E      += square_of(Cj);
+                }
+            }
+            return E;
+        }
 
-
+        static inline
+        void __optimizeE(numeric<double>::function &EE,
+                         triplet<double>           &xx,
+                         triplet<double>           &ff )
+        {
+            assert(xx.a<=xx.b);assert(xx.b<=xx.c);
+            double delta = Fabs(xx.c-xx.a);
+            while(true)
+            {
+                kernel::minimize(EE,xx,ff);
+                const double d_new = Fabs(xx.c-xx.a);
+                if(d_new>=delta)
+                {
+                    return;
+                }
+                delta = d_new;
+            }
+        }
 
         bool equilibria:: balance(array<double> &C0) throw()
         {
-            vector<double> score(N,0);
-            vector<size_t> imove(N,0);
-        BALANCE:
+
             //__________________________________________________________________
             //
-            // build the vector of bad concentrations
+            // initialize: transfert and compute first E
             //__________________________________________________________________
-            size_t nbad      = 0;
+            double E0   = 0;
             for(size_t j=M;j>0;--j)
             {
                 beta[j] = 0;
-                const double Cj = C0[j];
+                const double Cj = (C[j]=C0[j]);
                 if(active[j]&&(Cj<0))
                 {
-                    ++nbad;
                     beta[j] = -Cj;
+                    E0 += square_of(Cj);
                 }
             }
-            if(nbad<=0)
+
+            // at this point, E0, beta and C are set
+            if(E0<=0)
             {
-                //______________________________________________________________
-                //
-                // balanced return!
-                //______________________________________________________________
+                std::cerr << "balanced" << std::endl;
                 return true;
             }
             else
             {
-                //______________________________________________________________
-                //
-                // compute the descent direction
-                //______________________________________________________________
-                std::cerr << "C   =" << C    << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
-#if 0
-                for(size_t i=N;i>0;--i)
-                {
-                    score[i] = fabs(tao::dot(beta,Nu[i])/sqrt(nu2[i]));
-                    imove[i] = i;
-                }
-                std::cerr << "score=" << score << std::endl;
-                co_qsort(score,imove,__compare_decreasing<double>);
-                std::cerr << "imove=" << imove << std::endl;
-                exit(0);
-#endif
-                // on the Nu space
+            BALANCE_CYCLE:
+                std::cerr << "E0=" << E0 << std::endl;
+
+                // compute on xi space
                 tao::mul(xi,Nu,beta);
                 for(size_t i=N;i>0;--i)
                 {
-                    xi[i] /= nu2[i]; // rescaling according to topology
+                    xi[i] /= nu2[i];
                 }
-                // on the Nu space
+                // compute on C space
                 tao::mul(dC,NuT,xi);
-                std::cerr << "desc=" << dC   << std::endl;
 
-                //______________________________________________________________
-                //
-                // compute the descent factor
-                //______________________________________________________________
-                size_t increase_idx = 0;
-                double increase_fac = 0;
-                size_t decrease_idx = 0;
-                double decrease_fac = 0;
-                for(size_t j=M;j>0;--j)
+                std::cerr << "C   =" << C    << std::endl;
+                std::cerr << "beta=" << beta << std::endl;
+                std::cerr << "xi  =" << xi   << std::endl;
+                std::cerr << "dC  =" << dC   << std::endl;
+
+                double alpha = 1;
+                double E1    = callE(alpha);
+                std::cerr << "E1=" << E1 << "/" << E0 << std::endl;
+                triplet<double> xx = { 0,  alpha, alpha };
+                triplet<double> ff = { E0, E1,    E1    };
+                if(E1<E0)
                 {
-                    if(!active[j]) continue;
-                    const double d = dC[j];
-                    const double c = C[j];
-
-                    if(d>0)
-                    {
-                        //______________________________________________________
-                        //
-                        // check increasing concentration
-                        //______________________________________________________
-                        if(c<0)
-                        {
-                            //__________________________________________________
-                            //
-                            // don't go too fast
-                            //__________________________________________________
-                            const double fac = (-c)/d;
-                            std::cerr << "INCR: C[" << j << "]=" << c << " : d=" << d << " : " << fac << std::endl;
-                            if( (!increase_idx) || (fac>increase_fac) )
-                            {
-                                increase_idx = j;
-                                increase_fac = fac;
-                            }
-                        }
-                        // else do nothing!
-                    }
-                    else if(d<0)
-                    {
-                        //______________________________________________________
-                        //
-                        // check decreasing concentration
-                        //______________________________________________________
-                        if(c<=0)
-                        {
-                            //__________________________________________________
-                            //
-                            // blocked!
-                            //__________________________________________________
-                            std::cerr << "BLCK: C[" << j << "]=" << c << std::endl;
-                            return false;
-                        }
-                        else
-                        {
-                            //__________________________________________________
-                            //
-                            // don't make a negative concentration!
-                            //__________________________________________________
-                            assert(c>0);
-                            const double fac = c/(-d);
-                            std::cerr << "DECR: C[" << j << "]=" << c << " : d=" << d << " : " << fac << std::endl;
-                            if( !(decrease_idx) || (fac<decrease_idx) )
-                            {
-                                decrease_idx = j;
-                                decrease_fac = fac;
-                            }
-                        }
-                    }
+                    std::cerr << "bracket.expand" << std::endl;
+                    bracket<double>::expand(callE,xx,ff);
+                }
+                else
+                {
+                    assert(E1>=E0);
+                    std::cerr << "bracket.inside" << std::endl;
+                    bracket<double>::inside(callE,xx,ff);
+                }
+                std::cerr << "alpha=" << xx << std::endl;
+                std::cerr << "E    =" << ff  << std::endl;
+                __optimizeE(callE,xx,ff);
+                alpha = xx.b;
+                E1    = callE(alpha);
+                tao::set(C,Ctry);
+                std::cerr << "C1=" << C << std::endl;
+                std::cerr << "E1(" << alpha << ")=" << E1 << std::endl;
+                if(E1<=0)
+                {
+                    std::cerr << "perfectly balanced..." << std::endl;
+                    return true;
+                }
+                if(E1>=E0)
+                {
+                    std::cerr << "Reached limit..." << std::endl;
+                    exit(0);
+                }
+                else
+                {
+                    E0 = E1;
+                    goto BALANCE_CYCLE;
                 }
 
-                //______________________________________________________________
-                //
-                // choose the step factor
-                //______________________________________________________________
-                if(!increase_idx)
-                {
-                    std::cerr << "coulnd't increase...failure!" << std::endl;
-                    return false;
-                }
-                std::cerr << "increase@" << increase_idx << " : " << increase_fac << std::endl;
-                double alpha = increase_fac;
-                size_t zindx = increase_idx;
-                if( decrease_idx )
-                {
-                    std::cerr << "decrease@" << decrease_idx << " : " << decrease_fac << std::endl;
-                    if(decrease_fac<increase_fac)
-                    {
-                        std::cerr << "->takes over!" << std::endl;
-                        alpha = decrease_fac;
-                        zindx = decrease_idx;
-                    }
-                }
-                std::cerr << "alpha=" << alpha << ", zindx=" << zindx << std::endl;
 
-                //______________________________________________________________
-                //
-                // carefull move
-                //______________________________________________________________
-                for(size_t j=M;j>0;--j)
-                {
-                    if(!active[j]) { assert(Fabs(dC[j])<=0); continue; }
-                    const double d = alpha * dC[j];
-                    C[j] += d;
-                    if(d<=0&&C[j]<=0)
-                    {
-                        C[j] = 0;
-                    }
-                }
-                C[zindx] = 0;
-                goto BALANCE;
+                return false;
             }
+
         }
 
 

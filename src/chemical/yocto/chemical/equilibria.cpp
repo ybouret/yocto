@@ -20,7 +20,8 @@ namespace yocto
         M(0),
         N(0),
         max_length(0),
-        normGamma(this, & equilibria::__normGamma)
+        normGamma(this, & equilibria::__normGamma),
+        callE(this, & equilibria::__callE)
         {
         }
 

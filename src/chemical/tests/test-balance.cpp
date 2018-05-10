@@ -73,7 +73,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
             std::cerr << "unable to balance" << std::endl;
         }
         std::cerr << "<balancing/>" << std::endl << std::endl;
-        //exit(0);
+        std::cerr << "break..." << std::endl; break;
     }
      std::cerr << "Nu=" << cs.Nu << std::endl;
     
