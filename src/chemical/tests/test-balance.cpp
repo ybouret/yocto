@@ -54,19 +54,21 @@ YOCTO_UNIT_TEST_IMPL(balance)
     std::cerr << "Nu=" << cs.Nu << std::endl;
     std::cerr << "NuT=" << cs.NuT << std::endl;
 
+    vector<double> C0(M+2);
+
     for(size_t iter=1;iter<=1000;++iter)
     {
         std::cerr << "<balancing>" << std::endl;
         for(size_t i=1;i<=M;++i)
         {
-            cs.C[i] = 1e-3 * (alea.get<double>()-0.3);
+            C0[i] = 1e-3 * (alea.get<double>()-0.3);
         }
-        lib.display(cs.C);
+        lib.display(C0);
 
-        if(cs.balance(cs.C))
+        if(cs.balance2(C0))
         {
             std::cerr << "balanced:" << std::endl;
-            lib.display(cs.C);
+            lib.display(C0);
         }
         else
         {
