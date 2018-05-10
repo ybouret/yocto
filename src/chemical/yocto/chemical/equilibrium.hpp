@@ -66,6 +66,8 @@ namespace yocto
             void compute_forward( range &fwd, const array<double> &C) const throw();
             void compute_reverse( range &rev, const array<double> &C) const throw();
             void compute_extents( range &fwd, range &rev, const array<double> &C) const throw();
+            bool solve(array<double> &C, const double Kt) const;
+
         };
 
         class constant_equilibrium : public equilibrium

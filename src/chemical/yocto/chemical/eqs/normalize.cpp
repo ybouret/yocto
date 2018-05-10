@@ -12,6 +12,35 @@ namespace yocto
     
     namespace chemical
     {
+
+        bool equilibrium:: solve(array<double> &C, const double Kt) const
+        {
+            std::cerr << "Solving " << name << ", K=" << Kt << ", for C=" << C <<  std::endl;
+            const double Gamma = computeGamma(C,Kt);
+            std::cerr << "\tGamma=" << Gamma << std::endl;
+            if(Gamma>0)
+            {
+                // looking for a positive extent
+                range fwd;
+                compute_forward(fwd,C);
+                std::cerr << "\tfwd: " << fwd << std::endl;
+                return false;
+            }
+            else if(Gamma<0)
+            {
+                // looking for a negative extent
+                range rev;
+                compute_reverse(rev,C);
+                std::cerr << "\trev: " << rev << std::endl;
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
         static const char fn[] = "equilibria.normalize: ";
         
         double equilibria:: __normGamma(double alpha)
@@ -80,9 +109,31 @@ namespace yocto
                 }
             }
 
+            if(M>N)
+            {
+                const size_t dof = M-N;
+                matrix<double> Sigma(N,dof);
+                if(!svd<double>::orthonormal(Sigma,Nu) )
+                {
+                    std::cerr << "can't build ortho..." << std::endl;
+                }
+                std::cerr << "Sigma=" << Sigma << std::endl;
+            }
+
 
             // initialize K, Gamma, Phi, and GS
             initializeGammaAndPhi(C,t);
+            if(false)
+            {
+                size_t i=1;
+                for(iterator ii=begin();i<=N;++i,++ii)
+                {
+                    const equilibrium &eq = **ii;
+                    eq.solve(C,K[i]);
+                }
+            }
+
+
             double GS = GammaToScalar();
 
             while(true)

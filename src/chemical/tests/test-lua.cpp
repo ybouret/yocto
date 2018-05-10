@@ -36,6 +36,7 @@ YOCTO_UNIT_TEST_IMPL(lua)
         for(size_t j=cs.M;j>0;--j)
         {
             C0[j] = 1e-3 * (alea.get<double>()-0.3);
+            C0[j] = alea.get<double>();
         }
         std::cerr << "initial: " << std::endl;
         lib.display(C0);
@@ -47,6 +48,7 @@ YOCTO_UNIT_TEST_IMPL(lua)
         std::cerr << "balanced: " << std::endl;
         lib.display(C0);
         std::cerr << "normalizing..." << std::endl;
+        std::cerr << "Nu=" << cs.Nu << std::endl;
         cs.normalize(C0,0.0);
         break;
     }

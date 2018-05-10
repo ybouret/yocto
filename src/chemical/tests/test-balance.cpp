@@ -75,7 +75,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
         std::cerr << "<balancing/>" << std::endl << std::endl;
         //exit(0);
     }
-    
+     std::cerr << "Nu=" << cs.Nu << std::endl;
     
 }
 YOCTO_UNIT_TEST_DONE()

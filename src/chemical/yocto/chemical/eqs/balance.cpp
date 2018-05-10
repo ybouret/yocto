@@ -3,6 +3,7 @@
 #include "yocto/math/core/adjoint.hpp"
 #include "yocto/math/core/svd.hpp"
 #include "yocto/math/core/symdiag.hpp"
+#include "yocto/sort/quick.hpp"
 
 namespace yocto
 {
@@ -81,7 +82,8 @@ namespace yocto
 
         bool equilibria:: balance(array<double> &C0) throw()
         {
-
+            vector<double> score(N,0);
+            vector<size_t> imove(N,0);
         BALANCE:
             //__________________________________________________________________
             //
@@ -114,7 +116,17 @@ namespace yocto
                 //______________________________________________________________
                 std::cerr << "C   =" << C    << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
-
+#if 0
+                for(size_t i=N;i>0;--i)
+                {
+                    score[i] = fabs(tao::dot(beta,Nu[i])/sqrt(nu2[i]));
+                    imove[i] = i;
+                }
+                std::cerr << "score=" << score << std::endl;
+                co_qsort(score,imove,__compare_decreasing<double>);
+                std::cerr << "imove=" << imove << std::endl;
+                exit(0);
+#endif
                 // on the Nu space
                 tao::mul(xi,Nu,beta);
                 for(size_t i=N;i>0;--i)
