@@ -202,7 +202,7 @@ namespace yocto
                 tao::setvec(dC,C,Ctry);
                 tao::set(C,Ctry);
                 const double dC2 = tao::norm_sq(dC);
-                std::cerr << "E1(" << alpha << ")=" << E1 << "/" << E0 << " : |dC|^2=" << dC2 << std::endl;
+                //std::cerr << "E1(" << alpha << ")=" << E1 << "/" << E0 << " : |dC|^2=" << dC2 << std::endl;
 
                 if(E1<=0)
                 {
@@ -225,12 +225,14 @@ namespace yocto
             }
 
         BALANCE_CHECK:
+#if 0
             std::cerr.flush();
             for(size_t j=1;j<=M;++j)
             {
                 fprintf(stderr,"C0[%2d]= %+12.8e -> %+12.8e : dC=%+12.8e\n", int(j), C0[j], C[j], dC[j]);
             }
             fflush(stderr);
+#endif
 
 
             //__________________________________________________________________
