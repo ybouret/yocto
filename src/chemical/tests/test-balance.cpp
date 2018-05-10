@@ -65,7 +65,7 @@ YOCTO_UNIT_TEST_IMPL(balance)
         }
         lib.display(C0);
 
-        if(cs.balance2(C0))
+        if(cs.balance(C0))
         {
             std::cerr << "balanced:" << std::endl;
             lib.display(C0);
@@ -82,4 +82,47 @@ YOCTO_UNIT_TEST_IMPL(balance)
 }
 YOCTO_UNIT_TEST_DONE()
 
+YOCTO_UNIT_TEST_IMPL(balance2)
+{
+    library lib( "lib" );
+    species &H   = lib.add("H+",1);
+    species &OH  = lib.add("HO-",-1);
+    species &AH  = lib.add("AH",0);
+    species &Am  = lib.add("Am",-1);
+    lib.compile();
+
+    std::cerr << lib << std::endl;
+    equilibria   cs("eqs");
+    {
+        equilibrium &water = cs("water",1.0e-14);
+        water(H,1);
+        water(OH,1);
+        std::cerr << water << std::endl;
+    }
+
+    if(true)
+    {
+        equilibrium &acetic = cs("acetic",pow(10, -4.7));
+        acetic(AH,-1);
+        acetic(Am,1);
+        acetic(H,1);
+        std::cerr << acetic << std::endl;
+    }
+
+    cs.compile_for(lib);
+
+    vector<double> C0(cs.M,0);
+
+    C0[3] = -0.1;
+    C0[4] = 0.2;
+    lib.display(C0);
+    if(cs.balance(C0))
+    {
+        std::cerr << "balanced" << std::endl;
+        lib.display(C0);
+    }
+
+
+}
+YOCTO_UNIT_TEST_DONE()
 

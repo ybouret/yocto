@@ -1,8 +1,8 @@
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/math/core/tao.hpp"
-#include "yocto/math/core/adjoint.hpp"
+//#include "yocto/math/core/adjoint.hpp"
 #include "yocto/math/core/svd.hpp"
-#include "yocto/math/core/symdiag.hpp"
+//#include "yocto/math/core/symdiag.hpp"
 #include "yocto/sort/quick.hpp"
 #include "yocto/math/opt/bracket.hpp"
 #include "yocto/math/opt/minimize.hpp"
@@ -146,61 +146,72 @@ namespace yocto
 
         BALANCE_CYCLE:
             {
-                // at this point, E0, beta and C are set
-
+                //______________________________________________________________
+                //
+                // at this point, E0, beta and C are set: compute
+                // the descent direction
+                //______________________________________________________________
                 std::cerr << "balance.E0=" << E0 << std::endl;
 
-                // compute direction on xi space
                 tao::mul(xi,Nu,beta);
                 for(size_t i=N;i>0;--i)
                 {
                     xi[i] /= nu2[i];
                 }
-                // compute direction on C space
                 tao::mul(dC,NuT,xi);
 
                 std::cerr << "C   =" << C    << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
+                std::cerr << "xi  =" << xi   << std::endl;
                 std::cerr << "dC  =" << dC   << std::endl;
 
+                //______________________________________________________________
+                //
+                // line minimization
+                //______________________________________________________________
                 double alpha = 1;
                 double E1    = callE(alpha);
                 std::cerr << "E1=" << E1 << "/" << E0 << std::endl;
-                triplet<double> xx = { 0,  alpha, alpha };
-                triplet<double> ff = { E0, E1,    E1    };
-                if(E1<E0)
                 {
-                    std::cerr << "balance.bracket.expand" << std::endl;
-                    bracket<double>::expand(callE,xx,ff);
+                    triplet<double> xx = { 0,  alpha, alpha };
+                    triplet<double> ff = { E0, E1,    E1    };
+                    if(E1<E0)
+                    {
+                        std::cerr << "balance.bracket.expand" << std::endl;
+                        bracket<double>::expand(callE,xx,ff);
+                    }
+                    else
+                    {
+                        assert(E1>=E0);
+                        std::cerr << "balance.bracket.inside" << std::endl;
+                        bracket<double>::inside(callE,xx,ff);
+                    }
+                    __optimizeE(callE,xx,ff);
+                    alpha = xx.b;
+                    E1    = callE(alpha); // final Ctry, and beta
                 }
-                else
-                {
-                    assert(E1>=E0);
-                    std::cerr << "balance.bracket.inside" << std::endl;
-                    bracket<double>::inside(callE,xx,ff);
-                }
-                __optimizeE(callE,xx,ff);
-                alpha = xx.b;
-                E1    = callE(alpha);
+
+                //______________________________________________________________
+                //
+                // save the current step and update position
+                //______________________________________________________________
+
                 tao::setvec(dC,C,Ctry);
                 tao::set(C,Ctry);
                 const double dC2 = tao::norm_sq(dC);
+                std::cerr << "E1(" << alpha << ")=" << E1 << "/" << E0 << " : |dC|^2=" << dC2 << std::endl;
 
-                std::cerr << "E1(" << alpha << ")=" << E1 << std::endl;
                 if(E1<=0)
                 {
                     std::cerr << "balance.perfect!" << std::endl;
-                    tao::set(C0,C);
+                    tao::set(C0,C,M);
                     return true;
                 }
-                if(E1>=E0||dC2<=0)
+                if( (E1>=E0) || (dC2<=numeric<double>::minimum) )
                 {
                     std::cerr << "balance.reached" << std::endl;
-                    std::cerr << "C0 =" << C0 << std::endl;
-                    std::cerr << "C  =" << C << std::endl;
-                    std::cerr << "dC =" << dC << std::endl;
-                    std::cerr << "dC2=" << dC2 << std::endl;
-                    exit(0);
+                    goto BALANCE_CHECK;
+
                 }
                 else
                 {
@@ -208,195 +219,34 @@ namespace yocto
                     goto BALANCE_CYCLE;
                 }
 
-
-                return false;
             }
 
-        }
-
-        double equilibria:: __computeE(double alpha)
-        {
-            double E = 0;
-            for(size_t j=M;j>0;--j)
-            {
-                const double Cj = (Ctry[j]=C[j]+alpha*hh[j]);
-                beta[j] = 0;
-                if(active[j]&&Cj<0)
-                {
-                    beta[j] = -Cj;
-                    E      += square_of(Cj);
-                }
-            }
-            return E;
-        }
-
-        bool equilibria:: balance2(array<double> &C0) throw()
-        {
-            //__________________________________________________________________
-            //
-            //
-            // initialize: transfer, compute E0, beta
-            //
-            //__________________________________________________________________
-
-            // build E0 and beta at the same time
-            double E0   = 0;
-            for(size_t j=M;j>0;--j)
-            {
-                beta[j] = 0;
-                const double Cj = (C[j]=C0[j]);
-                if(active[j]&&(Cj<0))
-                {
-                    beta[j] = -Cj;
-                    E0 += square_of(Cj);
-                }
-            }
-
-            if(E0<=0)
-            {
-                std::cerr << "balanced.OK" << std::endl;
-                return true;
-            }
-
-            std::cerr << "E0    =" << E0 << std::endl;
-            std::cerr << "C0    =" << C << std::endl;
-            std::cerr << "beta0 =" << beta << std::endl;
-
-            // compute the initial descent directions
-            tao::mul(xi,Nu,beta);
-            for(size_t i=N;i>0;--i)
-            {
-                xi[i] /= nu2[i];
-            }
-            tao::mul(gg,NuT,xi); // principal  direction
-            tao::set(hh,gg);     // conjugated direction
-            std::cerr << "g0=" << gg << std::endl;
-            std::cerr << "h0=" << hh << std::endl;
-
-        BALANCE_STEP:
-            {
-                assert(E0>0);
-                //______________________________________________________________
-                //
-                //
-                // at this point, C, E0, gg and hh are set:
-                // compute the new concentration by line minimization along hh
-                //
-                //______________________________________________________________
-                std::cerr << std::endl;
-                std::cerr << "balance.E0=" << E0 << std::endl;
-
-                double alpha = 1;
-                double E1    = computeE(alpha);
-                {
-                    triplet<double> xx = { 0,  alpha, alpha };
-                    triplet<double> ff = { E0, E1,    E1    };
-
-                    if(E1<E0)
-                    {
-                        std::cerr <<  "balance.expand" << std::endl;
-                        bracket<double>::expand(computeE,xx,ff);
-                    }
-                    else
-                    {
-                        assert(E1>=E0);
-                        std::cerr << "balance.inside" << std::endl;
-                        bracket<double>::inside(computeE,xx,ff);
-                    }
-                    alpha = xx.b;
-                    E1    = __computeE(alpha);
-                }
-                tao::set(C,Ctry);
-                std::cerr << "E1(" << alpha << ")=" << E1 << "/" << E0 << std::endl;
-
-                //______________________________________________________________
-                //
-                //
-                // check balance status
-                //
-                //______________________________________________________________
-                if(E1<=0)
-                {
-                    std::cerr << "balance.found" << std::endl;
-                    for(size_t j=M;j>0;--j)
-                    {
-                        C0[j] = C[j];
-                    }
-                    return true;
-                }
-
-                bool converged = false;
-                if(E1>=E0)
-                {
-                    std::cerr << "balance.reached level-1" << std::endl;
-                    converged = true;
-                }
-
-                //______________________________________________________________
-                //
-                //
-                // let's compute the new principal descent direction in dC
-                //
-                //______________________________________________________________
-                tao::mul(xi,Nu,beta);
-                for(size_t i=N;i>0;--i)
-                {
-                    xi[i] /= nu2[i];
-                }
-                tao::mul(dC,NuT,xi);
-                if(converged)
-                {
-                    goto BALANCE_CONVERGED; // no need to go further
-                }
-
-                //______________________________________________________________
-                //
-                //
-                // compute the conjugated gradient from new direction dC,
-                // and old direction gg
-                //
-                //______________________________________________________________
-                double g2 = 0;
-                double dg = 0;
-                for(size_t j=M;j>0;--j)
-                {
-                    g2  += gg[j] * gg[j];
-                    dg  -= (gg[j]-dC[j])*dC[j];
-                }
-                std::cerr << "g2=" << g2 << std::endl;
-                if(g2<=numeric<double>::minimum)
-                {
-                    std::cerr << "balanced.reached level-2" << std::endl;
-                    goto BALANCE_CONVERGED;
-                }
-
-                const double fac = dg/g2;
-                for(size_t j=M;j>0;--j)
-                {
-                    gg[j] = dC[j];
-                    hh[j] = gg[j] + fac * hh[j];
-                }
-                std::cerr << "C   =" << C    << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
-                std::cerr << "gg  =" << gg   << std::endl;
-                std::cerr << "hh  =" << hh   << std::endl;
-                E0 = E1 ;
-
-                goto BALANCE_STEP;
-            }
-
-        BALANCE_CONVERGED:
-            std::cerr << "balance.converged: " << std::endl;
+        BALANCE_CHECK:
+            std::cerr.flush();
             for(size_t j=1;j<=M;++j)
             {
-                std::cerr << "C0[" << j << "]=" << C0[j] << " -> " << C[j] << " : dC=" << dC[j] << std::endl;
+                fprintf(stderr,"C0[%2d]= %+12.8e -> %+12.8e : dC=%+12.8e\n", int(j), C0[j], C[j], dC[j]);
+                //std::cerr << "C0[" << j << "]=" << C0[j] << " -> " << C[j] << " : dC=" << dC[j] << std::endl;
             }
-            exit(0);
+            fflush(stderr);
+
+
+            for(size_t j=M;j>0;--j)
+            {
+                if(!active[j]) continue;
+                const double Cj = C[j];
+                if(Cj<0)
+                {
+                    std::cerr << "Try to correct C[" << j << "]=" << Cj << std::endl;
+                }
+            }
+
             return false;
 
         }
 
 
+        
     }
 }
 

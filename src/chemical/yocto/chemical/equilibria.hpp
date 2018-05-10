@@ -48,7 +48,6 @@ namespace yocto
             vector<double> Gamma;  //!< Gamma       N
             vector<double> xi;     //!< extent      N
             vector<double> GamEV;  //!< Gamma Exponent Values [N]
-            vector<double> hh,gg;  //!< for CJ, [M]
             const size_t   max_length;
             //size_t         steps;  //!< last #steps for normalizing
 
@@ -72,7 +71,6 @@ namespace yocto
 
             //! balance a concentration
             bool balance(array<double> &C0) throw();
-            bool balance2(array<double> &C0) throw();
 
             //! normalize a balanced concentration
             void normalize( array<double> &C0, const double t );
@@ -85,10 +83,8 @@ namespace yocto
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
             double __normGamma(double alpha);
             double __callE(double alpha);
-            double __computeE(double alpha);
             math::numeric<double>::function normGamma;
             math::numeric<double>::function callE;
-            math::numeric<double>::function computeE;
 
             // from Gamma and Phi
             void compute_full_step();

@@ -21,8 +21,7 @@ namespace yocto
         N(0),
         max_length(0),
         normGamma(this, & equilibria::__normGamma),
-        callE(this, & equilibria::__callE),
-        computeE(this, &equilibria::__computeE)
+        callE(this, & equilibria::__callE)
         {
         }
 
@@ -77,8 +76,6 @@ namespace yocto
             (size_t &)N   = 0;
             (size_t &)max_length = 0;
 
-            gg.     release();
-            hh.     release();
             GamEV.  release();
             xi.     release();
             Gamma.  release();
@@ -138,8 +135,6 @@ namespace yocto
                     Gamma. make(N);
                     xi.    make(N);
                     GamEV. make(N);
-                    gg.    make(M);
-                    hh.    make(M);
 
                     //__________________________________________________________
                     //
