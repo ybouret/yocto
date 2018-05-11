@@ -96,6 +96,7 @@ namespace yocto
             return E;
         }
 
+#if 0
         static inline
         void __optimizeE(numeric<double>::function &EE,
                          triplet<double>           &xx,
@@ -114,7 +115,8 @@ namespace yocto
                 delta = d_new;
             }
         }
-
+#endif
+        
         bool equilibria:: balance(array<double> &C0) throw()
         {
 
@@ -156,6 +158,7 @@ namespace yocto
                 tao::mul(xi,Nu,beta);
                 for(size_t i=N;i>0;--i)
                 {
+                    assert(nu2[i]>0);
                     xi[i] /= nu2[i];
                 }
                 tao::mul(dC,NuT,xi);
@@ -174,22 +177,6 @@ namespace yocto
                 {
                     triplet<double> xx = { 0,  alpha, alpha };
                     triplet<double> ff = { E0, E1,    E1    };
-                    /*
-                    if(E1<E0)
-                    {
-                        std::cerr << "balance.bracket.expand" << std::endl;
-                        bracket<double>::expand(callE,xx,ff);
-                    }
-                    else
-                    {
-                        assert(E1>=E0);
-                        std::cerr << "balance.bracket.inside" << std::endl;
-                        bracket<double>::inside(callE,xx,ff);
-                    }
-                    __optimizeE(callE,xx,ff);
-                    alpha = xx.b;
-                    E1    = callE(alpha); // final Ctry, and beta
-                     */
                     alpha = optimize1D<double>::forward_run(callE,xx,ff,0);
                     E1    = ff.b;
                 }
@@ -198,7 +185,6 @@ namespace yocto
                 //
                 // save the current step and update position
                 //______________________________________________________________
-
                 tao::setvec(dC,C,Ctry);
                 tao::set(C,Ctry);
                 const double dC2 = tao::norm_sq(dC);
@@ -225,16 +211,6 @@ namespace yocto
             }
 
         BALANCE_CHECK:
-#if 0
-            std::cerr.flush();
-            for(size_t j=1;j<=M;++j)
-            {
-                fprintf(stderr,"C0[%2d]= %+12.8e -> %+12.8e : dC=%+12.8e\n", int(j), C0[j], C[j], dC[j]);
-            }
-            fflush(stderr);
-#endif
-
-
             //__________________________________________________________________
             //
             // check negative components
