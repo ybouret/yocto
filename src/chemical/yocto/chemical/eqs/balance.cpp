@@ -14,17 +14,17 @@ namespace yocto
     
     namespace chemical
     {
-
+        
         void equilibrium::compute_extents( range &fwd, range &rev, const array<double> &C) const throw()
         {
             compute_forward(fwd,C);
             compute_reverse(rev,C);
         }
-
+        
         void equilibrium:: compute_forward( range &fwd, const array<double> &C) const throw()
         {
             fwd.clear();
-
+            
             for(const actor *a=reactants.head;a;a=a->next)
             {
                 const size_t id = a->sp->indx;
@@ -50,10 +50,10 @@ namespace yocto
                 }
             }
         }
-
+        
         void equilibrium:: compute_reverse( range &rev, const array<double> &C) const throw()
         {
-
+            
             for(const actor *a=products.head;a;a=a->next)
             {
                 const size_t id = a->sp->indx;
@@ -79,7 +79,7 @@ namespace yocto
                 }
             }
         }
-
+        
         double equilibria:: __callE(double alpha)
         {
             double E = 0;
@@ -95,31 +95,12 @@ namespace yocto
             }
             return E;
         }
-
-#if 0
-        static inline
-        void __optimizeE(numeric<double>::function &EE,
-                         triplet<double>           &xx,
-                         triplet<double>           &ff )
-        {
-            assert(xx.a<=xx.b);assert(xx.b<=xx.c);
-            double delta = Fabs(xx.c-xx.a);
-            while(true)
-            {
-                kernel::minimize(EE,xx,ff);
-                const double d_new = Fabs(xx.c-xx.a);
-                if(d_new>=delta)
-                {
-                    return;
-                }
-                delta = d_new;
-            }
-        }
-#endif
+        
+        
         
         bool equilibria:: balance(array<double> &C0) throw()
         {
-
+            
             //__________________________________________________________________
             //
             // initialize: transfert and compute first E
@@ -135,7 +116,7 @@ namespace yocto
                     E0 += square_of(Cj);
                 }
             }
-
+            
             //__________________________________________________________________
             //
             // at this point, E0, beta and C are set
@@ -145,7 +126,7 @@ namespace yocto
                 std::cerr << "balance.OK" << std::endl;
                 return true;
             }
-
+            
         BALANCE_CYCLE:
             {
                 //______________________________________________________________
@@ -154,7 +135,7 @@ namespace yocto
                 // the descent direction
                 //______________________________________________________________
                 //std::cerr << "balance.E0=" << E0 << std::endl;
-
+                
                 tao::mul(xi,Nu,beta);
                 for(size_t i=N;i>0;--i)
                 {
@@ -162,12 +143,12 @@ namespace yocto
                     xi[i] /= nu2[i];
                 }
                 tao::mul(dC,NuT,xi);
-
+                
                 //std::cerr << "C   =" << C    << std::endl;
                 //std::cerr << "beta=" << beta << std::endl;
                 //std::cerr << "xi  =" << xi   << std::endl;
                 //std::cerr << "dC  =" << dC   << std::endl;
-
+                
                 //______________________________________________________________
                 //
                 // line minimization
@@ -180,7 +161,7 @@ namespace yocto
                     alpha = optimize1D<double>::forward_run(callE,xx,ff,0);
                     E1    = ff.b;
                 }
-
+                
                 //______________________________________________________________
                 //
                 // save the current step and update position
@@ -189,7 +170,7 @@ namespace yocto
                 tao::set(C,Ctry);
                 const double dC2 = tao::norm_sq(dC);
                 //std::cerr << "E1(" << alpha << ")=" << E1 << "/" << E0 << " : |dC|^2=" << dC2 << std::endl;
-
+                
                 if(E1<=0)
                 {
                     std::cerr << "balance.perfect!" << std::endl;
@@ -200,16 +181,16 @@ namespace yocto
                 {
                     std::cerr << "balance.reached" << std::endl;
                     goto BALANCE_CHECK;
-
+                    
                 }
                 else
                 {
                     E0 = E1;
                     goto BALANCE_CYCLE;
                 }
-
+                
             }
-
+            
         BALANCE_CHECK:
             //__________________________________________________________________
             //
@@ -250,7 +231,7 @@ namespace yocto
                             }
                         }
                     }
-
+                    
                     if(C[j]<0)
                     {
                         std::cerr << "invalid concentration C[" << j << "]=" << C[j] << std::endl;
@@ -258,14 +239,126 @@ namespace yocto
                     }
                 }
             }
-
+            
             tao::set(C0,C,M);
             return true;
-
+            
         }
-
-
         
+        double equilibria:: __minCG(double alpha)
+        {
+            double E = 0;
+            for(size_t j=M;j>0;--j)
+            {
+                const double Cj = (Ctry[j]=C[j]+alpha*hh[j]);
+                beta[j] = 0;
+                if(active[j]&&Cj<0)
+                {
+                    beta[j] = -Cj;
+                    E      += square_of(Cj);
+                }
+            }
+            return E;
+        }
+        
+        static inline
+        void __optimize(numeric<double>::function &F,
+                        triplet<double>           &xx,
+                        triplet<double>           &ff )
+        {
+            assert(xx.a<=xx.b);assert(xx.b<=xx.c);
+            double delta = Fabs(xx.c-xx.a);
+            while(true)
+            {
+                kernel::minimize(F,xx,ff);
+                const double d_new = Fabs(xx.c-xx.a);
+                if(d_new>=delta)
+                {
+                    return;
+                }
+                delta = d_new;
+            }
+        }
+        
+        bool equilibria:: balance2(array<double> &C0) throw()
+        {
+            
+            //__________________________________________________________________
+            //
+            // initialize: transfert and compute first E0
+            //__________________________________________________________________
+            double E0   = 0;
+            for(size_t j=M;j>0;--j)
+            {
+                beta[j] = 0;
+                const double Cj = (C[j]=C0[j]);
+                if(active[j]&&(Cj<0))
+                {
+                    beta[j] = -Cj;
+                    E0 += square_of(Cj);
+                }
+            }
+            
+            if(E0<=0)
+            {
+                std::cerr << "balance.OK" << std::endl;
+                return true;
+            }
+            
+            //__________________________________________________________________
+            //
+            // initialize conjugated directions
+            //__________________________________________________________________
+            tao::mul(xi,Nu,beta);
+            for(size_t i=N;i>0;--i)
+            {
+                assert(nu2[i]>0);
+                xi[i] /= nu2[i];
+            }
+            tao::mul(gg,NuT,xi);
+            tao::set(hh,gg);
+            
+        CYCLE:
+            {
+                //______________________________________________________________
+                //
+                // Loop: hh, gg and C are defined
+                //______________________________________________________________
+                double alpha= 1;
+                double E1   = minCG(alpha);
+                {
+                    triplet<double> xx = { 0,  alpha, alpha };
+                    triplet<double> ff = { E0, E1,    E1    };
+                    bracket<double>::expand(minCG,xx,ff);
+                    __optimize(minCG,xx,ff);
+                    E1 = minCG(alpha=xx.b);
+                }
+                
+                //______________________________________________________________
+                //
+                // early return ?
+                //______________________________________________________________
+                if(E1<=0)
+                {
+                    std::cerr << "balance.success" << std::endl;
+                    tao::set(C0,Ctry,M);
+                    return true;
+                }
+                
+                //__________________________________________________________________
+                //
+                // analyze result
+                //__________________________________________________________________
+                tao::set(C,Ctry);
+                if(E1>=E0)
+                {
+                    std::cerr << "balance.reached" << std::endl;
+                    std::cerr << "C=" << C << std::endl;
+                }
+                
+            }
+            
+        }
     }
 }
 

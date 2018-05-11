@@ -22,7 +22,8 @@ namespace yocto
         max_length(0),
         normGamma(this, & equilibria::__normGamma),
         callE(this, & equilibria::__callE),
-        callG(this, & equilibria::__callG)
+        callG(this, & equilibria::__callG),
+        minCG(this, & equilibria::__minCG )
         {
         }
 
@@ -88,6 +89,8 @@ namespace yocto
             Nu.     release();
             beta.   release();
             peqs.   release();
+            gg.     release();
+            hh.     release();
             
             Ctry.   release();
             active. release();
@@ -124,6 +127,8 @@ namespace yocto
 
                 if(N>0)
                 {
+                    hh.    make(M);
+                    gg.    make(M);
                     peqs.  make(N);
                     Nu.    make(N,M);
                     NuT.   make(M,N);
