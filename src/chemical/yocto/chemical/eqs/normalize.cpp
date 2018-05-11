@@ -80,6 +80,13 @@ namespace yocto
 
         }
 
+        double equilibria:: __callG(double alpha)
+        {
+            assert(pEq!=NULL);
+            tao::setprobe(Ctry, C,alpha, dC);
+            return pEq->computeGamma(Ctry,KEq);
+        }
+        
         void equilibria:: compute_full_step()
         {
             std::cerr << "Phi=" << Phi << std::endl;
@@ -108,159 +115,41 @@ namespace yocto
                     throw exception("%sinvalid initial concentration",fn);
                 }
             }
-
-            if(M>N)
-            {
-                const size_t dof = M-N;
-                matrix<double> Sigma(N,dof);
-                if(!svd<double>::orthonormal(Sigma,Nu) )
-                {
-                    std::cerr << "can't build ortho..." << std::endl;
-                }
-                std::cerr << "Sigma=" << Sigma << std::endl;
-            }
-
+            
 
             // initialize K, Gamma, Phi, and GS
             initializeGammaAndPhi(C,t);
-            if(false)
-            {
-                size_t i=1;
-                for(iterator ii=begin();i<=N;++i,++ii)
-                {
-                    const equilibrium &eq = **ii;
-                    eq.solve(C,K[i]);
-                }
-            }
-
-
-            double GS = GammaToScalar();
-
+            
             while(true)
             {
-                // compute full step
+                //______________________________________________________________
+                //
+                // at this point, C is valid, Gamma and Phi are computed@C
+                //______________________________________________________________
                 std::cerr << "Cini =" << C << std::endl;
                 std::cerr << "Gamma=" << Gamma << std::endl;
                 compute_full_step();
-
-                // limit full step, stay positive
+                
                 double alpha = 1;
-                size_t zindx = 0;
-                for(size_t j=M;j>0;--j)
+                for(size_t i=N;i>0;--i)
                 {
-                    if(!active[j]) { assert(Fabs(dC[j])<=0); continue; }
-                    const double d = dC[j];
-                    if(d<0)
-                    {
-                        const double c = C[j]; assert(c>=0);
-                        if(c+d<=0)
-                        {
-                            const double atmp=c/(-d);
-                            if(atmp<alpha)
-                            {
-                                alpha = atmp;
-                                zindx = j;
-                            }
-                        }
-                    }
+                    pEq = peqs[i];
+                    KEq = K[i];
+                    const double G0 = Gamma[i];
+                    std::cerr << "G0[" << i << "]=" << Gamma[i] << "/" << callG(0) << std::endl;
+                    double       G1 = callG(alpha);
+                    std::cerr << "G1=" << G1 << std::endl;
                 }
-                std::cerr << "alpha=" << alpha << ", zindx=" << zindx << std::endl;
-                for(size_t j=M;j>0;--j)
-                {
-                    if(active[j])
-                    {
-                        Ctry[j] = max_of<double>(C[j]+alpha*dC[j],0);
-                        dC[j] = Ctry[j] - C[j];
-                    }
-                    else
-                    {
-                        Ctry[j] = C[j];
-                        dC[j]   = 0;    // should be
-                    }
-                }
-                if(zindx)
-                {
-                    Ctry[zindx] = 0;
-                    dC[zindx]   = Ctry[zindx] - C[zindx];
-                }
-
-                // check where we are
-                updateGamma(Ctry);
-                double gs = GammaToScalar();
-                std::cerr << "|Gamma| : " << GS << " -> " << gs << std::endl;
-                if(gs<=0)
-                {
-                    GS=0;
-                    break;
-                }
-
-                if(gs<GS)
-                {
-                    tao::set(C,Ctry);
-                    updatePhi(C);
-                    GS=gs;
-                    continue;
-                }
-
-                std::cerr << "Need to backtrack!" << std::endl;
-                triplet<double> xx = { 0, alpha,alpha };
-                triplet<double> ff = { GS,gs,   gs    };
-                __optimize(normGamma,xx,ff);
-                gs = normGamma(alpha=xx.b);
-                std::cerr << "gs=" << gs << "@alpha=" << alpha << std::endl;
-                std::cerr << "Gamma=" << Gamma << std::endl;
-                std::cerr << "K    =" << K     << std::endl;
+                
+                
                 exit(0);
                 break;
-
             }
 
-            if(GS>0)
-            {
-                // check convergence
-                std::cerr << "Checking convergence..." << std::endl;
-            }
+            
         }
 
-
-        bool equilibria:: try_solve(const size_t i, const equilibrium &eq, const double Kt)
-        {
-            equilibrium::range rng;
-            std::cerr << "Try Solve " << eq.name << std::endl;
-            array<double> &nu  = Nu[i];
-            array<double> &phi = Phi[i];
-
-            eq.computeGradient(phi,C,Kt);
-            std::cerr << "phi=" << phi << std::endl;
-            std::cerr << "nu =" << nu  << std::endl;
-            const double   den = tao::dot(phi,nu);
-            if(Fabs(den)<=0)
-            {
-                return false;
-            }
-            const double gam    = eq.computeGamma(C,Kt);
-            const double extent = -gam/den;
-            std::cerr << "extent=" << extent << std::endl;
-            if(extent>0)
-            {
-                eq.compute_forward(rng,C);
-                std::cerr << "fwd=" << rng << std::endl;
-            }
-            else
-            {
-                if(extent<0)
-                {
-                    eq.compute_reverse(rng,C);
-                    std::cerr << "rev=" << rng << std::endl;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        
 
 
     }

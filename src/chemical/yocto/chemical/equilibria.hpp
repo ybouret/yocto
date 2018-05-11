@@ -77,15 +77,19 @@ namespace yocto
             
             std::ostream & spaces_for( const string &id, std::ostream &os ) const;
 
-            bool try_solve(const size_t i,const equilibrium &eq, const double Kt);
-
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
             double __normGamma(double alpha);
             double __callE(double alpha);
+            equilibrium *pEq;
+            double       KEq;
+            double __callG(double alpha);
+            
             math::numeric<double>::function normGamma;
             math::numeric<double>::function callE;
-
+            math::numeric<double>::function callG;
+            
             // from Gamma and Phi
             void compute_full_step();
         };

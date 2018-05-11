@@ -21,7 +21,8 @@ namespace yocto
         N(0),
         max_length(0),
         normGamma(this, & equilibria::__normGamma),
-        callE(this, & equilibria::__callE)
+        callE(this, & equilibria::__callE),
+        callG(this, & equilibria::__callG)
         {
         }
 
