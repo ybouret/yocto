@@ -210,8 +210,6 @@ namespace yocto
                 std::cerr << "gs=" << gs << "@alpha=" << alpha << std::endl;
                 std::cerr << "Gamma=" << Gamma << std::endl;
                 std::cerr << "K    =" << K     << std::endl;
-                std::cerr << "Kn   =" << Kn    << std::endl;
-                std::cerr << "Ranks=" << Ranks << std::endl;
                 exit(0);
                 break;
 

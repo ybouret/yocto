@@ -79,8 +79,6 @@ namespace yocto
             GamEV.  release();
             xi.     release();
             Gamma.  release();
-            Ranks.  release();
-            Kn.     release();
             K.      release();
             W.      release();
             Phi.    release();
@@ -88,7 +86,8 @@ namespace yocto
             NuT.    release();
             Nu.     release();
             beta.   release();
-
+            peqs.   release();
+            
             Ctry.   release();
             active. release();
             dC.     release();
@@ -124,14 +123,13 @@ namespace yocto
 
                 if(N>0)
                 {
+                    peqs.  make(N);
                     Nu.    make(N,M);
                     NuT.   make(M,N);
                     nu2.   make(N,0);
                     Phi.   make(N,M);
                     W.     make(N);
                     K.     make(N);
-                    Kn.    make(N);
-                    Ranks. make(N);
                     Gamma. make(N);
                     xi.    make(N);
                     GamEV. make(N);
@@ -144,7 +142,7 @@ namespace yocto
                         size_t ii=1;
                         for(iterator i=begin();i!=end();++i,++ii)
                         {
-                            const equilibrium &eq = **i;
+                            equilibrium &eq = **i;
                             eq.fill(Nu[ii],active);
                             const int nuP = eq.productsStoichiometry();
                             if(nuP>0)
@@ -155,7 +153,8 @@ namespace yocto
                             {
                                 GamEV[ii] = 1.0;
                             }
-                            nu2[ii] = eq.nu2;
+                            nu2[ii]  = eq.nu2;
+                            peqs[ii] = &eq;
                         }
                     }
 
@@ -197,43 +196,35 @@ namespace yocto
             }
         }
 
-#define __COMPUTE_K() \
-const double Kt = (K[i] = max_of<double>(eq.K(t),0));\
-Kn[i]    = pow(Kt,1.0/sqrt(nu2[i])); \
-Ranks[i] = i;
-#define __COMPUTE_RANKS() make_index(Kn,Ranks,__compare_decreasing<double>)
-
+#define __COMPUTE_Kt() \
+const double Kt = (K[i] = max_of<double>(eq.K(t),0))
+        
         void equilibria:: initializeGamma(const array<double> &C0, const double t)
         {
-            iterator ii=begin();
-            for(size_t i=1;i<=N;++i,++ii)
+            for(size_t i=N;i>0;--i)
             {
-                const equilibrium &eq = **ii; assert(eq.nu2>0); assert(nu2[i]>0);
-                __COMPUTE_K();
+                const equilibrium &eq = *peqs[i]; assert(eq.nu2>0); assert(nu2[i]>0);
+                __COMPUTE_Kt();
                 Gamma[i] = eq.computeGamma(C0,Kt);
             }
-            __COMPUTE_RANKS();
         }
 
         void equilibria:: initializeGammaAndPhi(const array<double> &C0,const double t)
         {
-            iterator ii=begin();
-            for(size_t i=1;i<=N;++i,++ii)
+            for(size_t i=N;i>0;--i)
             {
-                const equilibrium &eq = **ii;
-                __COMPUTE_K();
+                const equilibrium &eq = *peqs[i];
+                __COMPUTE_Kt();
                 Gamma[i] = eq.computeGamma(C0,Kt);
                 eq.computeGradient(Phi[i],C0,Kt);
             }
-            __COMPUTE_RANKS();
         }
 
         void equilibria:: updateGamma(const array<double> &C0)
         {
-            iterator ii=begin();
-            for(size_t i=1;i<=N;++i,++ii)
+            for(size_t i=N;i>0;--i)
             {
-                const equilibrium &eq = **ii;
+                const equilibrium &eq = *peqs[i];
                 Gamma[i] = eq.computeGamma(C0,K[i]);
             }
         }
@@ -242,10 +233,9 @@ Ranks[i] = i;
 
         void equilibria:: updatePhi(const array<double> &C0)
         {
-            iterator ii=begin();
-            for(size_t i=1;i<=N;++i,++ii)
+            for(size_t i=N;i>0;--i)
             {
-                const equilibrium &eq = **ii;
+                const equilibrium &eq = *peqs[i];
                 const double       Kt = K[i];
                 eq.computeGradient(Phi[i],C0,Kt);
             }
@@ -253,10 +243,9 @@ Ranks[i] = i;
 
         void equilibria:: updateGammaAndPhi(const array<double> &C0)
         {
-            iterator ii=begin();
-            for(size_t i=1;i<=N;++i,++ii)
+            for(size_t i=N;i>0;--i)
             {
-                const equilibrium &eq = **ii;
+                const equilibrium &eq = *peqs[i];
                 const double       Kt = K[i];
                 Gamma[i] = eq.computeGamma(C0,Kt);
                 eq.computeGradient(Phi[i],C0,Kt);

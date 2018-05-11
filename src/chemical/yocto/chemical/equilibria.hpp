@@ -17,7 +17,8 @@ namespace yocto
         public counted
         {
         public:
-
+            typedef equilibrium *eqptr;
+            
             explicit equilibria(const string &id, const size_t n=0);
             virtual ~equilibria() throw();
 
@@ -36,6 +37,7 @@ namespace yocto
             vector<double> Ctry;
             
             // N dependent objects
+            vector<eqptr>  peqs;   //!< fast access to equilibria
             vector<double> beta;   //!< if negative active species [M]
             matrix<double> Nu;     //!< topology    [NxM]
             matrix<double> NuT;    //!< transposed  [MxN]
@@ -43,8 +45,6 @@ namespace yocto
             matrix<double> Phi;    //!< jacobian    [NxM]
             matrix<double> W;      //!< inv(jacobian.nuT) NxN
             vector<double> K;      //!< constants   N
-            vector<double> Kn;     //!< constants/normalized N
-            vector<size_t> Ranks;  //!< equilibrium ranks N
             vector<double> Gamma;  //!< Gamma       N
             vector<double> xi;     //!< extent      N
             vector<double> GamEV;  //!< Gamma Exponent Values [N]
