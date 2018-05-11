@@ -50,6 +50,7 @@ YOCTO_UNIT_TEST_IMPL(lua)
         std::cerr << "normalizing..." << std::endl;
         std::cerr << "Nu=" << cs.Nu << std::endl;
         cs.normalize(C0,0.0);
+        lib.display(C0);
         break;
     }
 

@@ -84,14 +84,14 @@ namespace yocto
         {
             assert(pEq!=NULL);
             tao::setprobe(Ctry, C,alpha, dC);
-            return pEq->computeGamma(Ctry,KEq);
+            return square_of(pEq->computeGamma(Ctry,KEq));
         }
         
         void equilibria:: compute_full_step()
         {
-            std::cerr << "Phi=" << Phi << std::endl;
+            //std::cerr << "Phi=" << Phi << std::endl;
             tao::mmul_rtrn(W,Phi,Nu);
-            std::cerr << "W=" << W << std::endl;
+            //std::cerr << "W=" << W << std::endl;
             if(!LU<double>::build(W))
             {
                 throw exception("%ssingular set of concentrations",fn);
@@ -99,13 +99,15 @@ namespace yocto
             tao::neg(xi,Gamma);
             LU<double>::solve(W,xi);
             tao::mul(dC,NuT,xi);
-            std::cerr << "xi  =" << xi << std::endl;
-            std::cerr << "dC  =" << dC << std::endl;
+            //std::cerr << "xi  =" << xi << std::endl;
+            //std::cerr << "dC  =" << dC << std::endl;
         }
 
 
         void equilibria:: normalize(array<double> &C0, const double t)
         {
+            const double threshold = numeric<double>::ftol;
+            
             //__________________________________________________________________
             //
             // transfer data
@@ -129,37 +131,58 @@ namespace yocto
                 //
                 // at this point, C is valid, Gamma and Phi are computed@C
                 //______________________________________________________________
-                std::cerr << "Cini =" << C     << std::endl;
-                std::cerr << "Gamma=" << Gamma << std::endl;
+                //std::cerr << "Cini =" << C     << std::endl;
+                //std::cerr << "Gamma=" << Gamma << std::endl;
                 compute_full_step();
                 
-                double alpha = 1;
-                for(size_t i=N;i>0;--i)
+                size_t nbad = 0;
+                for(size_t j=M;j>0;--j)
                 {
-                    pEq = peqs[i];
-                    KEq = K[i];
-                    std::cerr << ".." << pEq->name << std::endl;
-                    const double G0 = Gamma[i];
-                    std::cerr << "G0=" << G0 << "/" << callG(0) << std::endl;
-                    double       G1 = callG(alpha);
-                    std::cerr << "G1=" << G1 << std::endl;
-                    
-                    const double prod = G0*G1;
-                    if(prod<0)
+                    Ctry[j] = C[j]; // save
+                    const double Cj =  (C[j]+=dC[j]);
+                    if(active[j]&&Cj<0)
                     {
-                        // change of sign: stop at
+                        ++nbad;
+                    }
+                }
+                if(nbad)
+                {
+                    std::cerr << "Bad!" << std::endl;
+                    std::cerr << "C=" << C << std::endl;
+                    if(!balance(C))
+                    {
+                        throw exception("%sunable to internally balance",fn);
                     }
                     else
                     {
-                        
+                        std::cerr << "balanced..." << std::endl;
+                        std::cerr << "C=" << C << std::endl;
                     }
                 }
-                
-                
-                exit(0);
-                break;
+                bool converged = true;
+                for(size_t j=M;j>0;--j)
+                {
+                    if(active[j])
+                    {
+                        const double c_new = C[j];
+                        const double c_old = Ctry[j];
+                        const double dC = Fabs(c_new-c_old);
+                        const double CC = Fabs(c_new)+Fabs(c_old);
+                        if(dC>threshold*CC)
+                        {
+                            converged=false;
+                            break;
+                        }
+                    }
+                }
+                if(converged)
+                {
+                    std::cerr << "Converged" << std::endl;
+                    break;
+                }
+                updateGammaAndPhi(C);
             }
-
+            tao::set(C0,C,M);
             
         }
 
