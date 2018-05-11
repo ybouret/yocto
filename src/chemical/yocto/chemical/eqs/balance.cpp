@@ -282,7 +282,7 @@ namespace yocto
         
         bool equilibria:: balance2(array<double> &C0) throw()
         {
-            
+            std::cerr << "balance2" << std::endl;
             //__________________________________________________________________
             //
             // initialize: transfert and compute first E0
@@ -317,6 +317,7 @@ namespace yocto
             }
             tao::mul(gg,NuT,xi);
             tao::set(hh,gg);
+           
             
         CYCLE:
             {
@@ -324,6 +325,11 @@ namespace yocto
                 //
                 // Loop: hh, gg and C are defined
                 //______________________________________________________________
+                std::cerr << "C   =" << C << std::endl;
+                std::cerr << "beta=" << beta << std::endl;
+                std::cerr << "gg  ="  << gg << std::endl;
+                std::cerr << "hh  =" << hh << std::endl;
+                
                 double alpha= 1;
                 double E1   = minCG(alpha);
                 {
@@ -345,19 +351,70 @@ namespace yocto
                     return true;
                 }
                 
-                //__________________________________________________________________
+                //______________________________________________________________
                 //
                 // analyze result
-                //__________________________________________________________________
-                tao::set(C,Ctry);
+                //______________________________________________________________
                 if(E1>=E0)
                 {
-                    std::cerr << "balance.reached" << std::endl;
-                    std::cerr << "C=" << C << std::endl;
+                    std::cerr << "balance.reached level 1" << std::endl;
+                    goto CHECK;
                 }
                 
+                assert(E1<E0);
+                
+                //______________________________________________________________
+                //
+                // compute new descent direction in dC
+                //______________________________________________________________
+                tao::mul(xi,Nu,beta);
+                for(size_t i=N;i>0;--i)
+                {
+                    assert(nu2[i]>0);
+                    xi[i] /= nu2[i];
+                }
+                tao::mul(dC,NuT,xi);
+                
+                //______________________________________________________________
+                //
+                // compute new descent direction in dC
+                //______________________________________________________________
+                std::cerr << "balance.CG" << std::endl;
+                double g2 = 0;
+                double dg = 0;
+                for(size_t j=M;j>0;--j)
+                {
+                    const double g = gg[j];
+                    const double d = dC[j];
+                    g2  += g*g;
+                    dg  += (d-g)*d;
+                }
+                if(g2<=numeric<double>::minimum)
+                {
+                    std::cerr << "balance.reached level-2" << std::endl;
+                }
+                const double fac = dg/g2;
+                std::cerr << "|_fac=" << fac << std::endl;
+                for(size_t j=M;j>0;--j)
+                {
+                    hh[j] = gg[j] + fac * hh[j];
+                    gg[j] = dC[j];
+                }
+                std::cerr << "gg=" << gg << std::endl;
+                std::cerr << "hh=" << hh << std::endl;
+                
+                exit(0);
             }
-            
+        CHECK:
+            for(size_t j=M;j>0;--j)
+            {
+                
+                dC[j] = Ctry[j] - C[j];
+                C[j]  = Ctry[j];
+            }
+            std::cerr << "C =" << C  << std::endl;
+            std::cerr << "dC=" << dC << std::endl;
+            exit(0);
         }
     }
 }

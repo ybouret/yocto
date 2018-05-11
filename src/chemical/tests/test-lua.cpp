@@ -29,18 +29,19 @@ YOCTO_UNIT_TEST_IMPL(lua)
     equilibria cs("cs");
     __lua::load(vm,cs,lib);
     std::cerr << cs << std::endl;
-
+    std::cerr << "Nu=" << cs.Nu << std::endl;
+    
     vector<double> C0(cs.M,0);
     for(size_t iter=1;iter<=100;++iter)
     {
         for(size_t j=cs.M;j>0;--j)
         {
             C0[j] = 1e-3 * (alea.get<double>()-0.3);
-            C0[j] = alea.get<double>();
+            //C0[j] = alea.get<double>();
         }
         std::cerr << "initial: " << std::endl;
         lib.display(C0);
-        if(!cs.balance(C0))
+        if(!cs.balance2(C0))
         {
             std::cerr << "unable to balance..." << std::endl;
             continue;
