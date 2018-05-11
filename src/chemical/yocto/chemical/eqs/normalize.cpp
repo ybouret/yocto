@@ -106,7 +106,10 @@ namespace yocto
 
         void equilibria:: normalize(array<double> &C0, const double t)
         {
-            // transfer
+            //__________________________________________________________________
+            //
+            // transfer data
+            //__________________________________________________________________
             for(size_t j=M;j>0;--j)
             {
                 C[j] = C0[j];
@@ -126,7 +129,7 @@ namespace yocto
                 //
                 // at this point, C is valid, Gamma and Phi are computed@C
                 //______________________________________________________________
-                std::cerr << "Cini =" << C << std::endl;
+                std::cerr << "Cini =" << C     << std::endl;
                 std::cerr << "Gamma=" << Gamma << std::endl;
                 compute_full_step();
                 
@@ -135,10 +138,21 @@ namespace yocto
                 {
                     pEq = peqs[i];
                     KEq = K[i];
+                    std::cerr << ".." << pEq->name << std::endl;
                     const double G0 = Gamma[i];
-                    std::cerr << "G0[" << i << "]=" << Gamma[i] << "/" << callG(0) << std::endl;
+                    std::cerr << "G0=" << G0 << "/" << callG(0) << std::endl;
                     double       G1 = callG(alpha);
                     std::cerr << "G1=" << G1 << std::endl;
+                    
+                    const double prod = G0*G1;
+                    if(prod<0)
+                    {
+                        // change of sign: stop at
+                    }
+                    else
+                    {
+                        
+                    }
                 }
                 
                 
