@@ -89,6 +89,8 @@ YOCTO_UNIT_TEST_IMPL(balance2)
     species &OH  = lib.add("HO-",-1);
     species &AH  = lib.add("AH",0);
     species &Am  = lib.add("Am",-1);
+    lib.add("Na+",1);
+    lib.add("Cl-",-1);
     lib.compile();
 
     std::cerr << lib << std::endl;
@@ -113,8 +115,13 @@ YOCTO_UNIT_TEST_IMPL(balance2)
 
     vector<double> C0(cs.M,0);
 
+#if 0
     C0[3] = -0.1;
     C0[4] = 0.2;
+#else
+    C0[1] = -0.1;
+#endif
+
     lib.display(C0);
     std::cerr << "Nu=" << cs.Nu << std::endl;
     if(cs.balance(C0))

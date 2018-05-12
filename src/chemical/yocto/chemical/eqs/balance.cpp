@@ -143,7 +143,8 @@ namespace yocto
 
         bool equilibria:: balance(array<double> &C0) throw()
         {
-            
+            equilibrium::range rng;
+
             //__________________________________________________________________
             //
             // initialize: transfert and compute first E
@@ -181,13 +182,28 @@ namespace yocto
                 for(size_t i=N;i>0;--i)
                 {
                     assert(nu2[i]>0);
-                    xi[i] /= nu2[i];
+                    const double extent = (xi[i] /= nu2[i]);
+                    std::cerr << ".." << peqs[i]->name << " : xi_guess=" << extent << " : ";
+                    if(extent>0)
+                    {
+                        peqs[i]->compute_forward(rng,C);
+                        std::cerr << " fwd: " << rng << std::endl;
+                    }
+                    else if(extent<0)
+                    {
+                        peqs[i]->compute_reverse(rng,C);
+                        std::cerr << " rng: " << rng << std::endl;
+                    }
+                    else
+                    {
+                        std::cerr << " nope" << std::endl;
+                    }
                 }
                 tao::mul(dC,NuT,xi);
-                
-                //std::cerr << "C   =" << C    << std::endl;
-                //std::cerr << "beta=" << beta << std::endl;
-
+                std::cerr << "C   =" << C    << std::endl;
+                std::cerr << "beta=" << beta << std::endl;
+                std::cerr << "desc=" << dC   << std::endl;
+                //exit(0);
                 
                 //______________________________________________________________
                 //
@@ -204,7 +220,7 @@ namespace yocto
                     alpha = max_of<double>(xx.b,0); // never go back
                     E1    = __callE(alpha);
                 }
-                std::cerr << "E1(" << alpha << ")=" << E1 << "/" << E0 << std::endl;
+                //std::cerr << "E1(" << alpha << ")=" << E1 << "/" << E0 << std::endl;
 
                 //______________________________________________________________
                 //
@@ -243,10 +259,12 @@ namespace yocto
                 }
 
                 rms = sqrt(rms/M);
-                std::cerr << "rms=" << rms << std::endl;
-                if(E1>=E0 || rms<=0 )
+                //std::cerr << "rms=" << rms << std::endl;
+                if(E1>=E0
+                   //|| rms<=0
+                   )
                 {
-                    std::cerr << "balance.reached_minimum" << std::endl;
+                    std::cerr << "balance.reached_minimum@" << E1 << std::endl;
                     goto CHECK;
                 }
 
@@ -257,222 +275,81 @@ namespace yocto
         CHECK:
             std::cerr << "balance.check" << std::endl;
             std::cerr << "C =" << C  << std::endl;
-            for(size_t i=N;i>0;--i)
-            {
-                std::cerr << "|_checking for '" << peqs[i]->name << "'" << std::endl;
-                const array<double> &nu = Nu[i];
-                double vmax = 0;
-                size_t nbad = 0;
-                for(size_t j=M;j>0;--j)
-                {
-                    if(Fabs(nu[j])>0)
-                    {
-                        assert(active[j]);
-                        const double c = C[j];
-                        const double v = Fabs(c);
-                        if(c<0)
-                        {
-                            ++nbad;
-                        }
-                        dC[j] = c;
-                        if(v>vmax)
-                        {
-                            vmax = v;
-                        }
-                    }
-                    else
-                    {
-                        dC[j] = 0;
-                    }
-                }
-                if(nbad<=0)
-                {
-                    std::cerr << "balance.cleared" << std::endl;
-                    tao::set(C0,C,M);
-                    return true;
-                }
-                std::cerr << "C=" << dC << std::endl;
-                std::cerr << "vmax=" << vmax << std::endl;
-            }
-
-            exit(0);
-
-        }
-        
-
-#if 0
-        double equilibria:: __minCG(double alpha)
-        {
-            double E = 0;
             for(size_t j=M;j>0;--j)
             {
-                const double Cj = (Ctry[j]=C[j]+alpha*hh[j]);
-                beta[j] = 0;
-                if(active[j]&&Cj<0)
+                const double Cj = C[j];
+                if(!active[j] || Cj>=0) continue; // good...
+                std::cerr << "..checking C[" << j << "]=" << Cj << std::endl;
+                bool can_be_zero = true;
+                bool was_met     = false;
+
+                // loop over equilibria
+                for(size_t i=N;i>0;--i)
                 {
-                    beta[j] = -Cj;
-                    E      += square_of(Cj);
+                    const array<double> &nu   = Nu[i];
+                    const double        coeff = Fabs(nu[j]);
+                    std::cerr << "|_in '" << peqs[i]->name << "'" << std::endl;
+                    if(coeff<=0)
+                    {
+                        std::cerr << "|_not involved" << std::endl;
+                        continue;
+                    }
+                    was_met = true;
+                    const double dxi = -Cj/coeff;
+                    std::cerr << "dxi=" << dxi << std::endl;
+                    for(size_t k=M;k>0;--k)
+                    {
+                        if(!active[k]) continue;
+                        const double Ck = C[k];
+                        if(Ck>=0)
+                        {
+                            
+                        }
+                    }
                 }
+
             }
-            return E;
-        }
-        
-        static inline
-        void __optimize(numeric<double>::function &F,
-                        triplet<double>           &xx,
-                        triplet<double>           &ff )
-        {
-            assert(xx.a<=xx.b);assert(xx.b<=xx.c);
-            double delta = Fabs(xx.c-xx.a);
-            while(true)
-            {
-                kernel::minimize(F,xx,ff);
-                const double d_new = Fabs(xx.c-xx.a);
-                if(d_new>=delta)
-                {
-                    return;
-                }
-                delta = d_new;
-            }
+            exit(0);
+
         }
         
         bool equilibria:: balance2(array<double> &C0) throw()
         {
-            std::cerr << "balance2" << std::endl;
-            //__________________________________________________________________
-            //
-            // initialize: transfert and compute first E0
-            //__________________________________________________________________
-            double E0   = 0;
+            matrix<double> U(M,M);
+            tao::mmul(U,NuT,Nu);
+            std::cerr << "Q=" << U << std::endl;
+            matrix<double> V(M,M);
+            vector<double> w(M,0);
+            if(!svd<double>::build(U,w,V))
+            {
+                std::cerr << "no svd" << std::endl;
+                exit(1);
+            }
+            std::cerr << "w=" << w << std::endl;
+            svd<double>::set_image_dimension(w,N);
+            std::cerr << "w=" << w << std::endl;
+            std::cerr << "U=" << U << std::endl;
+            std::cerr << "V=" << V << std::endl;
+
             for(size_t j=M;j>0;--j)
             {
                 beta[j] = 0;
                 const double Cj = (C[j]=C0[j]);
-                if(active[j]&&(Cj<0))
+                if(active[j]&&Cj<0)
                 {
                     beta[j] = -Cj;
-                    E0 += square_of(Cj);
                 }
             }
-            
-            if(E0<=0)
-            {
-                std::cerr << "balance.OK" << std::endl;
-                return true;
-            }
-            
-            //__________________________________________________________________
-            //
-            // initialize conjugated directions
-            //__________________________________________________________________
-            tao::mul(xi,Nu,beta);
-            for(size_t i=N;i>0;--i)
-            {
-                assert(nu2[i]>0);
-                xi[i] /= nu2[i];
-            }
-            tao::mul(gg,NuT,xi);
-            tao::set(hh,gg);
-           
-            
-        CYCLE:
-            {
-                //______________________________________________________________
-                //
-                // Loop: hh, gg and C are defined
-                //______________________________________________________________
-                std::cerr << "C   =" << C << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
-                std::cerr << "gg  ="  << gg << std::endl;
-                std::cerr << "hh  =" << hh << std::endl;
-                
-                double alpha= 1;
-                double E1   = minCG(alpha);
-
-                {
-                    triplet<double> xx = { 0,  alpha, alpha };
-                    triplet<double> ff = { E0, E1,    E1    };
-                    bracket<double>::expand(minCG,xx,ff);
-                    xx.co_sort(ff);
-                    __optimize(minCG,xx,ff);
-                    E1 = minCG(alpha=xx.b);
-                }
-                
-                //______________________________________________________________
-                //
-                // early return ?
-                //______________________________________________________________
-                if(E1<=0)
-                {
-                    std::cerr << "balance.success" << std::endl;
-                    tao::set(C0,Ctry,M);
-                    return true;
-                }
-
-
-                //______________________________________________________________
-                //
-                // analyze result
-                //______________________________________________________________
-
-                if(E1>=E0)
-                {
-                    std::cerr << "balance.reached level 1" << std::endl;
-                    for(size_t j=M;j>0;--j)
-                    {
-                        dC[j] = Ctry[j] - C[j];
-                        C[j]  = Ctry[j];
-                    }
-                    goto CHECK;
-                }
-                
-                assert(E1<E0);
-                
-                //______________________________________________________________
-                //
-                // compute new descent direction in dC
-                //______________________________________________________________
-                tao::mul(xi,Nu,beta);
-                for(size_t i=N;i>0;--i)
-                {
-                    assert(nu2[i]>0);
-                    xi[i] /= nu2[i];
-                }
-                tao::mul(dC,NuT,xi);
-                
-                //______________________________________________________________
-                //
-                // compute new descent direction in dC
-                //______________________________________________________________
-                std::cerr << "balance.CG" << std::endl;
-                double g2 = 0;
-                double dg = 0;
-                for(size_t j=M;j>0;--j)
-                {
-                    const double g = gg[j];
-                    const double d = dC[j];
-                    g2  += g*g;
-                    dg  += (d-g)*d;
-                }
-                if(g2<=numeric<double>::minimum)
-                {
-                    std::cerr << "balance.reached level-2" << std::endl;
-                }
-                const double fac = max_of<double>(dg/g2,0);
-                std::cerr << "|_fac=" << fac << std::endl;
-                for(size_t j=M;j>0;--j)
-                {
-                    hh[j] = gg[j] + fac * hh[j];
-                    gg[j] = dC[j];
-                }
-                goto CYCLE;
-            }
-        CHECK:
-
-
+            std::cerr << "C="    << C    << std::endl;
+            std::cerr << "beta=" << beta << std::endl;
+            svd<double>::solve(U,w,V,beta,dC);
+            std::cerr << "lam=" << dC << std::endl;
             exit(0);
+
         }
-#endif
+
+
+        
     }
 }
 
