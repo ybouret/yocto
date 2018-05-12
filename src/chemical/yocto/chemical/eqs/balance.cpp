@@ -244,7 +244,8 @@ namespace yocto
             return true;
             
         }
-        
+
+#if 0
         double equilibria:: __minCG(double alpha)
         {
             double E = 0;
@@ -332,10 +333,12 @@ namespace yocto
                 
                 double alpha= 1;
                 double E1   = minCG(alpha);
+
                 {
                     triplet<double> xx = { 0,  alpha, alpha };
                     triplet<double> ff = { E0, E1,    E1    };
                     bracket<double>::expand(minCG,xx,ff);
+                    xx.co_sort(ff);
                     __optimize(minCG,xx,ff);
                     E1 = minCG(alpha=xx.b);
                 }
@@ -350,14 +353,21 @@ namespace yocto
                     tao::set(C0,Ctry,M);
                     return true;
                 }
-                
+
+
                 //______________________________________________________________
                 //
                 // analyze result
                 //______________________________________________________________
+
                 if(E1>=E0)
                 {
                     std::cerr << "balance.reached level 1" << std::endl;
+                    for(size_t j=M;j>0;--j)
+                    {
+                        dC[j] = Ctry[j] - C[j];
+                        C[j]  = Ctry[j];
+                    }
                     goto CHECK;
                 }
                 
@@ -393,29 +403,21 @@ namespace yocto
                 {
                     std::cerr << "balance.reached level-2" << std::endl;
                 }
-                const double fac = dg/g2;
+                const double fac = max_of<double>(dg/g2,0);
                 std::cerr << "|_fac=" << fac << std::endl;
                 for(size_t j=M;j>0;--j)
                 {
                     hh[j] = gg[j] + fac * hh[j];
                     gg[j] = dC[j];
                 }
-                std::cerr << "gg=" << gg << std::endl;
-                std::cerr << "hh=" << hh << std::endl;
-                
-                exit(0);
+                goto CYCLE;
             }
         CHECK:
-            for(size_t j=M;j>0;--j)
-            {
-                
-                dC[j] = Ctry[j] - C[j];
-                C[j]  = Ctry[j];
-            }
-            std::cerr << "C =" << C  << std::endl;
-            std::cerr << "dC=" << dC << std::endl;
+
+
             exit(0);
         }
+#endif
     }
 }
 

@@ -72,7 +72,6 @@ namespace yocto
 
             //! balance a concentration
             bool balance(array<double> &C0) throw();
-            bool balance2(array<double> &C0) throw();
 
             //! normalize a balanced concentration
             void normalize( array<double> &C0, const double t );
@@ -87,12 +86,10 @@ namespace yocto
             equilibrium *pEq;
             double       KEq;
             double __callG(double alpha);
-            double __minCG(double alpha);
-            
+
             math::numeric<double>::function normGamma;
             math::numeric<double>::function callE;
             math::numeric<double>::function callG;
-            math::numeric<double>::function minCG;
 
             // from Gamma and Phi
             void compute_full_step();

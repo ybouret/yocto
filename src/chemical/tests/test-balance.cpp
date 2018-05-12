@@ -117,7 +117,7 @@ YOCTO_UNIT_TEST_IMPL(balance2)
     C0[4] = 0.2;
     lib.display(C0);
     std::cerr << "Nu=" << cs.Nu << std::endl;
-    if(cs.balance2(C0))
+    if(cs.balance(C0))
     {
         std::cerr << "balanced" << std::endl;
         lib.display(C0);

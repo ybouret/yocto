@@ -41,7 +41,7 @@ YOCTO_UNIT_TEST_IMPL(lua)
         }
         std::cerr << "initial: " << std::endl;
         lib.display(C0);
-        if(!cs.balance2(C0))
+        if(!cs.balance(C0))
         {
             std::cerr << "unable to balance..." << std::endl;
             continue;

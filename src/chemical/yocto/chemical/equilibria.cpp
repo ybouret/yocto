@@ -22,8 +22,7 @@ namespace yocto
         max_length(0),
         normGamma(this, & equilibria::__normGamma),
         callE(this, & equilibria::__callE),
-        callG(this, & equilibria::__callG),
-        minCG(this, & equilibria::__minCG )
+        callG(this, & equilibria::__callG)
         {
         }
 
