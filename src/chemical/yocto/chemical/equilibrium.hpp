@@ -68,6 +68,7 @@ namespace yocto
             void compute_extents( range &fwd, range &rev, const array<double> &C) const throw();
             bool solve(array<double> &C, const double Kt) const;
 
+            static const double Cmin;
         };
 
         class constant_equilibrium : public equilibrium

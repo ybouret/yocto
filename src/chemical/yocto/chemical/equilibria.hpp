@@ -78,7 +78,6 @@ namespace yocto
             
             std::ostream & spaces_for( const string &id, std::ostream &os ) const;
 
-            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
             double __normGamma(double alpha);

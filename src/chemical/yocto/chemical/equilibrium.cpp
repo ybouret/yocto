@@ -2,10 +2,15 @@
 #include "yocto/exception.hpp"
 #include "yocto/code/ipower.hpp"
 #include "yocto/math/core/tao.hpp"
+#include "yocto/math/types.hxx"
+
 namespace yocto
 {
     namespace chemical
     {
+
+        const double equilibrium::Cmin = math::numeric<double>::sqrt_tiny;
+
         equilibrium:: ~equilibrium() throw()
         {
         }
