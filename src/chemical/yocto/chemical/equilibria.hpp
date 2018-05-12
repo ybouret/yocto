@@ -39,7 +39,6 @@ namespace yocto
             // N dependent objects
             vector<eqptr>  peqs;   //!< fast access to equilibria
             vector<double> beta;   //!< if negative active species [M]
-            vector<double> hh,gg;  //!< for CG
             matrix<double> Nu;     //!< topology    [NxM]
             matrix<double> NuT;    //!< transposed  [MxN]
             vector<double> nu2;    //!< norm2 of Nu [N]
@@ -50,8 +49,7 @@ namespace yocto
             vector<double> xi;     //!< extent      N
             vector<double> GamEV;  //!< Gamma Exponent Values [N]
             const size_t   max_length;
-            //size_t         steps;  //!< last #steps for normalizing
-
+            
             void compile_for(const library &lib);
 
             void clear() throw();

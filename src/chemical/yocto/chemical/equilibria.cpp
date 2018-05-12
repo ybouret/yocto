@@ -88,9 +88,7 @@ namespace yocto
             Nu.     release();
             beta.   release();
             peqs.   release();
-            gg.     release();
-            hh.     release();
-            
+
             Ctry.   release();
             active. release();
             dC.     release();
@@ -126,8 +124,6 @@ namespace yocto
 
                 if(N>0)
                 {
-                    hh.    make(M);
-                    gg.    make(M);
                     peqs.  make(N);
                     Nu.    make(N,M);
                     NuT.   make(M,N);
@@ -149,6 +145,7 @@ namespace yocto
                         {
                             equilibrium &eq = **i;
                             eq.fill(Nu[ii],active);
+
                             const int nuP = eq.productsStoichiometry();
                             if(nuP>0)
                             {

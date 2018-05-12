@@ -88,17 +88,20 @@ namespace yocto
             {
                 if(active[j])
                 {
+                    // compute trial concentration
                     const double Cj = (Ctry[j]=C[j]+alpha*dC[j]);
                     if(Cj<0)
                     {
                         const double Cj2=Cj*Cj;
                         if(Cj2>=numeric<double>::tiny)
                         {
+                            // is significant
                             beta[j] = -Cj;
                             E += Cj2;
                         }
                         else
                         {
+                            // not significant
                             Ctry[j] = 0;
                             beta[j] = 0;
                             assert(Fabs(beta[j])<=0);
@@ -107,6 +110,7 @@ namespace yocto
                 }
                 else
                 {
+                    // just copy data
                     assert(Fabs(dC[j])<=0);
                     beta[j] = 0;
                     Ctry[j] = C[j];
@@ -148,11 +152,11 @@ namespace yocto
             {
                 C[j]  = C0[j];
             }
-            double E0 = callE(0.0);
+            double E0 = __callE(0.0);
 
             //__________________________________________________________________
             //
-            // at this point, E0, beta and C are set
+            // at this point, E0, beta and Ctry are set
             //__________________________________________________________________
             if(E0<=0)
             {
@@ -160,6 +164,11 @@ namespace yocto
                 tao::set(C0,Ctry,M);
                 return true;
             }
+
+            //__________________________________________________________________
+            //
+            // End of initialization
+            //__________________________________________________________________
             tao::set(C,Ctry);
         CYCLE:
             {
@@ -168,8 +177,6 @@ namespace yocto
                 // at this point, E0, beta and C are set: compute
                 // the descent direction
                 //______________________________________________________________
-                std::cerr << "balance.E0=" << E0 << std::endl;
-                
                 tao::mul(xi,Nu,beta);
                 for(size_t i=N;i>0;--i)
                 {
@@ -178,8 +185,8 @@ namespace yocto
                 }
                 tao::mul(dC,NuT,xi);
                 
-                std::cerr << "C   =" << C    << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
+                //std::cerr << "C   =" << C    << std::endl;
+                //std::cerr << "beta=" << beta << std::endl;
 
                 
                 //______________________________________________________________
@@ -194,8 +201,8 @@ namespace yocto
                     bracket<double>::expand(callE,xx,ff);
                     xx.co_sort(ff);
                     __optimize(callE,xx,ff);
-                    alpha = max_of<double>(xx.b,0);
-                    E1    = callE(alpha);
+                    alpha = max_of<double>(xx.b,0); // never go back
+                    E1    = __callE(alpha);
                 }
                 std::cerr << "E1(" << alpha << ")=" << E1 << "/" << E0 << std::endl;
 
@@ -206,19 +213,38 @@ namespace yocto
                 double rms = 0;
                 for(size_t j=M;j>0;--j)
                 {
-                    rms += square_of( dC[j] = Ctry[j]-C[j] );
+                    const double d  = Ctry[j] - C[j];
+                    const double d2 = d*d;
+                    if(d2>numeric<double>::tiny)
+                    {
+                        rms += d2;
+                        dC[j] = d;
+                    }
+                    else
+                    {
+                        dC[j] = 0;
+                    }
                     C[j] = Ctry[j];
                 }
 
                 if(E1<=0)
                 {
                     std::cerr << "balance.success" << std::endl;
-                    tao::set(C0,Ctry,M);
+                    for(size_t j=M;j>0;--j)
+                    {
+                        if(active[j])
+                        {
+                            assert(Ctry[j]>=0);
+                            C0[j] = Ctry[j];
+                        }
+
+                    }
                     return true;
                 }
+
                 rms = sqrt(rms/M);
-                std::cerr << "balance.rms=" << rms << std::endl;
-                if(E1>=E0)
+                std::cerr << "rms=" << rms << std::endl;
+                if(E1>=E0 || rms<=0 )
                 {
                     std::cerr << "balance.reached_minimum" << std::endl;
                     goto CHECK;
@@ -226,12 +252,48 @@ namespace yocto
 
                 E0 = E1;
                 goto CYCLE;
-
-
-                exit(0);
             }
+
         CHECK:
             std::cerr << "balance.check" << std::endl;
+            std::cerr << "C =" << C  << std::endl;
+            for(size_t i=N;i>0;--i)
+            {
+                std::cerr << "|_checking for '" << peqs[i]->name << "'" << std::endl;
+                const array<double> &nu = Nu[i];
+                double vmax = 0;
+                size_t nbad = 0;
+                for(size_t j=M;j>0;--j)
+                {
+                    if(Fabs(nu[j])>0)
+                    {
+                        assert(active[j]);
+                        const double c = C[j];
+                        const double v = Fabs(c);
+                        if(c<0)
+                        {
+                            ++nbad;
+                        }
+                        dC[j] = c;
+                        if(v>vmax)
+                        {
+                            vmax = v;
+                        }
+                    }
+                    else
+                    {
+                        dC[j] = 0;
+                    }
+                }
+                if(nbad<=0)
+                {
+                    std::cerr << "balance.cleared" << std::endl;
+                    tao::set(C0,C,M);
+                    return true;
+                }
+                std::cerr << "C=" << dC << std::endl;
+                std::cerr << "vmax=" << vmax << std::endl;
+            }
 
             exit(0);
 
