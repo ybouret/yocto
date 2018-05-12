@@ -182,28 +182,13 @@ namespace yocto
                 for(size_t i=N;i>0;--i)
                 {
                     assert(nu2[i]>0);
-                    const double extent = (xi[i] /= nu2[i]);
-                    std::cerr << ".." << peqs[i]->name << " : xi_guess=" << extent << " : ";
-                    if(extent>0)
-                    {
-                        peqs[i]->compute_forward(rng,C);
-                        std::cerr << " fwd: " << rng << std::endl;
-                    }
-                    else if(extent<0)
-                    {
-                        peqs[i]->compute_reverse(rng,C);
-                        std::cerr << " rng: " << rng << std::endl;
-                    }
-                    else
-                    {
-                        std::cerr << " nope" << std::endl;
-                    }
+                    (xi[i] /= nu2[i]);
                 }
                 tao::mul(dC,NuT,xi);
                 std::cerr << "C   =" << C    << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
                 std::cerr << "desc=" << dC   << std::endl;
-                //exit(0);
+                exit(0);
                 
                 //______________________________________________________________
                 //

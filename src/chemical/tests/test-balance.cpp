@@ -115,11 +115,13 @@ YOCTO_UNIT_TEST_IMPL(balance2)
 
     vector<double> C0(cs.M,0);
 
-#if 0
+#if 1
     C0[3] = -0.1;
     C0[4] = 0.2;
 #else
     C0[1] = -0.1;
+    //C0[3] = -0.1;
+    //C0[4] = 0.2;
 #endif
 
     lib.display(C0);
