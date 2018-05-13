@@ -91,22 +91,23 @@ namespace yocto
                 {
                     // compute trial concentration
                     const double Cj = (Ctry[j]=C[j]+alpha*dC[j]);
-                    if(Cj<0)
+                    const double Cj2 = Cj*Cj;
+                    if(Cj2>=numeric<double>::tiny)
                     {
-                        const double Cj2=Cj*Cj;
-                        if(Cj2>=numeric<double>::tiny)
+                        // significant
+                        if(Cj<0)
                         {
-                            // is significant
                             beta[j] = -Cj;
-                            E += Cj2;
+                            E      += Cj2;
                         }
-                        else
-                        {
-                            // not significant
-                            Ctry[j] = 0;
-                            assert(Fabs(beta[j])<=0);
-                        }
+                        // else nothing to do
                     }
+                    else
+                    {
+                        // not significant, positive of negative, set to zero
+                        Ctry[j] = 0;
+                    }
+
                 }
                 else
                 {
@@ -140,10 +141,23 @@ namespace yocto
 
         }
 
+        static inline
+        void __find_optimal(const double E0,
+                            double      &alpha,
+                            double      &E1,
+                            numeric<double>::function &F) throw()
+        {
+            triplet<double> xx = { 0,  alpha, alpha };
+            triplet<double> ff = { E0, E1,    E1    };
+            bracket<double>::expand(F,xx,ff);
+            xx.co_sort(ff);
+            __optimize(F,xx,ff);
+            alpha = max_of<double>(xx.b,0); // never go back
+            E1    = F(alpha);
+        }
+
         bool equilibria:: balance(array<double> &C0) throw()
         {
-            equilibrium::range rng;
-
             //__________________________________________________________________
             //
             // initialize: transfert and compute first E
@@ -184,48 +198,19 @@ namespace yocto
                     (xi[i] /= nu2[i]);
                 }
                 tao::mul(dC,NuT,xi);
-                std::cerr << "C   =" << C    << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
-                std::cerr << "desc=" << dC   << std::endl;
-                
+
                 //______________________________________________________________
                 //
-                // line minimization
+                // line minimization: a new Ctry is updated with beta@Ctry
                 //______________________________________________________________
                 double alpha = 1;
                 double E1    = callE(alpha);
-                {
-                    triplet<double> xx = { 0,  alpha, alpha };
-                    triplet<double> ff = { E0, E1,    E1    };
-                    bracket<double>::expand(callE,xx,ff);
-                    xx.co_sort(ff);
-                    __optimize(callE,xx,ff);
-                    alpha = max_of<double>(xx.b,0); // never go back
-                    E1    = __callE(alpha);
-                }
-                //std::cerr << "E1(" << alpha << ")=" << E1 << "/" << E0 << std::endl;
+                __find_optimal(E0,alpha,E1,callE);
 
                 //______________________________________________________________
                 //
                 // early return ?
                 //______________________________________________________________
-                double rms = 0;
-                for(size_t j=M;j>0;--j)
-                {
-                    const double d  = Ctry[j] - C[j];
-                    const double d2 = d*d;
-                    if(d2>numeric<double>::tiny)
-                    {
-                        rms += d2;
-                        dC[j] = d;
-                    }
-                    else
-                    {
-                        dC[j] = 0;
-                    }
-                    C[j] = Ctry[j];
-                }
-
                 if(E1<=0)
                 {
                     std::cerr << "balance.success" << std::endl;
@@ -236,16 +221,17 @@ namespace yocto
                             assert(Ctry[j]>=0);
                             C0[j] = Ctry[j];
                         }
-
                     }
                     return true;
                 }
 
-                rms = sqrt(rms/M);
-                //std::cerr << "rms=" << rms << std::endl;
-                if(E1>=E0
-                   //|| rms<=0
-                   )
+
+                //______________________________________________________________
+                //
+                // update result
+                //______________________________________________________________
+                tao::set(C,Ctry);
+                if(E1>=E0)
                 {
                     std::cerr << "balance.reached_minimum@" << E1 << std::endl;
                     goto CHECK;
@@ -257,45 +243,52 @@ namespace yocto
 
         CHECK:
             std::cerr << "balance.check" << std::endl;
-            std::cerr << "C =" << C  << std::endl;
+            std::cerr << "C=" << C << std::endl;
             for(size_t j=M;j>0;--j)
             {
                 const double Cj = C[j];
-                if(!active[j] || Cj>=0) continue; // good...
-                std::cerr << "..checking C[" << j << "]=" << Cj << std::endl;
-                bool can_be_zero = true;
-                bool was_met     = false;
-
-                // loop over equilibria
+                if(!active[j] || Cj>=0 ) continue;
+                assert(active[j]&&Cj<0);
+                std::cerr << "resorbing C[" << j << "]=" << Cj << std::endl;
+                bool was_met = false;
+                bool is_zero = true;
                 for(size_t i=N;i>0;--i)
                 {
-                    const array<double> &nu   = Nu[i];
-                    const double        coeff = Fabs(nu[j]);
-                    std::cerr << "|_in '" << peqs[i]->name << "'" << std::endl;
-                    if(coeff<=0)
-                    {
-                        std::cerr << "|_not involved" << std::endl;
-                        continue;
-                    }
-                    was_met = true;
-                    const double dxi = -Cj/coeff;
-                    std::cerr << "dxi=" << dxi << std::endl;
+                    const array<double> &nu_i   = Nu[i];
+                    const double         nu_ij  = nu_i[j]; if(Fabs(nu_ij)<=0) continue;
+                    const double         extent = Fabs(Cj/nu_ij);
+                    std::cerr << "zero_xi=" << extent << std::endl;
                     for(size_t k=M;k>0;--k)
                     {
-                        if(!active[k]) continue;
-                        const double Ck = C[k];
-                        if(Ck>=0)
+                        const double nu_ik = nu_i[k];  if(Fabs(nu_ik)<=0) continue;
+                        const double Ck    = C[k];     if(Ck<0) continue;
+                        const double delta = Fabs(nu_ik*extent);
+                        was_met = true;
+                        std::cerr << "..checked in " << peqs[i]->name << " | delta=" << delta << " / C[" << k << "]=" << Ck << std::endl;
+                        if( delta > numeric<double>::ftol * Ck )
                         {
-                            
+                            is_zero = false;
+                            break;
                         }
                     }
                 }
-
+                std::cerr << "was_met=" << was_met << std::endl;
+                std::cerr << "is_zero=" << is_zero << std::endl;
+                if(was_met&&is_zero)
+                {
+                    C[j] = 0;
+                }
+                else
+                {
+                    std::cerr << "balance.blocked" << std::endl;
+                    return false;
+                }
             }
-            exit(0);
-
+            tao::set(C0,C,M);
+            return true;
         }
-        
+
+#if 0
         bool equilibria:: balance2(array<double> &C0) throw()
         {
             // Initialize E0 and beta
@@ -337,7 +330,7 @@ namespace yocto
             exit(0);
 
         }
-
+#endif
 
         
     }
