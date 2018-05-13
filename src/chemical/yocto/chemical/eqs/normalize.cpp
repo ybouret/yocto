@@ -57,14 +57,11 @@ namespace yocto
             return GammaToScalar();
         }
 
-#if 0
         static inline
         void __optimize(math::numeric<double>::function &F,
                         triplet<double>                 &XX,
                         triplet<double>                 &FF) throw()
         {
-
-            bracket<double>::inside(F, XX, FF);
 
             double width = XX.c-XX.a; assert(width>=0);
             while(true)
@@ -80,8 +77,7 @@ namespace yocto
             }
 
         }
-#endif
-        
+
         
         void equilibria:: compute_full_step()
         {
@@ -98,7 +94,7 @@ namespace yocto
 
         bool equilibria:: normalize(array<double> &C0, const double t) throw()
         {
-            //const double threshold = numeric<double>::ftol;
+            const double threshold = numeric<double>::ftol;
 
             for(size_t j=M;j>0;--j)
             {
@@ -107,11 +103,13 @@ namespace yocto
 
             if(!balance(Cini))
             {
-                std::cerr << "normalize: couldn't balance initial concentrations" << std::endl;
                 return false;
             }
 
+            //__________________________________________________________________
+            //
             // initialize K, Gamma, Phi @Cini
+            //__________________________________________________________________
             initializeGammaAndPhi(Cini,t);
             double Gamma0 = GammaToScalar();
             size_t cycle  = 0;
@@ -123,11 +121,9 @@ namespace yocto
                 // at this point, Cini is valid, Gamma and Phi are computed@Cini
                 // => compute the full Newton's step
                 //______________________________________________________________
-                std::cerr << "Cini=" << Cini << "; Gamma0=" << Gamma0 << std::endl;
                 tao::mmul_rtrn(W,Phi,Nu);
                 if(!LU<double>::build(W))
                 {
-                    std::cerr << "normalize: singular system" << std::endl;
                     return false;
                 }
                 tao::neg(xi,Gamma);
@@ -136,7 +132,7 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // this is Newton's predicted concentration
+                // this is Newton's predicted concentration in C
                 //______________________________________________________________
                 tao::setsum(C,Cini,dC);
 
@@ -146,114 +142,79 @@ namespace yocto
                 //______________________________________________________________
                 if(!balance(C))
                 {
-                    std::cerr << "normalize: couldn't balance internal concentrations" << std::endl;
+                    // unable to balance...
                     return false;
                 }
-                tao::setvec(dC,C,Cini);
-                updateGamma(C);
-                double Gamma1 = GammaToScalar();
-                std::cerr << "Gamma: " << Gamma0 << " -> " << Gamma1 << std::endl;
-                if(Gamma1<=Gamma0)
-                {
-                    // check convergence
 
-                    // ready for next step
-                    tao::set(Cini,C);
-                    updatePhi(Cini);
-                    Gamma0 = Gamma1;
-                    if(cycle>=100)
-                    {
-                        std::cerr << "exit@cycle=" << cycle << std::endl;
-                        exit(0);
-                    }
-                }
-                else
-                {
-                    std::cerr << "backtrack!" << std::endl;
-
-                }
-
-            }
-
-            return false;
-
-#if 0
-            //__________________________________________________________________
-            //
-            // transfer data
-            //__________________________________________________________________
-            for(size_t j=M;j>0;--j)
-            {
-                C[j] = C0[j];
-                if(active[j]&&C[j]<0)
-                {
-                    throw exception("%sinvalid initial concentration",fn);
-                }
-            }
-            
-
-            // initialize K, Gamma, Phi, and GS
-            initializeGammaAndPhi(C,t);
-            
-            while(true)
-            {
                 //______________________________________________________________
                 //
-                // at this point, C is valid, Gamma and Phi are computed@C
+                // compute the effective dC, and update Gamma@C
                 //______________________________________________________________
-                //std::cerr << "Cini =" << C     << std::endl;
-                //std::cerr << "Gamma=" << Gamma << std::endl;
-                compute_full_step();
-                
-                size_t nbad = 0;
-                for(size_t j=M;j>0;--j)
+                tao::setvec(dC,Cini,C);
+                updateGamma(C);
+
+                //______________________________________________________________
+                //
+                // must be a total decreasing step in direction dC
+                //______________________________________________________________
+                double Gamma1 = GammaToScalar();
+                std::cerr << "Gamma: " << Gamma0 << " -> " << Gamma1 << std::endl;
+
+                //______________________________________________________________
+                //
+                // at this point,
+                // a balanced C, and Gamma1=|Gamma|@C are computed
+                //______________________________________________________________
+                if(Gamma1>Gamma0)
                 {
-                    Ctry[j] = C[j]; // save
-                    const double Cj =  (C[j]+=dC[j]);
-                    if(active[j]&&Cj<0)
+                    triplet<double> aa = { 0,      1,      1      };
+                    triplet<double> gg = { Gamma0, Gamma1, Gamma1 };
+                    bracket<double>::expand(normGamma,aa,gg);
+                    aa.co_sort(gg);
+                    __optimize(normGamma,aa,gg);
+                    std::cerr << "aa=" << aa << std::endl;
+                    std::cerr << "gg=" << gg << std::endl;
+                    Gamma1 = __normGamma(max_of<double>(aa.b,0.0));
+
+                    // retrieve C and dC from trial
+                    // Gamma is updated@Ctry
+                    for(size_t j=M;j>0;--j)
                     {
-                        ++nbad;
+                        C[j]  = Ctry[j];
+                        dC[j] = C[j]-Cini[j];
                     }
                 }
-                if(nbad)
-                {
-                    std::cerr << "Bad!" << std::endl;
-                    std::cerr << "C=" << C << std::endl;
-                    if(!balance(C))
-                    {
-                        throw exception("%sunable to internally balance",fn);
-                    }
-                    else
-                    {
-                        std::cerr << "balanced..." << std::endl;
-                        std::cerr << "C=" << C << std::endl;
-                    }
-                }
+                assert(Gamma1<=Gamma0);
+
+                //______________________________________________________________
+                //
+                // at this point,
+                // a balanced C, and Gamma1=|Gamma|@C are computed, Gamma1<=Gamma0
+                //______________________________________________________________
                 bool converged = true;
+                std::cerr << "dC=" << dC << std::endl;
                 for(size_t j=M;j>0;--j)
                 {
-                    if(active[j])
+                    const double c_old = Cini[j];
+                    const double c_new = C[j];
+                    const double delta = Fabs(dC[j]);
+                    if( (delta+delta) > threshold*( Fabs(c_old) + Fabs(c_new) ) )
                     {
-                        const double c_new = C[j];
-                        const double c_old = Ctry[j];
-                        const double dC = Fabs(c_new-c_old);
-                        const double CC = Fabs(c_new)+Fabs(c_old);
-                        if(dC>threshold*CC)
-                        {
-                            converged=false;
-                            break;
-                        }
+                        converged = false;
                     }
+                    Cini[j] = C[j];
                 }
                 if(converged)
                 {
-                    std::cerr << "Converged" << std::endl;
-                    break;
+                    std::cerr << "converged" << std::endl;
+                    tao::set(C0,Cini,M);
+                    return true;
                 }
-                updateGammaAndPhi(C);
+                updatePhi(Cini);
+                Gamma0=Gamma1;
             }
-            tao::set(C0,C,M);
-#endif
+
+            return false;
         }
 
         
