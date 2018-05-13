@@ -80,12 +80,7 @@ namespace yocto
 
         }
 
-        double equilibria:: __callG(double alpha)
-        {
-            assert(pEq!=NULL);
-            tao::setprobe(Ctry, C,alpha, dC);
-            return square_of(pEq->computeGamma(Ctry,KEq));
-        }
+        
         
         void equilibria:: compute_full_step()
         {

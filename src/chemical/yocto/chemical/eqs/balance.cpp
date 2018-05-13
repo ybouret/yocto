@@ -81,7 +81,9 @@ namespace yocto
         }
 
 
-        double equilibria:: __callE(double alpha)
+
+        
+        double equilibria:: __Balance(double alpha)
         {
             double E = 0;
             for(size_t j=M;j>0;--j)
@@ -140,33 +142,21 @@ namespace yocto
             }
 
         }
-
-        static inline
-        void __find_optimal(const double E0,
-                            double      &alpha,
-                            double      &E1,
-                            numeric<double>::function &F) throw()
-        {
-            triplet<double> xx = { 0,  alpha, alpha };
-            triplet<double> ff = { E0, E1,    E1    };
-            bracket<double>::expand(F,xx,ff);
-            xx.co_sort(ff);
-            __optimize(F,xx,ff);
-            alpha = max_of<double>(xx.b,0); // never go back
-            E1    = F(alpha);
-        }
+        
 
         bool equilibria:: balance(array<double> &C0) throw()
         {
             //__________________________________________________________________
             //
+            //
             // initialize: transfert and compute first E
+            //
             //__________________________________________________________________
             for(size_t j=M;j>0;--j)
             {
                 C[j]  = C0[j];
             }
-            double E0 = __callE(0.0);
+            double E0 = __Balance(0.0);
 
             //__________________________________________________________________
             //
@@ -181,7 +171,7 @@ namespace yocto
 
             //__________________________________________________________________
             //
-            // End of initialization
+            // End of initialization: set C to controlled Ctry
             //__________________________________________________________________
             tao::set(C,Ctry);
         CYCLE:
@@ -204,8 +194,16 @@ namespace yocto
                 // line minimization: a new Ctry is updated with beta@Ctry
                 //______________________________________________________________
                 double alpha = 1;
-                double E1    = callE(alpha);
-                __find_optimal(E0,alpha,E1,callE);
+                double E1    = __Balance(alpha);
+                {
+                    triplet<double> xx = { 0,  alpha, alpha };
+                    triplet<double> ff = { E0, E1,    E1    };
+                    bracket<double>::expand(Balance,xx,ff);
+                    xx.co_sort(ff);
+                    __optimize(Balance,xx,ff);
+                    alpha = max_of<double>(xx.b,0); // never go back
+                    E1    = __Balance(alpha);
+                }
 
                 //______________________________________________________________
                 //
@@ -244,27 +242,42 @@ namespace yocto
         CHECK:
             std::cerr << "balance.check" << std::endl;
             std::cerr << "C=" << C << std::endl;
+
+            //__________________________________________________________________
+            //
+            //
+            // check invalid values to see if balanced is kept by zeroing them
+            // in all involved equilibria
+            //
+            //__________________________________________________________________
             for(size_t j=M;j>0;--j)
             {
                 const double Cj = C[j];
                 if(!active[j] || Cj>=0 ) continue;
                 assert(active[j]&&Cj<0);
-                std::cerr << "resorbing C[" << j << "]=" << Cj << std::endl;
-                bool was_met = false;
-                bool is_zero = true;
+                bool was_met = false; //!< because all concentration may be negative for one equilibrium => not tested! => Bad
+                bool is_zero = true;  //!< is can be zeroed
+
+                //______________________________________________________________
+                //
+                // loop over all reactions
+                //______________________________________________________________
                 for(size_t i=N;i>0;--i)
                 {
                     const array<double> &nu_i   = Nu[i];
                     const double         nu_ij  = nu_i[j]; if(Fabs(nu_ij)<=0) continue;
-                    const double         extent = Fabs(Cj/nu_ij);
-                    std::cerr << "zero_xi=" << extent << std::endl;
+                    const double         extent = Fabs(Cj/nu_ij); //!< the absolute extent
+
+                    //__________________________________________________________
+                    //
+                    // loop over other components
+                    //__________________________________________________________
                     for(size_t k=M;k>0;--k)
                     {
-                        const double nu_ik = nu_i[k];  if(Fabs(nu_ik)<=0) continue;
-                        const double Ck    = C[k];     if(Ck<0) continue;
+                        const double nu_ik = nu_i[k];  if(Fabs(nu_ik)<=0) continue; assert(active[k]);
+                        const double Ck    = C[k];     if(Ck<0)           continue; assert(k!=j);
                         const double delta = Fabs(nu_ik*extent);
                         was_met = true;
-                        std::cerr << "..checked in " << peqs[i]->name << " | delta=" << delta << " / C[" << k << "]=" << Ck << std::endl;
                         if( delta > numeric<double>::ftol * Ck )
                         {
                             is_zero = false;
@@ -287,51 +300,6 @@ namespace yocto
             tao::set(C0,C,M);
             return true;
         }
-
-#if 0
-        bool equilibria:: balance2(array<double> &C0) throw()
-        {
-            // Initialize E0 and beta
-            tao::set(C,C0,M);
-
-            // at this point, E0, C and beta are computed
-            //std::cerr << "beta=" << beta << "; E0=" << E0 << std::endl;
-            for(size_t i=N;i>0;--i)
-            {
-                std::cerr << "\t...resorbing with " << peqs[i]->name << std::endl;
-                double E0 = __callE(0);
-                std::cerr << "C=" << C << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
-                double alpha = 0;
-                {
-                    const array<double> &nu_i = Nu[i];
-                    for(size_t j=M;j>0;--j)
-                    {
-                        const double nu_ij = nu_i[j];
-                        dC[j]   =  nu_ij;
-                        alpha  +=  nu_ij*beta[j];
-                    }
-                    alpha /= nu2[i];
-                }
-                std::cerr << "alpha=" << alpha << std::endl;
-                std::cerr << "dC   =" << dC << std::endl;
-                double E1 = __callE(alpha);
-                {
-                    triplet<double> aa = { 0,  alpha, alpha };
-                    triplet<double> ee = { E0, E1,    E1    };
-                    bracket<double>::expand(callE,aa,ee);
-                    aa.co_sort(ee);
-                    std::cerr << "alpha=" << aa << std::endl;
-                    std::cerr << "value=" << ee << std::endl;
-                }
-                std::cerr << std::endl;
-            }
-
-            exit(0);
-
-        }
-#endif
-
         
     }
 }

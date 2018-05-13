@@ -2,9 +2,11 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/chemical/library.hpp"
+#include "yocto/math/core/tao.hpp"
 
 using namespace yocto;
 using namespace chemical;
+using namespace math;
 
 YOCTO_UNIT_TEST_IMPL(balance)
 {
@@ -115,14 +117,10 @@ YOCTO_UNIT_TEST_IMPL(balance2)
 
     vector<double> C0(cs.M,0);
 
-#if 1
+
+    tao::ld(C0,0);
     C0[3] = -0.1;
     C0[4] = 0.2;
-#else
-    C0[1] = -0.1;
-    //C0[3] = -0.1;
-    //C0[4] = 0.2;
-#endif
 
     lib.display(C0);
     std::cerr << "Nu=" << cs.Nu << std::endl;
@@ -131,6 +129,17 @@ YOCTO_UNIT_TEST_IMPL(balance2)
         std::cerr << "balanced" << std::endl;
         lib.display(C0);
     }
+
+    tao::ld(C0,0);
+    C0[1] = -0.1;
+    lib.display(C0);
+    std::cerr << "Nu=" << cs.Nu << std::endl;
+    if(cs.balance(C0))
+    {
+        std::cerr << "balanced" << std::endl;
+        lib.display(C0);
+    }
+
 
 
 }
