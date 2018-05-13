@@ -87,6 +87,7 @@ namespace yocto
             Nu.     release();
             beta.   release();
             peqs.   release();
+            Cini.   release();
 
             Ctry.   release();
             active. release();
@@ -123,6 +124,7 @@ namespace yocto
 
                 if(N>0)
                 {
+                    Cini.  make(M);
                     peqs.  make(N);
                     Nu.    make(N,M);
                     NuT.   make(M,N);

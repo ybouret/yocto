@@ -89,12 +89,16 @@ YOCTO_UNIT_TEST_IMPL(norm)
         //C0[2] = 0.1;
         lib.display(C0);
         std::cerr << "<normalizing>" << std::endl;
-        cs.normalize(C0,0.0);
-        std::cerr << "<normalizing/>" << std::endl;
-        lib.display(C0);
+        if(cs.normalize(C0,0.0))
+        {
+            lib.display(C0);
+        }
+        else
+        {
+            std::cerr << "Couldn't normalize!" << std::endl;
+        }
         break;
     }
-    std::cerr << "Nu=" << cs.Nu << std::endl;
     std::cerr << cs << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()

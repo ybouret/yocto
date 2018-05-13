@@ -47,7 +47,7 @@ namespace yocto
         {
             for(size_t j=M;j>0;--j)
             {
-                const double Cj = (Ctry[j]=C[j]+alpha*dC[j]);
+                const double Cj = (Ctry[j]=Cini[j]+alpha*dC[j]);
                 if(active[j]&&(Cj<0))
                 {
                     Ctry[j] = 0;
@@ -57,6 +57,7 @@ namespace yocto
             return GammaToScalar();
         }
 
+#if 0
         static inline
         void __optimize(math::numeric<double>::function &F,
                         triplet<double>                 &XX,
@@ -79,14 +80,12 @@ namespace yocto
             }
 
         }
-
+#endif
         
         
         void equilibria:: compute_full_step()
         {
-            //std::cerr << "Phi=" << Phi << std::endl;
             tao::mmul_rtrn(W,Phi,Nu);
-            //std::cerr << "W=" << W << std::endl;
             if(!LU<double>::build(W))
             {
                 throw exception("%ssingular set of concentrations",fn);
@@ -94,15 +93,91 @@ namespace yocto
             tao::neg(xi,Gamma);
             LU<double>::solve(W,xi);
             tao::mul(dC,NuT,xi);
-            //std::cerr << "xi  =" << xi << std::endl;
-            //std::cerr << "dC  =" << dC << std::endl;
         }
 
 
-        void equilibria:: normalize(array<double> &C0, const double t)
+        bool equilibria:: normalize(array<double> &C0, const double t) throw()
         {
-            const double threshold = numeric<double>::ftol;
-            
+            //const double threshold = numeric<double>::ftol;
+
+            for(size_t j=M;j>0;--j)
+            {
+                Cini[j] = C0[j];
+            }
+
+            if(!balance(Cini))
+            {
+                std::cerr << "normalize: couldn't balance initial concentrations" << std::endl;
+                return false;
+            }
+
+            // initialize K, Gamma, Phi @Cini
+            initializeGammaAndPhi(Cini,t);
+            double Gamma0 = GammaToScalar();
+            size_t cycle  = 0;
+            while(true)
+            {
+                ++cycle;
+                //______________________________________________________________
+                //
+                // at this point, Cini is valid, Gamma and Phi are computed@Cini
+                // => compute the full Newton's step
+                //______________________________________________________________
+                std::cerr << "Cini=" << Cini << "; Gamma0=" << Gamma0 << std::endl;
+                tao::mmul_rtrn(W,Phi,Nu);
+                if(!LU<double>::build(W))
+                {
+                    std::cerr << "normalize: singular system" << std::endl;
+                    return false;
+                }
+                tao::neg(xi,Gamma);
+                LU<double>::solve(W,xi);
+                tao::mul(dC,NuT,xi);
+
+                //______________________________________________________________
+                //
+                // this is Newton's predicted concentration
+                //______________________________________________________________
+                tao::setsum(C,Cini,dC);
+
+                //______________________________________________________________
+                //
+                // which must be balanced
+                //______________________________________________________________
+                if(!balance(C))
+                {
+                    std::cerr << "normalize: couldn't balance internal concentrations" << std::endl;
+                    return false;
+                }
+                tao::setvec(dC,C,Cini);
+                updateGamma(C);
+                double Gamma1 = GammaToScalar();
+                std::cerr << "Gamma: " << Gamma0 << " -> " << Gamma1 << std::endl;
+                if(Gamma1<=Gamma0)
+                {
+                    // check convergence
+
+                    // ready for next step
+                    tao::set(Cini,C);
+                    updatePhi(Cini);
+                    Gamma0 = Gamma1;
+                    if(cycle>=100)
+                    {
+                        std::cerr << "exit@cycle=" << cycle << std::endl;
+                        exit(0);
+                    }
+                }
+                else
+                {
+                    std::cerr << "backtrack!" << std::endl;
+
+                }
+
+            }
+
+            return false;
+
+#if 0
             //__________________________________________________________________
             //
             // transfer data
@@ -178,7 +253,7 @@ namespace yocto
                 updateGammaAndPhi(C);
             }
             tao::set(C0,C,M);
-            
+#endif
         }
 
         

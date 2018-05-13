@@ -35,8 +35,9 @@ namespace yocto
             vector<double> dC;
             vector<bool>   active;
             vector<double> Ctry;
-            
-            // N dependent objects
+
+            // N dependent objects, if some equilibrium
+            vector<double> Cini;
             vector<eqptr>  peqs;   //!< fast access to equilibria
             vector<double> beta;   //!< if negative active species [M]
             matrix<double> Nu;     //!< topology    [NxM]
@@ -72,7 +73,7 @@ namespace yocto
             bool balance(array<double> &C0) throw();
 
             //! normalize a balanced concentration
-            void normalize( array<double> &C0, const double t );
+            bool normalize( array<double> &C0, const double t ) throw();
             
             std::ostream & spaces_for( const string &id, std::ostream &os ) const;
 
