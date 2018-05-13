@@ -86,6 +86,7 @@ namespace yocto
             double E = 0;
             for(size_t j=M;j>0;--j)
             {
+                beta[j] = 0;
                 if(active[j])
                 {
                     // compute trial concentration
@@ -103,7 +104,6 @@ namespace yocto
                         {
                             // not significant
                             Ctry[j] = 0;
-                            beta[j] = 0;
                             assert(Fabs(beta[j])<=0);
                         }
                     }
@@ -112,7 +112,6 @@ namespace yocto
                 {
                     // just copy data
                     assert(Fabs(dC[j])<=0);
-                    beta[j] = 0;
                     Ctry[j] = C[j];
                 }
             }
@@ -188,7 +187,6 @@ namespace yocto
                 std::cerr << "C   =" << C    << std::endl;
                 std::cerr << "beta=" << beta << std::endl;
                 std::cerr << "desc=" << dC   << std::endl;
-                exit(0);
                 
                 //______________________________________________________________
                 //
@@ -300,35 +298,42 @@ namespace yocto
         
         bool equilibria:: balance2(array<double> &C0) throw()
         {
-            matrix<double> U(M,M);
-            tao::mmul(U,NuT,Nu);
-            std::cerr << "Q=" << U << std::endl;
-            matrix<double> V(M,M);
-            vector<double> w(M,0);
-            if(!svd<double>::build(U,w,V))
-            {
-                std::cerr << "no svd" << std::endl;
-                exit(1);
-            }
-            std::cerr << "w=" << w << std::endl;
-            svd<double>::set_image_dimension(w,N);
-            std::cerr << "w=" << w << std::endl;
-            std::cerr << "U=" << U << std::endl;
-            std::cerr << "V=" << V << std::endl;
+            // Initialize E0 and beta
+            tao::set(C,C0,M);
 
-            for(size_t j=M;j>0;--j)
+            // at this point, E0, C and beta are computed
+            //std::cerr << "beta=" << beta << "; E0=" << E0 << std::endl;
+            for(size_t i=N;i>0;--i)
             {
-                beta[j] = 0;
-                const double Cj = (C[j]=C0[j]);
-                if(active[j]&&Cj<0)
+                std::cerr << "\t...resorbing with " << peqs[i]->name << std::endl;
+                double E0 = __callE(0);
+                std::cerr << "C=" << C << std::endl;
+                std::cerr << "beta=" << beta << std::endl;
+                double alpha = 0;
                 {
-                    beta[j] = -Cj;
+                    const array<double> &nu_i = Nu[i];
+                    for(size_t j=M;j>0;--j)
+                    {
+                        const double nu_ij = nu_i[j];
+                        dC[j]   =  nu_ij;
+                        alpha  +=  nu_ij*beta[j];
+                    }
+                    alpha /= nu2[i];
                 }
+                std::cerr << "alpha=" << alpha << std::endl;
+                std::cerr << "dC   =" << dC << std::endl;
+                double E1 = __callE(alpha);
+                {
+                    triplet<double> aa = { 0,  alpha, alpha };
+                    triplet<double> ee = { E0, E1,    E1    };
+                    bracket<double>::expand(callE,aa,ee);
+                    aa.co_sort(ee);
+                    std::cerr << "alpha=" << aa << std::endl;
+                    std::cerr << "value=" << ee << std::endl;
+                }
+                std::cerr << std::endl;
             }
-            std::cerr << "C="    << C    << std::endl;
-            std::cerr << "beta=" << beta << std::endl;
-            svd<double>::solve(U,w,V,beta,dC);
-            std::cerr << "lam=" << dC << std::endl;
+
             exit(0);
 
         }
