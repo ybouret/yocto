@@ -77,8 +77,8 @@ namespace yocto
             matrix<double> P;
             vector<double> Lam;
             vector<double> Cstar;
-            matrix<double> aNu2;
-            double         dNu2;
+            void compute_Cstar();
+
             void clear() throw();
         };
 

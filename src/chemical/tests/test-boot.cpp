@@ -76,7 +76,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
 
     boot loader("ini");
     loader.electroneutrality(lib);
-    loader.conserve(0,AH,Am);
+    loader.conserve(0.0,AH,Am);
     loader.conserve(0.0,Na,Cl);
     loader.conserve(0.0,Na);
 

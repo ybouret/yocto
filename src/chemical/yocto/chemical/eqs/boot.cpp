@@ -2,6 +2,7 @@
 #include "yocto/chemical/boot.hpp"
 #include "yocto/math/core/tao.hpp"
 #include "yocto/math/core/adjoint.hpp"
+#include "yocto/math/core/svd.hpp"
 
 namespace yocto
 {
@@ -16,6 +17,27 @@ namespace yocto
             Lam.   release();
             P.     release();
 
+        }
+
+
+        void boot:: compute_Cstar()
+        {
+            matrix<double> P2(Nc,Nc);
+            tao::mmul_rtrn(P2,P,P);
+            std::cerr << "P2=" << P2 << std::endl;
+            const double dP2 = determinant(P2);
+            std::cerr << "dP2=" << dP2 << std::endl;
+            if(Fabs(dP2)<=0)
+            {
+                throw exception("boot.%s: singular system of constraints", *name);
+            }
+            matrix<double> aP2(Nc,Nc);
+            adjoint(aP2,P2);
+            std::cerr << "aP2=" << aP2 << std::endl;
+            vector<double> U(Nc,0);
+            tao::mul(U,aP2,Lam);
+            tao::mul_trn(Cstar,P,U);
+            tao::divby(dP2,Cstar);
         }
 
         void  boot:: guess(array<double> &C0,
@@ -47,9 +69,6 @@ namespace yocto
                 Lam.make(Nc,0);
                 Cstar.make(M,0);
 
-
-                //X.make(M);
-
                 for(size_t k=Nc;k>0;--k)
                 {
                     array<double>    &Pk = P[k];
@@ -68,27 +87,7 @@ namespace yocto
                 std::cerr << "Lam=" << Lam << std::endl;
 
                 // construct most precise Cstar
-                {
-                    matrix<double> P2(Nc,Nc);
-                    tao::mmul_rtrn(P2,P,P);
-                    std::cerr << "P2=" << P2 << std::endl;
-                    const double dP2 = determinant(P2);
-                    std::cerr << "dP2=" << dP2 << std::endl;
-                    if(Fabs(dP2)<=0)
-                    {
-                        throw exception("boot.%s: singular system of constraints", *name);
-                    }
-                    matrix<double> aP2(Nc,Nc);
-                    adjoint(aP2,P2);
-                    std::cerr << "aP2=" << aP2 << std::endl;
-                    vector<double> U(Nc,0);
-                    tao::mul(U,aP2,Lam);
-                    std::cerr << "U=" << U << std::endl;
-                    tao::mul_trn(Cstar,P,U);
-                    std::cerr << "Ctmp=" << Cstar << std::endl;
-
-                    tao::divby(dP2,Cstar);
-                }
+                compute_Cstar();
                 std::cerr << "Cstar=" << Cstar << std::endl;
 
 
@@ -101,8 +100,18 @@ namespace yocto
                 std::cerr << "X=" << X << std::endl;
                 std::cerr << "Nu=" << Nu << std::endl;
                 vector<double> V(N,0);
-                cs.compute_extent(V,X);
+                cs.compute_extent(V,X,Cstar);
                 std::cerr << "V=" << V << std::endl;
+
+                vector<double> Y(M,0.1);
+                tao::add(Y,X);
+                std::cerr << "Y0=" << Y << std::endl;
+                cs.compute_extent(V,Y,Cstar);
+                tao::set(Y,Cstar);
+                tao::mul_add(Y,cs.NuT,V);
+                std::cerr << "Y1=" << Y << std::endl;
+                std::cerr << "V1=" << V << std::endl;
+
 
             }
             catch(...)
