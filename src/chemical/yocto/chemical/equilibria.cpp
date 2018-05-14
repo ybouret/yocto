@@ -19,6 +19,10 @@ namespace yocto
         name(id),
         M(0),
         N(0),
+        C(),
+        dC(),
+        active(),
+        Ctry(),
         max_length(0),
         normGamma(this, & equilibria::__normGamma),
         Balance(this, & equilibria::__Balance)

@@ -17,6 +17,8 @@ namespace yocto
         equilibrium:: equilibrium(const string &id) :
         name(id),
         K( this, & equilibrium:: getK ),
+        reactants(),
+        products(),
         nu2(0),
         scale(0)
         {
