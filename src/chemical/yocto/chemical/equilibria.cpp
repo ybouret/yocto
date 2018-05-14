@@ -36,7 +36,7 @@ namespace yocto
         K(),
         Gamma(),
         xi(),
-        GamEV(),
+        gev(),
         max_length(0),
         normGamma(this, & equilibria::__normGamma),
         Balance(this, & equilibria::__Balance)
@@ -94,7 +94,7 @@ namespace yocto
             (size_t &)N   = 0;
             (size_t &)max_length = 0;
 
-            GamEV.  release();
+            gev.    release();
             xi.     release();
             Gamma.  release();
             K.      release();
@@ -154,7 +154,7 @@ namespace yocto
                     K.     make(N);
                     Gamma. make(N);
                     xi.    make(N);
-                    GamEV. make(N);
+                    gev.   make(N);
 
                     //__________________________________________________________
                     //
@@ -167,17 +167,9 @@ namespace yocto
                             equilibrium &eq = **i;
                             eq.fill(Nu[ii],active);
 
-                            const int nuP = eq.productsStoichiometry();
-                            if(nuP>0)
-                            {
-                                GamEV[ii] = 1.0/nuP;
-                            }
-                            else
-                            {
-                                GamEV[ii] = 1.0;
-                            }
-                            nu2[ii]  = eq.nu2;
                             peqs[ii] = &eq;
+                            nu2[ii]  = eq.nu2; assert(nu2[ii]>0);
+                            gev[ii]  = 1.0/sqrt(nu2[ii]);
                         }
                     }
 
@@ -281,7 +273,7 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             double ans = 0;
             for(size_t i=N;i>0;--i)
             {
-                ans += pow( Fabs(Gamma[i]), GamEV[i] );
+                ans += pow( Fabs(Gamma[i]), gev[i] );
             }
             return ans;
         }

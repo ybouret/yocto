@@ -49,7 +49,7 @@ namespace yocto
             vector<double> K;      //!< constants   N
             vector<double> Gamma;  //!< Gamma       N
             vector<double> xi;     //!< extent      N
-            vector<double> GamEV;  //!< Gamma Exponent Values [N]
+            vector<double> gev;    //!< Gamma Exponent Values [N]
             const size_t   max_length;
             
             void compile_for(const library &lib);

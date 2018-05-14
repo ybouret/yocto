@@ -47,8 +47,7 @@ namespace yocto
 
             double computeGamma( const array<double> &C, const double Kt ) const throw();
             void   computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const throw();
-            int    productsStoichiometry() const throw();
-
+            
             double computeGammaLHS(const array<double> &C, const double Kt) const throw();
             double computeGammaRHS(const array<double> &C) const throw();
 
