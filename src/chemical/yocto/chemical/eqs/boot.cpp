@@ -1,9 +1,11 @@
 
 #include "yocto/chemical/boot.hpp"
-
+#include "yocto/math/core/tao.hpp"
 
 namespace yocto
 {
+    using namespace math;
+    
     namespace chemical
     {
         void  boot:: guess(array<double> &C0,
@@ -27,6 +29,7 @@ namespace yocto
 
             matrix<double> P(Nc,M);
             vector<double> Lambda(Nc,0);
+            matrix<double> P2(Nc,Nc);
             for(size_t k=Nc;k>0;--k)
             {
                 const constraint &c = *constraints[k];
@@ -34,6 +37,8 @@ namespace yocto
             }
             std::cerr << "P=" << P << std::endl;
             std::cerr << "Lam=" << Lambda << std::endl;
+            tao::mmul_rtrn(P2,P,P);
+            std::cerr << "P2=" << P2 << std::endl;
         }
     }
 
