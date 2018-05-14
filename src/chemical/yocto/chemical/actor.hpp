@@ -2,6 +2,7 @@
 #define YOCTO_CHEMICAL_ACTOR_INCLUDED 1
 
 #include "yocto/chemical/species.hpp"
+#include "yocto/associative/set.hpp"
 
 namespace yocto
 {
@@ -11,7 +12,8 @@ namespace yocto
         {
         public:
             typedef intr_ptr<string,component> pointer;
-            
+            typedef set<string,pointer>        database;
+
             virtual  ~component() throw();
             explicit  component( species &s, const int coef);
 
