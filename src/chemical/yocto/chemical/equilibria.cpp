@@ -282,6 +282,13 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             return ans;
         }
 
+        void equilibria:: compute_extent( array<double> &V0, const array<double> &C0 ) throw()
+        {
+            assert(C0.size()==M);
+            assert(V0.size()==N);
+            tao::mul(xi,Nu,C0);
+            tao::mul_and_div(V0,aNu2,xi,dNu2);
+        }
 
     }
 }

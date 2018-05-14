@@ -64,6 +64,10 @@ namespace yocto
             constraint & create( const double value );
 
             void electroneutrality( library &lib );
+            void conserve(const double totalC, species &sp1 );
+            void conserve(const double totalC, species &sp1, species &sp2 );
+            void conserve(const double totalC, species &sp1, species &sp2, species &sp3 );
+
 
             friend std::ostream & operator<<( std::ostream  &os, const boot &);
 

@@ -46,7 +46,7 @@ namespace yocto
                 P.make(Nc,M);
                 Lam.make(Nc,0);
                 Cstar.make(M,0);
-                
+
 
                 //X.make(M);
 
@@ -90,6 +90,8 @@ namespace yocto
                     tao::divby(dP2,Cstar);
                 }
                 std::cerr << "Cstar=" << Cstar << std::endl;
+
+
                 vector<double> X(M,0);
                 tao::set(X,Cstar);
                 if(!cs.balance(X))
@@ -98,7 +100,9 @@ namespace yocto
                 }
                 std::cerr << "X=" << X << std::endl;
                 std::cerr << "Nu=" << Nu << std::endl;
-
+                vector<double> V(N,0);
+                cs.compute_extent(V,X);
+                std::cerr << "V=" << V << std::endl;
 
             }
             catch(...)

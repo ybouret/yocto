@@ -11,9 +11,10 @@ YOCTO_UNIT_TEST_IMPL(boot)
     library lib( "lib" );
     species &H   = lib.add("H+",1);
     species &OH  = lib.add("HO-",-1);
-#if 0
+
     species &AH  = lib.add("AH",0);
     species &Am  = lib.add("Am",-1);
+#if 0
     species &NH4 = lib.add("NH4+",1);
     species &NH3 = lib.add("NH3",0);
     species &OxH2 = lib.add("OxH2",0);
@@ -34,7 +35,6 @@ YOCTO_UNIT_TEST_IMPL(boot)
         std::cerr << water << std::endl;
     }
 
-#if 0
     if(true)
     {
         equilibrium &acetic = cs("acetic",pow(10, -4.7));
@@ -44,6 +44,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
         std::cerr << acetic << std::endl;
     }
 
+#if 0
     if(true)
     {
         equilibrium &ammoniac = cs("ammoniac",pow(10,-9.8));
@@ -75,17 +76,10 @@ YOCTO_UNIT_TEST_IMPL(boot)
 
     boot loader("ini");
     loader.electroneutrality(lib);
+    loader.conserve(0,AH,Am);
+    loader.conserve(0.0,Na,Cl);
+    loader.conserve(0.0,Na);
 
-    {
-        boot::constraint &c = loader.create(0.01);
-        c.add(Na,1);
-        c.add(Cl,1);
-    }
-
-    {
-        boot::constraint &c = loader.create(0.0);
-        c.add(Cl,1);
-    }
 
     std::cerr << "loader " << loader.name << ":" << std::endl << loader << std::endl;
     vector<double> C0(cs.M);

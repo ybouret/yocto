@@ -112,6 +112,27 @@ namespace yocto
             }
         }
 
+        void boot:: conserve(const double totalC, species &sp1 )
+        {
+            constraint &c = create(totalC);
+            c.add(sp1,1);
+        }
+
+        void boot:: conserve(const double totalC, species &sp1, species &sp2)
+        {
+            constraint &c = create(totalC);
+            c.add(sp1,1);
+            c.add(sp2,1);
+        }
+
+        void boot:: conserve(const double totalC, species &sp1, species &sp2, species &sp3)
+        {
+            constraint &c = create(totalC);
+            c.add(sp1,1);
+            c.add(sp2,1);
+            c.add(sp3,1);
+        }
+
         std::ostream & operator<<( std::ostream  &os, const boot &b)
         {
             for(size_t i=1;i<=b.constraints.size();++i)
