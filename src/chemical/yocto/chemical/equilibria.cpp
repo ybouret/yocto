@@ -93,7 +93,8 @@ namespace yocto
             (size_t &)M   = 0;
             (size_t &)N   = 0;
             (size_t &)max_length = 0;
-
+            dNu2          = 0;
+            
             gev.    release();
             xi.     release();
             Gamma.  release();
@@ -101,6 +102,8 @@ namespace yocto
             W.      release();
             Phi.    release();
             nu2.    release();
+            aNu2.   release();
+            Nu2.    release();
             NuT.    release();
             Nu.     release();
             beta.   release();
@@ -148,6 +151,8 @@ namespace yocto
                     peqs.  make(N);
                     Nu.    make(N,M);
                     NuT.   make(M,N);
+                    Nu2.   make(N,N);
+                    aNu2.  make(N,N);
                     nu2.   make(N,0);
                     Phi.   make(N,M);
                     W.     make(N);
@@ -191,14 +196,13 @@ namespace yocto
                     //
                     // check OK
                     //__________________________________________________________
+                    tao::mmul(Nu2,Nu,NuT);
+                    dNu2 = ideterminant(Nu2);
+                    if( Fabs(dNu2) <= 0)
                     {
-                        matrix<double> Nu2(N);
-                        tao::mmul(Nu2,Nu,NuT);
-                        if( Fabs(__determinant(Nu2)) <= 0)
-                        {
-                            throw exception("singular system of chemical equations");
-                        }
+                        throw exception("singular system of chemical equations");
                     }
+                    iadjoint(aNu2,Nu2);
                     
 
                 }

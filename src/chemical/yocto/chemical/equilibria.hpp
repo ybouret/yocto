@@ -43,6 +43,8 @@ namespace yocto
             vector<double> beta;   //!< if negative active species [M]
             matrix<double> Nu;     //!< topology    [NxM]
             matrix<double> NuT;    //!< transposed  [MxN]
+            matrix<double> Nu2;    //!< Nu*NuT      [NxN];
+            matrix<double> aNu2;   //!< adjoint Nu2
             vector<double> nu2;    //!< norm2 of Nu [N]
             matrix<double> Phi;    //!< jacobian    [NxM]
             matrix<double> W;      //!< inv(jacobian.nuT) NxN
@@ -50,6 +52,7 @@ namespace yocto
             vector<double> Gamma;  //!< Gamma       N
             vector<double> xi;     //!< extent      N
             vector<double> gev;    //!< Gamma Exponent Values [N]
+            double         dNu2;   //!< determinant(Nu2)
             const size_t   max_length;
             
             void compile_for(const library &lib);

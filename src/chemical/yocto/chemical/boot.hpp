@@ -73,7 +73,8 @@ namespace yocto
             matrix<double> P;
             vector<double> Lam;
             vector<double> Cstar;
-            vector<double> X;
+            matrix<double> aNu2;
+            double         dNu2;
             void clear() throw();
         };
 

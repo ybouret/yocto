@@ -77,7 +77,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
     loader.electroneutrality(lib);
 
     {
-        boot::constraint &c = loader.create(0.0);
+        boot::constraint &c = loader.create(0.01);
         c.add(Na,1);
         c.add(Cl,1);
     }

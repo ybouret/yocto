@@ -12,7 +12,6 @@ namespace yocto
         void boot:: clear() throw()
         {
             (size_t&)Nc = 0;
-            X.     release();
             Cstar. release();
             Lam.   release();
             P.     release();
@@ -42,11 +41,15 @@ namespace yocto
                     return;
                 }
 
-                const matrix<double> &Nu  = cs.Nu;
+                // construct the linear algebra
+                const matrix<double> &Nu = cs.Nu;
                 P.make(Nc,M);
                 Lam.make(Nc,0);
                 Cstar.make(M,0);
-                X.make(M);
+                
+
+                //X.make(M);
+
                 for(size_t k=Nc;k>0;--k)
                 {
                     array<double>    &Pk = P[k];
@@ -64,6 +67,7 @@ namespace yocto
                 std::cerr << "P=" << P << std::endl;
                 std::cerr << "Lam=" << Lam << std::endl;
 
+                // construct most precise Cstar
                 {
                     matrix<double> P2(Nc,Nc);
                     tao::mmul_rtrn(P2,P,P);
@@ -79,15 +83,23 @@ namespace yocto
                     std::cerr << "aP2=" << aP2 << std::endl;
                     vector<double> U(Nc,0);
                     tao::mul(U,aP2,Lam);
+                    std::cerr << "U=" << U << std::endl;
                     tao::mul_trn(Cstar,P,U);
+                    std::cerr << "Ctmp=" << Cstar << std::endl;
+
                     tao::divby(dP2,Cstar);
                 }
                 std::cerr << "Cstar=" << Cstar << std::endl;
-                std::cerr << "Nu   =" << cs.Nu << std::endl;
-                vector<double> X(Cstar);
+                vector<double> X(M,0);
+                tao::set(X,Cstar);
+                if(!cs.balance(X))
+                {
+                    throw exception("boot.%s: no possible balanced solution", *name);
+                }
                 std::cerr << "X=" << X << std::endl;
-                cs.balance(X);
-                std::cerr << "X=" << X << std::endl;
+                std::cerr << "Nu=" << Nu << std::endl;
+
+
             }
             catch(...)
             {
