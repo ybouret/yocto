@@ -52,8 +52,7 @@ namespace yocto
 
             const string                name;
             vector<constraint::pointer> constraints;
-            matrix<double>              P;
-
+            
             explicit boot(const string &id);
             virtual ~boot() throw();
 
@@ -70,6 +69,12 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
+            const size_t   Nc;
+            matrix<double> P;
+            vector<double> Lam;
+            vector<double> Cstar;
+            vector<double> X;
+            void clear() throw();
         };
 
     }
