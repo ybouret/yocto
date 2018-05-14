@@ -9,8 +9,7 @@ namespace yocto
     namespace chemical
     {
 
-        const double equilibrium::Cmin = math::numeric<double>::sqrt_tiny;
-
+        
         equilibrium:: ~equilibrium() throw()
         {
         }
@@ -230,9 +229,9 @@ namespace yocto
             
         }
 
-        double equilibrium:: computeGamma( const array<double> &C, const double Kt ) const
+        double equilibrium:: computeGammaLHS(const array<double> &C, const double Kt) const throw()
         {
-            double lhs = 1;
+            double lhs = Kt;
             {
                 for(const actor *r=reactants.head;r;r=r->next)
                 {
@@ -240,7 +239,11 @@ namespace yocto
                     lhs *= ipower( C[r->sp->indx], r->ev );
                 }
             }
+            return lhs;
+        }
 
+        double equilibrium:: computeGammaRHS(const array<double> &C) const throw()
+        {
             double rhs = 1;
             {
                 for(const actor *p=products.head;p;p=p->next)
@@ -249,12 +252,16 @@ namespace yocto
                     rhs *= ipower( C[p->sp->indx], p->ev );
                 }
             }
-
-
-            return lhs*Kt - rhs;
+            return rhs;
         }
 
-        void   equilibrium:: computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const
+
+        double equilibrium:: computeGamma( const array<double> &C, const double Kt ) const throw()
+        {
+            return computeGammaLHS(C,Kt) - computeGammaRHS(C);
+        }
+
+        void   equilibrium:: computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const throw()
         {
             math::tao::ld(Phi,0);
             for(const actor *a = reactants.head; a != NULL; a=a->next )

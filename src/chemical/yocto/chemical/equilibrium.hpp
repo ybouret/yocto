@@ -45,10 +45,12 @@ namespace yocto
             //! fill reaction topology
             void fill( array<double> &nu, array<bool> &active) const throw();
 
-            double computeGamma( const array<double> &C, const double Kt ) const;
-            void   computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const;
+            double computeGamma( const array<double> &C, const double Kt ) const throw();
+            void   computeGradient( array<double> &Phi, const array<double> &C, const double Kt) const throw();
             int    productsStoichiometry() const throw();
-            
+
+            double computeGammaLHS(const array<double> &C, const double Kt) const throw();
+            double computeGammaRHS(const array<double> &C) const throw();
 
         protected:
             explicit equilibrium(const string &id);
@@ -67,8 +69,6 @@ namespace yocto
             void compute_reverse( range &rev, const array<double> &C) const throw();
             void compute_extents( range &fwd, range &rev, const array<double> &C) const throw();
             bool solve(array<double> &C, const double Kt) const;
-
-            static const double Cmin;
         };
 
         class constant_equilibrium : public equilibrium
