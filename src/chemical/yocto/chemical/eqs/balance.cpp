@@ -164,7 +164,6 @@ namespace yocto
             //__________________________________________________________________
             if(E0<=0)
             {
-                std::cerr << "balance.OK" << std::endl;
                 tao::set(C0,Ctry,M);
                 return true;
             }

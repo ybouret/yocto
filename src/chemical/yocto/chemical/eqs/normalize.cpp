@@ -92,7 +92,8 @@ namespace yocto
         }
 
 
-        bool equilibria:: normalize(array<double> &C0, const double t) throw()
+        bool equilibria:: normalize(array<double> &C0,
+                                    const double   t) throw()
         {
             const double threshold = numeric<double>::ftol;
 
@@ -132,15 +133,15 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // this is Newton's predicted concentration in C
+                // this is Newton's predicted concentration in Cend
                 //______________________________________________________________
-                tao::setsum(C,Cini,dC);
+                tao::setsum(Cend,Cini,dC);
 
                 //______________________________________________________________
                 //
                 // which must be balanced
                 //______________________________________________________________
-                if(!balance(C))
+                if(!balance(Cend))
                 {
                     // unable to balance...
                     return false;
@@ -148,18 +149,17 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // compute the effective dC, and update Gamma@C
+                // compute the effective dC, and update Gamma@Cend
                 //______________________________________________________________
-                tao::setvec(dC,Cini,C);
-                updateGamma(C);
+                tao::setvec(dC,Cini,Cend);
+                updateGamma(Cend);
 
                 //______________________________________________________________
                 //
                 // must be a total decreasing step in direction dC
                 //______________________________________________________________
                 double Gamma1 = GammaToScalar();
-                std::cerr << "Gamma: " << Gamma0 << " -> " << Gamma1 << std::endl;
-
+                
                 //______________________________________________________________
                 //
                 // at this point,
@@ -172,16 +172,17 @@ namespace yocto
                     bracket<double>::expand(normGamma,aa,gg);
                     aa.co_sort(gg);
                     __optimize(normGamma,aa,gg);
-                    std::cerr << "aa=" << aa << std::endl;
-                    std::cerr << "gg=" << gg << std::endl;
                     Gamma1 = __normGamma(max_of<double>(aa.b,0.0));
 
+                    //__________________________________________________________
+                    //
                     // retrieve C and dC from trial
                     // Gamma is updated@Ctry
+                    //__________________________________________________________
                     for(size_t j=M;j>0;--j)
                     {
-                        C[j]  = Ctry[j];
-                        dC[j] = C[j]-Cini[j];
+                        Cend[j]= Ctry[j];
+                        dC[j]  = Cend[j]-Cini[j];
                     }
                 }
                 assert(Gamma1<=Gamma0);
@@ -189,27 +190,34 @@ namespace yocto
                 //______________________________________________________________
                 //
                 // at this point,
-                // a balanced C, and Gamma1=|Gamma|@C are computed, Gamma1<=Gamma0
+                // a balanced Cend, and Gamma1=|Gamma|@Cend are computed
+                // with Gamma1<=Gamma0
+                // and updated dC.
+                // check convergence while updating Cini=Cend
                 //______________________________________________________________
                 bool converged = true;
-                std::cerr << "dC=" << dC << std::endl;
                 for(size_t j=M;j>0;--j)
                 {
                     const double c_old = Cini[j];
-                    const double c_new = C[j];
+                    const double c_new = Cend[j];
                     const double delta = Fabs(dC[j]);
                     if( (delta+delta) > threshold*( Fabs(c_old) + Fabs(c_new) ) )
                     {
                         converged = false;
                     }
-                    Cini[j] = C[j];
+                    Cini[j] = Cend[j];
                 }
                 if(converged)
                 {
-                    std::cerr << "converged" << std::endl;
+                    //std::cerr << "converged" << std::endl;
                     tao::set(C0,Cini,M);
                     return true;
                 }
+
+                //______________________________________________________________
+                //
+                // prepare for another loop
+                //______________________________________________________________
                 updatePhi(Cini);
                 Gamma0=Gamma1;
             }
