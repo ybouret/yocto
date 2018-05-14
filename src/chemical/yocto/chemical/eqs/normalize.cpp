@@ -43,7 +43,7 @@ namespace yocto
 
         static const char fn[] = "equilibria.normalize: ";
         
-        double equilibria:: __normGamma(double alpha)
+        double equilibria:: __NormGamma(double alpha)
         {
             for(size_t j=M;j>0;--j)
             {
@@ -169,10 +169,10 @@ namespace yocto
                 {
                     triplet<double> aa = { 0,      1,      1      };
                     triplet<double> gg = { Gamma0, Gamma1, Gamma1 };
-                    bracket<double>::expand(normGamma,aa,gg);
+                    bracket<double>::expand(NormGamma,aa,gg);
                     aa.co_sort(gg);
-                    __optimize(normGamma,aa,gg);
-                    Gamma1 = __normGamma(max_of<double>(aa.b,0.0));
+                    __optimize(NormGamma,aa,gg);
+                    Gamma1 = __NormGamma(max_of<double>(aa.b,0.0));
 
                     //__________________________________________________________
                     //

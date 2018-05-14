@@ -80,10 +80,10 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
-            double __normGamma(double alpha);
+            double __NormGamma(double alpha);
             double __Balance(double alpha);  //!< compute Ctry with numerical control
 
-            math::numeric<double>::function normGamma;
+            math::numeric<double>::function NormGamma;
             math::numeric<double>::function Balance;
             
             // from Gamma and Phi

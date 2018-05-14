@@ -38,8 +38,8 @@ namespace yocto
         xi(),
         gev(),
         max_length(0),
-        normGamma(this, & equilibria::__normGamma),
-        Balance(this, & equilibria::__Balance)
+        NormGamma(this, & equilibria::__NormGamma),
+        Balance(this,   & equilibria::__Balance  )
         {
         }
 
