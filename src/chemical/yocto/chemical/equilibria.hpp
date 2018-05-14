@@ -77,15 +77,18 @@ namespace yocto
             bool balance(array<double> &C0) throw();
 
             //! normalize a balanced concentration
-            bool normalize( array<double> &C0, const double t ) throw();
+            bool normalize( array<double> &C0, const double t, const bool initialize=true) throw();
 
             //! compute the: V0 = inv(Nu2)*Nu*C0, uses xi as internal memory
             void compute_extent( array<double> &V0, const array<double> &C0, const array<double> &Cstar ) throw();
 
+            //! compute C0 = Cstar + Nu'*V0, using internal xi and Gamma
+            void project( array<double> &C0, const array<double> &Cstar ) throw();
+
             //! for printing
             std::ostream & spaces_for( const string &id, std::ostream &os ) const;
 
-
+            double get_scale( const size_t iEq ) const throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);

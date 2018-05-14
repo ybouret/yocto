@@ -4,6 +4,7 @@
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/chemical/library.hpp"
 #include "yocto/associative/set.hpp"
+#include "yocto/randomized/bits.hpp"
 
 namespace yocto
 {
@@ -57,9 +58,10 @@ namespace yocto
             virtual ~boot() throw();
 
 
-            void guess(array<double> &C0,
-                       equilibria    &cs,
-                       const double   t);
+            void guess(array<double>    &C0,
+                       equilibria       &cs,
+                       const double      t,
+                       Randomized::Bits &ran);
 
             constraint & create( const double value );
 
@@ -73,13 +75,7 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
-            const size_t   Nc;
-            matrix<double> P;
-            vector<double> Lam;
-            vector<double> Cstar;
-            void compute_Cstar();
-
-            void clear() throw();
+            
         };
 
     }

@@ -13,35 +13,9 @@ namespace yocto
     namespace chemical
     {
 
-        bool equilibrium:: solve(array<double> &C, const double Kt) const
-        {
-            std::cerr << "Solving " << name << ", K=" << Kt << ", for C=" << C <<  std::endl;
-            const double Gamma = computeGamma(C,Kt);
-            std::cerr << "\tGamma=" << Gamma << std::endl;
-            if(Gamma>0)
-            {
-                // looking for a positive extent
-                range fwd;
-                compute_forward(fwd,C);
-                std::cerr << "\tfwd: " << fwd << std::endl;
-                return false;
-            }
-            else if(Gamma<0)
-            {
-                // looking for a negative extent
-                range rev;
-                compute_reverse(rev,C);
-                std::cerr << "\trev: " << rev << std::endl;
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
 
 
-        static const char fn[] = "equilibria.normalize: ";
+        //static const char fn[] = "equilibria.normalize: ";
         
         double equilibria:: __NormGamma(double alpha)
         {
@@ -77,23 +51,10 @@ namespace yocto
             }
 
         }
-
         
-        void equilibria:: compute_full_step()
-        {
-            tao::mmul_rtrn(W,Phi,Nu);
-            if(!LU<double>::build(W))
-            {
-                throw exception("%ssingular set of concentrations",fn);
-            }
-            tao::neg(xi,Gamma);
-            LU<double>::solve(W,xi);
-            tao::mul(dC,NuT,xi);
-        }
-
-
         bool equilibria:: normalize(array<double> &C0,
-                                    const double   t) throw()
+                                    const double   t,
+                                    const bool     initialize) throw()
         {
             const double threshold = numeric<double>::ftol;
 
@@ -111,7 +72,16 @@ namespace yocto
             //
             // initialize K, Gamma, Phi @Cini
             //__________________________________________________________________
-            initializeGammaAndPhi(Cini,t);
+            if(initialize)
+            {
+                // compute all the K[]
+                initializeGammaAndPhi(Cini,t);
+            }
+            else
+            {
+                //assuming K[] is already valid
+                updateGammaAndPhi(Cini);
+            }
             double Gamma0 = GammaToScalar();
             size_t cycle  = 0;
             while(true)

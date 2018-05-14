@@ -210,7 +210,7 @@ namespace yocto
                 //______________________________________________________________
                 if(E1<=0)
                 {
-                    std::cerr << "balance.success" << std::endl;
+                    //std::cerr << "balance.success" << std::endl;
                     for(size_t j=M;j>0;--j)
                     {
                         if(active[j])
@@ -230,7 +230,7 @@ namespace yocto
                 tao::set(C,Ctry);
                 if(E1>=E0)
                 {
-                    std::cerr << "balance.reached_minimum@" << E1 << std::endl;
+                    //std::cerr << "balance.reached_minimum@" << E1 << std::endl;
                     goto CHECK;
                 }
 
@@ -239,8 +239,8 @@ namespace yocto
             }
 
         CHECK:
-            std::cerr << "balance.check" << std::endl;
-            std::cerr << "C=" << C << std::endl;
+            //std::cerr << "balance.check" << std::endl;
+            //std::cerr << "C=" << C << std::endl;
 
             //__________________________________________________________________
             //
@@ -284,15 +284,15 @@ namespace yocto
                         }
                     }
                 }
-                std::cerr << "was_met=" << was_met << std::endl;
-                std::cerr << "is_zero=" << is_zero << std::endl;
+                //std::cerr << "was_met=" << was_met << std::endl;
+                //std::cerr << "is_zero=" << is_zero << std::endl;
                 if(was_met&&is_zero)
                 {
                     C[j] = 0;
                 }
                 else
                 {
-                    std::cerr << "balance.blocked" << std::endl;
+                    //std::cerr << "balance.blocked" << std::endl;
                     return false;
                 }
             }

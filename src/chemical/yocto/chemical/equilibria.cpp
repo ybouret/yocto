@@ -282,6 +282,13 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             return ans;
         }
 
+        double equilibria:: get_scale( const size_t iEq ) const throw()
+        {
+            assert(iEq>=1);
+            assert(iEq<=N);
+            return peqs[iEq]->scale( K[iEq] );
+        }
+
         void equilibria:: compute_extent( array<double> &V0, const array<double> &C0, const array<double> &Cstar ) throw()
         {
             assert(C0.size()==M);
@@ -290,6 +297,20 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             tao::mul(xi,Nu,C);
             tao::mul_and_div(V0,aNu2,xi,dNu2);
         }
+
+        void equilibria:: project(array<double>       &C0,
+                                  const array<double> &Cstar) throw()
+        {
+            assert(C0.size()==M);
+            assert(Cstar.size()==M);
+            tao::setvec(dC,Cstar,C0);
+            tao::mul(Gamma,Nu,dC);
+            tao::mul(xi,aNu2,Gamma);
+            tao::mul_and_div(dC, NuT, xi, dNu2);
+            tao::setsum(C0,Cstar,dC);
+        }
+
+
 
     }
 }

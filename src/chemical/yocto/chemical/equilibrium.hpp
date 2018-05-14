@@ -61,13 +61,15 @@ namespace yocto
             virtual double getK(double) const= 0;
 
         public:
-            const double nu2;
-            const double scale;
+            const double nu2; //!< sum(Nu[j]^2)
+            const int    dnu; //!< sum(Nu[j])
+            const double s_p; //!< 1.0/dnu if |dnu|>0
+
+            double scale( const double Kt ) const throw();
 
             void compute_forward( range &fwd, const array<double> &C) const throw();
             void compute_reverse( range &rev, const array<double> &C) const throw();
             void compute_extents( range &fwd, range &rev, const array<double> &C) const throw();
-            bool solve(array<double> &C, const double Kt) const;
         };
 
         class constant_equilibrium : public equilibrium

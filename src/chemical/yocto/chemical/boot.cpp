@@ -87,11 +87,7 @@ namespace yocto
 
         boot:: boot(const string &id) :
         name(id),
-        constraints(),
-        Nc(0),
-        P(),
-        Lam(),
-        Cstar()
+        constraints()
         {
         }
 

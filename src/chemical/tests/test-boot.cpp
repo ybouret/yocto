@@ -76,15 +76,18 @@ YOCTO_UNIT_TEST_IMPL(boot)
 
     boot loader("ini");
     loader.electroneutrality(lib);
-    loader.conserve(0.0,AH,Am);
+    loader.conserve(0,AH,Am);
     loader.conserve(0.0,Na,Cl);
-    loader.conserve(0.0,Na);
+    loader.conserve(0.0001,Na);
 
 
     std::cerr << "loader " << loader.name << ":" << std::endl << loader << std::endl;
+    
     vector<double> C0(cs.M);
-    loader.guess(C0,cs,0.0);
-
+    loader.guess(C0,cs,0.0, Randomized::Bits::Simple());
+    lib.display(C0);
+    cs.initializeGamma(C0,0.0);
+    std::cerr << "Gamma=" << cs.Gamma << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()
 

@@ -20,7 +20,8 @@ namespace yocto
         reactants(),
         products(),
         nu2(0),
-        scale(0)
+        dnu(0),
+        s_p(0)
         {
         }
 
@@ -164,25 +165,26 @@ namespace yocto
         void equilibrium:: compile() const
         {
             double &sum2 = (double &)nu2;
-            double &cc   = (double &)scale;
-            cc      = 0;
+            int    &sum1 = (int    &)dnu;
+            double &scal = (double &)s_p;
             sum2    = 0;
+            sum1    = 0;
+            scal    = 0;
             int z   = 0;
-            int sum = 0;
             for(const actor *a=reactants.head;a;a=a->next)
             {
                 const int nu = a->nu;
-                z += nu * a->sp->z;
-                sum  += nu;
-                sum2 += nu*nu;
+                z     += nu * a->sp->z;
+                sum1  += nu;
+                sum2  += nu*nu;
             }
 
             for(const actor *a=products.head;a;a=a->next)
             {
                 const int nu = a->nu;
-                z += nu * a->sp->z;
-                sum  += nu;
-                sum2 += nu*nu;
+                z     += nu * a->sp->z;
+                sum1  += nu;
+                sum2  += nu*nu;
             }
 
             if(z!=0)
@@ -194,8 +196,36 @@ namespace yocto
             {
                 throw exception("equilibrium '%s' has no topology!", *name);
             }
+
+            if(dnu!=0)
+            {
+                scal = 1.0/dnu;
+            }
             
         }
+
+        double equilibrium:: scale( const double Kt ) const throw()
+        {
+            if(Kt<=0)
+            {
+                return 0;
+            }
+            else
+            {
+                if(dnu)
+                {
+                    assert(fabs(s_p)>0);
+                    return pow(Kt,s_p);
+                }
+                else
+                {
+                    assert(0==dnu);
+                    return 0;
+                }
+            }
+        }
+
+
 
         void equilibrium:: fill( array<double> &nu, array<bool> &active) const throw()
         {
