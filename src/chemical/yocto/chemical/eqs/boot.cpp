@@ -60,37 +60,8 @@ namespace yocto
 
             std::cerr << "P=" << P << std::endl;
             std::cerr << "L=" << L << std::endl;
-            matrix<double> P2(Nc,Nc);
-            tao::mmul_rtrn(P2,P,P);
-            const double   dP2 = determinant(P2);
-            if(Fabs(dP2)<=0)
-            {
-                throw exception("boot.%s: singular system of constraints", *name);
-            }
-            matrix<double> aP2(Nc,Nc);
-            adjoint(aP2,P2);
 
-            vector<double> X(M);
-            vector<double> dL(Nc);
-            vector<double> U(Nc);
-            vector<double> dX(M);
 
-            if(!cs.normalize(X,t))
-            {
-                std::cerr << "cannot normalize X" << std::endl;
-                exit(0);
-            }
-            std::cerr << "X=" << X << std::endl;
-            tao::mul(dL,P,X);
-            tao::subp(dL,L);   std::cerr << "dL=" << dL << std::endl;
-            tao::mul(U,aP2,dL);
-            tao::mul_trn(dX,P,U);
-            tao::divby(dP2,dX);
-            std::cerr << "dX=" << dX << std::endl;
-
-            exit(0);
-
-#if 0
             //__________________________________________________________________
             //
             // construct most precise Cstar, checking that the linear
@@ -106,18 +77,46 @@ namespace yocto
                     throw exception("boot.%s: singular system of constraints", *name);
                 }
                 matrix<double> aP2(Nc,Nc);
-                adjoint(aP2,P2);
+                iadjoint(aP2,P2);
+
+                matrix<double> tPaP2(M,Nc);
+                tao::mmul_ltrn(tPaP2,P,aP2);
+                std::cerr << "tPaP2=" << tPaP2 << std::endl;
                 vector<double> U(Nc,0);
                 tao::mul(U,aP2,L);
                 tao::mul_trn(Cstar,P,U);
                 tao::divby(dP2,Cstar);
+                std::cerr << "aP2=" << aP2 << std::endl;
+                std::cerr << "dP2=" << dP2 << std::endl;
+                std::cerr << "U  =" << U   << std::endl;
             }
             std::cerr << "Cstar=" << Cstar << std::endl;
-
-            if(!cs.balance(Cstar))
+            if(!cs.balance(Cstar,false))
             {
                 throw exception("boot.%s: unable to balance Cstar",*name);
             }
+            std::cerr << "Cplus=" << Cstar << std::endl;
+
+            vector<double> dL(Nc);
+            tao::mul(dL,P,Cstar);
+            tao::subp(dL,L);
+            std::cerr << "dL=" << dL << std::endl;
+            if(!cs.normalize(Cstar,t))
+            {
+                throw exception("boot.%s: unable to solve",*name);
+            }
+            std::cerr << "Cfinal=" << Cstar << std::endl;
+            tao::mul(dL,P,Cstar);
+            tao::subp(dL,L);
+            for(size_t i=Nc;i>0;--i)
+            {
+                dL[i] /= tao::norm(P[i]);
+            }
+            std::cerr << "dL1=" << dL << std::endl;
+            std::cerr << "rms=" << tao::RMS(dL) << std::endl;
+            tao::set(C0,Cstar,M);
+#if 0
+
 
 
             if(!cs.normalize(Cstar,t))
@@ -127,7 +126,7 @@ namespace yocto
             std::cerr << "Cfinal=" << Cstar << std::endl;
             tao::set(C0,Cstar,M);
 #endif
-
+            exit(0);
         }
     }
 

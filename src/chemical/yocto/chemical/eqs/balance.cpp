@@ -144,7 +144,7 @@ namespace yocto
         }
         
 
-        bool equilibria:: balance(array<double> &C0) throw()
+        bool equilibria:: balance(array<double> &C0,const bool normal) throw()
         {
             //__________________________________________________________________
             //
@@ -241,59 +241,71 @@ namespace yocto
         CHECK:
             std::cerr << "balance.check" << std::endl;
             std::cerr << "C=" << C << std::endl;
-
-            //__________________________________________________________________
-            //
-            //
-            // check invalid values to see if balanced is kept by zeroing them
-            // in all involved equilibria
-            //
-            //__________________________________________________________________
-            for(size_t j=M;j>0;--j)
+            if(normal)
             {
-                const double Cj = C[j];
-                if(!active[j] || Cj>=0 ) continue;
-                assert(active[j]&&Cj<0);
-                bool was_met = false; //!< because all concentration may be negative for one equilibrium => not tested! => Bad
-                bool is_zero = true;  //!< is can be zeroed
-
-                //______________________________________________________________
+                //__________________________________________________________________
                 //
-                // loop over all reactions
-                //______________________________________________________________
-                for(size_t i=N;i>0;--i)
+                //
+                // check invalid values to see if balanced is kept by zeroing them
+                // in all involved equilibria
+                //
+                //__________________________________________________________________
+                for(size_t j=M;j>0;--j)
                 {
-                    const array<double> &nu_i   = Nu[i];
-                    const double         nu_ij  = nu_i[j]; if(Fabs(nu_ij)<=0) continue;
-                    const double         extent = Fabs(Cj/nu_ij); //!< the absolute extent
+                    const double Cj = C[j];
+                    if(!active[j] || Cj>=0 ) continue;
+                    assert(active[j]&&Cj<0);
+                    bool was_met = false; //!< because all concentration may be negative for one equilibrium => not tested! => Bad
+                    bool is_zero = true;  //!< is can be zeroed
 
-                    //__________________________________________________________
+                    //______________________________________________________________
                     //
-                    // loop over other components
-                    //__________________________________________________________
-                    for(size_t k=M;k>0;--k)
+                    // loop over all reactions
+                    //______________________________________________________________
+                    for(size_t i=N;i>0;--i)
                     {
-                        const double nu_ik = nu_i[k];  if(Fabs(nu_ik)<=0) continue; assert(active[k]);
-                        const double Ck    = C[k];     if(Ck<0)           continue; assert(k!=j);
-                        const double delta = Fabs(nu_ik*extent);
-                        was_met = true;
-                        if( delta > numeric<double>::ftol * Ck )
+                        const array<double> &nu_i   = Nu[i];
+                        const double         nu_ij  = nu_i[j]; if(Fabs(nu_ij)<=0) continue;
+                        const double         extent = Fabs(Cj/nu_ij); //!< the absolute extent
+
+                        //__________________________________________________________
+                        //
+                        // loop over other components
+                        //__________________________________________________________
+                        for(size_t k=M;k>0;--k)
                         {
-                            is_zero = false;
-                            break;
+                            const double nu_ik = nu_i[k];  if(Fabs(nu_ik)<=0) continue; assert(active[k]);
+                            const double Ck    = C[k];     if(Ck<0)           continue; assert(k!=j);
+                            const double delta = Fabs(nu_ik*extent);
+                            was_met = true;
+                            if( delta > numeric<double>::ftol * Ck )
+                            {
+                                is_zero = false;
+                                break;
+                            }
                         }
                     }
+                    //std::cerr << "was_met=" << was_met << std::endl;
+                    //std::cerr << "is_zero=" << is_zero << std::endl;
+                    if(was_met&&is_zero)
+                    {
+                        C[j] = 0;
+                    }
+                    else
+                    {
+                        //std::cerr << "balance.blocked" << std::endl;
+                        return false;
+                    }
                 }
-                //std::cerr << "was_met=" << was_met << std::endl;
-                //std::cerr << "is_zero=" << is_zero << std::endl;
-                if(was_met&&is_zero)
+            }
+            else
+            {
+                for(size_t j=M;j>0;--j)
                 {
-                    C[j] = 0;
-                }
-                else
-                {
-                    //std::cerr << "balance.blocked" << std::endl;
-                    return false;
+                    if(active[j]&&C[j]<0)
+                    {
+                        C[j] = 0;
+                    }
                 }
             }
             tao::set(C0,C,M);

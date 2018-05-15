@@ -75,8 +75,8 @@ YOCTO_UNIT_TEST_IMPL(boot)
     std::cerr << cs << std::endl;
 
     boot loader("ini");
-    double Ca = 0;
-    double Cb = 1;
+    double Ca = 1e-8;
+    double Cb = 1e-9;
     loader.electroneutrality(lib);
     loader.conserve(Ca,AH,Am);
     loader.conserve(Cb,NH3,NH4);

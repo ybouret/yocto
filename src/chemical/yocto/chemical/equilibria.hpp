@@ -74,7 +74,7 @@ namespace yocto
             
 
             //! balance a concentration
-            bool balance(array<double> &C0) throw();
+            bool balance(array<double> &C0, const bool normal=true) throw();
 
             //! normalize a balanced concentration
             bool normalize( array<double> &C0, const double t, const bool initialize=true) throw();
