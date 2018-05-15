@@ -3,8 +3,7 @@
 
 #include "yocto/chemical/equilibria.hpp"
 #include "yocto/chemical/library.hpp"
-#include "yocto/associative/set.hpp"
-#include "yocto/randomized/bits.hpp"
+//#include "yocto/associative/set.hpp"
 
 namespace yocto
 {
@@ -60,8 +59,7 @@ namespace yocto
 
             void guess(array<double>    &C0,
                        equilibria       &cs,
-                       const double      t,
-                       Randomized::Bits &ran);
+                       const double      t);
 
             constraint & create( const double value );
 

@@ -5,7 +5,7 @@
 #include "yocto/chemical/library.hpp"
 #include "yocto/container/matrix.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/math/types.hpp"
+#include "yocto/math/fcn/zfind.hpp"
 
 namespace yocto
 {
@@ -94,8 +94,9 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
-            const equilibrium *pEq;
-            double             KEq;
+            const equilibrium  *pEq;
+            double              KEq;
+            math::zfind<double> zsolve;
 
             double __NormGamma(double alpha);
             double __Balance(double alpha);  //!< compute Ctry with numerical control

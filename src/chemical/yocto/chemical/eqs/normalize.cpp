@@ -13,10 +13,6 @@ namespace yocto
     namespace chemical
     {
 
-
-
-        //static const char fn[] = "equilibria.normalize: ";
-
         double equilibria::__GammaEq(double alpha)
         {
             assert(pEq);
@@ -34,45 +30,58 @@ namespace yocto
 
         void equilibria:: move( const size_t iEq ) throw()
         {
-
             assert(iEq>=1);
             assert(iEq<=N);
+            
             KEq = K[iEq];
             pEq = peqs[iEq];
             tao::set(dC,Nu[iEq]);
 
             std::cerr << "move: " << pEq->name << " (K=" << KEq << ")  from  " << Cini << std::endl;
-            double xa = 0.0;
-            double Ga = __GammaEq(xa);
-            if(Ga>0)
+            triplet<double>    x = { 0.0, 0.0, 0.0 };
+            triplet<double>    G = { __GammaEq(x.a), 0, 0 };
+            const int          s = sign_of(G.a);
+            equilibrium::range r;
+            std::cerr << "Gam=" << G.a << std::endl;
+            switch(s)
             {
-                // looking for a positive extent
-                equilibrium::range fwd;
-                pEq->compute_forward(fwd,Cini);
-                std::cerr << "fwd: " << fwd << std::endl;
-
-                if(fwd.exists)
-                {
-                    double xb = fwd.xi;
-                    double Gb = __GammaEq(xb);
-                }
-                exit(1);
+                case  0: std::cerr << "no" << std::endl; return;
+                case -1: pEq->compute_reverse(r,Cini); break;
+                case  1: pEq->compute_forward(r,Cini); break;
+                default:
+                    // never get here
+                    return;
             }
-            else if(Ga<0)
+            std::cerr << "range: " << r << std::endl;
+            if(r.exists)
             {
-                // looking for a negative extent
-                equilibrium::range rev;
-                pEq->compute_reverse(rev,Cini);
-                std::cerr << "rev: " << rev << std::endl;
-                exit(2);
+                std::cerr << "using " << r.xi << std::endl;
+                x.c = r.xi;
+                G.c = __GammaEq(x.c);
             }
             else
             {
-                assert(Fabs(Ga)<=0);
-                std::cerr << "ok" << std::endl;
-                return;
+                std::cerr << "looking for extent" << std::endl;
+                x.c = s; // TODO: better choice ?
+                while( (G.c=__GammaEq(x.c)) * G.a > 0 )
+                {
+                    ++x.c;
+                }
             }
-            
+            std::cerr << "x=" << x << std::endl;
+            std::cerr << "G=" << G << std::endl;
+            const double alpha = zsolve.run(GammaEq,x,G);
+            std::cerr << "alpha=" << alpha << std::endl;
+
+            for(size_t j=M;j>0;--j)
+            {
+                Cini[j] = Cini[j] + alpha * dC[j];
+                if(active[j]&&Cini[j]<0)
+                {
+                    Cini[j]=0;
+                }
+            }
+            std::cerr << "=> C=" << Cini << std::endl;
         }
 
 
@@ -135,7 +144,12 @@ namespace yocto
                 // OK, let's try to sweep a little bit off position
                 //______________________________________________________________
                 sweep();
-                return false;
+                updateGammaAndPhi(Cini);
+                tao::mmul_rtrn(W,Phi,Nu);
+                if(!LU<double>::build(W))
+                {
+                    return false;
+                }
             }
             tao::neg(xi,Gamma);
             LU<double>::solve(W,xi);

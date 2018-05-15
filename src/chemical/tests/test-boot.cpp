@@ -14,9 +14,9 @@ YOCTO_UNIT_TEST_IMPL(boot)
 
     species &AH  = lib.add("AH",0);
     species &Am  = lib.add("Am",-1);
-#if 0
     species &NH4 = lib.add("NH4+",1);
     species &NH3 = lib.add("NH3",0);
+#if 0
     species &OxH2 = lib.add("OxH2",0);
     species &OxHm = lib.add("OxH-",-1);
     species &Oxmm = lib.add("Ox--",-2);
@@ -44,7 +44,6 @@ YOCTO_UNIT_TEST_IMPL(boot)
         std::cerr << acetic << std::endl;
     }
 
-#if 0
     if(true)
     {
         equilibrium &ammoniac = cs("ammoniac",pow(10,-9.8));
@@ -53,6 +52,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
         ammoniac(H,1);
     }
 
+#if 0
     if(true)
     {
         {
@@ -76,7 +76,8 @@ YOCTO_UNIT_TEST_IMPL(boot)
 
     boot loader("ini");
     loader.electroneutrality(lib);
-    loader.conserve(0,AH,Am);
+    loader.conserve(0.0,AH,Am);
+    loader.conserve(0.00001,NH3,NH4);
     loader.conserve(0.0,Na,Cl);
     loader.conserve(0.0,Na);
 
@@ -84,7 +85,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
     std::cerr << "loader " << loader.name << ":" << std::endl << loader << std::endl;
     
     vector<double> C0(cs.M);
-    loader.guess(C0,cs,0.0, Randomized::Bits::Simple());
+    loader.guess(C0,cs,0.0);
     lib.display(C0);
     cs.initializeGamma(C0,0.0);
     std::cerr << "Gamma=" << cs.Gamma << std::endl;

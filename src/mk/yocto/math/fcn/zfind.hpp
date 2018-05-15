@@ -92,11 +92,10 @@ namespace yocto {
              */
             bool lookup( typename numeric<T>::function &proc, triplet<T> &x, triplet<T> &f) const;
 
-
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(zfind);
         };
-        
+
         //YOCTO_DMC_MATH(struct zfind)
     }
     

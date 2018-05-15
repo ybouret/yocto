@@ -13,8 +13,7 @@ namespace yocto
 
         void  boot:: guess(array<double>    &C0,
                            equilibria       &cs,
-                           const double      t,
-                           Randomized::Bits &ran)
+                           const double      t)
         {
             //__________________________________________________________________
             //
@@ -57,10 +56,12 @@ namespace yocto
                         throw exception("boot.%s: constraint #%u is not orthogonal to equilibrium #%u",*name, unsigned(k), unsigned(i));
                     }
                 }
-
             }
-            //std::cerr << "P  =" << P << std::endl;
-            //std::cerr << "Lam=" << Lam << std::endl;
+
+            std::cerr << "P=" << P << std::endl;
+            std::cerr << "L=" << Lam << std::endl;
+            
+
 
             //__________________________________________________________________
             //
@@ -83,44 +84,20 @@ namespace yocto
                 tao::mul_trn(Cstar,P,U);
                 tao::divby(dP2,Cstar);
             }
-            //std::cerr << "Cstar=" << Cstar << std::endl;
+            std::cerr << "Cstar=" << Cstar << std::endl;
 
-            //__________________________________________________________________
-            //
-            // construct the balanced concentration from Cstar
-            //__________________________________________________________________
-            vector<double> Cplus(Cstar);
-            if(!cs.balance(Cplus))
+            if(!cs.balance(Cstar))
             {
-                throw exception("boot.%s: no possible balanced solution!", *name);
+                throw exception("boot.%s: unable to balance Cstar",*name);
             }
-            //std::cerr << "Cplus=" << Cplus << std::endl;
 
-            std::cerr << "Cplus=" << Cplus << std::endl;
 
-            vector<double> X(Cplus);
-            bool   initialize     = true;
-            double amplification  = 1;
-            while(!cs.normalize(X,t,initialize))
+            if(!cs.normalize(Cstar,t))
             {
-                initialize = false;
-                tao::set(X,Cplus);
-                for(size_t i=N;i>0;--i)
-                {
-                    const double         Cs   = cs.get_scale(i) * amplification;
-                    const array<double> &Nu_i = Nu[i];
-                    for(size_t j=M;j>0;--j)
-                    {
-                        if(Fabs(Nu_i[j])>0)
-                        {
-                            X[j] += Cs * ran.get<double>();
-                        }
-                    }
-                }
-                cs.project(X,Cstar);
-                amplification *= 1.1;
+                throw exception("boot.%s: unable to solve",*name);
             }
-            tao::set(C0,X,M);
+            std::cerr << "Cfinal=" << Cstar << std::endl;
+            tao::set(C0,Cstar,M);
         }
     }
 

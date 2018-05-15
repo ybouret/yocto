@@ -38,6 +38,11 @@ namespace yocto
         xi(),
         gev(),
         max_length(0),
+
+        pEq(0),
+        KEq(0),
+        zsolve(0),
+
         NormGamma(this, & equilibria::__NormGamma),
         Balance(this,   & equilibria::__Balance  ),
         GammaEq(this,   & equilibria::__GammaEq  )
