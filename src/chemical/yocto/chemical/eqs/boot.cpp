@@ -42,13 +42,13 @@ namespace yocto
             //__________________________________________________________________
             const matrix<double> &Nu = cs.Nu;
             matrix<double>        P(Nc,M);
-            vector<double>        Lam(Nc,0);
+            vector<double>        L(Nc,0);
 
             for(size_t k=Nc;k>0;--k)
             {
                 array<double>    &Pk = P[k];
                 const constraint &c  = *constraints[k];
-                Lam[k] = c.fill(Pk);
+                L[k] = c.fill(Pk);
                 for(size_t i=N;i>0;--i)
                 {
                     if(Fabs(tao::dot(Pk,Nu[i]))>0)
@@ -59,10 +59,37 @@ namespace yocto
             }
 
             std::cerr << "P=" << P << std::endl;
-            std::cerr << "L=" << Lam << std::endl;
-            
+            std::cerr << "L=" << L << std::endl;
+            matrix<double> P2(Nc,Nc);
+            tao::mmul_rtrn(P2,P,P);
+            const double   dP2 = determinant(P2);
+            if(Fabs(dP2)<=0)
+            {
+                throw exception("boot.%s: singular system of constraints", *name);
+            }
+            matrix<double> aP2(Nc,Nc);
+            adjoint(aP2,P2);
 
+            vector<double> X(M);
+            vector<double> dL(Nc);
+            vector<double> U(Nc);
+            vector<double> dX(M);
 
+            if(!cs.normalize(X,t))
+            {
+                std::cerr << "cannot normalize X" << std::endl;
+                exit(0);
+            }
+            std::cerr << "X=" << X << std::endl;
+            tao::mul(dL,P,X);
+            tao::subp(U,L);
+            tao::mul_trn(dX,P,U);
+            tao::divby(dP2,dX);
+            std::cerr << "dX=" << dX << std::endl;
+
+            exit(0);
+
+#if 0
             //__________________________________________________________________
             //
             // construct most precise Cstar, checking that the linear
@@ -80,7 +107,7 @@ namespace yocto
                 matrix<double> aP2(Nc,Nc);
                 adjoint(aP2,P2);
                 vector<double> U(Nc,0);
-                tao::mul(U,aP2,Lam);
+                tao::mul(U,aP2,L);
                 tao::mul_trn(Cstar,P,U);
                 tao::divby(dP2,Cstar);
             }
@@ -98,6 +125,8 @@ namespace yocto
             }
             std::cerr << "Cfinal=" << Cstar << std::endl;
             tao::set(C0,Cstar,M);
+#endif
+
         }
     }
 

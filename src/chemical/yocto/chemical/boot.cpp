@@ -64,6 +64,7 @@ namespace yocto
             {
                 const boot::component &cc = **i;
                 const double           w  = cc.w;
+                if(fabs(w)<=0) continue;
                 if(w>=0)
                 {
                     os << '+';
