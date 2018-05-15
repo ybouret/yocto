@@ -39,6 +39,8 @@ namespace yocto
             assert(iEq<=N);
             KEq = K[iEq];
             pEq = peqs[iEq];
+            tao::set(dC,Nu[iEq]);
+
             std::cerr << "move: " << pEq->name << " (K=" << KEq << ")  from  " << Cini << std::endl;
             double xa = 0.0;
             double Ga = __GammaEq(xa);
@@ -48,6 +50,12 @@ namespace yocto
                 equilibrium::range fwd;
                 pEq->compute_forward(fwd,Cini);
                 std::cerr << "fwd: " << fwd << std::endl;
+
+                if(fwd.exists)
+                {
+                    double xb = fwd.xi;
+                    double Gb = __GammaEq(xb);
+                }
                 exit(1);
             }
             else if(Ga<0)
