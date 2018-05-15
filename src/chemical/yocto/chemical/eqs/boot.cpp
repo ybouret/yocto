@@ -71,7 +71,7 @@ namespace yocto
             {
                 matrix<double> P2(Nc,Nc);
                 tao::mmul_rtrn(P2,P,P);
-                const double   dP2 = determinant(P2);
+                const double   dP2 = ideterminant(P2);
                 if(Fabs(dP2)<=0)
                 {
                     throw exception("boot.%s: singular system of constraints", *name);
@@ -79,9 +79,6 @@ namespace yocto
                 matrix<double> aP2(Nc,Nc);
                 iadjoint(aP2,P2);
 
-                matrix<double> tPaP2(M,Nc);
-                tao::mmul_ltrn(tPaP2,P,aP2);
-                std::cerr << "tPaP2=" << tPaP2 << std::endl;
                 vector<double> U(Nc,0);
                 tao::mul(U,aP2,L);
                 tao::mul_trn(Cstar,P,U);
