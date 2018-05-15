@@ -90,16 +90,17 @@ namespace yocto
 
             double get_scale( const size_t iEq ) const throw();
 
+            //! try to move on singular composition
+            
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
             double __NormGamma(double alpha);
             double __Balance(double alpha);  //!< compute Ctry with numerical control
-
+            const equilibrium *pEq;
+            double             KEq;
             math::numeric<double>::function NormGamma;
             math::numeric<double>::function Balance;
             
-            // from Gamma and Phi
-            void compute_full_step();
         };
 
     }

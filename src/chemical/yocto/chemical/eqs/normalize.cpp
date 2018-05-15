@@ -74,19 +74,25 @@ namespace yocto
             //__________________________________________________________________
             if(initialize)
             {
-                // compute all the K[]
-                initializeGammaAndPhi(Cini,t);
+                // compute all the K[] and Gamma
+                initializeGamma(Cini,t);
             }
             else
             {
-                //assuming K[] is already valid
-                updateGammaAndPhi(Cini);
+                //assuming K[] is already valid, compute Gamma
+                updateGamma(Cini);
             }
             double Gamma0 = GammaToScalar();
-            size_t cycle  = 0;
+            if(Gamma0<=0)
+            {
+                return true;
+            }
+            updatePhi(Cini);
+            size_t cycles  = 0;
             while(true)
             {
-                ++cycle;
+
+                ++cycles;
                 //______________________________________________________________
                 //
                 // at this point, Cini is valid, Gamma and Phi are computed@Cini
@@ -192,7 +198,7 @@ namespace yocto
                 Gamma0=Gamma1;
             }
 
-            return false;
+           // return false;
         }
 
         
