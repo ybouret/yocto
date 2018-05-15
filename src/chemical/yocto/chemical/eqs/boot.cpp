@@ -96,6 +96,8 @@ namespace yocto
             }
             //std::cerr << "Cplus=" << Cplus << std::endl;
 
+            std::cerr << "Cplus=" << Cplus << std::endl;
+
             vector<double> X(Cplus);
             bool   initialize     = true;
             double amplification  = 1;

@@ -78,7 +78,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
     loader.electroneutrality(lib);
     loader.conserve(0,AH,Am);
     loader.conserve(0.0,Na,Cl);
-    loader.conserve(0.0001,Na);
+    loader.conserve(0.0,Na);
 
 
     std::cerr << "loader " << loader.name << ":" << std::endl << loader << std::endl;

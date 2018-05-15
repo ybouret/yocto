@@ -39,7 +39,8 @@ namespace yocto
         gev(),
         max_length(0),
         NormGamma(this, & equilibria::__NormGamma),
-        Balance(this,   & equilibria::__Balance  )
+        Balance(this,   & equilibria::__Balance  ),
+        GammaEq(this,   & equilibria::__GammaEq  )
         {
         }
 
