@@ -82,7 +82,8 @@ namespace yocto
             }
             std::cerr << "X=" << X << std::endl;
             tao::mul(dL,P,X);
-            tao::subp(U,L);
+            tao::subp(dL,L);   std::cerr << "dL=" << dL << std::endl;
+            tao::mul(U,aP2,dL);
             tao::mul_trn(dX,P,U);
             tao::divby(dP2,dX);
             std::cerr << "dX=" << dX << std::endl;
