@@ -112,17 +112,7 @@ namespace yocto
             std::cerr << "dL1=" << dL << std::endl;
             std::cerr << "rms=" << tao::RMS(dL) << std::endl;
             tao::set(C0,Cstar,M);
-#if 0
-
-
-
-            if(!cs.normalize(Cstar,t))
-            {
-                throw exception("boot.%s: unable to solve",*name);
-            }
-            std::cerr << "Cfinal=" << Cstar << std::endl;
-            tao::set(C0,Cstar,M);
-#endif
+            
             exit(0);
         }
     }

@@ -37,7 +37,7 @@ namespace yocto
         {
         }
 
-        void boot:: constraint:: add( species &sp, const double w)
+        void boot:: constraint:: add( species &sp, const int w)
         {
             assert( sp.refcount() >= 1 );
             const component::pointer p( new component(sp,w) );
@@ -63,8 +63,8 @@ namespace yocto
             for( boot::components::const_iterator i=c.begin(); i != c.end(); ++i)
             {
                 const boot::component &cc = **i;
-                const double           w  = cc.w;
-                if(fabs(w)<=0) continue;
+                const int              w  = cc.w;
+                if(!w) continue;
                 if(w>=0)
                 {
                     os << '+';

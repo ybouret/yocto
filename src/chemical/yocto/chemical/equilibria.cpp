@@ -209,7 +209,6 @@ namespace yocto
                         throw exception("singular system of chemical equations");
                     }
                     iadjoint(aNu2,Nu2);
-                    
 
                 }
 
@@ -295,27 +294,7 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             return peqs[iEq]->scale( K[iEq] );
         }
 
-        void equilibria:: compute_extent( array<double> &V0, const array<double> &C0, const array<double> &Cstar ) throw()
-        {
-            assert(C0.size()==M);
-            assert(V0.size()==N);
-            tao::setvec(C,Cstar,C0);
-            tao::mul(xi,Nu,C);
-            tao::mul_and_div(V0,aNu2,xi,dNu2);
-        }
-
-        void equilibria:: project(array<double>       &C0,
-                                  const array<double> &Cstar) throw()
-        {
-            assert(C0.size()==M);
-            assert(Cstar.size()==M);
-            tao::setvec(dC,Cstar,C0);
-            tao::mul(Gamma,Nu,dC);
-            tao::mul(xi,aNu2,Gamma);
-            tao::mul_and_div(dC, NuT, xi, dNu2);
-            tao::setsum(C0,Cstar,dC);
-        }
-
+        
 
 
     }

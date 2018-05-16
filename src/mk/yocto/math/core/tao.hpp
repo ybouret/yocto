@@ -85,7 +85,7 @@ namespace yocto
 #undef Y_TAO_ADD
             }
 
-            //! a = b + c
+            //! a = b + c, a.size()<=b.size(), a.size()<=c.size()
             template <typename ARR, typename BRR, typename CRR>
             static inline void setsum( ARR &a, const BRR &b, const CRR &c) throw()
             {
@@ -229,7 +229,7 @@ namespace yocto
             static inline typename ARR::type norm_sq( const ARR &a ) throw()
             {
                 typename ARR::type ans(0);
-#define Y_TAO_NORMSQ(I) ans += Square(a[I])
+#define Y_TAO_NORMSQ(I) ans += square_of(a[I])
                 YOCTO_TAO_LOOP(a.size(),NORMSQ);
                 return ans;
 #undef  Y_TAO_NORMSQ
@@ -259,7 +259,7 @@ namespace yocto
                 assert(b.size()>0);
                 const size_t n = a.size();
                 typename ARR::type ans(0);
-#define Y_TAO_RMS(I) ans += (Square(a[I]-static_cast<typename ARR::type>(b[I])))
+#define Y_TAO_RMS(I) ans += (square_of(a[I]-static_cast<typename ARR::type>(b[I])))
                 YOCTO_TAO_LOOP(n,RMS);
 #undef  Y_TAO_RMS
                 return Sqrt(ans/n);

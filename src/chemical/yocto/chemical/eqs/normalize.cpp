@@ -148,7 +148,7 @@ namespace yocto
                 tao::mmul_rtrn(W,Phi,Nu);
                 if(!LU<double>::build(W))
                 {
-                    return false;
+                    return false; // this was the last best effort...
                 }
             }
             tao::neg(xi,Gamma);
@@ -158,8 +158,7 @@ namespace yocto
         }
 
         bool equilibria:: normalize(array<double> &C0,
-                                    const double   t,
-                                    const bool     initialize) throw()
+                                    const double   t) throw()
         {
             const double threshold = numeric<double>::ftol;
 
@@ -177,16 +176,8 @@ namespace yocto
             //
             // initialize K, Gamma, Phi @Cini
             //__________________________________________________________________
-            if(initialize)
-            {
-                // compute all the K[] and Gamma
-                initializeGamma(Cini,t);
-            }
-            else
-            {
-                //assuming K[] is already valid, compute Gamma
-                updateGamma(Cini);
-            }
+            initializeGamma(Cini,t);
+
             double Gamma0 = GammaToScalar();
             if(Gamma0<=0)
             {
@@ -278,16 +269,18 @@ namespace yocto
                 {
                     const double c_old = Cini[j];
                     const double c_new = Cend[j];
-                    const double delta = Fabs(dC[j]);
-                    if( (delta+delta) > threshold*( Fabs(c_old) + Fabs(c_new) ) )
+                    if(active[j])
                     {
-                        converged = false;
+                        const double delta = Fabs(dC[j]);
+                        if( (delta+delta) > threshold*( Fabs(c_old) + Fabs(c_new) ) )
+                        {
+                            converged = false;
+                        }
                     }
-                    Cini[j] = Cend[j];
+                    Cini[j] = c_new;
                 }
                 if(converged)
                 {
-                    //std::cerr << "converged" << std::endl;
                     tao::set(C0,Cini,M);
                     return true;
                 }
@@ -300,7 +293,6 @@ namespace yocto
                 Gamma0=Gamma1;
             }
 
-           // return false;
         }
 
         

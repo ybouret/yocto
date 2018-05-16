@@ -19,7 +19,7 @@ namespace yocto
             public:
                 typedef intr_ptr<string,component> pointer;
                 const species::pointer sp; //!< the species
-                const double           w;  //!< the weight
+                const int               w;  //!< the weight, INTEGER
                 const string &key() const throw();
                 virtual ~component() throw();
                 explicit component(species     &which,
@@ -39,7 +39,7 @@ namespace yocto
                 explicit constraint(const double v);
                 virtual ~constraint() throw();
                 
-                void add( species &sp, const double w);
+                void add( species &sp, const int w);
 
                 //! fill the array P with the weights, other positions are untouched
                 double fill( array<double> &p ) const throw();

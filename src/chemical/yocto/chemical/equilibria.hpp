@@ -77,14 +77,8 @@ namespace yocto
             bool balance(array<double> &C0, const bool normal=true) throw();
 
             //! normalize a balanced concentration
-            bool normalize( array<double> &C0, const double t, const bool initialize=true) throw();
-
-            //! compute the: V0 = inv(Nu2)*Nu*C0, uses xi as internal memory
-            void compute_extent( array<double> &V0, const array<double> &C0, const array<double> &Cstar ) throw();
-
-            //! compute C0 = Cstar + Nu'*V0, using internal xi and Gamma
-            void project( array<double> &C0, const array<double> &Cstar ) throw();
-
+            bool normalize(array<double> &C0, const double t) throw();
+            
             //! for printing
             std::ostream & spaces_for( const string &id, std::ostream &os ) const;
 
