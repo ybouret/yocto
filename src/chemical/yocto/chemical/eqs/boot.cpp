@@ -35,25 +35,30 @@ namespace yocto
             return E;
         }
 
-        static inline
-        void __optimize(math::numeric<double>::function &F,
-                        triplet<double>                 &XX,
-                        triplet<double>                 &FF) throw()
+        double boot:: RMS( const array<double> &XX ) throw()
         {
-
-            double width = XX.c-XX.a; assert(width>=0);
-            while(true)
+            tao::mul(dL,P,XX);
+            double sum2 = 0;
+            for(size_t k=Nc;k>0;--k)
             {
-                kernel::minimize(F, XX, FF);
-                const double new_width = XX.c-XX.a;
-                assert(new_width<=width);
-                if(new_width>=width)
-                {
-                    break;
-                }
-                width = new_width;
+                const double dl = dL[k] - L[k];
+                sum2 += (dl*dl)/p2[k];
             }
+            return sqrt(sum2/Nc);
         }
+
+
+        double boot:: __Control(double alpha)
+        {
+            tao::mulset(beta,alpha,dX);
+            tao::set(Xtry,Xorg);
+            if(!eqs->deliver(Xtry,beta,0,false))
+            {
+                throw exception("boot:%s: unable to perform control!", *name);
+            }
+            return RMS(Xtry);
+        }
+
 
         void  boot:: guess(array<double>    &C0,
                            equilibria       &cs,
@@ -66,10 +71,11 @@ namespace yocto
                 //
                 // check dimensionality
                 //__________________________________________________________________
-                N = cs.N;
-                M = cs.M;
-                Nc = constraints.size();
-
+                N   = cs.N;
+                M   = cs.M;
+                Nc  = constraints.size();
+                eqs = &cs;
+                
                 if(Nc+N!=M)
                 {
                     throw exception("boot.%s: #constraints=%u+#equilibria=%u != #species=%u",
@@ -96,6 +102,7 @@ namespace yocto
                 //______________________________________________________________
                 P.    make(Nc,M);
                 L.    make(Nc,0);
+                aP2.  make(Nc,Nc);
                 Xstar.make(M,0);
                 Q.    make(N,M);
                 Xorg. make(M);
@@ -103,6 +110,9 @@ namespace yocto
                 beta. make(M);
                 dX  . make(M);
                 V   . make(N);
+                dL  . make(Nc);
+                U   . make(Nc);
+                p2.   make(Nc);
 
                 //______________________________________________________________
                 //
@@ -112,7 +122,8 @@ namespace yocto
                 {
                     array<double>    &Pk = P[k];
                     const constraint &c  = *constraints[k];
-                    L[k] = c.fill(Pk);
+                    L[k]  = c.fill(Pk);
+                    p2[k] = tao::norm_sq(Pk);
                 }
 
                 std::cerr << "P=" << P << std::endl;
@@ -125,22 +136,17 @@ namespace yocto
                 //______________________________________________________________
                 matrix<double> P2(Nc,Nc);
                 tao::mmul_rtrn(P2,P,P);
-                const double   dP2 = ideterminant(P2);
+                dP2 = ideterminant(P2);
                 if(Fabs(dP2)<=0)
                 {
                     throw exception("boot.%s: singular system of constraints", *name);
                 }
-                matrix<double> aP2(Nc,Nc);
                 iadjoint(aP2,P2);
 
-                vector<double> U(Nc,0);
                 tao::mul(U,aP2,L);
                 tao::mul_trn(Xstar,P,U);
                 tao::divby(dP2,Xstar);
-                std::cerr << "aP2=" << aP2 << std::endl;
-                std::cerr << "dP2=" << dP2 << std::endl;
-                std::cerr << "U  =" << U   << std::endl;
-                std::cerr << "Cstar=" << Xstar << std::endl;
+                std::cerr << "Xstar=" << Xstar << std::endl;
 
                 //______________________________________________________________
                 //
@@ -189,27 +195,42 @@ namespace yocto
                 // motion along valid concentration
                 //
                 //______________________________________________________________
-                vector<double>  dL(Nc);
                 matrix<double>  tP(P,YOCTO_MATRIX_TRANSPOSE);
-                for(size_t loop=1;loop<=10;++loop)
+                double R0 = RMS(Xorg);
+                std::cerr << "R0=" << R0 << std::endl;
+                while(true)
                 {
+                    //__________________________________________________________
+                    //
                     // compute the constrained increase
-                    tao::mul(dL,P,Xorg); // dL = P*Xorg
-                    tao::subp(dL,L);     // dL = L-P*Xorg;
-                    std::cerr << "dL=" << dL << std::endl;
-                    tao::mul(U,aP2,dL);
-                    tao::mul_and_div(dX, tP, U, dP2);
-                    std::cerr << "dX0=" << dX << std::endl;
-                    tao::set(Xtry,Xorg);
-                    if(!cs.deliver(Xtry,dX,0,false))
+                    //
+                    //__________________________________________________________
+                    tao::mul(dL,P,Xorg);           // dL = P*Xorg
+                    tao::subp(dL,L);               // dL = L-P*Xorg;
+                    tao::mul(U,aP2,dL);            // U  = adjoint(P*P')*dL
+                    tao::mul_and_div(dX,tP,U,dP2); // dX = P'*inv(P*P')*(L-P*Xorg)
+
+                    double alpha = 1.0;
+                    double R1    = __Control(alpha);
+                    std::cerr << "Xtry=" << Xtry << " ; R1=" << R1 << "/" << R0 << std::endl;
+                    if(R1>=R0)
                     {
-                        throw exception("boot.%s: unable to deliver constrained increase",*name);
+                        triplet<double> xx = { 0, alpha, alpha };
+                        triplet<double> rr = { R0, R1, R1 };
+                        optimize1D<double>::run(Control,xx,rr);
+                        R1 = __Control(alpha=max_of<double>(0.0,xx.b));
                     }
-                    std::cerr << "Xtry=" << Xtry << std::endl;
-                    tao::setvec(dX, Xorg, Xtry);
-                    std::cerr << "dX1=" << dX << " / rms=" << tao::RMS(dX) << std::endl;
+
                     tao::set(Xorg,Xtry);
+                    if(R1>=R0)
+                    {
+                        R0=R1;
+                        break;
+                    }
+                    R0=R1;
                 }
+                
+
 
             }
             catch(...)
@@ -249,8 +270,7 @@ namespace yocto
                 triplet<double> xx = { 0, alpha, alpha };
                 triplet<double> ee = { E0, E1, E1 };
                 bracket<double>::expand(Balance,xx,ee);
-                xx.co_sort(ee);
-                __optimize(Balance,xx,ee);
+                optimize1D<double>::run(Balance,xx,ee);
                 E1 = __Balance(alpha=max_of<double>(0,xx.b));
                 std::cerr << "E1=" << E1 << " / " << E0 << " (alpha=" << alpha << ")" << std::endl;
                 if(E1<=0||E1>=E0)

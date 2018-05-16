@@ -78,6 +78,8 @@ namespace yocto
             size_t         Nc;
             matrix<double> P;
             vector<double> L;
+            matrix<double> aP2;
+            double         dP2;
             vector<double> Xstar;
             matrix<double> Q;
             vector<double> Xorg;
@@ -85,12 +87,19 @@ namespace yocto
             vector<double> beta;
             vector<double> dX;
             vector<double> V;
+            vector<double> dL;
+            vector<double> U;
+            vector<double> p2;
+            equilibria    *eqs;
 
             double __Balance(double alpha) throw(); // Ctry = C+alpha*dC, return Ctry^2
+            double __Control(double alpha);
             math::numeric<double>::function Balance;
+            math::numeric<double>::function Control;
+
             void clear() throw();
             void balance(const array<bool> &active);
-
+            double RMS( const array<double> &XX ) throw();
         };
 
     }

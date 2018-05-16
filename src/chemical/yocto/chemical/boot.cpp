@@ -88,6 +88,9 @@ namespace yocto
 
         void boot:: clear() throw()
         {
+            p2.    release();
+            U.     release();
+            dL.    release();
             V.     release();
             dX.    release();
             beta.  release();
@@ -95,15 +98,18 @@ namespace yocto
             Xorg.  release();
             Q.     release();
             Xstar. release();
+            aP2.   release();
             L.     release();
             P.     release();
             M=N=Nc=0;
+            dP2 = 0;
         }
 
         boot:: boot(const string &id) :
         name(id),
         constraints(),
-        Balance( this, & boot::__Balance )
+        Balance( this, & boot::__Balance ),
+        Control( this, & boot::__Balance )
         {
         }
 
