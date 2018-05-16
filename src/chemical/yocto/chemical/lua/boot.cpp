@@ -57,7 +57,7 @@ namespace yocto
                     throw exception("boot.%s#%d: item %u weight (first field) is not an integer",name,count,jm);
                 }
                 const int w = lua_tointeger(L,-1);
-                lua_pop(L,1);
+                lua_pop(L,1); // remove w
 
                 //______________________________________________________________
                 //
@@ -69,9 +69,10 @@ namespace yocto
                     throw exception("boot.%s#%d: item %u name (second field) is not a string",name,count,jm);
                 }
                 const string id = vm->To<string>(-1);
-                lua_pop(L,1);
-                std::cerr << "\tname  =" << id  << std::endl;
-                lua_pop(L,1);
+                lua_pop(L,1); // remove id
+
+
+                lua_pop(L,1); //remove item
 
                 //______________________________________________________________
                 //
@@ -105,7 +106,7 @@ namespace yocto
             lua_pop(L,1);
 
             assert(lua_istable(L,-1));
-            
+
             if( "E/N" == label )
             {
                 loader.electroneutrality(lib);

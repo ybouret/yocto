@@ -36,6 +36,10 @@ YOCTO_UNIT_TEST_IMPL(lua)
 
 
     vector<double> C0(cs.M,0);
+
+    loader.guess(C0,cs,0.0);
+
+#if 0
     for(size_t iter=1;iter<=100;++iter)
     {
         for(size_t j=cs.M;j>0;--j)
@@ -58,6 +62,7 @@ YOCTO_UNIT_TEST_IMPL(lua)
         lib.display(C0);
         break;
     }
+#endif
 
 
 }
