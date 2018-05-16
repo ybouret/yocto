@@ -294,7 +294,32 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             return peqs[iEq]->scale( K[iEq] );
         }
 
-        
+        bool equilibria:: deliver( array<double> &C0, const array<double> &delta, const double t, const bool initialize) throw()
+        {
+            if(initialize)
+            {
+                initializeGammaAndPhi(C0,t);
+            }
+            else
+            {
+                updateGammaAndPhi(C0);
+            }
+            tao::mmul_rtrn(W,Phi,Nu);
+            if(!LU<double>::build(W))
+            {
+                return false; // bad...
+            }
+            tao::set(xi,Gamma);
+            tao::mul_add(xi,Phi,delta);
+            LU<double>::solve(W,xi);
+            tao::mul(dC,NuT,xi);
+            for(size_t j=M;j>0;--j)
+            {
+                C0[j] += (delta[j] - dC[j]);
+            }
+            return normalize(C0,0,false);
+        }
+
 
 
     }

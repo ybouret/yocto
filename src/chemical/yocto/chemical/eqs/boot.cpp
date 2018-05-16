@@ -191,39 +191,24 @@ namespace yocto
                 //______________________________________________________________
                 vector<double>  dL(Nc);
                 matrix<double>  tP(P,YOCTO_MATRIX_TRANSPOSE);
-                array<double>  &Gamma = cs.Gamma;
-                matrix<double> &Phi   = cs.Phi;
-                matrix<double> &W     = cs.W;
-                matrix<double> &Nu    = cs.Nu;
-                array<double>  &xi    = cs.xi;
-                array<double>  &dC    = cs.dC;
+                for(size_t loop=1;loop<=10;++loop)
                 {
+                    // compute the constrained increase
                     tao::mul(dL,P,Xorg); // dL = P*Xorg
                     tao::subp(dL,L);     // dL = L-P*Xorg;
                     std::cerr << "dL=" << dL << std::endl;
                     tao::mul(U,aP2,dL);
                     tao::mul_and_div(dX, tP, U, dP2);
                     std::cerr << "dX0=" << dX << std::endl;
-                    cs.updateGammaAndPhi(Xorg); std::cerr << "Gamma0=" << Gamma << std::endl;
-                    tao::mul_add(Gamma,Phi,dX); std::cerr << "Gamma1=" << Gamma << std::endl;
-                    tao::mmul_rtrn(W,Phi,Nu);
-                    if(!LU<double>::build(W))
+                    tao::set(Xtry,Xorg);
+                    if(!cs.deliver(Xtry,dX,0,false))
                     {
-                        throw exception("unexpected singular system");
-                    }
-                    tao::set(xi,Gamma);
-                    LU<double>::solve(W,xi);
-                    std::cerr << "xi=" << xi << std::endl;
-                    tao::mul(dC,cs.NuT,xi);
-                    std::cerr << "dC=" << cs.dC << std::endl;
-                    tao::sub(dX,dC);
-                    std::cerr << "dX1=" << dX << std::endl;
-                    tao::setsum(Xtry,Xorg,dX);
-                    if(!cs.normalize(Xtry,0,false))
-                    {
-                        throw exception("boot.%s: unable to normalize guess concentration",*name);
+                        throw exception("boot.%s: unable to deliver constrained increase",*name);
                     }
                     std::cerr << "Xtry=" << Xtry << std::endl;
+                    tao::setvec(dX, Xorg, Xtry);
+                    std::cerr << "dX1=" << dX << " / rms=" << tao::RMS(dX) << std::endl;
+                    tao::set(Xorg,Xtry);
                 }
 
             }
