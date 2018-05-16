@@ -133,7 +133,6 @@ namespace yocto
 
             // get the constraint value
             const size_t n=vm->GetTableLength();
-            std::cerr << "parsing constraint with #" << n << " items" << std::endl;
             if(n<=0)
             {
                 throw exception("boot.%s: empty constraint#%d",name,count);

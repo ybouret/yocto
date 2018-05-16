@@ -73,19 +73,18 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
-            size_t         M;
-            size_t         N;
-            size_t         Nc;
-            matrix<double> P;
-            vector<double> L;
-            matrix<double> aP2;
-            double         dP2;
-            vector<double> Xstar;
-            matrix<double> Q;
-            vector<double> Xorg;
-            vector<double> Xtry;
-            vector<double> beta;
-            vector<double> dX;
+            size_t         M;     //!< #species, from equilibria
+            size_t         N;     //!< #equilibria
+            size_t         Nc;    //!< number of constraints
+            matrix<double> P;     //!< matrix of constraints
+            vector<double> L;     //!< constraints values
+            matrix<double> aP2;   //!< adjoint of     P*P'
+            double         dP2;   //!< determinant of P*P'
+            matrix<double> Q;     //!< orthogonal complementary of P
+            vector<double> Xorg;  //!< working concentrations
+            vector<double> Xtry;  //!< trial concentration
+            vector<double> beta;  //!< bad concentraion
+            vector<double> dX;    //!< probing step
             vector<double> V;
             vector<double> dL;
             vector<double> U;
@@ -98,7 +97,7 @@ namespace yocto
             math::numeric<double>::function Control;
 
             void clear() throw();
-            void balance(const array<bool> &active);
+            void balance();
             double RMS( const array<double> &XX ) throw();
         };
 
