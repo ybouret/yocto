@@ -29,8 +29,12 @@ YOCTO_UNIT_TEST_IMPL(lua)
     equilibria cs("cs");
     __lua::load(vm,cs,lib);
     std::cerr << cs << std::endl;
-    std::cerr << "Nu=" << cs.Nu << std::endl;
-    
+
+    boot loader("ini");
+    __lua::load(vm,loader,lib);
+    std::cerr << loader << std::endl;
+
+
     vector<double> C0(cs.M,0);
     for(size_t iter=1;iter<=100;++iter)
     {

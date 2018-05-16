@@ -132,10 +132,12 @@ namespace yocto
 
         std::ostream & operator<<( std::ostream  &os, const boot &b)
         {
+            os << "<boot \"" << b.name << "\",#constraint=" << b.constraints.size() <<">" << std::endl;
             for(size_t i=1;i<=b.constraints.size();++i)
             {
-                os << *b.constraints[i] << std::endl;
+                os << '\t' << *b.constraints[i] << std::endl;
             }
+            os << "<boot\"" << b.name << "\"/>";
             return os;
         }
 
