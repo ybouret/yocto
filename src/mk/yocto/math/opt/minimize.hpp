@@ -42,7 +42,12 @@ namespace yocto {
                             triplet<T> &x,
                             triplet<T> &f,
                             T          xtol);
-            
+
+            //! best effort
+            static void run(typename numeric<T>::function &func,
+                             triplet<T> &x,
+                             triplet<T> &f);
+
             //! (x.a <= x.b <= x.c) || (x.a>=x.b>=x.c) and f.b <= f.a and f.b <= f.c
             /**
              - return true is isOK(x,f) returns true

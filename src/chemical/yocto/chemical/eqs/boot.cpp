@@ -5,6 +5,7 @@
 #include "yocto/math/core/svd.hpp"
 #include "yocto/math/opt/minimize.hpp"
 #include "yocto/math/opt/bracket.hpp"
+#include "yocto/math/core/lu.hpp"
 
 namespace yocto
 {
@@ -19,11 +20,11 @@ namespace yocto
             for(size_t j=M;j>0;--j)
             {
                 beta[j] = 0;
-                const double Cj  = (Ctry[j] = Corg[j] + alpha * dC[j]);
+                const double Cj  = (Xtry[j] = Xorg[j] + alpha * dX[j]);
                 const double Cj2 = Cj*Cj;
                 if(Cj2<=0)
                 {
-                    Ctry[j] = 0;
+                    Xtry[j] = 0;
                 }
                 else if( Cj < 0 )
                 {
@@ -95,12 +96,12 @@ namespace yocto
                 //______________________________________________________________
                 P.    make(Nc,M);
                 L.    make(Nc,0);
-                Cstar.make(M,0);
+                Xstar.make(M,0);
                 Q.    make(N,M);
-                Corg. make(M);
-                Ctry. make(M);
+                Xorg. make(M);
+                Xtry. make(M);
                 beta. make(M);
-                dC  . make(M);
+                dX  . make(M);
                 V   . make(N);
 
                 //______________________________________________________________
@@ -122,30 +123,30 @@ namespace yocto
                 // construct most precise Cstar, checking that the linear
                 // problem is consistent
                 //______________________________________________________________
+                matrix<double> P2(Nc,Nc);
+                tao::mmul_rtrn(P2,P,P);
+                const double   dP2 = ideterminant(P2);
+                if(Fabs(dP2)<=0)
                 {
-                    matrix<double> P2(Nc,Nc);
-                    tao::mmul_rtrn(P2,P,P);
-                    const double   dP2 = ideterminant(P2);
-                    if(Fabs(dP2)<=0)
-                    {
-                        throw exception("boot.%s: singular system of constraints", *name);
-                    }
-                    matrix<double> aP2(Nc,Nc);
-                    iadjoint(aP2,P2);
-
-                    vector<double> U(Nc,0);
-                    tao::mul(U,aP2,L);
-                    tao::mul_trn(Cstar,P,U);
-                    tao::divby(dP2,Cstar);
-                    std::cerr << "aP2=" << aP2 << std::endl;
-                    std::cerr << "dP2=" << dP2 << std::endl;
-                    std::cerr << "U  =" << U   << std::endl;
+                    throw exception("boot.%s: singular system of constraints", *name);
                 }
-                std::cerr << "Cstar=" << Cstar << std::endl;
+                matrix<double> aP2(Nc,Nc);
+                iadjoint(aP2,P2);
+
+                vector<double> U(Nc,0);
+                tao::mul(U,aP2,L);
+                tao::mul_trn(Xstar,P,U);
+                tao::divby(dP2,Xstar);
+                std::cerr << "aP2=" << aP2 << std::endl;
+                std::cerr << "dP2=" << dP2 << std::endl;
+                std::cerr << "U  =" << U   << std::endl;
+                std::cerr << "Cstar=" << Xstar << std::endl;
 
                 //______________________________________________________________
                 //
+                //
                 // construct one orthonormal subspace
+                //
                 //______________________________________________________________
                 if(! svd<double>::orthonormal(Q,P) )
                 {
@@ -161,12 +162,69 @@ namespace yocto
                 }
                 std::cerr << "Q=" << Q << std::endl;
 
-                // initial point
-                tao::set(Corg,Cstar);
+                //______________________________________________________________
+                //
+                //
+                // construct an initial point
+                //
+                //______________________________________________________________
 
+                // start at cstart
+                tao::set(Xorg,Xstar);
+
+                // initial balance along Q
                 balance(cs.active);
+                std::cerr << "Xpls=" << Xorg << std::endl;
 
+                // and a final equilibrium close to a constrained concentration
+                if(!cs.normalize(Xorg,t,true))
+                {
+                    throw exception("boot.%s: unable to normalize guess concentration",*name);
+                }
+                std::cerr << "Xorg=" << Xorg << std::endl;
 
+                //______________________________________________________________
+                //
+                //
+                // motion along valid concentration
+                //
+                //______________________________________________________________
+                vector<double>  dL(Nc);
+                matrix<double>  tP(P,YOCTO_MATRIX_TRANSPOSE);
+                array<double>  &Gamma = cs.Gamma;
+                matrix<double> &Phi   = cs.Phi;
+                matrix<double> &W     = cs.W;
+                matrix<double> &Nu    = cs.Nu;
+                array<double>  &xi    = cs.xi;
+                array<double>  &dC    = cs.dC;
+                {
+                    tao::mul(dL,P,Xorg); // dL = P*Xorg
+                    tao::subp(dL,L);     // dL = L-P*Xorg;
+                    std::cerr << "dL=" << dL << std::endl;
+                    tao::mul(U,aP2,dL);
+                    tao::mul_and_div(dX, tP, U, dP2);
+                    std::cerr << "dX0=" << dX << std::endl;
+                    cs.updateGammaAndPhi(Xorg); std::cerr << "Gamma0=" << Gamma << std::endl;
+                    tao::mul_add(Gamma,Phi,dX); std::cerr << "Gamma1=" << Gamma << std::endl;
+                    tao::mmul_rtrn(W,Phi,Nu);
+                    if(!LU<double>::build(W))
+                    {
+                        throw exception("unexpected singular system");
+                    }
+                    tao::set(xi,Gamma);
+                    LU<double>::solve(W,xi);
+                    std::cerr << "xi=" << xi << std::endl;
+                    tao::mul(dC,cs.NuT,xi);
+                    std::cerr << "dC=" << cs.dC << std::endl;
+                    tao::sub(dX,dC);
+                    std::cerr << "dX1=" << dX << std::endl;
+                    tao::setsum(Xtry,Xorg,dX);
+                    if(!cs.normalize(Xtry,0,false))
+                    {
+                        throw exception("boot.%s: unable to normalize guess concentration",*name);
+                    }
+                    std::cerr << "Xtry=" << Xtry << std::endl;
+                }
 
             }
             catch(...)
@@ -190,16 +248,16 @@ namespace yocto
             while(true)
             {
                 // Corg, beta and E0 are computed
-                std::cerr << "E0  =" << E0   << std::endl;
-                std::cerr << "Corg=" << Corg << std::endl;
-                std::cerr << "beta=" << beta << std::endl;
+                // std::cerr << "Xorg=" << Xorg << std::endl;
+                //std::cerr << "beta=" << beta << std::endl;
                 tao::mul(V,Q,beta);
-                tao::mul_trn(dC,Q,V);
-                std::cerr << "dC=" << dC << std::endl;
+                tao::mul_trn(dX,Q,V);
+                //std::cerr << "dX=" << dX << std::endl;
                 double alpha = 1;
                 double E1    = __Balance(alpha);
                 if(E1<=0)
                 {
+                    //@Xtry
                     break;
                 }
 
@@ -208,31 +266,30 @@ namespace yocto
                 bracket<double>::expand(Balance,xx,ee);
                 xx.co_sort(ee);
                 __optimize(Balance,xx,ee);
-                E1 = __Balance(alpha=xx.b);
-                std::cerr << "E1=" << E1 << std::endl;
+                E1 = __Balance(alpha=max_of<double>(0,xx.b));
+                std::cerr << "E1=" << E1 << " / " << E0 << " (alpha=" << alpha << ")" << std::endl;
                 if(E1<=0||E1>=E0)
                 {
+                    //@Xtry
                     break;
                 }
 
                 // new step
                 E0 = E1;
-                tao::set(Corg,Ctry);
+                tao::set(Xorg,Xtry);
             }
             // out of the loop
-            tao::set(Corg,Ctry);
             for(size_t j=M;j>0;--j)
             {
                 if(active[j])
                 {
-                    Corg[j] = max_of<double>(0.0,Ctry[j]);
+                    Xorg[j] = max_of<double>(0.0,Xtry[j]);
                 }
                 else
                 {
-                    Corg[j] = Ctry[j];
+                    Xorg[j] = Xtry[j];
                 }
             }
-            std::cerr << "C=" << Corg << std::endl;
         }
 
     }

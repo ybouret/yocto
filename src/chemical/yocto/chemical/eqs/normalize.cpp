@@ -108,25 +108,6 @@ namespace yocto
             return GammaToScalar();
         }
 
-        static inline
-        void __optimize(math::numeric<double>::function &F,
-                        triplet<double>                 &XX,
-                        triplet<double>                 &FF) throw()
-        {
-
-            double width = XX.c-XX.a; assert(width>=0);
-            while(true)
-            {
-                kernel::minimize(F, XX, FF);
-                const double new_width = XX.c-XX.a;
-                assert(new_width<=width);
-                if(new_width>=width)
-                {
-                    break;
-                }
-                width = new_width;
-            }
-        }
 
         bool equilibria:: compute_step() throw()
         {
@@ -158,7 +139,8 @@ namespace yocto
         }
 
         bool equilibria:: normalize(array<double> &C0,
-                                    const double   t) throw()
+                                    const double   t,
+                                    const bool     initialize) throw()
         {
             const double threshold = numeric<double>::ftol;
 
@@ -176,8 +158,18 @@ namespace yocto
             //
             // initialize K, Gamma, Phi @Cini
             //__________________________________________________________________
-            initializeGamma(Cini,t);
+            if(initialize)
+            {
 
+                // compute all K and Gamma
+                initializeGamma(Cini,t);
+            }
+            else
+            {
+                // assuming K are already computed
+                updateGamma(Cini);
+            }
+            
             double Gamma0 = GammaToScalar();
             if(Gamma0<=0)
             {
@@ -239,8 +231,8 @@ namespace yocto
                     triplet<double> aa = { 0,      1,      1      };
                     triplet<double> gg = { Gamma0, Gamma1, Gamma1 };
                     bracket<double>::expand(NormGamma,aa,gg);
-                    aa.co_sort(gg);
-                    __optimize(NormGamma,aa,gg);
+                    optimize1D<double>::run(NormGamma,aa,gg);
+
                     Gamma1 = __NormGamma(max_of<double>(aa.b,0.0));
 
                     //__________________________________________________________

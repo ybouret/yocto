@@ -78,12 +78,12 @@ namespace yocto
             size_t         Nc;
             matrix<double> P;
             vector<double> L;
-            vector<double> Cstar;
+            vector<double> Xstar;
             matrix<double> Q;
-            vector<double> Corg;
-            vector<double> Ctry;
+            vector<double> Xorg;
+            vector<double> Xtry;
             vector<double> beta;
-            vector<double> dC;
+            vector<double> dX;
             vector<double> V;
 
             double __Balance(double alpha) throw(); // Ctry = C+alpha*dC, return Ctry^2

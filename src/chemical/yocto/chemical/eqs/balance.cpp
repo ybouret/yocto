@@ -122,26 +122,7 @@ namespace yocto
         }
         
         
-        static inline
-        void __optimize(math::numeric<double>::function &F,
-                        triplet<double>                 &xx,
-                        triplet<double>                 &ff) throw()
-        {
-
-            double width = xx.c-xx.a; assert(width>=0);
-            while(true)
-            {
-                kernel::minimize(F, xx, ff);
-                const double new_width = xx.c-xx.a;
-                assert(new_width<=width);
-                if(new_width>=width)
-                {
-                    break;
-                }
-                width = new_width;
-            }
-
-        }
+        
         
 
         bool equilibria:: balance(array<double> &C0,const bool normal) throw()
@@ -198,8 +179,7 @@ namespace yocto
                     triplet<double> xx = { 0,  alpha, alpha };
                     triplet<double> ff = { E0, E1,    E1    };
                     bracket<double>::expand(Balance,xx,ff);
-                    xx.co_sort(ff);
-                    __optimize(Balance,xx,ff);
+                    optimize1D<double>::run(Balance,xx,ff);
                     alpha = max_of<double>(xx.b,0); // never go back
                     E1    = __Balance(alpha);
                 }

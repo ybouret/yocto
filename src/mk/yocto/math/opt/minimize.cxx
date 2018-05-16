@@ -171,6 +171,32 @@ namespace yocto {
 
 #include "yocto/math/opt/bracket.hpp"
 
+namespace yocto
+{
+    namespace math
+    {
+        template <>
+        void optimize1D<real_t>::run(numeric<real_t>::function &func,
+                                     triplet<real_t>           &x,
+                                     triplet<real_t>           &f)
+        {
+            assert(x.is_ordered());
+            assert(f.b<=f.a);
+            assert(f.b<=f.c);
+            x.co_sort(f);
+            real_t dx_prev = Fabs(x.c - x.a);
+            for(;;)
+            {
+                kernel::minimize<real_t>(func,x,f);
+                const real_t dx_curr = Fabs(x.c-x.a);
+                if(dx_curr>=dx_prev) break;
+                dx_prev = dx_curr;
+            }
+        }
+
+    }
+}
+
 
 namespace yocto
 {

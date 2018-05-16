@@ -89,12 +89,12 @@ namespace yocto
         void boot:: clear() throw()
         {
             V.     release();
-            dC.    release();
+            dX.    release();
             beta.  release();
-            Ctry.  release();
-            Corg.  release();
+            Xtry.  release();
+            Xorg.  release();
             Q.     release();
-            Cstar. release();
+            Xstar. release();
             L.     release();
             P.     release();
             M=N=Nc=0;
