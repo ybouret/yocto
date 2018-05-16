@@ -78,6 +78,7 @@ namespace yocto
 
             //! normalize a balanced concentration
             bool normalize(array<double> &C0, const double t) throw();
+
             
             //! for printing
             std::ostream & spaces_for( const string &id, std::ostream &os ) const;

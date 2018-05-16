@@ -73,7 +73,24 @@ namespace yocto
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(boot);
-            
+            size_t         M;
+            size_t         N;
+            size_t         Nc;
+            matrix<double> P;
+            vector<double> L;
+            vector<double> Cstar;
+            matrix<double> Q;
+            vector<double> Corg;
+            vector<double> Ctry;
+            vector<double> beta;
+            vector<double> dC;
+            vector<double> V;
+
+            double __Balance(double alpha) throw(); // Ctry = C+alpha*dC, return Ctry^2
+            math::numeric<double>::function Balance;
+            void clear() throw();
+            void balance(const array<bool> &active);
+
         };
 
     }
