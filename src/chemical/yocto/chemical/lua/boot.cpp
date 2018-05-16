@@ -19,6 +19,33 @@ namespace yocto
             {
                 throw exception("boot.%s: constraint#%d is not a table",name,count);
             }
+
+            // get the constraint value
+            const size_t n=vm->GetTableLength();
+            std::cerr << "parsing constraint with #" << n << " items" << std::endl;
+            if(n<=0)
+            {
+                throw exception("boot.%s: empty constraint#%d",name,count);
+            }
+
+            lua_rawgeti(L,-1,1);
+            switch( lua_type(L,-1) )
+            {
+                case LUA_TNUMBER:
+                    std::cerr << "will be a generic constraint" << std::endl;
+                    break;
+
+                case LUA_TSTRING:
+                    std::cerr << "will be a precomputed constraint" << std::endl;;
+                    break;
+
+                default:
+                    throw exception("boot.%s#%d: invalid first item, must be a number or a string",name,count);
+            }
+            lua_pop(L,1);
+
+
+
         }
 
         void __lua::load(Lua::State::Pointer &vm,
