@@ -199,10 +199,16 @@ namespace yocto
                     tao::mul(U,aP2,dL);            // U  = adjoint(P*P')*dL
                     tao::mul_and_div(dX,tP,U,dP2); // dX = P'*inv(P*P')*(L-P*Xorg)
 
+                    //__________________________________________________________
+                    //
+                    // control the constraint increase
+                    //__________________________________________________________
                     double alpha = 1.0;
                     double R1    = __Control(alpha);
                     std::cerr << "Xtry=" << Xtry << " ; R1=" << R1 << "/" << R0 << std::endl;
-                    if(R1>=R0)
+
+#if 0
+                    if(false&&R1>=R0)
                     {
                         triplet<double> xx = { 0,  alpha, alpha };
                         triplet<double> rr = { R0, R1,    R1    };
@@ -210,19 +216,22 @@ namespace yocto
                         optimize1D<double>::run(Control,xx,rr);
                         R1 = __Control(alpha=max_of<double>(0.0,xx.b));
                     }
+#endif
 
-                    tao::set(Xorg,Xtry);
                     if(R1>=R0)
                     {
-                        R0=R1;
                         break;
                     }
-                    R0=R1;
+                    else
+                    {
+                        R0=R1;
+                        tao::set(Xorg,Xtry);
+                    }
                     //if(++nc>=13) exit(0);
                 }
-                std::cerr << "Xtry=" << Xtry << " ; RMS=" << R0 << std::endl;
+                std::cerr << "Xorg=" << Xorg << " ; R0=" << R0 << std::endl;
 
-                tao::set(C0,Xtry,M);
+                tao::set(C0,Xorg,M);
             }
             catch(...)
             {

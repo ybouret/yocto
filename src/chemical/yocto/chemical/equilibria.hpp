@@ -79,6 +79,7 @@ namespace yocto
             //! normalize a balanced concentration
             bool normalize(array<double> &C0, const double t, const bool initialize=true) throw();
 
+            //! C0 must be normalized!!
             bool deliver( array<double> &C0, const array<double> &delta, const double t, const bool initialize=true) throw();
             
             //! for printing

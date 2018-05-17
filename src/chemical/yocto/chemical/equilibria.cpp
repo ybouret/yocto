@@ -296,6 +296,10 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
 
         bool equilibria:: deliver( array<double> &C0, const array<double> &delta, const double t, const bool initialize) throw()
         {
+            //__________________________________________________________________
+            //
+            // starting point
+            //__________________________________________________________________
             if(initialize)
             {
                 initializeGammaAndPhi(C0,t);
@@ -304,6 +308,11 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             {
                 updateGammaAndPhi(C0);
             }
+
+            //__________________________________________________________________
+            //
+            // chemical moderation
+            //__________________________________________________________________
             tao::mmul_rtrn(W,Phi,Nu);
             if(!LU<double>::build(W))
             {
@@ -315,7 +324,7 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             tao::mul(dC,NuT,xi);
             for(size_t j=M;j>0;--j)
             {
-                C0[j] += (delta[j] - dC[j]);
+                C0[j] += (beta[j] - dC[j]);
             }
             return normalize(C0,0,false);
         }
