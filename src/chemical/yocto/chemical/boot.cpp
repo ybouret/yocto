@@ -118,6 +118,7 @@ namespace yocto
         Xorg(),
         Xtry(),
         beta(),
+        dX(),
         V(),
         dL(),
         U(),
