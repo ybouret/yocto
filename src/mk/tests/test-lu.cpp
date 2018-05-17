@@ -28,11 +28,11 @@ void __test_lu()
                 {
                     if(i==j)
                     {
-                        M[i][j] = int64_t((n*n)+i);
+                        M[i][j] = int((n*n)+i);
                     }
                     else
                     {
-                        const int64_t x = -int64_t(n) + int64_t(alea.leq(2*n));
+                        const int x = -int(n) + int(alea.leq(2*n));
                         //std::cerr << "x=" << x << std::endl;
                         M[i][j] = x;
                     }
@@ -76,11 +76,11 @@ void __test_lu()
 
                 for(size_t i=1;i<=n;++i)
                 {
-                    const int64_t x = -int64_t(n) + int64_t(alea.leq(2*n));
-                    const T       y(x);
+                    const int x = -int(n) + int(alea.leq(2*n));
+                    const T   y(x);
                     b.push_back(y);
-                    const int64_t x0 = 0;
-                    const T       y0(x0);
+                    const int x0 = 0;
+                    const T   y0(x0);
                     c.push_back(y0);
                 }
                 std::cerr << "b=" << b << std::endl;

@@ -21,7 +21,7 @@ namespace yocto
         template <>
         struct subset_metrics<1>
         {
-            static const size_t num_apex = 0;
+            static const size_t num_apex = 1;
         };
 
         template <>
@@ -33,7 +33,7 @@ namespace yocto
         template <>
         struct subset_metrics<3>
         {
-            static const size_t num_apex = 0;
+            static const size_t num_apex = 1;
         };
 
 

@@ -15,11 +15,11 @@ static inline T F( T x )
     ++call_counts;
     //return 7.1-Cos(x+T(0.23));
     //return 1-Cos(x+0.1);
-    return 3-Cos(x+0.2*x*x+0.1);
+    return T(3)-Cos(x+T(0.2)*x*x+T(0.1));
 }
 
-template <typename T,typename PROC>
-static inline void optim(PROC &proc, T xtol)
+template <typename T>
+static inline void optim(T xtol)
 {
     call_counts = 0;
     typename numeric<T>::function func( cfunctor(F<float>) );
@@ -29,7 +29,7 @@ static inline void optim(PROC &proc, T xtol)
     std::cerr << "x=" << x << std::endl;
     std::cerr << "f=" << f << std::endl;
     
-    proc(func,x,f,xtol);
+	optimize1D<T>::run(func,x,f,xtol);
     std::cerr << "min@" << x.b << " = " << f.b << std::endl;
     std::cerr << "\t\t#calls=" << call_counts << std::endl;
 }
@@ -47,7 +47,7 @@ YOCTO_UNIT_TEST_IMPL(opt)
     }
  
     std::cerr << "Double: " << std::endl;
-    optim<double>(optimize1D<double>::run,xtol);
+    optim<double>(xtol);
 }
 YOCTO_UNIT_TEST_DONE()
 

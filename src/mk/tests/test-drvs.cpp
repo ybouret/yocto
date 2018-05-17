@@ -69,7 +69,7 @@ namespace {
                 typename numeric<T>::function F( &dum, & Dummy::Function<T> );
                 for(size_t i=10000;i>0;--i)
                 {
-                    (void)drvs.compute(F,10*alea.get<T>(),1e-4);
+                    (void)drvs.compute(F,10*alea.get<T>(),T(1e-4));
                 }
             }
 
@@ -77,7 +77,7 @@ namespace {
                 typename numeric<T>::scalar_field        F( &dum, & Dummy::Field<T> );
                 typename numeric<T>::parametric_function P( &dum, & Dummy::FitFn<T> );
                 vector<T> x(4,0);
-                vector<T> h(x.size(),1e-4);
+                vector<T> h(x.size(),T(1e-4));
                 vector<T> g(x.size());
 
                 for(size_t i=10;i>0;--i)
@@ -88,7 +88,7 @@ namespace {
                     }
                     drvs.gradient(g,F,x,h);
                     std::cerr << x << " => " << g << std::endl;
-                    std::cerr << "|_: " << drvs.compute(P, 10*alea.get<T>(), x, 1e-4) << std::endl;
+                    std::cerr << "|_: " << drvs.compute(P, 10*alea.get<T>(), x, T(1e-4)) << std::endl;
                     drvs.gradient(g,P,10*alea.get<T>(), x, h);
                     std::cerr << "|_: " << g << std::endl;
                 }
