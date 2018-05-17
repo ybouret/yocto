@@ -6,6 +6,7 @@
 #include "yocto/math/opt/minimize.hpp"
 #include "yocto/math/opt/bracket.hpp"
 #include "yocto/math/core/lu.hpp"
+#include "yocto/math/types.hxx"
 
 namespace yocto
 {
@@ -171,7 +172,6 @@ namespace yocto
                 // and an initial equilibrium close to a constrained concentration
                 //
                 //______________________________________________________________
-
                 if(!cs.normalize(Xorg,t,true))
                 {
                     throw exception("boot.%s: unable to normalize guess concentration",*name);
@@ -193,7 +193,6 @@ namespace yocto
                     //__________________________________________________________
                     //
                     // compute the constrained increase
-                    //
                     //__________________________________________________________
                     tao::mul(dL,P,Xorg);           // dL = P*Xorg
                     tao::subp(dL,L);               // dL = L-P*Xorg;
