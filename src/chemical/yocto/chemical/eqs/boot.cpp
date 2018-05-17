@@ -51,6 +51,8 @@ namespace yocto
             clear();
             try
             {
+                std::cerr << "boot <" << name << ">" << std::endl;
+
                 //__________________________________________________________________
                 //
                 // check dimensionality
@@ -117,6 +119,7 @@ namespace yocto
                 // construct most precise Xstar, checking that the linear
                 // problem is consistent
                 //______________________________________________________________
+                std::cerr << "\...computing starting point" << std::endl;
                 matrix<double> P2(Nc,Nc);
                 tao::mmul_rtrn(P2,P,P);
                 dP2 = ideterminant(P2);
@@ -157,11 +160,10 @@ namespace yocto
                 // Look for a balanced Xorg
                 //
                 //______________________________________________________________
+                std::cerr << "\t...balancing" << std::endl;
                 balance();
                 double R0 = Error(Xorg);
 
-                std::cerr << "Xp=" << Xorg << std::endl;
-                std::cerr << "R=" << Error(Xorg) << std::endl;
                 if(R0>threshold)
                 {
                     throw exception("boot.%s: unable to balance initial constraints",*name);
@@ -173,11 +175,11 @@ namespace yocto
                 // and an initial equilibrium close to a constrained concentration
                 //
                 //______________________________________________________________
+                std::cerr << "\t...finding initial equilibrium" << std::endl;
                 if(!cs.normalize(Xorg,t,true))
                 {
                     throw exception("boot.%s: unable to normalize guess concentration",*name);
                 }
-                std::cerr << "Xorg=" << Xorg << std::endl;
 
                 //______________________________________________________________
                 //
@@ -185,6 +187,7 @@ namespace yocto
                 // motion along valid concentration
                 //
                 //______________________________________________________________
+                std::cerr << "\t...iterating" << std::endl;
                 matrix<double>  tP(P,YOCTO_MATRIX_TRANSPOSE);
                 R0 = Error(Xorg);
                 while(R0>0)
@@ -233,6 +236,7 @@ namespace yocto
 
 
                 }
+                std::cerr << "...done" << std::endl;
                 tao::set(C0,Xorg,M);
             }
             catch(...)
@@ -276,7 +280,6 @@ namespace yocto
             double E0 = __Balance(0.0);
             if(E0<=0)
             {
-                std::cerr << "boot.balanced..." << std::endl;
                 return;
             }
             
