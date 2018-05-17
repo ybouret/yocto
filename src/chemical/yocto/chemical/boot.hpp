@@ -98,7 +98,7 @@ namespace yocto
 
             void clear() throw();
             void balance();
-            double RMS( const array<double> &XX ) throw();
+            double Error( const array<double> &XX ) throw();
         };
 
     }

@@ -14,41 +14,18 @@ namespace yocto
     namespace chemical
     {
 
-        double boot:: __Balance(double alpha) throw()
-        {
-            double E = 0;
-            for(size_t j=M;j>0;--j)
-            {
-                beta[j] = 0;
-                const double Xj = (Xtry[j] = Xorg[j] + alpha * dX[j]);
-                const double X2 = Xj*Xj;
-                if(X2<=0)
-                {
-                    Xtry[j] = 0; // not significant;
-                }
-                else
-                {
-                    // significant: X2>0
-                    if(eqs->active[j] && Xj<0)
-                    {
-                        beta[j] = -Xj;
-                        E      += X2;
-                    }
-                }
-            }
-            return E;
-        }
 
-        double boot:: RMS( const array<double> &XX ) throw()
+
+        double boot:: Error( const array<double> &XX ) throw()
         {
             tao::mul(dL,P,XX);
-            double sum2 = 0;
+            double mae = 0;
             for(size_t k=Nc;k>0;--k)
             {
                 const double dl = dL[k] - L[k];
-                sum2 += (dl*dl)/p2[k];
+                mae += sqrt( (dl*dl)/p2[k] );
             }
-            return sqrt(sum2/Nc);
+            return mae/Nc;
         }
 
 
@@ -60,7 +37,7 @@ namespace yocto
             {
                 throw exception("boot:%s: unable to perform control!", *name);
             }
-            return RMS(Xtry);
+            return Error(Xtry);
         }
 
 
@@ -68,6 +45,7 @@ namespace yocto
                            equilibria       &cs,
                            const double      t)
         {
+            static const double threshold = numeric<double>::ftol;
             clear();
             try
             {
@@ -134,7 +112,7 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // construct most precise Cstar, checking that the linear
+                // construct most precise Xstar, checking that the linear
                 // problem is consistent
                 //______________________________________________________________
                 matrix<double> P2(Nc,Nc);
@@ -149,7 +127,7 @@ namespace yocto
                 tao::mul(U,aP2,L);
                 tao::mul_trn(Xorg,P,U);
                 tao::divby(dP2,Xorg);
-                std::cerr << "Xstar=" << Xorg << std::endl;
+                std::cerr << "Xorg=" << Xorg << std::endl;
 
                 //______________________________________________________________
                 //
@@ -174,16 +152,26 @@ namespace yocto
                 //______________________________________________________________
                 //
                 //
-                // construct an initial point
+                // Look for a balanced Xorg
+                //
+                //______________________________________________________________
+                balance();
+                double R0 = Error(Xorg);
+
+                std::cerr << "Xpls=" << Xorg << std::endl;
+                std::cerr << "Err0=" << Error(Xorg) << std::endl;
+                if(R0>threshold)
+                {
+                    throw exception("boot.%s: unable to balance initial constraints",*name);
+                }
+
+                //______________________________________________________________
+                //
+                //
+                // and an initial equilibrium close to a constrained concentration
                 //
                 //______________________________________________________________
 
-
-                // initial balance along Q
-                balance();
-                std::cerr << "Xpls=" << Xorg << std::endl;
-
-                // and a final equilibrium close to a constrained concentration
                 if(!cs.normalize(Xorg,t,true))
                 {
                     throw exception("boot.%s: unable to normalize guess concentration",*name);
@@ -197,7 +185,7 @@ namespace yocto
                 //
                 //______________________________________________________________
                 matrix<double>  tP(P,YOCTO_MATRIX_TRANSPOSE);
-                double R0 = RMS(Xorg);
+                R0 = Error(Xorg);
                 std::cerr << "R0=" << R0 << std::endl;
                 size_t nc = 0;
                 while(true)
@@ -219,6 +207,7 @@ namespace yocto
                     {
                         triplet<double> xx = { 0,  alpha, alpha };
                         triplet<double> rr = { R0, R1,    R1    };
+                        bracket<double>::expand(Control,xx,rr);
                         optimize1D<double>::run(Control,xx,rr);
                         R1 = __Control(alpha=max_of<double>(0.0,xx.b));
                     }
@@ -230,7 +219,7 @@ namespace yocto
                         break;
                     }
                     R0=R1;
-                    if(++nc>=13) exit(0);
+                    //if(++nc>=13) exit(0);
                 }
                 std::cerr << "Xtry=" << Xtry << " ; RMS=" << R0 << std::endl;
 
@@ -241,6 +230,31 @@ namespace yocto
                 clear(); throw;
             }
             clear();
+        }
+
+        double boot:: __Balance(double alpha) throw()
+        {
+            double E = 0;
+            for(size_t j=M;j>0;--j)
+            {
+                beta[j] = 0;
+                const double Xj = (Xtry[j] = Xorg[j] + alpha * dX[j]);
+                const double X2 = Xj*Xj;
+                if(X2<=0)
+                {
+                    Xtry[j] = 0; // not significant;
+                }
+                else
+                {
+                    // significant: X2>0
+                    if(eqs->active[j] && Xj<0)
+                    {
+                        beta[j] = -Xj;
+                        E      += X2;
+                    }
+                }
+            }
+            return E;
         }
 
         void boot:: balance()
@@ -259,24 +273,30 @@ namespace yocto
             while(true)
             {
 
-                // Corg, beta and E0 are computed
+                //______________________________________________________________
+                //
+                // Corg, beta and E0 are computed: compute the search dX
+                //______________________________________________________________
                 tao::mul(V,Q,beta);
                 tao::mul_trn(dX,Q,V);
-                //std::cerr << "dX=" << dX << std::endl;
                 double alpha = 1;
                 double E1    = __Balance(alpha);
                 if(E1<=0)
                 {
-                    //@Xtry
+                    //__________________________________________________________
+                    //
+                    //@Xtry: early break!
+                    //__________________________________________________________
                     break;
                 }
 
-                triplet<double> xx = { 0, alpha, alpha };
-                triplet<double> ee = { E0, E1, E1 };
-                bracket<double>::expand(Balance,xx,ee);
-                optimize1D<double>::run(Balance,xx,ee);
-                E1 = __Balance(alpha=max_of<double>(0,xx.b));
-                //std::cerr << "E1=" << E1 << " / " << E0 << " (alpha=" << alpha << ")" << std::endl;
+                {
+                    triplet<double> xx = { 0, alpha, alpha };
+                    triplet<double> ee = { E0, E1, E1 };
+                    bracket<double>::expand(Balance,xx,ee);
+                    optimize1D<double>::run(Balance,xx,ee);
+                    E1 = __Balance(alpha=max_of<double>(0,xx.b));
+                }
                 if(E1<=0||E1>=E0)
                 {
                     //@Xtry
