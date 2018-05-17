@@ -110,16 +110,13 @@ namespace yocto
                     L[k]  = c.fill(Pk);
                     p2[k] = tao::norm_sq(Pk);
                 }
-
-                //std::cerr << "P=" << P << std::endl;
-                //std::cerr << "L=" << L << std::endl;
-
+                
                 //______________________________________________________________
                 //
                 // construct most precise Xstar, checking that the linear
                 // problem is consistent
                 //______________________________________________________________
-                std::cerr << "\...computing starting point" << std::endl;
+                std::cerr << "\t...computing starting point" << std::endl;
                 matrix<double> P2(Nc,Nc);
                 tao::mmul_rtrn(P2,P,P);
                 dP2 = ideterminant(P2);
@@ -132,7 +129,6 @@ namespace yocto
                 tao::mul(U,aP2,L);
                 tao::mul_trn(Xorg,P,U);
                 tao::divby(dP2,Xorg);
-                //std::cerr << "Xorg=" << Xorg << std::endl;
 
                 //______________________________________________________________
                 //

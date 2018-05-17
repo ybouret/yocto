@@ -107,6 +107,22 @@ namespace yocto
         boot:: boot(const string &id) :
         name(id),
         constraints(),
+        M(0),
+        N(0),
+        Nc(0),
+        P(),
+        L(),
+        aP2(),
+        dP2(0),
+        Q(),
+        Xorg(),
+        Xtry(),
+        beta(),
+        V(),
+        dL(),
+        U(),
+        p2(),
+        eqs(0),
         Balance( this, & boot::__Balance ),
         Control( this, & boot::__Control )
         {
