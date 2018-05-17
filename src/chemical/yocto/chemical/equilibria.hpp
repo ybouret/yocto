@@ -87,6 +87,10 @@ namespace yocto
 
             double get_scale( const size_t iEq ) const throw();
 
+            bool mix(array<double>       &Cmix,
+                     const array<double> &C0, const double V0,
+                     const array<double> &C1, const double V1,
+                     const double t);
 
 
         private:
