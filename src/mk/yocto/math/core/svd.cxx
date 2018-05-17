@@ -299,9 +299,9 @@ namespace yocto
         template <>
         size_t svd<real_t>:: truncate( array<real_t> &w ) throw()
         {
-            size_t       ans = 0;
-            const size_t n   = w.size();
-            real_t wmax = 0;
+            size_t       ans  = 0;
+            const size_t n    = w.size();
+            real_t       wmax = 0;
             for( size_t i=n;i>0;--i)
             {
                 const real_t tmp = Fabs( w[i] );

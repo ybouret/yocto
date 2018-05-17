@@ -16,7 +16,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
     species &Am  = lib.add("Am",-1);
     species &NH4 = lib.add("NH4+",1);
     species &NH3 = lib.add("NH3",0);
-#if 0
+#if 1
     species &OxH2 = lib.add("OxH2",0);
     species &OxHm = lib.add("OxH-",-1);
     species &Oxmm = lib.add("Ox--",-2);
@@ -52,7 +52,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
         ammoniac(H,1);
     }
 
-#if 0
+#if 1
     if(true)
     {
         {
@@ -80,6 +80,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
     loader.electroneutrality(lib);
     loader.conserve(Ca,AH,Am);
     loader.conserve(Cb,NH3,NH4);
+    loader.conserve(0,OxH2,OxHm,Oxmm);
     loader.conserve(Cb,Cl);
     loader.conserve(0.0,Na);
 
@@ -89,8 +90,7 @@ YOCTO_UNIT_TEST_IMPL(boot)
     vector<double> C0(cs.M);
     loader.guess(C0,cs,0.0);
     lib.display(C0);
-    cs.initializeGamma(C0,0.0);
-    std::cerr << "Gamma=" << cs.Gamma << std::endl;
+
 }
 YOCTO_UNIT_TEST_DONE()
 

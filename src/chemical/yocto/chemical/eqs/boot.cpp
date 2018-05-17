@@ -7,6 +7,7 @@
 #include "yocto/math/opt/bracket.hpp"
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/types.hxx"
+#include "yocto/ios/ocstream.hpp"
 
 namespace yocto
 {
@@ -108,8 +109,8 @@ namespace yocto
                     p2[k] = tao::norm_sq(Pk);
                 }
 
-                std::cerr << "P=" << P << std::endl;
-                std::cerr << "L=" << L << std::endl;
+                //std::cerr << "P=" << P << std::endl;
+                //std::cerr << "L=" << L << std::endl;
 
                 //______________________________________________________________
                 //
@@ -128,7 +129,7 @@ namespace yocto
                 tao::mul(U,aP2,L);
                 tao::mul_trn(Xorg,P,U);
                 tao::divby(dP2,Xorg);
-                std::cerr << "Xorg=" << Xorg << std::endl;
+                //std::cerr << "Xorg=" << Xorg << std::endl;
 
                 //______________________________________________________________
                 //
@@ -148,7 +149,7 @@ namespace yocto
                         tao::divby( tao::norm(Qi), Qi);
                     }
                 }
-                std::cerr << "Q=" << Q << std::endl;
+                //std::cerr << "Q=" << Q << std::endl;
 
                 //______________________________________________________________
                 //
@@ -159,8 +160,8 @@ namespace yocto
                 balance();
                 double R0 = Error(Xorg);
 
-                std::cerr << "Xpls=" << Xorg << std::endl;
-                std::cerr << "Err0=" << Error(Xorg) << std::endl;
+                std::cerr << "Xp=" << Xorg << std::endl;
+                std::cerr << "R=" << Error(Xorg) << std::endl;
                 if(R0>threshold)
                 {
                     throw exception("boot.%s: unable to balance initial constraints",*name);
@@ -186,9 +187,7 @@ namespace yocto
                 //______________________________________________________________
                 matrix<double>  tP(P,YOCTO_MATRIX_TRANSPOSE);
                 R0 = Error(Xorg);
-                std::cerr << "R0=" << R0 << std::endl;
-                size_t nc = 0;
-                while(true)
+                while(R0>0)
                 {
                     //__________________________________________________________
                     //
@@ -201,36 +200,39 @@ namespace yocto
 
                     //__________________________________________________________
                     //
-                    // control the constraint increase
+                    // deliver it
                     //__________________________________________________________
                     double alpha = 1.0;
                     double R1    = __Control(alpha);
-                    std::cerr << "Xtry=" << Xtry << " ; R1=" << R1 << "/" << R0 << std::endl;
-
-#if 0
-                    if(false&&R1>=R0)
+                    if(R1<R0)
                     {
-                        triplet<double> xx = { 0,  alpha, alpha };
-                        triplet<double> rr = { R0, R1,    R1    };
-                        bracket<double>::expand(Control,xx,rr);
-                        optimize1D<double>::run(Control,xx,rr);
-                        R1 = __Control(alpha=max_of<double>(0.0,xx.b));
-                    }
-#endif
-
-                    if(R1>=R0)
-                    {
-                        break;
+                        tao::set(Xorg,Xtry);
+                        R0 = R1 ;
+                        continue;
                     }
                     else
                     {
-                        R0=R1;
+                        assert(R1>=R0);
+                        triplet<double> xx = { 0,  alpha, alpha };
+                        triplet<double> rr = { R0, R1,    R1    };
+                        bracket<double>::inside(Control,xx,rr);
+                        optimize1D<double>::run(Control,xx,rr);
+                        R1 = __Control(alpha=xx.b);
                         tao::set(Xorg,Xtry);
+                        if(R1>=R0)
+                        {
+                            R0=R1;
+                            break;
+                        }
+                        else
+                        {
+                            R0 = R1 ;
+                            continue;
+                        }
                     }
-                    //if(++nc>=13) exit(0);
-                }
-                std::cerr << "Xorg=" << Xorg << " ; R0=" << R0 << std::endl;
 
+
+                }
                 tao::set(C0,Xorg,M);
             }
             catch(...)

@@ -108,7 +108,7 @@ namespace yocto
         name(id),
         constraints(),
         Balance( this, & boot::__Balance ),
-        Control( this, & boot::__Balance )
+        Control( this, & boot::__Control )
         {
         }
 

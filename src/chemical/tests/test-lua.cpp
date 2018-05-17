@@ -38,32 +38,8 @@ YOCTO_UNIT_TEST_IMPL(lua)
     vector<double> C0(cs.M,0);
 
     loader.guess(C0,cs,0.0);
-
-#if 0
-    for(size_t iter=1;iter<=100;++iter)
-    {
-        for(size_t j=cs.M;j>0;--j)
-        {
-            C0[j] = 1e-3 * (alea.get<double>()-0.3);
-            //C0[j] = alea.get<double>();
-        }
-        std::cerr << "initial: " << std::endl;
-        lib.display(C0);
-        if(!cs.balance(C0))
-        {
-            std::cerr << "unable to balance..." << std::endl;
-            continue;
-        }
-        std::cerr << "balanced: " << std::endl;
-        lib.display(C0);
-        std::cerr << "normalizing..." << std::endl;
-        std::cerr << "Nu=" << cs.Nu << std::endl;
-        cs.normalize(C0,0.0);
-        lib.display(C0);
-        break;
-    }
-#endif
-
+    lib.display(C0);
+    
 
 }
 YOCTO_UNIT_TEST_DONE()

@@ -294,7 +294,10 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             return peqs[iEq]->scale( K[iEq] );
         }
 
-        bool equilibria:: deliver( array<double> &C0, const array<double> &delta, const double t, const bool initialize) throw()
+        bool equilibria:: deliver(array<double>       &C0,
+                                  const array<double> &delta,
+                                  const double         t,
+                                  const bool           initialize) throw()
         {
             //__________________________________________________________________
             //
@@ -322,9 +325,18 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             tao::mul_add(xi,Phi,delta);
             LU<double>::solve(W,xi);
             tao::mul(dC,NuT,xi);
+#if 0
+            {
+                tao::set(beta,delta);
+                tao::sub(beta,dC);
+                std::cerr << "C0   =" << C0    << std::endl;
+                std::cerr << "delta=" << delta << std::endl;
+                std::cerr << "damp =" << beta  << std::endl;
+            }
+#endif
             for(size_t j=M;j>0;--j)
             {
-                C0[j] += (beta[j] - dC[j]);
+                C0[j] += (delta[j] - dC[j]);
             }
             return normalize(C0,0,false);
         }
