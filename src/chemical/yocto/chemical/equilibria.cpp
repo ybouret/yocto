@@ -335,15 +335,7 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             tao::mul_add(xi,Phi,delta);
             LU<double>::solve(W,xi);
             tao::mul(dC,NuT,xi);
-#if 0
-            {
-                tao::set(beta,delta);
-                tao::sub(beta,dC);
-                std::cerr << "C0   =" << C0    << std::endl;
-                std::cerr << "delta=" << delta << std::endl;
-                std::cerr << "damp =" << beta  << std::endl;
-            }
-#endif
+            
             for(size_t j=M;j>0;--j)
             {
                 C0[j] += (delta[j] - dC[j]);
@@ -351,6 +343,40 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             return normalize(C0,0,false);
         }
 
+        bool equilibria:: damp( array<double> &delta, const array<double> &C0, const double t, const bool initialize) throw()
+        {
+            //__________________________________________________________________
+            //
+            // starting point
+            //__________________________________________________________________
+            if(initialize)
+            {
+                initializeGammaAndPhi(C0,t);
+            }
+            else
+            {
+                updateGammaAndPhi(C0);
+            }
+
+            //__________________________________________________________________
+            //
+            // chemical moderation
+            //__________________________________________________________________
+            tao::mmul_rtrn(W,Phi,Nu);
+            if(!LU<double>::build(W))
+            {
+                return false; // bad...
+            }
+            tao::set(xi,Gamma);
+            tao::mul_add(xi,Phi,delta);
+            LU<double>::solve(W,xi);
+            tao::mul(dC,NuT,xi);
+            for(size_t j=M;j>0;--j)
+            {
+                delta[j] -= dC[j];
+            }
+            return true;
+        }
 
 
     }

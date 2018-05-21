@@ -81,7 +81,11 @@ namespace yocto
 
             //! C0 must be normalized!!
             bool deliver( array<double> &C0, const array<double> &delta, const double t, const bool initialize=true) throw();
-            
+
+            //! just damping
+            bool damp( array<double> &delta, const array<double> &C0, const double t, const bool initialize=true) throw();
+
+
             //! for printing
             std::ostream & spaces_for( const string &id, std::ostream &os ) const;
 
