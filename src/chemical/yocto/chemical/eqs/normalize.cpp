@@ -188,7 +188,7 @@ namespace yocto
                 //______________________________________________________________
                 if(!compute_step())
                 {
-                    // realy, realy singular composition and system...
+                    // really, really singular composition and system...
                     return false;
                 }
 
