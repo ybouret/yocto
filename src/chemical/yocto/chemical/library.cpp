@@ -2,6 +2,7 @@
 #include "yocto/chemical/library.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/code/utils.hpp"
+#include <cmath>
 
 namespace yocto
 {
@@ -12,7 +13,8 @@ namespace yocto
         library:: library( const string &id, const size_t reserved ) :
         species_set(reserved,as_capacity),
         name(id),
-        max_name_length(0)
+        max_name_length(0),
+        proton_name("H+")
         {
         }
 
@@ -85,6 +87,21 @@ namespace yocto
                 std::cerr << '=' << ' ' << C[ii] << std::endl;
             }
         }
+
+        double library:: pH(const array<double> &C) const
+        {
+            static const char fn[] = "chemical.library.pH: ";
+            const species::pointer *ppProton = search(proton_name);
+            if(!ppProton) throw exception("%schemical.library.pH: no %s",fn,*proton_name);
+            const size_t proton_index = (**ppProton).indx;
+            assert(proton_index>0);
+            assert(proton_index<=C.size());
+            const double h = C[proton_index];
+            if(h<=0) throw exception("%s[%s]=%g",fn,*proton_name, h);
+            return -log10(h);
+        }
+
+
     }
 }
 

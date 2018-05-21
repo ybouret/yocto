@@ -34,10 +34,11 @@ namespace yocto
             friend std::ostream & operator<<( std::ostream &os, const library &lib);
 
             void display( const array<double> &C ) const;
-
+            double pH(const array<double> &C) const;
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(library);
+            const string proton_name;
         };
 
     }

@@ -98,6 +98,9 @@ namespace yocto
 
             functor<void,TL2(array<double>&,double)> project;
 
+
+            bool compute_step() throw();
+
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
             const equilibrium  *pEq;
@@ -119,7 +122,6 @@ namespace yocto
             //! best move for everyone
             void sweep() throw();
 
-            bool compute_step() throw();
         };
 
     }

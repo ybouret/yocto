@@ -224,7 +224,7 @@ namespace yocto
                 //______________________________________________________________
                 //
                 // at this point,
-                // a balanced C, and Gamma1=|Gamma|@C are computed
+                // a balanced Cend, and Gamma1=|Gamma|@Cend are computed
                 //______________________________________________________________
                 if(Gamma1>Gamma0)
                 {
