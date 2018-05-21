@@ -66,23 +66,22 @@ YOCTO_UNIT_TEST_IMPL(lua)
         for(size_t i=0;i<=Nd;++i)
         {
             const double V1 = (2*V0*i)/Nd;
+            const int iv =int(floor(V1*100+0.5));
+            if(  iv == 634 || iv == 632 )
+            {
+                std::cerr << std::endl;
+                std::cerr << "V1=" << V1 << std::endl;
+                //cs.updateGammaAndPhi(cs.C);
+                //cs.compute_step();
+            }
             if(!cs.mix(Cmix,C0,V0,C1,V1,0.0))
             {
                 throw exception("cannot mix @V1=%g", V1);
             }
             std::cerr << ".";
             fp("%g",V1);
-            const int iv =int(floor(V1*100+0.5));
-            if(  iv == 634 || iv == 632 )
-            {
-                std::cerr << std::endl;
-                std::cerr << "C=" << cs.C << std::endl;
-                std::cerr << "dC=" << cs.dC << std::endl;
-                cs.updateGammaAndPhi(cs.C);
-                std::cerr << "Gam=" << cs.Gamma << std::endl;
-                cs.compute_step();
-                std::cerr << "dC0=" << cs.dC << std::endl;
-            }
+            if(634==iv) exit(0);
+
             if(has_proton)
             {
                 fp(" %g", lib.pH(Cmix) );

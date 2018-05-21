@@ -143,7 +143,7 @@ namespace yocto
                                     const bool     initialize) throw()
         {
             const double threshold = numeric<double>::ftol;
-
+            std::cerr << "normalize" << std::endl;
             for(size_t j=M;j>0;--j)
             {
                 Cini[j] = C0[j];
@@ -163,16 +163,19 @@ namespace yocto
 
                 // compute all K and Gamma
                 initializeGamma(Cini,t);
+                std::cerr << "C_in=" << Cini << std::endl;
             }
             else
             {
                 // assuming K are already computed
                 updateGamma(Cini);
+                std::cerr << "C_up=" << Cini << std::endl;
             }
             
             double Gamma0 = GammaToScalar();
             if(Gamma0<=0)
             {
+                std::cerr << "already normalized" << std::endl;
                 return true;
             }
             updatePhi(Cini);
@@ -186,6 +189,7 @@ namespace yocto
                 // at this point, Cini is valid, Gamma and Phi are computed@Cini
                 // => compute the full Newton's step
                 //______________________________________________________________
+                std::cerr << "Gamma=" << Gamma << std::endl;
                 if(!compute_step())
                 {
                     // really, really singular composition and system...
