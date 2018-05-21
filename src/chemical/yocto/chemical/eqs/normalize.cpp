@@ -189,6 +189,7 @@ namespace yocto
                 // at this point, Cini is valid, Gamma and Phi are computed@Cini
                 // => compute the full Newton's step
                 //______________________________________________________________
+                std::cerr << "Cini =" << Cini << std::endl;
                 std::cerr << "Gamma=" << Gamma << std::endl;
                 if(!compute_step())
                 {
@@ -201,7 +202,9 @@ namespace yocto
                 // this is Newton's predicted concentration in Cend
                 //______________________________________________________________
                 tao::setsum(Cend,Cini,dC);
-
+                std::cerr << "dC  =" << dC   << std::endl;
+                std::cerr << "Cend=" << Cend << std::endl;
+                
                 //______________________________________________________________
                 //
                 // which must be balanced
@@ -211,6 +214,7 @@ namespace yocto
                     // unable to balance...
                     return false;
                 }
+                std::cerr << "Cbal=" << Cend << std::endl;
 
                 //______________________________________________________________
                 //
@@ -224,7 +228,7 @@ namespace yocto
                 // must be a total decreasing step in direction dC
                 //______________________________________________________________
                 double Gamma1 = GammaToScalar();
-                
+                std::cerr << "Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
                 //______________________________________________________________
                 //
                 // at this point,
@@ -234,7 +238,7 @@ namespace yocto
                 {
                     triplet<double> aa = { 0,      1,      1      };
                     triplet<double> gg = { Gamma0, Gamma1, Gamma1 };
-                    bracket<double>::expand(NormGamma,aa,gg);
+                    bracket<double>::inside(NormGamma,aa,gg);
                     optimize1D<double>::run(NormGamma,aa,gg);
 
                     Gamma1 = __NormGamma(max_of<double>(aa.b,0.0));
@@ -249,6 +253,8 @@ namespace yocto
                         Cend[j]= Ctry[j];
                         dC[j]  = Cend[j]-Cini[j];
                     }
+                    std::cerr << "->Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
+
                 }
                 assert(Gamma1<=Gamma0);
 
