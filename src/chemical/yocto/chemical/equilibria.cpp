@@ -39,6 +39,8 @@ namespace yocto
         gev(),
         max_length(0),
 
+        project(this, & equilibria:: __Project),
+
         pEq(0),
         KEq(0),
         zsolve(0),
@@ -47,6 +49,14 @@ namespace yocto
         Balance(this,   & equilibria::__Balance  ),
         GammaEq(this,   & equilibria::__GammaEq  )
         {
+        }
+
+        void equilibria:: __Project(array<double> &C0, const double t)
+        {
+            if( !normalize(C0,t,true) )
+            {
+                throw exception("equilibria: invalid concentration @t=%g",t);
+            }
         }
 
         equilibrium & equilibria:: operator()(const string &id, const double K)

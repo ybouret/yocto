@@ -92,6 +92,7 @@ namespace yocto
                      const array<double> &C1, const double V1,
                      const double t);
 
+            functor<void,TL2(array<double>&,double)> project;
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);
@@ -102,6 +103,7 @@ namespace yocto
             double __NormGamma(double alpha);
             double __Balance(double alpha);  //!< compute Ctry with numerical control
             double __GammaEq(double alpha);
+            void   __Project( array<double> &C0, const double t );
 
             math::numeric<double>::function NormGamma;
             math::numeric<double>::function Balance;
