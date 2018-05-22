@@ -58,6 +58,8 @@ YOCTO_UNIT_TEST_IMPL(lua)
             std::cerr << loader << std::endl;
             loader.guess(C1,cs,0);
         }
+        std::cerr << "using" << std::endl;
+        lib.display(C1);
 
         vector<double> Cmix(cs.M,0);
         const double V0 = 10;
@@ -66,26 +68,20 @@ YOCTO_UNIT_TEST_IMPL(lua)
         for(size_t i=0;i<=Nd;++i)
         {
             const double V1 = (2*V0*i)/Nd;
-            const int iv =int(floor(V1*100+0.5));
-            if(  iv == 634 || iv == 632 )
-            {
-                std::cerr << std::endl;
-                std::cerr << "V1=" << V1 << std::endl;
-                //cs.updateGammaAndPhi(cs.C);
-                //cs.compute_step();
-            }
+
             if(!cs.mix(Cmix,C0,V0,C1,V1,0.0))
             {
                 throw exception("cannot mix @V1=%g", V1);
             }
             std::cerr << ".";
             fp("%g",V1);
-            if(634==iv) exit(0);
+
 
             if(has_proton)
             {
                 fp(" %g", lib.pH(Cmix) );
             }
+            
             for(size_t j=1;j<=cs.M;++j)
             {
                 fp(" %g", Cmix[j]);

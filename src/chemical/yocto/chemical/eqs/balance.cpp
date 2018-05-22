@@ -224,7 +224,7 @@ namespace yocto
                 tao::set(C,Ctry);
                 if(E1>=E0)
                 {
-                    std::cerr << "balance.reached_minimum@" << E1 << std::endl;
+                    //std::cerr << "balance.reached_minimum@" << E1 << std::endl;
                     goto CHECK;
                 }
 

@@ -142,9 +142,9 @@ namespace yocto
                                     const double   t,
                                     const bool     initialize) throw()
         {
-            const double threshold = numeric<double>::ftol;
-            std::cerr << "normalize" << std::endl;
-
+            const double ftol = numeric<double>::ftol;
+            const double tiny = numeric<double>::tiny;
+            
             for(size_t j=M;j>0;--j)
             {
                 Cini[j] = C0[j];
@@ -164,19 +164,19 @@ namespace yocto
 
                 // compute all K and Gamma
                 initializeGamma(Cini,t);
-                std::cerr << "C_in=" << Cini << std::endl;
+                //std::cerr << "C_in=" << Cini << std::endl;
             }
             else
             {
                 // assuming K are already computed
                 updateGamma(Cini);
-                std::cerr << "C_up=" << Cini << std::endl;
+                //std::cerr << "C_up=" << Cini << std::endl;
             }
             
             double Gamma0 = GammaToScalar();
             if(Gamma0<=0)
             {
-                std::cerr << "already normalized" << std::endl;
+                //std::cerr << "already normalized" << std::endl;
                 return true;
             }
             updatePhi(Cini);
@@ -190,8 +190,6 @@ namespace yocto
                 // at this point, Cini is valid, Gamma and Phi are computed@Cini
                 // => compute the full Newton's step
                 //______________________________________________________________
-                std::cerr << "Cini =" << Cini << std::endl;
-                std::cerr << "Gamma=" << Gamma << std::endl;
                 if(!compute_step())
                 {
                     // really, really singular composition and system...
@@ -203,24 +201,19 @@ namespace yocto
                 // this is Newton's predicted concentration in Cend
                 //______________________________________________________________
                 tao::setsum(Cend,Cini,dC);
-                std::cerr << "dC  =" << dC   << std::endl;
-                std::cerr << "Cend=" << Cend << std::endl;
-                
+
                 //______________________________________________________________
                 //
                 // which must be balanced
                 //______________________________________________________________
-                bool changed = false;
+                bool changed = false; // keep track if something was changed
                 if(!balance(Cend,&changed))
                 {
                     // unable to balance...
                     return false;
                 }
-                if(changed)
-                {
-                    std::cerr << "Cbal=" << Cend << std::endl;
-                    //exit(0);
-                }
+
+
                 //______________________________________________________________
                 //
                 // compute the effective dC, and update Gamma@Cend
@@ -233,8 +226,9 @@ namespace yocto
                 // must be a total decreasing step in direction dC
                 //______________________________________________________________
                 double Gamma1 = GammaToScalar();
-                std::cerr << "Gamma=" << Gamma << std::endl;
-                std::cerr << "Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
+                //std::cerr << "Gamma=" << Gamma << std::endl;
+                //std::cerr << "Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
+
                 //______________________________________________________________
                 //
                 // at this point,
@@ -261,7 +255,7 @@ namespace yocto
                             Cend[j]= Ctry[j];
                             dC[j]  = Cend[j]-Cini[j];
                         }
-                        std::cerr << "->Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
+                        //std::cerr << "->Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
                     }
                     assert(Gamma1<=Gamma0);
                 }
@@ -282,13 +276,33 @@ namespace yocto
                     if(active[j])
                     {
                         const double delta = Fabs(dC[j]);
-                        if( (delta+delta) > threshold*( Fabs(c_old) + Fabs(c_new) ) )
+                        if( (delta+delta) > ftol*( Fabs(c_old) + Fabs(c_new) ) )
                         {
                             converged = false;
                         }
                     }
                     Cini[j] = c_new;
                 }
+
+                //______________________________________________________________
+                //
+                // second level in case of numeric noise
+                //______________________________________________________________
+                if(!converged)
+                {
+                    //std::cerr << "Testing dC=" << dC << std::endl;
+                    converged = true;
+                    for(size_t j=M;j>0;--j)
+                    {
+                        if( square_of(dC[j]) > tiny )
+                        {
+                            converged=false;
+                            break;
+                        }
+                    }
+
+                }
+
                 if(converged)
                 {
                     tao::set(C0,Cini,M);
