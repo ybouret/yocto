@@ -221,6 +221,9 @@ namespace yocto
                 // try Cend=C_ini+alpha*step;
                 tao::setprobe(Cend, Cini, alpha, step);
                 bool converged = true;
+                std::cerr << "Cini=" << Cini << std::endl;
+                std::cerr << "alpha=" << alpha << ", step=" << step << std::endl;
+                std::cerr << "Cend=" << Cend << std::endl;
                 for(size_t j=M;j>0;--j)
                 {
                     if(active[j])
@@ -231,6 +234,9 @@ namespace yocto
                         }
                     }
                 }
+
+                
+
                 if(converged)
                 {
                     break;
