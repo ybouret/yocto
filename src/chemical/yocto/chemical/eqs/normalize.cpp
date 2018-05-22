@@ -157,12 +157,11 @@ namespace yocto
                                     const double   t,
                                     const bool     initialize) throw()
         {
-
+            
             //__________________________________________________________________
             //
             // prepare look up
             //__________________________________________________________________
-
             for(size_t j=M;j>0;--j)
             {
                 Cini[j] = C0[j];
@@ -172,6 +171,7 @@ namespace yocto
             {
                 return false;
             }
+
             assert(is_valid(Cini));
 
             //__________________________________________________________________
@@ -195,10 +195,8 @@ namespace yocto
             {
                 return true;
             }
-            // monitor jumps height!
             updatePhi(Cini);
-            size_t jumps    = 0;
-            double GammaTop = Gamma0;
+
             while(true)
             {
                 //______________________________________________________________
@@ -212,120 +210,81 @@ namespace yocto
                     // really bad system...
                     return false;
                 }
-                tao::setsum(Cend,Cini,step);
-                bool changed = false;
-                if(!balance(Cend,&changed))
-                {
-                    std::cerr << "couldn't balance Cend=" << Cend << std::endl;
-                    return false;
-                }
 
                 //______________________________________________________________
                 //
-                //
-                // compute the effective step, which is in NuT space...
-                //
+                // try steps
                 //______________________________________________________________
-                assert(is_valid(Cini));
+                double alpha   = 1;
+            STEP:
+                // try Cend=C_ini+alpha*step;
+                tao::setprobe(Cend, Cini, alpha, step);
+                bool converged = true;
+                for(size_t j=M;j>0;--j)
+                {
+                    if(active[j])
+                    {
+                        if(Fabs(Cend[j]-Cini[j])>0)
+                        {
+                            converged = false;
+                        }
+                    }
+                }
+                if(converged)
+                {
+                    break;
+                }
+                // try balance it
+                if(!balance(Cend))
+                {
+                    alpha/=2;
+                    goto STEP;
+                }
+
                 assert(is_valid(Cend));
                 updateGamma(Cend);
                 double Gamma1 = GammaToScalar();
-                std::cerr << "Gamma: " << Gamma0 << "->" << Gamma1 << std::endl;
+                //std::cerr << "Gamma: " << Gamma1 << "/" << Gamma0 << std::endl;
                 if(Gamma1<=0)
                 {
-                    //__________________________________________________________
-                    //
-                    // perfect !
-                    //__________________________________________________________
-                    goto NORMALIZED;
+                    // perfect
+                    break;
                 }
-                else if(Gamma1<Gamma0)
+                else if( Gamma1 < Gamma0 )
                 {
-                    //__________________________________________________________
-                    //
-                    // good!
-                    //__________________________________________________________
-                    goto CONTINUE;
+                    // good
+                    goto NEXT;
                 }
                 else
                 {
                     assert(Gamma1>=Gamma0);
-                    if(changed)
-                    {
-                        // has changed=>accept new position?
-                        ++jumps;
-                        std::cerr << "jump#" << jumps << std::endl;
-                        std::cerr << "step=" << step << std::endl;
-                        std::cerr << "Cini=" << Cini << std::endl;
-                        std::cerr << "Cend=" << Cend << std::endl;
-
-                        double alpha =1;
-                        while(true)
-                        {
-                            alpha /= 2;
-                            if(alpha<=0)
-                            {
-                                std::cerr << "unable to move forward..." << std::endl;
-                                return false;
-                            }
-                            tao::setprobe(Cend, Cini, alpha, step);
-                            if(!balance(Cend))
-                            {
-                                continue;
-                            }
-                            updateGamma(Cend);
-                            Gamma1 = GammaToScalar();
-                            std::cerr << "\t->Gamma1=" << Gamma1 << std::endl;
-                            if(Gamma1<GammaTop)
-                            {
-                                GammaTop = Gamma1;
-                                break;
-                            }
-                        }
-                        goto CONTINUE;
-                    }
-                    else
-                    {
-                        //______________________________________________________
-                        //
-                        // jsut backtrack inside
-                        //______________________________________________________
-                        tao::setvec(step,Cini,Cend); // recompute the full step
-                        triplet<double> xx = {0,1,1};
-                        triplet<double> ff = {Gamma0,Gamma1,Gamma1};
-                        bracket<double>::inside(NormGamma,xx,ff);
-                        optimize1D<double>::run(NormGamma,xx,ff);
-                        Gamma1 = __NormGamma(xx.b);
-
-                        if(Gamma1>=Gamma0)
-                        {
-                            //__________________________________________________
-                            //
-                            // must accept
-                            //__________________________________________________
-                            goto NORMALIZED;
-                        }
-                        else
-                        {
-                            //__________________________________________________
-                            //
-                            // continue;
-                            //__________________________________________________
-                            goto CONTINUE;
-                        }
-                    }
+                    //not good enough
+                    alpha/=2;
+                    goto STEP;
                 }
-
-            CONTINUE:
-                Gamma0 = Gamma1;
+            NEXT:
+                Gamma0 =  Gamma1;
                 tao::set(Cini,Cend);
                 updatePhi(Cini);
-
             }
 
-        NORMALIZED:
+#if 0
+            // checking all
+            updatePhi(Cend);
+            tao::mmul_rtrn(W,Phi,Nu);
+            if(!LU<double>::build(W))
+            {
+                std::cerr << "singular step!!!" << std::endl;
+                return false;
+            }
+            tao::set(xi,Gamma); // don't change the sign...
+            LU<double>::solve(W,xi);
+            tao::mul(step,NuT,xi);
+            std::cerr << "Cend=" << Cend << std::endl;
+            std::cerr << "step=" << step << std::endl;
+#endif
+
             tao::set(C0,Cend,M);
-            assert(is_valid(C0));
             return true;
         }
 
