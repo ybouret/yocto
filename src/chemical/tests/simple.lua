@@ -31,9 +31,12 @@ cs =
 
 };
 
-Cb  = 0.005;
-Ca  = 0.000;
-COx = 0.000;
+math.randomseed(os.time());
+amplitude=0.01;
+
+Cb  = amplitude*math.random();
+Ca  = amplitude*math.random();
+COx = amplitude*math.random();
 
 ini =
 {

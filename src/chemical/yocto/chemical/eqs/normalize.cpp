@@ -99,12 +99,16 @@ namespace yocto
             for(size_t j=M;j>0;--j)
             {
                 const double Cj = (Ctry[j]=Cini[j]+alpha*step[j]);
-                if(active[j]&&(Cj<0))
+                if(active[j])
                 {
-                    Ctry[j] = 0;
+                    assert(Cini[j]>=0);
+                    if(Cj<=0)
+                    {
+                        Ctry[j] = 0;
+                    }
                 }
             }
-            tao::setprobe(Ctry,Cini,alpha,step);
+            assert(is_valid(Ctry));
             updateGamma(Ctry);
             return GammaToScalar();
         }
@@ -113,7 +117,7 @@ namespace yocto
         {
             for(size_t j=M;j>0;--j)
             {
-                if(active[j]&&C[j]<0) return false;
+                if(active[j]&&C0[j]<0) return false;
             }
             return true;
         }
@@ -202,7 +206,8 @@ namespace yocto
                 // Gamma, Gamma0, and Phi are computed at Cini
                 // Try to compute a step and final concentration
                 //______________________________________________________________
-                std::cerr << "Cini=" << Cini << "; Gamma0=" << Gamma0 << std::endl;
+                std::cerr << "Cini=" << Cini << "; Gamma=" << Gamma << "; Gamma0=" << Gamma0 << std::endl;
+                assert(is_valid(Cini));
                 if(!compute_step(Gamma0))
                 {
                     // really bad system...
@@ -215,17 +220,66 @@ namespace yocto
                     std::cerr << "couldn't balance Cend=" << Cend << std::endl;
                     return false;
                 }
+
                 //______________________________________________________________
                 //
-                // compute the effective step, with is in NuT space...
+                //
+                // compute the effective step, which is in NuT space...
+                //
                 //______________________________________________________________
                 assert(is_valid(Cini));
                 assert(is_valid(Cend));
                 tao::setvec(step,Cini,Cend);
                 updateGamma(Cend);
                 double Gamma1 = GammaToScalar();
-                std::cerr << "Cend=" << Cend << "; Gamma1=" << Gamma1 << std::endl;
-                exit(0);
+                std::cerr << "Cend=" << Cend << "; Gamma=" << Gamma << "; Gamma1=" << Gamma1 << std::endl;
+                if(Gamma1<=0)
+                {
+                    //__________________________________________________________
+                    //
+                    // perfect !
+                    //__________________________________________________________
+                    tao::set(C0,Cend,M);
+                    return true;
+                }
+                else if(Gamma1<Gamma0)
+                {
+                    //__________________________________________________________
+                    //
+                    // good!
+                    //__________________________________________________________
+                    Gamma0 = Gamma1;
+                    tao::set(Cini,Cend);
+                    updatePhi(Cini);
+                    continue;
+                }
+                else
+                {
+                    assert(Gamma1>=Gamma0);
+                    if(changed)
+                    {
+                        // has changed=>accept new position
+                        std::cerr << "Has Changed: accept!" << std::endl;
+                        Gamma0 =  Gamma1;
+                        tao::set(Cini,Cend);
+                        updatePhi(Cini);
+                        continue;
+                    }
+                    else
+                    {
+                        // backtrack inside
+                        std::cerr << "Backtrack" << std::endl;
+                        triplet<double> xx = {0,1,1};
+                        triplet<double> ff = {Gamma0,Gamma1,Gamma1};
+                        bracket<double>::inside(NormGamma,xx,ff);
+                        optimize1D<double>::run(NormGamma,xx,ff);
+                        Gamma1 = __NormGamma(xx.b);
+                        std::cerr << "->Gamma1=" << Gamma1 << std::endl;
+                        exit(0);
+
+                    }
+                }
+
 
             }
 
