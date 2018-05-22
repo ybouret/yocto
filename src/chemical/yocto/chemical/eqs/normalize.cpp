@@ -167,13 +167,14 @@ namespace yocto
                 Cini[j] = C0[j];
             }
 
+            std::cerr << "norm.balance.ini..." << std::endl;
             if(!balance(Cini))
             {
                 return false;
             }
 
             assert(is_valid(Cini));
-
+            std::cerr << "norm.init" << std::endl;
             //__________________________________________________________________
             //
             // initialize K, Gamma, Phi @Cini
@@ -244,7 +245,7 @@ namespace yocto
                 assert(is_valid(Cend));
                 updateGamma(Cend);
                 double Gamma1 = GammaToScalar();
-                //std::cerr << "Gamma: " << Gamma1 << "/" << Gamma0 << std::endl;
+                std::cerr << "Gamma: " << Gamma1 << "/" << Gamma0 << std::endl;
                 if(Gamma1<=0)
                 {
                     // perfect

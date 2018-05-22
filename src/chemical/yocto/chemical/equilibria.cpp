@@ -344,6 +344,7 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             {
                 C0[j] += (delta[j] - dC[j]);
             }
+            std::cerr << "deliver/norm..." << delta << std::endl;
             return normalize(C0,0,false);
         }
 

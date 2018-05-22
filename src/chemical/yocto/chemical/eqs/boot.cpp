@@ -205,15 +205,17 @@ namespace yocto
                     //__________________________________________________________
                     double alpha = 1.0;
                     double R1    = __Control(alpha);
-                    std::cerr << "Xtry=" << Xtry << std::endl;
+                    std::cerr << "Xtry=" << Xtry << "; R1=" << R1 << "/R0=" << R0 << std::endl;
                     if(R1<R0)
                     {
+                        std::cerr << "OK" << std::endl;
                         tao::set(Xorg,Xtry);
                         R0 = R1 ;
                         continue;
                     }
                     else
                     {
+                        std::cerr << "Backtrack" << std::endl;
                         assert(R1>=R0);
                         triplet<double> xx = { 0,  alpha, alpha };
                         triplet<double> rr = { R0, R1,    R1    };
