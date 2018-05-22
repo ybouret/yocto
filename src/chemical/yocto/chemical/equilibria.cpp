@@ -122,6 +122,7 @@ namespace yocto
             Nu2.    release();
             NuT.    release();
             Nu.     release();
+            errc.   release();
             beta.   release();
             peqs.   release();
             Cend.   release();
@@ -159,6 +160,7 @@ namespace yocto
                 active. make(M,false);
                 Ctry.   make(M);
                 beta.   make(M);
+                errc.   make(M);
 
                 if(N>0)
                 {

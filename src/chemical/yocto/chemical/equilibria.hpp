@@ -41,6 +41,7 @@ namespace yocto
             vector<double> Cend;   //!< for Newton's algo
             vector<eqptr>  peqs;   //!< fast access to equilibria
             vector<double> beta;   //!< if negative active species [M]
+            vector<double> errc;   //!< array to sort and sum
             matrix<double> Nu;     //!< topology    [NxM]
             matrix<double> NuT;    //!< transposed  [MxN]
             matrix<double> Nu2;    //!< Nu*NuT      [NxN];
@@ -74,7 +75,7 @@ namespace yocto
             
 
             //! balance a concentration
-            bool balance(array<double> &C0) throw();
+            bool balance(array<double> &C0,bool *changed=NULL) throw();
 
             //! normalize a balanced concentration
             bool normalize(array<double> &C0, const double t, const bool initialize=true) throw();
