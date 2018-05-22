@@ -197,7 +197,8 @@ namespace yocto
             }
             // monitor jumps height!
             updatePhi(Cini);
-            size_t jumps = 0;
+            size_t jumps    = 0;
+            double GammaTop = Gamma0;
             while(true)
             {
                 //______________________________________________________________
@@ -205,7 +206,6 @@ namespace yocto
                 // Gamma, Gamma0, and Phi are computed at Cini
                 // Try to compute a step and final concentration
                 //______________________________________________________________
-                //std::cerr << "Cini=" << Cini << "; Gamma=" << Gamma << "; Gamma0=" << Gamma0 << std::endl;
                 assert(is_valid(Cini));
                 if(!compute_step(Gamma0))
                 {
@@ -228,10 +228,8 @@ namespace yocto
                 //______________________________________________________________
                 assert(is_valid(Cini));
                 assert(is_valid(Cend));
-                tao::setvec(step,Cini,Cend);
                 updateGamma(Cend);
                 double Gamma1 = GammaToScalar();
-                //std::cerr << "Cend=" << Cend << "; Gamma=" << Gamma << "; Gamma1=" << Gamma1 << std::endl;
                 std::cerr << "Gamma: " << Gamma0 << "->" << Gamma1 << std::endl;
                 if(Gamma1<=0)
                 {
@@ -257,16 +255,42 @@ namespace yocto
                         // has changed=>accept new position?
                         ++jumps;
                         std::cerr << "jump#" << jumps << std::endl;
+                        std::cerr << "step=" << step << std::endl;
                         std::cerr << "Cini=" << Cini << std::endl;
                         std::cerr << "Cend=" << Cend << std::endl;
+
+                        double alpha =1;
+                        while(true)
+                        {
+                            alpha /= 2;
+                            if(alpha<=0)
+                            {
+                                std::cerr << "unable to move forward..." << std::endl;
+                                return false;
+                            }
+                            tao::setprobe(Cend, Cini, alpha, step);
+                            if(!balance(Cend))
+                            {
+                                continue;
+                            }
+                            updateGamma(Cend);
+                            Gamma1 = GammaToScalar();
+                            std::cerr << "\t->Gamma1=" << Gamma1 << std::endl;
+                            if(Gamma1<GammaTop)
+                            {
+                                GammaTop = Gamma1;
+                                break;
+                            }
+                        }
                         goto CONTINUE;
                     }
                     else
                     {
                         //______________________________________________________
                         //
-                        // backtrack inside
+                        // jsut backtrack inside
                         //______________________________________________________
+                        tao::setvec(step,Cini,Cend); // recompute the full step
                         triplet<double> xx = {0,1,1};
                         triplet<double> ff = {Gamma0,Gamma1,Gamma1};
                         bracket<double>::inside(NormGamma,xx,ff);
