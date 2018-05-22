@@ -39,6 +39,7 @@ namespace yocto
             // N dependent objects, if some equilibrium
             vector<double> Cini;   //!< for Newton's algo
             vector<double> Cend;   //!< for Newton's algo
+            vector<double> step;   //!< for Newton's algo
             vector<eqptr>  peqs;   //!< fast access to equilibria
             vector<double> beta;   //!< if negative active species [M]
             vector<double> errc;   //!< array to sort and sum
@@ -99,8 +100,10 @@ namespace yocto
 
             functor<void,TL2(array<double>&,double)> project;
 
+            //! compute Newton's step@Cini, recompute |Gamma| is Cini is changed
+            bool compute_step(double &GammaIni) throw();
 
-            bool compute_step() throw();
+            bool is_valid(const array<double> &C0) const throw();
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(equilibria);

@@ -98,18 +98,27 @@ namespace yocto
         {
             for(size_t j=M;j>0;--j)
             {
-                const double Cj = (Ctry[j]=Cini[j]+alpha*dC[j]);
+                const double Cj = (Ctry[j]=Cini[j]+alpha*step[j]);
                 if(active[j]&&(Cj<0))
                 {
                     Ctry[j] = 0;
                 }
             }
+            tao::setprobe(Ctry,Cini,alpha,step);
             updateGamma(Ctry);
             return GammaToScalar();
         }
 
+        bool equilibria:: is_valid(const array<double> &C0) const throw()
+        {
+            for(size_t j=M;j>0;--j)
+            {
+                if(active[j]&&C[j]<0) return false;
+            }
+            return true;
+        }
 
-        bool equilibria:: compute_step() throw()
+        bool equilibria:: compute_step(double &GammaIni) throw()
         {
             //__________________________________________________________________
             //
@@ -126,6 +135,7 @@ namespace yocto
                 //______________________________________________________________
                 sweep();
                 updateGammaAndPhi(Cini);
+                GammaIni = GammaToScalar();
                 tao::mmul_rtrn(W,Phi,Nu);
                 if(!LU<double>::build(W))
                 {
@@ -134,10 +144,96 @@ namespace yocto
             }
             tao::neg(xi,Gamma);
             LU<double>::solve(W,xi);
-            tao::mul(dC,NuT,xi);
+            tao::mul(step,NuT,xi);
             return true;
         }
 
+
+        bool equilibria:: normalize(array<double> &C0,
+                                    const double   t,
+                                    const bool     initialize) throw()
+        {
+
+            //__________________________________________________________________
+            //
+            // prepare look up
+            //__________________________________________________________________
+
+            for(size_t j=M;j>0;--j)
+            {
+                Cini[j] = C0[j];
+            }
+
+            if(!balance(Cini))
+            {
+                return false;
+            }
+            assert(is_valid(Cini));
+
+            //__________________________________________________________________
+            //
+            // initialize K, Gamma, Phi @Cini
+            //__________________________________________________________________
+            if(initialize)
+            {
+
+                // compute all K and Gamma
+                initializeGamma(Cini,t);
+                //std::cerr << "C_in=" << Cini << std::endl;
+            }
+            else
+            {
+                // assuming K are already computed
+                updateGamma(Cini);
+                //std::cerr << "C_up=" << Cini << std::endl;
+            }
+
+            double Gamma0 = GammaToScalar();
+            if(Gamma0<=0)
+            {
+                //std::cerr << "already normalized" << std::endl;
+                return true;
+            }
+            updatePhi(Cini);
+            while(true)
+            {
+                //______________________________________________________________
+                //
+                // Gamma, Gamma0, and Phi are computed at Cini
+                // Try to compute a step and final concentration
+                //______________________________________________________________
+                std::cerr << "Cini=" << Cini << "; Gamma0=" << Gamma0 << std::endl;
+                if(!compute_step(Gamma0))
+                {
+                    // really bad system...
+                    return false;
+                }
+                tao::setsum(Cend,Cini,step);
+                bool changed = false;
+                if(!balance(Cend,&changed))
+                {
+                    std::cerr << "couldn't balance Cend=" << Cend << std::endl;
+                    return false;
+                }
+                //______________________________________________________________
+                //
+                // compute the effective step, with is in NuT space...
+                //______________________________________________________________
+                assert(is_valid(Cini));
+                assert(is_valid(Cend));
+                tao::setvec(step,Cini,Cend);
+                updateGamma(Cend);
+                double Gamma1 = GammaToScalar();
+                std::cerr << "Cend=" << Cend << "; Gamma1=" << Gamma1 << std::endl;
+                exit(0);
+
+            }
+
+            return false;
+        }
+
+
+#if 0
         bool equilibria:: normalize(array<double> &C0,
                                     const double   t,
                                     const bool     initialize) throw()
@@ -319,7 +415,7 @@ namespace yocto
             }
 
         }
-
+#endif
         
 
 

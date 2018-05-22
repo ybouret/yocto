@@ -125,6 +125,7 @@ namespace yocto
             errc.   release();
             beta.   release();
             peqs.   release();
+            step.   release();
             Cend.   release();
             Cini.   release();
 
@@ -166,6 +167,7 @@ namespace yocto
                 {
                     Cini.  make(M);
                     Cend.  make(M);
+                    step.  make(M);
                     peqs.  make(N);
                     Nu.    make(N,M);
                     NuT.   make(M,N);
