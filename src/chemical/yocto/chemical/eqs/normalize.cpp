@@ -144,6 +144,7 @@ namespace yocto
         {
             const double threshold = numeric<double>::ftol;
             std::cerr << "normalize" << std::endl;
+
             for(size_t j=M;j>0;--j)
             {
                 Cini[j] = C0[j];
@@ -209,13 +210,17 @@ namespace yocto
                 //
                 // which must be balanced
                 //______________________________________________________________
-                if(!balance(Cend))
+                bool changed = false;
+                if(!balance(Cend,&changed))
                 {
                     // unable to balance...
                     return false;
                 }
-                std::cerr << "Cbal=" << Cend << std::endl;
-
+                if(changed)
+                {
+                    std::cerr << "Cbal=" << Cend << std::endl;
+                    //exit(0);
+                }
                 //______________________________________________________________
                 //
                 // compute the effective dC, and update Gamma@Cend
@@ -228,35 +233,38 @@ namespace yocto
                 // must be a total decreasing step in direction dC
                 //______________________________________________________________
                 double Gamma1 = GammaToScalar();
+                std::cerr << "Gamma=" << Gamma << std::endl;
                 std::cerr << "Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
                 //______________________________________________________________
                 //
                 // at this point,
                 // a balanced Cend, and Gamma1=|Gamma|@Cend are computed
                 //______________________________________________________________
-                if(Gamma1>Gamma0)
+                if(!changed)
                 {
-                    triplet<double> aa = { 0,      1,      1      };
-                    triplet<double> gg = { Gamma0, Gamma1, Gamma1 };
-                    bracket<double>::inside(NormGamma,aa,gg);
-                    optimize1D<double>::run(NormGamma,aa,gg);
-
-                    Gamma1 = __NormGamma(max_of<double>(aa.b,0.0));
-
-                    //__________________________________________________________
-                    //
-                    // retrieve C and dC from trial
-                    // Gamma is updated@Ctry
-                    //__________________________________________________________
-                    for(size_t j=M;j>0;--j)
+                    if(Gamma1>Gamma0)
                     {
-                        Cend[j]= Ctry[j];
-                        dC[j]  = Cend[j]-Cini[j];
-                    }
-                    std::cerr << "->Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
+                        triplet<double> aa = { 0,      1,      1      };
+                        triplet<double> gg = { Gamma0, Gamma1, Gamma1 };
+                        bracket<double>::inside(NormGamma,aa,gg);
+                        optimize1D<double>::run(NormGamma,aa,gg);
 
+                        Gamma1 = __NormGamma(max_of<double>(aa.b,0.0));
+
+                        //__________________________________________________________
+                        //
+                        // retrieve C and dC from trial
+                        // Gamma is updated@Ctry
+                        //__________________________________________________________
+                        for(size_t j=M;j>0;--j)
+                        {
+                            Cend[j]= Ctry[j];
+                            dC[j]  = Cend[j]-Cini[j];
+                        }
+                        std::cerr << "->Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
+                    }
+                    assert(Gamma1<=Gamma0);
                 }
-                assert(Gamma1<=Gamma0);
 
                 //______________________________________________________________
                 //
