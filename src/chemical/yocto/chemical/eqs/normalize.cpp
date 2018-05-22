@@ -183,22 +183,21 @@ namespace yocto
 
                 // compute all K and Gamma
                 initializeGamma(Cini,t);
-                //std::cerr << "C_in=" << Cini << std::endl;
             }
             else
             {
                 // assuming K are already computed
                 updateGamma(Cini);
-                //std::cerr << "C_up=" << Cini << std::endl;
             }
 
             double Gamma0 = GammaToScalar();
             if(Gamma0<=0)
             {
-                //std::cerr << "already normalized" << std::endl;
                 return true;
             }
+            // monitor jumps height!
             updatePhi(Cini);
+            size_t jumps = 0;
             while(true)
             {
                 //______________________________________________________________
@@ -206,7 +205,7 @@ namespace yocto
                 // Gamma, Gamma0, and Phi are computed at Cini
                 // Try to compute a step and final concentration
                 //______________________________________________________________
-                std::cerr << "Cini=" << Cini << "; Gamma=" << Gamma << "; Gamma0=" << Gamma0 << std::endl;
+                //std::cerr << "Cini=" << Cini << "; Gamma=" << Gamma << "; Gamma0=" << Gamma0 << std::endl;
                 assert(is_valid(Cini));
                 if(!compute_step(Gamma0))
                 {
@@ -232,15 +231,15 @@ namespace yocto
                 tao::setvec(step,Cini,Cend);
                 updateGamma(Cend);
                 double Gamma1 = GammaToScalar();
-                std::cerr << "Cend=" << Cend << "; Gamma=" << Gamma << "; Gamma1=" << Gamma1 << std::endl;
+                //std::cerr << "Cend=" << Cend << "; Gamma=" << Gamma << "; Gamma1=" << Gamma1 << std::endl;
+                std::cerr << "Gamma: " << Gamma0 << "->" << Gamma1 << std::endl;
                 if(Gamma1<=0)
                 {
                     //__________________________________________________________
                     //
                     // perfect !
                     //__________________________________________________________
-                    tao::set(C0,Cend,M);
-                    return true;
+                    goto NORMALIZED;
                 }
                 else if(Gamma1<Gamma0)
                 {
@@ -248,42 +247,62 @@ namespace yocto
                     //
                     // good!
                     //__________________________________________________________
-                    Gamma0 = Gamma1;
-                    tao::set(Cini,Cend);
-                    updatePhi(Cini);
-                    continue;
+                    goto CONTINUE;
                 }
                 else
                 {
                     assert(Gamma1>=Gamma0);
                     if(changed)
                     {
-                        // has changed=>accept new position
-                        std::cerr << "Has Changed: accept!" << std::endl;
-                        Gamma0 =  Gamma1;
-                        tao::set(Cini,Cend);
-                        updatePhi(Cini);
-                        continue;
+                        // has changed=>accept new position?
+                        ++jumps;
+                        std::cerr << "jump#" << jumps << std::endl;
+                        std::cerr << "Cini=" << Cini << std::endl;
+                        std::cerr << "Cend=" << Cend << std::endl;
+                        goto CONTINUE;
                     }
                     else
                     {
+                        //______________________________________________________
+                        //
                         // backtrack inside
-                        std::cerr << "Backtrack" << std::endl;
+                        //______________________________________________________
                         triplet<double> xx = {0,1,1};
                         triplet<double> ff = {Gamma0,Gamma1,Gamma1};
                         bracket<double>::inside(NormGamma,xx,ff);
                         optimize1D<double>::run(NormGamma,xx,ff);
                         Gamma1 = __NormGamma(xx.b);
-                        std::cerr << "->Gamma1=" << Gamma1 << std::endl;
-                        exit(0);
 
+                        if(Gamma1>=Gamma0)
+                        {
+                            //__________________________________________________
+                            //
+                            // must accept
+                            //__________________________________________________
+                            goto NORMALIZED;
+                        }
+                        else
+                        {
+                            //__________________________________________________
+                            //
+                            // continue;
+                            //__________________________________________________
+                            goto CONTINUE;
+                        }
                     }
                 }
 
+            CONTINUE:
+                Gamma0 = Gamma1;
+                tao::set(Cini,Cend);
+                updatePhi(Cini);
 
             }
 
-            return false;
+        NORMALIZED:
+            tao::set(C0,Cend,M);
+            assert(is_valid(C0));
+            return true;
         }
 
 
