@@ -8,6 +8,7 @@
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/types.hxx"
 #include "yocto/ios/ocstream.hpp"
+#include "yocto/sort/quick.hpp"
 
 namespace yocto
 {
@@ -93,6 +94,7 @@ namespace yocto
                 Xorg. make(M);
                 Xtry. make(M);
                 beta. make(M);
+                errc. make(M);
                 dX  . make(M);
                 V   . make(N);
                 dL  . make(Nc);
@@ -176,7 +178,7 @@ namespace yocto
                 {
                     throw exception("boot.%s: unable to normalize guess concentration",*name);
                 }
-
+                std::cerr << "Xorg=" << Xorg << std::endl;
                 //______________________________________________________________
                 //
                 //
@@ -203,6 +205,7 @@ namespace yocto
                     //__________________________________________________________
                     double alpha = 1.0;
                     double R1    = __Control(alpha);
+                    std::cerr << "Xtry=" << Xtry << std::endl;
                     if(R1<R0)
                     {
                         tao::set(Xorg,Xtry);
@@ -244,13 +247,13 @@ namespace yocto
 
         double boot:: __Balance(double alpha) throw()
         {
-            double E = 0;
+            size_t nbad = 0;
             for(size_t j=M;j>0;--j)
             {
                 beta[j] = 0;
                 const double Xj = (Xtry[j] = Xorg[j] + alpha * dX[j]);
                 const double X2 = Xj*Xj;
-                if(X2<=0)
+                if(X2<=numeric<double>::tiny)
                 {
                     Xtry[j] = 0; // not significant;
                 }
@@ -260,11 +263,24 @@ namespace yocto
                     if(eqs->active[j] && Xj<0)
                     {
                         beta[j] = -Xj;
-                        E      += X2;
+                        errc[++nbad] = X2;
                     }
                 }
             }
-            return E;
+            if(nbad>0)
+            {
+                double E = 0;
+                quicksort(&errc[1],nbad,__compare_decreasing<double>);
+                for(size_t k=nbad;k>0;--k)
+                {
+                    E += errc[k];
+                }
+                return E;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         void boot:: balance()

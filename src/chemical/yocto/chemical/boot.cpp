@@ -93,6 +93,7 @@ namespace yocto
             dL.    release();
             V.     release();
             dX.    release();
+            errc.  release();
             beta.  release();
             Xtry.  release();
             Xorg.  release();
@@ -118,6 +119,7 @@ namespace yocto
         Xorg(),
         Xtry(),
         beta(),
+        errc(),
         dX(),
         V(),
         dL(),

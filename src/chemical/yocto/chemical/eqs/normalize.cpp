@@ -213,6 +213,7 @@ namespace yocto
                     return false;
                 }
 
+                //if(changed) std::cerr << "changed!" << std::endl;
 
                 //______________________________________________________________
                 //

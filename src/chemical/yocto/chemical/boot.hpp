@@ -83,7 +83,8 @@ namespace yocto
             matrix<double> Q;     //!< orthogonal complementary of P
             vector<double> Xorg;  //!< working concentrations
             vector<double> Xtry;  //!< trial concentration
-            vector<double> beta;  //!< bad concentraion
+            vector<double> beta;  //!< bad concentration
+            vector<double> errc;  //!< error/beta
             vector<double> dX;    //!< probing step
             vector<double> V;
             vector<double> dL;
