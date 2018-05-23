@@ -5,6 +5,7 @@
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/core/adjoint.hpp"
 #include "yocto/sort/index.hpp"
+#include "yocto/sort/quick.hpp"
 
 namespace yocto
 {
@@ -37,6 +38,7 @@ namespace yocto
         Gamma(),
         xi(),
         gev(),
+        Gnorm(),
         max_length(0),
 
         project(this, & equilibria:: __Project),
@@ -110,7 +112,8 @@ namespace yocto
             (size_t &)N   = 0;
             (size_t &)max_length = 0;
             dNu2          = 0;
-            
+
+            Gnorm.  release();
             gev.    release();
             xi.     release();
             Gamma.  release();
@@ -180,6 +183,7 @@ namespace yocto
                     Gamma. make(N);
                     xi.    make(N);
                     gev.   make(N);
+                    Gnorm. make(N);
 
                     //__________________________________________________________
                     //
@@ -293,10 +297,16 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
         
         double equilibria:: GammaToScalar() const throw()
         {
+            vector<double> &arr = (vector<double>&)Gnorm;
+            for(size_t i=N;i>0;--i)
+            {
+                arr[i] = pow( Fabs(Gamma[i]), gev[i] );
+            }
+            quicksort(arr,__compare_decreasing<double>);
             double ans = 0;
             for(size_t i=N;i>0;--i)
             {
-                ans += pow( Fabs(Gamma[i]), gev[i] );
+                ans += arr[i];
             }
             return ans;
         }

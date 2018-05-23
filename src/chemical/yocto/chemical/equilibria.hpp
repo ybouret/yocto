@@ -55,6 +55,7 @@ namespace yocto
             vector<double> Gamma;  //!< Gamma       N
             vector<double> xi;     //!< extent      N
             vector<double> gev;    //!< Gamma Exponent Values [N]
+            vector<double> Gnorm;  //!< for precise Gamma2Scalar
             double         dNu2;   //!< determinant(Nu2)
             const size_t   max_length;
             

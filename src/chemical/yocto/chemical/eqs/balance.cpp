@@ -117,6 +117,7 @@ namespace yocto
                     Ctry[j] = C[j];
                 }
             }
+            
             if(nbad)
             {
                 quicksort(&errc[1],nbad,__compare_decreasing<double>);
@@ -197,7 +198,6 @@ namespace yocto
                     alpha = max_of<double>(xx.b,0); // never go back
                     E1    = __Balance(alpha);
                 }
-                //std::cerr << "Ctry=" << Ctry << "; E1=" << E1 << "; alpha=" << alpha << std::endl;
 
                 //______________________________________________________________
                 //
@@ -224,7 +224,6 @@ namespace yocto
                 tao::set(C,Ctry);
                 if(E1>=E0)
                 {
-                    //std::cerr << "balance.reached_minimum@" << E1 << std::endl;
                     goto CHECK;
                 }
 
@@ -233,11 +232,6 @@ namespace yocto
             }
 
         CHECK:
-            //std::cerr << "balance.check" << std::endl;
-            //std::cerr << "C=" << C << "; E0=" << E0 << std::endl;
-            //exit(1);
-
-            
             double Cmax = 0;
             size_t na   = 0;
             for(size_t j=M;j>0;--j)
@@ -250,8 +244,7 @@ namespace yocto
             }
 
             const double Cnul = numeric<double>::epsilon * na * Cmax;
-            //std::cerr << "Cnul=" << Cnul << std::endl;
-
+            
             for(size_t j=M;j>0;--j)
             {
                 const double Cj = C[j];
