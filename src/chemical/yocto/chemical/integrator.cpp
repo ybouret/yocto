@@ -27,7 +27,6 @@ namespace yocto
             double      dt   = t1-t0;
             ode_driver &self = *this;
             self.operator()(damped,C0,t0,t1,dt,&eqs.project);
-
         }
 
         void integrator:: __damped(array<double> &dCdt, double t, const array<double> &C)
