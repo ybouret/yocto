@@ -98,18 +98,22 @@ namespace yocto
         {
             for(size_t j=M;j>0;--j)
             {
-                const double Cj = (Ctry[j]=Cini[j]+alpha*step[j]);
+                const double Cj = (Cend[j]=Cini[j]+alpha*step[j]);
                 if(active[j])
                 {
                     assert(Cini[j]>=0);
                     if(Cj<=0)
                     {
-                        Ctry[j] = 0;
+                        Cend[j] = 0;
                     }
                 }
             }
-            assert(is_valid(Ctry));
-            updateGamma(Ctry);
+            assert(is_valid(Cend));
+            if(!balance(Cend))
+            {
+                throw;
+            }
+            updateGamma(Cend);
             return GammaToScalar();
         }
 
@@ -160,24 +164,26 @@ namespace yocto
             
             //__________________________________________________________________
             //
+            //
             // prepare look up
+            //
             //__________________________________________________________________
             for(size_t j=M;j>0;--j)
             {
                 Cini[j] = C0[j];
             }
 
-            std::cerr << "norm.balance.ini..." << std::endl;
             if(!balance(Cini))
             {
                 return false;
             }
 
             assert(is_valid(Cini));
-            std::cerr << "norm.init" << std::endl;
             //__________________________________________________________________
             //
+            //
             // initialize K, Gamma, Phi @Cini
+            //
             //__________________________________________________________________
             if(initialize)
             {
@@ -198,12 +204,19 @@ namespace yocto
             }
             updatePhi(Cini);
 
-            while(true)
+
+            //__________________________________________________________________
+            //
+            //
+            // Newton's Loop
+            //
+            //__________________________________________________________________
+        LOOP:
             {
                 //______________________________________________________________
                 //
                 // Gamma, Gamma0, and Phi are computed at Cini
-                // Try to compute a step and final concentration
+                // try to compute a step
                 //______________________________________________________________
                 assert(is_valid(Cini));
                 if(!compute_step(Gamma0))
@@ -214,272 +227,167 @@ namespace yocto
 
                 //______________________________________________________________
                 //
-                // try steps
+                // adjusting step
                 //______________________________________________________________
-                double alpha   = 1;
-            STEP:
-                // try Cend=C_ini+alpha*step;
-                tao::setprobe(Cend, Cini, alpha, step);
-                bool converged = true;
-                std::cerr << "Cini=" << Cini << std::endl;
-                std::cerr << "alpha=" << alpha << ", step=" << step << std::endl;
-                std::cerr << "Cend=" << Cend << std::endl;
-                for(size_t j=M;j>0;--j)
+                double Gamma1 = 0;
+            ADJUST_STEP:
+                try
                 {
-                    if(active[j])
+                    Gamma1 = __NormGamma(1.0);
+                }
+                catch(...)
+                {
+                    std::cerr << "normalize.adjust" << std::endl;
+                    //std::cerr << "@C=" << Cini << std::endl;
+                    double rms = 0;
+                    for(size_t j=M;j>0;--j)
                     {
-                        if(Fabs(Cend[j]-Cini[j])>0)
+                        const double as2 = square_of( step[j] *= 0.5 );
+                        if( as2 <= numeric<double>::tiny )
                         {
-                            converged = false;
+                            step[j] = 0;
+                        }
+                        else
+                        {
+                            rms += as2;
                         }
                     }
+                    if( (rms/M) <= 0 )
+                    {
+                        std::cerr  << "normalize:: unable to adjust step" << std::endl;
+                        return false;
+                    }
+                    exit(0);
+                    goto ADJUST_STEP;
                 }
 
-                
+                //______________________________________________________________
+                //
+                // optimizing
+                //______________________________________________________________
+                //std::cerr << "step=" << step << std::endl;
+                //std::cerr << "Gamma=" << Gamma << "; " << Gamma0 << " -> " << Gamma1 << std::endl;
 
-                if(converged)
-                {
-                    break;
-                }
-                // try balance it
-                if(!balance(Cend))
-                {
-                    alpha/=2;
-                    goto STEP;
-                }
-
-                assert(is_valid(Cend));
-                updateGamma(Cend);
-                double Gamma1 = GammaToScalar();
-                std::cerr << "Gamma: " << Gamma1 << "/" << Gamma0 << std::endl;
                 if(Gamma1<=0)
                 {
+                    //__________________________________________________________
+                    //
                     // perfect
-                    break;
+                    //__________________________________________________________
+                    goto NORMALIZED;
                 }
-                else if( Gamma1 < Gamma0 )
+                else if(Gamma1<Gamma0)
                 {
-                    // good
-                    goto NEXT;
+                    //__________________________________________________________
+                    //
+                    // accept
+                    //__________________________________________________________
+                    goto NEXT_STEP;
                 }
                 else
                 {
+
+                    //__________________________________________________________
+                    //
+                    // backtrack
+                    //__________________________________________________________
                     assert(Gamma1>=Gamma0);
-                    //not good enough
-                    alpha/=2;
-                    goto STEP;
-                }
-            NEXT:
-                Gamma0 =  Gamma1;
-                tao::set(Cini,Cend);
-                updatePhi(Cini);
-            }
-
-#if 0
-            // checking all
-            updatePhi(Cend);
-            tao::mmul_rtrn(W,Phi,Nu);
-            if(!LU<double>::build(W))
-            {
-                std::cerr << "singular step!!!" << std::endl;
-                return false;
-            }
-            tao::set(xi,Gamma); // don't change the sign...
-            LU<double>::solve(W,xi);
-            tao::mul(step,NuT,xi);
-            std::cerr << "Cend=" << Cend << std::endl;
-            std::cerr << "step=" << step << std::endl;
-#endif
-
-            tao::set(C0,Cend,M);
-            return true;
-        }
-
-
-#if 0
-        bool equilibria:: normalize(array<double> &C0,
-                                    const double   t,
-                                    const bool     initialize) throw()
-        {
-            const double ftol = numeric<double>::ftol;
-            const double tiny = numeric<double>::tiny;
-            
-            for(size_t j=M;j>0;--j)
-            {
-                Cini[j] = C0[j];
-            }
-
-            if(!balance(Cini))
-            {
-                return false;
-            }
-
-            //__________________________________________________________________
-            //
-            // initialize K, Gamma, Phi @Cini
-            //__________________________________________________________________
-            if(initialize)
-            {
-
-                // compute all K and Gamma
-                initializeGamma(Cini,t);
-                //std::cerr << "C_in=" << Cini << std::endl;
-            }
-            else
-            {
-                // assuming K are already computed
-                updateGamma(Cini);
-                //std::cerr << "C_up=" << Cini << std::endl;
-            }
-            
-            double Gamma0 = GammaToScalar();
-            if(Gamma0<=0)
-            {
-                //std::cerr << "already normalized" << std::endl;
-                return true;
-            }
-            updatePhi(Cini);
-            size_t cycles  = 0;
-            while(true)
-            {
-
-                ++cycles;
-                //______________________________________________________________
-                //
-                // at this point, Cini is valid, Gamma and Phi are computed@Cini
-                // => compute the full Newton's step
-                //______________________________________________________________
-                if(!compute_step())
-                {
-                    // really, really singular composition and system...
-                    return false;
-                }
-
-                //______________________________________________________________
-                //
-                // this is Newton's predicted concentration in Cend
-                //______________________________________________________________
-                tao::setsum(Cend,Cini,dC);
-
-                //______________________________________________________________
-                //
-                // which must be balanced
-                //______________________________________________________________
-                bool changed = false; // keep track if something was changed
-                if(!balance(Cend,&changed))
-                {
-                    // unable to balance...
-                    return false;
-                }
-
-                //if(changed) std::cerr << "changed!" << std::endl;
-
-                //______________________________________________________________
-                //
-                // compute the effective dC, and update Gamma@Cend
-                //______________________________________________________________
-                tao::setvec(dC,Cini,Cend);
-                updateGamma(Cend);
-
-                //______________________________________________________________
-                //
-                // must be a total decreasing step in direction dC
-                //______________________________________________________________
-                double Gamma1 = GammaToScalar();
-                //std::cerr << "Gamma=" << Gamma << std::endl;
-                //std::cerr << "Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
-
-                //______________________________________________________________
-                //
-                // at this point,
-                // a balanced Cend, and Gamma1=|Gamma|@Cend are computed
-                //______________________________________________________________
-                if(!changed)
-                {
-                    if(Gamma1>Gamma0)
+                    triplet<double> xx = { 0, 1, 1 };
+                    triplet<double> ff = { Gamma0, Gamma1, Gamma1 };
+                    try
                     {
-                        triplet<double> aa = { 0,      1,      1      };
-                        triplet<double> gg = { Gamma0, Gamma1, Gamma1 };
-                        bracket<double>::inside(NormGamma,aa,gg);
-                        optimize1D<double>::run(NormGamma,aa,gg);
-
-                        Gamma1 = __NormGamma(max_of<double>(aa.b,0.0));
-
-                        //__________________________________________________________
-                        //
-                        // retrieve C and dC from trial
-                        // Gamma is updated@Ctry
-                        //__________________________________________________________
-                        for(size_t j=M;j>0;--j)
-                        {
-                            Cend[j]= Ctry[j];
-                            dC[j]  = Cend[j]-Cini[j];
-                        }
-                        //std::cerr << "->Gamma1=" << Gamma1 << "/" << Gamma0 << std::endl;
+                        bracket<double>::inside(NormGamma,xx,ff);
+                        optimize1D<double>::run(NormGamma,xx,ff);
+                        Gamma1 = __NormGamma(xx.b);
                     }
-                    assert(Gamma1<=Gamma0);
-                }
-
-                //______________________________________________________________
-                //
-                // at this point,
-                // a balanced Cend, and Gamma1=|Gamma|@Cend are computed
-                // with Gamma1<=Gamma0
-                // and updated dC.
-                // check convergence while updating Cini=Cend
-                //______________________________________________________________
-                bool converged = true;
-                for(size_t j=M;j>0;--j)
-                {
-                    const double c_old = Cini[j];
-                    const double c_new = Cend[j];
-                    if(active[j])
+                    catch(...)
                     {
-                        const double delta = Fabs(dC[j]);
-                        if( (delta+delta) > ftol*( Fabs(c_old) + Fabs(c_new) ) )
+                        std::cerr << "normalized.bactracking failure" << std::endl;
+                        return false;
+                    }
+
+                    if(Gamma1<=0)
+                    {
+                        goto NORMALIZED;
+                    }
+                    else
+                    {
+                        if(Gamma1>=Gamma0)
                         {
-                            converged = false;
+                            goto CHECK_EXTREMUM;
+                        }
+                        else
+                        {
+                            goto NEXT_STEP;
                         }
                     }
-                    Cini[j] = c_new;
+
                 }
 
+            NEXT_STEP:
                 //______________________________________________________________
                 //
-                // second level in case of numeric noise
+                // check convergence
                 //______________________________________________________________
-                if(!converged)
                 {
-                    //std::cerr << "Testing dC=" << dC << std::endl;
-                    converged = true;
+                    bool   converged = true;
+                    double rms       = 0;
                     for(size_t j=M;j>0;--j)
                     {
-                        if( square_of(dC[j]) > tiny )
+                        if(active[j])
                         {
-                            converged=false;
-                            break;
+                            const double c_old = Cini[j];
+                            const double c_new = Cend[j];
+                            const double delta = c_old-c_new;
+                            if(converged)
+                            {
+                                const double c_try = c_old+delta;
+                                if(Fabs(c_new-c_try)>0)
+                                {
+                                    converged = false;
+                                }
+                            }
+                            const double d2 = delta*delta;
+                            if(d2>numeric<double>::tiny)
+                            {
+                                rms += d2;
+                            }
                         }
                     }
-
-                }
-
-                if(converged)
-                {
-                    tao::set(C0,Cini,M);
-                    return true;
+                    rms /= M;
+                    if(converged||rms<=0)
+                    {
+                        std::cerr << "converged=" << converged << ", rms=" << rms << std::endl;
+                        goto NORMALIZED;
+                    }
                 }
 
                 //______________________________________________________________
                 //
-                // prepare for another loop
+                // prepare for next step
                 //______________________________________________________________
+                //std::cerr << "Gamma: " << Gamma0 << " -> " << Gamma1 << std::endl;
+                Gamma0 = Gamma1;
+                tao::set(Cini,Cend);
                 updatePhi(Cini);
-                Gamma0=Gamma1;
+                goto LOOP;
+
+            CHECK_EXTREMUM:
+                std::cerr << "Extremum@" << Gamma1 << std::endl;
+                ;
+
+            NORMALIZED:
+                std::cerr << "Cend=" << Cend << "; Gamma1=" << Gamma1 << std::endl;
+                tao::set(C0,Cend,M);
+
+                return true;
             }
 
+
         }
-#endif
-        
+
+
+
 
 
     }

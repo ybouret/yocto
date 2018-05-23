@@ -39,7 +39,8 @@ namespace yocto
             // N dependent objects, if some equilibrium
             vector<double> Cini;   //!< for Newton's algo
             vector<double> Cend;   //!< for Newton's algo
-            vector<double> step;   //!< for Newton's algo
+            vector<double> step;   //!< for Newton's algo, full step
+            
             vector<eqptr>  peqs;   //!< fast access to equilibria
             vector<double> beta;   //!< if negative active species [M]
             vector<double> errc;   //!< array to sort and sum
@@ -65,8 +66,8 @@ namespace yocto
             void initializeGamma(const array<double> &C0, const double t);
 
             //! compute Gamma for a computed set of K
-            void updateGamma(const array<double> &C0);
-            void updatePhi(const array<double> &C0);
+            void updateGamma(const array<double> &C0) throw();
+            void updatePhi(const array<double> &C0) throw();
             
             //! initialize K, Gamma and Phi 
             void   initializeGammaAndPhi(const array<double> &C0,const double t);

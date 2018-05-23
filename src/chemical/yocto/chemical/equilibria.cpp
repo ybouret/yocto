@@ -258,7 +258,7 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             }
         }
 
-        void equilibria:: updateGamma(const array<double> &C0)
+        void equilibria:: updateGamma(const array<double> &C0) throw()
         {
             for(size_t i=N;i>0;--i)
             {
@@ -269,7 +269,7 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
 
 
 
-        void equilibria:: updatePhi(const array<double> &C0)
+        void equilibria:: updatePhi(const array<double> &C0) throw()
         {
             for(size_t i=N;i>0;--i)
             {
