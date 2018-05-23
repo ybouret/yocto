@@ -22,11 +22,18 @@ namespace yocto
         double boot:: Error( const array<double> &XX ) throw()
         {
             tao::mul(dL,P,XX);
-            double mae = 0;
             for(size_t k=Nc;k>0;--k)
             {
                 const double dl = dL[k] - L[k];
-                mae += sqrt( (dl*dl)/p2[k] );
+                const double r2 = (dl*dl)/p2[k];
+                residue[k] = sqrt(r2);
+            }
+
+            quicksort(residue,__compare_decreasing<double>);
+            double mae = 0;
+            for(size_t k=Nc;k>0;--k)
+            {
+                mae += residue[k];
             }
             return mae/Nc;
         }
@@ -36,7 +43,7 @@ namespace yocto
         {
             tao::mulset(beta,alpha,dX);
             tao::set(Xtry,Xorg);
-            if(!eqs->deliver(Xtry,beta,0,false))
+            if(!eqs->__deliver(Xtry,beta,0,false))
             {
                 throw exception("boot:%s: unable to perform control!", *name);
             }
@@ -87,20 +94,20 @@ namespace yocto
                 //
                 // allocated workspace
                 //______________________________________________________________
-                P.    make(Nc,M);
-                L.    make(Nc,0);
-                aP2.  make(Nc,Nc);
-                Q.    make(N,M);
-                Xorg. make(M);
-                Xtry. make(M);
-                beta. make(M);
-                errc. make(M);
-                dX  . make(M);
-                V   . make(N);
-                dL  . make(Nc);
-                U   . make(Nc);
-                p2.   make(Nc);
-
+                P.       make(Nc,M);
+                L.       make(Nc,0);
+                aP2.     make(Nc,Nc);
+                Q.       make(N,M);
+                Xorg.    make(M);
+                Xtry.    make(M);
+                beta.    make(M);
+                errc.    make(M);
+                dX  .    make(M);
+                V   .    make(N);
+                dL  .    make(Nc);
+                U   .    make(Nc);
+                p2.      make(Nc);
+                residue. make(Nc);
                 //______________________________________________________________
                 //
                 // construct the linear algebra problem
@@ -161,7 +168,7 @@ namespace yocto
                 std::cerr << "\t...balancing" << std::endl;
                 balance();
                 double R0 = Error(Xorg);
-
+                
                 if(R0>threshold)
                 {
                     throw exception("boot.%s: unable to balance initial constraints",*name);
@@ -205,38 +212,64 @@ namespace yocto
                     //__________________________________________________________
                     double alpha = 1.0;
                     double R1    = __Control(alpha);
-                    std::cerr << "Xtry=" << Xtry << "; R1=" << R1 << "/R0=" << R0 << std::endl;
+                    std::cerr << "\tXtry=" << Xtry << "; R1=" << R1 << "/R0=" << R0 << std::endl;
                     if(R1<R0)
                     {
-                        std::cerr << "OK" << std::endl;
-                        tao::set(Xorg,Xtry);
-                        R0 = R1 ;
-                        continue;
+                        goto UPDATE;
                     }
                     else
                     {
-                        std::cerr << "Backtrack" << std::endl;
                         assert(R1>=R0);
                         triplet<double> xx = { 0,  alpha, alpha };
                         triplet<double> rr = { R0, R1,    R1    };
                         bracket<double>::inside(Control,xx,rr);
                         optimize1D<double>::run(Control,xx,rr);
                         R1 = __Control(alpha=xx.b);
-                        tao::set(Xorg,Xtry);
                         if(R1>=R0)
                         {
-                            R0=R1;
+                            //stuck...
                             break;
                         }
                         else
                         {
-                            R0 = R1 ;
-                            continue;
+                            goto UPDATE;
                         }
                     }
 
+                UPDATE:
+                    {
+                        double rms       = 0;
+                        bool   converged = true;
+                        for(size_t j=M;j>0;--j)
+                        {
+                            const double x_old = Xorg[j];
+                            const double x_new = Xtry[j];
+                            const double delta = x_new-x_old;
+                            if(converged)
+                            {
+                                const double x_add = x_old+delta;
+                                if(Fabs(x_old-x_add)>0)
+                                {
+                                    converged = false;
+                                }
+                            }
+                            const double d2 = delta*delta;
+                            if(d2>numeric<double>::tiny)
+                            {
+                                rms += d2;
+                            }
+                            Xorg[j] = x_new;
+                        }
+                        R0 = R1 ;
+                        if(converged||rms<=numeric<double>::tiny)
+                        {
+                            break;
+                        }
+                    }
 
                 }
+
+
                 std::cerr << "...done" << std::endl;
                 tao::set(C0,Xorg,M);
             }

@@ -334,10 +334,10 @@ namespace yocto
                     double rms       = 0;
                     for(size_t j=M;j>0;--j)
                     {
+                        const double c_new = Cend[j];
                         if(active[j])
                         {
                             const double c_old = Cini[j];
-                            const double c_new = Cend[j];
                             const double delta = c_old-c_new;
                             if(converged)
                             {
@@ -353,11 +353,12 @@ namespace yocto
                                 rms += d2;
                             }
                         }
+                        Cini[j] = c_new;
                     }
                     rms /= M;
-                    if(converged||rms<=0)
+                    if(converged||rms<=numeric<double>::tiny)
                     {
-                        std::cerr << "converged=" << converged << ", rms=" << rms << std::endl;
+                        //std::cerr << "converged=" << converged << ", rms=" << rms << std::endl;
                         goto NORMALIZED;
                     }
                 }
@@ -366,18 +367,16 @@ namespace yocto
                 //
                 // prepare for next step
                 //______________________________________________________________
-                //std::cerr << "Gamma: " << Gamma0 << " -> " << Gamma1 << std::endl;
                 Gamma0 = Gamma1;
-                tao::set(Cini,Cend);
                 updatePhi(Cini);
                 goto LOOP;
 
             CHECK_EXTREMUM:
-                std::cerr << "Extremum@" << Gamma1 << std::endl;
+                //std::cerr << "Extremum@" << Gamma1 << std::endl;
                 ;
 
             NORMALIZED:
-                std::cerr << "Cend=" << Cend << "; Gamma1=" << Gamma1 << std::endl;
+                //std::cerr << "Cend=" << Cend << "; Gamma1=" << Gamma1 << std::endl;
                 tao::set(C0,Cend,M);
 
                 return true;

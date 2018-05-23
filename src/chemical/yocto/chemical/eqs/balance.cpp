@@ -117,7 +117,7 @@ namespace yocto
                     Ctry[j] = C[j];
                 }
             }
-            
+
             if(nbad)
             {
                 quicksort(&errc[1],nbad,__compare_decreasing<double>);
@@ -195,8 +195,7 @@ namespace yocto
                     triplet<double> ff = { E0, E1,    E1    };
                     bracket<double>::expand(Balance,xx,ff);
                     optimize1D<double>::run(Balance,xx,ff);
-                    alpha = max_of<double>(xx.b,0); // never go back
-                    E1    = __Balance(alpha);
+                    E1 = __Balance( alpha=max_of<double>(xx.b,0) );
                 }
 
                 //______________________________________________________________

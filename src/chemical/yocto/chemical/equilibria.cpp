@@ -318,10 +318,10 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             return peqs[iEq]->scale( K[iEq] );
         }
 
-        bool equilibria:: deliver(array<double>       &C0,
-                                  const array<double> &delta,
-                                  const double         t,
-                                  const bool           initialize) throw()
+        bool equilibria:: __deliver(array<double>       &C0,
+                                    const array<double> &delta,
+                                    const double         t,
+                                    const bool           initialize) throw()
         {
             //__________________________________________________________________
             //
@@ -354,7 +354,6 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             {
                 C0[j] += (delta[j] - dC[j]);
             }
-            std::cerr << "deliver/norm..." << delta << std::endl;
             return normalize(C0,0,false);
         }
 

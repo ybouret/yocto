@@ -90,9 +90,10 @@ namespace yocto
             vector<double> dL;
             vector<double> U;
             vector<double> p2;
+            vector<double> residue; //!< to compute residue
             equilibria    *eqs;
 
-            double __Balance(double alpha) throw(); // Ctry = C+alpha*dC, return Ctry^2
+            double __Balance(double alpha) throw(); // Xtry = Xorg+alpha*dX, return Xtry^2
             double __Control(double alpha);
             math::numeric<double>::function Balance;
             math::numeric<double>::function Control;
