@@ -16,7 +16,7 @@ species =
 Kw = 1e-14;
 
 function Ka(t)
-return 10^(-4.8);
+return 10^(-4.8)*(1.0+0.1*math.sin(6.28*t/60.0));
 end
 
 Kb = 10^(-9.2);

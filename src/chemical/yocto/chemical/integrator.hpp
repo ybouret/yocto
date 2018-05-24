@@ -16,6 +16,8 @@ namespace yocto
         class integrator : public ode_driver
         {
         public:
+            double dt_max; //!< avoid too quick, default is 1ms
+            
             explicit integrator( const double user_ftol );
             virtual ~integrator() throw();
 

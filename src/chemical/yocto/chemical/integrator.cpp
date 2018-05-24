@@ -9,7 +9,8 @@ namespace yocto
         }
 
         integrator:: integrator(const double user_ftol) :
-        yocto::chemical::ode_driver(user_ftol),
+        ode_driver(user_ftol),
+        dt_max(1e-3),
         pSystem(0),
         pScheme(0),
         damped( this, & integrator:: __damped )
@@ -24,9 +25,9 @@ namespace yocto
         {
             pScheme = &scheme;
             pSystem = &eqs;
-            double      dt   = t1-t0;
+            double      dt   = min_of<double>(t1-t0,dt_max);
             ode_driver &self = *this;
-            self.operator()(damped,C0,t0,t1,dt,&eqs.project);
+            self(damped,C0,t0,t1,dt,&eqs.project);
         }
 
         void integrator:: __damped(array<double> &dCdt, double t, const array<double> &C)
@@ -38,7 +39,8 @@ namespace yocto
 
             // compute initial guess
             (*pScheme)(dCdt,t,C);
-
+            
+            
             // chemical damping
             if(!cs.damp(dCdt,C,t,true))
             {
