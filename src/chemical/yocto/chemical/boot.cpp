@@ -88,19 +88,20 @@ namespace yocto
 
         void boot:: clear() throw()
         {
-            p2.    release();
-            U.     release();
-            dL.    release();
-            V.     release();
-            dX.    release();
-            errc.  release();
-            beta.  release();
-            Xtry.  release();
-            Xorg.  release();
-            Q.     release();
-            aP2.   release();
-            L.     release();
-            P.     release();
+            residue. release();
+            p2.      release();
+            U.       release();
+            dL.      release();
+            V.       release();
+            dX.      release();
+            errc.    release();
+            beta.    release();
+            Xtry.    release();
+            Xorg.    release();
+            Q.       release();
+            aP2.     release();
+            L.       release();
+            P.       release();
             M=N=Nc=0;
             dP2 = 0;
         }

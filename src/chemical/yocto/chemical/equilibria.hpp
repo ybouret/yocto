@@ -40,7 +40,6 @@ namespace yocto
             vector<double> Cini;   //!< for Newton's algo
             vector<double> Cend;   //!< for Newton's algo
             vector<double> step;   //!< for Newton's algo, full step
-            
             vector<eqptr>  peqs;   //!< fast access to equilibria
             vector<double> beta;   //!< if negative active species [M]
             vector<double> errc;   //!< array to sort and sum

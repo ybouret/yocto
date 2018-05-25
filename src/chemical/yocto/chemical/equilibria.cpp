@@ -27,10 +27,13 @@ namespace yocto
 
         Cini(),
         Cend(),
+        step(),
         peqs(),
         beta(),
+        errc(),
         Nu(),
         NuT(),
+        aNu2(),
         nu2(),
         Phi(),
         W(),
@@ -39,6 +42,7 @@ namespace yocto
         xi(),
         gev(),
         Gnorm(),
+        dNu2(0),
         max_length(0),
 
         project(this, & equilibria:: __Project),
