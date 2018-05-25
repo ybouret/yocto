@@ -126,6 +126,7 @@ namespace yocto
         dL(),
         U(),
         p2(),
+        residue(),
         eqs(0),
         Balance( this, & boot::__Balance ),
         Control( this, & boot::__Control )

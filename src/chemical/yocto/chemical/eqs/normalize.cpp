@@ -257,7 +257,6 @@ namespace yocto
                         std::cerr  << "normalize:: unable to adjust step" << std::endl;
                         return false;
                     }
-                    exit(0);
                     goto ADJUST_STEP;
                 }
 
