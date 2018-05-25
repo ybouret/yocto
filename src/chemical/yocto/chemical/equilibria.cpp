@@ -5,7 +5,7 @@
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/core/adjoint.hpp"
 #include "yocto/sort/index.hpp"
-#include "yocto/sort/quick.hpp"
+#include "yocto/sort/summation.hpp"
 
 namespace yocto
 {
@@ -306,6 +306,9 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             {
                 arr[i] = pow( Fabs(Gamma[i]), gev[i] );
             }
+
+            return summation(arr,N);
+#if 0
             quicksort(arr,__compare_decreasing<double>);
             double ans = 0;
             for(size_t i=N;i>0;--i)
@@ -313,6 +316,7 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
                 ans += arr[i];
             }
             return ans;
+#endif
         }
 
         double equilibria:: get_scale( const size_t iEq ) const throw()

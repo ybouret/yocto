@@ -4,7 +4,7 @@
 #include "yocto/math/opt/bracket.hpp"
 #include "yocto/math/opt/minimize.hpp"
 #include "yocto/math/types.hxx"
-#include "yocto/sort/quick.hpp"
+#include "yocto/sort/summation.hpp"
 
 namespace yocto
 {
@@ -118,6 +118,9 @@ namespace yocto
                 }
             }
 
+            return summation(errc,nbad);
+
+#if 0
             if(nbad)
             {
                 quicksort(&errc[1],nbad,__compare_decreasing<double>);
@@ -132,6 +135,7 @@ namespace yocto
             {
                 return 0;
             }
+#endif
         }
         
         

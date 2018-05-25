@@ -8,7 +8,7 @@
 #include "yocto/math/core/lu.hpp"
 #include "yocto/math/types.hxx"
 #include "yocto/ios/ocstream.hpp"
-#include "yocto/sort/quick.hpp"
+#include "yocto/sort/summation.hpp"
 
 namespace yocto
 {
@@ -28,7 +28,8 @@ namespace yocto
                 const double r2 = (dl*dl)/p2[k];
                 residue[k] = sqrt(r2);
             }
-
+            return summation(residue,Nc)/Nc;
+#if 0
             quicksort(residue,__compare_decreasing<double>);
             double mae = 0;
             for(size_t k=Nc;k>0;--k)
@@ -36,6 +37,7 @@ namespace yocto
                 mae += residue[k];
             }
             return mae/Nc;
+#endif
         }
 
 
