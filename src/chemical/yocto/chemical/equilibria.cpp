@@ -357,7 +357,10 @@ const double Kt = (K[i] = max_of<double>(eq.K(t),0))
             return normalize(C0,0,false);
         }
 
-        bool equilibria:: damp( array<double> &delta, const array<double> &C0, const double t, const bool initialize) throw()
+        bool equilibria:: damp(array<double>       &delta,
+                               const array<double> &C0,
+                               const double         t,
+                               const bool           initialize) throw()
         {
             //__________________________________________________________________
             //

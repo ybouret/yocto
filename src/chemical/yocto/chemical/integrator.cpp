@@ -25,7 +25,10 @@ namespace yocto
         {
             pScheme = &scheme;
             pSystem = &eqs;
-            double      dt   = min_of<double>(t1-t0,dt_max);
+            double       dt  = t1-t0;
+            const int    sdt = sign_of(t0-t1);
+            const double adt = min_of(dt_max,fabs(dt));
+            dt               = sdt*adt;
             ode_driver &self = *this;
             self(damped,C0,t0,t1,dt,&eqs.project);
         }
