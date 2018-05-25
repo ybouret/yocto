@@ -3,6 +3,7 @@
 #include "yocto/sequence/vector.hpp"
 #include "yocto/comparator.hpp"
 #include "yocto/sort/ysort.hpp"
+#include "yocto/sort/summation.hpp"
 
 #include "support.hpp"
 
@@ -168,6 +169,26 @@ static inline void test_co_netsort()
     
 }
 
+template <typename T>
+static inline void test_sum()
+{
+    const size_t N = 10 + alea.leq(10);
+    vector<T> data(N+5+alea.leq(5));
+    for(size_t i=N;i>0;--i)
+    {
+        data[i] = alea.get<T>();
+    }
+
+    alea.shuffle(&data[1],N);
+    const T sum = summation(&data[1],N);
+    std::cerr << "(1/2) data=" << data << std::endl;
+    std::cerr << "(1/2) sum =" << sum << std::endl;
+    alea.shuffle(&data[1],N);
+    const T sumb = summation(data,N);
+    std::cerr << "(2/2) data=" << data << std::endl;
+    std::cerr << "(2/2) sum =" << sumb << std::endl;
+
+}
 
 YOCTO_UNIT_TEST_IMPL(sort)
 {
@@ -177,6 +198,10 @@ YOCTO_UNIT_TEST_IMPL(sort)
     test_cosort<int,string>();
     test_netsort<float>();
     test_co_netsort<int, float>();
+
+    test_sum<int>();
+    test_sum<float>();
+    test_sum<double>();
     
 }
 YOCTO_UNIT_TEST_DONE()

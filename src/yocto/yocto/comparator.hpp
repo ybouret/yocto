@@ -19,6 +19,14 @@ namespace yocto
         return - __compare<T>(lhs,rhs);
     }
 
+    template <typename T>
+    inline int __compare_abs_decreasing( T const & lhs, T const &rhs ) throw()
+    {
+        const T L = (lhs<0) ? -lhs : lhs;
+        const T R = (rhs<0) ? -rhs : rhs;
+        return - __compare<T>(L,R);
+    }
+
     //! increasing order, for libc functions
     template <typename T>
     inline int __compareC( const void *lhs, const void *rhs ) throw()

@@ -4,6 +4,7 @@
 #include "yocto/comparator.hpp"
 #include "yocto/sort/nwsrt.hpp"
 #include "yocto/code/bmove.hpp"
+#include "yocto/sequence/lw-array.hpp"
 
 namespace yocto
 {
@@ -118,6 +119,14 @@ MACRO(23); MACRO(24)
         {
             _ySort2(&arr[1],&brr[1],compare,0,n-1);
         }
+    }
+
+    //! C-style sorting
+    template<typename T,typename FUNC>
+    inline void ySort( T *a, size_t n, FUNC &compare )
+    {
+        lw_array<T> A(a,n);
+        ySort<T,FUNC>(A,compare);
     }
 
 }
