@@ -33,6 +33,7 @@ namespace yocto
         errc(),
         Nu(),
         NuT(),
+        Nu2(),
         aNu2(),
         nu2(),
         Phi(),
