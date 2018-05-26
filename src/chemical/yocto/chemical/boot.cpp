@@ -10,7 +10,7 @@ namespace yocto
         }
 
         boot:: component::component(species     &which,
-                                    const double weight) :
+                                    const int    weight) :
         sp( &which ),
         w( weight  )
         {

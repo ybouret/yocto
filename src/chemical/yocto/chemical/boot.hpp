@@ -23,7 +23,7 @@ namespace yocto
                 const string &key() const throw();
                 virtual ~component() throw();
                 explicit component(species     &which,
-                                   const double weight);
+                                   const int    weight);
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(component);

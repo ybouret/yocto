@@ -56,7 +56,7 @@ namespace yocto
                 {
                     throw exception("boot.%s#%d: item %u weight (first field) is not an integer",name,count,jm);
                 }
-                const int w = lua_tointeger(L,-1);
+                const int w = int(lua_tointeger(L,-1));
                 lua_pop(L,1); // remove w
 
                 //______________________________________________________________
