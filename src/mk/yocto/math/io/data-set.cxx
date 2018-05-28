@@ -47,8 +47,9 @@ namespace yocto
 		}
 		
 		template<>
-		void data_set<z_type>:: parse_line( const string &line ) const
+		void data_set<z_type>:: parse_line( const string &line, const size_t iline ) const
 		{
+            char location[1024];
 			tokenizer tkn( line );
 			
 			if( !tkn.get_next( character<char>::is_space ) )
@@ -72,7 +73,8 @@ namespace yocto
 				}
 				
 				const string res( tkn.token(), tkn.units() );
-				const z_type ans = strconv::to_real<real_t>( res );
+                snprintf(location,sizeof(location)-1,"line %u, field#%u",unsigned(iline),unsigned(idx));
+				const z_type ans = strconv::to_real<real_t>( res, location);
 				(*p)->push_back( ans );
 			}
 			
@@ -114,7 +116,7 @@ namespace yocto
             size_t     count   = 0;
 			while( in.read_line(line) >= 0 )
 			{
-				parse_line(line);
+				parse_line(line,iline);
                 if(keep)
                 {
                     colmap::iterator        i = first_col;

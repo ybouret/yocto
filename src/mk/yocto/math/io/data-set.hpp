@@ -36,7 +36,7 @@ namespace yocto
         private:
             mutable colmap map_;
             YOCTO_DISABLE_COPY_AND_ASSIGN(data_set);
-            void parse_line( const string &line ) const;
+            void parse_line( const string &line, const size_t iline ) const;
         };
 		
 	}
