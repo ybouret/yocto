@@ -30,7 +30,7 @@ namespace yocto
     template <
     typename T
     >
-    T summation( array<T> &a, const size_t n) throw()
+    T summation( array<T> &a, size_t n) throw()
     {
         assert(n<=a.size());
         switch(n)
@@ -42,9 +42,10 @@ namespace yocto
         lw_array<T> arr( &a[1], n );
         quicksort(arr,__compare_decreasing<T>);
         T sum(0);
-#define YOCTO_SUMMATION(I) sum += arr[I]
-        YOCTO_LOOP_FUNC_(n,YOCTO_SUMMATION,1);
-#undef  YOCTO_SUMMATION
+        while(n>0)
+        {
+            sum += a[n--];
+        }
         return sum;
     }
 

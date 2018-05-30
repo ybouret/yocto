@@ -45,14 +45,27 @@ namespace yocto
 				(*i)->free();
 			}
 		}
-		
+
+        static inline bool __is_sep( const char C ) throw()
+        {
+            switch(C)
+            {
+                case ' ':
+                case '\t':
+                case '\v':
+                case '\f':
+                    return true;
+            }
+            return false;
+        }
+
 		template<>
 		void data_set<z_type>:: parse_line( const string &line, const size_t iline ) const
 		{
             char location[1024];
 			tokenizer tkn( line );
 			
-			if( !tkn.get_next( character<char>::is_space ) )
+			if( !tkn.get_next( __is_sep ) )
 			{
 				return; //! empty line
 			}
@@ -66,7 +79,7 @@ namespace yocto
 				const size_t idx = p->key;
 				while( tkn.count() != idx )
 				{
-					if( !tkn.get_next( character<char>::is_space  ) )
+					if( !tkn.get_next( __is_sep  ) )
 					{
 						throw exception("[data_set( missing column %u for data #%u )]", unsigned(idx), unsigned( (*p)->size()) );
 					}
