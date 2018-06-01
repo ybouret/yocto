@@ -283,6 +283,7 @@ YOCTO_UNIT_TEST_IMPL(fit_poly)
         aorg[4] = a2;
         aorg[5] = 70;
         aorg[6] = 1;
+
         
         Fit::LS<double> lsf;
         //lsf.verbose = true;

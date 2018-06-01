@@ -20,7 +20,7 @@ MACRO(23); MACRO(24)
     inline void _ySort(T        *tableau,
                        FUNC     &cmp,
                        const int debut,
-                       const int fin ) throw()
+                       const int fin )
     {
         if(debut>=fin) return;
 
@@ -33,10 +33,8 @@ MACRO(23); MACRO(24)
                 Y_SORT_REPEAT(Y_SORT_IMPL);
 
             default: {
+                const T pivot(tableau[debut]);
                 ++droite;
-                uint64_t     tmp[YOCTO_U64_FOR_ITEM(T)];
-                T           &pivot  = *(T*)&tmp[0];
-                core::bmove<sizeof(T)>(&pivot,&tableau[debut]);
 
                 while(true)
                 {
@@ -72,7 +70,7 @@ MACRO(23); MACRO(24)
                         U        *brr,
                         FUNC     &cmp,
                         const int debut,
-                        const int fin ) throw()
+                        const int fin ) 
     {
         if(debut>=fin) return;
 
@@ -85,11 +83,9 @@ MACRO(23); MACRO(24)
                 Y_SORT_REPEAT(Y_SORT_IMPL2);
 
             default: {
-                ++droite;
-                uint64_t     tmp[YOCTO_U64_FOR_ITEM(T)];
-                T           &pivot  = *(T*)&tmp[0];
-                core::bmove<sizeof(T)>(&pivot,&arr[debut]);
+                const T pivot(arr[debut]);
 
+                ++droite;
                 while(true)
                 {
                     do droite--; while( cmp(pivot,arr[droite]) < 0 );

@@ -42,7 +42,7 @@ namespace yocto
                     ++calls;
                     const size_t nvar = a.size();
                     assert(0==(nvar%3));
-                    const size_t ng   = a.size()/3;
+                    const size_t ng   = nvar/3;
                     size_t j=0;
                     T ans(0);
                     for(size_t i=1;i<=ng;++i)

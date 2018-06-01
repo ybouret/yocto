@@ -3,6 +3,7 @@
 
 
 #include "yocto/sequence/array.hpp"
+#include "yocto/code/cast.hpp"
 
 namespace yocto
 {
@@ -24,7 +25,7 @@ namespace yocto
 		YOCTO_ARGUMENTS_DECL_T;
 		
 		explicit lw_array( T *addr, size_t num_items ) throw() :
-		item_( ((mutable_type *)addr)-1 ),
+        item_( _cast::prev<mutable_type>((void*)addr) ),
 		size_( num_items )
 		{ 
 			assert( !(addr==NULL&&num_items>0) );
