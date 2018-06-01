@@ -233,4 +233,16 @@ YOCTO_BUILD(lua)
 YOCTO_BUILD(lzo)
 YOCTO_BUILD(tiff)
 
+ADD_CUSTOM_TARGET(third_party 
+DEPENDS 
+y-z 
+y-bz2 
+y-png 
+y-jbig
+y-jpeg
+y-lua
+y-lzo
+COMMENT "Building Third Party Libraries")
+
+ 
 
