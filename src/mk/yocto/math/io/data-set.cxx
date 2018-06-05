@@ -8,6 +8,7 @@
 #include "yocto/string/conv.hpp"
 
 #include <cstdlib>
+#include <cstdio>
 
 namespace yocto
 {
