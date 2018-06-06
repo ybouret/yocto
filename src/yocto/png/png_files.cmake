@@ -5,12 +5,8 @@ SET(PNG_PUBLIC_HEADERS
 )
 
 SET(PNG_PRIVATE_HEADERS
-	png.h
-	pngconf.h
 	pngdebug.h
 	pnginfo.h
-	pnglibconf.h
-	pngprefix.h
 	pngpriv.h
 	pngstruct.h
 )
