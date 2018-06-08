@@ -18,6 +18,9 @@ SET(OTHERINCLUDES cderror.h cdjpeg.h jdct.h jinclude.h jmemsys.h jpegint.h
         
 ADD_LIBRARY(y-jpeg STATIC ${LIBSOURCES})
 
+INSTALL( FILES ${INSTINCLUDES}  DESTINATION include/yocto/jpeg )
+INSTALL( TARGETS y-jpeg ARCHIVE DESTINATION lib )
+
 SET(cjpeg_SOURCES     cjpeg.c rdppm.c rdgif.c rdtarga.c rdrle.c rdbmp.c rdswitch.c cdjpeg.c)
 SET(djpeg_SOURCES     djpeg.c wrppm.c wrgif.c wrtarga.c wrrle.c wrbmp.c rdcolmap.c cdjpeg.c)
 SET(jpegtran_SOURCES  jpegtran.c rdswitch.c cdjpeg.c transupp.c)
@@ -28,14 +31,17 @@ SET(wrjpgcom_SOURCES  wrjpgcom.c)
 ADD_EXECUTABLE(cjpeg    ${cjpeg_SOURCES})
 ADD_EXECUTABLE(djpeg    ${djpeg_SOURCES})
 ADD_EXECUTABLE(jpegtran ${jpegtran_SOURCES})
-ADD_EXECUTABLE(rdjpgcom ${rdjpgcom_SOURCES})
-ADD_EXECUTABLE(wrjpgcom ${wrjpgcom_SOURCES})
 
 TARGET_LINK_LIBRARIES(cjpeg    y-jpeg)
 TARGET_LINK_LIBRARIES(djpeg    y-jpeg)
 TARGET_LINK_LIBRARIES(jpegtran y-jpeg)
+
+IF(FALSE)
+ADD_EXECUTABLE(rdjpgcom ${rdjpgcom_SOURCES})
+ADD_EXECUTABLE(wrjpgcom ${wrjpgcom_SOURCES})
 TARGET_LINK_LIBRARIES(rdjpgcom y-jpeg)
 TARGET_LINK_LIBRARIES(wrjpgcom y-jpeg)
+ENDIF()
 
 SET(SRCDIR ${CMAKE_CURRENT_SOURCE_DIR})
 SET(cmp ${CMAKE_COMMAND} -E compare_files)
