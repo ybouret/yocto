@@ -1,4 +1,4 @@
-PROJECT(z)
+PROJECT(z C)
 
 include(CheckTypeSize)
 include(CheckFunctionExists)

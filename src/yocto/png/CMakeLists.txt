@@ -1,4 +1,4 @@
-PROJECT(png)
+PROJECT(png C)
 
 INCLUDE_DIRECTORIES(../zlib ${CMAKE_CURRENT_BINARY_DIR}/../zlib)
 INCLUDE(png_files.cmake)
@@ -12,7 +12,10 @@ INSTALL( TARGETS y-png ARCHIVE       DESTINATION lib )
 
 ADD_EXECUTABLE(pngtest pngtest.c)
 TARGET_LINK_LIBRARIES(pngtest y-png y-z)
-
+IF(NOT WIN32)
+		TARGET_LINK_LIBRARIES(pngtest m)
+ENDIF()
+	
 ADD_CUSTOM_TARGET( test-png 
 COMMAND pngtest ${CMAKE_CURRENT_SOURCE_DIR}/pngtest.png
 COMMENT "Testing png")
