@@ -235,9 +235,9 @@ YOCTO_BUILD(tiff)
 
 ADD_CUSTOM_TARGET(third_party 
 DEPENDS 
-y-z 
+y-z    test-z
 y-bz2 
-y-png 
+y-png  test-png
 y-jbig
 y-jpeg test-jpeg
 y-lua

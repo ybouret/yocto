@@ -55,20 +55,15 @@ include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
 add_library(y-z STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
 INSTALL( FILES ${ZLIB_PUBLIC_HDRS} DESTINATION include/yocto/zlib )
 INSTALL( TARGETS y-z ARCHIVE       DESTINATION lib )
-
-IF(YOCTO_BUILD_TESTS)
-	enable_testing()
-	add_executable(z-example test/example.c)
-	target_link_libraries(z-example y-z)
-	add_test(z-example z-example)
+add_executable(z-example test/example.c)
+target_link_libraries(z-example y-z)
 	
-	IF(TRUE)
-		add_executable(minigzip test/minigzip.c)
-		target_link_libraries(minigzip y-z)
+ADD_CUSTOM_TARGET( test-z
+COMMAND z-example
+COMMENT "Testing zlib")
 	
-		add_executable(z-infcover test/infcover.c)
-		target_link_libraries(z-infcover y-z)
-	ENDIF()
+add_executable(minigzip test/minigzip.c)
+target_link_libraries(minigzip y-z)
 	
-ENDIF()
-
+#add_executable(z-infcover test/infcover.c)
+#target_link_libraries(z-infcover y-z)
