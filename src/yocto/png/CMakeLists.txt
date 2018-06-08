@@ -10,9 +10,14 @@ ADD_LIBRARY( y-png STATIC ${PNG_SOURCES} ${PNG_HEADERS} )
 INSTALL( FILES ${PNG_PUBLIC_HEADERS} DESTINATION include/yocto/png )
 INSTALL( TARGETS y-png ARCHIVE       DESTINATION lib )
 
+ADD_EXECUTABLE(pngtest pngtest.c)
+TARGET_LINK_LIBRARIES(pngtest y-png y-z)
+
+ADD_CUSTOM_TARGET( test-png 
+COMMAND pngtest ${CMAKE_CURRENT_SOURCE_DIR}/pngtest.png
+COMMENT "Testing png")
+
 IF(YOCTO_BUILD_TESTS)
-	ADD_EXECUTABLE(pngtest pngtest.c)
-	TARGET_LINK_LIBRARIES(pngtest y-png y-z)
 	IF(NOT WIN32)
 		TARGET_LINK_LIBRARIES(pngtest m)
 	ENDIF()
