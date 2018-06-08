@@ -239,7 +239,7 @@ y-z
 y-bz2 
 y-png 
 y-jbig
-y-jpeg
+y-jpeg test-jpeg
 y-lua
 y-lzo
 COMMENT "Building Third Party Libraries")
