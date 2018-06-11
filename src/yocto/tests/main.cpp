@@ -100,12 +100,13 @@ YOCTO_UNIT_TEST_INIT(200)
     YOCTO_UNIT_TEST_DECL(clock);
     YOCTO_UNIT_TEST_DECL(multi_arrays);
     YOCTO_UNIT_TEST_DECL(endian);
+
     YOCTO_UNIT_TEST_DECL(rle);
     YOCTO_UNIT_TEST_DECL(unrle);
 
-    YOCTO_UNIT_TEST_DECL(huff);
     YOCTO_UNIT_TEST_DECL(bwt);
     YOCTO_UNIT_TEST_DECL(bwt16);
+
     YOCTO_UNIT_TEST_DECL(file_size);
     YOCTO_UNIT_TEST_DECL(wallpaper);
 
@@ -153,9 +154,6 @@ YOCTO_UNIT_TEST_INIT(200)
 
     YOCTO_UNIT_TEST_DECL(mtf);
     YOCTO_UNIT_TEST_DECL(unmtf);
-    
-    YOCTO_UNIT_TEST_DECL(dsf);
-    YOCTO_UNIT_TEST_DECL(undsf);
 
 
 

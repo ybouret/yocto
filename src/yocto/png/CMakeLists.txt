@@ -15,7 +15,7 @@ TARGET_LINK_LIBRARIES(pngtest y-png y-z)
 IF(NOT WIN32)
 		TARGET_LINK_LIBRARIES(pngtest m)
 ENDIF()
-	
+
 ADD_CUSTOM_TARGET( test-png 
 COMMAND pngtest ${CMAKE_CURRENT_SOURCE_DIR}/pngtest.png
 COMMENT "Testing png")
