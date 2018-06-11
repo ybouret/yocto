@@ -63,111 +63,8 @@ static inline void test_cosort()
     check_sorted(ra, "co-sorting");
 }
 
-#include "yocto/sort/network.hpp"
-
-template <typename T>
-static inline void test_netsort()
-{
-    std::cerr << "-- sorting network" << std::endl;
-
-    const size_t n = 1 + alea.leq( 20 );
-    vector<T> ra(6,as_capacity);
-    
-    //-- level 2
-    for(size_t i=0;i<n;++i)
-    {
-        ra.free();
-        for(size_t j=0;j<2;++j) { const T tmp( gen<T>::get() ); ra.push_back(tmp); }
-        std::cerr << ra << " => ";
-        netsort<T>::level2(ra[1], ra[2]);
-        std::cerr << ra;
-        std::cerr << std::endl;
-        check_sorted(ra, "netsort2");
-    }
-    
-    //-- level 3
-    for(size_t i=0;i<n;++i)
-    {
-        ra.free();
-        for(size_t j=0;j<3;++j) { const T tmp( gen<T>::get() ); ra.push_back(tmp); }
-        std::cerr << ra << " => ";
-        netsort<T>::level3(ra[1], ra[2], ra[3]);
-        std::cerr << ra;
-        std::cerr << std::endl;
-        check_sorted(ra, "netsort3");
-    }
-    
-    //-- level 4
-    for(size_t i=0;i<n;++i)
-    {
-        ra.free();
-        for(size_t j=0;j<4;++j) { const T tmp( gen<T>::get() ); ra.push_back(tmp); }
-        std::cerr << ra << " => ";
-        netsort<T>::level4(ra[1], ra[2], ra[3], ra[4]);
-        std::cerr << ra;
-        std::cerr << std::endl;
-        check_sorted(ra, "netsort4");
-    }
-    
-    //-- level 6
-    for(size_t i=0;i<n;++i)
-    {
-        ra.free();
-        for(size_t j=0;j<6;++j) { const T tmp( gen<T>::get() ); ra.push_back(tmp); }
-        std::cerr << ra << " => ";
-        netsort<T>::level6(ra[1], ra[2], ra[3], ra[4], ra[5], ra[6]);
-        std::cerr << ra;
-        std::cerr << std::endl;
-        check_sorted(ra, "netsort6");
-    }
-
-}
 
 
-template <typename T, typename U>
-static inline void test_co_netsort()
-{
-    std::cerr << "-- co_sorting network" << std::endl;
-
-    const size_t n = 1 + alea.leq( 20 );
-    vector<T> ra(6,as_capacity);
-    vector<U> rb(6,as_capacity);
-    
-    for(size_t i=0;i<n;++i)
-    {
-        ra.free();
-        rb.free();
-        for(size_t j=0;j<2;++j) {
-            const T tmp( gen<T>::get() ); ra.push_back(tmp);
-            const U ump( gen<U>::get() ); rb.push_back(ump);
-        }
-        std::cerr << "rawA=" << ra << std::endl;
-        std::cerr << "rawB=" << rb << std::endl;
-        netsort<T>::template co_level2<U>( &ra[1], &rb[1]);
-        std::cerr << "srtA=" << ra << std::endl;
-        std::cerr << "srtB=" << rb << std::endl;
-        check_sorted(ra, "co_netsort2");
-    }
-
-    
-    for(size_t i=0;i<n;++i)
-    {
-        ra.free();
-        rb.free();
-        for(size_t j=0;j<3;++j) {
-            const T tmp( gen<T>::get() ); ra.push_back(tmp);
-            const U ump( gen<U>::get() ); rb.push_back(ump);
-        }
-        std::cerr << "rawA=" << ra << std::endl;
-        std::cerr << "rawB=" << rb << std::endl;
-        netsort<T>::template co_level3<U>( &ra[1], &rb[1]);
-        std::cerr << "srtA=" << ra << std::endl;
-        std::cerr << "srtB=" << rb << std::endl;
-        check_sorted(ra, "co_netsort3");
-    }
-
-    
-}
 
 template <typename T>
 static inline void test_sum()
@@ -196,8 +93,7 @@ YOCTO_UNIT_TEST_IMPL(sort)
     test_sort<float>();
     test_sort<string>();
     test_cosort<int,string>();
-    test_netsort<float>();
-    test_co_netsort<int, float>();
+    
 
     test_sum<int>();
     test_sum<float>();

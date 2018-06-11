@@ -6,7 +6,7 @@
 
 #include "yocto/math/types.hpp"
 #include "yocto/type/args.hpp"
-#include "yocto/sort/network.hpp"
+#include "yocto/sort/nwsrt0.hpp"
 
 #include <iostream>
 
@@ -37,12 +37,12 @@ namespace yocto {
 
             inline void sort() throw()
             {
-                netsort<T>::level3(a,b,c);
+                nwsrt0<T>::op3(&a);
             }
 
             inline void co_sort( triplet<T> &other ) throw()
             {
-                netsort<T>::co_level3(a,b,c,other.a,other.b,other.c);
+                nwsrt0<T>::co_op3(&a,&other.a);
             }
 
 

@@ -6,7 +6,6 @@
 #include "yocto/math/core/lu.hpp"
 #include "yocto/code/ipower.hpp"
 #include "yocto/math/triplet.hpp"
-#include "yocto/sort/network.hpp"
 
 namespace yocto
 {
