@@ -1,4 +1,4 @@
-#include "yocto/core/list.hpp"
+#include "yocto/core/list-check.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/alea.hpp"
 #include "yocto/sort/merge.hpp"
@@ -57,6 +57,7 @@ YOCTO_UNIT_TEST_IMPL(list)
     const size_t num   = 30 + alea.leq(100);
     node_type   *nodes = new node_type[num];
     core::list_of<node_type> L;
+    core::check_list(L);
 
     std::cerr << "-- inserting" << std::endl;
     for( size_t i=0; i < num; ++i )
@@ -79,6 +80,7 @@ YOCTO_UNIT_TEST_IMPL(list)
             L.push_back( node );
             std::cerr << "<";
         }
+        core::check_list(L);
     }
     std::cerr << std::endl;
     std::cerr << "-- raw list" << std::endl;

@@ -28,6 +28,11 @@ namespace yocto
 	void format_error( char buffer[], size_t length, error_type err ) throw();
 	void critical_error( error_type err, const char when[] ) throw();
 	extern const error_type error_invalid_data;
+    inline void fatal_error(const char when[]) throw()
+    {
+        critical_error(error_invalid_data,when);
+    }
+
 }
 
 #endif

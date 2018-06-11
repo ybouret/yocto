@@ -17,7 +17,7 @@ namespace yocto
         class subsets : public object, public subset<COORD>::list
         {
         public:
-            typedef core::list_of_cpp<subsets> list;
+            typedef core::list_of_cpp< subsets<COORD> > list;
             
             
             const COORD   sizes;
@@ -57,7 +57,7 @@ namespace yocto
         
         ////////////////////////////////////////////////////////////////////////
         //
-        // used to find optimial
+        // used to find optimal
         //
         ////////////////////////////////////////////////////////////////////////
         template <typename COORD>
@@ -80,7 +80,9 @@ namespace yocto
                 setup(cpus,full,layers,pbcs);
                 typename subsets<COORD>::list &self = *this;
                 assert(self.size>0);
+                std::cerr << "...sorting subsets" << std::endl;
                 core::merging< subsets<COORD> >::sort(self, compare_by_scores, NULL );
+                std::cerr << "..done" << std::endl;
                 if(false)
                 {
                     for(const subsets<COORD> *subs = self.head; subs; subs=subs->next)
@@ -101,13 +103,14 @@ namespace yocto
                         fallback = subs;
                     }
                 }
+                
             }
             
             static inline
             COORD optimal_sizes_for(const size_t        cpus,
                                     const patch<COORD> &full,
                                     const size_t        layers,
-                                    const COORD        &pbcs,
+                                    const COORD         pbcs,
                                     COORD              *fallback)
             {
                 const mapping maps(cpus,full,layers,pbcs);

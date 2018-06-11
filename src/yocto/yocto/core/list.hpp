@@ -13,6 +13,7 @@ namespace yocto
 		class list_of
 		{
 		public:
+            typedef NODE node_type;
 			inline explicit list_of() throw() : head(NULL), tail(NULL), size(0) {}
 			inline virtual ~list_of() throw() { assert(NULL==head); assert(NULL==tail); assert(0==size); }
 			
@@ -133,7 +134,7 @@ namespace yocto
             inline void auto_delete() throw()
             {
                 NODE *node = tail;
-				while( node )
+				while( node!=NULL )
 				{
                     assert(node);
 					NODE *prev = node->prev;
@@ -389,7 +390,8 @@ namespace yocto
                 NODE *prev = node->prev;
                 insert_before(prev,unlink(node));
             }
-		private:
+
+        private:
 			YOCTO_DISABLE_COPY_AND_ASSIGN(list_of);
 			inline void push_first( NODE *node ) throw()
 			{
