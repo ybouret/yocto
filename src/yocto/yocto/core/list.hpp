@@ -135,6 +135,7 @@ namespace yocto
                 NODE *node = tail;
 				while( node )
 				{
+                    assert(node);
 					NODE *prev = node->prev;
 					node->next = NULL;
 					node->prev = NULL;

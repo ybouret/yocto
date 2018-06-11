@@ -99,8 +99,8 @@ namespace yocto
             flags(0)
             {
 
-                memset( (void*)&local[0], 0, sizeof(local) );
-                memset( (void*)&async[0], 0, sizeof(async) );
+                memset( (void*)&local[0],      0, sizeof(local) );
+                memset( (void*)&async[0],      0, sizeof(async) );
                 memset( (void*)&apex_local[0], 0, sizeof(apex_local) );
                 memset( (void*)&apex_async[0], 0, sizeof(apex_async) );
                 //______________________________________________________________
