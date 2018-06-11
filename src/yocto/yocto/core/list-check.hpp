@@ -64,6 +64,16 @@ fatal_error(buffer);\
                     YOCTO_CORE_LIST_CHECK(reverse_count==the.size);
                 }
 
+                {
+                    for(const typename LIST::node_type *node=the.head->next;node!=NULL;node=node->next)
+                    {
+                        for(const typename LIST::node_type *sub=node->next;sub;sub=sub->next)
+                        {
+                            YOCTO_CORE_LIST_CHECK(node!=sub);
+                        }
+                    }
+                }
+
             }
             return true;
         }
