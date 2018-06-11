@@ -17,4 +17,6 @@ ENDIF(MPI_FOUND)
 ENABLE_TESTING()
 ADD_TEST(ipso     test-ipso ipso)
 ADD_TEST(divide   test-ipso divide)
+ADD_TEST(subopt0  test-ipso subopt 100,100,100 0,0,0 4 1 )
+ADD_TEST(subopt1  test-ipso subopt 100,100,100 1,1,1 4 1 )
 

@@ -90,11 +90,11 @@ namespace yocto
             ranks(),
             inner( full(rank, (COORD *)&ranks) ),
             outer( inner ),
-            vswaps( SWAPS ) ,
-            local(),
-            async(),
-            apex_local(),
-            apex_async(),
+            vswaps( SWAPS ),
+            local(0),
+            async(0),
+            apex_local(0),
+            apex_async(0),
             locals(),
             asyncs(),
             next(0),
@@ -105,19 +105,7 @@ namespace yocto
             {
 
 
-                for(size_t i=0;i<SWAPS;++i)
-                {
-                    (void) vswaps.push_back();
-                }
-                local = &vswaps[0];
-                async = local + DIM;
-                apex_local = async      + DIM;
-                apex_async = apex_local + APEX;
-
-                //memset( (void*)&local[0],      0, sizeof(local) );
-                //memset( (void*)&async[0],      0, sizeof(async) );
-                //memset( (void*)&apex_local[0], 0, sizeof(apex_local) );
-                //memset( (void*)&apex_async[0], 0, sizeof(apex_async) );
+                setup_swaps();
 
                 //______________________________________________________________
                 //
@@ -491,10 +479,11 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             ranks(r_id),
             inner( __inner ),
             outer( __outer ),
-            local(),
-            async(),
-            apex_local(),
-            apex_async(),
+            vswaps( SWAPS ),
+            local(0),
+            async(0),
+            apex_local(0),
+            apex_async(0),
             locals(),
             asyncs(),
             next(0),
@@ -503,6 +492,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
             score(),
             flags(0)
             {
+                setup_swaps();
             }
 
 
@@ -510,6 +500,19 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
 
         private:
             YOCTO_DISABLE_COPY_AND_ASSIGN(subset);
+
+            inline void setup_swaps() throw()
+            {
+                for(size_t i=0;i<SWAPS;++i)
+                {
+                    (void) vswaps.push_back();
+                }
+                local = &vswaps[0];
+                async = local + DIM;
+                apex_local = async      + DIM;
+                apex_async = apex_local + APEX;
+            }
+
 
             //! store the apex swap in its slot, and optimize I/O
             inline void push_back_apex( swaps *swp )

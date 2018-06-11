@@ -7,7 +7,7 @@
 #include "yocto/counted-object.hpp"
 #include "yocto/sequence/addr-list.hpp"
 #include "yocto/sort/merge.hpp"
-#include "yocto/core/list-check.hpp"
+#include "yocto/core/list.hpp"
 
 namespace yocto
 {
@@ -111,7 +111,7 @@ swap    & _send = (swap &)send;
         {
         public:
             inline explicit swaps_list() throw() : swaps::list() {}
-            inline virtual ~swaps_list() throw() { std::cerr << "~swap_list" << std::endl; }
+            inline virtual ~swaps_list() throw() { }
 
             //! total list of counts for optimal partition
             inline size_t counts() const throw()

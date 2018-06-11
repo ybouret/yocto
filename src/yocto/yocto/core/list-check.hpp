@@ -10,6 +10,7 @@ namespace yocto
 {
     namespace core
     {
+#if 1
         template <typename LIST>
         inline bool check_list( const LIST &the ) throw()
         {
@@ -77,6 +78,7 @@ fatal_error(buffer);\
             }
             return true;
         }
+#endif
     }
 }
 

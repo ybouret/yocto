@@ -25,10 +25,8 @@ namespace yocto
             subsets      *next;
             subsets      *prev;
             
-            inline virtual ~subsets() throw()
-            {
-                core::check_list(*this); std::cerr << "~subsets.size=" << this->size << std::endl;
-            }
+            inline virtual ~subsets() throw() {}
+
             inline explicit subsets(const divider<COORD> &full,
                                     const size_t          layers,
                                     const COORD           pbcs,
@@ -51,7 +49,6 @@ namespace yocto
                     }
                 }
                 assert(this->size==size_t(__coord_prod(sizes)));
-                core::check_list(*this);
             }
             
         private:
@@ -71,7 +68,7 @@ namespace yocto
             const subsets<COORD> * optimal;
             const subsets<COORD> * fallback;
             
-            inline virtual ~mapping() throw() { core::check_list(*this); std::cerr << "~mapping.size=" << this->size << std::endl;  }
+            inline virtual ~mapping() throw() {}
             inline explicit mapping(const size_t        cpus,
                                     const patch<COORD> &full,
                                     const size_t        layers,
@@ -83,10 +80,7 @@ namespace yocto
                 setup(cpus,full,layers,pbcs);
                 typename subsets<COORD>::list &self = *this;
                 assert(self.size>0);
-                std::cerr << "...sorting subsets" << std::endl;
                 core::merging< subsets<COORD> >::sort(self, compare_by_scores, NULL );
-                std::cerr << "..done" << std::endl;
-                core::check_list(self);
                 optimal  = self.head; assert(optimal);
                 fallback = self.tail; assert(fallback);
                 for(const subsets<COORD> *subs=fallback;subs;subs=subs->prev)
@@ -107,7 +101,6 @@ namespace yocto
                                     COORD              *fallback)
             {
                 const mapping maps(cpus,full,layers,pbcs);
-                core::check_list(maps);
                 if(fallback)
                 {
                     *fallback = maps.fallback->sizes;
