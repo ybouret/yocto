@@ -8,6 +8,7 @@
 #include "yocto/ipso/vertex.hpp"
 #include "yocto/ipso/real-indices.hpp"
 #include "yocto/sort/merge.hpp"
+#include "yocto/sequence/slots.hpp"
 
 namespace yocto
 {
@@ -48,15 +49,18 @@ namespace yocto
             static const size_t               DIM = YOCTO_IPSO_DIM_OF(COORD);
             typedef subset_metrics<DIM>       metrics;
             static const size_t               APEX = metrics::num_apex;
-
+            static const size_t               SWAPS = (DIM+APEX)*2;
             const size_t          rank;             //!< global (aka MPI) rank
             const COORD           ranks;            //!< local ranks
             const patch_type      inner;            //!< inner working patch
             const patch_type      outer;            //!< outer patch, with swap zones
-            const swaps_list      local[DIM];       //!< local swaps, 0 or pair by dimension
-            const swaps_list      async[DIM];       //!< async swaps
-            const swaps_list      apex_local[APEX]; //!<
-            const swaps_list      apex_async[APEX]; //!<
+        private:
+            slots_of<swaps_list>  vswaps;
+        public:
+            const swaps_list      *local;      //!< local swaps, 0 or pair by dimension, [DIM]
+            const swaps_list      *async;      //!< async swaps                          [DIM]
+            const swaps_list      *apex_local; //!< [APEX]
+            const swaps_list      *apex_async; //!< [APEX]
             
             const swaps_addr_list locals;      //!< locals collection
             const swaps_addr_list asyncs;      //!< asyncs collection
@@ -67,22 +71,7 @@ namespace yocto
             const unsigned        flags;       //!< full flags
 
 
-            inline virtual ~subset() throw() {
-                std::cerr << "~subset: #locals=" << locals.size << ", #asyncs=" << asyncs.size << std::endl;
-                for(size_t dim=0;dim<DIM;++dim)
-                {
-                    std::cerr << "local[" << dim << "].size=" << local[dim].size << std::endl; core::check_list(local[dim]);
-                    std::cerr << "async[" << dim << "].size=" << async[dim].size << std::endl; core::check_list(async[dim]);
-                }
-                for(size_t dim=0;dim<APEX;++dim)
-                {
-                    std::cerr << "apex_local[" << dim << "].size=" << apex_local[dim].size << std::endl; core::check_list(apex_local[dim]);
-                    std::cerr << "apex_async[" << dim << "].size=" << apex_async[dim].size << std::endl; core::check_list(apex_async[dim]);
-
-                }
-                core::check_list(locals);
-                core::check_list(asyncs);
-                }
+            inline virtual ~subset() throw() {}
 
             //! build the outer layout and the swaps
             /**
@@ -101,6 +90,7 @@ namespace yocto
             ranks(),
             inner( full(rank, (COORD *)&ranks) ),
             outer( inner ),
+            vswaps( SWAPS ) ,
             local(),
             async(),
             apex_local(),
@@ -114,10 +104,21 @@ namespace yocto
             flags(0)
             {
 
-                memset( (void*)&local[0],      0, sizeof(local) );
-                memset( (void*)&async[0],      0, sizeof(async) );
-                memset( (void*)&apex_local[0], 0, sizeof(apex_local) );
-                memset( (void*)&apex_async[0], 0, sizeof(apex_async) );
+
+                for(size_t i=0;i<SWAPS;++i)
+                {
+                    (void) vswaps.push_back();
+                }
+                local = &vswaps[0];
+                async = local + DIM;
+                apex_local = async      + DIM;
+                apex_async = apex_local + APEX;
+
+                //memset( (void*)&local[0],      0, sizeof(local) );
+                //memset( (void*)&async[0],      0, sizeof(async) );
+                //memset( (void*)&apex_local[0], 0, sizeof(apex_local) );
+                //memset( (void*)&apex_async[0], 0, sizeof(apex_async) );
+
                 //______________________________________________________________
                 //
                 // checking swaps availability
@@ -445,7 +446,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
             }
 
-            
+
             inline void register_all_swaps()
             {
                 assert(0==asyncs.size);
@@ -460,7 +461,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     {
                         _locals.append(swp);
                     }
-                    
+
                     for(swaps *swp = async[dim].head;swp;swp=swp->next )
                     {
                         _asyncs.append(swp);
@@ -481,7 +482,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     }
                 }
             }
-            
+
             //! 1D constructor, to split
             inline subset(const size_t      r_id,
                           const patch_type &__inner,
@@ -613,7 +614,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                     //__________________________________________________________
                     bool removed_lo = false;
                     bool removed_up = false;
-                    
+
                     if(is_dim_first)
                     {
                         if(outer_lo<inner_lo)
@@ -657,7 +658,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
 
             }
-            
+
             inline void compute_flags() throw()
             {
                 unsigned &f = (unsigned &)flags;
