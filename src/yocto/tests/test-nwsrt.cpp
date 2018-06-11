@@ -1,4 +1,6 @@
 #include "yocto/sort/nwsrt.hpp"
+#include "yocto/sort/nwsrt0.hpp"
+
 #include "yocto/utest/run.hpp"
 #include "yocto/sequence/vector.hpp"
 #include "yocto/comparator.hpp"
@@ -16,6 +18,7 @@ void __fill_seq( SEQ &a, const size_t N )
         typename SEQ::type tmp = alea.get<typename SEQ::mutable_type>();
         a.push_back(tmp);
     }
+
 }
 
 template <typename T>
@@ -36,12 +39,22 @@ for(size_t iter=0;iter<1000;++iter)\
 {\
 __fill_seq(arr,N); assert(N==arr.size());\
 nwsrt<TYPE>::op##N( &arr[1], __compare<TYPE> );\
+nwsrt0<TYPE>::op##N( &arr[1] );\
+check_is_sorted(arr,#N);\
+alea.shuffle( &arr[1],N );\
+idx.free(); for(size_t i=1;i<=N;++i) idx.push_back(i); assert(N==idx.size());\
+nwsrt<TYPE>::co_op##N( &arr[1], &idx[1], __compare<TYPE> );\
+check_is_sorted(arr,#N);\
+alea.shuffle( &arr[1],N );\
+idx.free(); for(size_t i=1;i<=N;++i) idx.push_back(i); assert(N==idx.size());\
+nwsrt0<TYPE>::co_op##N( &arr[1], &idx[1]);\
 check_is_sorted(arr,#N);\
 }\
 } while(false)
 
 #define __RUN(TYPE) do {\
-vector<TYPE> arr(32,as_capacity);\
+vector<TYPE>   arr(32,as_capacity);\
+vector<size_t> idx(32,as_capacity);\
 __EXE(TYPE,2);\
 __EXE(TYPE,3);\
 __EXE(TYPE,4);\

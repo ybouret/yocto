@@ -1,44 +1,41 @@
-#ifndef YOCTO_NWSRT_INCLUDED
-#define YOCTO_NWSRT_INCLUDED 1
+#ifndef YOCTO_NWSRT0_INCLUDED
+#define YOCTO_NWSRT0_INCLUDED 1
 
 #include "yocto/code/bswap.hpp"
 
 #undef YOCTO_NWSRT_SWAP
 #undef YOCTO_NWSRT_SWP2
 
-#define YOCTO_NWSRT_SWAP(I,J) { T &aI = a[I]; T &aJ = a[J]; if(compare(aJ,aI)<0) core::bswap<sizeof(T)>(&aI,&aJ); }
-#define YOCTO_NWSRT_SWP2(I,J) { T &aI = a[I]; T &aJ = a[J]; if(compare(aJ,aI)<0) { core::bswap<sizeof(T)>(&aI,&aJ); core::bswap<sizeof(U)>(&b[I],&b[J]);} }
+#define YOCTO_NWSRT_SWAP(I,J) { T &aI = a[I]; T &aJ = a[J]; if(aJ<aI) core::bswap<sizeof(T)>(&aI,&aJ); }
+#define YOCTO_NWSRT_SWP2(I,J) { T &aI = a[I]; T &aJ = a[J]; if(aJ<aI) { core::bswap<sizeof(T)>(&aI,&aJ); core::bswap<sizeof(U)>(&b[I],&b[J]);} }
 
 namespace yocto {
 
-	template <typename T> struct nwsrt {
+	template <typename T> struct nwsrt0 {
 
-		template <typename FUNC>
-		static inline void op2(T *a,FUNC &compare) throw() {
+        static inline void op2(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op2(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op2(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 		}
 
-		template <typename FUNC>
-		static inline void op3(T *a,FUNC &compare) throw() {
+		static inline void op3(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 0, 2)
 			YOCTO_NWSRT_SWAP( 0, 1)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op3(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op3(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 0, 2)
 			YOCTO_NWSRT_SWP2( 0, 1)
 		}
 
-		template <typename FUNC>
-		static inline void op4(T *a,FUNC &compare) throw() {
+		static inline void op4(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 			YOCTO_NWSRT_SWAP( 2, 3)
 			YOCTO_NWSRT_SWAP( 0, 2)
@@ -46,8 +43,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 1, 2)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op4(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op4(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 			YOCTO_NWSRT_SWP2( 2, 3)
 			YOCTO_NWSRT_SWP2( 0, 2)
@@ -55,8 +52,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 1, 2)
 		}
 
-		template <typename FUNC>
-		static inline void op5(T *a,FUNC &compare) throw() {
+		static inline void op5(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 			YOCTO_NWSRT_SWAP( 3, 4)
 			YOCTO_NWSRT_SWAP( 2, 4)
@@ -68,8 +64,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 1, 2)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op5(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op5(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 			YOCTO_NWSRT_SWP2( 3, 4)
 			YOCTO_NWSRT_SWP2( 2, 4)
@@ -81,8 +77,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 1, 2)
 		}
 
-		template <typename FUNC>
-		static inline void op6(T *a,FUNC &compare) throw() {
+		static inline void op6(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 4, 5)
 			YOCTO_NWSRT_SWAP( 0, 2)
@@ -97,8 +92,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 2, 3)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op6(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op6(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 4, 5)
 			YOCTO_NWSRT_SWP2( 0, 2)
@@ -113,8 +108,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 2, 3)
 		}
 
-		template <typename FUNC>
-		static inline void op7(T *a,FUNC &compare) throw() {
+		static inline void op7(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 3, 4)
 			YOCTO_NWSRT_SWAP( 5, 6)
@@ -133,8 +127,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 2, 3)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op7(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op7(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 3, 4)
 			YOCTO_NWSRT_SWP2( 5, 6)
@@ -153,8 +147,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 2, 3)
 		}
 
-		template <typename FUNC>
-		static inline void op8(T *a,FUNC &compare) throw() {
+		static inline void op8(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 			YOCTO_NWSRT_SWAP( 2, 3)
 			YOCTO_NWSRT_SWAP( 4, 5)
@@ -176,8 +169,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 3, 4)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op8(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op8(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 			YOCTO_NWSRT_SWP2( 2, 3)
 			YOCTO_NWSRT_SWP2( 4, 5)
@@ -199,8 +192,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 3, 4)
 		}
 
-		template <typename FUNC>
-		static inline void op9(T *a,FUNC &compare) throw() {
+		static inline void op9(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 			YOCTO_NWSRT_SWAP( 3, 4)
 			YOCTO_NWSRT_SWAP( 6, 7)
@@ -228,8 +220,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 2, 3)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op9(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op9(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 			YOCTO_NWSRT_SWP2( 3, 4)
 			YOCTO_NWSRT_SWP2( 6, 7)
@@ -257,66 +249,9 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 2, 3)
 		}
 
-		template <typename FUNC>
-		static inline void op9_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 2, 6)
-			YOCTO_NWSRT_SWAP( 0, 5)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 0, 7)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 5, 8)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 2, 7)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 3, 7)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 4, 5)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op9_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 2, 6)
-			YOCTO_NWSRT_SWP2( 0, 5)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 0, 7)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 5, 8)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 2, 7)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 3, 7)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 4, 5)
-		}
 
-		template <typename FUNC>
-		static inline void op10(T *a,FUNC &compare) throw() {
+		static inline void op10(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 4)
 			YOCTO_NWSRT_SWAP( 7, 8)
 			YOCTO_NWSRT_SWAP( 2, 3)
@@ -348,8 +283,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 5, 6)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op10(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op10(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 4)
 			YOCTO_NWSRT_SWP2( 7, 8)
 			YOCTO_NWSRT_SWP2( 2, 3)
@@ -381,74 +316,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 5, 6)
 		}
 
-		template <typename FUNC>
-		static inline void op10_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 4, 9)
-			YOCTO_NWSRT_SWAP( 3, 8)
-			YOCTO_NWSRT_SWAP( 2, 7)
-			YOCTO_NWSRT_SWAP( 1, 6)
-			YOCTO_NWSRT_SWAP( 0, 5)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP( 6, 9)
-			YOCTO_NWSRT_SWAP( 0, 3)
-			YOCTO_NWSRT_SWAP( 5, 8)
-			YOCTO_NWSRT_SWAP( 0, 2)
-			YOCTO_NWSRT_SWAP( 3, 6)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP( 2, 5)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 4, 7)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 4, 5)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op10_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 4, 9)
-			YOCTO_NWSRT_SWP2( 3, 8)
-			YOCTO_NWSRT_SWP2( 2, 7)
-			YOCTO_NWSRT_SWP2( 1, 6)
-			YOCTO_NWSRT_SWP2( 0, 5)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2( 6, 9)
-			YOCTO_NWSRT_SWP2( 0, 3)
-			YOCTO_NWSRT_SWP2( 5, 8)
-			YOCTO_NWSRT_SWP2( 0, 2)
-			YOCTO_NWSRT_SWP2( 3, 6)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2( 2, 5)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 4, 7)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 4, 5)
-		}
-
-		template <typename FUNC>
-		static inline void op11(T *a,FUNC &compare) throw() {
+		static inline void op11(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 9)
 			YOCTO_NWSRT_SWAP( 2, 8)
 			YOCTO_NWSRT_SWAP( 3, 7)
@@ -486,8 +355,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 4, 5)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op11(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op11(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 9)
 			YOCTO_NWSRT_SWP2( 2, 8)
 			YOCTO_NWSRT_SWP2( 3, 7)
@@ -525,86 +394,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 4, 5)
 		}
 
-		template <typename FUNC>
-		static inline void op11_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 0, 2)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 8,10)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 0, 4)
-			YOCTO_NWSRT_SWAP( 3, 7)
-			YOCTO_NWSRT_SWAP( 1, 5)
-			YOCTO_NWSRT_SWAP( 6,10)
-			YOCTO_NWSRT_SWAP( 4, 8)
-			YOCTO_NWSRT_SWAP( 5, 9)
-			YOCTO_NWSRT_SWAP( 2, 6)
-			YOCTO_NWSRT_SWAP( 0, 4)
-			YOCTO_NWSRT_SWAP( 3, 8)
-			YOCTO_NWSRT_SWAP( 1, 5)
-			YOCTO_NWSRT_SWAP( 6,10)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP( 7,10)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP( 7, 8)
-		}
-
-		template <typename U,typename FUNC>
-		static inline void co_op11_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 0, 2)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 8,10)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 0, 4)
-			YOCTO_NWSRT_SWP2( 3, 7)
-			YOCTO_NWSRT_SWP2( 1, 5)
-			YOCTO_NWSRT_SWP2( 6,10)
-			YOCTO_NWSRT_SWP2( 4, 8)
-			YOCTO_NWSRT_SWP2( 5, 9)
-			YOCTO_NWSRT_SWP2( 2, 6)
-			YOCTO_NWSRT_SWP2( 0, 4)
-			YOCTO_NWSRT_SWP2( 3, 8)
-			YOCTO_NWSRT_SWP2( 1, 5)
-			YOCTO_NWSRT_SWP2( 6,10)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2( 7,10)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2( 7, 8)
-		}
-
-		template <typename FUNC>
-		static inline void op12(T *a,FUNC &compare) throw() {
+		static inline void op12(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 			YOCTO_NWSRT_SWAP( 2, 3)
 			YOCTO_NWSRT_SWAP( 4, 5)
@@ -646,8 +436,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 7, 8)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op12(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op12(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 			YOCTO_NWSRT_SWP2( 2, 3)
 			YOCTO_NWSRT_SWP2( 4, 5)
@@ -689,94 +479,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 7, 8)
 		}
 
-		template <typename FUNC>
-		static inline void op12_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 0, 5)
-			YOCTO_NWSRT_SWAP( 2, 7)
-			YOCTO_NWSRT_SWAP( 4,10)
-			YOCTO_NWSRT_SWAP( 3, 6)
-			YOCTO_NWSRT_SWAP( 8,11)
-			YOCTO_NWSRT_SWAP( 1, 9)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 1, 8)
-			YOCTO_NWSRT_SWAP( 0, 3)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP( 7,10)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 4, 8)
-			YOCTO_NWSRT_SWAP( 6,11)
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 5, 8)
-			YOCTO_NWSRT_SWAP( 3, 7)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP( 2, 5)
-			YOCTO_NWSRT_SWAP( 7,10)
-			YOCTO_NWSRT_SWAP( 6, 9)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 8,10)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 3, 4)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op12_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 0, 5)
-			YOCTO_NWSRT_SWP2( 2, 7)
-			YOCTO_NWSRT_SWP2( 4,10)
-			YOCTO_NWSRT_SWP2( 3, 6)
-			YOCTO_NWSRT_SWP2( 8,11)
-			YOCTO_NWSRT_SWP2( 1, 9)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 1, 8)
-			YOCTO_NWSRT_SWP2( 0, 3)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2( 7,10)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 4, 8)
-			YOCTO_NWSRT_SWP2( 6,11)
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 5, 8)
-			YOCTO_NWSRT_SWP2( 3, 7)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2( 2, 5)
-			YOCTO_NWSRT_SWP2( 7,10)
-			YOCTO_NWSRT_SWP2( 6, 9)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 8,10)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 3, 4)
-		}
-
-		template <typename FUNC>
-		static inline void op13(T *a,FUNC &compare) throw() {
+        static inline void op13(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 7)
 			YOCTO_NWSRT_SWAP( 9,11)
 			YOCTO_NWSRT_SWAP( 3, 4)
@@ -824,8 +528,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 5, 6)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op13(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op13(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 7)
 			YOCTO_NWSRT_SWP2( 9,11)
 			YOCTO_NWSRT_SWP2( 3, 4)
@@ -873,106 +577,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 5, 6)
 		}
 
-		template <typename FUNC>
-		static inline void op13_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 4, 8)
-			YOCTO_NWSRT_SWAP( 0, 9)
-			YOCTO_NWSRT_SWAP( 3, 7)
-			YOCTO_NWSRT_SWAP( 2, 5)
-			YOCTO_NWSRT_SWAP( 6,11)
-			YOCTO_NWSRT_SWAP( 1,12)
-			YOCTO_NWSRT_SWAP( 0, 6)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 5, 8)
-			YOCTO_NWSRT_SWAP( 7,12)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 8,12)
-			YOCTO_NWSRT_SWAP( 3, 6)
-			YOCTO_NWSRT_SWAP( 8,10)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 2, 8)
-			YOCTO_NWSRT_SWAP( 5, 9)
-			YOCTO_NWSRT_SWAP( 4, 7)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 0, 2)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP( 1, 8)
-			YOCTO_NWSRT_SWAP( 6, 9)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP( 6,10)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 5, 6)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op13_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 4, 8)
-			YOCTO_NWSRT_SWP2( 0, 9)
-			YOCTO_NWSRT_SWP2( 3, 7)
-			YOCTO_NWSRT_SWP2( 2, 5)
-			YOCTO_NWSRT_SWP2( 6,11)
-			YOCTO_NWSRT_SWP2( 1,12)
-			YOCTO_NWSRT_SWP2( 0, 6)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 5, 8)
-			YOCTO_NWSRT_SWP2( 7,12)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 8,12)
-			YOCTO_NWSRT_SWP2( 3, 6)
-			YOCTO_NWSRT_SWP2( 8,10)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 2, 8)
-			YOCTO_NWSRT_SWP2( 5, 9)
-			YOCTO_NWSRT_SWP2( 4, 7)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 0, 2)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2( 1, 8)
-			YOCTO_NWSRT_SWP2( 6, 9)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2( 6,10)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 5, 6)
-		}
-
-		template <typename FUNC>
-		static inline void op14(T *a,FUNC &compare) throw() {
+		static inline void op14(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 6)
 			YOCTO_NWSRT_SWAP( 2, 3)
 			YOCTO_NWSRT_SWAP( 8,12)
@@ -1026,8 +632,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 6, 7)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op14(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op14(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 6)
 			YOCTO_NWSRT_SWP2( 2, 3)
 			YOCTO_NWSRT_SWP2( 8,12)
@@ -1081,118 +687,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 6, 7)
 		}
 
-		template <typename FUNC>
-		static inline void op14_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP( 0, 2)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 8,10)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP( 0, 4)
-			YOCTO_NWSRT_SWAP( 8,12)
-			YOCTO_NWSRT_SWAP( 1, 5)
-			YOCTO_NWSRT_SWAP( 9,13)
-			YOCTO_NWSRT_SWAP( 2, 6)
-			YOCTO_NWSRT_SWAP( 3, 7)
-			YOCTO_NWSRT_SWAP( 0, 8)
-			YOCTO_NWSRT_SWAP( 1, 9)
-			YOCTO_NWSRT_SWAP( 2,10)
-			YOCTO_NWSRT_SWAP( 3,11)
-			YOCTO_NWSRT_SWAP( 4,12)
-			YOCTO_NWSRT_SWAP( 5,13)
-			YOCTO_NWSRT_SWAP( 5,10)
-			YOCTO_NWSRT_SWAP( 6, 9)
-			YOCTO_NWSRT_SWAP( 3,12)
-			YOCTO_NWSRT_SWAP( 7,11)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 4, 8)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP( 7,13)
-			YOCTO_NWSRT_SWAP( 2, 8)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP(11,13)
-			YOCTO_NWSRT_SWAP( 3, 8)
-			YOCTO_NWSRT_SWAP( 7,12)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP(10,12)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 8, 9)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op14_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2( 0, 2)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 8,10)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2( 0, 4)
-			YOCTO_NWSRT_SWP2( 8,12)
-			YOCTO_NWSRT_SWP2( 1, 5)
-			YOCTO_NWSRT_SWP2( 9,13)
-			YOCTO_NWSRT_SWP2( 2, 6)
-			YOCTO_NWSRT_SWP2( 3, 7)
-			YOCTO_NWSRT_SWP2( 0, 8)
-			YOCTO_NWSRT_SWP2( 1, 9)
-			YOCTO_NWSRT_SWP2( 2,10)
-			YOCTO_NWSRT_SWP2( 3,11)
-			YOCTO_NWSRT_SWP2( 4,12)
-			YOCTO_NWSRT_SWP2( 5,13)
-			YOCTO_NWSRT_SWP2( 5,10)
-			YOCTO_NWSRT_SWP2( 6, 9)
-			YOCTO_NWSRT_SWP2( 3,12)
-			YOCTO_NWSRT_SWP2( 7,11)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 4, 8)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2( 7,13)
-			YOCTO_NWSRT_SWP2( 2, 8)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2(11,13)
-			YOCTO_NWSRT_SWP2( 3, 8)
-			YOCTO_NWSRT_SWP2( 7,12)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2(10,12)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 8, 9)
-		}
-
-		template <typename FUNC>
-		static inline void op15(T *a,FUNC &compare) throw() {
+		static inline void op15(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 			YOCTO_NWSRT_SWAP( 2, 3)
 			YOCTO_NWSRT_SWAP( 4, 5)
@@ -1251,8 +747,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 8, 9)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op15(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op15(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 			YOCTO_NWSRT_SWP2( 2, 3)
 			YOCTO_NWSRT_SWP2( 4, 5)
@@ -1311,128 +807,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 8, 9)
 		}
 
-		template <typename FUNC>
-		static inline void op15_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 3,11)
-			YOCTO_NWSRT_SWAP( 2,10)
-			YOCTO_NWSRT_SWAP( 4, 9)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP( 1,14)
-			YOCTO_NWSRT_SWAP(11,14)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 7,10)
-			YOCTO_NWSRT_SWAP( 0,12)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 2, 5)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 0, 2)
-			YOCTO_NWSRT_SWAP( 9,14)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP(11,13)
-			YOCTO_NWSRT_SWAP( 3,12)
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 5,11)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 8,12)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 6,13)
-			YOCTO_NWSRT_SWAP( 3, 7)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP(12,14)
-			YOCTO_NWSRT_SWAP(10,13)
-			YOCTO_NWSRT_SWAP( 1, 5)
-			YOCTO_NWSRT_SWAP( 8,11)
-			YOCTO_NWSRT_SWAP( 4, 9)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP(13,14)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP(10,12)
-			YOCTO_NWSRT_SWAP( 4, 8)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP( 7,10)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 6, 7)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op15_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 3,11)
-			YOCTO_NWSRT_SWP2( 2,10)
-			YOCTO_NWSRT_SWP2( 4, 9)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2( 1,14)
-			YOCTO_NWSRT_SWP2(11,14)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 7,10)
-			YOCTO_NWSRT_SWP2( 0,12)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 2, 5)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 0, 2)
-			YOCTO_NWSRT_SWP2( 9,14)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2(11,13)
-			YOCTO_NWSRT_SWP2( 3,12)
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 5,11)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 8,12)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 6,13)
-			YOCTO_NWSRT_SWP2( 3, 7)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2(12,14)
-			YOCTO_NWSRT_SWP2(10,13)
-			YOCTO_NWSRT_SWP2( 1, 5)
-			YOCTO_NWSRT_SWP2( 8,11)
-			YOCTO_NWSRT_SWP2( 4, 9)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2(13,14)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2(10,12)
-			YOCTO_NWSRT_SWP2( 4, 8)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2( 7,10)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 6, 7)
-		}
-
-		template <typename FUNC>
-		static inline void op16(T *a,FUNC &compare) throw() {
+		static inline void op16(T *a) throw() {
 			YOCTO_NWSRT_SWAP(12,13)
 			YOCTO_NWSRT_SWAP( 5, 7)
 			YOCTO_NWSRT_SWAP( 3,11)
@@ -1495,8 +871,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 6, 7)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op16(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op16(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2(12,13)
 			YOCTO_NWSRT_SWP2( 5, 7)
 			YOCTO_NWSRT_SWP2( 3,11)
@@ -1559,136 +935,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 6, 7)
 		}
 
-		template <typename FUNC>
-		static inline void op16_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP( 0, 2)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 8,10)
-			YOCTO_NWSRT_SWAP(12,14)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP(13,15)
-			YOCTO_NWSRT_SWAP( 0, 4)
-			YOCTO_NWSRT_SWAP( 8,12)
-			YOCTO_NWSRT_SWAP( 1, 5)
-			YOCTO_NWSRT_SWAP( 9,13)
-			YOCTO_NWSRT_SWAP( 2, 6)
-			YOCTO_NWSRT_SWAP(10,14)
-			YOCTO_NWSRT_SWAP( 3, 7)
-			YOCTO_NWSRT_SWAP(11,15)
-			YOCTO_NWSRT_SWAP( 0, 8)
-			YOCTO_NWSRT_SWAP( 1, 9)
-			YOCTO_NWSRT_SWAP( 2,10)
-			YOCTO_NWSRT_SWAP( 3,11)
-			YOCTO_NWSRT_SWAP( 4,12)
-			YOCTO_NWSRT_SWAP( 5,13)
-			YOCTO_NWSRT_SWAP( 6,14)
-			YOCTO_NWSRT_SWAP( 7,15)
-			YOCTO_NWSRT_SWAP( 5,10)
-			YOCTO_NWSRT_SWAP( 6, 9)
-			YOCTO_NWSRT_SWAP( 3,12)
-			YOCTO_NWSRT_SWAP(13,14)
-			YOCTO_NWSRT_SWAP( 7,11)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 4, 8)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP( 7,13)
-			YOCTO_NWSRT_SWAP( 2, 8)
-			YOCTO_NWSRT_SWAP(11,14)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP(11,13)
-			YOCTO_NWSRT_SWAP( 3, 8)
-			YOCTO_NWSRT_SWAP( 7,12)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP(10,12)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 8, 9)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op16_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2( 0, 2)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 8,10)
-			YOCTO_NWSRT_SWP2(12,14)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2(13,15)
-			YOCTO_NWSRT_SWP2( 0, 4)
-			YOCTO_NWSRT_SWP2( 8,12)
-			YOCTO_NWSRT_SWP2( 1, 5)
-			YOCTO_NWSRT_SWP2( 9,13)
-			YOCTO_NWSRT_SWP2( 2, 6)
-			YOCTO_NWSRT_SWP2(10,14)
-			YOCTO_NWSRT_SWP2( 3, 7)
-			YOCTO_NWSRT_SWP2(11,15)
-			YOCTO_NWSRT_SWP2( 0, 8)
-			YOCTO_NWSRT_SWP2( 1, 9)
-			YOCTO_NWSRT_SWP2( 2,10)
-			YOCTO_NWSRT_SWP2( 3,11)
-			YOCTO_NWSRT_SWP2( 4,12)
-			YOCTO_NWSRT_SWP2( 5,13)
-			YOCTO_NWSRT_SWP2( 6,14)
-			YOCTO_NWSRT_SWP2( 7,15)
-			YOCTO_NWSRT_SWP2( 5,10)
-			YOCTO_NWSRT_SWP2( 6, 9)
-			YOCTO_NWSRT_SWP2( 3,12)
-			YOCTO_NWSRT_SWP2(13,14)
-			YOCTO_NWSRT_SWP2( 7,11)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 4, 8)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2( 7,13)
-			YOCTO_NWSRT_SWP2( 2, 8)
-			YOCTO_NWSRT_SWP2(11,14)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2(11,13)
-			YOCTO_NWSRT_SWP2( 3, 8)
-			YOCTO_NWSRT_SWP2( 7,12)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2(10,12)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 8, 9)
-		}
-
-		template <typename FUNC>
-		static inline void op17(T *a,FUNC &compare) throw() {
+		static inline void op17(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 3, 4)
 			YOCTO_NWSRT_SWAP( 5, 6)
@@ -1770,8 +1018,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(15,16)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op17(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op17(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 3, 4)
 			YOCTO_NWSRT_SWP2( 5, 6)
@@ -1853,158 +1101,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(15,16)
 		}
 
-		template <typename FUNC>
-		static inline void op17_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 5,11)
-			YOCTO_NWSRT_SWAP( 4, 9)
-			YOCTO_NWSRT_SWAP( 7,12)
-			YOCTO_NWSRT_SWAP( 0,14)
-			YOCTO_NWSRT_SWAP( 2,16)
-			YOCTO_NWSRT_SWAP( 1,15)
-			YOCTO_NWSRT_SWAP( 3, 8)
-			YOCTO_NWSRT_SWAP( 6,13)
-			YOCTO_NWSRT_SWAP( 3,10)
-			YOCTO_NWSRT_SWAP( 8,13)
-			YOCTO_NWSRT_SWAP( 4, 7)
-			YOCTO_NWSRT_SWAP( 9,12)
-			YOCTO_NWSRT_SWAP( 0, 2)
-			YOCTO_NWSRT_SWAP(14,16)
-			YOCTO_NWSRT_SWAP( 1, 6)
-			YOCTO_NWSRT_SWAP(10,15)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP(11,13)
-			YOCTO_NWSRT_SWAP( 0, 4)
-			YOCTO_NWSRT_SWAP(12,16)
-			YOCTO_NWSRT_SWAP( 2, 9)
-			YOCTO_NWSRT_SWAP( 7,14)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP(13,15)
-			YOCTO_NWSRT_SWAP( 5,10)
-			YOCTO_NWSRT_SWAP( 6,11)
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP(15,16)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP( 8,10)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP(11,13)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 8,14)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 6,12)
-			YOCTO_NWSRT_SWAP(10,14)
-			YOCTO_NWSRT_SWAP( 1, 8)
-			YOCTO_NWSRT_SWAP( 2, 5)
-			YOCTO_NWSRT_SWAP( 9,12)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP( 3,10)
-			YOCTO_NWSRT_SWAP(13,15)
-			YOCTO_NWSRT_SWAP(11,14)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 3, 8)
-			YOCTO_NWSRT_SWAP(10,12)
-			YOCTO_NWSRT_SWAP(13,14)
-			YOCTO_NWSRT_SWAP( 3, 6)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 7, 8)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op17_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 5,11)
-			YOCTO_NWSRT_SWP2( 4, 9)
-			YOCTO_NWSRT_SWP2( 7,12)
-			YOCTO_NWSRT_SWP2( 0,14)
-			YOCTO_NWSRT_SWP2( 2,16)
-			YOCTO_NWSRT_SWP2( 1,15)
-			YOCTO_NWSRT_SWP2( 3, 8)
-			YOCTO_NWSRT_SWP2( 6,13)
-			YOCTO_NWSRT_SWP2( 3,10)
-			YOCTO_NWSRT_SWP2( 8,13)
-			YOCTO_NWSRT_SWP2( 4, 7)
-			YOCTO_NWSRT_SWP2( 9,12)
-			YOCTO_NWSRT_SWP2( 0, 2)
-			YOCTO_NWSRT_SWP2(14,16)
-			YOCTO_NWSRT_SWP2( 1, 6)
-			YOCTO_NWSRT_SWP2(10,15)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2(11,13)
-			YOCTO_NWSRT_SWP2( 0, 4)
-			YOCTO_NWSRT_SWP2(12,16)
-			YOCTO_NWSRT_SWP2( 2, 9)
-			YOCTO_NWSRT_SWP2( 7,14)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2(13,15)
-			YOCTO_NWSRT_SWP2( 5,10)
-			YOCTO_NWSRT_SWP2( 6,11)
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2(15,16)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2( 8,10)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2(11,13)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 8,14)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 6,12)
-			YOCTO_NWSRT_SWP2(10,14)
-			YOCTO_NWSRT_SWP2( 1, 8)
-			YOCTO_NWSRT_SWP2( 2, 5)
-			YOCTO_NWSRT_SWP2( 9,12)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2( 3,10)
-			YOCTO_NWSRT_SWP2(13,15)
-			YOCTO_NWSRT_SWP2(11,14)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 3, 8)
-			YOCTO_NWSRT_SWP2(10,12)
-			YOCTO_NWSRT_SWP2(13,14)
-			YOCTO_NWSRT_SWP2( 3, 6)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 7, 8)
-		}
-
-		template <typename FUNC>
-		static inline void op18(T *a,FUNC &compare) throw() {
+		static inline void op18(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 4,12)
 			YOCTO_NWSRT_SWAP( 5,13)
 			YOCTO_NWSRT_SWAP( 0, 7)
@@ -2085,8 +1183,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 7, 8)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op18(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op18(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 4,12)
 			YOCTO_NWSRT_SWP2( 5,13)
 			YOCTO_NWSRT_SWP2( 0, 7)
@@ -2167,184 +1265,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 7, 8)
 		}
 
-		template <typename FUNC>
-		static inline void op18_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP(16,17)
-			YOCTO_NWSRT_SWAP( 0, 2)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 8,10)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP(12,17)
-			YOCTO_NWSRT_SWAP(13,14)
-			YOCTO_NWSRT_SWAP(15,16)
-			YOCTO_NWSRT_SWAP( 0, 4)
-			YOCTO_NWSRT_SWAP( 1, 5)
-			YOCTO_NWSRT_SWAP( 2, 6)
-			YOCTO_NWSRT_SWAP( 3, 7)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 8,12)
-			YOCTO_NWSRT_SWAP(11,16)
-			YOCTO_NWSRT_SWAP(13,15)
-			YOCTO_NWSRT_SWAP(14,17)
-			YOCTO_NWSRT_SWAP( 7,16)
-			YOCTO_NWSRT_SWAP( 6,17)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP(10,14)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 9,15)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 1,13)
-			YOCTO_NWSRT_SWAP( 0, 8)
-			YOCTO_NWSRT_SWAP(16,17)
-			YOCTO_NWSRT_SWAP( 7,14)
-			YOCTO_NWSRT_SWAP( 5,12)
-			YOCTO_NWSRT_SWAP( 3,15)
-			YOCTO_NWSRT_SWAP( 6,13)
-			YOCTO_NWSRT_SWAP( 4,10)
-			YOCTO_NWSRT_SWAP( 2,11)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 1, 8)
-			YOCTO_NWSRT_SWAP(14,16)
-			YOCTO_NWSRT_SWAP( 6, 9)
-			YOCTO_NWSRT_SWAP( 7,13)
-			YOCTO_NWSRT_SWAP( 5,11)
-			YOCTO_NWSRT_SWAP( 3,10)
-			YOCTO_NWSRT_SWAP( 4,15)
-			YOCTO_NWSRT_SWAP( 4, 8)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP( 5, 9)
-			YOCTO_NWSRT_SWAP( 7,11)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP(12,16)
-			YOCTO_NWSRT_SWAP( 3, 6)
-			YOCTO_NWSRT_SWAP(10,13)
-			YOCTO_NWSRT_SWAP( 5, 8)
-			YOCTO_NWSRT_SWAP(11,14)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP(12,14)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP(13,15)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP(13,14)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 4, 5)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op18_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2(16,17)
-			YOCTO_NWSRT_SWP2( 0, 2)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 8,10)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2(12,17)
-			YOCTO_NWSRT_SWP2(13,14)
-			YOCTO_NWSRT_SWP2(15,16)
-			YOCTO_NWSRT_SWP2( 0, 4)
-			YOCTO_NWSRT_SWP2( 1, 5)
-			YOCTO_NWSRT_SWP2( 2, 6)
-			YOCTO_NWSRT_SWP2( 3, 7)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 8,12)
-			YOCTO_NWSRT_SWP2(11,16)
-			YOCTO_NWSRT_SWP2(13,15)
-			YOCTO_NWSRT_SWP2(14,17)
-			YOCTO_NWSRT_SWP2( 7,16)
-			YOCTO_NWSRT_SWP2( 6,17)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2(10,14)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 9,15)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 1,13)
-			YOCTO_NWSRT_SWP2( 0, 8)
-			YOCTO_NWSRT_SWP2(16,17)
-			YOCTO_NWSRT_SWP2( 7,14)
-			YOCTO_NWSRT_SWP2( 5,12)
-			YOCTO_NWSRT_SWP2( 3,15)
-			YOCTO_NWSRT_SWP2( 6,13)
-			YOCTO_NWSRT_SWP2( 4,10)
-			YOCTO_NWSRT_SWP2( 2,11)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 1, 8)
-			YOCTO_NWSRT_SWP2(14,16)
-			YOCTO_NWSRT_SWP2( 6, 9)
-			YOCTO_NWSRT_SWP2( 7,13)
-			YOCTO_NWSRT_SWP2( 5,11)
-			YOCTO_NWSRT_SWP2( 3,10)
-			YOCTO_NWSRT_SWP2( 4,15)
-			YOCTO_NWSRT_SWP2( 4, 8)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2( 5, 9)
-			YOCTO_NWSRT_SWP2( 7,11)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2(12,16)
-			YOCTO_NWSRT_SWP2( 3, 6)
-			YOCTO_NWSRT_SWP2(10,13)
-			YOCTO_NWSRT_SWP2( 5, 8)
-			YOCTO_NWSRT_SWP2(11,14)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2(12,14)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2(13,15)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2(13,14)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 4, 5)
-		}
-
-		template <typename FUNC>
-		static inline void op19(T *a,FUNC &compare) throw() {
+		static inline void op19(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 4,10)
 			YOCTO_NWSRT_SWAP( 3,12)
 			YOCTO_NWSRT_SWAP( 0,16)
@@ -2433,8 +1355,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(11,12)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op19(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op19(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 4,10)
 			YOCTO_NWSRT_SWP2( 3,12)
 			YOCTO_NWSRT_SWP2( 0,16)
@@ -2523,8 +1445,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(11,12)
 		}
 
-		template <typename FUNC>
-		static inline void op20(T *a,FUNC &compare) throw() {
+		static inline void op20(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 			YOCTO_NWSRT_SWAP( 2, 3)
 			YOCTO_NWSRT_SWAP( 4, 5)
@@ -2629,8 +1550,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(15,16)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op20(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op20(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 			YOCTO_NWSRT_SWP2( 2, 3)
 			YOCTO_NWSRT_SWP2( 4, 5)
@@ -2735,200 +1656,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(15,16)
 		}
 
-		template <typename FUNC>
-		static inline void op20_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 2,11)
-			YOCTO_NWSRT_SWAP( 8,17)
-			YOCTO_NWSRT_SWAP( 0,10)
-			YOCTO_NWSRT_SWAP( 9,19)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP( 3, 6)
-			YOCTO_NWSRT_SWAP(13,16)
-			YOCTO_NWSRT_SWAP( 1,12)
-			YOCTO_NWSRT_SWAP( 7,18)
-			YOCTO_NWSRT_SWAP( 3,14)
-			YOCTO_NWSRT_SWAP( 5,16)
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP(18,19)
-			YOCTO_NWSRT_SWAP( 4,13)
-			YOCTO_NWSRT_SWAP( 6,15)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP(10,12)
-			YOCTO_NWSRT_SWAP( 2, 8)
-			YOCTO_NWSRT_SWAP(11,17)
-			YOCTO_NWSRT_SWAP( 4, 7)
-			YOCTO_NWSRT_SWAP(12,15)
-			YOCTO_NWSRT_SWAP( 0, 3)
-			YOCTO_NWSRT_SWAP(16,19)
-			YOCTO_NWSRT_SWAP( 1,14)
-			YOCTO_NWSRT_SWAP( 5,18)
-			YOCTO_NWSRT_SWAP( 8,10)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP( 6,13)
-			YOCTO_NWSRT_SWAP( 0, 2)
-			YOCTO_NWSRT_SWAP(17,19)
-			YOCTO_NWSRT_SWAP( 5, 9)
-			YOCTO_NWSRT_SWAP(10,14)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP(16,18)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP(11,13)
-			YOCTO_NWSRT_SWAP( 0, 4)
-			YOCTO_NWSRT_SWAP(15,19)
-			YOCTO_NWSRT_SWAP( 2, 7)
-			YOCTO_NWSRT_SWAP(12,17)
-			YOCTO_NWSRT_SWAP( 1, 5)
-			YOCTO_NWSRT_SWAP(14,18)
-			YOCTO_NWSRT_SWAP( 3, 9)
-			YOCTO_NWSRT_SWAP(10,16)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP(13,15)
-			YOCTO_NWSRT_SWAP(17,18)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 5,10)
-			YOCTO_NWSRT_SWAP( 9,14)
-			YOCTO_NWSRT_SWAP(15,18)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP(16,17)
-			YOCTO_NWSRT_SWAP( 8,12)
-			YOCTO_NWSRT_SWAP( 7,11)
-			YOCTO_NWSRT_SWAP(13,17)
-			YOCTO_NWSRT_SWAP( 2, 6)
-			YOCTO_NWSRT_SWAP( 3, 7)
-			YOCTO_NWSRT_SWAP(12,16)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP(15,17)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP(14,16)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP(15,16)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP(13,14)
-			YOCTO_NWSRT_SWAP( 7,10)
-			YOCTO_NWSRT_SWAP( 9,12)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 9,13)
-			YOCTO_NWSRT_SWAP( 6,10)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP(12,14)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP( 8,10)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 9,10)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op20_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 2,11)
-			YOCTO_NWSRT_SWP2( 8,17)
-			YOCTO_NWSRT_SWP2( 0,10)
-			YOCTO_NWSRT_SWP2( 9,19)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2( 3, 6)
-			YOCTO_NWSRT_SWP2(13,16)
-			YOCTO_NWSRT_SWP2( 1,12)
-			YOCTO_NWSRT_SWP2( 7,18)
-			YOCTO_NWSRT_SWP2( 3,14)
-			YOCTO_NWSRT_SWP2( 5,16)
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2(18,19)
-			YOCTO_NWSRT_SWP2( 4,13)
-			YOCTO_NWSRT_SWP2( 6,15)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2(10,12)
-			YOCTO_NWSRT_SWP2( 2, 8)
-			YOCTO_NWSRT_SWP2(11,17)
-			YOCTO_NWSRT_SWP2( 4, 7)
-			YOCTO_NWSRT_SWP2(12,15)
-			YOCTO_NWSRT_SWP2( 0, 3)
-			YOCTO_NWSRT_SWP2(16,19)
-			YOCTO_NWSRT_SWP2( 1,14)
-			YOCTO_NWSRT_SWP2( 5,18)
-			YOCTO_NWSRT_SWP2( 8,10)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2( 6,13)
-			YOCTO_NWSRT_SWP2( 0, 2)
-			YOCTO_NWSRT_SWP2(17,19)
-			YOCTO_NWSRT_SWP2( 5, 9)
-			YOCTO_NWSRT_SWP2(10,14)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2(16,18)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2(11,13)
-			YOCTO_NWSRT_SWP2( 0, 4)
-			YOCTO_NWSRT_SWP2(15,19)
-			YOCTO_NWSRT_SWP2( 2, 7)
-			YOCTO_NWSRT_SWP2(12,17)
-			YOCTO_NWSRT_SWP2( 1, 5)
-			YOCTO_NWSRT_SWP2(14,18)
-			YOCTO_NWSRT_SWP2( 3, 9)
-			YOCTO_NWSRT_SWP2(10,16)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2(13,15)
-			YOCTO_NWSRT_SWP2(17,18)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 5,10)
-			YOCTO_NWSRT_SWP2( 9,14)
-			YOCTO_NWSRT_SWP2(15,18)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2(16,17)
-			YOCTO_NWSRT_SWP2( 8,12)
-			YOCTO_NWSRT_SWP2( 7,11)
-			YOCTO_NWSRT_SWP2(13,17)
-			YOCTO_NWSRT_SWP2( 2, 6)
-			YOCTO_NWSRT_SWP2( 3, 7)
-			YOCTO_NWSRT_SWP2(12,16)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2(15,17)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2(14,16)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2(15,16)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2(13,14)
-			YOCTO_NWSRT_SWP2( 7,10)
-			YOCTO_NWSRT_SWP2( 9,12)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 9,13)
-			YOCTO_NWSRT_SWP2( 6,10)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2(12,14)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2( 8,10)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 9,10)
-		}
-
-		template <typename FUNC>
-		static inline void op21(T *a,FUNC &compare) throw() {
+		static inline void op21(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 5, 9)
 			YOCTO_NWSRT_SWAP(11,15)
 			YOCTO_NWSRT_SWAP( 1,19)
@@ -3033,8 +1762,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP( 9,10)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op21(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op21(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 5, 9)
 			YOCTO_NWSRT_SWP2(11,15)
 			YOCTO_NWSRT_SWP2( 1,19)
@@ -3139,8 +1868,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2( 9,10)
 		}
 
-		template <typename FUNC>
-		static inline void op22(T *a,FUNC &compare) throw() {
+		static inline void op22(T *a) throw() {
 			YOCTO_NWSRT_SWAP(10,11)
 			YOCTO_NWSRT_SWAP( 2, 8)
 			YOCTO_NWSRT_SWAP(13,19)
@@ -3251,8 +1979,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(13,14)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op22(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op22(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2(10,11)
 			YOCTO_NWSRT_SWP2( 2, 8)
 			YOCTO_NWSRT_SWP2(13,19)
@@ -3363,248 +2091,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(13,14)
 		}
 
-		template <typename FUNC>
-		static inline void op22_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP(16,17)
-			YOCTO_NWSRT_SWAP(18,19)
-			YOCTO_NWSRT_SWAP(20,21)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 0, 5)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP(10,12)
-			YOCTO_NWSRT_SWAP(11,13)
-			YOCTO_NWSRT_SWAP(14,16)
-			YOCTO_NWSRT_SWAP(15,17)
-			YOCTO_NWSRT_SWAP(18,20)
-			YOCTO_NWSRT_SWAP(19,21)
-			YOCTO_NWSRT_SWAP( 6,10)
-			YOCTO_NWSRT_SWAP( 7,11)
-			YOCTO_NWSRT_SWAP( 8,12)
-			YOCTO_NWSRT_SWAP( 9,13)
-			YOCTO_NWSRT_SWAP(14,18)
-			YOCTO_NWSRT_SWAP(15,19)
-			YOCTO_NWSRT_SWAP(16,20)
-			YOCTO_NWSRT_SWAP(17,21)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP( 0, 2)
-			YOCTO_NWSRT_SWAP( 9,17)
-			YOCTO_NWSRT_SWAP( 7,15)
-			YOCTO_NWSRT_SWAP(11,19)
-			YOCTO_NWSRT_SWAP( 8,16)
-			YOCTO_NWSRT_SWAP( 3,12)
-			YOCTO_NWSRT_SWAP( 0,10)
-			YOCTO_NWSRT_SWAP( 1,18)
-			YOCTO_NWSRT_SWAP( 5,20)
-			YOCTO_NWSRT_SWAP(13,21)
-			YOCTO_NWSRT_SWAP( 6,14)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 0, 7)
-			YOCTO_NWSRT_SWAP(17,20)
-			YOCTO_NWSRT_SWAP( 3,15)
-			YOCTO_NWSRT_SWAP( 9,18)
-			YOCTO_NWSRT_SWAP( 2,11)
-			YOCTO_NWSRT_SWAP( 4,16)
-			YOCTO_NWSRT_SWAP( 5,10)
-			YOCTO_NWSRT_SWAP( 1, 8)
-			YOCTO_NWSRT_SWAP(12,19)
-			YOCTO_NWSRT_SWAP(13,14)
-			YOCTO_NWSRT_SWAP(20,21)
-			YOCTO_NWSRT_SWAP( 0, 6)
-			YOCTO_NWSRT_SWAP( 3, 8)
-			YOCTO_NWSRT_SWAP(12,18)
-			YOCTO_NWSRT_SWAP( 2,13)
-			YOCTO_NWSRT_SWAP(14,16)
-			YOCTO_NWSRT_SWAP( 5, 9)
-			YOCTO_NWSRT_SWAP(10,15)
-			YOCTO_NWSRT_SWAP( 4, 7)
-			YOCTO_NWSRT_SWAP(11,17)
-			YOCTO_NWSRT_SWAP(16,20)
-			YOCTO_NWSRT_SWAP(18,19)
-			YOCTO_NWSRT_SWAP(15,17)
-			YOCTO_NWSRT_SWAP(12,14)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP( 8,13)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 2, 6)
-			YOCTO_NWSRT_SWAP(19,20)
-			YOCTO_NWSRT_SWAP(16,17)
-			YOCTO_NWSRT_SWAP(15,18)
-			YOCTO_NWSRT_SWAP(11,14)
-			YOCTO_NWSRT_SWAP( 9,13)
-			YOCTO_NWSRT_SWAP(10,12)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP(18,19)
-			YOCTO_NWSRT_SWAP(14,16)
-			YOCTO_NWSRT_SWAP(13,15)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 5,10)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP(17,19)
-			YOCTO_NWSRT_SWAP(16,18)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP( 9,11)
-			YOCTO_NWSRT_SWAP( 8,10)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP( 3, 6)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP(17,18)
-			YOCTO_NWSRT_SWAP(15,16)
-			YOCTO_NWSRT_SWAP(13,14)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP(16,17)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP( 4, 5)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op22_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2(16,17)
-			YOCTO_NWSRT_SWP2(18,19)
-			YOCTO_NWSRT_SWP2(20,21)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 0, 5)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2(10,12)
-			YOCTO_NWSRT_SWP2(11,13)
-			YOCTO_NWSRT_SWP2(14,16)
-			YOCTO_NWSRT_SWP2(15,17)
-			YOCTO_NWSRT_SWP2(18,20)
-			YOCTO_NWSRT_SWP2(19,21)
-			YOCTO_NWSRT_SWP2( 6,10)
-			YOCTO_NWSRT_SWP2( 7,11)
-			YOCTO_NWSRT_SWP2( 8,12)
-			YOCTO_NWSRT_SWP2( 9,13)
-			YOCTO_NWSRT_SWP2(14,18)
-			YOCTO_NWSRT_SWP2(15,19)
-			YOCTO_NWSRT_SWP2(16,20)
-			YOCTO_NWSRT_SWP2(17,21)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2( 0, 2)
-			YOCTO_NWSRT_SWP2( 9,17)
-			YOCTO_NWSRT_SWP2( 7,15)
-			YOCTO_NWSRT_SWP2(11,19)
-			YOCTO_NWSRT_SWP2( 8,16)
-			YOCTO_NWSRT_SWP2( 3,12)
-			YOCTO_NWSRT_SWP2( 0,10)
-			YOCTO_NWSRT_SWP2( 1,18)
-			YOCTO_NWSRT_SWP2( 5,20)
-			YOCTO_NWSRT_SWP2(13,21)
-			YOCTO_NWSRT_SWP2( 6,14)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 0, 7)
-			YOCTO_NWSRT_SWP2(17,20)
-			YOCTO_NWSRT_SWP2( 3,15)
-			YOCTO_NWSRT_SWP2( 9,18)
-			YOCTO_NWSRT_SWP2( 2,11)
-			YOCTO_NWSRT_SWP2( 4,16)
-			YOCTO_NWSRT_SWP2( 5,10)
-			YOCTO_NWSRT_SWP2( 1, 8)
-			YOCTO_NWSRT_SWP2(12,19)
-			YOCTO_NWSRT_SWP2(13,14)
-			YOCTO_NWSRT_SWP2(20,21)
-			YOCTO_NWSRT_SWP2( 0, 6)
-			YOCTO_NWSRT_SWP2( 3, 8)
-			YOCTO_NWSRT_SWP2(12,18)
-			YOCTO_NWSRT_SWP2( 2,13)
-			YOCTO_NWSRT_SWP2(14,16)
-			YOCTO_NWSRT_SWP2( 5, 9)
-			YOCTO_NWSRT_SWP2(10,15)
-			YOCTO_NWSRT_SWP2( 4, 7)
-			YOCTO_NWSRT_SWP2(11,17)
-			YOCTO_NWSRT_SWP2(16,20)
-			YOCTO_NWSRT_SWP2(18,19)
-			YOCTO_NWSRT_SWP2(15,17)
-			YOCTO_NWSRT_SWP2(12,14)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2( 8,13)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 2, 6)
-			YOCTO_NWSRT_SWP2(19,20)
-			YOCTO_NWSRT_SWP2(16,17)
-			YOCTO_NWSRT_SWP2(15,18)
-			YOCTO_NWSRT_SWP2(11,14)
-			YOCTO_NWSRT_SWP2( 9,13)
-			YOCTO_NWSRT_SWP2(10,12)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2(18,19)
-			YOCTO_NWSRT_SWP2(14,16)
-			YOCTO_NWSRT_SWP2(13,15)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 5,10)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2(17,19)
-			YOCTO_NWSRT_SWP2(16,18)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2( 9,11)
-			YOCTO_NWSRT_SWP2( 8,10)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2( 3, 6)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2(17,18)
-			YOCTO_NWSRT_SWP2(15,16)
-			YOCTO_NWSRT_SWP2(13,14)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2(16,17)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2( 4, 5)
-		}
-
-		template <typename FUNC>
-		static inline void op23(T *a,FUNC &compare) throw() {
+		static inline void op23(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 			YOCTO_NWSRT_SWAP( 2, 3)
 			YOCTO_NWSRT_SWAP( 4, 5)
@@ -3725,8 +2213,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(15,16)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op23(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op23(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 			YOCTO_NWSRT_SWP2( 2, 3)
 			YOCTO_NWSRT_SWP2( 4, 5)
@@ -3847,252 +2335,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(15,16)
 		}
 
-		template <typename FUNC>
-		static inline void op23_1(T *a,FUNC &compare) throw() {
-			YOCTO_NWSRT_SWAP( 1,20)
-			YOCTO_NWSRT_SWAP( 2,21)
-			YOCTO_NWSRT_SWAP( 5,13)
-			YOCTO_NWSRT_SWAP( 9,17)
-			YOCTO_NWSRT_SWAP( 0, 7)
-			YOCTO_NWSRT_SWAP(15,22)
-			YOCTO_NWSRT_SWAP( 4,11)
-			YOCTO_NWSRT_SWAP( 6,12)
-			YOCTO_NWSRT_SWAP(10,16)
-			YOCTO_NWSRT_SWAP( 8,18)
-			YOCTO_NWSRT_SWAP(14,19)
-			YOCTO_NWSRT_SWAP( 3, 8)
-			YOCTO_NWSRT_SWAP( 4,14)
-			YOCTO_NWSRT_SWAP(11,18)
-			YOCTO_NWSRT_SWAP( 2, 6)
-			YOCTO_NWSRT_SWAP(16,20)
-			YOCTO_NWSRT_SWAP( 0, 9)
-			YOCTO_NWSRT_SWAP(13,22)
-			YOCTO_NWSRT_SWAP( 5,15)
-			YOCTO_NWSRT_SWAP( 7,17)
-			YOCTO_NWSRT_SWAP( 1,10)
-			YOCTO_NWSRT_SWAP(12,21)
-			YOCTO_NWSRT_SWAP( 8,19)
-			YOCTO_NWSRT_SWAP(17,22)
-			YOCTO_NWSRT_SWAP( 0, 5)
-			YOCTO_NWSRT_SWAP(20,21)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 6,15)
-			YOCTO_NWSRT_SWAP( 7,16)
-			YOCTO_NWSRT_SWAP(18,19)
-			YOCTO_NWSRT_SWAP(21,22)
-			YOCTO_NWSRT_SWAP( 0, 1)
-			YOCTO_NWSRT_SWAP( 8,11)
-			YOCTO_NWSRT_SWAP(17,20)
-			YOCTO_NWSRT_SWAP( 2, 5)
-			YOCTO_NWSRT_SWAP( 9,12)
-			YOCTO_NWSRT_SWAP(10,13)
-			YOCTO_NWSRT_SWAP(19,22)
-			YOCTO_NWSRT_SWAP( 0, 3)
-			YOCTO_NWSRT_SWAP(11,14)
-			YOCTO_NWSRT_SWAP( 6, 8)
-			YOCTO_NWSRT_SWAP(15,18)
-			YOCTO_NWSRT_SWAP(20,21)
-			YOCTO_NWSRT_SWAP( 1, 2)
-			YOCTO_NWSRT_SWAP( 5,17)
-			YOCTO_NWSRT_SWAP( 4,11)
-			YOCTO_NWSRT_SWAP(14,16)
-			YOCTO_NWSRT_SWAP( 3, 9)
-			YOCTO_NWSRT_SWAP(13,19)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 4, 7)
-			YOCTO_NWSRT_SWAP(16,18)
-			YOCTO_NWSRT_SWAP( 8,14)
-			YOCTO_NWSRT_SWAP( 7,15)
-			YOCTO_NWSRT_SWAP( 4, 6)
-			YOCTO_NWSRT_SWAP(18,21)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP(11,13)
-			YOCTO_NWSRT_SWAP(16,20)
-			YOCTO_NWSRT_SWAP(12,14)
-			YOCTO_NWSRT_SWAP( 1, 4)
-			YOCTO_NWSRT_SWAP(19,21)
-			YOCTO_NWSRT_SWAP( 2, 6)
-			YOCTO_NWSRT_SWAP(13,18)
-			YOCTO_NWSRT_SWAP( 8,12)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP(15,17)
-			YOCTO_NWSRT_SWAP(11,16)
-			YOCTO_NWSRT_SWAP( 1, 3)
-			YOCTO_NWSRT_SWAP( 4, 9)
-			YOCTO_NWSRT_SWAP(19,20)
-			YOCTO_NWSRT_SWAP( 5, 8)
-			YOCTO_NWSRT_SWAP(14,17)
-			YOCTO_NWSRT_SWAP( 6,10)
-			YOCTO_NWSRT_SWAP(13,16)
-			YOCTO_NWSRT_SWAP(12,15)
-			YOCTO_NWSRT_SWAP( 2, 3)
-			YOCTO_NWSRT_SWAP(18,20)
-			YOCTO_NWSRT_SWAP(17,19)
-			YOCTO_NWSRT_SWAP( 6, 9)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP( 8,12)
-			YOCTO_NWSRT_SWAP( 2, 4)
-			YOCTO_NWSRT_SWAP( 3, 5)
-			YOCTO_NWSRT_SWAP(18,19)
-			YOCTO_NWSRT_SWAP(16,17)
-			YOCTO_NWSRT_SWAP( 7, 9)
-			YOCTO_NWSRT_SWAP(13,15)
-			YOCTO_NWSRT_SWAP( 3, 4)
-			YOCTO_NWSRT_SWAP( 5, 6)
-			YOCTO_NWSRT_SWAP(17,18)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP( 4, 5)
-			YOCTO_NWSRT_SWAP(15,17)
-			YOCTO_NWSRT_SWAP(10,14)
-			YOCTO_NWSRT_SWAP( 6,11)
-			YOCTO_NWSRT_SWAP( 9,12)
-			YOCTO_NWSRT_SWAP( 5, 7)
-			YOCTO_NWSRT_SWAP(14,16)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP(15,16)
-			YOCTO_NWSRT_SWAP( 6, 7)
-			YOCTO_NWSRT_SWAP(11,13)
-			YOCTO_NWSRT_SWAP( 9,10)
-			YOCTO_NWSRT_SWAP(13,14)
-			YOCTO_NWSRT_SWAP( 7, 8)
-			YOCTO_NWSRT_SWAP(14,15)
-			YOCTO_NWSRT_SWAP( 8, 9)
-			YOCTO_NWSRT_SWAP(12,14)
-			YOCTO_NWSRT_SWAP(11,12)
-			YOCTO_NWSRT_SWAP(12,13)
-			YOCTO_NWSRT_SWAP(10,11)
-			YOCTO_NWSRT_SWAP(11,12)
-		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op23_1(T *a, U *b, FUNC &compare) throw() {
-			YOCTO_NWSRT_SWP2( 1,20)
-			YOCTO_NWSRT_SWP2( 2,21)
-			YOCTO_NWSRT_SWP2( 5,13)
-			YOCTO_NWSRT_SWP2( 9,17)
-			YOCTO_NWSRT_SWP2( 0, 7)
-			YOCTO_NWSRT_SWP2(15,22)
-			YOCTO_NWSRT_SWP2( 4,11)
-			YOCTO_NWSRT_SWP2( 6,12)
-			YOCTO_NWSRT_SWP2(10,16)
-			YOCTO_NWSRT_SWP2( 8,18)
-			YOCTO_NWSRT_SWP2(14,19)
-			YOCTO_NWSRT_SWP2( 3, 8)
-			YOCTO_NWSRT_SWP2( 4,14)
-			YOCTO_NWSRT_SWP2(11,18)
-			YOCTO_NWSRT_SWP2( 2, 6)
-			YOCTO_NWSRT_SWP2(16,20)
-			YOCTO_NWSRT_SWP2( 0, 9)
-			YOCTO_NWSRT_SWP2(13,22)
-			YOCTO_NWSRT_SWP2( 5,15)
-			YOCTO_NWSRT_SWP2( 7,17)
-			YOCTO_NWSRT_SWP2( 1,10)
-			YOCTO_NWSRT_SWP2(12,21)
-			YOCTO_NWSRT_SWP2( 8,19)
-			YOCTO_NWSRT_SWP2(17,22)
-			YOCTO_NWSRT_SWP2( 0, 5)
-			YOCTO_NWSRT_SWP2(20,21)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 6,15)
-			YOCTO_NWSRT_SWP2( 7,16)
-			YOCTO_NWSRT_SWP2(18,19)
-			YOCTO_NWSRT_SWP2(21,22)
-			YOCTO_NWSRT_SWP2( 0, 1)
-			YOCTO_NWSRT_SWP2( 8,11)
-			YOCTO_NWSRT_SWP2(17,20)
-			YOCTO_NWSRT_SWP2( 2, 5)
-			YOCTO_NWSRT_SWP2( 9,12)
-			YOCTO_NWSRT_SWP2(10,13)
-			YOCTO_NWSRT_SWP2(19,22)
-			YOCTO_NWSRT_SWP2( 0, 3)
-			YOCTO_NWSRT_SWP2(11,14)
-			YOCTO_NWSRT_SWP2( 6, 8)
-			YOCTO_NWSRT_SWP2(15,18)
-			YOCTO_NWSRT_SWP2(20,21)
-			YOCTO_NWSRT_SWP2( 1, 2)
-			YOCTO_NWSRT_SWP2( 5,17)
-			YOCTO_NWSRT_SWP2( 4,11)
-			YOCTO_NWSRT_SWP2(14,16)
-			YOCTO_NWSRT_SWP2( 3, 9)
-			YOCTO_NWSRT_SWP2(13,19)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 4, 7)
-			YOCTO_NWSRT_SWP2(16,18)
-			YOCTO_NWSRT_SWP2( 8,14)
-			YOCTO_NWSRT_SWP2( 7,15)
-			YOCTO_NWSRT_SWP2( 4, 6)
-			YOCTO_NWSRT_SWP2(18,21)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2(11,13)
-			YOCTO_NWSRT_SWP2(16,20)
-			YOCTO_NWSRT_SWP2(12,14)
-			YOCTO_NWSRT_SWP2( 1, 4)
-			YOCTO_NWSRT_SWP2(19,21)
-			YOCTO_NWSRT_SWP2( 2, 6)
-			YOCTO_NWSRT_SWP2(13,18)
-			YOCTO_NWSRT_SWP2( 8,12)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2(15,17)
-			YOCTO_NWSRT_SWP2(11,16)
-			YOCTO_NWSRT_SWP2( 1, 3)
-			YOCTO_NWSRT_SWP2( 4, 9)
-			YOCTO_NWSRT_SWP2(19,20)
-			YOCTO_NWSRT_SWP2( 5, 8)
-			YOCTO_NWSRT_SWP2(14,17)
-			YOCTO_NWSRT_SWP2( 6,10)
-			YOCTO_NWSRT_SWP2(13,16)
-			YOCTO_NWSRT_SWP2(12,15)
-			YOCTO_NWSRT_SWP2( 2, 3)
-			YOCTO_NWSRT_SWP2(18,20)
-			YOCTO_NWSRT_SWP2(17,19)
-			YOCTO_NWSRT_SWP2( 6, 9)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2( 8,12)
-			YOCTO_NWSRT_SWP2( 2, 4)
-			YOCTO_NWSRT_SWP2( 3, 5)
-			YOCTO_NWSRT_SWP2(18,19)
-			YOCTO_NWSRT_SWP2(16,17)
-			YOCTO_NWSRT_SWP2( 7, 9)
-			YOCTO_NWSRT_SWP2(13,15)
-			YOCTO_NWSRT_SWP2( 3, 4)
-			YOCTO_NWSRT_SWP2( 5, 6)
-			YOCTO_NWSRT_SWP2(17,18)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2( 4, 5)
-			YOCTO_NWSRT_SWP2(15,17)
-			YOCTO_NWSRT_SWP2(10,14)
-			YOCTO_NWSRT_SWP2( 6,11)
-			YOCTO_NWSRT_SWP2( 9,12)
-			YOCTO_NWSRT_SWP2( 5, 7)
-			YOCTO_NWSRT_SWP2(14,16)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2(15,16)
-			YOCTO_NWSRT_SWP2( 6, 7)
-			YOCTO_NWSRT_SWP2(11,13)
-			YOCTO_NWSRT_SWP2( 9,10)
-			YOCTO_NWSRT_SWP2(13,14)
-			YOCTO_NWSRT_SWP2( 7, 8)
-			YOCTO_NWSRT_SWP2(14,15)
-			YOCTO_NWSRT_SWP2( 8, 9)
-			YOCTO_NWSRT_SWP2(12,14)
-			YOCTO_NWSRT_SWP2(11,12)
-			YOCTO_NWSRT_SWP2(12,13)
-			YOCTO_NWSRT_SWP2(10,11)
-			YOCTO_NWSRT_SWP2(11,12)
-		}
-
-		template <typename FUNC>
-		static inline void op24(T *a,FUNC &compare) throw() {
+		static inline void op24(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 			YOCTO_NWSRT_SWAP( 2, 3)
 			YOCTO_NWSRT_SWAP( 4, 5)
@@ -4218,8 +2462,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(15,16)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op24(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op24(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 			YOCTO_NWSRT_SWP2( 2, 3)
 			YOCTO_NWSRT_SWP2( 4, 5)
@@ -4345,8 +2589,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(15,16)
 		}
 
-		template <typename FUNC>
-		static inline void op25(T *a,FUNC &compare) throw() {
+		static inline void op25(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 4, 5)
 			YOCTO_NWSRT_SWAP( 7, 8)
@@ -4503,8 +2746,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(11,12)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op25(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op25(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 4, 5)
 			YOCTO_NWSRT_SWP2( 7, 8)
@@ -4661,8 +2904,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(11,12)
 		}
 
-		template <typename FUNC>
-		static inline void op26(T *a,FUNC &compare) throw() {
+        static inline void op26(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 4, 5)
 			YOCTO_NWSRT_SWAP( 7, 8)
@@ -4828,8 +3070,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(12,13)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op26(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op26(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 4, 5)
 			YOCTO_NWSRT_SWP2( 7, 8)
@@ -4995,8 +3237,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(12,13)
 		}
 
-		template <typename FUNC>
-		static inline void op27(T *a,FUNC &compare) throw() {
+		static inline void op27(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 4, 5)
 			YOCTO_NWSRT_SWAP( 7, 8)
@@ -5172,8 +3413,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(12,13)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op27(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op27(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 4, 5)
 			YOCTO_NWSRT_SWP2( 7, 8)
@@ -5349,8 +3590,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(12,13)
 		}
 
-		template <typename FUNC>
-		static inline void op28(T *a,FUNC &compare) throw() {
+		static inline void op28(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 3, 4)
 			YOCTO_NWSRT_SWAP( 5, 6)
@@ -5532,8 +3772,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(13,14)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op28(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op28(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 3, 4)
 			YOCTO_NWSRT_SWP2( 5, 6)
@@ -5715,8 +3955,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(13,14)
 		}
 
-		template <typename FUNC>
-		static inline void op29(T *a,FUNC &compare) throw() {
+		static inline void op29(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 3, 4)
 			YOCTO_NWSRT_SWAP( 5, 6)
@@ -5910,8 +4149,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(13,14)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op29(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op29(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 3, 4)
 			YOCTO_NWSRT_SWP2( 5, 6)
@@ -6105,8 +4344,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(13,14)
 		}
 
-		template <typename FUNC>
-		static inline void op30(T *a,FUNC &compare) throw() {
+		static inline void op30(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 3, 4)
 			YOCTO_NWSRT_SWAP( 5, 6)
@@ -6307,8 +4545,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(14,15)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op30(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op30(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 3, 4)
 			YOCTO_NWSRT_SWP2( 5, 6)
@@ -6509,8 +4747,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(14,15)
 		}
 
-		template <typename FUNC>
-		static inline void op31(T *a,FUNC &compare) throw() {
+		static inline void op31(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 1, 2)
 			YOCTO_NWSRT_SWAP( 3, 4)
 			YOCTO_NWSRT_SWAP( 5, 6)
@@ -6719,8 +4956,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(14,15)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op31(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op31(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 1, 2)
 			YOCTO_NWSRT_SWP2( 3, 4)
 			YOCTO_NWSRT_SWP2( 5, 6)
@@ -6929,8 +5166,7 @@ namespace yocto {
 			YOCTO_NWSRT_SWP2(14,15)
 		}
 
-		template <typename FUNC>
-		static inline void op32(T *a,FUNC &compare) throw() {
+		static inline void op32(T *a) throw() {
 			YOCTO_NWSRT_SWAP( 0, 1)
 			YOCTO_NWSRT_SWAP( 2, 3)
 			YOCTO_NWSRT_SWAP( 4, 5)
@@ -7144,8 +5380,8 @@ namespace yocto {
 			YOCTO_NWSRT_SWAP(15,16)
 		}
 
-		template <typename U,typename FUNC>
-		static inline void co_op32(T *a, U *b, FUNC &compare) throw() {
+		template <typename U>
+		static inline void co_op32(T *a, U *b) throw() {
 			YOCTO_NWSRT_SWP2( 0, 1)
 			YOCTO_NWSRT_SWP2( 2, 3)
 			YOCTO_NWSRT_SWP2( 4, 5)
