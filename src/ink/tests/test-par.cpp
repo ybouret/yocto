@@ -41,12 +41,13 @@ YOCTO_UNIT_TEST_IMPL(par)
     const coord  area = ipso::__coord_parser::get<coord>(argv[1],"area");
     Area         full(0,0,area.x,area.y);
 
-
-
     Engine seq_doms(full,seq);
+    return 0;
+    
     Engine par_doms(full,par);
 
-    
+
+
 
     DoSomething host;
     seq_doms.submit(&host, & DoSomething::run );
