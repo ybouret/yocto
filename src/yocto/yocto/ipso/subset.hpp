@@ -67,7 +67,22 @@ namespace yocto
             const unsigned        flags;       //!< full flags
 
 
-            inline virtual ~subset() throw() {}
+            inline virtual ~subset() throw() {
+                std::cerr << "~subset: #locals=" << locals.size << ", #asyncs=" << asyncs.size << std::endl;
+                for(size_t dim=0;dim<DIM;++dim)
+                {
+                    std::cerr << "local[" << dim << "].size=" << local[dim].size << std::endl; core::check_list(local[dim]);
+                    std::cerr << "async[" << dim << "].size=" << async[dim].size << std::endl; core::check_list(async[dim]);
+                }
+                for(size_t dim=0;dim<APEX;++dim)
+                {
+                    std::cerr << "apex_local[" << dim << "].size=" << apex_local[dim].size << std::endl; core::check_list(apex_local[dim]);
+                    std::cerr << "apex_async[" << dim << "].size=" << apex_async[dim].size << std::endl; core::check_list(apex_async[dim]);
+
+                }
+                core::check_list(locals);
+                core::check_list(asyncs);
+                }
 
             //! build the outer layout and the swaps
             /**

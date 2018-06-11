@@ -56,9 +56,10 @@ namespace yocto
             const size_t    n     = queue->num_threads();
             std::cerr << "computing optimal sizes..." << std::endl;
             (coord &)       sizes = Mapping::optimal_sizes_for(n,p,0,ipso::coord2D(0,0),NULL);
-            std::cerr << "...done" << std::endl;
-            Divider         part(sizes,p);
+            std::cerr << "...done, sizes=" << sizes << std::endl;
 
+            Divider         part(sizes,p);
+            std::cerr << "...creating domains..." << std::endl;
             for(size_t rank=0;rank<part.size;++rank)
             {
                 coord      ranks;

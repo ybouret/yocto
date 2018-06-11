@@ -25,8 +25,10 @@ namespace yocto
             subsets      *next;
             subsets      *prev;
             
-            inline virtual ~subsets() throw() {}
-            
+            inline virtual ~subsets() throw()
+            {
+                core::check_list(*this); std::cerr << "~subsets.size=" << this->size << std::endl;
+            }
             inline explicit subsets(const divider<COORD> &full,
                                     const size_t          layers,
                                     const COORD           pbcs,
@@ -49,6 +51,7 @@ namespace yocto
                     }
                 }
                 assert(this->size==size_t(__coord_prod(sizes)));
+                core::check_list(*this);
             }
             
         private:
@@ -68,7 +71,7 @@ namespace yocto
             const subsets<COORD> * optimal;
             const subsets<COORD> * fallback;
             
-            inline virtual ~mapping() throw() {}
+            inline virtual ~mapping() throw() { core::check_list(*this); std::cerr << "~mapping.size=" << this->size << std::endl;  }
             inline explicit mapping(const size_t        cpus,
                                     const patch<COORD> &full,
                                     const size_t        layers,
@@ -83,17 +86,7 @@ namespace yocto
                 std::cerr << "...sorting subsets" << std::endl;
                 core::merging< subsets<COORD> >::sort(self, compare_by_scores, NULL );
                 std::cerr << "..done" << std::endl;
-                if(false)
-                {
-                    for(const subsets<COORD> *subs = self.head; subs; subs=subs->next)
-                    {
-                        std::cerr << "subset#" << subs->sizes << " : score=" << subs->score << std::endl;
-                        for(const subset<COORD> *sub = subs->head;sub;sub=sub->next)
-                        {
-                            std::cerr << "\t\t" << sub->score << std::endl;
-                        }
-                    }
-                }
+                core::check_list(self);
                 optimal  = self.head; assert(optimal);
                 fallback = self.tail; assert(fallback);
                 for(const subsets<COORD> *subs=fallback;subs;subs=subs->prev)
@@ -103,7 +96,7 @@ namespace yocto
                         fallback = subs;
                     }
                 }
-                
+
             }
             
             static inline
@@ -114,6 +107,7 @@ namespace yocto
                                     COORD              *fallback)
             {
                 const mapping maps(cpus,full,layers,pbcs);
+                core::check_list(maps);
                 if(fallback)
                 {
                     *fallback = maps.fallback->sizes;
@@ -158,7 +152,7 @@ namespace yocto
         inline COORD map_optimal_sizes(const size_t        cpus,
                                        const patch<COORD> &full,
                                        const size_t        layers,
-                                       const COORD        &pbcs)
+                                       const COORD         pbcs)
         {
             const coord1D np = coord1D(cpus);
             COORD         fallback;

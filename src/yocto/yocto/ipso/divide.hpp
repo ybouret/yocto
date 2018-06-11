@@ -201,7 +201,8 @@ namespace yocto
                 typedef divider<coord2D>  divider_type;
 
 
-                inline explicit in2D( const coord2D userSizes, const patch_type &p) :
+                inline explicit in2D(const coord2D     userSizes,
+                                     const patch_type &p) :
                 divider_type(userSizes,p)
                 {
                     for(size_t dim=0;dim<DIM;++dim)
