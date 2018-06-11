@@ -134,7 +134,7 @@ namespace yocto
             //! assuming C++ node
             inline void auto_delete() throw()
             {
-                std::cerr << "Auto Delete list_of<" << typeid(NODE).name() << ">" << std::endl;
+                std::cerr << "\t*** Auto Delete list_of<" << typeid(NODE).name() << ">" << std::endl;
                 NODE *node = tail;
 				while( node!=NULL )
 				{
@@ -144,6 +144,7 @@ namespace yocto
 					delete node;
 					node = prev;
 				}
+                std::cerr << "\t*** Done!" << std::endl;
 				reset();
             }
             
