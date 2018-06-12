@@ -91,7 +91,7 @@ namespace yocto
                 {
                     xch1d(this->async[dim]);
                 }
-                for(size_t diag=0;diag<2;++diag)
+                for(size_t diag=0;diag<this->APEX;++diag)
                 {
                     xch1d(this->apex_async[diag]);
                 }

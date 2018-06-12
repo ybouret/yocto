@@ -22,7 +22,7 @@ namespace yocto
         template <>
         struct subset_metrics<1>
         {
-            static const size_t num_apex = 1;
+            static const size_t num_apex = 0;
         };
 
         template <>
@@ -34,7 +34,7 @@ namespace yocto
         template <>
         struct subset_metrics<3>
         {
-            static const size_t num_apex = 1;
+            static const size_t num_apex = 0;
         };
 
 
@@ -342,7 +342,7 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 {
                     f.swap_local(local[dim]);
                 }
-                for(size_t diag=0;diag<2;++diag)
+                for(size_t diag=0;diag<this->APEX;++diag)
                 {
                     f.swap_local(apex_local[diag]);
                 }
@@ -509,8 +509,11 @@ do { const unsigned flag = swaps::dim2pos(dim, 1); _##KIND.push_back( new swaps(
                 }
                 local = &vswaps[0];
                 async = local + DIM;
-                apex_local = async      + DIM;
-                apex_async = apex_local + APEX;
+                if(APEX)
+                {
+                    apex_local = async      + DIM;
+                    apex_async = apex_local + APEX;
+                }
             }
 
 
