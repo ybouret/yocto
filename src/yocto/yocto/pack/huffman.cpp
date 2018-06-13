@@ -53,6 +53,7 @@ namespace yocto
     namespace pack
     {
         Huffman::Alphabet:: Alphabet() :
+        root(0),
         used(),
         full(0),
         nyt(0),
@@ -69,6 +70,7 @@ namespace yocto
             nyt = &chars[NYT];
             eos = &chars[EOS];
             initialize();
+            buildTree();
         }
 
         Huffman:: Alphabet:: ~Alphabet() throw()
@@ -150,6 +152,82 @@ namespace yocto
             {
                 std::cerr << "\t#" << Text(ch->Char) << " = " << ch->Freq << std::endl;
             }
+        }
+
+        static inline
+        Huffman::TreeNode * popTreeNode(Huffman::NodeList &Q1,
+                                        Huffman::NodeList &Q2) throw()
+        {
+            assert(Q1.size>0||Q2.size>0);
+            if(0==Q2.size)
+            {
+                //______________________________________________________________
+                //
+                // no nodes in Q2
+                //______________________________________________________________
+                assert(Q1.size>0);
+                return Q1.pop_back();
+            }
+            else
+            {
+                assert(Q2.size>0);
+                if(0==Q1.size)
+                {
+                    //__________________________________________________________
+                    //
+                    // no nodes in Q1
+                    //__________________________________________________________
+                    return Q2.pop_back();
+                }
+                else
+                {
+                    //__________________________________________________________
+                    //
+                    // nodes in both queue
+                    //__________________________________________________________
+                    return (Q1.tail->Freq<=Q2.tail->Freq) ? Q1.pop_back() : Q2.pop_back();
+                }
+            }
+        }
+
+        void Huffman:: Alphabet:: buildTree() throw()
+        {
+            std::cerr << "building tree..." << std::endl;
+            NodeList Q1;
+            NodeList Q2;
+            size_t   iNode = 0;
+            for(const CharNode *ch = used.head; ch; ch=ch->next)
+            {
+                assert(iNode<NumNodes);
+                TreeNode *node = &nodes[iNode++];
+                node->parent   = 0;
+                node->left     = 0;
+                node->right    = 0;
+                node->next     = 0;
+                node->prev     = 0;
+                node->Node     = ch;
+                node->Freq     = ch->Freq;
+                Q1.push_back(node);
+                std::cerr << "..ini " << Text(ch->Char) << " @" << node->Freq << std::endl;
+            }
+
+            while( (Q1.size+Q2.size)>1 )
+            {
+                assert(iNode<NumNodes);
+                TreeNode *node = &nodes[iNode++];
+                node->Node     = 0;
+                TreeNode *r    = (node->right = popTreeNode(Q1,Q2));
+                TreeNode *l    = (node->left  = popTreeNode(Q1,Q2));
+                node->Freq = l->Freq+r->Freq;
+                r->parent  = l->parent = node;
+                node->next = 0;
+                node->prev = 0;
+                std::cerr << "..add @" << node->Freq << std::endl;
+                Q2.push_front(node);
+            }
+            assert(1==Q1.size+Q2.size);
+            root = popTreeNode(Q1,Q2);
+            std::cerr << "#used=" << used.size << ", #nodes=" << iNode << std::endl;
         }
 
 

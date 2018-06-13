@@ -51,6 +51,8 @@ namespace yocto
                 TreeNode       *parent;
                 TreeNode       *left;
                 TreeNode       *right;
+                TreeNode       *prev;
+                TreeNode       *next;
                 const CharNode *Node;
                 FreqType        Freq;
 
@@ -58,6 +60,7 @@ namespace yocto
                 TreeNode(); ~TreeNode() throw();
                 YOCTO_DISABLE_COPY_AND_ASSIGN(TreeNode);
             };
+            typedef core::list_of<TreeNode> NodeList;
 
             class Alphabet
             {
@@ -73,12 +76,15 @@ namespace yocto
                 void append( const CharNode &ch ) throw(); //!< with a zero frequency
                 void update( const CharNode &ch ) throw(); //!< with a positive frequency
 
+                void buildTree() throw();
+
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Alphabet);
                 static const size_t   CharNodeLength = NumChars * sizeof(CharNode);
                 static const size_t   TreeNodeOffset = YOCTO_MEMALIGN(CharNodeLength);
                 static const size_t   RequiredLength = TreeNodeOffset + NumNodes * sizeof(TreeNode);
+                TreeNode *root;
                 CharList  used;
                 size_t    full;
                 CharNode *nyt;
