@@ -352,16 +352,21 @@ namespace yocto
             const CharNode &ch = chars[b];
             if(ch.Freq>0)
             {
+                std::cerr << "emit code for " << char(b) << " +" << ch.Bits << std::endl;
                 io.push(ch.Code,ch.Bits);
+                std::cerr << "update model" << std::endl;
                 update(ch);
             }
             else
             {
-                if(used.size>0)
+                if(used.size>2)
                 {
+                    std::cerr << "emit NYT +" << nyt->Bits << std::endl;
                     io.push(nyt->Code,nyt->Bits);
                 }
+                std::cerr << "emit code for " << char(b) << " +" << ch.Bits << std::endl;
                 io.push(ch.Code,ch.Bits);
+                std::cerr << "append model" << std::endl;
                 append(ch);
             }
         }

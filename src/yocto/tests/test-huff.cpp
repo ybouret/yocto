@@ -26,7 +26,7 @@ YOCTO_UNIT_TEST_IMPL(huff)
     {
         alpha.encode(io,C);
         ibits+=8;
-        while(io.size()>8)
+        while(io.size()>=8)
         {
             gp.write( io.pop_full<uint8_t>() );
             obits += 8;
@@ -34,7 +34,7 @@ YOCTO_UNIT_TEST_IMPL(huff)
     }
     alpha.display();
     io.fill_to_byte_with(false);
-    while(io.size()>8)
+    while(io.size()>=8)
     {
         gp.write( io.pop_full<uint8_t>() );
         obits += 8;
