@@ -53,6 +53,7 @@ namespace yocto
     namespace pack
     {
         Huffman::Alphabet:: Alphabet() :
+        max_bits(16),
         root(0),
         used(),
         full(0),
@@ -116,7 +117,10 @@ namespace yocto
             {
                 std::cerr << "\t=== FULL ===" << std::endl;
                 (void) used.unlink(nyt);
+                nyt->Code=0;
+                nyt->Bits=0;
             }
+            buildTree();
         }
 
         void Huffman:: Alphabet:: update(const CharNode &ch) throw()
@@ -129,6 +133,7 @@ namespace yocto
             {
                 used.towards_head(p);
             }
+            buildTree();
         }
 
         void Huffman:: Alphabet:: add( const uint8_t b ) throw()
@@ -190,10 +195,28 @@ namespace yocto
             }
         }
 
+
+        void Huffman:: Alphabet:: rescale() throw()
+        {
+            for(CharNode *ch = used.head; ch; ch=ch->next)
+            {
+                assert(ch->Freq>0);
+                (ch->Freq>>=1)|=1;
+            }
+        }
+
         void Huffman:: Alphabet:: buildTree() throw()
         {
-            std::cerr << "building tree..." << std::endl;
+            //__________________________________________________________________
+            //
+            // build the tree
+            //__________________________________________________________________
+        TRY_BUILD:
             {
+                //______________________________________________________________
+                //
+                // initialize queues
+                //______________________________________________________________
                 NodeList Q1;
                 NodeList Q2;
                 size_t   iNode = 0;
@@ -210,9 +233,12 @@ namespace yocto
                     node->Freq     = ch->Freq;
                     node->Bits     = 0;
                     Q1.push_back(node);
-                    std::cerr << "..ini " << Text(ch->Char) << " #" << node->Freq << std::endl;
                 }
 
+                //______________________________________________________________
+                //
+                // algorithm
+                //______________________________________________________________
                 while( (Q1.size+Q2.size)>1 )
                 {
                     assert(iNode<NumNodes);
@@ -221,6 +247,12 @@ namespace yocto
                     TreeNode *r    = (node->right = popTreeNode(Q1,Q2));
                     TreeNode *l    = (node->left  = popTreeNode(Q1,Q2));
                     node->Bits = max_of(l->Bits,r->Bits)+1;
+                    if(node->Bits>max_bits)
+                    {
+                        rescale();
+                        goto TRY_BUILD;
+                    }
+
                     node->Freq = l->Freq+r->Freq;
                     r->parent  = l->parent = node;
                     l->cbit    = NodeAtLeft;
@@ -228,22 +260,22 @@ namespace yocto
                     node->next = 0;
                     node->prev = 0;
                     node->parent = 0;
-                    std::cerr << "..add #" << node->Freq << "@" << node->Bits << std::endl;
                     Q2.push_front(node);
                 }
                 assert(1==Q1.size+Q2.size);
                 root = popTreeNode(Q1,Q2);
-                std::cerr << "#used=" << used.size << ", #nodes=" << iNode << std::endl;
                 assert(used.size*2-1==iNode);
                 root->cbit   = 0;
             }
 
-            std::cerr << "building code, maxbits=" << root->Bits << std::endl;
+            //__________________________________________________________________
+            //
+            // build the codes
+            //__________________________________________________________________
             {
                 size_t iNode = 0;
                 for(CharNode *ch = used.head; ch; ch=ch->next,++iNode)
                 {
-                    std::cerr << "encoding " << Text(ch->Char) << std::endl << "|_";
                     ch->Code = 0;
                     ch->Bits = 0;
                     assert(nodes[iNode].Node == ch);
@@ -252,9 +284,7 @@ namespace yocto
                         assert( ((curr->cbit) | 0x1 )<=0x1);
                         (ch->Code <<= 1) |= curr->cbit;
                         ch->Bits++;
-                        std::cerr << curr->cbit;
                     }
-                    std::cerr << "\tbits=" << ch->Bits << std::endl;
                 }
             }
 
@@ -309,6 +339,31 @@ namespace yocto
                 fp << "}\n";
             }
             ios::graphviz_render("huff.dot");
+        }
+    }
+}
+
+namespace yocto
+{
+    namespace pack
+    {
+        void Huffman:: Alphabet:: encode(ios::bitio &io, const uint8_t b)
+        {
+            const CharNode &ch = chars[b];
+            if(ch.Freq>0)
+            {
+                io.push(ch.Code,ch.Bits);
+                update(ch);
+            }
+            else
+            {
+                if(used.size>0)
+                {
+                    io.push(nyt->Code,nyt->Bits);
+                }
+                io.push(ch.Code,ch.Bits);
+                append(ch);
+            }
         }
     }
 }

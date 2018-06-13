@@ -3,6 +3,7 @@
 
 #include "yocto/core/list.hpp"
 #include "yocto/code/round.hpp"
+#include "yocto/ios/bitio.hpp"
 
 namespace yocto
 {
@@ -27,12 +28,12 @@ namespace yocto
             class CharNode
             {
             public:
-                CharNode      *next;
-                CharNode      *prev;
-                CharType       Char;
-                FreqType       Freq;
-                CodeType       Code;
-                size_t         Bits;
+                CharNode      *next; //!< for list
+                CharNode      *prev; //!< for list
+                CharType       Char; //!< mapping to a character
+                FreqType       Freq; //!< its frequency
+                CodeType       Code; //!< its code
+                size_t         Bits; //!< ist code size
                 inline void initialize(const FreqType f) throw()
                 {
                     next = 0;
@@ -77,17 +78,21 @@ namespace yocto
                 void add( const uint8_t b ) throw();
 
                 const CharNode & operator[](const uint8_t b) const throw();
-                void append( const CharNode &ch ) throw(); //!< with a zero frequency
-                void update( const CharNode &ch ) throw(); //!< with a positive frequency
+                void append( const CharNode &ch ) throw(); //!< with a zero frequency, and build tree
+                void update( const CharNode &ch ) throw(); //!< with a positive frequency, and build tree
+
+                void encode( ios::bitio &io, const uint8_t b);
 
                 void buildTree() throw();
                 void saveTree() const;
+                void rescale() throw();
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Alphabet);
                 static const size_t   CharNodeLength = NumChars * sizeof(CharNode);
                 static const size_t   TreeNodeOffset = YOCTO_MEMALIGN(CharNodeLength);
                 static const size_t   RequiredLength = TreeNodeOffset + NumNodes * sizeof(TreeNode);
+                size_t    max_bits;
                 TreeNode *root;
                 CharList  used;
                 size_t    full;
