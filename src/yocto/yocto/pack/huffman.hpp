@@ -45,6 +45,9 @@ namespace yocto
             };
             typedef core::list_of<CharNode> CharList;
 
+            static const CodeType NodeAtLeft  = 0;
+            static const CodeType NodeAtRight = 1;
+
             class TreeNode
             {
             public:
@@ -55,7 +58,8 @@ namespace yocto
                 TreeNode       *next;
                 const CharNode *Node;
                 FreqType        Freq;
-
+                size_t          Bits;
+                CodeType        cbit;
             private:
                 TreeNode(); ~TreeNode() throw();
                 YOCTO_DISABLE_COPY_AND_ASSIGN(TreeNode);

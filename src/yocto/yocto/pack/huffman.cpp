@@ -193,41 +193,71 @@ namespace yocto
         void Huffman:: Alphabet:: buildTree() throw()
         {
             std::cerr << "building tree..." << std::endl;
-            NodeList Q1;
-            NodeList Q2;
-            size_t   iNode = 0;
-            for(const CharNode *ch = used.head; ch; ch=ch->next)
             {
-                assert(iNode<NumNodes);
-                TreeNode *node = &nodes[iNode++];
-                node->parent   = 0;
-                node->left     = 0;
-                node->right    = 0;
-                node->next     = 0;
-                node->prev     = 0;
-                node->Node     = ch;
-                node->Freq     = ch->Freq;
-                Q1.push_back(node);
-                std::cerr << "..ini " << Text(ch->Char) << " @" << node->Freq << std::endl;
+                NodeList Q1;
+                NodeList Q2;
+                size_t   iNode = 0;
+                for(const CharNode *ch = used.head; ch; ch=ch->next)
+                {
+                    assert(iNode<NumNodes);
+                    TreeNode *node = &nodes[iNode++];
+                    node->parent   = 0;
+                    node->left     = 0;
+                    node->right    = 0;
+                    node->next     = 0;
+                    node->prev     = 0;
+                    node->Node     = ch;
+                    node->Freq     = ch->Freq;
+                    node->Bits     = 0;
+                    Q1.push_back(node);
+                    std::cerr << "..ini " << Text(ch->Char) << " #" << node->Freq << std::endl;
+                }
+
+                while( (Q1.size+Q2.size)>1 )
+                {
+                    assert(iNode<NumNodes);
+                    TreeNode *node = &nodes[iNode++];
+                    node->Node     = 0;
+                    TreeNode *r    = (node->right = popTreeNode(Q1,Q2));
+                    TreeNode *l    = (node->left  = popTreeNode(Q1,Q2));
+                    node->Bits = max_of(l->Bits,r->Bits)+1;
+                    node->Freq = l->Freq+r->Freq;
+                    r->parent  = l->parent = node;
+                    l->cbit    = NodeAtLeft;
+                    r->cbit    = NodeAtRight;
+                    node->next = 0;
+                    node->prev = 0;
+                    node->parent = 0;
+                    std::cerr << "..add #" << node->Freq << "@" << node->Bits << std::endl;
+                    Q2.push_front(node);
+                }
+                assert(1==Q1.size+Q2.size);
+                root = popTreeNode(Q1,Q2);
+                std::cerr << "#used=" << used.size << ", #nodes=" << iNode << std::endl;
+                assert(used.size*2-1==iNode);
+                root->cbit   = 0;
             }
 
-            while( (Q1.size+Q2.size)>1 )
+            std::cerr << "building code, maxbits=" << root->Bits << std::endl;
             {
-                assert(iNode<NumNodes);
-                TreeNode *node = &nodes[iNode++];
-                node->Node     = 0;
-                TreeNode *r    = (node->right = popTreeNode(Q1,Q2));
-                TreeNode *l    = (node->left  = popTreeNode(Q1,Q2));
-                node->Freq = l->Freq+r->Freq;
-                r->parent  = l->parent = node;
-                node->next = 0;
-                node->prev = 0;
-                std::cerr << "..add @" << node->Freq << std::endl;
-                Q2.push_front(node);
+                size_t iNode = 0;
+                for(CharNode *ch = used.head; ch; ch=ch->next,++iNode)
+                {
+                    std::cerr << "encoding " << Text(ch->Char) << std::endl << "|_";
+                    ch->Code = 0;
+                    ch->Bits = 0;
+                    assert(nodes[iNode].Node == ch);
+                    for(const TreeNode *curr=nodes+iNode;curr!=root;curr=curr->parent)
+                    {
+                        assert( ((curr->cbit) | 0x1 )<=0x1);
+                        (ch->Code <<= 1) |= curr->cbit;
+                        ch->Bits++;
+                        std::cerr << curr->cbit;
+                    }
+                    std::cerr << "\tbits=" << ch->Bits << std::endl;
+                }
             }
-            assert(1==Q1.size+Q2.size);
-            root = popTreeNode(Q1,Q2);
-            std::cerr << "#used=" << used.size << ", #nodes=" << iNode << std::endl;
+
         }
 
 
@@ -236,7 +266,6 @@ namespace yocto
 }
 
 #include "yocto/ios/ocstream.hpp"
-//#include "yocto/ios/ocstream.hpp"
 #include "yocto/ios/graphviz.hpp"
 
 namespace yocto
@@ -257,11 +286,11 @@ namespace yocto
                     fp << '[';
                     if(node->Node)
                     {
-                        fp("label=\"%s@%u\"", Text(node->Node->Char), unsigned(node->Freq) );
+                        fp("label=\"%s#%u@%u\"", Text(node->Node->Char), unsigned(node->Freq), unsigned(node->Node->Bits) );
                     }
                     else
                     {
-                        fp("label=\"@%u\"", unsigned(node->Freq) );
+                        fp("label=\"#%u\"", unsigned(node->Freq) );
                     }
                     fp << ']' << ';' << '\n';
                 }
@@ -270,11 +299,11 @@ namespace yocto
                     const TreeNode *node = nodes+i;
                     if(node->left)
                     {
-                        fp << '\t'; fp.viz(node); fp << "->"; fp.viz(node->left); fp("[label=\"1\"];\n");
+                        fp << '\t'; fp.viz(node); fp << "->"; fp.viz(node->left); fp("[label=\"%u\"];\n",unsigned(node->left->cbit));
                     }
                     if(node->right)
                     {
-                        fp << '\t'; fp.viz(node); fp << "->"; fp.viz(node->right); fp("[label=\"0\"];\n");
+                        fp << '\t'; fp.viz(node); fp << "->"; fp.viz(node->right); fp("[label=\"%u\"];\n",unsigned(node->right->cbit));
                     }
                 }
                 fp << "}\n";
