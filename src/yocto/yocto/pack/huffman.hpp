@@ -77,7 +77,7 @@ namespace yocto
                 void update( const CharNode &ch ) throw(); //!< with a positive frequency
 
                 void buildTree() throw();
-
+                void saveTree() const;
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Alphabet);

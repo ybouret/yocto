@@ -25,7 +25,7 @@ namespace yocto
                     default:
                         break;
                 }
-                if(ch>=32&&ch<127)
+                if( (ch>=32&&ch<127) && ch!='\"')
                 {
                     data[0] = '\'';
                     data[1] = char(ch);
@@ -231,6 +231,56 @@ namespace yocto
         }
 
 
+
+    }
+}
+
+#include "yocto/ios/ocstream.hpp"
+//#include "yocto/ios/ocstream.hpp"
+#include "yocto/ios/graphviz.hpp"
+
+namespace yocto
+{
+    namespace pack
+    {
+        void Huffman::Alphabet:: saveTree() const
+        {
+            {
+                ios::wcstream fp("huff.dot");
+                fp << "digraph G {\n";
+                const size_t nu = used.size;
+                const size_t nn = 2*nu-1;
+                for(size_t i=0;i<nn;++i)
+                {
+                    const TreeNode *node = nodes+i;
+                    fp << '\t'; fp.viz(node);
+                    fp << '[';
+                    if(node->Node)
+                    {
+                        fp("label=\"%s@%u\"", Text(node->Node->Char), unsigned(node->Freq) );
+                    }
+                    else
+                    {
+                        fp("label=\"@%u\"", unsigned(node->Freq) );
+                    }
+                    fp << ']' << ';' << '\n';
+                }
+                for(size_t i=0;i<nn;++i)
+                {
+                    const TreeNode *node = nodes+i;
+                    if(node->left)
+                    {
+                        fp << '\t'; fp.viz(node); fp << "->"; fp.viz(node->left); fp("[label=\"1\"];\n");
+                    }
+                    if(node->right)
+                    {
+                        fp << '\t'; fp.viz(node); fp << "->"; fp.viz(node->right); fp("[label=\"0\"];\n");
+                    }
+                }
+                fp << "}\n";
+            }
+            ios::graphviz_render("huff.dot");
+        }
     }
 }
 

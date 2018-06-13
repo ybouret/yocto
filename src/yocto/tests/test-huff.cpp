@@ -23,6 +23,7 @@ YOCTO_UNIT_TEST_IMPL(huff)
     }
     alpha.display();
     alpha.buildTree();
+    alpha.saveTree();
 }
 YOCTO_UNIT_TEST_DONE()
 
