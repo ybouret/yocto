@@ -86,6 +86,8 @@ namespace yocto
                 CharNode &ch = chars[i];
                 assert(i==ch.Char);
                 ch.initialize(0);
+                ch.Code = i;
+                ch.Bits = 8;
             }
             nyt->initialize(1);
             eos->initialize(1);
@@ -93,6 +95,8 @@ namespace yocto
             used.push_front( nyt );
         }
 
+
+        
         void Huffman:: Alphabet:: add( const uint8_t b ) throw()
         {
             CharNode *ch = &chars[b];

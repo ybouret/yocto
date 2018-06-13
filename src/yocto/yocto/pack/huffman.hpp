@@ -13,6 +13,7 @@ namespace yocto
         {
             typedef size_t        FreqType;
             typedef unit_t        CharType;
+            typedef size_t        CodeType;
             static const size_t   NumBytes = 256;
             static const size_t   LastByte = NumBytes-1;
             static const CharType NYT      = LastByte+1;
@@ -30,6 +31,8 @@ namespace yocto
                 CharNode      *prev;
                 CharType       Char;
                 FreqType       Freq;
+                CodeType       Code;
+                size_t         Bits;
                 inline void initialize(const FreqType f) throw()
                 {
                     next = 0;
