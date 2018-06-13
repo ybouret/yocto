@@ -69,12 +69,18 @@ namespace yocto
                 void display() const;
                 void add( const uint8_t b ) throw();
 
+                const CharNode & operator[](const uint8_t b) const throw();
+                void append( const CharNode &ch ) throw(); //!< with a zero frequency
+                void update( const CharNode &ch ) throw(); //!< with a positive frequency
+
+
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Alphabet);
                 static const size_t   CharNodeLength = NumChars * sizeof(CharNode);
                 static const size_t   TreeNodeOffset = YOCTO_MEMALIGN(CharNodeLength);
                 static const size_t   RequiredLength = TreeNodeOffset + NumNodes * sizeof(TreeNode);
                 CharList  used;
+                size_t    full;
                 CharNode *nyt;
                 CharNode *eos;
                 size_t    count; //!< for memory allocation

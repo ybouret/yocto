@@ -54,6 +54,7 @@ namespace yocto
     {
         Huffman::Alphabet:: Alphabet() :
         used(),
+        full(0),
         nyt(0),
         eos(0),
         count( RequiredLength ),
@@ -81,6 +82,7 @@ namespace yocto
         void Huffman::Alphabet::initialize() throw()
         {
             used.reset();
+            full = 0;
             for(size_t i=0;i<NumBytes;++i)
             {
                 CharNode &ch = chars[i];
@@ -95,31 +97,48 @@ namespace yocto
             used.push_front( nyt );
         }
 
+        const Huffman::CharNode & Huffman::Alphabet:: operator[](const uint8_t b) const throw()
+        {
+            return chars[b];
+        }
 
-        
+        void Huffman:: Alphabet:: append(const CharNode &ch) throw()
+        {
+            CharNode *p = (CharNode *)&ch;
+            assert(0==p->Freq);
+            assert(used.owns(nyt));
+            assert(full<NumBytes);
+            ++(p->Freq);
+            used.insert_before(nyt,p);
+            if(++full>=NumBytes)
+            {
+                std::cerr << "\t=== FULL ===" << std::endl;
+                (void) used.unlink(nyt);
+            }
+        }
+
+        void Huffman:: Alphabet:: update(const CharNode &ch) throw()
+        {
+            CharNode *p = (CharNode *)&ch;
+            assert(0<p->Freq);
+            ++(p->Freq);
+            assert(used.owns(p));
+            while( (used.head!=p) && (p->Freq>p->prev->Freq) )
+            {
+                used.towards_head(p);
+            }
+        }
+
         void Huffman:: Alphabet:: add( const uint8_t b ) throw()
         {
-            CharNode *ch = &chars[b];
-            if( ch->Freq++ <= 0 )
+            const CharNode &ch = chars[b];
+            if(ch.Freq<=0)
             {
-                //______________________________________________________________
-                //
-                // new char
-                //______________________________________________________________
-                assert(1==ch->Freq);
-                used.insert_before(nyt,ch);
+                append(ch);
             }
             else
             {
-                //______________________________________________________________
-                //
-                // used char
-                //______________________________________________________________
-                assert(used.owns(ch));
-                while( (used.head!=ch) && (ch->Freq>ch->prev->Freq) )
-                {
-                    used.towards_head(ch);
-                }
+                update(ch);
             }
         }
 
