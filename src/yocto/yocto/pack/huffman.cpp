@@ -12,7 +12,7 @@ namespace yocto
         {
             static char data[4];
             memset(data,0,sizeof(data));
-            if(ch<0||ch>NumChars)
+            if(ch<0||ch>CharType(NumChars))
             {
                 return "???";
             }
@@ -88,7 +88,7 @@ namespace yocto
             for(size_t i=0;i<NumBytes;++i)
             {
                 CharNode &ch = chars[i];
-                assert(i==ch.Char);
+                assert(i==size_t(ch.Char));
                 ch.initialize(0);
                 ch.Code = i;
                 ch.Bits = 8;
