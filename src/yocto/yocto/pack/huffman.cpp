@@ -96,17 +96,26 @@ namespace yocto
         void Huffman:: Alphabet:: add( const uint8_t b ) throw()
         {
             CharNode *ch = &chars[b];
-            if(ch->Freq++ <= 0)
+            if( ch->Freq++ <= 0 )
             {
+                //______________________________________________________________
+                //
                 // new char
+                //______________________________________________________________
                 assert(1==ch->Freq);
                 used.insert_before(nyt,ch);
-                assert(used.owns(ch));
             }
             else
             {
+                //______________________________________________________________
+                //
                 // used char
+                //______________________________________________________________
                 assert(used.owns(ch));
+                while( (used.head!=ch) && (ch->Freq>ch->prev->Freq) )
+                {
+                    used.towards_head(ch);
+                }
             }
         }
 
