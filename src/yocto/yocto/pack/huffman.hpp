@@ -82,10 +82,32 @@ namespace yocto
                 void update( const CharNode &ch ) throw(); //!< with a positive frequency, and build tree
 
                 void encode( ios::bitio &io, const uint8_t b);
+                void flush( ios::bitio &io );
 
                 void buildTree() throw();
                 void saveTree() const;
                 void rescale() throw();
+
+                enum DecodeStatus
+                {
+                    DecodeWaitFor8,
+                    DecodeWaitFor1
+                };
+
+                class DecodeContext
+                {
+                public:
+                    inline  DecodeContext() throw() : node(0), status(DecodeWaitFor8) {}
+                    inline ~DecodeContext() throw() {}
+                    inline  void restart() throw() { node=0; status=DecodeWaitFor8; }
+                    TreeNode     *node;
+                    DecodeStatus  status;
+
+                private:
+                    YOCTO_DISABLE_COPY_AND_ASSIGN(DecodeContext);
+                };
+
+                bool decode( ios::bitio &io, DecodeContext &ctx, char &C );
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Alphabet);
@@ -95,8 +117,7 @@ namespace yocto
                 size_t    max_bits;
                 TreeNode *root;
                 CharList  used;    //!< current used chars, ranked by frequencies
-                size_t    full;    //!< counter to remove nyt when not necessary
-                bool      flag;    //!< initialized 'false', set to 'true' after first append, to emit NYT
+                size_t    size;    //!< alphabet size
                 CharNode *nyt;
                 CharNode *eos;
                 size_t    count; //!< for memory allocation

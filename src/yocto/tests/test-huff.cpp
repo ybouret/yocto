@@ -46,4 +46,47 @@ YOCTO_UNIT_TEST_IMPL(huff)
 }
 YOCTO_UNIT_TEST_DONE()
 
+#include "yocto/hashing/sha1.hpp"
+YOCTO_UNIT_TEST_IMPL(huffio)
+{
+    std::cerr << "Huffman I/O" << std::endl;
+    hashing::sha1     H;
+    ios::bitio        io;
+    H.set();
+    size_t ibytes = 0;
+    char C=0;
+    {
+        std::cerr << "ihuff..." << std::endl;
+        Huffman::Alphabet ihuff;
+        ios::icstream     fp( ios::cstdin );
+        while( fp.query(C) )
+        {
+            ihuff.encode(io,C);
+            H.run_type(C);
+            ++ibytes;
+        }
+        ihuff.flush(io);
+    }
+    assert(0==(io.size()%8));
+    const size_t   obytes = io.size()>>3;
+    const uint64_t i64    = H.key<uint64_t>();
+    std::cerr << "ibytes = " << ibytes << " => obytes=" << obytes << std::endl;
+    std::cerr << "i64    = " << i64 << std::endl;
+
+    {
+        H.set();
+        Huffman::Alphabet ohuff;
+        Huffman::Alphabet::DecodeContext ctx;
+        ios::ocstream fp( ios::cstdout );
+        while( ohuff.decode(io,ctx,C) )
+        {
+            //fp.write(C);
+            H.run_type(C);
+        }
+    }
+    const uint64_t o64 = H.key<uint64_t>();
+    std::cerr << "o64=" << o64 << "/" << i64 << std::endl;
+
+}
+YOCTO_UNIT_TEST_DONE()
 

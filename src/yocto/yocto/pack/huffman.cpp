@@ -56,8 +56,7 @@ namespace yocto
         max_bits(16),
         root(0),
         used(),
-        full(0),
-        flag(false),
+        size(0),
         nyt(0),
         eos(0),
         count( RequiredLength ),
@@ -86,8 +85,7 @@ namespace yocto
         void Huffman::Alphabet::initialize() throw()
         {
             used.reset();
-            flag = false;
-            full = 0;
+            size = 0;
             for(size_t i=0;i<NumBytes;++i)
             {
                 CharNode &ch = chars[i];
@@ -112,11 +110,10 @@ namespace yocto
             CharNode *p = (CharNode *)&ch;
             assert(0==p->Freq);
             assert(used.owns(nyt));
-            assert(full<NumBytes);
+            assert(size<NumBytes);
             ++(p->Freq);
             used.insert_before(nyt,p);
-            flag = true;
-            if(++full>=NumBytes)
+            if(++size>=NumBytes)
             {
                 //std::cerr << "\t=== FULL ===" << std::endl;
                 (void) used.unlink(nyt);
@@ -356,25 +353,104 @@ namespace yocto
             const CharNode &ch = chars[b];
             if(ch.Freq>0)
             {
-                std::cerr << "emit code for " << char(b) << " +" << ch.Bits << std::endl;
                 io.push(ch.Code,ch.Bits);
-                std::cerr << "update model" << std::endl;
                 update(ch);
             }
             else
             {
-                if(flag)
+                if(size>0)
                 {
-                    std::cerr << "emit NYT +" << nyt->Bits << std::endl;
                     io.push(nyt->Code,nyt->Bits);
                 }
-                std::cerr << "emit code for " << char(b) << " +" << ch.Bits << std::endl;
                 io.push(ch.Code,ch.Bits);
-                std::cerr << "append model" << std::endl;
                 append(ch);
+            }
+        }
+
+        void Huffman:: Alphabet:: flush( ios::bitio &io )
+        {
+            if(size>0)
+            {
+                io.push( eos->Code, eos->Bits );
+                io.fill_to_byte_with(false);
             }
         }
     }
 }
+
+#include "yocto/exception.hpp"
+
+namespace yocto
+{
+    namespace pack
+    {
+        bool Huffman:: Alphabet:: decode( ios::bitio &io, DecodeContext &ctx, char &C )
+        {
+            static const char fn[] = "Huffman::Alphabet.decode: ";
+
+            switch(ctx.status)
+            {
+                case DecodeWaitFor8:
+                DECODE8:
+                {
+                    if(io.size()<8) return false;
+                    const uint8_t B = io.pop_full<uint8_t>();
+                    C = char(B);
+                    CharNode &ch = chars[B];
+                    if(ch.Freq>0) throw exception("%salready transmitted char %s",fn,Text(ch.Char));
+                    append(ch);
+                    ctx.status= DecodeWaitFor1;
+                    ctx.node  = root;
+                    return true;
+                }
+
+                case DecodeWaitFor1:
+                DECODE1:
+                {
+                    assert(ctx.node);
+                    if(io.size()<=0) return false; // not enough bits
+                    ctx.node = (io.pop()? ctx.node->right : ctx.node->left);
+                    const CharNode *pch = ctx.node->Node;
+                    if(!pch) goto DECODE1;
+
+                    if(pch==nyt)
+                    {
+                        if(size<=0) throw exception("%sunexpected NYT",fn);
+                        ctx.node   = 0;
+                        ctx.status = DecodeWaitFor8;
+                        goto DECODE8;
+                    }
+                    else if(pch==eos)
+                    {
+                        //std::cerr << "need to think..." << std::endl; exit(0);
+                        while( 0 != (io.size() & 7) )
+                        {
+                            io.skip();
+                        }
+                        assert(DecodeWaitFor1==ctx.status);
+                        ctx.node=root;
+                        goto DECODE1;
+                    }
+                    else
+                    {
+                        assert(pch->Char>=0); assert(pch->Char<256);
+                        const uint8_t B = uint8_t(pch->Char);
+                        C = char(B);
+                        CharNode &ch = chars[B];
+                        if(ch.Freq<=0) throw exception("%sunexpected encoded %s",fn,Text(pch->Char));
+                        update(ch);
+                        assert(DecodeWaitFor1==ctx.status);
+                        ctx.node = root;
+                        return true;
+                    }
+                }
+            }
+
+
+        }
+    }
+}
+
+
 
 
