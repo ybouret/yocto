@@ -422,7 +422,6 @@ namespace yocto
                     }
                     else if(pch==eos)
                     {
-                        //std::cerr << "need to think..." << std::endl; exit(0);
                         while( 0 != (io.size() & 7) )
                         {
                             io.skip();
@@ -445,9 +444,9 @@ namespace yocto
                     }
                 }
             }
-
-
+            return false;
         }
+
     }
 }
 

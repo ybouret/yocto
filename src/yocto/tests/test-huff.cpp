@@ -71,8 +71,7 @@ YOCTO_UNIT_TEST_IMPL(huffio)
     const size_t   obytes = io.size()>>3;
     const uint64_t i64    = H.key<uint64_t>();
     std::cerr << "ibytes = " << ibytes << " => obytes=" << obytes << std::endl;
-    std::cerr << "i64    = " << i64 << std::endl;
-
+    
     {
         H.set();
         Huffman::Alphabet ohuff;
@@ -85,7 +84,7 @@ YOCTO_UNIT_TEST_IMPL(huffio)
         }
     }
     const uint64_t o64 = H.key<uint64_t>();
-    std::cerr << "o64=" << o64 << "/" << i64 << std::endl;
+    std::cerr << std::hex << "o64=" << o64 << "/" << i64 << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()
