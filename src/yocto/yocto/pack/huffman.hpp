@@ -73,12 +73,12 @@ namespace yocto
                 explicit Alphabet();
                 virtual ~Alphabet() throw();
 
-                void initialize() throw(); //!< reset frequencies and initialize used
-                void display() const;
-                void add( const uint8_t b ) throw();
+                void initialize() throw();           //!< reset frequencies and initialize used
+                void display() const;                //!< debug output
+                void add( const uint8_t b ) throw(); //!< for debug purpose: append or update
 
                 const CharNode & operator[](const uint8_t b) const throw();
-                void append( const CharNode &ch ) throw(); //!< with a zero frequency, and build tree
+                void append( const CharNode &ch ) throw(); //!< with a zero frequency,     and build tree
                 void update( const CharNode &ch ) throw(); //!< with a positive frequency, and build tree
 
                 void encode( ios::bitio &io, const uint8_t b);
@@ -94,8 +94,9 @@ namespace yocto
                 static const size_t   RequiredLength = TreeNodeOffset + NumNodes * sizeof(TreeNode);
                 size_t    max_bits;
                 TreeNode *root;
-                CharList  used;
-                size_t    full;
+                CharList  used;    //!< current used chars, ranked by frequencies
+                size_t    full;    //!< counter to remove nyt when not necessary
+                bool      flag;    //!< initialized 'false', set to 'true' after first append, to emit NYT
                 CharNode *nyt;
                 CharNode *eos;
                 size_t    count; //!< for memory allocation

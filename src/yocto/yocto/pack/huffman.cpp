@@ -57,6 +57,7 @@ namespace yocto
         root(0),
         used(),
         full(0),
+        flag(false),
         nyt(0),
         eos(0),
         count( RequiredLength ),
@@ -85,6 +86,7 @@ namespace yocto
         void Huffman::Alphabet::initialize() throw()
         {
             used.reset();
+            flag = false;
             full = 0;
             for(size_t i=0;i<NumBytes;++i)
             {
@@ -113,12 +115,14 @@ namespace yocto
             assert(full<NumBytes);
             ++(p->Freq);
             used.insert_before(nyt,p);
+            flag = true;
             if(++full>=NumBytes)
             {
-                std::cerr << "\t=== FULL ===" << std::endl;
+                //std::cerr << "\t=== FULL ===" << std::endl;
                 (void) used.unlink(nyt);
                 nyt->Code=0;
                 nyt->Bits=0;
+                nyt->Freq=0;
             }
             buildTree();
         }
@@ -359,7 +363,7 @@ namespace yocto
             }
             else
             {
-                if(used.size>2)
+                if(flag)
                 {
                     std::cerr << "emit NYT +" << nyt->Bits << std::endl;
                     io.push(nyt->Code,nyt->Bits);
