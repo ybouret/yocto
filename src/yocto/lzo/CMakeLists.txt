@@ -17,22 +17,12 @@ INSTALL( TARGETS y-lzo ARCHIVE DESTINATION lib )
 
 #SET(YOCTO_AUTO_TEST ON)
 
-IF(YOCTO_AUTO_TEST)
+ADD_EXECUTABLE(lzotest testmini.c)
+TARGET_LINK_LIBRARIES(lzotest y-lzo)
 
-IF(NOT MSVC)
 
-ADD_EXECUTABLE(test-lzo testmini.c)
-TARGET_LINK_LIBRARIES(test-lzo y-lzo)
-
-ADD_CUSTOM_COMMAND( 
-	TARGET  test-lzo
-	POST_BUILD
-	COMMAND test-lzo
-	COMMENT "Auto Testing LZO..."
-)
-
-ENDIF(NOT MSVC)
-
-ENDIF(YOCTO_AUTO_TEST)
+ADD_CUSTOM_TARGET( test-lzo
+COMMAND lzotest 
+COMMENT "Testing lzo")
 
 

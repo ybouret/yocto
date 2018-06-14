@@ -236,13 +236,13 @@ YOCTO_BUILD(tiff)
 ADD_CUSTOM_TARGET(third_party 
 DEPENDS 
 y-z    test-z
-y-bz2 
+y-bz2  test-bz2
 y-png  test-png
-y-jbig
+y-jbig test-jbig
 y-jpeg test-jpeg
 y-tiff
 y-lua
-y-lzo
+y-lzo  test-lzo
 COMMENT "Building Third Party Libraries")
 
  
