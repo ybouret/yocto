@@ -22,10 +22,9 @@ ADD_TEST(mpq test-mpl  mpq)
 ADD_TEST(hash test-mpl hash)
 ADD_TEST(rand test-mpl rand)
 
-FIND_PACKAGE(MPI)
+INCLUDE(../../../share/mpi.cmake)
 
 IF(MPI_FOUND)
-	INCLUDE_DIRECTORIES(${MPI_INCLUDE_PATH})
 	INCLUDE_DIRECTORIES(../../mpi)
 
 	ADD_EXECUTABLE(test-mpl-par main-par.cpp)

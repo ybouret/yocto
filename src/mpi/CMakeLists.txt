@@ -1,6 +1,6 @@
 PROJECT(mpi)
 
-FIND_PACKAGE(MPI)
+INCLUDE(../../share/mpi.cmake)
 
 IF(MPI_FOUND)
   
@@ -11,12 +11,7 @@ IF(MPI_FOUND)
   SET( srcs ${decl} ${impl} )
 
   INCLUDE_DIRECTORIES( . ../yocto )
-  INCLUDE_DIRECTORIES(${MPI_INCLUDE_PATH})
-
-  IF(YOCTO_WINDOWS AND YOCTO_GNU)
-    ADD_DEFINITIONS( -DMSMPI_NO_SAL=1 )
-  ENDIF()
-
+	
   ADD_LIBRARY(y-mpi STATIC ${srcs} )
   INSTALL( TARGETS y-mpi ARCHIVE DESTINATION lib )
   
