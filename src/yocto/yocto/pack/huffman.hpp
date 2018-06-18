@@ -4,6 +4,7 @@
 #include "yocto/core/list.hpp"
 #include "yocto/code/round.hpp"
 #include "yocto/ios/bitio.hpp"
+#include "yocto/pack/q-codec.hpp"
 
 namespace yocto
 {
@@ -12,9 +13,9 @@ namespace yocto
 
         struct Huffman
         {
-            typedef size_t        FreqType;
-            typedef unit_t        CharType;
-            typedef size_t        CodeType;
+            typedef size_t        FreqType; //! for frequency counts
+            typedef unit_t        CharType; //! [0..255+extra]
+            typedef size_t        CodeType; //! encoded char
             static const size_t   NumBytes = 256;
             static const size_t   LastByte = NumBytes-1;
             static const CharType NYT      = LastByte+1;
@@ -24,7 +25,7 @@ namespace yocto
 
             static const char *Text(const CharType ch) throw(); //!< not thread safe
 
-
+            //! hold information about a char
             class CharNode
             {
             public:
@@ -49,6 +50,7 @@ namespace yocto
             static const CodeType NodeAtLeft  = 0;
             static const CodeType NodeAtRight = 1;
 
+            //! a Huffman tree node
             class TreeNode
             {
             public:
@@ -57,16 +59,17 @@ namespace yocto
                 TreeNode       *right;
                 TreeNode       *prev;
                 TreeNode       *next;
-                const CharNode *Node;
+                const CharNode *Node; //!< not null if leaf, null if internal
                 FreqType        Freq;
                 size_t          Bits;
-                CodeType        cbit;
+                CodeType        cbit; //!< setup during build
             private:
                 TreeNode(); ~TreeNode() throw();
                 YOCTO_DISABLE_COPY_AND_ASSIGN(TreeNode);
             };
             typedef core::list_of<TreeNode> NodeList;
 
+            //! manage operations
             class Alphabet
             {
             public:
@@ -126,6 +129,51 @@ namespace yocto
                 TreeNode *nodes; //!< NumNodes
 
             };
+
+            class Codec : public pack::q_codec
+            {
+            public:
+                virtual ~Codec() throw();
+                virtual void reset() throw();
+                
+            protected:
+                explicit Codec();
+                Alphabet   ab;
+                ios::bitio io;
+                void io2Q();
+
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Codec);
+            };
+
+            class Encoder : public Codec
+            {
+            public:
+                explicit Encoder();
+                virtual ~Encoder() throw();
+
+                virtual void write( char C );
+                virtual void flush();
+                
+            private:
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Encoder);
+            };
+
+            class Decoder : public Codec
+            {
+            public:
+                explicit Decoder();
+                virtual ~Decoder() throw();
+
+                virtual void write(char C);
+                virtual void flush();
+                virtual void reset() throw();
+                
+            private:
+                Alphabet::DecodeContext ctx;
+                YOCTO_DISABLE_COPY_AND_ASSIGN(Decoder);
+            };
+
         };
 
     }

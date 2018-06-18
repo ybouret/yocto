@@ -451,5 +451,88 @@ namespace yocto
 }
 
 
+namespace yocto
+{
+    namespace pack
+    {
+        Huffman:: Codec:: Codec() : ab(), io()
+        {
+        }
+
+        Huffman:: Codec:: ~Codec() throw()
+        {
+        }
+
+        void Huffman:: Codec:: reset() throw()
+        {
+            io.free();
+            ab.initialize();
+        }
+
+        void Huffman:: Codec:: io2Q()
+        {
+            while(io.size()>=8)
+            {
+                Q.push_back( io.pop_full<uint8_t>() );
+            }
+        }
+    }
+}
+
+namespace yocto
+{
+    namespace pack
+    {
+        Huffman::Encoder::  Encoder() : Codec() {}
+        Huffman::Encoder:: ~Encoder() throw() {}
+
+
+        void Huffman:: Encoder:: write( char C )
+        {
+            ab.encode(io,C);
+            io2Q();
+        }
+
+        void Huffman:: Encoder:: flush()
+        {
+            ab.flush(io);
+            io2Q();
+        }
+
+    }
+
+}
+
+namespace yocto
+{
+    namespace pack
+    {
+        Huffman::Decoder::  Decoder() : Codec(), ctx() {}
+        Huffman::Decoder:: ~Decoder() throw() {}
+
+
+        void Huffman:: Decoder:: write( char C )
+        {
+            io.push_full<uint8_t>(C);
+            while( ab.decode(io,ctx,C) )
+            {
+                Q.push_back(C);
+            }
+        }
+
+        void Huffman:: Decoder:: flush()
+        {
+            // nothing to do
+        }
+
+        void Huffman:: Decoder:: reset() throw()
+        {
+            Codec::reset();
+            ctx.restart();
+        }
+
+    }
+
+}
 
 
