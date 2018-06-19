@@ -39,7 +39,7 @@ namespace yocto
 
             //! get local patch from this...
             /**
-             \param rank rank<size
+             \param rank   rank<size
              \param pRanks save local ranks if not NULL
              */
             virtual patch<COORD> operator()(const size_t rank, COORD *pRanks) const throw() = 0;

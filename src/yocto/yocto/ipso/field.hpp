@@ -21,7 +21,7 @@ namespace yocto
             typedef intr_ptr<string,field_info> pointer;
             typedef set<string,pointer>         set_type;
 
-            const string name;      //!< unique identifier for set
+            const string name;      //!< unique identifier for set_type
             const size_t count;     //!< items count, set by field after setup
             const size_t bytes;     //!< bytes count, set by field after setup
             const size_t item_size; //!< one item size
