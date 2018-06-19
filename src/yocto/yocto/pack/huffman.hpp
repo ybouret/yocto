@@ -18,10 +18,10 @@ namespace yocto
             typedef size_t        CodeType; //! encoded char
             static const size_t   NumBytes = 256;
             static const size_t   LastByte = NumBytes-1;
-            static const CharType NYT      = LastByte+1;
-            static const CharType EOS      = NYT+1;
+            static const CharType NYT      = LastByte+1; //!< Not Yet Transmitted
+            static const CharType EOS      = NYT+1;      //!< End Of Stream
             static const size_t   NumChars = EOS+1;
-            static const size_t   NumNodes = 2*NumChars;
+            static const size_t   NumNodes = 2*NumChars-1;
 
             static const char *Text(const CharType ch) throw(); //!< not thread safe
 
@@ -60,9 +60,9 @@ namespace yocto
                 TreeNode       *prev;
                 TreeNode       *next;
                 const CharNode *Node; //!< not null if leaf, null if internal
-                FreqType        Freq;
-                size_t          Bits;
-                CodeType        cbit; //!< setup during build
+                FreqType        Freq; //!< its cumulative frequency
+                size_t          Bits; //!< local height
+                CodeType        cbit; //!< setup during build, NodeAtLeft or NodeAtRight
             private:
                 TreeNode(); ~TreeNode() throw();
                 YOCTO_DISABLE_COPY_AND_ASSIGN(TreeNode);
@@ -89,7 +89,7 @@ namespace yocto
 
                 void buildTree() throw();
                 void saveTree() const;
-                void rescale() throw();
+                void rescale_frequencies() throw();
 
                 enum DecodeStatus
                 {
@@ -118,18 +118,19 @@ namespace yocto
                 static const size_t   TreeNodeOffset = YOCTO_MEMALIGN(CharNodeLength);
                 static const size_t   RequiredLength = TreeNodeOffset + NumNodes * sizeof(TreeNode);
                 size_t    max_bits;
-                TreeNode *root;
+                TreeNode *root;    //!< the top node of the encoding tree
                 CharList  used;    //!< current used chars, ranked by frequencies
                 size_t    size;    //!< alphabet size
-                CharNode *nyt;
-                CharNode *eos;
-                size_t    count; //!< for memory allocation
-                uint8_t  *bytes; //!< for chars+nodes
-                CharNode *chars; //!< NumChars
-                TreeNode *nodes; //!< NumNodes
+                CharNode *nyt;     //!< Not Yet Transmitted address
+                CharNode *eos;     //!< end of stream address
+                size_t    count;   //!< for memory allocation
+                uint8_t  *bytes;   //!< for chars+nodes
+                CharNode *chars;   //!< NumChars
+                TreeNode *nodes;   //!< NumNodes
 
             };
 
+            //! Codec common parts
             class Codec : public pack::q_codec
             {
             public:
@@ -146,6 +147,7 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Codec);
             };
 
+            //! Encoder
             class Encoder : public Codec
             {
             public:
@@ -159,6 +161,7 @@ namespace yocto
                 YOCTO_DISABLE_COPY_AND_ASSIGN(Encoder);
             };
 
+            //! Decoder
             class Decoder : public Codec
             {
             public:

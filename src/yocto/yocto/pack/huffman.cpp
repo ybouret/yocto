@@ -197,7 +197,7 @@ namespace yocto
         }
 
 
-        void Huffman:: Alphabet:: rescale() throw()
+        void Huffman:: Alphabet:: rescale_frequencies() throw()
         {
             for(CharNode *ch = used.head; ch; ch=ch->next)
             {
@@ -250,7 +250,9 @@ namespace yocto
                     node->Bits = max_of(l->Bits,r->Bits)+1;
                     if(node->Bits>max_bits)
                     {
-                        rescale();
+                        rescale_frequencies();
+                        Q1.reset();
+                        Q2.reset();
                         goto TRY_BUILD;
                     }
 
