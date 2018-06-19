@@ -82,6 +82,7 @@ namespace
         rmesh1("rmesh1",names1D,W1D),
         cmesh1("cmesh1",names1D,W1D),
         f1d( W1D.create<F1D>( "f1d" ) ),
+        var1D(),
 
         region2D(coord2D(1,1),dims.xy()),
         pbcs2D(pbcs.xy()),
@@ -94,6 +95,7 @@ namespace
         cmesh2("cmesh2",names2D,W2D),
         f2d( W2D.create<F2D>( "f2d" ) ),
         f2dv( W2D.create<F2DV>( "f2dv" ) ),
+        var2D(),
 
         region3D(coord3D(1,1,1),dims),
         pbcs3D(pbcs),
@@ -105,7 +107,8 @@ namespace
         rmesh3("rmesh3",names3D,W3D),
         cmesh3("cmesh3",names3D,W3D),
         f3d(  W3D.create<F3D>( "f3d" )   ),
-        f3dv( W3D.create<F3DV>( "f3dv" ) )
+        f3dv( W3D.create<F3DV>( "f3dv" ) ),
+        var3D()
 
         {
             MPI.Printf(stderr, "sub1D: %d->%d\n", int(W1D.outer.lower), int(W1D.outer.upper) );

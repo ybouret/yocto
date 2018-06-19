@@ -157,11 +157,11 @@ SET( physics_srcs ${physics_decl} ${physics_impl} )
 INSTALL( FILES ${physics_decl} DESTINATION include/yocto/physics )
 SOURCE_GROUP( physics FILES ${physics_srcs} )
 
-FILE( GLOB parallel_decl yocto/parallel/*.hpp)
-FILE( GLOB parallel_impl yocto/parallel/*.cpp)
-SET( parallel_srcs ${parallel_decl} ${parallel_impl} )
-INSTALL( FILES ${parallel_decl} DESTINATION include/yocto/parallel )
-SOURCE_GROUP( parallel FILES ${parallel_srcs} )
+#FILE( GLOB parallel_decl yocto/parallel/*.hpp)
+#FILE( GLOB parallel_impl yocto/parallel/*.cpp)
+#SET( parallel_srcs ${parallel_decl} ${parallel_impl} )
+#INSTALL( FILES ${parallel_decl} DESTINATION include/yocto/parallel )
+#SOURCE_GROUP( parallel FILES ${parallel_srcs} )
 
 FILE( GLOB ipso_decl yocto/ipso/*.hpp)
 FILE( GLOB ipso_impl yocto/ipso/*.cpp)
@@ -200,8 +200,8 @@ INSTALL( FILES ${mpl_rsa_decl} DESTINATION include/yocto/mpl/rsa )
 SOURCE_GROUP( mpl/rsa FILES ${mpl_rsa_srcs} )
 
 
-SET( decl ${top_decl} ${type_decl} ${ptr_decl} ${code_decl} ${threading_decl} ${threading_scheme_decl} ${core_decl} ${mem_decl} ${string_decl} ${container_decl} ${sequence_decl} ${hashing_decl} ${ios_decl} ${randomized_decl} ${associative_decl} ${stock_decl} ${ordered_decl} ${fragment_decl}  ${math_decl} ${rtld_decl} ${fs_decl} ${pack_decl} ${sort_decl} ${sys_decl} ${counting_decl} ${physics_decl} ${parallel_decl} ${ipso_decl} ${ipso_mesh_decl} ${ipso_format_decl} ${mpl_decl} ${mpl_natural_decl} ${mpl_rsa_decl})
-SET( srcs ${top_srcs} ${type_srcs} ${ptr_srcs} ${code_srcs} ${threading_srcs} ${threading_scheme_srcs} ${core_srcs} ${mem_srcs} ${string_srcs} ${container_srcs} ${sequence_srcs} ${hashing_srcs} ${ios_srcs} ${randomized_srcs} ${associative_srcs} ${stock_srcs} ${ordered_srcs} ${fragment_srcs}  ${math_srcs} ${rtld_srcs} ${fs_srcs} ${pack_srcs} ${sort_srcs} ${sys_srcs} ${counting_srcs} ${physics_srcs} ${parallel_srcs} ${ipso_srcs} ${ipso_mesh_srcs} ${ipso_format_srcs} ${mpl_srcs} ${mpl_natural_srcs} ${mpl_rsa_impl})
+SET( decl ${top_decl} ${type_decl} ${ptr_decl} ${code_decl} ${threading_decl} ${threading_scheme_decl} ${core_decl} ${mem_decl} ${string_decl} ${container_decl} ${sequence_decl} ${hashing_decl} ${ios_decl} ${randomized_decl} ${associative_decl} ${stock_decl} ${ordered_decl} ${fragment_decl}  ${math_decl} ${rtld_decl} ${fs_decl} ${pack_decl} ${sort_decl} ${sys_decl} ${counting_decl} ${physics_decl} ${ipso_decl} ${ipso_mesh_decl} ${ipso_format_decl} ${mpl_decl} ${mpl_natural_decl} ${mpl_rsa_decl})
+SET( srcs ${top_srcs} ${type_srcs} ${ptr_srcs} ${code_srcs} ${threading_srcs} ${threading_scheme_srcs} ${core_srcs} ${mem_srcs} ${string_srcs} ${container_srcs} ${sequence_srcs} ${hashing_srcs} ${ios_srcs} ${randomized_srcs} ${associative_srcs} ${stock_srcs} ${ordered_srcs} ${fragment_srcs}  ${math_srcs} ${rtld_srcs} ${fs_srcs} ${pack_srcs} ${sort_srcs} ${sys_srcs} ${counting_srcs} ${physics_srcs} ${ipso_srcs} ${ipso_mesh_srcs} ${ipso_format_srcs} ${mpl_srcs} ${mpl_natural_srcs} ${mpl_rsa_impl})
 
 INCLUDE_DIRECTORIES( . )
 

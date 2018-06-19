@@ -123,7 +123,6 @@ YOCTO_UNIT_TEST_INIT(200)
     YOCTO_UNIT_TEST_DECL(comb_perf);
     YOCTO_UNIT_TEST_DECL(comb_io);
     YOCTO_UNIT_TEST_DECL(dispatch);
-    YOCTO_UNIT_TEST_DECL(split);
     YOCTO_UNIT_TEST_DECL(ipower);
 
     YOCTO_UNIT_TEST_DECL(tokenizer);
@@ -142,13 +141,9 @@ YOCTO_UNIT_TEST_INIT(200)
     YOCTO_UNIT_TEST_DECL(slots2D);
     YOCTO_UNIT_TEST_DECL(matrix);
 
-    YOCTO_UNIT_TEST_DECL(points);
-    YOCTO_UNIT_TEST_DECL(splitting);
-    YOCTO_UNIT_TEST_DECL(server_split);
 
     YOCTO_UNIT_TEST_DECL(xtensor);
 
-    YOCTO_UNIT_TEST_DECL(field);
     YOCTO_UNIT_TEST_DECL(variadic);
     YOCTO_UNIT_TEST_DECL(mph);
     YOCTO_UNIT_TEST_DECL(net_string);
