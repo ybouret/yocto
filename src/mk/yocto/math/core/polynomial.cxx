@@ -3,6 +3,8 @@
 #include "yocto/math/types.hpp"
 #include <iostream>
 #include "yocto/code/ipower.hpp"
+#include "yocto/sort/merge.hpp"
+#include "yocto/comparator.hpp"
 
 namespace yocto
 {
@@ -42,53 +44,42 @@ namespace yocto
             return terms.size ? terms.tail->p : 0;
         }
         
-        
+        namespace
+        {
+            static inline
+            int compare_terms( const polynomial<z_type>::term *lhs, const polynomial<z_type>::term *rhs,void*) throw()
+            {
+                return __compare(lhs->p,rhs->p);
+            }
+        }
+
         template <>
         void polynomial<z_type>:: add(const size_t coef, const z_type value)
         {
-            if(Fabs(value)<=0)
-                return;
-            
-            
-            for(term *cur = terms.head;cur;cur=cur->next)
+            // don't add if trivial
+            if(Fabs(value)<=0) return;
+
+            // scan
+            for(term *curr=terms.head;curr;curr=curr->next)
             {
-                const size_t p = cur->p;
-                
+                const size_t p = curr->p;
                 if(p==coef)
                 {
-                    cur->a += value;
-                    if(Fabs(cur->a)<=0)
+                    // coefficient already exists
+                    if( Fabs(curr->a += value) <= 0)
                     {
-                        delete terms.unlink(cur);
+                        delete terms.unlink(curr);
                     }
                     return;
                 }
-                
-                if(p>coef)
-                {
-                    //insert a new node before term
-                    term *New = new term(coef,value);
-                    if(terms.size==1||cur==terms.head)
-                    {
-                        terms.push_front(New);
-                    }
-                    else
-                    {
-                        term *prv = cur->prev; assert(prv);
-                        prv->next = New;
-                        cur->prev = New;
-                        New->prev = prv;
-                        New->next = cur;
-                        terms.size++;
-                    }
-                    return;
-                }
-                
-                assert(p<coef);
             }
-            
-            // append a a new node
-            terms.push_back( new term(coef,value) );
+
+            // create a new node
+            terms.push_back(new term(coef,value) );
+
+            // organize
+            core::merging<term>::sort(terms,compare_terms,NULL);
+
         }
         
         template <>
