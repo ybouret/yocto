@@ -16,13 +16,13 @@ namespace yocto
              P'(t2) = df2
              */
             template <typename T>
-            void gap(polynomial<T> &P,
-                     const T t1,
-                     const T f1,
-                     const T df1,
-                     const T t2,
-                     const T f2,
-                     const T df2)
+            static void gap(polynomial<T> &P,
+                            const T t1,
+                            const T f1,
+                            const T df1,
+                            const T t2,
+                            const T f2,
+                            const T df2)
             {
                 P.clear();
                 P.add(0,f1);

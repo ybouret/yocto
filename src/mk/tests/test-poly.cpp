@@ -1,5 +1,6 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/math/core/polynomial-utils.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 using namespace yocto;
 using namespace math;
@@ -62,7 +63,37 @@ YOCTO_UNIT_TEST_IMPL(poly)
     Poly::derivative(P,Q);
     std::cerr << P << "/" << Q << std::endl;
     
-    
+    {
+        const double t1  = 1.0;
+        const double t2  = 2.0;
+        const double f1  = sin(t1);
+        const double df1 = cos(t1);
+        const double f2  = sin(t2);
+        const double df2 = cos(t2);
+        __poly::gap(P,t1, f1, df1, t2, f2, df2);
+        const size_t NE = 10;
+        const size_t NP = 100;
+        {
+            ios::wcstream fp("poly.dat");
+            for(size_t i=0;i<=NE;++i)
+            {
+                const double t = (i*t1)/NE;
+                fp("%g %g\n",t,sin(t));
+            }
+
+            for(size_t i=0;i<=NP;++i)
+            {
+                const double t = t1 +(i*(t2-t1))/NP;
+                fp("%g %g\n",t,P(t-t1));
+            }
+
+            for(size_t i=0;i<=NE;++i)
+            {
+                const double t = t2 + (i*(3.14-t2))/NE;
+                fp("%g %g\n",t,sin(t));
+            }
+        }
+    }
     
 }
 YOCTO_UNIT_TEST_DONE()
