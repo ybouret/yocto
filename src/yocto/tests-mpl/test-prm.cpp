@@ -28,14 +28,15 @@ YOCTO_UNIT_TEST_IMPL(prm)
         }
         if(ans)
         {
-            std::cerr << ' ' << j;
+            std::cout << ' ' << i;
             if( (0==(count%16)) )
             {
-                std::cerr << std::endl;
+                std::cout << std::endl;
             }
         }
     }
-    std::cerr << std::endl;
+    std::cout << std::endl;
+    std::cout << '[' << count << ']' << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()

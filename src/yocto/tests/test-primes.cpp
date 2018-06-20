@@ -53,10 +53,10 @@ YOCTO_UNIT_TEST_IMPL(primality)
     }
     std::cerr << std::endl;
 
-    for(size_t i=1+alea.leq(100);i>0;--i)
+    for(size_t i=1+alea.leq(10);i>0;--i)
     {
         const size_t j=2+alea.leq(0x10000000);
-        std::cerr << primality::prev(j) << '\t' << j << '\t' << primality::next(j) << std::endl;
+        std::cerr << primality::prev(j) << "\t<=\t" << j << "\t<=\t" << primality::next(j) << std::endl;
     }
 
     std::cerr << "[" << j0 << "]" << std::endl;
