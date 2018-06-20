@@ -31,10 +31,10 @@ namespace yocto
             
             
             template <>
-            void SampleType<real_t>:: display(std::ostream &os,
-                                              const Array  &aorg,
-                                              const Array  &aerr,
-                                              const char   *prefix) const
+            std::ostream & SampleType<real_t>:: display(std::ostream &os,
+                                                        const Array  &aorg,
+                                                        const Array  &aerr,
+                                                        const char   *prefix) const
             {
                 const size_t nvar = variables.size();
                 assert(aorg.size()==nvar);
@@ -88,7 +88,8 @@ namespace yocto
                     os << ')';
                     os << std::endl;
                 }
-                
+
+                return os;
             }
         }
     }

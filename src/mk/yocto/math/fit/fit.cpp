@@ -134,6 +134,12 @@ namespace yocto
                 return fv->indx;
             }
 
+            size_t Variables:: operator[](const char *var_name) const
+            {
+                const string vn(var_name);
+                return (*this)[vn];
+            }
+
             size_t Variables:: getMaxNameLength() const throw()
             {
                 size_t ans = 0;

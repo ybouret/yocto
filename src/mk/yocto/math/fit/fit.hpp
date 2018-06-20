@@ -67,9 +67,23 @@ namespace yocto
 
                 //! indice of variable name
                 size_t operator[](const string &var_name) const;
+                size_t operator[](const char   *var_name) const;
 
                 //! max length of name
                 size_t getMaxNameLength() const throw();
+
+                template <typename T> inline
+                T & operator()( array<T> &arr, const char *var_name ) const
+                {
+                    return arr[ (*this)[var_name] ];
+                }
+
+                template <typename T> inline
+                T & operator()( array<T> &arr, const string &var_name ) const
+                {
+                    return arr[ (*this)[var_name] ];
+                }
+
 
             private:
                 void check_no_multiple_link(const string &link) const;
@@ -176,10 +190,10 @@ namespace yocto
                 virtual size_t count() const throw() = 0; //!< number of sub-samples
                 virtual T      correlation() const throw() = 0;
 
-                void display(std::ostream &os,
-                             const Array  &aorg,
-                             const Array  &aerr,
-                             const char   *prefix=0) const;
+                std::ostream & display(std::ostream &os,
+                                       const Array  &aorg,
+                                       const Array  &aerr,
+                                       const char   *prefix=0) const;
 
             private:
                 YOCTO_DISABLE_COPY_AND_ASSIGN(SampleType);
