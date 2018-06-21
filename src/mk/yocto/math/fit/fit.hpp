@@ -79,7 +79,19 @@ namespace yocto
                 }
 
                 template <typename T> inline
+                const T & operator()( const array<T> &arr, const char *var_name ) const
+                {
+                    return arr[ (*this)[var_name] ];
+                }
+
+                template <typename T> inline
                 T & operator()( array<T> &arr, const string &var_name ) const
+                {
+                    return arr[ (*this)[var_name] ];
+                }
+
+                template <typename T> inline
+                const T & operator()( const array<T> &arr, const string &var_name ) const
                 {
                     return arr[ (*this)[var_name] ];
                 }
