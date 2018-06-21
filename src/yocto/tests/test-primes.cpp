@@ -74,3 +74,48 @@ YOCTO_UNIT_TEST_IMPL(primality)
 }
 YOCTO_UNIT_TEST_DONE()
 
+#include "yocto/sequence/vector.hpp"
+#include "yocto/ios/ocstream.hpp"
+YOCTO_UNIT_TEST_IMPL(primgen)
+{
+    size_t n       = 6542;
+    if(argc>1)
+    {
+        n = strconv::to<size_t>(argv[1],"n");
+    }
+    size_t i       = 3;
+    size_t count   = 0;
+    size_t maxCode = 0;
+    size_t maxInit = i;
+    vector<uint8_t> codes(16384,as_capacity);
+
+    ios::wcstream fp("primgen.dat");
+    while(count<n)
+    {
+        const size_t j = primality::next(i+2);
+        const size_t delta = j-i;
+        if( 0 != (delta%2)) { throw exception("difference is not even"); }
+        const size_t code  = (delta>>1)-1;
+        if(code>255)
+        {
+            break;
+        }
+        codes.push_back(code);
+        if(code>maxCode)
+        {
+            maxCode = code;
+            maxInit = i;
+        }
+        fp("%u %u %u\n", unsigned(i), unsigned(code), unsigned(maxCode));
+
+        fprintf( stderr, "%10u=>%10u : %4u : @%4u\n", unsigned(i), unsigned(j), unsigned(delta), unsigned(code) );
+        i=j;
+        ++count;
+    }
+    fflush(stderr);
+    std::cerr << "maxCode=" << maxCode << " for " << maxInit << std::endl;
+}
+YOCTO_UNIT_TEST_DONE()
+
+
+

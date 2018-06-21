@@ -27,6 +27,7 @@ YOCTO_UNIT_TEST_INIT(200)
     YOCTO_UNIT_TEST_DECL(container);
     YOCTO_UNIT_TEST_DECL(sequence);
     YOCTO_UNIT_TEST_DECL(primality);
+    YOCTO_UNIT_TEST_DECL(primgen);
     YOCTO_UNIT_TEST_DECL(hash);
     YOCTO_UNIT_TEST_DECL(hcol);
     YOCTO_UNIT_TEST_DECL(streams);
