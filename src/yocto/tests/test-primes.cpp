@@ -37,7 +37,7 @@ YOCTO_UNIT_TEST_IMPL(primality)
         const bool ans = primality::_check(i);
         if(ans != primality::check(i) )
         {
-            throw exception("different result/v1 for %lu", (unsigned long)(i));
+            throw exception("different results for %lu", (unsigned long)(i));
         }
 
 
@@ -59,17 +59,17 @@ YOCTO_UNIT_TEST_IMPL(primality)
         std::cerr << primality::prev(j) << "\t<=\t" << j << "\t<=\t" << primality::next(j) << std::endl;
     }
 
-    std::cerr << "[" << j0 << "]" << std::endl;
-    std::cerr << "Computing speeds..." << std::endl;
-    const double speed0 = check_perf(n,primality::_check);
-    std::cerr << "speed0=" << speed0 << std::endl;
-    const double speed1 = check_perf(n,primality::check);
-    std::cerr << "speed1=" << speed1 << std::endl;
 
-#if 0
-    const double speed2 = check_perf(n,primality::check2);
-    std::cerr << "speed2=" << speed2 << std::endl;
-#endif
+    std::cerr << "[" << j0 << "]" << std::endl;
+
+    if(false)
+    {
+        std::cerr << "Computing speeds..." << std::endl;
+        const double speed0 = check_perf(n,primality::_check);
+        std::cerr << "speed0=" << speed0 << std::endl;
+        const double speed1 = check_perf(n,primality::check);
+        std::cerr << "speed1=" << speed1 << std::endl;
+    }
     
 }
 YOCTO_UNIT_TEST_DONE()
@@ -78,42 +78,63 @@ YOCTO_UNIT_TEST_DONE()
 #include "yocto/ios/ocstream.hpp"
 YOCTO_UNIT_TEST_IMPL(primgen)
 {
-    size_t n       = 6542;
+    size_t n = 1000;
     if(argc>1)
     {
-        n = strconv::to<size_t>(argv[1],"n");
+        n = strconv::to_size(argv[1],"n");
     }
-    size_t i       = 3;
-    size_t count   = 0;
-    size_t maxCode = 0;
-    size_t maxInit = i;
-    vector<uint8_t> codes(16384,as_capacity);
+    fprintf(stderr, "Building List\n");
+    vector<size_t> p(65536,as_capacity);
 
-    ios::wcstream fp("primgen.dat");
-    while(count<n)
+    for(size_t i=5;i*i<=n;i+=6)
     {
-        const size_t j = primality::next(i+2);
-        const size_t delta = j-i;
-        if( 0 != (delta%2)) { throw exception("difference is not even"); }
-        const size_t code  = (delta>>1)-1;
-        if(code>255)
-        {
-            break;
-        }
-        codes.push_back(code);
-        if(code>maxCode)
-        {
-            maxCode = code;
-            maxInit = i;
-        }
-        fp("%u %u %u\n", unsigned(i), unsigned(code), unsigned(maxCode));
-
-        fprintf( stderr, "%10u=>%10u : %4u : @%4u\n", unsigned(i), unsigned(j), unsigned(delta), unsigned(code) );
-        i=j;
-        ++count;
+        p.push_back(i);
+        p.push_back(i+2);
     }
-    fflush(stderr);
-    std::cerr << "maxCode=" << maxCode << " for " << maxInit << std::endl;
+    const size_t N = p.size();
+    size_t j=0;
+    for(size_t i=1;i<=N;++i)
+    {
+        //std::cerr << ' ' << p[i];
+        fprintf(stderr," %5lu",(unsigned long)(p[i]));
+        if( 0 == (++j%16) )
+        {
+            fprintf(stderr,"\n");
+        }
+        fflush(stderr);
+    }
+    std::cerr << std::endl;
+
+    std::cerr << "[" << p.size() << "]" << std::endl;
+    std::cerr << "up to " << p.back() << std::endl;
+    size_t codeMax = 0;
+    j = 0;
+    std::cerr.flush();
+    for(size_t i=2;i<=N;++i)
+    {
+        const size_t delta = p[i]-p[i-1];
+
+        fprintf(stderr," %4lu",(unsigned long)(delta));
+        if( 0 == (++j%16) )
+        {
+            fprintf(stderr,"\n");
+        }
+        fflush(stderr);
+
+        if( 0 != (delta%2) )
+        {
+            throw exception("invalid delta");
+        }
+        const size_t half = (delta>>1); assert(half>0);
+        const size_t code = half-1;
+        if(code>codeMax)
+        {
+            codeMax = code;
+        }
+
+    }
+    std::cerr << std::endl;
+    std::cerr << "codeMax=" << codeMax << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()
 
