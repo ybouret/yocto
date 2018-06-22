@@ -37,9 +37,15 @@ YOCTO_UNIT_TEST_IMPL(primality)
         const bool ans = primality::_check(i);
         if(ans != primality::check(i) )
         {
-            throw exception("different results for %lu", (unsigned long)(i));
+            throw exception("different results for %lu, level-1", (unsigned long)(i));
         }
 
+#if 0
+        if(ans != primality::check2(i) )
+        {
+            throw exception("different results for %lu, level-2", (unsigned long)(i));
+        }
+#endif
 
         if(ans)
         {
@@ -69,6 +75,8 @@ YOCTO_UNIT_TEST_IMPL(primality)
         std::cerr << "speed0=" << speed0 << std::endl;
         const double speed1 = check_perf(n,primality::check);
         std::cerr << "speed1=" << speed1 << std::endl;
+        //const double speed2 = check_perf(n,primality::check2);
+        //std::cerr << "speed2=" << speed2 << std::endl;
     }
     
 }
@@ -78,6 +86,38 @@ YOCTO_UNIT_TEST_DONE()
 #include "yocto/ios/ocstream.hpp"
 YOCTO_UNIT_TEST_IMPL(primgen)
 {
+
+    const uint64_t n = limit_of<uint32_t>::maximum;
+    const uint64_t m = limit_of<uint16_t>::maximum;
+
+    vector<uint16_t> p(32768,as_capacity);
+    uint64_t i = 5;
+    for(;i*i<=n;i+=6)
+    {
+        if(i>m)
+        {
+            throw exception("primgen failure");
+        }
+        p.push_back(uint16_t(i));
+        p.push_back(uint16_t(i+2));
+    }
+    std::cerr << "[" << p.size() << "]" << std::endl;
+    const unsigned N = p.size();
+    ios::wcstream fp("prime32.inc");
+    fp("static const size_t   __prime32_idx = 0x%lx;\n", (unsigned long)(i) );
+    fp("static const uint16_t __prime32[%u]={\n",N);
+    size_t j=0;
+    for(unsigned i=1;i<=N;++i)
+    {
+        fp(" 0x%04x", p[i]);
+        if(i<N) fp << ',';
+        if( 0 == (++j%16) ) fp << '\n';
+    }
+    fp("\n};\n");
+    fp("static const size_t  __prime32_num = sizeof(__prime32)/sizeof(__prime32[0]);\n");
+
+
+#if 0
     size_t n = 1000;
     if(argc>1)
     {
@@ -110,31 +150,8 @@ YOCTO_UNIT_TEST_IMPL(primgen)
     size_t codeMax = 0;
     j = 0;
     std::cerr.flush();
-    for(size_t i=2;i<=N;++i)
-    {
-        const size_t delta = p[i]-p[i-1];
+#endif
 
-        fprintf(stderr," %4lu",(unsigned long)(delta));
-        if( 0 == (++j%16) )
-        {
-            fprintf(stderr,"\n");
-        }
-        fflush(stderr);
-
-        if( 0 != (delta%2) )
-        {
-            throw exception("invalid delta");
-        }
-        const size_t half = (delta>>1); assert(half>0);
-        const size_t code = half-1;
-        if(code>codeMax)
-        {
-            codeMax = code;
-        }
-
-    }
-    std::cerr << std::endl;
-    std::cerr << "codeMax=" << codeMax << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()
 
