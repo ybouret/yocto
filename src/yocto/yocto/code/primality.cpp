@@ -31,10 +31,10 @@ namespace yocto
     {
 
         if(n<=1)
-            return false;
+            return false; //!< for 0 and 1
         else if(n<=3)
-            return true;
-        else if( !(n%2) || !(n%3) )
+            return true;  //!< for 2 and 3
+        else if( !(n%2) || !(n%3) ) //! for 2,4,6,8,9...
             return false;
         else
         {
