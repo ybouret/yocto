@@ -48,10 +48,15 @@ namespace yocto
             }
             return true;
         }
-
-
     }
 
+#if 0
+    bool primality:: check2(const size_t n) throw()
+    {
+#include "/Users/ybouret/program/yocto/prime32.cxx"
+    }
+#endif
+    
     size_t primality:: prev(const size_t n)
     {
         switch(n)
