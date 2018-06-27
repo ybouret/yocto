@@ -22,24 +22,24 @@ namespace yocto
             word_type          *data;            //!< first byte of data
             word_type           firstAvailable;  //!< bookeeping
             word_type           stillAvailable;  //!< bookeeping
-            const word_type     blockIncrement;  //!< for memory access
             const word_type     providedNumber;  //!< initial count
-            
+            const size_t        blockIncrement;  //!< for memory access
+
             inline tChunk(void        *data_entry,
                           const size_t block_size,
                           const size_t chunk_size ) throw() :
             data( (word_type *)data_entry ),
             firstAvailable(0),
             stillAvailable(0),
-            blockIncrement(0),
-            providedNumber(0)
+            providedNumber(0),
+            blockIncrement(0)
             {
                 //______________________________________________________________
                 //
                 // compute all parameters
                 //______________________________________________________________
                 const size_t block_round    = YOCTO_ALIGN_FOR_ITEM(word_type,block_size);
-                (word_type &)blockIncrement = word_type(block_round/sizeof(word_type));
+                (size_t    &)blockIncrement = word_type(block_round/sizeof(word_type));
                 
                 const size_t top_blocks     = chunk_size/block_round;
                 stillAvailable              = word_type( (MaxBlocks < top_blocks) ? MaxBlocks : top_blocks );
@@ -60,7 +60,7 @@ namespace yocto
             inline ~tChunk() throw() {}
 
             //! acquire a zeroed block
-            inline void *acquire()
+            inline void *acquire() throw()
             {
                 assert(stillAvailable>0);
                 assert(stillAvailable<=providedNumber);
