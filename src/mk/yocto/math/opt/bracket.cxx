@@ -244,7 +244,7 @@ namespace yocto {
                 //--------------------------------------------------------------
             PROBE:
                 //std::cerr << "\tdefault step" << std::endl;
-                SHFT(x.a,x.b,x.c,x.b + GOLD * (x.b - x.a) );
+                SHFT(x.a,x.b,x.c,x.c + GOLD * (x.c - x.b) );
                 SHFT(f.a,f.b,f.c,func(x.c));
                 assert(f.b<=f.a);
                 assert(x.is_ordered());

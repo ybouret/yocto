@@ -155,7 +155,7 @@ namespace yocto
 
         }
 
-        //! assuming ff1 is zeroed, same sime than fft2
+        //! assuming fft1 is zeroed, same size than fft2
         static inline
         void _fft_v2(const uint8_t *data1,
                      const size_t   size1,
