@@ -108,7 +108,7 @@ namespace yocto
                          the same contour level, in which case only the side of the box
                          is drawn.
                          vertex 4 +-------------------+ vertex 3
-                         | \               / |
+                         .        | \               / |
                          |   \    m-3    /   |
                          |     \       /     |
                          |       \   /       |
