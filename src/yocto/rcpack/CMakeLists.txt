@@ -11,6 +11,7 @@ ADD_DEPENDENCIES(rcdemo yocto-rcpack)
 SET(RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/resources)
 #MESSAGE("resources@${RESOURCES}" )
 
+IF(FALSE)
 ADD_CUSTOM_COMMAND(
 	TARGET rcdemo 
 	POST_BUILD
@@ -18,3 +19,4 @@ ADD_CUSTOM_COMMAND(
 	COMMENT "Adding resources to rcdemo..."  )
 	
 INSTALL( TARGETS yocto-rcpack RUNTIME DESTINATION bin )
+ENDIF()
